@@ -1,3 +1,4 @@
+process.env.PUPPETEER_CACHE_DIR = process.env.PUPPETEER_CACHE_DIR || require("path").join(__dirname, ".cache", "puppeteer");
 const express = require("express");
 const path = require("path");
 const axios = require("axios");
@@ -12,7 +13,7 @@ app.use(express.static(path.join(__dirname,"public")));
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V3.4",
+  service:"Hydropolis Studio V3.5",
   time:new Date().toISOString()
 }));
 
@@ -354,4 +355,4 @@ app.get("/api/image-proxy",async(req,res)=>{
 });
 
 app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")));
-app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V3.4 on ${PORT}`));
+app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V3.5 on ${PORT}`));

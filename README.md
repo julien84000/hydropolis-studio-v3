@@ -1,34 +1,22 @@
-# Hydropolis Studio V3.4 — correction des photos dynamiques
+# Hydropolis Studio V3.5
 
-La V3.3 ne suffisait pas : Amphora change réellement le visuel dans le navigateur après sélection de la finition.
+Correctif ciblé du problème vu dans les logs Render :
 
-## Nouvelle méthode
-La V3.4 utilise un navigateur Chromium côté serveur Render :
-1. ouvre la fiche officielle du fabricant ;
-2. cherche le menu de finition ;
-3. sélectionne automatiquement `BS`, `BB` ou `BC` suivant la référence ;
-4. attend le changement dynamique du visuel ;
-5. récupère l'image produit affichée après cette sélection ;
-6. renvoie cette photo à Hydropolis Studio.
+`Dynamic finish lookup failed: Could not find Chrome`
 
-Exemple de validation :
-`RE001.BB` doit sélectionner **BB Brushed Black PVD** sur la fiche Amphora avant de récupérer le visuel.
+## Correction
+Render installe maintenant explicitement Chrome pendant le build :
 
-## Important pour Render
-Une nouvelle dépendance `puppeteer` est ajoutée. Le premier build sera donc plus long que les précédents car Chromium doit être installé.
+`npm install && npx puppeteer browsers install chrome`
 
-## PDF client
-La logique V3.3 est conservée :
-- A4 paysage ;
-- suppression automatique des grandes marges blanches autour de la photo ;
-- petite marge de sécurité ;
-- produit toujours visible en entier ;
-- aucune déformation (`object-fit: contain`).
+Le cache Puppeteer est placé dans le projet pour que le navigateur installé au build soit retrouvé au runtime.
 
-## Test
-Après redéploiement :
-1. faire un rechargement forcé du navigateur ;
-2. rechercher `RE001.BB` ;
-3. cliquer `Trouver la photo fabricant` ;
-4. vérifier que le visuel est noir brossé et non acier ;
-5. ajouter au projet puis vérifier `Aperçu PDF`.
+## Test après déploiement
+1. Attendre la fin complète du build Render.
+2. Recharger Hydropolis Studio.
+3. Rechercher `RE001.BB`.
+4. Cliquer `Trouver la photo fabricant`.
+5. La fiche Amphora doit être ouverte côté serveur et la finition `BB Brushed Black PVD` sélectionnée avant récupération de l'image.
+6. Vérifier ensuite l'Aperçu PDF.
+
+La logique PDF A4 paysage avec image entière et recadrage des marges blanches reste inchangée.

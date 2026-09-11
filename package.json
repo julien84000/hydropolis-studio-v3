@@ -1,11 +1,12 @@
 {
   "name": "hydropolis-studio-v3",
-  "version": "3.4.0",
+  "version": "3.5.0",
   "private": true,
   "description": "Hydropolis Studio V3 - Render test server",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "postinstall": "npx puppeteer browsers install chrome"
   },
   "engines": {
     "node": ">=20"
