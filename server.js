@@ -13,7 +13,7 @@ app.use(express.static(path.join(__dirname,"public")));
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V3.6",
+  service:"Hydropolis Studio V3.7",
   time:new Date().toISOString()
 }));
 
@@ -115,65 +115,67 @@ async function dynamicFinishImage({manufacturerUrl,reference,finishCode,finish})
   try{
     await page.setViewport({width:1440,height:1200,deviceScaleFactor:1});
     await page.setUserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/150 Safari/537.36");
-    await page.goto(manufacturerUrl,{waitUntil:"networkidle2",timeout:30000});
+    await page.goto(manufacturerUrl,{waitUntil:"networkidle2",timeout:35000});
 
-    const result=await page.evaluate(async ({finishCode,finish})=>{
-      const visible = el => {
-        const s=getComputedStyle(el), r=el.getBoundingClientRect();
-        return s.display!=="none" && s.visibility!=="hidden" && r.width>0 && r.height>0;
-      };
+    const chosen=await page.evaluate(async ({finishCode,finish})=>{
       const norm=s=>String(s||"").trim().toLowerCase();
-      const targets=[norm(finishCode),norm(finish)];
-
+      const targets=[norm(finishCode),norm(finish)].filter(Boolean);
+      const visible=el=>{
+        const s=getComputedStyle(el),r=el.getBoundingClientRect();
+        return s.display!=="none"&&s.visibility!=="hidden"&&r.width>0&&r.height>0;
+      };
       const selects=[...document.querySelectorAll("select")].filter(visible);
-      let chosen=null;
-      for(const sel of selects){
-        const options=[...sel.options];
-        const opt=options.find(o=>{
+      let sel=null,opt=null;
+      for(const s of selects){
+        const found=[...s.options].find(o=>{
           const t=norm(o.textContent);
-          return targets.some(x=>x && (t===x || t.startsWith(x+" ") || t.includes(x)));
+          return targets.some(x=>t===x||t.startsWith(x+" ")||t.includes(x));
         });
-        if(opt){chosen={sel,opt};break;}
+        if(found){sel=s;opt=found;break;}
       }
-      if(!chosen) return {error:"Aucun sélecteur de finition correspondant n'a été trouvé."};
+      if(!sel||!opt) return {error:"Aucun sélecteur de finition correspondant trouvé."};
 
-      const imageSnapshot=()=>[...document.images]
-        .filter(visible)
-        .map(img=>({
-          src:img.currentSrc||img.src||"",
-          w:img.naturalWidth||0,h:img.naturalHeight||0,
-          area:(img.getBoundingClientRect().width||0)*(img.getBoundingClientRect().height||0)
-        }))
-        .filter(x=>x.src);
-
-      const before=imageSnapshot();
-      const beforeSet=new Set(before.map(x=>x.src));
-
-      chosen.sel.value=chosen.opt.value;
-      chosen.sel.dispatchEvent(new Event("input",{bubbles:true}));
-      chosen.sel.dispatchEvent(new Event("change",{bubbles:true}));
-
-      await new Promise(r=>setTimeout(r,2200));
-
-      const after=imageSnapshot();
-      const changed=after.filter(x=>!beforeSet.has(x.src) && x.w>=350 && x.h>=350)
-        .sort((a,b)=>(b.area+b.w*b.h)-(a.area+a.w*a.h));
-
-      if(changed[0]) return {url:changed[0].src,method:"changed-image",option:chosen.opt.textContent.trim()};
-
-      // If WordPress/WooCommerce reuses the same element, find the largest current product image,
-      // excluding finish swatches/icons and tiny UI images.
-      const candidates=after
-        .filter(x=>x.w>=500 && x.h>=500)
-        .filter(x=>!/logo|icon|acciaio|nero\.jpg|rame\.jpg|flag|avatar/i.test(x.src))
-        .sort((a,b)=>(b.area+b.w*b.h)-(a.area+a.w*a.h));
-
-      if(candidates[0]) return {url:candidates[0].src,method:"largest-after-selection",option:chosen.opt.textContent.trim()};
-      return {error:"La finition a été sélectionnée mais aucune grande image produit n'a été détectée."};
+      sel.value=opt.value;
+      sel.dispatchEvent(new Event("input",{bubbles:true}));
+      sel.dispatchEvent(new Event("change",{bubbles:true}));
+      if(window.jQuery){
+        try{window.jQuery(sel).val(opt.value).trigger("change");}catch(e){}
+      }
+      return {option:opt.textContent.trim(),value:opt.value};
     },{finishCode,finish});
 
-    if(result.error) throw new Error(result.error);
-    return result;
+    if(chosen.error) throw new Error(chosen.error);
+
+    await new Promise(r=>setTimeout(r,3200));
+
+    const handle=await page.evaluateHandle(()=>{
+      const visible=el=>{
+        const s=getComputedStyle(el),r=el.getBoundingClientRect();
+        return s.display!=="none"&&s.visibility!=="hidden"&&r.width>80&&r.height>80;
+      };
+      const bad=el=>{
+        const t=((el.currentSrc||el.src||"")+" "+(el.alt||"")+" "+(el.className||"")).toLowerCase();
+        return /logo|icon|flag|avatar|acciaio\.jpg|nero\.jpg|rame\.jpg|swatch|thumb/.test(t);
+      };
+      const imgs=[...document.querySelectorAll("img")].filter(visible).filter(x=>!bad(x));
+      imgs.sort((a,b)=>{
+        const ar=a.getBoundingClientRect(), br=b.getBoundingClientRect();
+        return (br.width*br.height)-(ar.width*ar.height);
+      });
+      return imgs[0]||null;
+    });
+
+    const el=handle.asElement();
+    if(!el) throw new Error("Visuel produit rendu introuvable après sélection de la finition.");
+
+    const png=await el.screenshot({type:"png",encoding:"base64"});
+    await handle.dispose();
+
+    return {
+      dataUrl:`data:image/png;base64,${png}`,
+      option:chosen.option,
+      method:"rendered-element-screenshot"
+    };
   }finally{
     await page.close().catch(()=>{});
   }
@@ -186,26 +188,19 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish})
   // open the product page, select the requested finish, then read the updated product image.
   try{
     const dyn=await dynamicFinishImage({manufacturerUrl,reference,finishCode,finish});
-    if(dyn && dyn.url){
+    if(dyn && dyn.dataUrl){
       return {
         manufacturerUrl,reference,finishCode,finish,base,
         best:{
-          url:dyn.url,
+          dataUrl:dyn.dataUrl,
           source:"manufacturer-browser-selection",
           score:500,
           finishMatch:"exact",
           selectedOption:dyn.option,
           method:dyn.method
         },
-        candidates:[{
-          url:dyn.url,
-          source:"manufacturer-browser-selection",
-          score:500,
-          finishMatch:"exact",
-          selectedOption:dyn.option,
-          method:dyn.method
-        }],
-        note:`Photo officielle obtenue après sélection automatique de la finition ${dyn.option}.`
+        candidates:[],
+        note:`Visuel officiel capturé après sélection automatique de la finition ${dyn.option}.`
       };
     }
   }catch(browserError){
@@ -362,4 +357,4 @@ app.get("/api/image-proxy",async(req,res)=>{
 });
 
 app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")));
-app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V3.6 on ${PORT}`));
+app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V3.7 on ${PORT}`));

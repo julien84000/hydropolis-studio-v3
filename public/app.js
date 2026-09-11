@@ -103,9 +103,9 @@ async function autoCropForPdf(src){
   });
 }
 
-const manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v34")||"{}");
+const manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v37")||"{}");
 function manufacturerCacheKey(p){return `${p.manufacturer}|${p.reference}`;}
-function saveManufacturerCache(){localStorage.setItem("hydropolis-manufacturer-v34",JSON.stringify(manufacturerImageCache));}
+function saveManufacturerCache(){localStorage.setItem("hydropolis-manufacturer-v37",JSON.stringify(manufacturerImageCache));}
 function cachedManufacturerImage(p){return manufacturerImageCache[manufacturerCacheKey(p)]||null;}
 
 async function fetchManufacturerImage(p,force=false){
@@ -124,9 +124,12 @@ async function fetchManufacturerImage(p,force=false){
   const data=await r.json();
   if(!r.ok) throw new Error(data.detail||data.error||"Recherche fabricant impossible");
   if(!data.best) throw new Error(data.note||"Aucune photo fabricant trouvée");
+  const src=data.best.dataUrl
+    ? data.best.dataUrl
+    : `/api/image-proxy?url=${encodeURIComponent(data.best.url)}`;
   const result={
-    remoteUrl:data.best.url,
-    src:`/api/image-proxy?url=${encodeURIComponent(data.best.url)}`,
+    remoteUrl:data.best.url||"",
+    src,
     finishMatch:data.best.finishMatch||"generic",
     source:data.best.finishMatch==="exact"
       ?`Site officiel fabricant · finition ${p.finish}`
