@@ -41,3 +41,9 @@ button,input,select,textarea{font:inherit}.shell{display:grid;grid-template-colu
 .image-actions a{font-size:10px;color:#846638;text-decoration:none;font-weight:700}
 .tiny{font-size:9px;border:1px solid var(--line);background:#fff;border-radius:6px;padding:5px 7px;cursor:pointer}
 .pdf-photo-missing{font-size:7pt;line-height:1.5;color:#8a8479;text-align:center;padding:8mm}
+
+/* V3.1 */
+.manufacturer-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:7px}
+.manufacturer-tools .source-link{margin-top:0}
+.manufacturer-search{font-weight:700}
+.manufacturer-search:disabled{opacity:.55;cursor:wait}
