@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hydropolis Studio V3 · Render</title><link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="shell">
+<aside class="sidebar">
+  <div class="logo"><span>H</span><div><b>Hydropolis</b><small>Studio V3</small></div></div>
+  <button class="nav active" data-view="catalog">Catalogue intelligent</button>
+  <button class="nav" data-view="project">Projet par pièce</button>
+  <button class="nav" data-view="preview">Présentation client</button>
+  <div class="side-note"><b>Base active</b><span>Amphora · REEL · Tarif 2024</span><span id="catalogCount"></span><span id="imageCount"></span></div>
+</aside>
+
+<main>
+<header>
+  <div><h1 id="viewTitle">Catalogue intelligent</h1><p id="viewSubtitle">Recherche par produit, avec priorité aux photos du fabricant et à la finition exacte.</p></div>
+  <div class="head-actions"><button class="btn ghost" id="saveBtn">Sauvegarder</button><button class="btn primary" id="previewTopBtn">Aperçu PDF</button></div>
+</header>
+
+<section id="view-catalog" class="view active">
+  <div class="search-card">
+    <div class="target-row">
+      <div><span class="eyebrow">Ajouter les produits dans</span><select id="targetRoom"></select></div>
+      <button class="btn ghost" id="newRoomQuick">+ Nouvelle pièce</button>
+    </div>
+    <div class="search-line"><input id="searchInput" autofocus placeholder="Référence, désignation, collection, fabricant…"><button class="btn primary" id="clearSearch">Effacer</button></div>
+    <div class="filters">
+      <select id="manufacturerFilter"><option value="">Tous fabricants</option></select>
+      <select id="collectionFilter"><option value="">Toutes collections</option></select>
+      <select id="categoryFilter"><option value="">Toutes catégories</option></select>
+      <select id="finishFilter"><option value="">Toutes finitions</option></select>
+    </div>
+  </div>
+  <div class="catalog-layout">
+    <div><div class="section-head"><div><b>Résultats</b><span id="resultCount"></span></div></div><div id="results" class="results"></div></div>
+    <aside class="basket"><div class="section-head"><div><b>Projet</b><span id="selectionCount"></span></div></div><div id="selectionMini"></div><button class="btn primary wide" id="goProjectBtn">Voir les pièces</button></aside>
+  </div>
+</section>
+
+<section id="view-project" class="view">
+  <div class="grid2">
+    <div class="card"><div class="eyebrow">Projet</div><h2>Informations client</h2>
+      <div class="fields two">
+        <label>Nom du projet<input id="projectName" placeholder="Villa Saint-Rémy"></label>
+        <label>Client<input id="clientName" placeholder="Mme / M. …"></label>
+        <label>Lieu<input id="projectLocation" placeholder="Saint-Rémy-de-Provence"></label>
+        <label>Date<input id="projectDate" type="date"></label>
+      </div>
+      <label>Introduction<textarea id="projectIntro" rows="4"></textarea></label>
+    </div>
+    <div class="card"><div class="eyebrow">Couverture</div><h2>Image principale</h2>
+      <label id="coverDrop" class="drop"><input id="coverInput" type="file" accept="image/*" hidden><span>＋</span><b>Déposer l'image</b><small>ou cliquer pour parcourir</small></label>
+    </div>
+  </div>
+
+  <div class="section-head room-titlebar"><div><div class="eyebrow">Composition</div><h2>Pièces et éléments</h2></div><button class="btn primary" id="addRoomBtn">+ Ajouter une pièce</button></div>
+  <div id="roomsEditor" class="rooms"></div>
+</section>
+
+<section id="view-preview" class="view">
+  <div class="preview-toolbar"><div><b>Aperçu du dossier</b><span>Chaque pièce génère ses propres pages et ses propres produits.</span></div><button class="btn primary" id="printBtn">Imprimer / PDF</button></div>
+  <div class="preview-bg"><div id="document"></div></div>
+</section>
+</main>
+</div>
+<script src="app.js"></script>
+</body></html>
