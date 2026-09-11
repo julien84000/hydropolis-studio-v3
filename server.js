@@ -2,6 +2,7 @@ const express = require("express");
 const path = require("path");
 const axios = require("axios");
 const cheerio = require("cheerio");
+const puppeteer = require("puppeteer");
 
 const app = express();
 const PORT = process.env.PORT || 10000;
@@ -11,7 +12,7 @@ app.use(express.static(path.join(__dirname,"public")));
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V3.3",
+  service:"Hydropolis Studio V3.4",
   time:new Date().toISOString()
 }));
 
@@ -82,8 +83,126 @@ function variationImageUrl(v){
   return v?.image?.full_src || v?.image?.src || v?.image?.url || "";
 }
 
+
+let browserPromise=null;
+async function getBrowser(){
+  if(!browserPromise){
+    browserPromise=puppeteer.launch({
+      headless:true,
+      args:[
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--no-zygote",
+        "--disable-gpu"
+      ]
+    }).catch(e=>{browserPromise=null;throw e;});
+  }
+  return browserPromise;
+}
+
+async function dynamicFinishImage({manufacturerUrl,reference,finishCode,finish}){
+  const browser=await getBrowser();
+  const page=await browser.newPage();
+  try{
+    await page.setViewport({width:1440,height:1200,deviceScaleFactor:1});
+    await page.setUserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/150 Safari/537.36");
+    await page.goto(manufacturerUrl,{waitUntil:"networkidle2",timeout:30000});
+
+    const result=await page.evaluate(async ({finishCode,finish})=>{
+      const visible = el => {
+        const s=getComputedStyle(el), r=el.getBoundingClientRect();
+        return s.display!=="none" && s.visibility!=="hidden" && r.width>0 && r.height>0;
+      };
+      const norm=s=>String(s||"").trim().toLowerCase();
+      const targets=[norm(finishCode),norm(finish)];
+
+      const selects=[...document.querySelectorAll("select")].filter(visible);
+      let chosen=null;
+      for(const sel of selects){
+        const options=[...sel.options];
+        const opt=options.find(o=>{
+          const t=norm(o.textContent);
+          return targets.some(x=>x && (t===x || t.startsWith(x+" ") || t.includes(x)));
+        });
+        if(opt){chosen={sel,opt};break;}
+      }
+      if(!chosen) return {error:"Aucun sélecteur de finition correspondant n'a été trouvé."};
+
+      const imageSnapshot=()=>[...document.images]
+        .filter(visible)
+        .map(img=>({
+          src:img.currentSrc||img.src||"",
+          w:img.naturalWidth||0,h:img.naturalHeight||0,
+          area:(img.getBoundingClientRect().width||0)*(img.getBoundingClientRect().height||0)
+        }))
+        .filter(x=>x.src);
+
+      const before=imageSnapshot();
+      const beforeSet=new Set(before.map(x=>x.src));
+
+      chosen.sel.value=chosen.opt.value;
+      chosen.sel.dispatchEvent(new Event("input",{bubbles:true}));
+      chosen.sel.dispatchEvent(new Event("change",{bubbles:true}));
+
+      await new Promise(r=>setTimeout(r,2200));
+
+      const after=imageSnapshot();
+      const changed=after.filter(x=>!beforeSet.has(x.src) && x.w>=350 && x.h>=350)
+        .sort((a,b)=>(b.area+b.w*b.h)-(a.area+a.w*a.h));
+
+      if(changed[0]) return {url:changed[0].src,method:"changed-image",option:chosen.opt.textContent.trim()};
+
+      // If WordPress/WooCommerce reuses the same element, find the largest current product image,
+      // excluding finish swatches/icons and tiny UI images.
+      const candidates=after
+        .filter(x=>x.w>=500 && x.h>=500)
+        .filter(x=>!/logo|icon|acciaio|nero\.jpg|rame\.jpg|flag|avatar/i.test(x.src))
+        .sort((a,b)=>(b.area+b.w*b.h)-(a.area+a.w*a.h));
+
+      if(candidates[0]) return {url:candidates[0].src,method:"largest-after-selection",option:chosen.opt.textContent.trim()};
+      return {error:"La finition a été sélectionnée mais aucune grande image produit n'a été détectée."};
+    },{finishCode,finish});
+
+    if(result.error) throw new Error(result.error);
+    return result;
+  }finally{
+    await page.close().catch(()=>{});
+  }
+}
+
 async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish}){
   const base=productBase(reference);
+
+  // Priority 1: reproduce the user's real action on the official site:
+  // open the product page, select the requested finish, then read the updated product image.
+  try{
+    const dyn=await dynamicFinishImage({manufacturerUrl,reference,finishCode,finish});
+    if(dyn && dyn.url){
+      return {
+        manufacturerUrl,reference,finishCode,finish,base,
+        best:{
+          url:dyn.url,
+          source:"manufacturer-browser-selection",
+          score:500,
+          finishMatch:"exact",
+          selectedOption:dyn.option,
+          method:dyn.method
+        },
+        candidates:[{
+          url:dyn.url,
+          source:"manufacturer-browser-selection",
+          score:500,
+          finishMatch:"exact",
+          selectedOption:dyn.option,
+          method:dyn.method
+        }],
+        note:`Photo officielle obtenue après sélection automatique de la finition ${dyn.option}.`
+      };
+    }
+  }catch(browserError){
+    console.warn("Dynamic finish lookup failed:",browserError.message);
+  }
   const page=await axios.get(manufacturerUrl,{
     timeout:18000,
     maxRedirects:5,
@@ -235,4 +354,4 @@ app.get("/api/image-proxy",async(req,res)=>{
 });
 
 app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")));
-app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V3.3 on ${PORT}`));
+app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V3.4 on ${PORT}`));

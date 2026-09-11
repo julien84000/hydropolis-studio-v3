@@ -82,3 +82,6 @@ button,input,select,textarea{font:inherit}.shell{display:grid;grid-template-colu
   .page{width:297mm;height:210mm;page-break-after:always;break-after:page}
   .tile-img img{object-fit:contain !important}
 }
+
+/* V3.4 */
+.photo-status b{color:#2d382f}

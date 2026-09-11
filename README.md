@@ -1,31 +1,34 @@
-# Hydropolis Studio V3.3 — Update Render
+# Hydropolis Studio V3.4 — correction des photos dynamiques
 
-## 1. Photos Amphora selon la finition
-La V3.3 lit maintenant les données de variations WooCommerce présentes dans la fiche officielle fabricant.
+La V3.3 ne suffisait pas : Amphora change réellement le visuel dans le navigateur après sélection de la finition.
 
-Exemple :
-- `RE001.BS` → variation BS
-- `RE001.BB` → variation BB
-- `RE001.BC` → variation BC
+## Nouvelle méthode
+La V3.4 utilise un navigateur Chromium côté serveur Render :
+1. ouvre la fiche officielle du fabricant ;
+2. cherche le menu de finition ;
+3. sélectionne automatiquement `BS`, `BB` ou `BC` suivant la référence ;
+4. attend le changement dynamique du visuel ;
+5. récupère l'image produit affichée après cette sélection ;
+6. renvoie cette photo à Hydropolis Studio.
 
-L'objectif est de récupérer l'image associée à la variation sélectionnée par le site, et non le visuel initial de la page.
+Exemple de validation :
+`RE001.BB` doit sélectionner **BB Brushed Black PVD** sur la fiche Amphora avant de récupérer le visuel.
 
-## 2. Dossier client A4 paysage
-Le dossier reste en 297 × 210 mm.
+## Important pour Render
+Une nouvelle dépendance `puppeteer` est ajoutée. Le premier build sera donc plus long que les précédents car Chromium doit être installé.
 
-Avant insertion dans le PDF, la photo produit est automatiquement préparée :
-- suppression des grandes marges blanches inutiles autour du produit ;
-- ajout d'une petite marge de sécurité ;
-- conservation du produit en entier ;
-- aucune déformation ;
-- `object-fit: contain` dans le cadre final.
+## PDF client
+La logique V3.3 est conservée :
+- A4 paysage ;
+- suppression automatique des grandes marges blanches autour de la photo ;
+- petite marge de sécurité ;
+- produit toujours visible en entier ;
+- aucune déformation (`object-fit: contain`).
 
-Le résultat doit donc montrer un produit plus grand tout en conservant l'intégralité du visuel.
-
-## Test recommandé
-1. Rechercher `RE001.BC`.
-2. Cliquer `Trouver la photo fabricant`.
-3. Vérifier que le robinet est bien cuivre brossé.
-4. Ajouter le produit à SDB MASTER.
-5. Ouvrir `Aperçu PDF`.
-6. Vérifier que le produit est entièrement visible et occupe correctement son cadre.
+## Test
+Après redéploiement :
+1. faire un rechargement forcé du navigateur ;
+2. rechercher `RE001.BB` ;
+3. cliquer `Trouver la photo fabricant` ;
+4. vérifier que le visuel est noir brossé et non acier ;
+5. ajouter au projet puis vérifier `Aperçu PDF`.
