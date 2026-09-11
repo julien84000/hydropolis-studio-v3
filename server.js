@@ -1,9 +1,9 @@
-process.env.PUPPETEER_CACHE_DIR = process.env.PUPPETEER_CACHE_DIR || require("path").join(__dirname, ".cache", "puppeteer");
 const express = require("express");
 const path = require("path");
 const axios = require("axios");
 const cheerio = require("cheerio");
-const puppeteer = require("puppeteer");
+const puppeteer = require("puppeteer-core");
+const chromium = require("@sparticuz/chromium");
 
 const app = express();
 const PORT = process.env.PORT || 10000;
@@ -13,7 +13,7 @@ app.use(express.static(path.join(__dirname,"public")));
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V3.5",
+  service:"Hydropolis Studio V3.6",
   time:new Date().toISOString()
 }));
 
@@ -88,16 +88,23 @@ function variationImageUrl(v){
 let browserPromise=null;
 async function getBrowser(){
   if(!browserPromise){
+    const executablePath=await chromium.executablePath();
     browserPromise=puppeteer.launch({
-      headless:true,
+      executablePath,
+      headless:"shell",
       args:[
+        ...chromium.args,
         "--no-sandbox",
         "--disable-setuid-sandbox",
         "--disable-dev-shm-usage",
-        "--no-zygote",
-        "--disable-gpu"
-      ]
-    }).catch(e=>{browserPromise=null;throw e;});
+        "--disable-gpu",
+        "--single-process"
+      ],
+      defaultViewport:{width:1440,height:1200}
+    }).catch(e=>{
+      browserPromise=null;
+      throw e;
+    });
   }
   return browserPromise;
 }
@@ -355,4 +362,4 @@ app.get("/api/image-proxy",async(req,res)=>{
 });
 
 app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")));
-app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V3.5 on ${PORT}`));
+app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V3.6 on ${PORT}`));

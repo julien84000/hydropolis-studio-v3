@@ -1,22 +1,38 @@
-# Hydropolis Studio V3.5
+# Hydropolis Studio V3.6
 
-Correctif ciblé du problème vu dans les logs Render :
+Correctif ciblé du build Render.
 
-`Dynamic finish lookup failed: Could not find Chrome`
+## Erreur observée
+Le build V3.5 échouait avec :
 
-## Correction
-Render installe maintenant explicitement Chrome pendant le build :
+`Failed to set up chrome-headless-shell ...`
 
-`npm install && npx puppeteer browsers install chrome`
+Le problème venait du téléchargement de Chrome pendant `npm install`.
 
-Le cache Puppeteer est placé dans le projet pour que le navigateur installé au build soit retrouvé au runtime.
+## Correction V3.6
+La V3.6 ne télécharge plus Chrome au moment du build.
+
+Elle utilise :
+- `puppeteer-core`
+- `@sparticuz/chromium`
+
+Chromium est fourni sous forme de dépendance npm et son chemin est transmis explicitement à Puppeteer au démarrage.
+
+Le build Render redevient simplement :
+
+`npm install`
 
 ## Test après déploiement
-1. Attendre la fin complète du build Render.
-2. Recharger Hydropolis Studio.
+1. Attendre que Render affiche `Deploy succeeded`.
+2. Recharger Hydropolis Studio avec un rechargement forcé.
 3. Rechercher `RE001.BB`.
 4. Cliquer `Trouver la photo fabricant`.
-5. La fiche Amphora doit être ouverte côté serveur et la finition `BB Brushed Black PVD` sélectionnée avant récupération de l'image.
-6. Vérifier ensuite l'Aperçu PDF.
+5. Vérifier que le serveur ouvre la fiche Amphora, sélectionne `BB Brushed Black PVD`, puis récupère le visuel correspondant.
+6. Ajouter au projet et vérifier `Aperçu PDF`.
 
-La logique PDF A4 paysage avec image entière et recadrage des marges blanches reste inchangée.
+## PDF client
+Toujours en A4 paysage :
+- suppression des grandes marges blanches inutiles ;
+- produit visible en entier ;
+- aucune déformation ;
+- `object-fit: contain`.

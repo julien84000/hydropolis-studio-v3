@@ -3,9 +3,6 @@ services:
     name: hydropolis-studio-v3
     runtime: node
     plan: free
-    buildCommand: npm install && npx puppeteer browsers install chrome
+    buildCommand: npm install
     startCommand: npm start
     healthCheckPath: /api/health
-    envVars:
-      - key: PUPPETEER_CACHE_DIR
-        value: /opt/render/project/src/.cache/puppeteer

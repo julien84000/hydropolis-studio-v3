@@ -1,12 +1,11 @@
 {
   "name": "hydropolis-studio-v3",
-  "version": "3.5.0",
+  "version": "3.6.0",
   "private": true,
   "description": "Hydropolis Studio V3 - Render test server",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "postinstall": "npx puppeteer browsers install chrome"
+    "start": "node server.js"
   },
   "engines": {
     "node": ">=20"
@@ -15,6 +14,7 @@
     "axios": "^1.7.9",
     "cheerio": "^1.0.0",
     "express": "^4.21.2",
-    "puppeteer": "^24.16.0"
+    "puppeteer-core": "^24.16.0",
+    "@sparticuz/chromium": "^138.0.2"
   }
 }
