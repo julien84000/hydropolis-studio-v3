@@ -55,6 +55,54 @@ function useCatalogueFallback(productId){
 }
 
 
+
+async function autoCropForPdf(src){
+  return new Promise((resolve)=>{
+    const img=new Image();
+    img.onload=()=>{
+      try{
+        const maxScan=1400;
+        const scale=Math.min(1,maxScan/img.naturalWidth,maxScan/img.naturalHeight);
+        const w=Math.max(1,Math.round(img.naturalWidth*scale));
+        const h=Math.max(1,Math.round(img.naturalHeight*scale));
+        const c=document.createElement("canvas"); c.width=w;c.height=h;
+        const ctx=c.getContext("2d",{willReadFrequently:true});
+        ctx.drawImage(img,0,0,w,h);
+        const d=ctx.getImageData(0,0,w,h).data;
+        let minX=w,minY=h,maxX=-1,maxY=-1;
+        for(let y=0;y<h;y++){
+          for(let x=0;x<w;x++){
+            const i=(y*w+x)*4, a=d[i+3], r=d[i], g=d[i+1], b=d[i+2];
+            // White/transparent background is ignored. Product + natural shadow are retained.
+            const visible=a>18 && !(r>246 && g>246 && b>246);
+            if(visible){
+              if(x<minX)minX=x;if(x>maxX)maxX=x;
+              if(y<minY)minY=y;if(y>maxY)maxY=y;
+            }
+          }
+        }
+        if(maxX<minX || maxY<minY){resolve(src);return;}
+        const bw=maxX-minX+1,bh=maxY-minY+1;
+        const pad=Math.round(Math.max(bw,bh)*0.055);
+        minX=Math.max(0,minX-pad);minY=Math.max(0,minY-pad);
+        maxX=Math.min(w-1,maxX+pad);maxY=Math.min(h-1,maxY+pad);
+        const cw=maxX-minX+1,ch=maxY-minY+1;
+        const out=document.createElement("canvas");
+        // Keep enough resolution for A4 PDF output.
+        const targetScale=Math.min(2.2,1800/Math.max(cw,ch));
+        out.width=Math.max(1,Math.round(cw*targetScale));
+        out.height=Math.max(1,Math.round(ch*targetScale));
+        const o=out.getContext("2d");
+        o.fillStyle="#ffffff";o.fillRect(0,0,out.width,out.height);
+        o.drawImage(c,minX,minY,cw,ch,0,0,out.width,out.height);
+        resolve(out.toDataURL("image/jpeg",0.94));
+      }catch(e){resolve(src);}
+    };
+    img.onerror=()=>resolve(src);
+    img.src=src;
+  });
+}
+
 const manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v32")||"{}");
 function manufacturerCacheKey(p){return `${p.manufacturer}|${p.reference}`;}
 function saveManufacturerCache(){localStorage.setItem("hydropolis-manufacturer-v32",JSON.stringify(manufacturerImageCache));}
@@ -128,6 +176,7 @@ async function enrichSelectedPhoto(id,force=false){
   try{
     const img=await fetchManufacturerImage(p,force);
     p.image=img.src;
+    p.pdfImage=await autoCropForPdf(img.src);
     p.imageSource=img.source;
     p.imageFinishMatch=img.finishMatch;
     p.imageNote=img.note;
@@ -176,9 +225,10 @@ async function addProduct(ref,roomId){
  const p=CATALOG.find(x=>x.reference===ref);if(!p)return;
  const cached=cachedManufacturerImage(p);
  const id=crypto.randomUUID?crypto.randomUUID():Math.random().toString(36);
- state.selected.push({...p,id,roomId,image:cached?.src||"",imageSource:cached?.source||"Photo fabricant à rechercher",imageFinishMatch:cached?.finishMatch||"",imageStatus:cached?imageBadge(cached,p):"Recherche fabricant…",customImage:false});
+ const pdfImage=cached?await autoCropForPdf(cached.src):"";
+ state.selected.push({...p,id,roomId,image:cached?.src||"",pdfImage,imageSource:cached?.source||"Photo fabricant à rechercher",imageFinishMatch:cached?.finishMatch||"",imageStatus:cached?imageBadge(cached,p):"Recherche fabricant…",customImage:false});
  saveState();renderSelection();renderRooms();
- if(!cached) await enrichSelectedPhoto(id,false);
+ if(!cached)await enrichSelectedPhoto(id,false);
 }
 function removeProduct(id){state.selected=state.selected.filter(x=>x.id!==id);saveState();renderSelection();renderRooms();}
 function renderSelection(){
@@ -209,7 +259,7 @@ function renderRooms(){
  $$(".go-cat").forEach(b=>b.onclick=()=>{showView("catalog");$("#targetRoom").value=b.dataset.id;renderCatalog();});
  $$(".del-room").forEach(b=>b.onclick=()=>{if(state.rooms.length===1)return alert("Il faut conserver au moins une pièce.");let id=b.dataset.id;if(!confirm("Supprimer cette pièce et ses éléments ?"))return;state.rooms=state.rooms.filter(r=>r.id!==id);state.selected=state.selected.filter(p=>p.roomId!==id);saveState();renderRoomSelect();renderRooms();renderSelection();});
  $$(".del-prod").forEach(b=>b.onclick=()=>removeProduct(b.dataset.id));$$(".fallback-btn").forEach(b=>b.onclick=()=>useCatalogueFallback(b.dataset.id));$$(".enrich-btn").forEach(b=>b.onclick=()=>enrichSelectedPhoto(b.dataset.id,true));
- $$(".prod-file").forEach(inp=>inp.onchange=async e=>{let f=e.target.files[0];if(!f)return;let data=await normalizeImageFile(f,1600,1200,.9);let p=state.selected.find(x=>x.id===inp.parentElement.dataset.id);p.image=data;p.imageSource="Photo personnalisée";p.customImage=true;saveState();renderRooms();});
+ $$(".prod-file").forEach(inp=>inp.onchange=async e=>{let f=e.target.files[0];if(!f)return;let data=await normalizeImageFile(f,1600,1200,.9);let p=state.selected.find(x=>x.id===inp.parentElement.dataset.id);p.image=data;p.pdfImage=await autoCropForPdf(data);p.imageSource="Photo personnalisée";p.customImage=true;saveState();renderRooms();});
  $$(".manual-btn").forEach(b=>b.onclick=()=>{let id=b.dataset.id, card=b.closest(".room-card"), lab=$(".manual-label",card).value.trim(), price=parseFloat($(".manual-price",card).value||0);if(!lab)return;let r=roomById(id);r.manual=r.manual||[];r.manual.push({label:lab,price});saveState();renderRooms();});
  $$(".del-manual").forEach(b=>b.onclick=()=>{roomById(b.dataset.room).manual.splice(+b.dataset.i,1);saveState();renderRooms();});
 }
@@ -217,7 +267,7 @@ function bindProject(){[["projectName","name"],["clientName","client"],["project
 function showView(v){$$(".nav").forEach(n=>n.classList.toggle("active",n.dataset.view===v));$$(".view").forEach(x=>x.classList.remove("active"));$("#view-"+v).classList.add("active");let t={catalog:["Catalogue intelligent","Recherche puis ajout direct dans la pièce choisie."],project:["Projet par pièce","Chaque pièce contient ses produits catalogue et ses éléments libres."],preview:["Présentation client","Mise en page automatique organisée pièce par pièce."]};$("#viewTitle").textContent=t[v][0];$("#viewSubtitle").textContent=t[v][1];if(v==="preview")buildDocument();}
 function buildDocument(){
  let html=`<section class="page"><div class="goldline"></div><div class="coverimg">${state.project.cover?`<img src="${state.project.cover}">`:""}</div><div class="brandcover"><h2>Hydropolis</h2><p>salle de bains<br>Agencement + Décoration</p><div class="projname">${state.project.name||"Projet client"}${state.project.location?" — "+state.project.location:""}</div></div></section>`,no=2;
- state.rooms.forEach(r=>{let items=[...state.selected.filter(p=>p.roomId===r.id),...(r.manual||[]).map(m=>({manual:true,...m}))];for(let i=0;i<Math.max(1,Math.ceil(items.length/6));i++){let ch=items.slice(i*6,i*6+6);html+=`<section class="page"><div class="pagehead"><div><h2>${r.title}</h2><p>${r.subtitle||""}</p></div><div style="font-family:Georgia;color:var(--gold)">Hydropolis</div></div><div class="tiles">${ch.map(p=>p.manual?`<article class="tile"><div class="tile-img"></div><div class="maker">ÉLÉMENT DE PROJET</div><div class="title">${p.label}</div><div class="price">${euro(p.price)} HT</div></article>`:`<article class="tile"><div class="tile-img">${p.image?`<img src="${p.image}">`:`<div class="pdf-photo-missing">Photo fabricant<br>${exactFinishLabel(p)}</div>`}</div><div class="maker">${p.manufacturer} · ${p.collection}</div><div class="title">${p.designation}</div><div class="finish">${p.finish}</div><div class="price">${euro(p.totalPrice)} HT</div><div class="refsmall">Réf. ${p.reference}${p.internalReference?" · complet avec partie à encastrer":""}</div></article>`).join("")}</div><div class="page-no">${no++}</div><div class="bottom"></div></section>`;}});
+ state.rooms.forEach(r=>{let items=[...state.selected.filter(p=>p.roomId===r.id),...(r.manual||[]).map(m=>({manual:true,...m}))];for(let i=0;i<Math.max(1,Math.ceil(items.length/6));i++){let ch=items.slice(i*6,i*6+6);html+=`<section class="page"><div class="pagehead"><div><h2>${r.title}</h2><p>${r.subtitle||""}</p></div><div style="font-family:Georgia;color:var(--gold)">Hydropolis</div></div><div class="tiles">${ch.map(p=>p.manual?`<article class="tile"><div class="tile-img"></div><div class="maker">ÉLÉMENT DE PROJET</div><div class="title">${p.label}</div><div class="price">${euro(p.price)} HT</div></article>`:`<article class="tile"><div class="tile-img">${(p.pdfImage||p.image)?`<img src="${p.pdfImage||p.image}">`:`<div class="pdf-photo-missing">Photo fabricant<br>${exactFinishLabel(p)}</div>`}</div><div class="maker">${p.manufacturer} · ${p.collection}</div><div class="title">${p.designation}</div><div class="finish">${p.finish}</div><div class="price">${euro(p.totalPrice)} HT</div><div class="refsmall">Réf. ${p.reference}${p.internalReference?" · complet avec partie à encastrer":""}</div></article>`).join("")}</div><div class="page-no">${no++}</div><div class="bottom"></div></section>`;}});
  $("#document").innerHTML=html;
 }
 function exportJson(){let blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hydropolis-projet.json";a.click();}

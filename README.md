@@ -1,21 +1,31 @@
-# Hydropolis Studio V3.2 — Mise à jour Render
+# Hydropolis Studio V3.3 — Update Render
 
-## Ce que corrige V3.2
-- Le bouton **Trouver la photo fabricant** est maintenant réellement présent dans le catalogue.
-- À l'ajout d'un produit, l'application cherche automatiquement sa photo officielle.
-- Pour Amphora, le serveur privilégie le lien **Download area > IMAGE** de la fiche produit.
-- Le serveur tente ensuite, de façon prudente, de détecter un fichier officiel spécifique à la finition BS / BB / BC.
-- Si la photo officielle trouvée ne permet pas de certifier la finition, l'application l'indique clairement : **finition non garantie**.
-- Aucune photo de catalogue générique n'est utilisée silencieusement à la place d'une finition exacte.
-- Les photos sont servies via Render afin d'éviter les blocages CORS/hotlink.
-- Cache navigateur des photos déjà validées.
-- A4 paysage et redimensionnement automatique conservés.
+## 1. Photos Amphora selon la finition
+La V3.3 lit maintenant les données de variations WooCommerce présentes dans la fiche officielle fabricant.
+
+Exemple :
+- `RE001.BS` → variation BS
+- `RE001.BB` → variation BB
+- `RE001.BC` → variation BC
+
+L'objectif est de récupérer l'image associée à la variation sélectionnée par le site, et non le visuel initial de la page.
+
+## 2. Dossier client A4 paysage
+Le dossier reste en 297 × 210 mm.
+
+Avant insertion dans le PDF, la photo produit est automatiquement préparée :
+- suppression des grandes marges blanches inutiles autour du produit ;
+- ajout d'une petite marge de sécurité ;
+- conservation du produit en entier ;
+- aucune déformation ;
+- `object-fit: contain` dans le cadre final.
+
+Le résultat doit donc montrer un produit plus grand tout en conservant l'intégralité du visuel.
 
 ## Test recommandé
 1. Rechercher `RE001.BC`.
 2. Cliquer `Trouver la photo fabricant`.
-3. Vérifier la mention sous la photo :
-   - `✓ Photo fabricant · Cuivre brossé PVD` si une ressource officielle spécifique est trouvée ;
-   - ou `Photo fabricant · finition non garantie` si Amphora ne publie qu'un visuel générique du produit.
-
-Le site officiel Amphora publie bien la fiche RE001 avec les trois finitions BS, BB et BC et un lien de téléchargement IMAGE. La V3.2 exploite cette structure plutôt qu'une recherche générique d'images.
+3. Vérifier que le robinet est bien cuivre brossé.
+4. Ajouter le produit à SDB MASTER.
+5. Ouvrir `Aperçu PDF`.
+6. Vérifier que le produit est entièrement visible et occupe correctement son cadre.

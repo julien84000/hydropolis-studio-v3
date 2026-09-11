@@ -11,7 +11,7 @@ app.use(express.static(path.join(__dirname,"public")));
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V3.2",
+  service:"Hydropolis Studio V3.3",
   time:new Date().toISOString()
 }));
 
@@ -58,6 +58,30 @@ function classify(url,base,finishCode){
   return "generic";
 }
 
+function decodeHtmlEntities(s){
+  return String(s||"")
+    .replace(/&quot;/g,'"')
+    .replace(/&#039;/g,"'")
+    .replace(/&amp;/g,"&")
+    .replace(/&lt;/g,"<")
+    .replace(/&gt;/g,">");
+}
+function variationText(v){
+  const attrs=v?.attributes||{};
+  return Object.values(attrs).join(" ").toLowerCase();
+}
+function finishTerms(code,label){
+  const map={
+    BS:["bs","brushed steel","acier brossé","acciaio spazzolato"],
+    BB:["bb","brushed black","black pvd","noir brossé","nero spazzolato"],
+    BC:["bc","brushed copper","copper pvd","cuivre brossé","rame spazzolato"]
+  };
+  return [...(map[String(code||"").toUpperCase()]||[]),String(label||"").toLowerCase()].filter(Boolean);
+}
+function variationImageUrl(v){
+  return v?.image?.full_src || v?.image?.src || v?.image?.url || "";
+}
+
 async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish}){
   const base=productBase(reference);
   const page=await axios.get(manufacturerUrl,{
@@ -71,12 +95,58 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish})
   const $=cheerio.load(page.data);
   const candidates=[];
 
-  // 1) Amphora and similar manufacturer sites: prioritize the official DOWNLOAD AREA > IMAGE link.
+  // 1) WooCommerce variation data: this is the important part for Amphora.
+  // The image shown by the page changes only after selecting BS / BB / BC.
+  // WooCommerce normally embeds the variation -> image map in data-product_variations.
+  $(".variations_form, form.variations_form").each((_,el)=>{
+    let raw=$(el).attr("data-product_variations");
+    if(!raw)return;
+    try{
+      raw=decodeHtmlEntities(raw);
+      const variations=JSON.parse(raw);
+      const terms=finishTerms(finishCode,finish);
+      for(const v of variations){
+        const txt=variationText(v);
+        const url=variationImageUrl(v);
+        if(!url || !isImageUrl(url))continue;
+        const exact=terms.some(t=>txt===t || txt.includes(t));
+        candidates.push({
+          url:absoluteUrl(manufacturerUrl,url),
+          source:"woocommerce-variation",
+          score:exact?250:70,
+          finishMatch:exact?"exact":"generic",
+          variationId:v.variation_id||null,
+          attributes:v.attributes||{}
+        });
+      }
+    }catch(e){
+      // Some WP setups escape the JSON twice.
+      try{
+        const variations=JSON.parse(decodeHtmlEntities(decodeURIComponent(raw)));
+        const terms=finishTerms(finishCode,finish);
+        for(const v of variations){
+          const txt=variationText(v), url=variationImageUrl(v);
+          if(!url || !isImageUrl(url))continue;
+          const exact=terms.some(t=>txt===t || txt.includes(t));
+          candidates.push({
+            url:absoluteUrl(manufacturerUrl,url),
+            source:"woocommerce-variation",
+            score:exact?250:70,
+            finishMatch:exact?"exact":"generic",
+            variationId:v.variation_id||null,
+            attributes:v.attributes||{}
+          });
+        }
+      }catch{}
+    }
+  });
+
+  // 2) Official Download area > IMAGE.
   $("a").each((_,el)=>{
     const $a=$(el);
     const text=$a.text().trim().replace(/\s+/g," ").toUpperCase();
     const href=absoluteUrl(manufacturerUrl,$a.attr("href"));
-    if(!href) return;
+    if(!href)return;
     if(text==="IMAGE" && isImageUrl(href)){
       candidates.push({
         url:href,
@@ -87,21 +157,20 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish})
     }
   });
 
-  // 2) Product-page images. Exclude finish swatches/logos.
+  // 3) Visible product images on the official page.
   $("img").each((_,el)=>{
     const $img=$(el);
     const alt=($img.attr("alt")||"").toLowerCase();
     const title=($img.attr("title")||"").toLowerCase();
-    const attrs=["data-large_image","data-zoom-image","data-original","data-src","src"];
-    for(const attr of attrs){
+    for(const attr of ["data-large_image","data-zoom-image","data-original","data-src","src"]){
       const href=absoluteUrl(manufacturerUrl,$img.attr(attr));
-      if(!href || !isImageUrl(href)) continue;
+      if(!href || !isImageUrl(href))continue;
       const text=(href+" "+alt+" "+title).toLowerCase();
-      if(/logo|icon|sprite|avatar|flag|placeholder|loading|acciaio\.jpg|nero\.jpg|rame\.jpg/.test(text)) continue;
+      if(/logo|icon|sprite|avatar|flag|placeholder|loading|acciaio\.jpg|nero\.jpg|rame\.jpg/.test(text))continue;
       let score=10;
-      if(text.includes(base.toLowerCase())) score+=35;
-      if(text.includes(String(finishCode||"").toLowerCase())) score+=20;
-      if(/product|prodot|zoom|large|gallery/.test(text)) score+=5;
+      if(text.includes(base.toLowerCase()))score+=35;
+      if(text.includes(String(finishCode||"").toLowerCase()))score+=20;
+      if(/product|prodot|zoom|large|gallery/.test(text))score+=5;
       candidates.push({
         url:href,
         source:"official-page",
@@ -111,37 +180,8 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish})
     }
   });
 
-  // 3) If the official download is generic, probe conservative filename variants
-  // in the SAME manufacturer upload directory. We only accept a real image response.
-  const official=candidates.sort((a,b)=>b.score-a.score)[0];
-  if(official && official.url){
-    try{
-      const u=new URL(official.url);
-      const dir=u.href.slice(0,u.href.lastIndexOf("/")+1);
-      const ext=(u.pathname.match(/\.(jpe?g|png|webp)$/i)||["",".jpg"])[1];
-      const probes=[
-        `${base}-${finishCode}${ext}`,
-        `${base}_${finishCode}${ext}`,
-        `${base}.${finishCode}${ext}`,
-        `${base}${finishCode}${ext}`
-      ];
-      for(const name of probes){
-        const url=dir+name;
-        if(await imageExists(url,manufacturerUrl)){
-          candidates.push({
-            url,
-            source:"official-finish-file",
-            score:140,
-            finishMatch:"exact"
-          });
-          break;
-        }
-      }
-    }catch{}
-  }
-
-  const sorted=unique(candidates).sort((a,b)=>{
-    if(a.finishMatch!==b.finishMatch) return a.finishMatch==="exact"?-1:1;
+  const sorted=unique(candidates).filter(x=>x.url).sort((a,b)=>{
+    if(a.finishMatch!==b.finishMatch)return a.finishMatch==="exact"?-1:1;
     return b.score-a.score;
   });
 
@@ -149,12 +189,12 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish})
   return {
     manufacturerUrl,reference,finishCode,finish,base,
     best,
-    candidates:sorted.slice(0,12),
-    note: best
-      ? (best.finishMatch==="exact"
-          ? "Photo officielle correspondant à la finition détectée."
-          : "Photo officielle du produit trouvée, mais la finition exacte n'est pas explicitement identifiable dans le fichier fabricant.")
-      : "Aucune photo officielle exploitable trouvée."
+    candidates:sorted.slice(0,16),
+    note:best
+      ?(best.finishMatch==="exact"
+        ?"Photo officielle de la variation correspondant à la finition sélectionnée."
+        :"Photo officielle trouvée, mais la finition exacte n'a pas pu être certifiée.")
+      :"Aucune photo officielle exploitable trouvée."
   };
 }
 
@@ -195,4 +235,4 @@ app.get("/api/image-proxy",async(req,res)=>{
 });
 
 app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")));
-app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V3.2 on ${PORT}`));
+app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V3.3 on ${PORT}`));
