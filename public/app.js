@@ -54,6 +54,93 @@ function useCatalogueFallback(productId){
   saveState();renderRooms();
 }
 
+
+const manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v32")||"{}");
+function manufacturerCacheKey(p){return `${p.manufacturer}|${p.reference}`;}
+function saveManufacturerCache(){localStorage.setItem("hydropolis-manufacturer-v32",JSON.stringify(manufacturerImageCache));}
+function cachedManufacturerImage(p){return manufacturerImageCache[manufacturerCacheKey(p)]||null;}
+
+async function fetchManufacturerImage(p,force=false){
+  const key=manufacturerCacheKey(p);
+  if(!force && manufacturerImageCache[key]) return manufacturerImageCache[key];
+  const r=await fetch("/api/manufacturer-image",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      manufacturerUrl:p.manufacturerUrl,
+      reference:p.reference,
+      finishCode:p.finishCode,
+      finish:p.finish
+    })
+  });
+  const data=await r.json();
+  if(!r.ok) throw new Error(data.detail||data.error||"Recherche fabricant impossible");
+  if(!data.best) throw new Error(data.note||"Aucune photo fabricant trouvée");
+  const result={
+    remoteUrl:data.best.url,
+    src:`/api/image-proxy?url=${encodeURIComponent(data.best.url)}`,
+    finishMatch:data.best.finishMatch||"generic",
+    source:data.best.finishMatch==="exact"
+      ?`Site officiel fabricant · finition ${p.finish}`
+      :"Site officiel fabricant · visuel produit générique",
+    note:data.note||"",
+    checkedAt:new Date().toISOString()
+  };
+  manufacturerImageCache[key]=result;
+  saveManufacturerCache();
+  return result;
+}
+
+function imageBadge(img,p){
+  if(!img)return `Photo fabricant à rechercher`;
+  return img.finishMatch==="exact"
+    ?`✓ Photo fabricant · ${p.finish}`
+    :`Photo fabricant · finition non garantie`;
+}
+
+async function lookupCatalogPhoto(reference,button){
+  const p=CATALOG.find(x=>x.reference===reference);
+  if(!p)return;
+  const card=button.closest(".result");
+  const thumb=$(".catalog-thumb",card);
+  const info=$(".photo-status",card);
+  button.disabled=true;
+  button.textContent="Recherche…";
+  if(info)info.textContent="Interrogation du site fabricant…";
+  try{
+    const img=await fetchManufacturerImage(p,true);
+    thumb.innerHTML=`<img src="${img.src}" alt="${p.reference}">`;
+    if(info)info.innerHTML=`<b>${imageBadge(img,p)}</b>${img.note?`<br>${img.note}`:""}`;
+    button.textContent="Actualiser la photo";
+  }catch(e){
+    if(info)info.textContent="Aucune photo officielle trouvée : "+e.message;
+    button.textContent="Réessayer";
+  }finally{
+    button.disabled=false;
+  }
+}
+
+async function enrichSelectedPhoto(id,force=false){
+  const p=state.selected.find(x=>x.id===id);
+  if(!p)return;
+  p.imageStatus="Recherche sur le site fabricant…";
+  renderRooms();
+  try{
+    const img=await fetchManufacturerImage(p,force);
+    p.image=img.src;
+    p.imageSource=img.source;
+    p.imageFinishMatch=img.finishMatch;
+    p.imageNote=img.note;
+    p.imageStatus=imageBadge(img,p);
+    p.customImage=false;
+  }catch(e){
+    p.imageStatus="Photo fabricant non trouvée";
+    p.imageNote=e.message;
+  }
+  saveState();
+  renderRooms();
+}
+
 function loadState(){try{let s=JSON.parse(localStorage.getItem("hydropolis-v21"));if(s)Object.assign(state,s)}catch(e){}; if(!state.rooms?.length)state.rooms=[{id:"r1",title:"SDB MASTER",subtitle:"",manual:[]}];}
 function saveState(){localStorage.setItem("hydropolis-v21",JSON.stringify(state));}
 function unique(k){return [...new Set(CATALOG.map(x=>x[k]).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"fr"));}
@@ -66,19 +153,33 @@ function renderCatalog(){
  let rows=CATALOG.filter(p=>matches(p,q)&&Object.entries(fs).every(([k,v])=>!v||p[k]===v));
  $("#resultCount").textContent=rows.length+" résultat"+(rows.length>1?"s":"");
  let room=roomById($("#targetRoom").value)||state.rooms[0];
- $("#results").innerHTML=rows.slice(0,100).map(p=>`
- <article class="result">
-   <div class="catalog-thumb">${preferredImageFor(p).src?`<img src="${preferredImageFor(p).src}" alt="">`:`<div class="photo-missing"><b>Photo fabricant</b><br>${exactFinishLabel(p)}<br>à récupérer</div>`}</div>
+ $("#results").innerHTML=rows.slice(0,100).map(p=>{
+   const cached=cachedManufacturerImage(p);
+   return `<article class="result">
+   <div class="catalog-thumb">${cached?`<img src="${cached.src}" alt="${p.reference}">`:`<div class="photo-missing"><b>Photo fabricant</b><br>${exactFinishLabel(p)}<br>à rechercher</div>`}</div>
    <div><div class="r-top"><span class="ref">${p.reference}</span><span class="badge">${p.manufacturer}</span><span class="badge">${p.collection}</span><span class="badge">${p.category}</span></div>
    <div class="designation">${p.designation}</div><div class="meta">${p.finish}</div>
-   <a class="source-link" target="_blank" href="${p.manufacturerUrl}">1. Rechercher la photo sur le site fabricant · ${exactFinishLabel(p)} ↗</a>${p.fallbackImage?`<div class="fallback-note">Catalogue disponible uniquement en secours</div>`:""}</div>
+   <div class="manufacturer-tools">
+     <button class="tiny lookup-photo" data-ref="${p.reference}">${cached?"Actualiser la photo":"Trouver la photo fabricant"}</button>
+     <a class="source-link" target="_blank" href="${p.manufacturerUrl}">Fiche officielle ↗</a>
+   </div>
+   <div class="photo-status">${cached?`<b>${imageBadge(cached,p)}</b>${cached.note?`<br>${cached.note}`:""}`:`Priorité au site officiel du fabricant.`}</div>
+   </div>
    <div class="price-box"><div class="price">${euro(p.totalPrice)} HT</div>
    ${p.internalReference?`<div class="internal">Ext. ${euro(p.price)} + ${p.internalReference} ${euro(p.internalPrice)}<br><b>interne ajouté automatiquement</b></div>`:`<div class="internal">Référence complète</div>`}
    <button class="btn primary add" data-ref="${p.reference}" style="margin-top:9px">Ajouter à ${room.title}</button></div>
- </article>`).join("")||`<div class="empty">Aucun résultat.</div>`;
+ </article>`}).join("")||`<div class="empty">Aucun résultat.</div>`;
  $$(".add").forEach(b=>b.onclick=()=>addProduct(b.dataset.ref,$("#targetRoom").value));
+ $$(".lookup-photo").forEach(b=>b.onclick=()=>lookupCatalogPhoto(b.dataset.ref,b));
 }
-function addProduct(ref,roomId){const p=CATALOG.find(x=>x.reference===ref);if(!p)return;let pref=preferredImageFor(p);state.selected.push({...p,id:crypto.randomUUID?crypto.randomUUID():Math.random().toString(36),roomId,image:pref.src||"",imageSource:pref.source,customImage:false});saveState();renderSelection();renderRooms();}
+async function addProduct(ref,roomId){
+ const p=CATALOG.find(x=>x.reference===ref);if(!p)return;
+ const cached=cachedManufacturerImage(p);
+ const id=crypto.randomUUID?crypto.randomUUID():Math.random().toString(36);
+ state.selected.push({...p,id,roomId,image:cached?.src||"",imageSource:cached?.source||"Photo fabricant à rechercher",imageFinishMatch:cached?.finishMatch||"",imageStatus:cached?imageBadge(cached,p):"Recherche fabricant…",customImage:false});
+ saveState();renderSelection();renderRooms();
+ if(!cached) await enrichSelectedPhoto(id,false);
+}
 function removeProduct(id){state.selected=state.selected.filter(x=>x.id!==id);saveState();renderSelection();renderRooms();}
 function renderSelection(){
  $("#selectionCount").textContent=state.rooms.length+" pièce"+(state.rooms.length>1?"s":"")+" · "+state.selected.length+" produit"+(state.selected.length>1?"s":"");
@@ -95,8 +196,8 @@ function renderRooms(){
       <div class="room-product">
         <div class="room-prod-img"><label data-id="${p.id}">${p.image?`<img src="${p.image}">`:"＋ Photo"}<input class="prod-file" type="file" accept="image/*" hidden></label></div>
         <div><b>${p.designation}</b><div class="tech">${p.manufacturer} · ${p.collection} · ${p.reference} · <b>${exactFinishLabel(p)}</b></div>${p.internalReference?`<div class="tech">Complet avec ${p.internalReference}</div>`:""}
-        <div class="image-actions"><a target="_blank" href="${p.manufacturerUrl}">Photo fabricant ↗</a>${(!p.image && p.fallbackImage)?`<button class="tiny fallback-btn" data-id="${p.id}">Utiliser catalogue en secours</button>`:""}</div></div>
-        <div class="price-total">${euro(p.totalPrice)} HT<div class="tech">${p.imageSource||"Photo fabricant à récupérer"}</div></div>
+        <div class="image-actions"><button class="tiny enrich-btn" data-id="${p.id}">${p.image?"Actualiser photo fabricant":"Chercher photo fabricant"}</button><a target="_blank" href="${p.manufacturerUrl}">Fiche officielle ↗</a>${(!p.image && p.fallbackImage)?`<button class="tiny fallback-btn" data-id="${p.id}">Catalogue en secours</button>`:""}</div></div>
+        <div class="price-total">${euro(p.totalPrice)} HT<div class="tech">${p.imageStatus||p.imageSource||"Photo fabricant à rechercher"}</div>${p.imageNote?`<div class="tech">${p.imageNote}</div>`:""}</div>
         <button class="icon del-prod" data-id="${p.id}">×</button>
       </div>`).join(""):`<div class="room-empty">Aucun produit catalogue dans cette pièce.</div>`}</div>
    <div class="manual-zone"><b>Éléments libres de la pièce</b><div class="tech">Pour mobilier sur mesure, miroir, peinture, pose, décoration ou produit non encore référencé.</div>
@@ -107,7 +208,7 @@ function renderRooms(){
  $$(".room-sub").forEach(x=>x.oninput=()=>{roomById(x.dataset.id).subtitle=x.value;saveState();});
  $$(".go-cat").forEach(b=>b.onclick=()=>{showView("catalog");$("#targetRoom").value=b.dataset.id;renderCatalog();});
  $$(".del-room").forEach(b=>b.onclick=()=>{if(state.rooms.length===1)return alert("Il faut conserver au moins une pièce.");let id=b.dataset.id;if(!confirm("Supprimer cette pièce et ses éléments ?"))return;state.rooms=state.rooms.filter(r=>r.id!==id);state.selected=state.selected.filter(p=>p.roomId!==id);saveState();renderRoomSelect();renderRooms();renderSelection();});
- $$(".del-prod").forEach(b=>b.onclick=()=>removeProduct(b.dataset.id));$$(".fallback-btn").forEach(b=>b.onclick=()=>useCatalogueFallback(b.dataset.id));
+ $$(".del-prod").forEach(b=>b.onclick=()=>removeProduct(b.dataset.id));$$(".fallback-btn").forEach(b=>b.onclick=()=>useCatalogueFallback(b.dataset.id));$$(".enrich-btn").forEach(b=>b.onclick=()=>enrichSelectedPhoto(b.dataset.id,true));
  $$(".prod-file").forEach(inp=>inp.onchange=async e=>{let f=e.target.files[0];if(!f)return;let data=await normalizeImageFile(f,1600,1200,.9);let p=state.selected.find(x=>x.id===inp.parentElement.dataset.id);p.image=data;p.imageSource="Photo personnalisée";p.customImage=true;saveState();renderRooms();});
  $$(".manual-btn").forEach(b=>b.onclick=()=>{let id=b.dataset.id, card=b.closest(".room-card"), lab=$(".manual-label",card).value.trim(), price=parseFloat($(".manual-price",card).value||0);if(!lab)return;let r=roomById(id);r.manual=r.manual||[];r.manual.push({label:lab,price});saveState();renderRooms();});
  $$(".del-manual").forEach(b=>b.onclick=()=>{roomById(b.dataset.room).manual.splice(+b.dataset.i,1);saveState();renderRooms();});

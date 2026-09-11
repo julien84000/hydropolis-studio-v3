@@ -1,23 +1,21 @@
-# Hydropolis Studio V3.1 — Render
+# Hydropolis Studio V3.2 — Mise à jour Render
 
-Mise à jour de la V3 déjà déployée.
+## Ce que corrige V3.2
+- Le bouton **Trouver la photo fabricant** est maintenant réellement présent dans le catalogue.
+- À l'ajout d'un produit, l'application cherche automatiquement sa photo officielle.
+- Pour Amphora, le serveur privilégie le lien **Download area > IMAGE** de la fiche produit.
+- Le serveur tente ensuite, de façon prudente, de détecter un fichier officiel spécifique à la finition BS / BB / BC.
+- Si la photo officielle trouvée ne permet pas de certifier la finition, l'application l'indique clairement : **finition non garantie**.
+- Aucune photo de catalogue générique n'est utilisée silencieusement à la place d'une finition exacte.
+- Les photos sont servies via Render afin d'éviter les blocages CORS/hotlink.
+- Cache navigateur des photos déjà validées.
+- A4 paysage et redimensionnement automatique conservés.
 
-## Nouveautés
-- recherche automatique d'image sur la fiche officielle fabricant ;
-- prise en compte de la référence et de la finition `BS / BB / BC` dans le classement des images ;
-- récupération des images via le serveur Render pour éviter les blocages de hotlink/CORS ;
-- cache local des images déjà trouvées ;
-- recherche automatique au moment où un produit est ajouté à une pièce ;
-- bouton **Trouver / Actualiser la photo fabricant** ;
-- le catalogue PDF reste uniquement une solution de secours ;
-- dossier client A4 paysage conservé.
+## Test recommandé
+1. Rechercher `RE001.BC`.
+2. Cliquer `Trouver la photo fabricant`.
+3. Vérifier la mention sous la photo :
+   - `✓ Photo fabricant · Cuivre brossé PVD` si une ressource officielle spécifique est trouvée ;
+   - ou `Photo fabricant · finition non garantie` si Amphora ne publie qu'un visuel générique du produit.
 
-## Mise à jour sur GitHub
-Remplacer les fichiers actuels du dépôt par ceux contenus dans ce ZIP.
-Render redéploiera automatiquement après le commit.
-
-Fichiers modifiés principalement :
-- `server.js`
-- `public/app.js`
-- `public/index.html`
-- `public/styles.css`
+Le site officiel Amphora publie bien la fiche RE001 avec les trois finitions BS, BB et BC et un lien de téléchargement IMAGE. La V3.2 exploite cette structure plutôt qu'une recherche générique d'images.

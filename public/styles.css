@@ -47,3 +47,10 @@ button,input,select,textarea{font:inherit}.shell{display:grid;grid-template-colu
 .manufacturer-tools .source-link{margin-top:0}
 .manufacturer-search{font-weight:700}
 .manufacturer-search:disabled{opacity:.55;cursor:wait}
+
+/* V3.2 */
+.manufacturer-tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.manufacturer-tools .source-link{margin:0}
+.lookup-photo,.enrich-btn{font-weight:750}
+.lookup-photo:disabled,.enrich-btn:disabled{opacity:.55;cursor:wait}
+.photo-status{font-size:10px;line-height:1.35;color:var(--muted);margin-top:6px;max-width:520px}
