@@ -1,31 +1,49 @@
-# Hydropolis Studio V3.9
+# Hydropolis Studio V4.0
 
-## Changement d'architecture
+## 1. Correction du mapping des finitions Amphora
 
-V3.9 supprime complètement Chromium/Puppeteer pour la recherche des photos Amphora.
+V4.0 ne cherche plus simplement `BB`, `BC` ou `BS` dans le JSON des variations.
 
-La recherche se fait désormais directement dans le HTML officiel Amphora :
-1. récupération HTTP de la fiche produit ;
-2. lecture des données WooCommerce `data-product_variations` ;
-3. association variation -> finition BS / BB / BC -> image officielle ;
-4. le lien `IMAGE` générique reste uniquement un fallback non certifié.
+Le serveur :
+- lit les `<select>` WooCommerce de la fiche Amphora ;
+- associe la **valeur technique** de chaque option à son libellé visible (`BS Brushed Steel`, `BB Brushed Black PVD`, `BC Brushed Copper PVD`) ;
+- compare ensuite cette valeur aux `attributes` de chaque variation ;
+- ne déclare `exact:true` que si la variation WooCommerce elle-même correspond à la finition demandée.
 
-## Pourquoi
+Les images génériques de la page ou du bouton IMAGE ne peuvent plus être certifiées `exact:true`.
 
-Les logs Render V3.8 montraient :
-- `Navigation timeout of 25000 ms exceeded`
-- `Waiting failed: 10000ms exceeded`
+En cas d'échec, Render écrit aussi :
+`[manufacturer-variation-debug]`
+avec les valeurs d'options et les attributs de variations afin de diagnostiquer immédiatement le mapping.
 
-Ces erreurs venaient de l'automatisation navigateur et non du catalogue produit.
+## 2. Drawing / fiche technique
 
-## Test
+La zone Download Amphora est analysée pour récupérer automatiquement `DRAWING` / `DISEGNO` / `DESSIN`.
 
-Tester :
-- RE001.BS
-- RE001.BB
-- RE001.BC
+Dans le projet, chaque produit disposant d'un drawing affiche :
+- `Drawing ↗`
+- une case **Inclure le drawing dans le dossier client**
 
-Dans les logs Render, chaque recherche affiche maintenant une ligne :
-`[manufacturer-image] {...}`
+La case est désactivée par défaut.
 
-Le champ `exact:true` signifie que l'image provient directement de la variation WooCommerce correspondant à la finition demandée.
+Si elle est cochée :
+- une page A4 paysage dédiée est ajoutée après la pièce correspondante ;
+- les PDF techniques sont convertis en image haute définition côté serveur pour être imprimables dans le dossier client final ;
+- le drawing est affiché entier, sans déformation.
+
+## Test conseillé
+
+Après déploiement :
+1. rechercher `RE001.BS`
+2. rechercher `RE001.BB`
+3. rechercher `RE001.BC`
+
+Puis vérifier dans Render :
+`[manufacturer-image]`
+
+L'objectif est d'obtenir pour chacun :
+- `exact:true`
+- des `variationId` cohérents avec la finition
+- `drawing:true`
+
+Si `exact:false` persiste, copier la ligne `[manufacturer-variation-debug]`.

@@ -103,9 +103,9 @@ async function autoCropForPdf(src){
   });
 }
 
-const manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v39")||"{}");
+const manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v40")||"{}");
 function manufacturerCacheKey(p){return `${p.manufacturer}|${p.reference}`;}
-function saveManufacturerCache(){localStorage.setItem("hydropolis-manufacturer-v39",JSON.stringify(manufacturerImageCache));}
+function saveManufacturerCache(){localStorage.setItem("hydropolis-manufacturer-v40",JSON.stringify(manufacturerImageCache));}
 function cachedManufacturerImage(p){return manufacturerImageCache[manufacturerCacheKey(p)]||null;}
 
 async function fetchManufacturerImage(p,force=false){
@@ -135,6 +135,9 @@ async function fetchManufacturerImage(p,force=false){
       ?`Site officiel fabricant · finition ${p.finish}`
       :"Site officiel fabricant · visuel produit générique",
     note:data.note||"",
+    drawingUrl:data.drawing?.url||"",
+    drawingType:data.drawing?.type||"",
+    drawingLabel:data.drawing?.label||"",
     checkedAt:new Date().toISOString()
   };
   manufacturerImageCache[key]=result;
@@ -184,6 +187,10 @@ async function enrichSelectedPhoto(id,force=false){
     p.imageFinishMatch=img.finishMatch;
     p.imageNote=img.note;
     p.imageStatus=imageBadge(img,p);
+    p.drawingUrl=img.drawingUrl||p.drawingUrl||"";
+    p.drawingType=img.drawingType||p.drawingType||"";
+    p.drawingLabel=img.drawingLabel||p.drawingLabel||"";
+    if(typeof p.includeDrawing!=="boolean") p.includeDrawing=false;
     p.customImage=false;
   }catch(e){
     p.imageStatus="Photo fabricant non trouvée";
@@ -229,7 +236,7 @@ async function addProduct(ref,roomId){
  const cached=cachedManufacturerImage(p);
  const id=crypto.randomUUID?crypto.randomUUID():Math.random().toString(36);
  const pdfImage=cached?await autoCropForPdf(cached.src):"";
- state.selected.push({...p,id,roomId,image:cached?.src||"",pdfImage,imageSource:cached?.source||"Photo fabricant à rechercher",imageFinishMatch:cached?.finishMatch||"",imageStatus:cached?imageBadge(cached,p):"Recherche fabricant…",customImage:false});
+ state.selected.push({...p,id,roomId,image:cached?.src||"",pdfImage,imageSource:cached?.source||"Photo fabricant à rechercher",imageFinishMatch:cached?.finishMatch||"",imageStatus:cached?imageBadge(cached,p):"Recherche fabricant…",drawingUrl:cached?.drawingUrl||"",drawingType:cached?.drawingType||"",drawingLabel:cached?.drawingLabel||"",includeDrawing:false,customImage:false});
  saveState();renderSelection();renderRooms();
  if(!cached)await enrichSelectedPhoto(id,false);
 }
@@ -249,7 +256,7 @@ function renderRooms(){
       <div class="room-product">
         <div class="room-prod-img"><label data-id="${p.id}">${p.image?`<img src="${p.image}">`:"＋ Photo"}<input class="prod-file" type="file" accept="image/*" hidden></label></div>
         <div><b>${p.designation}</b><div class="tech">${p.manufacturer} · ${p.collection} · ${p.reference} · <b>${exactFinishLabel(p)}</b></div>${p.internalReference?`<div class="tech">Complet avec ${p.internalReference}</div>`:""}
-        <div class="image-actions"><button class="tiny enrich-btn" data-id="${p.id}">${p.image?"Actualiser photo fabricant":"Chercher photo fabricant"}</button><a target="_blank" href="${p.manufacturerUrl}">Fiche officielle ↗</a>${(!p.image && p.fallbackImage)?`<button class="tiny fallback-btn" data-id="${p.id}">Catalogue en secours</button>`:""}</div></div>
+        <div class="image-actions"><button class="tiny enrich-btn" data-id="${p.id}">${p.image?"Actualiser photo fabricant":"Chercher photo fabricant"}</button><a target="_blank" href="${p.manufacturerUrl}">Fiche officielle ↗</a>${p.drawingUrl?`<a target="_blank" href="${p.drawingUrl}">Drawing ↗</a><label class="drawing-toggle"><input type="checkbox" class="drawing-check" data-id="${p.id}" ${p.includeDrawing?"checked":""}> Inclure le drawing dans le dossier client</label>`:`<span class="tech">Drawing à récupérer avec la photo fabricant</span>`}${(!p.image && p.fallbackImage)?`<button class="tiny fallback-btn" data-id="${p.id}">Catalogue en secours</button>`:""}</div></div>
         <div class="price-total">${euro(p.totalPrice)} HT<div class="tech">${p.imageStatus||p.imageSource||"Photo fabricant à rechercher"}</div>${p.imageNote?`<div class="tech">${p.imageNote}</div>`:""}</div>
         <button class="icon del-prod" data-id="${p.id}">×</button>
       </div>`).join(""):`<div class="room-empty">Aucun produit catalogue dans cette pièce.</div>`}</div>
@@ -262,6 +269,7 @@ function renderRooms(){
  $$(".go-cat").forEach(b=>b.onclick=()=>{showView("catalog");$("#targetRoom").value=b.dataset.id;renderCatalog();});
  $$(".del-room").forEach(b=>b.onclick=()=>{if(state.rooms.length===1)return alert("Il faut conserver au moins une pièce.");let id=b.dataset.id;if(!confirm("Supprimer cette pièce et ses éléments ?"))return;state.rooms=state.rooms.filter(r=>r.id!==id);state.selected=state.selected.filter(p=>p.roomId!==id);saveState();renderRoomSelect();renderRooms();renderSelection();});
  $$(".del-prod").forEach(b=>b.onclick=()=>removeProduct(b.dataset.id));$$(".fallback-btn").forEach(b=>b.onclick=()=>useCatalogueFallback(b.dataset.id));$$(".enrich-btn").forEach(b=>b.onclick=()=>enrichSelectedPhoto(b.dataset.id,true));
+ $$(".drawing-check").forEach(ch=>ch.onchange=()=>{let p=state.selected.find(x=>x.id===ch.dataset.id);if(!p)return;p.includeDrawing=ch.checked;saveState();});
  $$(".prod-file").forEach(inp=>inp.onchange=async e=>{let f=e.target.files[0];if(!f)return;let data=await normalizeImageFile(f,1600,1200,.9);let p=state.selected.find(x=>x.id===inp.parentElement.dataset.id);p.image=data;p.pdfImage=await autoCropForPdf(data);p.imageSource="Photo personnalisée";p.customImage=true;saveState();renderRooms();});
  $$(".manual-btn").forEach(b=>b.onclick=()=>{let id=b.dataset.id, card=b.closest(".room-card"), lab=$(".manual-label",card).value.trim(), price=parseFloat($(".manual-price",card).value||0);if(!lab)return;let r=roomById(id);r.manual=r.manual||[];r.manual.push({label:lab,price});saveState();renderRooms();});
  $$(".del-manual").forEach(b=>b.onclick=()=>{roomById(b.dataset.room).manual.splice(+b.dataset.i,1);saveState();renderRooms();});
@@ -270,7 +278,32 @@ function bindProject(){[["projectName","name"],["clientName","client"],["project
 function showView(v){$$(".nav").forEach(n=>n.classList.toggle("active",n.dataset.view===v));$$(".view").forEach(x=>x.classList.remove("active"));$("#view-"+v).classList.add("active");let t={catalog:["Catalogue intelligent","Recherche puis ajout direct dans la pièce choisie."],project:["Projet par pièce","Chaque pièce contient ses produits catalogue et ses éléments libres."],preview:["Présentation client","Mise en page automatique organisée pièce par pièce."]};$("#viewTitle").textContent=t[v][0];$("#viewSubtitle").textContent=t[v][1];if(v==="preview")buildDocument();}
 function buildDocument(){
  let html=`<section class="page"><div class="goldline"></div><div class="coverimg">${state.project.cover?`<img src="${state.project.cover}">`:""}</div><div class="brandcover"><h2>Hydropolis</h2><p>salle de bains<br>Agencement + Décoration</p><div class="projname">${state.project.name||"Projet client"}${state.project.location?" — "+state.project.location:""}</div></div></section>`,no=2;
- state.rooms.forEach(r=>{let items=[...state.selected.filter(p=>p.roomId===r.id),...(r.manual||[]).map(m=>({manual:true,...m}))];for(let i=0;i<Math.max(1,Math.ceil(items.length/6));i++){let ch=items.slice(i*6,i*6+6);html+=`<section class="page"><div class="pagehead"><div><h2>${r.title}</h2><p>${r.subtitle||""}</p></div><div style="font-family:Georgia;color:var(--gold)">Hydropolis</div></div><div class="tiles">${ch.map(p=>p.manual?`<article class="tile"><div class="tile-img"></div><div class="maker">ÉLÉMENT DE PROJET</div><div class="title">${p.label}</div><div class="price">${euro(p.price)} HT</div></article>`:`<article class="tile"><div class="tile-img">${(p.pdfImage||p.image)?`<img src="${p.pdfImage||p.image}">`:`<div class="pdf-photo-missing">Photo fabricant<br>${exactFinishLabel(p)}</div>`}</div><div class="maker">${p.manufacturer} · ${p.collection}</div><div class="title">${p.designation}</div><div class="finish">${p.finish}</div><div class="price">${euro(p.totalPrice)} HT</div><div class="refsmall">Réf. ${p.reference}${p.internalReference?" · complet avec partie à encastrer":""}</div></article>`).join("")}</div><div class="page-no">${no++}</div><div class="bottom"></div></section>`;}});
+
+ state.rooms.forEach(r=>{
+   let products=state.selected.filter(p=>p.roomId===r.id);
+   let items=[...products,...(r.manual||[]).map(m=>({manual:true,...m}))];
+
+   for(let i=0;i<Math.max(1,Math.ceil(items.length/6));i++){
+     let ch=items.slice(i*6,i*6+6);
+     html+=`<section class="page"><div class="pagehead"><div><h2>${r.title}</h2><p>${r.subtitle||""}</p></div><div style="font-family:Georgia;color:var(--gold)">Hydropolis</div></div><div class="tiles">${ch.map(p=>p.manual?`<article class="tile"><div class="tile-img"></div><div class="maker">ÉLÉMENT DE PROJET</div><div class="title">${p.label}</div><div class="price">${euro(p.price)} HT</div></article>`:`<article class="tile"><div class="tile-img">${(p.pdfImage||p.image)?`<img src="${p.pdfImage||p.image}">`:`<div class="pdf-photo-missing">Photo fabricant<br>${exactFinishLabel(p)}</div>`}</div><div class="maker">${p.manufacturer} · ${p.collection}</div><div class="title">${p.designation}</div><div class="finish">${p.finish}</div><div class="price">${euro(p.totalPrice)} HT</div><div class="refsmall">Réf. ${p.reference}${p.internalReference?" · complet avec partie à encastrer":""}</div></article>`).join("")}</div><div class="page-no">${no++}</div><div class="bottom"></div></section>`;
+   }
+
+   // Optional technical drawing pages, one page per selected product.
+   products.filter(p=>p.includeDrawing&&p.drawingUrl).forEach(p=>{
+     const drawingSrc=p.drawingType==="pdf"
+       ?`/api/pdf-page-image?url=${encodeURIComponent(p.drawingUrl)}`
+       :`/api/image-proxy?url=${encodeURIComponent(p.drawingUrl)}`;
+
+     html+=`<section class="page drawing-page">
+       <div class="pagehead"><div><h2>${r.title} · Drawing technique</h2><p>${p.manufacturer} ${p.collection} · ${p.reference}</p></div><div style="font-family:Georgia;color:var(--gold)">Hydropolis</div></div>
+       <div class="drawing-sheet">
+         <div class="drawing-meta"><div class="maker">${p.manufacturer} · ${p.collection}</div><div class="title">${p.designation}</div><div class="finish">${p.finish}</div><div class="refsmall">Réf. ${p.reference}</div></div>
+         <div class="drawing-visual"><img src="${drawingSrc}" alt="Drawing ${p.reference}"></div>
+       </div>
+       <div class="page-no">${no++}</div><div class="bottom"></div>
+     </section>`;
+   });
+ });
  $("#document").innerHTML=html;
 }
 function exportJson(){let blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hydropolis-projet.json";a.click();}
