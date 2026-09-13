@@ -13,7 +13,7 @@ app.use(express.static(path.join(__dirname,"public")));
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V3.7",
+  service:"Hydropolis Studio V3.8",
   time:new Date().toISOString()
 }));
 
@@ -86,46 +86,109 @@ function variationImageUrl(v){
 
 
 let browserPromise=null;
+let browserLaunchLock=Promise.resolve();
+
 async function getBrowser(){
-  if(!browserPromise){
+  if(browserPromise) return browserPromise;
+
+  browserLaunchLock=browserLaunchLock.then(async()=>{
+    if(browserPromise) return browserPromise;
     const executablePath=await chromium.executablePath();
-    browserPromise=puppeteer.launch({
-      executablePath,
-      headless:"shell",
-      args:[
-        ...chromium.args,
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage",
-        "--disable-gpu",
-        "--single-process"
-      ],
-      defaultViewport:{width:1440,height:1200}
-    }).catch(e=>{
-      browserPromise=null;
-      throw e;
-    });
-  }
-  return browserPromise;
+
+    // Small retry loop helps on Render if Chromium is momentarily locked (ETXTBSY).
+    let lastError=null;
+    for(let attempt=1;attempt<=3;attempt++){
+      try{
+        browserPromise=await puppeteer.launch({
+          executablePath,
+          headless:"shell",
+          args:[
+            ...chromium.args,
+            "--no-sandbox",
+            "--disable-setuid-sandbox",
+            "--disable-dev-shm-usage",
+            "--disable-gpu",
+            "--single-process"
+          ],
+          defaultViewport:{width:1440,height:1200}
+        });
+        browserPromise.on("disconnected",()=>{browserPromise=null;});
+        return browserPromise;
+      }catch(e){
+        lastError=e;
+        if(String(e?.message||"").includes("ETXTBSY")){
+          await new Promise(r=>setTimeout(r,1200*attempt));
+          continue;
+        }
+        throw e;
+      }
+    }
+    throw lastError||new Error("Impossible de lancer Chromium");
+  });
+
+  return browserLaunchLock;
 }
 
 async function dynamicFinishImage({manufacturerUrl,reference,finishCode,finish}){
   const browser=await getBrowser();
   const page=await browser.newPage();
+
   try{
     await page.setViewport({width:1440,height:1200,deviceScaleFactor:1});
     await page.setUserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/150 Safari/537.36");
-    await page.goto(manufacturerUrl,{waitUntil:"networkidle2",timeout:35000});
+    page.setDefaultNavigationTimeout(25000);
+    page.setDefaultTimeout(12000);
 
-    const chosen=await page.evaluate(async ({finishCode,finish})=>{
+    // Amphora keeps background requests alive, so networkidle2 can time out forever.
+    // DOMContentLoaded is enough; then we wait only for the controls we actually need.
+    await page.goto(manufacturerUrl,{
+      waitUntil:"domcontentloaded",
+      timeout:25000
+    });
+
+    // Give late product scripts a brief moment to attach.
+    await new Promise(r=>setTimeout(r,1200));
+
+    // Wait until at least one select with a matching finish option exists.
+    await page.waitForFunction(({finishCode,finish})=>{
+      const norm=s=>String(s||"").trim().toLowerCase();
+      const targets=[norm(finishCode),norm(finish)].filter(Boolean);
+      const selects=[...document.querySelectorAll("select")];
+      return selects.some(sel=>[...sel.options].some(o=>{
+        const t=norm(o.textContent);
+        return targets.some(x=>t===x||t.startsWith(x+" ")||t.includes(x));
+      }));
+    },{timeout:10000},{finishCode,finish});
+
+    const before=await page.evaluate(()=>{
+      const visible=el=>{
+        const s=getComputedStyle(el),r=el.getBoundingClientRect();
+        return s.display!=="none"&&s.visibility!=="hidden"&&r.width>80&&r.height>80;
+      };
+      return [...document.querySelectorAll("img")]
+        .filter(visible)
+        .map(img=>({
+          src:img.currentSrc||img.src||"",
+          w:img.naturalWidth||0,
+          h:img.naturalHeight||0,
+          area:(img.getBoundingClientRect().width||0)*(img.getBoundingClientRect().height||0)
+        }))
+        .filter(x=>x.src)
+        .sort((a,b)=>b.area-a.area)
+        .slice(0,8);
+    });
+
+    const chosen=await page.evaluate(({finishCode,finish})=>{
       const norm=s=>String(s||"").trim().toLowerCase();
       const targets=[norm(finishCode),norm(finish)].filter(Boolean);
       const visible=el=>{
         const s=getComputedStyle(el),r=el.getBoundingClientRect();
         return s.display!=="none"&&s.visibility!=="hidden"&&r.width>0&&r.height>0;
       };
+
       const selects=[...document.querySelectorAll("select")].filter(visible);
       let sel=null,opt=null;
+
       for(const s of selects){
         const found=[...s.options].find(o=>{
           const t=norm(o.textContent);
@@ -133,35 +196,75 @@ async function dynamicFinishImage({manufacturerUrl,reference,finishCode,finish})
         });
         if(found){sel=s;opt=found;break;}
       }
+
       if(!sel||!opt) return {error:"Aucun sélecteur de finition correspondant trouvé."};
 
       sel.value=opt.value;
       sel.dispatchEvent(new Event("input",{bubbles:true}));
       sel.dispatchEvent(new Event("change",{bubbles:true}));
+
+      // Amphora/WordPress often relies on jQuery handlers.
       if(window.jQuery){
-        try{window.jQuery(sel).val(opt.value).trigger("change");}catch(e){}
+        try{
+          window.jQuery(sel).val(opt.value).trigger("change");
+          window.jQuery(sel).trigger("woocommerce_variation_select_change");
+        }catch(e){}
       }
-      return {option:opt.textContent.trim(),value:opt.value};
+
+      return {
+        option:opt.textContent.trim(),
+        value:opt.value,
+        name:sel.name||"",
+        id:sel.id||""
+      };
     },{finishCode,finish});
 
     if(chosen.error) throw new Error(chosen.error);
 
-    await new Promise(r=>setTimeout(r,3200));
+    // Wait for the product visual to repaint. Do not wait for the whole page/network.
+    let changed=false;
+    const beforeSet=new Set(before.map(x=>x.src));
+    try{
+      await page.waitForFunction((beforeUrls)=>{
+        const visible=el=>{
+          const s=getComputedStyle(el),r=el.getBoundingClientRect();
+          return s.display!=="none"&&s.visibility!=="hidden"&&r.width>100&&r.height>100;
+        };
+        const imgs=[...document.querySelectorAll("img")].filter(visible);
+        return imgs.some(img=>{
+          const src=img.currentSrc||img.src||"";
+          return src && !beforeUrls.includes(src);
+        });
+      },{timeout:4500},[...beforeSet]);
+      changed=true;
+    }catch{
+      // Many product sites repaint the same image element or URL; a screenshot still captures the rendered result.
+    }
 
+    await new Promise(r=>setTimeout(r,1800));
+
+    // Select the most likely product visual after the finish has been applied.
     const handle=await page.evaluateHandle(()=>{
       const visible=el=>{
         const s=getComputedStyle(el),r=el.getBoundingClientRect();
-        return s.display!=="none"&&s.visibility!=="hidden"&&r.width>80&&r.height>80;
+        return s.display!=="none"&&s.visibility!=="hidden"&&r.width>100&&r.height>100;
       };
       const bad=el=>{
         const t=((el.currentSrc||el.src||"")+" "+(el.alt||"")+" "+(el.className||"")).toLowerCase();
-        return /logo|icon|flag|avatar|acciaio\.jpg|nero\.jpg|rame\.jpg|swatch|thumb/.test(t);
+        return /logo|icon|flag|avatar|acciaio\.jpg|nero\.jpg|rame\.jpg|swatch|thumb|related|other-product/.test(t);
       };
-      const imgs=[...document.querySelectorAll("img")].filter(visible).filter(x=>!bad(x));
+
+      const imgs=[...document.querySelectorAll("img")]
+        .filter(visible)
+        .filter(img=>!bad(img));
+
       imgs.sort((a,b)=>{
         const ar=a.getBoundingClientRect(), br=b.getBoundingClientRect();
-        return (br.width*br.height)-(ar.width*ar.height);
+        const aScore=(ar.width*ar.height)+(a.naturalWidth*a.naturalHeight*0.05);
+        const bScore=(br.width*br.height)+(b.naturalWidth*b.naturalHeight*0.05);
+        return bScore-aScore;
       });
+
       return imgs[0]||null;
     });
 
@@ -174,7 +277,7 @@ async function dynamicFinishImage({manufacturerUrl,reference,finishCode,finish})
     return {
       dataUrl:`data:image/png;base64,${png}`,
       option:chosen.option,
-      method:"rendered-element-screenshot"
+      method:changed?"rendered-element-screenshot-after-src-change":"rendered-element-screenshot-after-selection"
     };
   }finally{
     await page.close().catch(()=>{});
@@ -357,4 +460,4 @@ app.get("/api/image-proxy",async(req,res)=>{
 });
 
 app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")));
-app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V3.7 on ${PORT}`));
+app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V3.8 on ${PORT}`));
