@@ -1,32 +1,31 @@
-# Hydropolis Studio V3.8
+# Hydropolis Studio V3.9
 
-Correctif ciblé à partir des logs Render.
+## Changement d'architecture
 
-## Erreurs observées
-- `spawn ETXTBSY`
-- `Navigation timeout of 35000 ms exceeded`
+V3.9 supprime complètement Chromium/Puppeteer pour la recherche des photos Amphora.
 
-## Corrections V3.8
-1. Chromium est lancé de manière sérialisée et réutilisé entre les recherches.
-2. En cas de `ETXTBSY`, le serveur retente automatiquement le lancement.
-3. Amphora n'est plus chargé avec `networkidle2`.
-4. La page est considérée prête dès `DOMContentLoaded`.
-5. Le serveur attend uniquement la présence du sélecteur de finition.
-6. Il sélectionne BS / BB / BC, déclenche les événements natifs et jQuery, puis attend uniquement le changement du visuel.
-7. Le serveur capture ensuite directement le rendu du produit affiché.
+La recherche se fait désormais directement dans le HTML officiel Amphora :
+1. récupération HTTP de la fiche produit ;
+2. lecture des données WooCommerce `data-product_variations` ;
+3. association variation -> finition BS / BB / BC -> image officielle ;
+4. le lien `IMAGE` générique reste uniquement un fallback non certifié.
 
-## Test recommandé
-Tester dans cet ordre :
-- `RE001.BS`
-- `RE001.BB`
-- `RE001.BC`
+## Pourquoi
 
-Cliquer sur `Trouver / Actualiser la photo` pour chacune.
-Les trois visuels doivent être différents.
+Les logs Render V3.8 montraient :
+- `Navigation timeout of 25000 ms exceeded`
+- `Waiting failed: 10000ms exceeded`
 
-## PDF client
-A4 paysage inchangé :
-- produit entier ;
-- grandes marges blanches supprimées ;
-- petite marge de sécurité ;
-- aucune déformation.
+Ces erreurs venaient de l'automatisation navigateur et non du catalogue produit.
+
+## Test
+
+Tester :
+- RE001.BS
+- RE001.BB
+- RE001.BC
+
+Dans les logs Render, chaque recherche affiche maintenant une ligne :
+`[manufacturer-image] {...}`
+
+Le champ `exact:true` signifie que l'image provient directement de la variation WooCommerce correspondant à la finition demandée.
