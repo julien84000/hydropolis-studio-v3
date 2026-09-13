@@ -133,3 +133,160 @@ button,input,select,textarea{font:inherit}.shell{display:grid;grid-template-colu
 @media print{
   .drawing-visual{border:none}
 }
+
+.drawing-result-link{margin-left:8px;font-size:12px;color:#9a7b45;text-decoration:none}
+.drawing-result-link:hover{text-decoration:underline}
+
+
+/* =========================================================
+   Hydropolis Studio V4.2 — dossier client centered layout
+   Référence visuelle: esquisse validée par le client
+   ========================================================= */
+
+#document .page:not(.cover-page){
+  background:#fff !important;
+}
+
+/* Product grid: 3 columns, balanced, generous spacing */
+#document .tiles{
+  display:grid !important;
+  grid-template-columns:repeat(3, minmax(0, 1fr)) !important;
+  column-gap:52px !important;
+  row-gap:34px !important;
+  align-content:start !important;
+  align-items:start !important;
+  padding:22px 28px 34px !important;
+  box-sizing:border-box !important;
+}
+
+/* Every product becomes one centered visual + centered copy block */
+#document .tile,
+#document .product-tile{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  text-align:center !important;
+  min-width:0 !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  padding:0 !important;
+  margin:0 !important;
+}
+
+/* Image sits visually on a white background and is centered exactly over text */
+#document .tile-img{
+  width:100% !important;
+  height:182px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  background:#fff !important;
+  overflow:hidden !important;
+  margin:0 auto 12px !important;
+  padding:0 !important;
+  box-sizing:border-box !important;
+}
+
+#document .tile-img img{
+  width:100% !important;
+  height:100% !important;
+  object-fit:contain !important;
+  object-position:center center !important;
+  display:block !important;
+  margin:auto !important;
+  background:#fff !important;
+}
+
+/* Text block uses same axis as the image */
+#document .tile-copy,
+#document .tile > .maker,
+#document .tile > .title,
+#document .tile > .finish,
+#document .tile > .price,
+#document .tile > .refsmall{
+  width:100% !important;
+  text-align:center !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
+}
+
+#document .tile-copy{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+}
+
+#document .tile .maker{
+  font-size:10px !important;
+  letter-spacing:.08em !important;
+  text-transform:uppercase !important;
+  color:#6d6a65 !important;
+  margin:0 0 6px !important;
+}
+
+#document .tile .title{
+  max-width:290px !important;
+  font-size:12px !important;
+  line-height:1.25 !important;
+  font-weight:600 !important;
+  margin:0 auto 4px !important;
+}
+
+#document .tile .finish{
+  font-size:11px !important;
+  line-height:1.25 !important;
+  margin:0 0 5px !important;
+}
+
+#document .tile .price{
+  font-size:16px !important;
+  line-height:1.15 !important;
+  font-weight:700 !important;
+  margin:0 0 3px !important;
+}
+
+#document .tile .refsmall{
+  font-size:9px !important;
+  line-height:1.2 !important;
+  color:#666 !important;
+  margin:0 !important;
+}
+
+/* Empty slots and manual items stay discreet and aligned */
+#document .tile .pdf-photo-missing{
+  width:100% !important;
+  height:100% !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  text-align:center !important;
+  background:#fff !important;
+}
+
+/* Header remains refined while matching the white page */
+#document .pagehead{
+  background:#fff !important;
+}
+
+/* Drawings remain on white too */
+#document .drawing-page,
+#document .drawing-visual{
+  background:#fff !important;
+}
+
+@media print{
+  #document .page{
+    background:#fff !important;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+  #document .tiles{
+    grid-template-columns:repeat(3, minmax(0,1fr)) !important;
+  }
+  #document .tile-img{
+    height:182px !important;
+    background:#fff !important;
+  }
+}

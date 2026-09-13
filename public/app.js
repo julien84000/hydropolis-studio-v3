@@ -103,9 +103,9 @@ async function autoCropForPdf(src){
   });
 }
 
-const manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v40")||"{}");
+const manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v41")||"{}");
 function manufacturerCacheKey(p){return `${p.manufacturer}|${p.reference}`;}
-function saveManufacturerCache(){localStorage.setItem("hydropolis-manufacturer-v40",JSON.stringify(manufacturerImageCache));}
+function saveManufacturerCache(){localStorage.setItem("hydropolis-manufacturer-v41",JSON.stringify(manufacturerImageCache));}
 function cachedManufacturerImage(p){return manufacturerImageCache[manufacturerCacheKey(p)]||null;}
 
 async function fetchManufacturerImage(p,force=false){
@@ -256,7 +256,7 @@ function renderRooms(){
       <div class="room-product">
         <div class="room-prod-img"><label data-id="${p.id}">${p.image?`<img src="${p.image}">`:"＋ Photo"}<input class="prod-file" type="file" accept="image/*" hidden></label></div>
         <div><b>${p.designation}</b><div class="tech">${p.manufacturer} · ${p.collection} · ${p.reference} · <b>${exactFinishLabel(p)}</b></div>${p.internalReference?`<div class="tech">Complet avec ${p.internalReference}</div>`:""}
-        <div class="image-actions"><button class="tiny enrich-btn" data-id="${p.id}">${p.image?"Actualiser photo fabricant":"Chercher photo fabricant"}</button><a target="_blank" href="${p.manufacturerUrl}">Fiche officielle ↗</a>${p.drawingUrl?`<a target="_blank" href="${p.drawingUrl}">Drawing ↗</a><label class="drawing-toggle"><input type="checkbox" class="drawing-check" data-id="${p.id}" ${p.includeDrawing?"checked":""}> Inclure le drawing dans le dossier client</label>`:`<span class="tech">Drawing à récupérer avec la photo fabricant</span>`}${(!p.image && p.fallbackImage)?`<button class="tiny fallback-btn" data-id="${p.id}">Catalogue en secours</button>`:""}</div></div>
+        <div class="image-actions"><button class="tiny enrich-btn" data-id="${p.id}">${p.image?"Actualiser photo fabricant":"Chercher photo fabricant"}</button><a target="_blank" href="${p.manufacturerUrl}">Fiche officielle ↗</a>${(manufacturerImageCache[p.reference]?.drawingUrl)?`<a target="_blank" class="drawing-result-link" href="${manufacturerImageCache[p.reference].drawingUrl}">Drawing ↗</a>`:""}${p.drawingUrl?`<a target="_blank" href="${p.drawingUrl}">Drawing ↗</a><label class="drawing-toggle"><input type="checkbox" class="drawing-check" data-id="${p.id}" ${p.includeDrawing?"checked":""}> Inclure le drawing dans le dossier client</label>`:`<span class="tech">Drawing à récupérer avec la photo fabricant</span>`}${(!p.image && p.fallbackImage)?`<button class="tiny fallback-btn" data-id="${p.id}">Catalogue en secours</button>`:""}</div></div>
         <div class="price-total">${euro(p.totalPrice)} HT<div class="tech">${p.imageStatus||p.imageSource||"Photo fabricant à rechercher"}</div>${p.imageNote?`<div class="tech">${p.imageNote}</div>`:""}</div>
         <button class="icon del-prod" data-id="${p.id}">×</button>
       </div>`).join(""):`<div class="room-empty">Aucun produit catalogue dans cette pièce.</div>`}</div>
@@ -285,7 +285,7 @@ function buildDocument(){
 
    for(let i=0;i<Math.max(1,Math.ceil(items.length/6));i++){
      let ch=items.slice(i*6,i*6+6);
-     html+=`<section class="page"><div class="pagehead"><div><h2>${r.title}</h2><p>${r.subtitle||""}</p></div><div style="font-family:Georgia;color:var(--gold)">Hydropolis</div></div><div class="tiles">${ch.map(p=>p.manual?`<article class="tile"><div class="tile-img"></div><div class="maker">ÉLÉMENT DE PROJET</div><div class="title">${p.label}</div><div class="price">${euro(p.price)} HT</div></article>`:`<article class="tile"><div class="tile-img">${(p.pdfImage||p.image)?`<img src="${p.pdfImage||p.image}">`:`<div class="pdf-photo-missing">Photo fabricant<br>${exactFinishLabel(p)}</div>`}</div><div class="maker">${p.manufacturer} · ${p.collection}</div><div class="title">${p.designation}</div><div class="finish">${p.finish}</div><div class="price">${euro(p.totalPrice)} HT</div><div class="refsmall">Réf. ${p.reference}${p.internalReference?" · complet avec partie à encastrer":""}</div></article>`).join("")}</div><div class="page-no">${no++}</div><div class="bottom"></div></section>`;
+     html+=`<section class="page"><div class="pagehead"><div><h2>${r.title}</h2><p>${r.subtitle||""}</p></div><div style="font-family:Georgia;color:var(--gold)">Hydropolis</div></div><div class="tiles">${ch.map(p=>p.manual?`<article class="tile"><div class="tile-img"></div><div class="maker">ÉLÉMENT DE PROJET</div><div class="title">${p.label}</div><div class="price">${euro(p.price)} HT</div></article>`:`<article class="tile product-tile"><div class="tile-img">${(p.pdfImage||p.image)?`<img src="${p.pdfImage||p.image}">`:`<div class="pdf-photo-missing">Photo fabricant<br>${exactFinishLabel(p)}</div>`}</div><div class="tile-copy"><div class="maker">${p.manufacturer} · ${p.collection}</div><div class="title">${p.designation}</div><div class="finish">${p.finish}</div><div class="price">${euro(p.totalPrice)} HT</div><div class="refsmall">Réf. ${p.reference}${p.internalReference?" · complet avec partie à encastrer":""}</div></div></article>`).join("")}</div><div class="page-no">${no++}</div><div class="bottom"></div></section>`;
    }
 
    // Optional technical drawing pages, one page per selected product.

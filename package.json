@@ -1,12 +1,12 @@
 {
   "name": "hydropolis-studio-v3",
-  "version": "4.0.0",
+  "version": "4.2.0",
   "private": true,
   "description": "Hydropolis Studio V3 - Render test server",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "build": "node -e \"console.log('Hydropolis V4.0: strict finish matching + technical drawings')\""
+    "build": "node -e \"console.log('Hydropolis V4.2: centered presentation layout')\""
   },
   "engines": {
     "node": ">=20"
