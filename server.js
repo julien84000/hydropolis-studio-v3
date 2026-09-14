@@ -336,7 +336,8 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     try{href=decodeURIComponent(href)}catch{}
     if(!isImageUrl(href)) continue;
     const low=href.toLowerCase();
-    if(/logo|icon|sprite|avatar|flag|placeholder|loading|swatch|favicon/.test(low)) continue;
+    if(/logo|icon|sprite|avatar|flag|placeholder|loading|swatch|favicon|chrome2|brushed-gunmetal|brushed-brass|brushed-nickel3/.test(low)) continue;
+    if(/[?&](?:w|h)=50(?:&|$)/i.test(href)) continue;
     let score=25;
     if(/assets\.zucchettidesign\.it/i.test(href)) score+=70;
     if(low.includes(base.toLowerCase())) score+=120;
@@ -350,11 +351,16 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     });
   }
 
-  // Coalbrook: once the correct official product page is resolved, its four main product
-  // images contain the exact SKU (e.g. BA1005BB-2000.png). This is a reliable finish match.
+  // Coalbrook: product pages expose the four real product images first, then four
+  // circular finish swatches. The Excel reference can differ from the current web SKU,
+  // so map the requested finish by the SKU suffix in the official image URL (CP/GM/BB/BN),
+  // not by requiring the full Excel reference to appear in the filename.
   if(/coalbrookuk\.co\.uk/i.test(manufacturerUrl)){
+    const coalFinish=String(requested||"").toUpperCase();
     $("img").each((_,el)=>{
       const $img=$(el);
+      const alt=normalizeToken($img.attr("alt")||"");
+      const title=normalizeToken($img.attr("title")||"");
       const attrs=["src","data-src","srcset","data-srcset"];
       for(const attr of attrs){
         const raw=$img.attr(attr)||"";
@@ -362,12 +368,31 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
           const candidate=part.trim().split(/\s+/)[0];
           const href=absoluteUrl(manufacturerUrl,candidate);
           if(!href || !/\.(?:jpe?g|png|webp)(?:\?|$)/i.test(href)) continue;
+
           const low=href.toLowerCase();
-          if(!low.includes(String(reference||"").toLowerCase())) continue;
+          // Never use Coalbrook's circular colour chips as product photography.
+          if(
+            /(?:chrome2|brushed-gunmetal|brushed-brass|brushed-nickel3|colour|color|swatch)/i.test(low) ||
+            /\b(?:chrome|gunmetal|brushed brass|brushed nickel)\s+colour\b/i.test(alt+" "+title) ||
+            /[?&](?:w|h)=50(?:&|$)/i.test(href)
+          ) continue;
+
+          // Real Coalbrook product images use filenames such as DC1009BB-2000.png.
+          const pathname=(()=>{try{return new URL(href).pathname}catch{return href}})();
+          const filename=pathname.split("/").pop()||"";
+          const m=filename.toUpperCase().match(/([A-Z0-9]+)(CP|GM|BB|BN)(?:[-_].*)?\.(?:JPE?G|PNG|WEBP)$/i);
+          if(!m) continue;
+
+          const detected=m[2].toUpperCase();
+          const exact=coalFinish && detected===coalFinish;
           candidates.push({
-            url:href,source:"coalbrook-sku-image",score:2000,
-            finishMatch:"exact",detectedFinishCode:requested||null,
-            variationId:null,attributes:{}
+            url:href,
+            source:"coalbrook-product-image",
+            score: exact ? 5000 : 500,
+            finishMatch: exact ? "exact" : "generic",
+            detectedFinishCode:detected,
+            variationId:null,
+            attributes:{}
           });
         }
       }
