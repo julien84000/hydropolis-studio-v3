@@ -743,3 +743,107 @@ button,input,select,textarea{font:inherit}.shell{display:grid;grid-template-colu
     transform:none!important;
   }
 }
+
+/* V5.4 — présentation structurée par espaces fonctionnels */
+#document .space-head{
+  position:relative;
+  padding-left:11mm!important;
+}
+#document .space-head:before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:1mm;
+  bottom:5mm;
+  width:1.5px;
+  background:rgba(170,119,54,.55);
+}
+#document .space-head h2{
+  font-size:27pt!important;
+}
+#document .space-head p{
+  max-width:145mm!important;
+}
+#document .space-rule{
+  position:absolute;
+  right:13mm;
+  top:39mm;
+  width:26mm;
+  height:1px;
+  background:rgba(166,119,59,.28);
+}
+#document .space-rule span{
+  position:absolute;
+  right:0;
+  top:-5mm;
+  font-family:Georgia,serif;
+  font-size:7pt;
+  color:#a77a42;
+}
+#document .space-tiles{
+  margin-top:3mm!important;
+}
+#document .space-page .editorial-tile:nth-child(4){
+  margin-left:7mm!important;
+}
+#document .space-page .editorial-tile:nth-child(5){
+  margin-left:7mm!important;
+}
+#document .space-page .editorial-tile:nth-child(6){
+  margin-left:7mm!important;
+}
+#document .space-empty{
+  margin:30mm auto;
+  text-align:center;
+  color:#8d867d;
+  font-family:Georgia,serif;
+  font-size:13pt;
+}
+
+/* V5.5 — planches d'ambiance par espace */
+#document .visual-board-page{padding:11mm 12mm 11mm!important;overflow:hidden;background:#fff!important}
+#document .visual-board-page:after{display:none!important}
+#document .board-head{height:21mm;display:flex;justify-content:space-between;align-items:flex-start;position:relative;z-index:2}
+#document .board-head:before,#document .board-head:after{content:"";position:absolute;top:-4mm;height:1.2px;background:#b98a4d}
+#document .board-head:before{left:0;width:58mm} #document .board-head:after{right:0;width:51mm}
+#document .board-head h2{margin:1.5mm 0 0!important;font-family:Georgia,serif;font-size:22pt!important;font-weight:400!important;letter-spacing:-.025em;line-height:1}
+#document .board-intro{position:absolute;left:12mm;top:30mm;width:68mm;font-size:6.4pt;line-height:1.45;color:#766e65;z-index:2}
+#document .visual-board{position:absolute;left:12mm;right:12mm;top:39mm;bottom:14mm}
+#document .board-item{position:absolute;margin:0;padding:0;background:transparent;border:0}
+#document .board-visual{position:absolute;inset:0 0 17mm 0;background:#f7f4ef;overflow:hidden}
+#document .board-visual img{width:100%;height:100%;object-fit:contain;display:block}
+#document .board-copy{position:absolute;left:0;right:0;bottom:0;min-height:15mm;padding-top:2mm;background:#fff}
+#document .board-copy .maker{font-size:5.2pt!important;color:#a2733b!important;letter-spacing:.08em!important;text-transform:uppercase;margin:0 0 .8mm!important}
+#document .board-copy .title{font-family:Georgia,serif;font-size:8.2pt!important;line-height:1.12!important;font-weight:400!important;margin:0 0 .8mm!important}
+#document .board-copy .finish,#document .board-copy .price,#document .board-copy .refsmall{font-size:5.5pt!important;line-height:1.25!important;margin:0!important}
+#document .board-copy .price{font-weight:700!important;margin-top:.7mm!important}
+#document .board-copy .refsmall{color:#999087!important}
+#document .visual-board .board-item-1{left:0;top:0;width:35%;height:70%}
+#document .visual-board .board-item-2{left:38%;top:0;width:22%;height:48%}
+#document .visual-board .board-item-3{right:0;top:-9mm;width:36%;height:59%}
+#document .visual-board .board-item-4{left:38%;bottom:0;width:27%;height:44%}
+#document .visual-board .board-item-5{right:0;bottom:0;width:31%;height:39%}
+#document .visual-board.count-1 .board-item-1{left:13%;top:-4mm;width:72%;height:91%}
+#document .visual-board.count-2 .board-item-1{left:0;top:4mm;width:48%;height:79%}
+#document .visual-board.count-2 .board-item-2{left:auto;right:0;top:-5mm;width:47%;height:86%}
+#document .visual-board.count-3 .board-item-1{left:0;top:4mm;width:45%;height:80%}
+#document .visual-board.count-3 .board-item-2{left:49%;top:-6mm;width:28%;height:52%}
+#document .visual-board.count-3 .board-item-3{right:0;top:auto;bottom:0;width:47%;height:47%}
+#document .visual-board.count-4 .board-item-1{left:0;top:0;width:39%;height:75%}
+#document .visual-board.count-4 .board-item-2{left:43%;top:-7mm;width:24%;height:51%}
+#document .visual-board.count-4 .board-item-3{right:0;top:2mm;width:29%;height:62%}
+#document .visual-board.count-4 .board-item-4{left:43%;bottom:0;width:52%;height:40%}
+#document .board-wc .visual-board .board-item-1{left:5%;top:5mm;width:35%;height:75%}
+#document .board-wc .visual-board .board-item-2{left:48%;top:0;width:25%;height:48%}
+#document .board-wc .visual-board .board-item-3{right:2%;top:auto;bottom:8mm;width:29%;height:43%}
+#document .manual-board-item{border-left:1px solid rgba(185,138,77,.55);padding-left:4mm!important}
+#document .manual-board-item .board-copy{top:8mm;bottom:auto;background:transparent}
+@media screen{
+ #document .board-item{transition:transform .35s cubic-bezier(.2,.7,.2,1),filter .35s ease}
+ #document .board-item:hover{transform:translate3d(0,-5px,0) scale(1.006);filter:drop-shadow(0 14px 14px rgba(49,42,34,.10));z-index:5}
+ #document .board-visual img{transition:transform .55s cubic-bezier(.2,.75,.2,1)}
+ #document .board-item:hover .board-visual img{transform:scale(1.025)}
+}
+@media print{
+ #document .board-item,#document .board-item:hover,#document .board-visual img,#document .board-item:hover .board-visual img{transform:none!important;filter:none!important;transition:none!important}
+}

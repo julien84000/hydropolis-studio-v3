@@ -103,9 +103,9 @@ async function autoCropForPdf(src){
   });
 }
 
-const manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v53")||"{}");
+const manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v55")||"{}");
 function manufacturerCacheKey(p){return `${p.manufacturer}|${p.reference}`;}
-function saveManufacturerCache(){localStorage.setItem("hydropolis-manufacturer-v53",JSON.stringify(manufacturerImageCache));}
+function saveManufacturerCache(){localStorage.setItem("hydropolis-manufacturer-v55",JSON.stringify(manufacturerImageCache));}
 function cachedManufacturerImage(p){return manufacturerImageCache[manufacturerCacheKey(p)]||null;}
 
 async function fetchManufacturerImage(p,force=false){
@@ -457,6 +457,67 @@ function technicalDocumentPage(r,p,url,label,no){
     <div class="page-no">${no}</div><div class="bottom"></div>
   </section>`;
 }
+
+function presentationSpace(p){
+  const t=[p.category,p.designation,p.marketingDescription,p.originalDescription,p.collection]
+    .filter(Boolean).join(" ").toLowerCase();
+
+  if(/wc|toilet|cuvette|abattant|bidet|toilette/.test(t)) return "WC";
+  if(/baignoire|bath\b|bath filler|bath spout|bain-douche/.test(t)) return "BAIN";
+  if(/douche|shower|handshower|hand shower|pomme|rainhead|thermostat|flexible|wall outlet/.test(t)) return "DOUCHE";
+  if(/lavabo|basin|vasque|siphon|bonde|waste|bottle trap/.test(t)) return "LAVABO";
+
+  const c=String(p.category||"").toLowerCase();
+  if(c.includes("lavabo")) return "LAVABO";
+  if(c.includes("douche")) return "DOUCHE";
+  if(c.includes("bain")) return "BAIN";
+  if(c.includes("wc")) return "WC";
+  return "AUTRES";
+}
+function presentationSpaceLabel(space){
+  return {
+    LAVABO:"Espace lavabo",
+    DOUCHE:"Espace douche",
+    BAIN:"Espace bain",
+    WC:"Espace WC",
+    AUTRES:"Autres éléments"
+  }[space]||space;
+}
+function presentationSpaceIntro(space){
+  return {
+    LAVABO:"Robinetterie, vidage, siphon et accessoires coordonnés autour de la vasque.",
+    DOUCHE:"Commandes, sorties d’eau, douchettes et éléments de douche réunis dans un même ensemble.",
+    BAIN:"Robinetterie et accessoires dédiés à l’espace baignoire.",
+    WC:"Équipements et accessoires coordonnés pour l’espace WC.",
+    AUTRES:"Éléments complémentaires de la pièce."
+  }[space]||"";
+}
+function orderedPresentationGroups(items){
+  const buckets={LAVABO:[],DOUCHE:[],BAIN:[],WC:[],AUTRES:[]};
+  items.forEach(p=>{
+    const key=p.manual?"AUTRES":presentationSpace(p);
+    (buckets[key]||buckets.AUTRES).push(p);
+  });
+  const groups=[];
+  if(buckets.LAVABO.length && buckets.BAIN.length){
+    groups.push({space:"LAVABO_BAIN",label:"Espaces lavabo / bain",intro:"Une composition commune autour du plan lavabo et de l’espace baignoire.",items:[...buckets.LAVABO,...buckets.BAIN]});
+  }else{
+    if(buckets.LAVABO.length) groups.push({space:"LAVABO",label:"Espace lavabo",intro:presentationSpaceIntro("LAVABO"),items:buckets.LAVABO});
+    if(buckets.BAIN.length) groups.push({space:"BAIN",label:"Espace bain",intro:presentationSpaceIntro("BAIN"),items:buckets.BAIN});
+  }
+  if(buckets.DOUCHE.length) groups.push({space:"DOUCHE",label:"Espace douche",intro:presentationSpaceIntro("DOUCHE"),items:buckets.DOUCHE});
+  if(buckets.WC.length) groups.push({space:"WC",label:"Espace toilette",intro:presentationSpaceIntro("WC"),items:buckets.WC});
+  if(buckets.AUTRES.length) groups.push({space:"AUTRES",label:"Accessoires & éléments complémentaires",intro:presentationSpaceIntro("AUTRES"),items:buckets.AUTRES});
+  return groups;
+}
+function boardItemHtml(p,idx){
+  const cls=`board-item board-item-${idx+1}`;
+  if(p.manual){
+    return `<article class="${cls} manual-board-item" data-parallax-layer="${0.018+(idx%4)*0.008}"><div class="board-copy"><div class="maker">ÉLÉMENT DE PROJET</div><div class="title">${p.label}</div>${state.showClientPrices!==false?`<div class="price">${euro(p.price)} HT</div>`:""}</div></article>`;
+  }
+  return `<article class="${cls}" data-parallax-layer="${0.018+(idx%4)*0.008}"><div class="board-visual">${(p.pdfImage||p.image)?`<img src="${p.pdfImage||p.image}" alt="${p.designation}">`:`<div class="pdf-photo-missing">Photo fabricant<br>${exactFinishLabel(p)}</div>`}</div><div class="board-copy"><div class="maker">${p.manufacturer} · ${p.collection}</div><div class="title">${p.designation}</div><div class="finish">${p.finish}</div>${state.showClientPrices!==false?`<div class="price">${euro(p.totalPrice)} HT</div>`:""}${state.showSupplierReferences!==false?`<div class="refsmall">Réf. ${p.reference}${p.internalReference?" · complet avec partie à encastrer":""}</div>`:""}</div></article>`;
+}
+
 function buildDocument(){
  let html=`<section class="page cover-page editorial-page" data-parallax-page>
   <div class="cover-ambient" data-parallax-layer="0.10"></div>
@@ -474,28 +535,28 @@ function buildDocument(){
    let products=state.selected.filter(p=>p.roomId===r.id);
    let items=[...products,...(r.manual||[]).map(m=>({manual:true,...m}))];
 
-   for(let i=0;i<Math.max(1,Math.ceil(items.length/6));i++){
-     let ch=items.slice(i*6,i*6+6);
-     html+=`<section class="page editorial-page room-page" data-parallax-page>
-  <div class="page-ambient page-ambient-a" data-parallax-layer="0.06"></div>
-  <div class="pagehead editorial-head">
-    <div><div class="section-kicker">SÉLECTION</div><h2>${r.title}</h2><p>${r.subtitle||"Une sélection pensée comme un ensemble cohérent."}</p></div>
-    <div class="editorial-brand">Hydropolis</div>
-  </div>
-  <div class="tiles editorial-tiles">${ch.map((p,idx)=>p.manual?`<article class="tile editorial-tile manual-tile stagger-${idx%3}" data-parallax-layer="${0.025+(idx%3)*0.012}"><div class="tile-img manual-visual"></div><div class="tile-copy"><div class="maker">ÉLÉMENT DE PROJET</div><div class="title">${p.label}</div>${state.showClientPrices!==false?`<div class="price">${euro(p.price)} HT</div>`:""}</div></article>`:`<article class="tile product-tile editorial-tile stagger-${idx%3}" data-parallax-layer="${0.025+(idx%3)*0.012}">
-    <div class="tile-img editorial-product-visual">${(p.pdfImage||p.image)?`<img src="${p.pdfImage||p.image}">`:`<div class="pdf-photo-missing">Photo fabricant<br>${exactFinishLabel(p)}</div>`}</div>
-    <div class="tile-copy">
-      <div class="maker">${p.manufacturer} · ${p.collection}</div>
-      <div class="title">${p.designation}</div>
-      <div class="finish">${p.finish}</div>
-      ${state.showClientPrices!==false?`<div class="price">${euro(p.totalPrice)} HT</div>`:""}
-      ${state.showSupplierReferences!==false?`<div class="refsmall">Réf. ${p.reference}${p.internalReference?" · complet avec partie à encastrer":""}</div>`:""}
-    </div>
-  </article>`).join("")}</div>
-  <div class="page-no">${no++}</div>
-  <div class="editorial-footer"><span>Maison Hydropolis</span><span>${r.title}</span></div>
-</section>`;
+   const groups=orderedPresentationGroups(items);
+   if(!groups.length){
+     html+=`<section class="page editorial-page room-page space-page" data-parallax-page>
+       <div class="pagehead editorial-head"><div><div class="section-kicker">SÉLECTION</div><h2>${r.title}</h2><p>${r.subtitle||""}</p></div><div class="editorial-brand">Hydropolis</div></div>
+       <div class="space-empty">Aucun élément sélectionné.</div>
+       <div class="page-no">${no++}</div><div class="editorial-footer"><span>Maison Hydropolis</span><span>${r.title}</span></div>
+     </section>`;
    }
+
+   groups.forEach(group=>{
+     for(let i=0;i<Math.ceil(group.items.length/5);i++){
+       const ch=group.items.slice(i*5,i*5+5);
+       const continuation=i>0?" · suite":"";
+       html+=`<section class="page editorial-page room-page visual-board-page board-${group.space.toLowerCase()}" data-parallax-page>
+         <div class="page-ambient page-ambient-a" data-parallax-layer="0.05"></div>
+         <div class="board-head"><div><div class="section-kicker">${r.title}${continuation}</div><h2>${group.label}</h2></div><div class="editorial-brand">Hydropolis</div></div>
+         <div class="board-intro">${group.intro}</div>
+         <div class="visual-board count-${Math.max(1,ch.length)}">${ch.map((p,idx)=>boardItemHtml(p,idx)).join("")}</div>
+         <div class="page-no">${no++}</div><div class="editorial-footer"><span>Maison Hydropolis</span><span>${r.title} · ${group.label}</span></div>
+       </section>`;
+     }
+   });
 
    // Optional official technical sheets.
    products.filter(p=>p.includeTechnicalSheet&&p.technicalSheetUrl&&/\.pdf(?:\?|$)/i.test(p.technicalSheetUrl)).forEach(p=>{
