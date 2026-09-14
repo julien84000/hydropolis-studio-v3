@@ -2,12 +2,12 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Hydropolis Studio V4.8 · Render</title><link rel="stylesheet" href="styles.css">
+<title>Hydropolis Studio V5.0 · Render</title><link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <div class="shell">
 <aside class="sidebar">
-  <div class="logo"><span>H</span><div><b>Hydropolis</b><small>Studio V4.8</small></div></div>
+  <div class="logo"><span>H</span><div><b>Hydropolis</b><small>Studio V5.0</small></div></div>
   <button class="nav active" data-view="catalog">Catalogue intelligent</button>
   <button class="nav" data-view="project">Projet par pièce</button>
   <button class="nav" data-view="preview">Présentation client</button>
@@ -50,6 +50,13 @@
         <label>Date<input id="projectDate" type="date"></label>
       </div>
       <label>Introduction<textarea id="projectIntro" rows="4"></textarea></label>
+      <div class="client-output-options">
+        <div class="eyebrow">Édition du dossier client</div>
+        <div class="client-output-checks">
+          <label><input id="showClientPrices" type="checkbox" checked> Afficher les prix</label>
+          <label><input id="showSupplierReferences" type="checkbox" checked> Afficher les références fournisseur</label>
+        </div>
+      </div>
     </div>
     <div class="card"><div class="eyebrow">Couverture</div><h2>Image principale</h2>
       <label id="coverDrop" class="drop"><input id="coverInput" type="file" accept="image/*" hidden><span>＋</span><b>Déposer l'image</b><small>ou cliquer pour parcourir</small></label>

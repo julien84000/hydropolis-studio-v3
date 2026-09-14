@@ -1,21 +1,20 @@
-# Hydropolis Studio V4.8
+# Hydropolis Studio V5.0
 
-## Documents fabricant : Coalbrook + Zucchetti
+## Options d'édition du dossier client
 
-La V4.8 sépare désormais la récupération des documents de celle des photos.
+Deux cases à cocher sont ajoutées dans « Informations client » :
 
-### Coalbrook
-- Fiche technique = lien officiel « Spec sheet »
-- Drawing 2D = lien officiel « DWG File » lorsqu'il est exploitable
-- Notice = « Installation Guide »
-- Fiche produit officielle résolue au lieu du lien de recherche générique
+- Afficher les prix
+- Afficher les références fournisseur
 
-### Zucchetti
-- Fiche technique = « Technical sheet »
-- Drawing 2D = « 2D drawing »
-- Notice = « Installation manual / Warnings »
+Les deux choix sont indépendants et mémorisés avec le projet.
 
-Les liens apparaissent dans la fiche produit du projet après « Chercher/Actualiser photo + documents ».
-Même si aucune photo fiable n'est trouvée, les documents peuvent maintenant être récupérés et conservés.
+Combinaisons possibles :
+- prix + références ;
+- prix sans références ;
+- références sans prix ;
+- ni prix ni références.
 
-Le cache fabricant passe en V4.8 afin de relancer la récupération documentaire.
+Les réglages s'appliquent à l'aperçu et au PDF client.
+Lorsque « Afficher les prix » est désactivé, les prix des produits catalogue et des éléments libres sont masqués.
+Lorsque « Afficher les références fournisseur » est désactivé, les références sont également masquées sur les pages de drawing technique.

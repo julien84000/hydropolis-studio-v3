@@ -103,9 +103,9 @@ async function autoCropForPdf(src){
   });
 }
 
-const manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v48")||"{}");
+const manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v50")||"{}");
 function manufacturerCacheKey(p){return `${p.manufacturer}|${p.reference}`;}
-function saveManufacturerCache(){localStorage.setItem("hydropolis-manufacturer-v48",JSON.stringify(manufacturerImageCache));}
+function saveManufacturerCache(){localStorage.setItem("hydropolis-manufacturer-v50",JSON.stringify(manufacturerImageCache));}
 function cachedManufacturerImage(p){return manufacturerImageCache[manufacturerCacheKey(p)]||null;}
 
 async function fetchManufacturerImage(p,force=false){
@@ -227,7 +227,12 @@ async function enrichSelectedPhoto(id,force=false){
   renderRooms();
 }
 
-function loadState(){try{let s=JSON.parse(localStorage.getItem("hydropolis-v21"));if(s)Object.assign(state,s)}catch(e){}; if(!state.rooms?.length)state.rooms=[{id:"r1",title:"SDB MASTER",subtitle:"",manual:[]}];}
+function loadState(){
+  try{let s=JSON.parse(localStorage.getItem("hydropolis-v21"));if(s)Object.assign(state,s)}catch(e){}
+  if(!state.rooms?.length)state.rooms=[{id:"r1",title:"SDB MASTER",subtitle:"",manual:[]}];
+  if(typeof state.showClientPrices!=="boolean")state.showClientPrices=true;
+  if(typeof state.showSupplierReferences!=="boolean")state.showSupplierReferences=true;
+}
 function saveState(){localStorage.setItem("hydropolis-v21",JSON.stringify(state));}
 function unique(k){return [...new Set(CATALOG.map(x=>x[k]).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"fr"));}
 function fillSelect(id,values,keepValue=true){
@@ -328,7 +333,33 @@ function renderRooms(){
  $$(".manual-btn").forEach(b=>b.onclick=()=>{let id=b.dataset.id, card=b.closest(".room-card"), lab=$(".manual-label",card).value.trim(), price=parseFloat($(".manual-price",card).value||0);if(!lab)return;let r=roomById(id);r.manual=r.manual||[];r.manual.push({label:lab,price});saveState();renderRooms();});
  $$(".del-manual").forEach(b=>b.onclick=()=>{roomById(b.dataset.room).manual.splice(+b.dataset.i,1);saveState();renderRooms();});
 }
-function bindProject(){[["projectName","name"],["clientName","client"],["projectLocation","location"],["projectDate","date"],["projectIntro","intro"]].forEach(([id,k])=>{$("#"+id).value=state.project[k]||"";$("#"+id).oninput=()=>{state.project[k]=$("#"+id).value;saveState();}});if(state.project.cover){$("#coverDrop").classList.add("has");$("#coverDrop").style.backgroundImage=`url("${state.project.cover}")`;}$("#coverInput").onchange=async e=>{let f=e.target.files[0];if(!f)return;let data=await normalizeImageFile(f,2200,1500,.92);state.project.cover=data;saveState();$("#coverDrop").classList.add("has");$("#coverDrop").style.backgroundImage=`url("${data}")`;};}
+function bindProject(){
+  [["projectName","name"],["clientName","client"],["projectLocation","location"],["projectDate","date"],["projectIntro","intro"]].forEach(([id,k])=>{
+    $("#"+id).value=state.project[k]||"";
+    $("#"+id).oninput=()=>{state.project[k]=$("#"+id).value;saveState();};
+  });
+  if(state.project.cover){
+    $("#coverDrop").classList.add("has");
+    $("#coverDrop").style.backgroundImage=`url("${state.project.cover}")`;
+  }
+  $("#coverInput").onchange=async e=>{
+    let f=e.target.files[0];if(!f)return;
+    let data=await normalizeImageFile(f,2200,1500,.92);
+    state.project.cover=data;saveState();
+    $("#coverDrop").classList.add("has");
+    $("#coverDrop").style.backgroundImage=`url("${data}")`;
+  };
+  const priceToggle=$("#showClientPrices");
+  const refToggle=$("#showSupplierReferences");
+  if(priceToggle){
+    priceToggle.checked=state.showClientPrices!==false;
+    priceToggle.onchange=()=>{state.showClientPrices=priceToggle.checked;saveState();};
+  }
+  if(refToggle){
+    refToggle.checked=state.showSupplierReferences!==false;
+    refToggle.onchange=()=>{state.showSupplierReferences=refToggle.checked;saveState();};
+  }
+}
 function showView(v){$$(".nav").forEach(n=>n.classList.toggle("active",n.dataset.view===v));$$(".view").forEach(x=>x.classList.remove("active"));$("#view-"+v).classList.add("active");let t={catalog:["Catalogue intelligent","Recherche puis ajout direct dans la pièce choisie."],project:["Projet par pièce","Chaque pièce contient ses produits catalogue et ses éléments libres."],preview:["Présentation client","Mise en page automatique organisée pièce par pièce."]};$("#viewTitle").textContent=t[v][0];$("#viewSubtitle").textContent=t[v][1];if(v==="preview")buildDocument();}
 function buildDocument(){
  let html=`<section class="page"><div class="goldline"></div><div class="coverimg">${state.project.cover?`<img src="${state.project.cover}">`:""}</div><div class="brandcover"><h2>Hydropolis</h2><p>salle de bains<br>Agencement + Décoration</p><div class="projname">${state.project.name||"Projet client"}${state.project.location?" — "+state.project.location:""}</div></div></section>`,no=2;
@@ -339,7 +370,7 @@ function buildDocument(){
 
    for(let i=0;i<Math.max(1,Math.ceil(items.length/6));i++){
      let ch=items.slice(i*6,i*6+6);
-     html+=`<section class="page"><div class="pagehead"><div><h2>${r.title}</h2><p>${r.subtitle||""}</p></div><div style="font-family:Georgia;color:var(--gold)">Hydropolis</div></div><div class="tiles">${ch.map(p=>p.manual?`<article class="tile"><div class="tile-img"></div><div class="maker">ÉLÉMENT DE PROJET</div><div class="title">${p.label}</div><div class="price">${euro(p.price)} HT</div></article>`:`<article class="tile product-tile"><div class="tile-img">${(p.pdfImage||p.image)?`<img src="${p.pdfImage||p.image}">`:`<div class="pdf-photo-missing">Photo fabricant<br>${exactFinishLabel(p)}</div>`}</div><div class="tile-copy"><div class="maker">${p.manufacturer} · ${p.collection}</div><div class="title">${p.designation}</div><div class="finish">${p.finish}</div><div class="price">${euro(p.totalPrice)} HT</div><div class="refsmall">Réf. ${p.reference}${p.internalReference?" · complet avec partie à encastrer":""}</div></div></article>`).join("")}</div><div class="page-no">${no++}</div><div class="bottom"></div></section>`;
+     html+=`<section class="page"><div class="pagehead"><div><h2>${r.title}</h2><p>${r.subtitle||""}</p></div><div style="font-family:Georgia;color:var(--gold)">Hydropolis</div></div><div class="tiles">${ch.map(p=>p.manual?`<article class="tile"><div class="tile-img"></div><div class="maker">ÉLÉMENT DE PROJET</div><div class="title">${p.label}</div>${state.showClientPrices!==false?`<div class="price">${euro(p.price)} HT</div>`:""}</article>`:`<article class="tile product-tile"><div class="tile-img">${(p.pdfImage||p.image)?`<img src="${p.pdfImage||p.image}">`:`<div class="pdf-photo-missing">Photo fabricant<br>${exactFinishLabel(p)}</div>`}</div><div class="tile-copy"><div class="maker">${p.manufacturer} · ${p.collection}</div><div class="title">${p.designation}</div><div class="finish">${p.finish}</div>${state.showClientPrices!==false?`<div class="price">${euro(p.totalPrice)} HT</div>`:""}${state.showSupplierReferences!==false?`<div class="refsmall">Réf. ${p.reference}${p.internalReference?" · complet avec partie à encastrer":""}</div>`:""}</div></article>`).join("")}</div><div class="page-no">${no++}</div><div class="bottom"></div></section>`;
    }
 
    // Optional technical drawing pages, one page per selected product.
@@ -349,9 +380,9 @@ function buildDocument(){
        :`/api/image-proxy?url=${encodeURIComponent(p.drawingUrl)}`;
 
      html+=`<section class="page drawing-page">
-       <div class="pagehead"><div><h2>${r.title} · Drawing technique</h2><p>${p.manufacturer} ${p.collection} · ${p.reference}</p></div><div style="font-family:Georgia;color:var(--gold)">Hydropolis</div></div>
+       <div class="pagehead"><div><h2>${r.title} · Drawing technique</h2><p>${p.manufacturer} ${p.collection}${state.showSupplierReferences!==false?` · ${p.reference}`:""}</p></div><div style="font-family:Georgia;color:var(--gold)">Hydropolis</div></div>
        <div class="drawing-sheet">
-         <div class="drawing-meta"><div class="maker">${p.manufacturer} · ${p.collection}</div><div class="title">${p.designation}</div><div class="finish">${p.finish}</div><div class="refsmall">Réf. ${p.reference}</div></div>
+         <div class="drawing-meta"><div class="maker">${p.manufacturer} · ${p.collection}</div><div class="title">${p.designation}</div><div class="finish">${p.finish}</div>${state.showSupplierReferences!==false?`<div class="refsmall">Réf. ${p.reference}</div>`:""}</div>
          <div class="drawing-visual"><img src="${drawingSrc}" alt="Drawing ${p.reference}"></div>
        </div>
        <div class="page-no">${no++}</div><div class="bottom"></div>
@@ -370,9 +401,26 @@ async function loadSupplierCatalogs(){
     console.log(`[catalog] ${extra.length} références Coalbrook + Zucchetti chargées`);
   }catch(e){console.error("[catalog-extra]",e);}
 }
+function harmonizeSavedCatalogProducts(){
+  const byRef=new Map(CATALOG.map(p=>[p.reference,p]));
+  for(const room of state.rooms||[]){
+    for(const p of room.products||[]){
+      const c=byRef.get(p.reference);
+      if(!c)continue;
+      p.designation=c.designation||p.designation;
+      p.collection=c.collection||p.collection;
+      p.manufacturer=c.manufacturer||p.manufacturer;
+      p.finish=c.finish||p.finish;
+      p.category=c.category||p.category;
+      p.manufacturerUrl=c.manufacturerUrl||p.manufacturerUrl;
+    }
+  }
+}
 async function bootstrap(){
   await loadSupplierCatalogs();
-  loadState();initFilters();renderRoomSelect();bindProject();renderSelection();renderRooms();renderCatalog();
+  loadState();
+  harmonizeSavedCatalogProducts();
+  initFilters();renderRoomSelect();bindProject();renderSelection();renderRooms();renderCatalog();
 }
 bootstrap();
 ["searchInput","collectionFilter","categoryFilter","finishFilter","targetRoom"].forEach(id=>$("#"+id).addEventListener("input",renderCatalog));

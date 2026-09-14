@@ -151,34 +151,55 @@ function similarityScore(a,b){
   let hit=0; for(const x of A) if(B.has(x)) hit++;
   return hit/Math.max(1,Math.min(A.size,B.size));
 }
+function coalbrookRangeSlug(collection){
+  const map={
+    bank:"bank",domo:"domo",decca:"decca",zurich:"zurich",
+    "shower and bath":"shower-and-bath",accessories:"accessories",
+    bay:"bay",mainstream:"mainstream"
+  };
+  return map[normalizeToken(collection||"")]||"";
+}
 async function resolveManufacturerProductUrl(manufacturerUrl,reference,originalDescription,designation,collection){
   if(!/coalbrookuk\.co\.uk/i.test(manufacturerUrl)) return manufacturerUrl;
   try{
-    // Coalbrook's WordPress-style ?s= URL returns 404. Resolve from its official product catalogue instead.
-    const catalogue="https://coalbrookuk.co.uk/products";
-    const r=await axios.get(catalogue,{timeout:22000,headers:{"User-Agent":"Mozilla/5.0","Accept-Language":"en-GB,en;q=0.9"}});
+    const slug=coalbrookRangeSlug(collection);
+    const catalogue=slug
+      ?`https://coalbrookuk.co.uk/range/${slug}`
+      :"https://coalbrookuk.co.uk/type/basin";
+    const r=await axios.get(catalogue,{
+      timeout:22000,maxRedirects:5,validateStatus:x=>x>=200&&x<400,
+      headers:{"User-Agent":"Mozilla/5.0","Accept-Language":"en-GB,en;q=0.9"}
+    });
     const $=cheerio.load(String(r.data||""));
-    const target=originalDescription||designation||"";
-    let best={url:"",score:0};
+    let target=String(originalDescription||designation||"");
+    target=target.replace(/^Coalbrook\s+/i,"");
+    if(collection){
+      const safe=String(collection).replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+      target=target.replace(new RegExp("^"+safe+"\\s+","i"),"");
+    }
+    target=target.replace(/\s*-\s*(brushed brass|brushed nickel|chrome|gunmetal|matt white)\s*$/i,"");
+
+    const seen=new Set(), options=[];
     $("a[href*='/product/']").each((_,el)=>{
       const href=absoluteUrl(catalogue,$(el).attr("href"));
-      if(!href) return;
-      const card=$(el).closest("article,li,.product,.card,div");
+      if(!href||seen.has(href)) return;
+      seen.add(href);
+      const card=$(el).closest("article,li,.product,.card,.product-item,div");
       const text=(($(el).attr("aria-label")||"")+" "+($(el).attr("title")||"")+" "+$(el).text()+" "+card.text()).trim();
       let score=similarityScore(target,text);
-      const wantedCollection=normalizeToken(collection||"");
-      const cardText=normalizeToken(text);
-      if(wantedCollection){
-        if(cardText.includes(wantedCollection)) score+=1.25;
-        else score-=0.85;
-      }
-      if(score>best.score) best={url:href,score,text:cardText};
+      const A=new Set(productWords(target)),B=new Set(productWords(text));
+      let hits=0;for(const x of A)if(B.has(x))hits++;
+      if(A.size && hits===A.size)score+=1.5;
+      options.push({href,score,text:normalizeToken(text)});
     });
-    // Bank/Domo/Decca/Zurich peuvent partager exactement le même intitulé.
-    // Sans collection fiable, on refuse le rapprochement.
-    if(best.url && best.score>=1.05) return best.url;
+    options.sort((a,b)=>b.score-a.score);
+    const best=options[0],second=options[1];
+    if(best && best.score>=0.65 && (!second||best.score-second.score>=0.035||best.score>=1.45)){
+      return best.href;
+    }
     return "";
-  }catch{
+  }catch(e){
+    console.error("[coalbrook-resolve]",e.message);
     return "";
   }
 }
@@ -233,28 +254,8 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
   const html=String(page.data||"");
   const $=cheerio.load(html);
 
-  // Validation stricte de la collection Coalbrook.
-  // Le même nom de produit existe dans plusieurs collections ; une photo Domo ne doit
-  // jamais être utilisée pour une référence Decca, Bank ou Zurich.
-  if(/coalbrookuk\.co\.uk/i.test(manufacturerUrl) && collection){
-    const known=["bank","domo","decca","zurich"];
-    const wanted=normalizeToken(collection);
-    const h1=$("h1").first();
-    let context="";
-    if(h1.length){
-      const parentText=normalizeToken(h1.parent().text());
-      const prevText=normalizeToken(h1.prevAll().slice(0,4).text());
-      context=(prevText+" "+parentText).trim();
-    }
-    if(!context) context=normalizeToken($("body").text().slice(0,4000));
-    const detected=known.find(c=>context.includes(c))||"";
-    if(known.includes(wanted) && detected && detected!==wanted){
-      return {
-        image:null, exact:false, drawing:null, technicalSheet:null, installationGuide:null,
-        note:`Photo Coalbrook refusée : fiche officielle ${detected} alors que la référence tarif appartient à ${wanted}.`
-      };
-    }
-  }
+  // La collection Coalbrook a déjà été imposée par la page de gamme officielle.
+
 
   const candidates=[];
   const variationDebug=[];
@@ -496,7 +497,24 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     (!isCoalbrook || x.source==="coalbrook-product-image")
   )||null;
   const fallback=sorted.find(x=>x.finishMatch!=="exact")||null;
-  const best=exact||fallback;
+  let best=exact||fallback;
+
+  // Évite les images cassées : on rapatrie l'image officielle choisie côté serveur
+  // et on la renvoie directement au navigateur sous forme data URL.
+  if(best && /(?:coalbrookuk\.co\.uk|zucchettidesign\.it|assets\.zucchettidesign\.it)/i.test(best.url||manufacturerUrl)){
+    try{
+      const ir=await axios.get(best.url,{
+        responseType:"arraybuffer",timeout:18000,maxRedirects:5,
+        headers:{"User-Agent":"Mozilla/5.0","Referer":new URL(manufacturerUrl).origin+"/"}
+      });
+      const ct=String(ir.headers["content-type"]||"image/jpeg");
+      if(ct.startsWith("image/") && ir.data && ir.data.length<9000000){
+        best={...best,dataUrl:`data:${ct};base64,${Buffer.from(ir.data).toString("base64")}`};
+      }
+    }catch(e){
+      console.warn("[manufacturer-image-embed]",e.message);
+    }
+  }
 
   console.log("[manufacturer-image]",JSON.stringify({
     reference,

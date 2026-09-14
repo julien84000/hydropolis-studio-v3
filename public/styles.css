@@ -290,3 +290,30 @@ button,input,select,textarea{font:inherit}.shell{display:grid;grid-template-colu
     background:#fff !important;
   }
 }
+
+.client-output-options{
+  margin-top:16px;
+  padding:14px 16px;
+  border:1px solid #e3d8c9;
+  border-radius:12px;
+  background:#fbf8f3;
+}
+.client-output-checks{
+  display:flex;
+  gap:24px;
+  flex-wrap:wrap;
+  margin-top:9px;
+}
+.client-output-checks label{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+}
+.client-output-checks input[type="checkbox"]{
+  width:17px;
+  height:17px;
+  accent-color:#b88643;
+}
