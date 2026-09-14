@@ -1,18 +1,19 @@
-# Hydropolis Studio V4.2
+# Hydropolis Studio V4.3
 
-Mise à jour du dossier client selon la maquette validée.
+Ajout de deux fabricants au catalogue existant :
 
-## Présentation produit
-- fond blanc ;
-- image centrée horizontalement ;
-- texte produit centré exactement sous l'image ;
-- image et texte partagent le même axe central ;
-- `object-fit: contain` pour afficher le produit entier sans déformation ;
-- grille 3 colonnes, plus équilibrée et plus proche de la deuxième esquisse validée ;
-- marges et espacements simplifiés pour un rendu plus premium.
+- Amphora : catalogue existant conservé.
+- Coalbrook : 1483 références issues du tarif EUR août 2026.
+- Zucchetti : 12053 références issues du tarif valable à partir du 01/05/2026.
 
-## Conservation des fonctions V4.1
-- bonnes finitions Amphora ;
-- Drawing fabricant ;
-- option d'inclusion du Drawing dans le dossier client ;
-- PDF A4 paysage.
+## V4.3
+- terminologie produit et finitions affichées en français ;
+- prix fournisseur EUR/HT issus des fichiers fournis ;
+- recherche multi-marques par référence, désignation, collection, catégorie et finition ;
+- Coalbrook : détection des mentions `Requires ... rough sold separately` et ajout du corps d'encastrement lorsqu'il est présent dans le tarif ;
+- Zucchetti : détection `Trim Only` et lecture de la référence interne encodée dans le deep-link lorsqu'elle est disponible ;
+- liens vers les fiches officielles fabricants ;
+- récupération photo/drawing via le moteur fabricant existant, étendu à Coalbrook et Zucchetti ;
+- présentation client V4.2 conservée : fond blanc, image et texte centrés.
+
+Attention : lorsqu'un tarif indique qu'une partie interne est nécessaire mais que son prix/référence ne peut pas être résolu automatiquement, l'app conserve le produit mais ne fabrique aucun prix manquant.

@@ -103,9 +103,9 @@ async function autoCropForPdf(src){
   });
 }
 
-const manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v41")||"{}");
+const manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v43")||"{}");
 function manufacturerCacheKey(p){return `${p.manufacturer}|${p.reference}`;}
-function saveManufacturerCache(){localStorage.setItem("hydropolis-manufacturer-v41",JSON.stringify(manufacturerImageCache));}
+function saveManufacturerCache(){localStorage.setItem("hydropolis-manufacturer-v43",JSON.stringify(manufacturerImageCache));}
 function cachedManufacturerImage(p){return manufacturerImageCache[manufacturerCacheKey(p)]||null;}
 
 async function fetchManufacturerImage(p,force=false){
@@ -307,7 +307,20 @@ function buildDocument(){
  $("#document").innerHTML=html;
 }
 function exportJson(){let blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hydropolis-projet.json";a.click();}
-loadState();initFilters();renderRoomSelect();bindProject();renderSelection();renderRooms();renderCatalog();
+async function loadSupplierCatalogs(){
+  try{
+    const r=await fetch("/catalog_extra.json",{cache:"no-cache"});
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    const extra=await r.json();
+    if(Array.isArray(extra)) CATALOG.push(...extra);
+    console.log(`[catalog] ${extra.length} références Coalbrook + Zucchetti chargées`);
+  }catch(e){console.error("[catalog-extra]",e);}
+}
+async function bootstrap(){
+  await loadSupplierCatalogs();
+  loadState();initFilters();renderRoomSelect();bindProject();renderSelection();renderRooms();renderCatalog();
+}
+bootstrap();
 ["searchInput","manufacturerFilter","collectionFilter","categoryFilter","finishFilter","targetRoom"].forEach(id=>$("#"+id).addEventListener("input",renderCatalog));
 $("#clearSearch").onclick=()=>{$("#searchInput").value="";["manufacturerFilter","collectionFilter","categoryFilter","finishFilter"].forEach(id=>$("#"+id).value="");renderCatalog();};
 $("#newRoomQuick").onclick=newRoom;$("#addRoomBtn").onclick=newRoom;$("#goProjectBtn").onclick=()=>showView("project");$("#previewTopBtn").onclick=()=>showView("preview");$("#printBtn").onclick=()=>{buildDocument();setTimeout(()=>window.print(),100)};$("#saveBtn").onclick=exportJson;

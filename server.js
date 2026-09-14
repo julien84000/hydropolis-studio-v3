@@ -11,7 +11,7 @@ app.use(express.static(path.join(__dirname,"public")));
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V4.2",
+  service:"Hydropolis Studio V4.3",
   time:new Date().toISOString()
 }));
 
@@ -140,9 +140,53 @@ function isPdfUrl(url){
 }
 
 
+
+async function resolveManufacturerProductUrl(manufacturerUrl,reference){
+  if(!/coalbrookuk\.co\.uk/i.test(manufacturerUrl) || !/[?&]s=/i.test(manufacturerUrl)) return manufacturerUrl;
+  try{
+    const r=await axios.get(manufacturerUrl,{timeout:18000,headers:{"User-Agent":"Mozilla/5.0","Accept-Language":"en-GB,en;q=0.9"}});
+    const $=cheerio.load(String(r.data||""));
+    const base=String(reference||"").replace(/[A-Z]{2}$/i,"").toUpperCase();
+    let best="";
+    $("a[href*='/product/']").each((_,el)=>{
+      if(best) return;
+      const href=absoluteUrl(manufacturerUrl,$(el).attr("href"));
+      const text=normalizeToken($(el).closest("article,li,div").text()+" "+$(el).text()).toUpperCase();
+      if(text.includes(base) || text.includes(String(reference||"").toUpperCase())) best=href;
+    });
+    if(!best) best=absoluteUrl(manufacturerUrl,$("a[href*='/product/']").first().attr("href"));
+    return best||manufacturerUrl;
+  }catch{return manufacturerUrl;}
+}
+function finishExactInText(text,finishCode,finish,reference){
+  const n=normalizeToken(text);
+  const f=normalizeToken(finish);
+  const ref=normalizeToken(reference);
+  if(ref && n.includes(ref)) return true;
+  if(f && f.length>3 && n.includes(f)) return true;
+  const aliases={
+    CP:["chrome","chromed"],
+    BN:["brushed nickel"],
+    BB:["brushed brass"],
+    GM:["gunmetal"],
+    C3:["brushed nickel"],
+    C50:["metal black"],
+    C51:["brushed metal black"],
+    N6:["matt black","matte black"],
+    N1:["embossed matt black"],
+    P21:["brushed pvd chocolate","pvd brushed chocolate"],
+    P31:["brushed pvd british gold"],
+    P41:["pvd brushed gold","brushed pvd gold"],
+    P81:["brushed total black pvd","pvd brushed total black"],
+    P91:["brushed pvd copper"]
+  };
+  return (aliases[String(finishCode||"").toUpperCase()]||[]).some(x=>n.includes(normalizeToken(x)));
+}
+
 async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish}){
   const base=productBase(reference);
   const requested=String(finishCode||"").toUpperCase();
+  manufacturerUrl=await resolveManufacturerProductUrl(manufacturerUrl,reference);
 
   const page=await axios.get(manufacturerUrl,{
     timeout:22000,
@@ -252,11 +296,13 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish})
       if(/logo|icon|sprite|avatar|flag|placeholder|loading|acciaio\.jpg|nero\.jpg|rame\.jpg|swatch/.test(text)) continue;
       let score=10;
       if(text.includes(base.toLowerCase())) score+=35;
+      const imageExact=finishExactInText(text,requested,finish,reference);
+      if(imageExact) score+=700;
       candidates.push({
         url:href,
         source:"official-page",
         score,
-        finishMatch:"generic",
+        finishMatch:imageExact?"exact":"generic",
         detectedFinishCode:null,
         variationId:null,
         attributes:{}
@@ -287,7 +333,8 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish})
     return b.score-a.score;
   });
 
-  const exact=sorted.find(x=>x.finishMatch==="exact" && x.source.startsWith("woocommerce-variation"))||null;
+  const isAmphora=/amphoradesign\.it/i.test(manufacturerUrl);
+  const exact=sorted.find(x=>x.finishMatch==="exact" && (!isAmphora || x.source.startsWith("woocommerce-variation")))||null;
   const fallback=sorted.find(x=>x.finishMatch!=="exact")||null;
   const best=exact||fallback;
 
@@ -318,9 +365,9 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish})
     drawing,
     candidates:sorted.slice(0,20),
     note:exact
-      ?`Photo officielle Amphora correspondant à la finition ${requested}, associée à la variation fabricant.`
+      ?`Photo officielle fabricant correspondant à la finition ${requested}, associée à la variation fabricant.`
       :(best
-        ?"Visuel officiel trouvé, mais aucune variation Amphora ne permet de certifier cette finition."
+        ?"Visuel officiel trouvé, mais aucune donnée fabricant ne permet de certifier cette finition."
         :"Aucune photo officielle exploitable trouvée.")
   };
 }
@@ -408,4 +455,4 @@ app.get("/api/image-proxy",async(req,res)=>{
 });
 
 app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")));
-app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V4.2 on ${PORT}`));
+app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V4.3 on ${PORT}`));
