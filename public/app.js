@@ -103,9 +103,9 @@ async function autoCropForPdf(src){
   });
 }
 
-const manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v46")||"{}");
+const manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v48")||"{}");
 function manufacturerCacheKey(p){return `${p.manufacturer}|${p.reference}`;}
-function saveManufacturerCache(){localStorage.setItem("hydropolis-manufacturer-v46",JSON.stringify(manufacturerImageCache));}
+function saveManufacturerCache(){localStorage.setItem("hydropolis-manufacturer-v48",JSON.stringify(manufacturerImageCache));}
 function cachedManufacturerImage(p){return manufacturerImageCache[manufacturerCacheKey(p)]||null;}
 
 async function fetchManufacturerImage(p,force=false){
@@ -127,21 +127,29 @@ async function fetchManufacturerImage(p,force=false){
   });
   const data=await r.json();
   if(!r.ok) throw new Error(data.detail||data.error||"Recherche fabricant impossible");
-  if(!data.best) throw new Error(data.note||"Aucune photo fabricant trouvée");
-  const src=data.best.dataUrl
-    ? data.best.dataUrl
-    : `/api/image-proxy?url=${encodeURIComponent(data.best.url)}`;
+  const hasImage=!!data.best;
+  const src=hasImage
+    ? (data.best.dataUrl ? data.best.dataUrl : `/api/image-proxy?url=${encodeURIComponent(data.best.url)}`)
+    : "";
   const result={
-    remoteUrl:data.best.url||"",
+    remoteUrl:data.best?.url||"",
+    resolvedManufacturerUrl:data.manufacturerUrl||p.manufacturerUrl||"",
     src,
-    finishMatch:data.best.finishMatch||"generic",
-    source:data.best.finishMatch==="exact"
-      ?`Site officiel fabricant · finition ${p.finish}`
-      :"Site officiel fabricant · visuel produit générique",
+    finishMatch:data.best?.finishMatch||"",
+    source:hasImage
+      ?(data.best.finishMatch==="exact"
+        ?`Site officiel fabricant · finition ${p.finish}`
+        :"Site officiel fabricant · visuel produit générique")
+      :"",
     note:data.note||"",
     drawingUrl:data.drawing?.url||"",
     drawingType:data.drawing?.type||"",
     drawingLabel:data.drawing?.label||"",
+    technicalSheetUrl:data.technicalSheet?.url||"",
+    technicalSheetLabel:data.technicalSheet?.label||"Fiche technique",
+    technicalSheetType:data.technicalSheet?.type||"",
+    installationGuideUrl:data.installationGuide?.url||"",
+    installationGuideLabel:data.installationGuide?.label||"Notice d'installation",
     checkedAt:new Date().toISOString()
   };
   manufacturerImageCache[key]=result;
@@ -167,9 +175,15 @@ async function lookupCatalogPhoto(reference,button){
   if(info)info.textContent="Interrogation du site fabricant…";
   try{
     const img=await fetchManufacturerImage(p,true);
-    thumb.innerHTML=`<img src="${img.src}" alt="${p.reference}">`;
-    if(info)info.innerHTML=`<b>${imageBadge(img,p)}</b>${img.note?`<br>${img.note}`:""}`;
-    button.textContent="Actualiser la photo";
+    if(img.src){
+      thumb.innerHTML=`<img src="${img.src}" alt="${p.reference}">`;
+      if(info)info.innerHTML=`<b>${imageBadge(img,p)}</b>${img.note?`<br>${img.note}`:""}`;
+      button.textContent="Actualiser la photo";
+    }else{
+      if(info)info.innerHTML=`Aucune photo officielle certifiée.${img.note?`<br>${img.note}`:""}${img.technicalSheetUrl?`<br><b>Fiche technique disponible.</b>`:""}`;
+      button.textContent="Réessayer";
+    }
+    renderCatalog();
   }catch(e){
     if(info)info.textContent="Aucune photo officielle trouvée : "+e.message;
     button.textContent="Réessayer";
@@ -185,17 +199,26 @@ async function enrichSelectedPhoto(id,force=false){
   renderRooms();
   try{
     const img=await fetchManufacturerImage(p,force);
-    p.image=img.src;
-    p.pdfImage=await autoCropForPdf(img.src);
-    p.imageSource=img.source;
-    p.imageFinishMatch=img.finishMatch;
+    if(img.src){
+      p.image=img.src;
+      p.pdfImage=await autoCropForPdf(img.src);
+      p.imageSource=img.source;
+      p.imageFinishMatch=img.finishMatch;
+      p.imageStatus=imageBadge(img,p);
+      p.customImage=false;
+    }else if(!p.image){
+      p.imageStatus="Photo fabricant non certifiée";
+    }
     p.imageNote=img.note;
-    p.imageStatus=imageBadge(img,p);
+    p.resolvedManufacturerUrl=img.resolvedManufacturerUrl||p.resolvedManufacturerUrl||p.manufacturerUrl||"";
     p.drawingUrl=img.drawingUrl||p.drawingUrl||"";
     p.drawingType=img.drawingType||p.drawingType||"";
     p.drawingLabel=img.drawingLabel||p.drawingLabel||"";
+    p.technicalSheetUrl=img.technicalSheetUrl||p.technicalSheetUrl||"";
+    p.technicalSheetLabel=img.technicalSheetLabel||p.technicalSheetLabel||"Fiche technique";
+    p.installationGuideUrl=img.installationGuideUrl||p.installationGuideUrl||"";
+    p.installationGuideLabel=img.installationGuideLabel||p.installationGuideLabel||"Notice d'installation";
     if(typeof p.includeDrawing!=="boolean") p.includeDrawing=false;
-    p.customImage=false;
   }catch(e){
     p.imageStatus="Photo fabricant non trouvée";
     p.imageNote=e.message;
@@ -249,7 +272,9 @@ function renderCatalog(){
    <div class="designation">${p.designation}</div><div class="meta">${p.finish}</div>
    <div class="manufacturer-tools">
      <button class="tiny lookup-photo" data-ref="${p.reference}">${cached?"Actualiser la photo":"Trouver la photo fabricant"}</button>
-     <a class="source-link" target="_blank" href="${p.manufacturerUrl}">Fiche officielle ↗</a>
+     <a class="source-link" target="_blank" href="${cached?.resolvedManufacturerUrl||p.manufacturerUrl}">Fiche officielle ↗</a>
+     ${cached?.technicalSheetUrl?`<a class="source-link technical-sheet-link" target="_blank" href="${cached.technicalSheetUrl}">Fiche technique ↗</a>`:""}
+     ${cached?.drawingUrl?`<a class="source-link drawing-result-link" target="_blank" href="${cached.drawingUrl}">Drawing 2D ↗</a>`:""}
    </div>
    <div class="photo-status">${cached?`<b>${imageBadge(cached,p)}</b>${cached.note?`<br>${cached.note}`:""}`:`Priorité au site officiel du fabricant.`}</div>
    </div>
@@ -265,7 +290,7 @@ async function addProduct(ref,roomId){
  const cached=cachedManufacturerImage(p);
  const id=crypto.randomUUID?crypto.randomUUID():Math.random().toString(36);
  const pdfImage=cached?await autoCropForPdf(cached.src):"";
- state.selected.push({...p,id,roomId,image:cached?.src||"",pdfImage,imageSource:cached?.source||"Photo fabricant à rechercher",imageFinishMatch:cached?.finishMatch||"",imageStatus:cached?imageBadge(cached,p):"Recherche fabricant…",drawingUrl:cached?.drawingUrl||"",drawingType:cached?.drawingType||"",drawingLabel:cached?.drawingLabel||"",includeDrawing:false,customImage:false});
+ state.selected.push({...p,id,roomId,image:cached?.src||"",pdfImage,imageSource:cached?.source||"Photo fabricant à rechercher",imageFinishMatch:cached?.finishMatch||"",imageStatus:cached?imageBadge(cached,p):"Recherche fabricant…",resolvedManufacturerUrl:cached?.resolvedManufacturerUrl||p.manufacturerUrl||"",drawingUrl:cached?.drawingUrl||"",drawingType:cached?.drawingType||"",drawingLabel:cached?.drawingLabel||"",technicalSheetUrl:cached?.technicalSheetUrl||"",technicalSheetLabel:cached?.technicalSheetLabel||"Fiche technique",installationGuideUrl:cached?.installationGuideUrl||"",installationGuideLabel:cached?.installationGuideLabel||"Notice d'installation",includeDrawing:false,customImage:false});
  saveState();renderSelection();renderRooms();
  if(!cached)await enrichSelectedPhoto(id,false);
 }
@@ -285,7 +310,7 @@ function renderRooms(){
       <div class="room-product">
         <div class="room-prod-img"><label data-id="${p.id}">${p.image?`<img src="${p.image}">`:"＋ Photo"}<input class="prod-file" type="file" accept="image/*" hidden></label></div>
         <div><b>${p.designation}</b><div class="tech">${p.manufacturer} · ${p.collection} · ${p.reference} · <b>${exactFinishLabel(p)}</b></div>${p.internalReference?`<div class="tech">Complet avec ${p.internalReference}</div>`:""}
-        <div class="image-actions"><button class="tiny enrich-btn" data-id="${p.id}">${p.image?"Actualiser photo fabricant":"Chercher photo fabricant"}</button><a target="_blank" href="${p.manufacturerUrl}">Fiche officielle ↗</a>${(manufacturerImageCache[p.reference]?.drawingUrl)?`<a target="_blank" class="drawing-result-link" href="${manufacturerImageCache[p.reference].drawingUrl}">Drawing ↗</a>`:""}${p.drawingUrl?`<a target="_blank" href="${p.drawingUrl}">Drawing ↗</a><label class="drawing-toggle"><input type="checkbox" class="drawing-check" data-id="${p.id}" ${p.includeDrawing?"checked":""}> Inclure le drawing dans le dossier client</label>`:`<span class="tech">Drawing à récupérer avec la photo fabricant</span>`}${(!p.image && p.fallbackImage)?`<button class="tiny fallback-btn" data-id="${p.id}">Catalogue en secours</button>`:""}</div></div>
+        <div class="image-actions"><button class="tiny enrich-btn" data-id="${p.id}">${p.image?"Actualiser photo + documents":"Chercher photo + documents"}</button><a target="_blank" href="${p.resolvedManufacturerUrl||p.manufacturerUrl}">Fiche officielle ↗</a>${p.technicalSheetUrl?`<a target="_blank" class="technical-sheet-link" href="${p.technicalSheetUrl}">Fiche technique ↗</a>`:`<span class="tech">Fiche technique à récupérer</span>`}${p.installationGuideUrl?`<a target="_blank" href="${p.installationGuideUrl}">Notice installation ↗</a>`:""}${p.drawingUrl?`<a target="_blank" href="${p.drawingUrl}">Drawing 2D ↗</a><label class="drawing-toggle"><input type="checkbox" class="drawing-check" data-id="${p.id}" ${p.includeDrawing?"checked":""}> Inclure le drawing dans le dossier client</label>`:`<span class="tech">Drawing 2D à récupérer</span>`}${(!p.image && p.fallbackImage)?`<button class="tiny fallback-btn" data-id="${p.id}">Catalogue en secours</button>`:""}</div></div>
         <div class="price-total">${euro(p.totalPrice)} HT<div class="tech">${p.imageStatus||p.imageSource||"Photo fabricant à rechercher"}</div>${p.imageNote?`<div class="tech">${p.imageNote}</div>`:""}</div>
         <button class="icon del-prod" data-id="${p.id}">×</button>
       </div>`).join(""):`<div class="room-empty">Aucun produit catalogue dans cette pièce.</div>`}</div>

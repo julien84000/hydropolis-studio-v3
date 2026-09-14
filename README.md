@@ -1,18 +1,21 @@
-# Hydropolis Studio V4.6
+# Hydropolis Studio V4.8
 
-## Correctif Coalbrook — photos produit
-La V4.5 pouvait sélectionner les pastilles circulaires de finition à la place du produit.
+## Documents fabricant : Coalbrook + Zucchetti
 
-La V4.6 :
-- exclut explicitement les swatches Coalbrook (Chrome, Gunmetal, Brushed Brass, Brushed Nickel) ;
-- ignore les miniatures de 50 px ;
-- utilise les quatre vraies images produit de la fiche officielle ;
-- associe la finition à partir du suffixe du SKU officiel présent dans l'URL de l'image :
-  - CP = Chromé
-  - GM = Gunmetal
-  - BB = Laiton brossé
-  - BN = Nickel brossé
-- fonctionne même lorsque la référence du tarif Excel diffère de la référence web actuelle de Coalbrook ;
-- passe le cache photo en V4.6 afin de ne pas réutiliser les anciennes pastilles mémorisées.
+La V4.8 sépare désormais la récupération des documents de celle des photos.
 
-Les filtres dépendants par fabricant de la V4.5 sont conservés.
+### Coalbrook
+- Fiche technique = lien officiel « Spec sheet »
+- Drawing 2D = lien officiel « DWG File » lorsqu'il est exploitable
+- Notice = « Installation Guide »
+- Fiche produit officielle résolue au lieu du lien de recherche générique
+
+### Zucchetti
+- Fiche technique = « Technical sheet »
+- Drawing 2D = « 2D drawing »
+- Notice = « Installation manual / Warnings »
+
+Les liens apparaissent dans la fiche produit du projet après « Chercher/Actualiser photo + documents ».
+Même si aucune photo fiable n'est trouvée, les documents peuvent maintenant être récupérés et conservés.
+
+Le cache fabricant passe en V4.8 afin de relancer la récupération documentaire.

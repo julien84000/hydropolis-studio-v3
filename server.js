@@ -142,7 +142,7 @@ function isPdfUrl(url){
 
 
 function productWords(s){
-  const stop=new Set(["coalbrook","bank","domo","decca","zurich","chrome","brushed","nickel","brass","gunmetal","bathroom","uk","with","and","the","for","fixed","spout"]);
+  const stop=new Set(["coalbrook","chrome","brushed","nickel","brass","gunmetal","bathroom","uk","with","and","the","for","fixed"]);
   return normalizeToken(s).split(/[^a-z0-9]+/).filter(x=>x.length>2&&!stop.has(x));
 }
 function similarityScore(a,b){
@@ -151,7 +151,7 @@ function similarityScore(a,b){
   let hit=0; for(const x of A) if(B.has(x)) hit++;
   return hit/Math.max(1,Math.min(A.size,B.size));
 }
-async function resolveManufacturerProductUrl(manufacturerUrl,reference,originalDescription,designation){
+async function resolveManufacturerProductUrl(manufacturerUrl,reference,originalDescription,designation,collection){
   if(!/coalbrookuk\.co\.uk/i.test(manufacturerUrl)) return manufacturerUrl;
   try{
     // Coalbrook's WordPress-style ?s= URL returns 404. Resolve from its official product catalogue instead.
@@ -165,13 +165,21 @@ async function resolveManufacturerProductUrl(manufacturerUrl,reference,originalD
       if(!href) return;
       const card=$(el).closest("article,li,.product,.card,div");
       const text=(($(el).attr("aria-label")||"")+" "+($(el).attr("title")||"")+" "+$(el).text()+" "+card.text()).trim();
-      const score=similarityScore(target,text);
-      if(score>best.score) best={url:href,score};
+      let score=similarityScore(target,text);
+      const wantedCollection=normalizeToken(collection||"");
+      const cardText=normalizeToken(text);
+      if(wantedCollection){
+        if(cardText.includes(wantedCollection)) score+=1.25;
+        else score-=0.85;
+      }
+      if(score>best.score) best={url:href,score,text:cardText};
     });
-    if(best.url && best.score>=0.45) return best.url;
-    return catalogue;
+    // Bank/Domo/Decca/Zurich peuvent partager exactement le même intitulé.
+    // Sans collection fiable, on refuse le rapprochement.
+    if(best.url && best.score>=1.05) return best.url;
+    return "";
   }catch{
-    return "https://coalbrookuk.co.uk/products";
+    return "";
   }
 }
 function finishExactInText(text,finishCode,finish,reference){
@@ -202,7 +210,13 @@ function finishExactInText(text,finishCode,finish,reference){
 async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,designation,originalDescription,collection,manufacturer}){
   const base=productBase(reference);
   const requested=String(finishCode||"").toUpperCase();
-  manufacturerUrl=await resolveManufacturerProductUrl(manufacturerUrl,reference,originalDescription,designation);
+  manufacturerUrl=await resolveManufacturerProductUrl(manufacturerUrl,reference,originalDescription,designation,collection);
+  if(!manufacturerUrl){
+    return {
+      image:null, exact:false, drawing:null, technicalSheet:null, installationGuide:null,
+      note:"Aucune photo Coalbrook certifiée : la fiche produit exacte n’a pas pu être identifiée sans ambiguïté."
+    };
+  }
 
   const page=await axios.get(manufacturerUrl,{
     timeout:22000,
@@ -218,6 +232,30 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
 
   const html=String(page.data||"");
   const $=cheerio.load(html);
+
+  // Validation stricte de la collection Coalbrook.
+  // Le même nom de produit existe dans plusieurs collections ; une photo Domo ne doit
+  // jamais être utilisée pour une référence Decca, Bank ou Zurich.
+  if(/coalbrookuk\.co\.uk/i.test(manufacturerUrl) && collection){
+    const known=["bank","domo","decca","zurich"];
+    const wanted=normalizeToken(collection);
+    const h1=$("h1").first();
+    let context="";
+    if(h1.length){
+      const parentText=normalizeToken(h1.parent().text());
+      const prevText=normalizeToken(h1.prevAll().slice(0,4).text());
+      context=(prevText+" "+parentText).trim();
+    }
+    if(!context) context=normalizeToken($("body").text().slice(0,4000));
+    const detected=known.find(c=>context.includes(c))||"";
+    if(known.includes(wanted) && detected && detected!==wanted){
+      return {
+        image:null, exact:false, drawing:null, technicalSheet:null, installationGuide:null,
+        note:`Photo Coalbrook refusée : fiche officielle ${detected} alors que la référence tarif appartient à ${wanted}.`
+      };
+    }
+  }
+
   const candidates=[];
   const variationDebug=[];
   const finishOptionMap=buildFinishOptionMap($);
@@ -399,6 +437,35 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     });
   }
 
+  // FICHES TECHNIQUES / SPEC SHEETS + NOTICE D'INSTALLATION.
+  // Coalbrook expose "Spec sheet" ; Zucchetti expose "Technical sheet".
+  let technicalSheet=null;
+  let installationGuide=null;
+  $("a").each((_,el)=>{
+    const labelRaw=$(el).text().trim();
+    const label=normalizeToken(labelRaw);
+    const href=absoluteUrl(manufacturerUrl,$(el).attr("href"));
+    if(!href) return;
+
+    if(!technicalSheet && /\b(spec sheet|technical sheet|technical data sheet|fiche technique)\b/.test(label)){
+      technicalSheet={
+        url:href,
+        label:labelRaw||"Fiche technique",
+        type:isPdfUrl(href)?"pdf":"link",
+        source:"official-download"
+      };
+    }
+
+    if(!installationGuide && /\b(installation guide|installation manual|installation manual warnings|instructions|notice d installation)\b/.test(label)){
+      installationGuide={
+        url:href,
+        label:labelRaw||"Notice d'installation",
+        type:isPdfUrl(href)?"pdf":"link",
+        source:"official-download"
+      };
+    }
+  });
+
   // DRAWING / DISEGNO / DESSIN TECHNIQUE.
   let drawing=null;
   $("a").each((_,el)=>{
@@ -423,7 +490,11 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
   });
 
   const isAmphora=/amphoradesign\.it/i.test(manufacturerUrl);
-  const exact=sorted.find(x=>x.finishMatch==="exact" && (!isAmphora || x.source.startsWith("woocommerce-variation")))||null;
+  const isCoalbrook=/coalbrookuk\.co\.uk/i.test(manufacturerUrl);
+  const exact=sorted.find(x=>x.finishMatch==="exact" &&
+    (!isAmphora || x.source.startsWith("woocommerce-variation")) &&
+    (!isCoalbrook || x.source==="coalbrook-product-image")
+  )||null;
   const fallback=sorted.find(x=>x.finishMatch!=="exact")||null;
   const best=exact||fallback;
 
@@ -452,6 +523,8 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     best,
     exactFound:!!exact,
     drawing,
+    technicalSheet,
+    installationGuide,
     candidates:sorted.slice(0,20),
     note:exact
       ?`Photo officielle fabricant correspondant à la finition ${requested}, associée à la variation fabricant.`
