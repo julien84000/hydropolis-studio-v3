@@ -559,6 +559,109 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     }
   });
 
+  // Recor uses a WordPress gallery where the useful bathtub photo may live in
+  // srcset, <source>, og:image, data-lazy attributes or CSS background-image.
+  // Collect those official assets explicitly and rank the current model highest.
+  const recorGallery=[];
+  if(/recor\.pt/i.test(manufacturerUrl)){
+    const seenRecor=new Set();
+    const model=recorModelFromData(reference,designation||originalDescription||"");
+    const modelToken=normalizeToken(model||"");
+    const pageSlug=(()=>{try{return new URL(manufacturerUrl).pathname.toLowerCase()}catch{return ""}})();
+
+    function recorCanonical(raw){
+      const href=absoluteUrl(manufacturerUrl,raw);
+      if(!href)return "";
+      let s=href;
+      try{
+        const u=new URL(s);
+        u.hash="";
+        ["w","h","width","height","resize","fit","crop","quality","q"].forEach(k=>u.searchParams.delete(k));
+        s=u.href;
+      }catch{}
+      return s
+        .replace(/-\d{2,5}x\d{2,5}(?=\.(?:jpe?g|png|webp)(?:$|\?))/i,"")
+        .toLowerCase();
+    }
+
+    function addRecor(raw,context="",bonus=0){
+      const href=absoluteUrl(manufacturerUrl,raw);
+      if(!href || !isImageUrl(href))return;
+      const low=(href+" "+context).toLowerCase();
+      if(/logo|favicon|icon|sprite|avatar|flag|placeholder|loading|cookie|social|payment|recor-logo/.test(low))return;
+      if(/wp-content\/uploads\/.*(?:logo|marca|brand)/i.test(low))return;
+
+      const key=recorCanonical(href);
+      if(!key || seenRecor.has(key))return;
+      seenRecor.add(key);
+
+      let score=300+bonus;
+      const norm=normalizeToken(low);
+      if(modelToken && norm.includes(modelToken))score+=1000;
+      if(model && pageSlug.includes(model.toLowerCase().replace(/[^a-z0-9]+/g,"-")))score+=500;
+      if(/product|produto|banheira|bathtub|bathub/.test(low))score+=120;
+      if(/gallery|woocommerce-product-gallery|elementor-gallery/.test(context.toLowerCase()))score+=180;
+
+      const item={
+        url:href,
+        source:"recor-product-gallery",
+        score,
+        finishMatch:"generic",
+        detectedFinishCode:null,
+        variationId:null,
+        attributes:{model}
+      };
+      recorGallery.push(item);
+      candidates.push(item);
+    }
+
+    // Metadata often points to the main product photo.
+    $("meta[property='og:image'],meta[property='og:image:secure_url'],meta[name='twitter:image']").each((_,el)=>{
+      addRecor($(el).attr("content"),"meta product image",350);
+    });
+
+    // Normal and lazy-loaded image nodes, including srcset.
+    $("img").each((_,el)=>{
+      const im=$(el);
+      const context=[
+        im.attr("alt")||"", im.attr("title")||"",
+        im.attr("class")||"", im.parent().attr("class")||""
+      ].join(" ");
+      for(const attr of ["data-large_image","data-original","data-lazy-src","data-src","src"]){
+        addRecor(im.attr(attr),context,100);
+      }
+      for(const attr of ["srcset","data-srcset"]){
+        const ss=im.attr(attr)||"";
+        const parts=ss.split(",").map(x=>x.trim()).filter(Boolean);
+        if(parts.length){
+          // Prefer largest candidate in srcset.
+          addRecor(parts[parts.length-1].split(/\s+/)[0],context,140);
+        }
+      }
+    });
+
+    $("picture source").each((_,el)=>{
+      const ss=$(el).attr("srcset")||"";
+      const parts=ss.split(",").map(x=>x.trim()).filter(Boolean);
+      if(parts.length)addRecor(parts[parts.length-1].split(/\s+/)[0],$(el).parent().attr("class")||"",140);
+    });
+
+    // Elementor / WordPress background images.
+    $("[style]").each((_,el)=>{
+      const style=$(el).attr("style")||"";
+      const rx=/url\((['"]?)([^'")]+)\1\)/gi;
+      let m;
+      while((m=rx.exec(style)))addRecor(m[2],($(el).attr("class")||"")+" "+style,80);
+    });
+
+    // Raw HTML fallback for image URLs embedded in JSON or CSS.
+    const rawRecor=html.match(/https?:\\?\/\\?\/[^"'<>\\\s]+?\.(?:jpe?g|png|webp)(?:\\?[^"'<>\\\s]*)?/gi)||[];
+    for(const raw of rawRecor){
+      addRecor(raw.replace(/\\\//g,"/").replace(/&amp;/g,"&"),"raw html",20);
+    }
+  }
+
+
 
 
 
@@ -869,7 +972,15 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
   // Catalano: the selected finish is authoritative.
   // Never mix images from other finishes or generic collection/lifestyle galleries.
   const isCatalano=/catalano\.it/i.test(manufacturerUrl);
+  const isRecor=/recor\.pt/i.test(manufacturerUrl);
   let productImages=best?[best]:[];
+
+  if(isRecor && recorGallery.length){
+    const recorSorted=uniqueBest(recorGallery).sort((x,y)=>y.score-x.score);
+    productImages=recorSorted.slice(0,2);
+    best=productImages[0]||best;
+  }
+
   if(isCatalano){
     const exactFinishGallery=catalanoGallery.filter(x=>x.finishMatch==="exact");
     const suffix=String(requested||reference||"").replace(/\D/g,"").slice(-2);
@@ -893,7 +1004,7 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
   // et on la renvoie directement au navigateur sous forme data URL.
   async function embedOfficialImage(item){
     if(!item) return item;
-    if(!/(?:coalbrookuk\.co\.uk|zucchettidesign\.it|assets\.zucchettidesign\.it|catalano\.it)/i.test(item.url||manufacturerUrl)) return item;
+    if(!/(?:coalbrookuk\.co\.uk|zucchettidesign\.it|assets\.zucchettidesign\.it|catalano\.it|recor\.pt)/i.test(item.url||manufacturerUrl)) return item;
     try{
       const ir=await axios.get(item.url,{
         responseType:"arraybuffer",timeout:18000,maxRedirects:5,
@@ -907,7 +1018,7 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     return item;
   }
   if(best) best=await embedOfficialImage(best);
-  if(isCatalano){
+  if(isCatalano || isRecor){
     productImages=await Promise.all(productImages.map(embedOfficialImage));
     if(productImages.length) best=productImages[0];
   }else productImages=best?[best]:[];
@@ -922,7 +1033,8 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     drawing:!!drawing,
     candidates:sorted.length,
     catalanoGallery:isCatalano?productImages.length:undefined,
-    catalanoExactFinish:isCatalano?catalanoGallery.filter(x=>x.finishMatch==="exact").length:undefined
+    catalanoExactFinish:isCatalano?catalanoGallery.filter(x=>x.finishMatch==="exact").length:undefined,
+    recorGallery:isRecor?productImages.length:undefined
   }));
 
   if(!exact){
