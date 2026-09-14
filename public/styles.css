@@ -317,3 +317,429 @@ button,input,select,textarea{font:inherit}.shell{display:grid;grid-template-colu
   height:17px;
   accent-color:#b88643;
 }
+
+.basin-accessories{
+  grid-column:2 / 4;
+  margin:6px 0 3px;
+  padding:10px 12px;
+  border:1px solid #e4d7c5;
+  border-radius:10px;
+  background:#fbf8f3;
+}
+.basin-accessories-head{
+  display:flex;
+  align-items:baseline;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:7px;
+}
+.basin-accessories-head b{
+  font-size:11px;
+  color:#9b6d32;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+.basin-accessories-head span{
+  font-size:10px;
+  color:#777;
+}
+.accessory-option{
+  display:flex;
+  justify-content:space-between;
+  gap:14px;
+  align-items:center;
+  padding:7px 0;
+  border-top:1px solid #ece3d7;
+}
+.accessory-option:first-of-type{border-top:0}
+.accessory-option>div:first-child{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+.accessory-option b{font-size:12px}
+.accessory-option span{font-size:10px;color:#6e6962}
+.accessory-option-right{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  flex-shrink:0;
+}
+.accessory-option-right strong{font-size:11px}
+.accessory-added{
+  color:#6f7a63!important;
+  font-weight:700;
+}
+.accessory-option.unavailable{opacity:.65}
+@media(max-width:900px){
+  .basin-accessories{grid-column:1 / -1}
+  .accessory-option{align-items:flex-start;flex-direction:column}
+}
+
+
+/* =========================================================
+   V5.3 — Dossier client éditorial, fluide et parallax preview
+   ========================================================= */
+.preview-bg{
+  background:
+    radial-gradient(circle at 12% 10%,rgba(187,143,83,.13),transparent 32%),
+    linear-gradient(180deg,#d9d5ce 0%,#cbc7c0 100%);
+  padding:46px 32px 70px;
+  scroll-behavior:smooth;
+  perspective:1200px;
+}
+#document{
+  gap:42px;
+}
+#document .editorial-page{
+  --parallax-progress:0;
+  background:#fff;
+  border-radius:2px;
+  box-shadow:0 24px 60px rgba(50,43,34,.20);
+  transition:box-shadow .35s ease,filter .35s ease;
+  isolation:isolate;
+}
+#document .editorial-page:hover{
+  box-shadow:0 32px 76px rgba(50,43,34,.25);
+}
+#document [data-parallax-layer]{
+  transform:translate3d(0,var(--parallax-y,0),0);
+  will-change:transform;
+  transition:transform .08s linear;
+}
+
+/* Cover */
+#document .cover-page{
+  padding:0!important;
+  overflow:hidden;
+  background:#f5f0e8!important;
+}
+#document .cover-page:after{
+  display:none;
+}
+#document .cover-ambient{
+  position:absolute;
+  inset:-12%;
+  background:
+    radial-gradient(circle at 74% 20%,rgba(188,143,78,.28),transparent 28%),
+    radial-gradient(circle at 18% 78%,rgba(127,107,79,.12),transparent 35%);
+  z-index:0;
+}
+#document .editorial-cover-image{
+  position:absolute;
+  inset:13mm 12mm 16mm 42%;
+  height:auto!important;
+  margin:0!important;
+  border:0!important;
+  padding:0!important;
+  overflow:hidden;
+  border-radius:1px;
+  box-shadow:0 20px 48px rgba(49,41,31,.22);
+  z-index:1;
+}
+#document .editorial-cover-image img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  transform:scale(1.045);
+}
+#document .editorial-cover-card{
+  position:absolute;
+  left:18mm;
+  top:48mm;
+  width:102mm;
+  text-align:left!important;
+  margin:0!important;
+  padding:16mm 12mm 14mm;
+  background:rgba(255,255,255,.88);
+  backdrop-filter:blur(8px);
+  box-shadow:0 18px 42px rgba(66,56,42,.12);
+  z-index:2;
+}
+#document .cover-kicker,
+#document .section-kicker{
+  font-size:6.5pt;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  color:#a47335;
+  font-weight:700;
+}
+#document .editorial-cover-card h2{
+  font-family:Georgia,serif;
+  font-size:34pt!important;
+  line-height:.95;
+  margin:6mm 0 5mm!important;
+  color:#27231f!important;
+  font-weight:400!important;
+}
+#document .editorial-cover-card p{
+  font-size:8.5pt!important;
+  line-height:1.55!important;
+  color:#625c54;
+  margin:0!important;
+}
+#document .editorial-cover-card .projname{
+  margin-top:13mm!important;
+  padding-top:4mm;
+  border-top:1px solid rgba(167,118,56,.38);
+  font-size:10pt!important;
+  line-height:1.45;
+  color:#24211e!important;
+}
+#document .cover-page-mark{
+  position:absolute;
+  left:18mm;
+  bottom:13mm;
+  font-size:6pt;
+  letter-spacing:.18em;
+  color:#7b7369;
+  z-index:2;
+}
+
+/* Room/product pages */
+#document .room-page{
+  padding:12mm 13mm 12mm!important;
+  overflow:hidden;
+}
+#document .room-page:after{
+  display:none;
+}
+#document .page-ambient{
+  position:absolute;
+  width:76mm;
+  height:76mm;
+  border-radius:50%;
+  right:-18mm;
+  top:-22mm;
+  background:radial-gradient(circle,rgba(186,143,82,.11),rgba(186,143,82,0) 68%);
+  z-index:0;
+}
+#document .editorial-head{
+  border:0!important;
+  padding:0 0 4mm!important;
+  min-height:24mm;
+  align-items:flex-end;
+}
+#document .editorial-head h2{
+  font-family:Georgia,serif;
+  font-size:24pt!important;
+  line-height:1;
+  letter-spacing:-.02em;
+  margin:2mm 0 2mm!important;
+  font-weight:400!important;
+}
+#document .editorial-head p{
+  max-width:125mm;
+  font-size:7.5pt!important;
+  color:#6b655e!important;
+  line-height:1.5;
+}
+#document .editorial-brand{
+  font-family:Georgia,serif;
+  font-size:10pt;
+  color:#9f7139;
+  padding-bottom:1.5mm;
+}
+
+/* softer, less rigid product composition */
+#document .editorial-tiles{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  column-gap:12mm!important;
+  row-gap:7mm!important;
+  margin-top:1mm!important;
+  padding:0 1mm 10mm!important;
+  align-items:start!important;
+}
+#document .editorial-tile{
+  position:relative;
+  align-items:flex-start!important;
+  text-align:left!important;
+  padding:0!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+#document .editorial-tile.stagger-1{
+  margin-top:8mm!important;
+}
+#document .editorial-tile.stagger-2{
+  margin-top:2.5mm!important;
+}
+#document .editorial-tile .editorial-product-visual{
+  width:100%!important;
+  height:43mm!important;
+  margin:0 0 3.2mm!important;
+  padding:4mm!important;
+  background:linear-gradient(145deg,#faf9f7,#f4f1ec)!important;
+  border-radius:2px;
+  position:relative;
+  overflow:hidden!important;
+}
+#document .editorial-tile.stagger-1 .editorial-product-visual{
+  height:48mm!important;
+}
+#document .editorial-tile.stagger-2 .editorial-product-visual{
+  height:40mm!important;
+}
+#document .editorial-product-visual:after{
+  content:"";
+  position:absolute;
+  width:28mm;
+  height:28mm;
+  right:-8mm;
+  bottom:-10mm;
+  border-radius:50%;
+  background:rgba(183,134,72,.08);
+  pointer-events:none;
+}
+#document .editorial-product-visual img{
+  object-fit:contain!important;
+  object-position:center!important;
+  position:relative;
+  z-index:1;
+}
+#document .editorial-tile .tile-copy{
+  align-items:flex-start!important;
+  text-align:left!important;
+  width:100%!important;
+}
+#document .editorial-tile .maker,
+#document .editorial-tile .title,
+#document .editorial-tile .finish,
+#document .editorial-tile .price,
+#document .editorial-tile .refsmall{
+  text-align:left!important;
+  margin-left:0!important;
+  margin-right:0!important;
+}
+#document .editorial-tile .maker{
+  font-size:5.8pt!important;
+  letter-spacing:.12em!important;
+  color:#967044!important;
+  margin-bottom:1.5mm!important;
+}
+#document .editorial-tile .title{
+  font-family:Georgia,serif;
+  font-weight:400!important;
+  font-size:10.5pt!important;
+  line-height:1.18!important;
+  max-width:100%!important;
+  margin:0 0 1.5mm!important;
+  color:#25221e;
+}
+#document .editorial-tile .finish{
+  font-size:6.7pt!important;
+  color:#706a63!important;
+  margin:0 0 2mm!important;
+}
+#document .editorial-tile .price{
+  font-size:9pt!important;
+  font-weight:650!important;
+  margin:0 0 1mm!important;
+  color:#26231f;
+}
+#document .editorial-tile .refsmall{
+  font-size:5.4pt!important;
+  color:#999087!important;
+}
+#document .manual-tile{
+  padding-top:9mm!important;
+  min-height:50mm;
+}
+#document .manual-visual{
+  display:none!important;
+}
+#document .editorial-footer{
+  position:absolute;
+  left:13mm;
+  right:13mm;
+  bottom:7mm;
+  display:flex;
+  justify-content:space-between;
+  border-top:1px solid rgba(166,119,59,.25);
+  padding-top:2mm;
+  font-size:5.3pt;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:#8e857b;
+}
+#document .room-page .page-no{
+  bottom:7mm!important;
+  left:50%!important;
+  transform:translateX(-50%);
+}
+#document .room-page .bottom{
+  display:none!important;
+}
+
+/* technical pages inherit the softer style */
+#document .drawing-page{
+  background:#fff!important;
+  border-radius:2px;
+}
+#document .drawing-page .pagehead{
+  border:0!important;
+  border-bottom:1px solid rgba(163,116,56,.28)!important;
+  padding-bottom:3mm!important;
+}
+
+/* screen-only interaction */
+@media screen{
+  #document .editorial-tile{
+    transition:transform .28s ease,filter .28s ease;
+  }
+  #document .editorial-tile:hover{
+    transform:translate3d(0,-4px,0) scale(1.008);
+    filter:drop-shadow(0 12px 14px rgba(48,41,33,.08));
+  }
+  #document .editorial-product-visual img{
+    transition:transform .5s cubic-bezier(.2,.75,.2,1);
+  }
+  #document .editorial-tile:hover .editorial-product-visual img{
+    transform:scale(1.035);
+  }
+}
+
+/* print/PDF remains exact and stable: no movement, no browser blur */
+@media print{
+  .preview-bg{
+    background:#fff!important;
+    padding:0!important;
+    perspective:none!important;
+  }
+  #document{
+    gap:0!important;
+  }
+  #document .editorial-page{
+    border-radius:0!important;
+    box-shadow:none!important;
+    filter:none!important;
+  }
+  #document [data-parallax-layer]{
+    transform:none!important;
+    transition:none!important;
+  }
+  #document .editorial-cover-card{
+    backdrop-filter:none!important;
+    background:#fff!important;
+  }
+  #document .editorial-tile,
+  #document .editorial-tile:hover{
+    transform:none!important;
+    filter:none!important;
+  }
+  #document .editorial-product-visual img,
+  #document .editorial-tile:hover .editorial-product-visual img{
+    transform:none!important;
+  }
+}
+
+@media (prefers-reduced-motion:reduce){
+  #document [data-parallax-layer],
+  #document .editorial-tile,
+  #document .editorial-product-visual img{
+    transition:none!important;
+    transform:none!important;
+  }
+}

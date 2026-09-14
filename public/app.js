@@ -103,9 +103,9 @@ async function autoCropForPdf(src){
   });
 }
 
-const manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v51")||"{}");
+const manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v53")||"{}");
 function manufacturerCacheKey(p){return `${p.manufacturer}|${p.reference}`;}
-function saveManufacturerCache(){localStorage.setItem("hydropolis-manufacturer-v51",JSON.stringify(manufacturerImageCache));}
+function saveManufacturerCache(){localStorage.setItem("hydropolis-manufacturer-v53",JSON.stringify(manufacturerImageCache));}
 function cachedManufacturerImage(p){return manufacturerImageCache[manufacturerCacheKey(p)]||null;}
 
 async function fetchManufacturerImage(p,force=false){
@@ -292,12 +292,88 @@ function renderCatalog(){
  $$(".add").forEach(b=>b.onclick=()=>addProduct(b.dataset.ref,$("#targetRoom").value));
  $$(".lookup-photo").forEach(b=>b.onclick=()=>lookupCatalogPhoto(b.dataset.ref,b));
 }
-async function addProduct(ref,roomId){
+
+function accessoryText(p){
+  return [p.designation,p.marketingDescription,p.originalDescription,p.category,p.collection]
+    .filter(Boolean).join(" ").toLowerCase();
+}
+function isBasinTap(p){
+  if(!p || p.category!=="Lavabo") return false;
+  const t=accessoryText(p);
+  if(/bonde|waste|siphon|trap|vidage|accessoire|spare|replacement/.test(t)) return false;
+  return /mitigeur|mélangeur|robinet|mixer|faucet|basin tap|bec lavabo|basin spout/.test(t);
+}
+function accessoryKind(p){
+  const t=accessoryText(p);
+  const spare=/replacement|spare|part of|body|locknut|rod|tube|sleeve|cap\b|vitone|deviatore/.test(t);
+  if(spare) return "";
+  if(/siphon|bottle trap/.test(t) && !/without trap/.test(t)) return "siphon";
+  if(/bonde|basin waste|lavabo waste|waste/.test(t) && !/shower tray|bath|baignoire|without trap/.test(t)) return "bonde";
+  return "";
+}
+function compatibleFinish(source,candidate){
+  if(!source.finish) return true;
+  if(candidate.finish===source.finish) return true;
+  if(source.finishCode && candidate.finishCode && source.finishCode===candidate.finishCode) return true;
+  return false;
+}
+function accessoryScore(source,candidate,kind){
+  let score=0;
+  if(candidate.manufacturer===source.manufacturer) score+=1000;
+  if(compatibleFinish(source,candidate)) score+=500;
+  else return -9999;
+  if(accessoryKind(candidate)===kind) score+=300;
+  if(candidate.collection===source.collection) score+=35;
+  const t=accessoryText(candidate);
+  if(kind==="siphon"){
+    if(/siphon bouteille|bottle trap/.test(t)) score+=90;
+    if(/lavabo|basin/.test(t)) score+=60;
+  }
+  if(kind==="bonde"){
+    if(/bonde|basin waste|lavabo waste/.test(t)) score+=90;
+    if(/clic.?clac|click.?clack|free flow|écoulement libre/.test(t)) score+=40;
+    if(/lavabo|basin/.test(t)) score+=60;
+  }
+  if(candidate.price>0) score+=5;
+  return score;
+}
+function matchingAccessory(source,kind){
+  return CATALOG
+    .filter(c=>c.reference!==source.reference && c.manufacturer===source.manufacturer && accessoryKind(c)===kind)
+    .map(c=>({c,score:accessoryScore(source,c,kind)}))
+    .filter(x=>x.score>0)
+    .sort((x,y)=>y.score-x.score || String(x.c.reference).localeCompare(String(y.c.reference)))[0]?.c||null;
+}
+function basinAccessorySuggestions(p,roomId){
+  if(!isBasinTap(p)) return "";
+  const siphon=matchingAccessory(p,"siphon");
+  const bonde=matchingAccessory(p,"bonde");
+  const selectedRefs=new Set(state.selected.filter(x=>x.roomId===roomId).map(x=>x.reference));
+
+  const option=(kind,item)=>{
+    const label=kind==="siphon"?"Siphon assorti":"Bonde assortie";
+    if(!item) return `<div class="accessory-option unavailable"><div><b>${label}</b><span>Aucune référence assortie identifiée dans le tarif ${p.manufacturer}.</span></div></div>`;
+    const already=selectedRefs.has(item.reference);
+    return `<div class="accessory-option">
+      <div><b>${label}</b><span>${item.designation} · ${item.reference} · ${item.finish||p.finish}</span></div>
+      <div class="accessory-option-right"><strong>${euro(item.totalPrice)} HT</strong>
+      ${already?`<span class="accessory-added">Déjà ajouté</span>`:`<button class="tiny add-accessory" data-ref="${item.reference}" data-room="${roomId}" data-parent="${p.id}">+ Ajouter</button>`}</div>
+    </div>`;
+  };
+
+  return `<div class="basin-accessories">
+    <div class="basin-accessories-head"><b>Compléments lavabo assortis</b><span>Optionnels — même fabricant et même finition</span></div>
+    ${option("siphon",siphon)}
+    ${option("bonde",bonde)}
+  </div>`;
+}
+
+async function addProduct(ref,roomId,parentId=""){
  const p=CATALOG.find(x=>x.reference===ref);if(!p)return;
  const cached=cachedManufacturerImage(p);
  const id=crypto.randomUUID?crypto.randomUUID():Math.random().toString(36);
  const pdfImage=cached?await autoCropForPdf(cached.src):"";
- state.selected.push({...p,id,roomId,image:cached?.src||"",pdfImage,imageSource:cached?.source||"Photo fabricant à rechercher",imageFinishMatch:cached?.finishMatch||"",imageStatus:cached?imageBadge(cached,p):"Recherche fabricant…",resolvedManufacturerUrl:cached?.resolvedManufacturerUrl||p.manufacturerUrl||"",drawingUrl:cached?.drawingUrl||"",drawingType:cached?.drawingType||"",drawingLabel:cached?.drawingLabel||"",technicalSheetUrl:cached?.technicalSheetUrl||"",technicalSheetLabel:cached?.technicalSheetLabel||"Fiche technique",installationGuideUrl:cached?.installationGuideUrl||"",installationGuideLabel:cached?.installationGuideLabel||"Notice d'installation",includeDrawing:false,includeTechnicalSheet:false,includeInstallationGuide:false,customImage:false});
+ state.selected.push({...p,id,roomId,image:cached?.src||"",pdfImage,imageSource:cached?.source||"Photo fabricant à rechercher",imageFinishMatch:cached?.finishMatch||"",imageStatus:cached?imageBadge(cached,p):"Recherche fabricant…",resolvedManufacturerUrl:cached?.resolvedManufacturerUrl||p.manufacturerUrl||"",drawingUrl:cached?.drawingUrl||"",drawingType:cached?.drawingType||"",drawingLabel:cached?.drawingLabel||"",technicalSheetUrl:cached?.technicalSheetUrl||"",technicalSheetLabel:cached?.technicalSheetLabel||"Fiche technique",installationGuideUrl:cached?.installationGuideUrl||"",installationGuideLabel:cached?.installationGuideLabel||"Notice d'installation",includeDrawing:false,includeTechnicalSheet:false,includeInstallationGuide:false,customImage:false,accessoryFor:parentId||""});
  saveState();renderSelection();renderRooms();
  if(!cached)await enrichSelectedPhoto(id,false);
 }
@@ -320,6 +396,7 @@ function renderRooms(){
         <div class="image-actions"><button class="tiny enrich-btn" data-id="${p.id}">${p.image?"Actualiser photo + documents":"Chercher photo + documents"}</button><a target="_blank" href="${p.resolvedManufacturerUrl||p.manufacturerUrl}">Fiche officielle ↗</a>${p.technicalSheetUrl?`<a target="_blank" class="technical-sheet-link" href="${p.technicalSheetUrl}">Fiche technique ↗</a><label class="drawing-toggle"><input type="checkbox" class="techsheet-check" data-id="${p.id}" ${p.includeTechnicalSheet?"checked":""}> Inclure la fiche technique</label>`:`<span class="tech">Fiche technique à récupérer</span>`}${p.installationGuideUrl?`<a target="_blank" href="${p.installationGuideUrl}">Notice installation ↗</a><label class="drawing-toggle"><input type="checkbox" class="install-check" data-id="${p.id}" ${p.includeInstallationGuide?"checked":""}> Inclure la notice</label>`:""}${p.drawingUrl?`<a target="_blank" href="${p.drawingUrl}">${p.drawingType==="cad"?"DWG":"Drawing 2D"} ↗</a>${["pdf","image"].includes(p.drawingType)?`<label class="drawing-toggle"><input type="checkbox" class="drawing-check" data-id="${p.id}" ${p.includeDrawing?"checked":""}> Inclure le drawing</label>`:`<span class="tech">DWG consultable, non intégrable au PDF</span>`}`:`<span class="tech">Drawing 2D à récupérer</span>`}${(!p.image && p.fallbackImage)?`<button class="tiny fallback-btn" data-id="${p.id}">Catalogue en secours</button>`:""}</div></div>
         <div class="price-total">${euro(p.totalPrice)} HT<div class="tech">${p.imageStatus||p.imageSource||"Photo fabricant à rechercher"}</div>${p.imageNote?`<div class="tech">${p.imageNote}</div>`:""}</div>
         <button class="icon del-prod" data-id="${p.id}">×</button>
+        ${basinAccessorySuggestions(p,r.id)}
       </div>`).join(""):`<div class="room-empty">Aucun produit catalogue dans cette pièce.</div>`}</div>
    <div class="manual-zone"><b>Éléments libres de la pièce</b><div class="tech">Pour mobilier sur mesure, miroir, peinture, pose, décoration ou produit non encore référencé.</div>
       <div class="manual-add"><input class="manual-label" data-id="${r.id}" placeholder="Ex. Meuble vasque sur mesure"><input class="manual-price" data-id="${r.id}" type="number" step="0.01" placeholder="Prix HT"><button class="btn ghost manual-btn" data-id="${r.id}">Ajouter</button></div>
@@ -329,7 +406,11 @@ function renderRooms(){
  $$(".room-sub").forEach(x=>x.oninput=()=>{roomById(x.dataset.id).subtitle=x.value;saveState();});
  $$(".go-cat").forEach(b=>b.onclick=()=>{showView("catalog");$("#targetRoom").value=b.dataset.id;renderCatalog();});
  $$(".del-room").forEach(b=>b.onclick=()=>{if(state.rooms.length===1)return alert("Il faut conserver au moins une pièce.");let id=b.dataset.id;if(!confirm("Supprimer cette pièce et ses éléments ?"))return;state.rooms=state.rooms.filter(r=>r.id!==id);state.selected=state.selected.filter(p=>p.roomId!==id);saveState();renderRoomSelect();renderRooms();renderSelection();});
- $$(".del-prod").forEach(b=>b.onclick=()=>removeProduct(b.dataset.id));$$(".fallback-btn").forEach(b=>b.onclick=()=>useCatalogueFallback(b.dataset.id));$$(".enrich-btn").forEach(b=>b.onclick=()=>enrichSelectedPhoto(b.dataset.id,true));
+ $$(".del-prod").forEach(b=>b.onclick=()=>removeProduct(b.dataset.id));
+ $$(".add-accessory").forEach(b=>b.onclick=async()=>{
+   b.disabled=true;
+   await addProduct(b.dataset.ref,b.dataset.room,b.dataset.parent||"");
+ });$$(".fallback-btn").forEach(b=>b.onclick=()=>useCatalogueFallback(b.dataset.id));$$(".enrich-btn").forEach(b=>b.onclick=()=>enrichSelectedPhoto(b.dataset.id,true));
  $$(".drawing-check").forEach(ch=>ch.onchange=()=>{let p=state.selected.find(x=>x.id===ch.dataset.id);if(!p)return;p.includeDrawing=ch.checked;saveState();});
  $$(".techsheet-check").forEach(ch=>ch.onchange=()=>{let p=state.selected.find(x=>x.id===ch.dataset.id);if(!p)return;p.includeTechnicalSheet=ch.checked;saveState();});
  $$(".install-check").forEach(ch=>ch.onchange=()=>{let p=state.selected.find(x=>x.id===ch.dataset.id);if(!p)return;p.includeInstallationGuide=ch.checked;saveState();});
@@ -377,7 +458,17 @@ function technicalDocumentPage(r,p,url,label,no){
   </section>`;
 }
 function buildDocument(){
- let html=`<section class="page"><div class="goldline"></div><div class="coverimg">${state.project.cover?`<img src="${state.project.cover}">`:""}</div><div class="brandcover"><h2>Hydropolis</h2><p>salle de bains<br>Agencement + Décoration</p><div class="projname">${state.project.name||"Projet client"}${state.project.location?" — "+state.project.location:""}</div></div></section>`,no=2;
+ let html=`<section class="page cover-page editorial-page" data-parallax-page>
+  <div class="cover-ambient" data-parallax-layer="0.10"></div>
+  <div class="coverimg editorial-cover-image" data-parallax-layer="0.18">${state.project.cover?`<img src="${state.project.cover}">`:""}</div>
+  <div class="brandcover editorial-cover-card" data-parallax-layer="-0.08">
+    <div class="cover-kicker">MAISON HYDROPOLIS</div>
+    <h2>Hydropolis</h2>
+    <p>Salle de bains · Agencement · Décoration</p>
+    <div class="projname">${state.project.name||"Projet client"}${state.project.location?"<br>"+state.project.location:""}</div>
+  </div>
+  <div class="cover-page-mark">DOSSIER CLIENT</div>
+</section>`,no=2;
 
  state.rooms.forEach(r=>{
    let products=state.selected.filter(p=>p.roomId===r.id);
@@ -385,7 +476,25 @@ function buildDocument(){
 
    for(let i=0;i<Math.max(1,Math.ceil(items.length/6));i++){
      let ch=items.slice(i*6,i*6+6);
-     html+=`<section class="page"><div class="pagehead"><div><h2>${r.title}</h2><p>${r.subtitle||""}</p></div><div style="font-family:Georgia;color:var(--gold)">Hydropolis</div></div><div class="tiles">${ch.map(p=>p.manual?`<article class="tile"><div class="tile-img"></div><div class="maker">ÉLÉMENT DE PROJET</div><div class="title">${p.label}</div>${state.showClientPrices!==false?`<div class="price">${euro(p.price)} HT</div>`:""}</article>`:`<article class="tile product-tile"><div class="tile-img">${(p.pdfImage||p.image)?`<img src="${p.pdfImage||p.image}">`:`<div class="pdf-photo-missing">Photo fabricant<br>${exactFinishLabel(p)}</div>`}</div><div class="tile-copy"><div class="maker">${p.manufacturer} · ${p.collection}</div><div class="title">${p.designation}</div><div class="finish">${p.finish}</div>${state.showClientPrices!==false?`<div class="price">${euro(p.totalPrice)} HT</div>`:""}${state.showSupplierReferences!==false?`<div class="refsmall">Réf. ${p.reference}${p.internalReference?" · complet avec partie à encastrer":""}</div>`:""}</div></article>`).join("")}</div><div class="page-no">${no++}</div><div class="bottom"></div></section>`;
+     html+=`<section class="page editorial-page room-page" data-parallax-page>
+  <div class="page-ambient page-ambient-a" data-parallax-layer="0.06"></div>
+  <div class="pagehead editorial-head">
+    <div><div class="section-kicker">SÉLECTION</div><h2>${r.title}</h2><p>${r.subtitle||"Une sélection pensée comme un ensemble cohérent."}</p></div>
+    <div class="editorial-brand">Hydropolis</div>
+  </div>
+  <div class="tiles editorial-tiles">${ch.map((p,idx)=>p.manual?`<article class="tile editorial-tile manual-tile stagger-${idx%3}" data-parallax-layer="${0.025+(idx%3)*0.012}"><div class="tile-img manual-visual"></div><div class="tile-copy"><div class="maker">ÉLÉMENT DE PROJET</div><div class="title">${p.label}</div>${state.showClientPrices!==false?`<div class="price">${euro(p.price)} HT</div>`:""}</div></article>`:`<article class="tile product-tile editorial-tile stagger-${idx%3}" data-parallax-layer="${0.025+(idx%3)*0.012}">
+    <div class="tile-img editorial-product-visual">${(p.pdfImage||p.image)?`<img src="${p.pdfImage||p.image}">`:`<div class="pdf-photo-missing">Photo fabricant<br>${exactFinishLabel(p)}</div>`}</div>
+    <div class="tile-copy">
+      <div class="maker">${p.manufacturer} · ${p.collection}</div>
+      <div class="title">${p.designation}</div>
+      <div class="finish">${p.finish}</div>
+      ${state.showClientPrices!==false?`<div class="price">${euro(p.totalPrice)} HT</div>`:""}
+      ${state.showSupplierReferences!==false?`<div class="refsmall">Réf. ${p.reference}${p.internalReference?" · complet avec partie à encastrer":""}</div>`:""}
+    </div>
+  </article>`).join("")}</div>
+  <div class="page-no">${no++}</div>
+  <div class="editorial-footer"><span>Maison Hydropolis</span><span>${r.title}</span></div>
+</section>`;
    }
 
    // Optional official technical sheets.
@@ -415,7 +524,40 @@ function buildDocument(){
    });
  });
  $("#document").innerHTML=html;
+ initPreviewParallax();
 }
+
+function initPreviewParallax(){
+  const host=document.querySelector(".preview-bg");
+  if(!host || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  if(host._parallaxHandler) host.removeEventListener("scroll",host._parallaxHandler);
+
+  let raf=0;
+  const update=()=>{
+    raf=0;
+    const hostRect=host.getBoundingClientRect();
+    host.querySelectorAll("[data-parallax-page]").forEach(page=>{
+      const rect=page.getBoundingClientRect();
+      const center=(rect.top+rect.bottom)/2;
+      const viewportCenter=(hostRect.top+hostRect.bottom)/2;
+      const delta=Math.max(-1,Math.min(1,(center-viewportCenter)/Math.max(hostRect.height,1)));
+      page.style.setProperty("--parallax-progress",delta.toFixed(3));
+      page.querySelectorAll("[data-parallax-layer]").forEach(layer=>{
+        const strength=parseFloat(layer.dataset.parallaxLayer||"0");
+        const y=delta*strength*140;
+        layer.style.setProperty("--parallax-y",`${y.toFixed(2)}px`);
+      });
+    });
+  };
+  const handler=()=>{
+    if(!raf) raf=requestAnimationFrame(update);
+  };
+  host._parallaxHandler=handler;
+  host.addEventListener("scroll",handler,{passive:true});
+  window.addEventListener("resize",handler,{passive:true});
+  update();
+}
+
 function exportJson(){let blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hydropolis-projet.json";a.click();}
 async function loadSupplierCatalogs(){
   try{
