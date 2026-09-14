@@ -103,14 +103,31 @@ async function autoCropForPdf(src){
   });
 }
 
-const manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v66")||"{}");
+try{
+  Object.keys(localStorage).forEach(k=>{
+    if(/^hydropolis-manufacturer-/i.test(k) && k!=="hydropolis-manufacturer-v68")localStorage.removeItem(k);
+  });
+}catch(e){}
+let manufacturerImageCache={};
+try{manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v68")||"{}")||{};}catch(e){manufacturerImageCache={};}
 function manufacturerCacheKey(p){return `${p.manufacturer}|${p.reference}`;}
-function saveManufacturerCache(){localStorage.setItem("hydropolis-manufacturer-v66",JSON.stringify(manufacturerImageCache));}
+function saveManufacturerCache(){
+  try{
+    localStorage.setItem("hydropolis-manufacturer-v68",JSON.stringify(manufacturerImageCache));
+  }catch(e){
+    console.warn("[Hydropolis cache] quota dépassé, cache vidé",e);
+    manufacturerImageCache={};
+    try{
+      Object.keys(localStorage).forEach(k=>{if(/^hydropolis-manufacturer-/i.test(k))localStorage.removeItem(k);});
+    }catch{}
+  }
+}
 function cachedManufacturerImage(p){return manufacturerImageCache[manufacturerCacheKey(p)]||null;}
 
 async function fetchManufacturerImage(p,force=false){
   const key=manufacturerCacheKey(p);
-  if(!force && manufacturerImageCache[key]) return manufacturerImageCache[key];
+  if(!force && manufacturerImageCache[key])return manufacturerImageCache[key];
+
   const r=await fetch("/api/manufacturer-image",{
     method:"POST",
     headers:{"Content-Type":"application/json"},
@@ -125,21 +142,23 @@ async function fetchManufacturerImage(p,force=false){
       manufacturer:p.manufacturer
     })
   });
+
   const data=await r.json();
-  if(!r.ok) throw new Error(data.detail||data.error||"Recherche fabricant impossible");
-  const hasImage=!!data.best;
-  const src=hasImage
-    ? (data.best.dataUrl ? data.best.dataUrl : `/api/image-proxy?url=${encodeURIComponent(data.best.url)}`)
-    : "";
-  const imageSources=(data.images||[]).map(img=>img.dataUrl ? img.dataUrl : `/api/image-proxy?url=${encodeURIComponent(img.url)}`).filter(Boolean);
+  if(!r.ok)throw new Error(data.detail||data.error||"Recherche fabricant impossible");
+
+  const toProxy=url=>url?`/api/image-proxy?url=${encodeURIComponent(url)}`:"";
+  const src=data.best?.url?toProxy(data.best.url):"";
+  const imageSources=(data.images||[]).map(x=>toProxy(x.url)).filter(Boolean);
+
   const result={
     remoteUrl:data.best?.url||"",
+    remoteImages:(data.images||[]).map(x=>x.url).filter(Boolean),
     resolvedManufacturerUrl:data.manufacturerUrl||p.manufacturerUrl||"",
     src,
-    images:imageSources,
+    images:imageSources.length?imageSources:(src?[src]:[]),
     finishMatch:data.best?.finishMatch||"",
-    source:hasImage
-      ?(data.best.finishMatch==="exact"
+    source:src
+      ?(data.best?.finishMatch==="exact"
         ?`Site officiel fabricant · finition ${p.finish}`
         :"Site officiel fabricant · visuel produit générique")
       :"",
@@ -154,6 +173,7 @@ async function fetchManufacturerImage(p,force=false){
     installationGuideLabel:data.installationGuide?.label||"Notice d'installation",
     checkedAt:new Date().toISOString()
   };
+
   manufacturerImageCache[key]=result;
   saveManufacturerCache();
   return result;
@@ -199,13 +219,16 @@ async function enrichSelectedPhoto(id,force=false){
   if(!p)return;
   p.imageStatus="Recherche sur le site fabricant…";
   renderRooms();
+
   try{
     const img=await fetchManufacturerImage(p,force);
     if(img.src){
       p.image=img.src;
-      p.pdfImage=await autoCropForPdf(img.src);
       p.images=img.images||[img.src].filter(Boolean);
-      p.pdfImages=await Promise.all((p.images||[]).slice(0,/catalano/i.test(p.manufacturer||"")?8:2).map(autoCropForPdf));
+      p.pdfImage=img.src;
+      p.pdfImages=p.images.slice(0,/catalano/i.test(p.manufacturer||"")?8:2);
+      p.remoteImageUrl=img.remoteUrl||"";
+      p.remoteImages=img.remoteImages||[];
       p.imageSource=img.source;
       p.imageFinishMatch=img.finishMatch;
       p.imageStatus=imageBadge(img,p);
@@ -222,15 +245,14 @@ async function enrichSelectedPhoto(id,force=false){
     p.technicalSheetLabel=img.technicalSheetLabel||p.technicalSheetLabel||"Fiche technique";
     p.installationGuideUrl=img.installationGuideUrl||p.installationGuideUrl||"";
     p.installationGuideLabel=img.installationGuideLabel||p.installationGuideLabel||"Notice d'installation";
-    if(typeof p.includeDrawing!=="boolean") p.includeDrawing=false;
-    if(typeof p.includeTechnicalSheet!=="boolean") p.includeTechnicalSheet=false;
-    if(typeof p.includeInstallationGuide!=="boolean") p.includeInstallationGuide=false;
   }catch(e){
-    p.imageStatus="Photo fabricant non trouvée";
+    p.imageStatus=p.image?"Photo existante conservée":"Photo fabricant non trouvée";
     p.imageNote=e.message;
   }
+
   saveState();
   renderRooms();
+  renderSelection();
 }
 
 function loadState(){
@@ -264,7 +286,38 @@ function loadState(){
     }
   });
 }
-function saveState(){localStorage.setItem("hydropolis-v21",JSON.stringify(state));}
+function saveState(){
+  const compact={
+    ...state,
+    selected:(state.selected||[]).map(p=>{
+      const q={...p};
+      if(!q.customImage){
+        if(typeof q.image==="string" && /^data:/i.test(q.image)) q.image="";
+        if(Array.isArray(q.images)) q.images=q.images.filter(x=>typeof x==="string" && !/^data:/i.test(x));
+        if(typeof q.pdfImage==="string" && /^data:/i.test(q.pdfImage)) q.pdfImage=q.image||"";
+        if(Array.isArray(q.pdfImages)) q.pdfImages=q.pdfImages.filter(x=>typeof x==="string" && !/^data:/i.test(x));
+      }
+      return q;
+    })
+  };
+  const payload=JSON.stringify(compact);
+  try{
+    localStorage.setItem("hydropolis-v21",payload);
+    return true;
+  }catch(e){
+    console.warn("[Hydropolis storage] quota dépassé",e);
+    try{
+      Object.keys(localStorage).forEach(k=>{
+        if(/^hydropolis-manufacturer-/i.test(k))localStorage.removeItem(k);
+      });
+      localStorage.setItem("hydropolis-v21",payload);
+      return true;
+    }catch(e2){
+      console.warn("[Hydropolis storage] projet conservé en mémoire",e2);
+      return false;
+    }
+  }
+}
 function unique(k){return [...new Set(CATALOG.map(x=>x[k]).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"fr"));}
 function fillSelect(id,values,keepValue=true){
  const el=$("#"+id); if(!el)return;
@@ -401,10 +454,38 @@ async function addProduct(ref,roomId,parentId=""){
  const p=CATALOG.find(x=>x.reference===ref);if(!p)return;
  const cached=cachedManufacturerImage(p);
  const id=crypto.randomUUID?crypto.randomUUID():Math.random().toString(36);
- const pdfImage=cached?await autoCropForPdf(cached.src):"";
- state.selected.push({...p,id,roomId,image:cached?.src||"",images:cached?.images||[cached?.src].filter(Boolean),pdfImage,pdfImages:cached?.images?.length?await Promise.all(cached.images.slice(0,2).map(autoCropForPdf)):(pdfImage?[pdfImage]:[]),imageSource:cached?.source||"Photo fabricant à rechercher",imageFinishMatch:cached?.finishMatch||"",imageStatus:cached?imageBadge(cached,p):"Recherche fabricant…",resolvedManufacturerUrl:cached?.resolvedManufacturerUrl||p.manufacturerUrl||"",drawingUrl:cached?.drawingUrl||"",drawingType:cached?.drawingType||"",drawingLabel:cached?.drawingLabel||"",technicalSheetUrl:cached?.technicalSheetUrl||"",technicalSheetLabel:cached?.technicalSheetLabel||"Fiche technique",installationGuideUrl:cached?.installationGuideUrl||"",installationGuideLabel:cached?.installationGuideLabel||"Notice d'installation",includeDrawing:false,includeTechnicalSheet:false,includeInstallationGuide:false,customImage:false,accessoryFor:parentId||""});
- saveState();renderSelection();renderRooms();renderMarginDashboard();
- if(!cached)await enrichSelectedPhoto(id,false);
+
+ state.selected.push({
+   ...p,id,roomId,
+   image:cached?.src||"",
+   images:cached?.images||[cached?.src].filter(Boolean),
+   pdfImage:cached?.src||"",
+   pdfImages:cached?.images||[cached?.src].filter(Boolean),
+   remoteImageUrl:cached?.remoteUrl||"",
+   remoteImages:cached?.remoteImages||[],
+   imageSource:cached?.source||"Photo fabricant à rechercher",
+   imageFinishMatch:cached?.finishMatch||"",
+   imageStatus:cached?imageBadge(cached,p):"Recherche fabricant…",
+   resolvedManufacturerUrl:cached?.resolvedManufacturerUrl||p.manufacturerUrl||"",
+   drawingUrl:cached?.drawingUrl||"",
+   drawingType:cached?.drawingType||"",
+   drawingLabel:cached?.drawingLabel||"",
+   technicalSheetUrl:cached?.technicalSheetUrl||"",
+   technicalSheetLabel:cached?.technicalSheetLabel||"Fiche technique",
+   installationGuideUrl:cached?.installationGuideUrl||"",
+   installationGuideLabel:cached?.installationGuideLabel||"Notice d'installation",
+   includeDrawing:false,includeTechnicalSheet:false,includeInstallationGuide:false,
+   customImage:false,accessoryFor:parentId||""
+ });
+
+ saveState();
+ renderSelection();
+ renderRooms();
+ renderMarginDashboard();
+
+ if(!cached){
+   enrichSelectedPhoto(id,false).catch(err=>console.warn("[enrich after add]",err));
+ }
 }
 function removeProduct(id){state.selected=state.selected.filter(x=>x.id!==id);saveState();renderSelection();renderRooms();renderMarginDashboard();}
 
@@ -712,36 +793,22 @@ function bindProject(){
 }
 async function refreshCatalanoGalleries(){
   const targets=(state.selected||[]).filter(p=>{
-    if(!/catalano/i.test(p.manufacturer||"") || p.customImage)return false;
+    if(!/catalano/i.test(p.manufacturer||"")||p.customImage)return false;
     return productVisuals(p).length<2;
   });
   if(!targets.length)return false;
 
   const timeout=(ms)=>new Promise((_,reject)=>setTimeout(()=>reject(new Error("timeout")),ms));
-
   const jobs=targets.map(async p=>{
     try{
       const img=await Promise.race([fetchManufacturerImage(p,true),timeout(12000)]);
-      if(!img || !img.src)return false;
-
-      const nextImages=(img.images&&img.images.length)?img.images:[img.src];
-      // Never erase an existing working image/gallery while refreshing.
-      p.image=img.src || p.image;
-      if(nextImages.length)p.images=nextImages;
-
-      try{
-        p.pdfImage=await Promise.race([autoCropForPdf(p.image),timeout(6000)]);
-      }catch(e){
-        p.pdfImage=p.pdfImage||p.image;
-      }
-
-      try{
-        p.pdfImages=await Promise.all((p.images||[]).slice(0,8).map(async src=>{
-          try{return await Promise.race([autoCropForPdf(src),timeout(6000)])}
-          catch(e){return src}
-        }));
-      }catch(e){}
-
+      if(!img?.src)return false;
+      p.image=img.src||p.image;
+      p.images=(img.images&&img.images.length)?img.images:(p.images||[]);
+      p.pdfImage=p.image;
+      p.pdfImages=(p.images||[]).slice(0,8);
+      p.remoteImageUrl=img.remoteUrl||p.remoteImageUrl||"";
+      p.remoteImages=img.remoteImages||p.remoteImages||[];
       p.imageSource=img.source||p.imageSource;
       p.imageFinishMatch=img.finishMatch||p.imageFinishMatch;
       p.imageStatus=imageBadge(img,p);
@@ -754,7 +821,7 @@ async function refreshCatalanoGalleries(){
   });
 
   const results=await Promise.allSettled(jobs);
-  const changed=results.some(r=>r.status==="fulfilled" && r.value===true);
+  const changed=results.some(r=>r.status==="fulfilled"&&r.value===true);
   if(changed)saveState();
   return changed;
 }
@@ -773,6 +840,7 @@ function showView(v){
   $("#viewSubtitle").textContent=t[v][1];
 
   if(v==="margin")renderMarginDashboard();
+  if(v==="project"){renderSelection();renderRooms();}
 
   if(v==="preview"){
     // Critical: never block the dossier on manufacturer network calls.
