@@ -790,44 +790,60 @@ function canonicalImageKey(src){
 }
 function productVisuals(p){
   const seen=new Set(), out=[];
+  const keyOf=src=>{
+    if(!src || typeof src!=="string")return "";
+    let s=src.trim();
+    try{
+      if(!/^data:/i.test(s)){
+        const u=new URL(s,location.href);
+        u.search="";u.hash="";s=u.href;
+      }
+    }catch(e){}
+    return s
+      .replace(/-\d{2,4}x\d{2,4}(?=\.(?:jpe?g|png|webp)(?:$|\?))/i,"")
+      .toLowerCase();
+  };
   const add=src=>{
     if(!src || typeof src!=="string")return;
-    const key=canonicalImageKey(src);
-    if(!key || seen.has(key))return;
-    seen.add(key);
-    out.push(src);
+    const k=keyOf(src);
+    if(!k || seen.has(k))return;
+    seen.add(k);out.push(src);
   };
-  add(p.pdfImage);
+
+  // Main product image first. pdfImage may be a technical-document preview.
   add(p.image);
   if(Array.isArray(p.images))p.images.forEach(add);
   if(Array.isArray(p.imageGallery))p.imageGallery.forEach(add);
   add(p.image2);add(p.image3);add(p.image4);
+  add(p.pdfImage);
   return out;
 }
 function boardVisualHtml(p){
   const all=productVisuals(p);
-  if(!all.length)return `<div class="board-image-fallback">Photo fabricant<br>à rechercher</div>`;
-
-  const isCatalano=/catalano/i.test(p.manufacturer||"");
-  const imgs=isCatalano ? all.slice(0,6) : all.slice(0,1);
-
-  if(imgs.length===1){
-    return `<div class="board-gallery gallery-1">
-      <figure><img src="${imgs[0]}" alt="${p.designation||""}"></figure>
-    </div>`;
+  if(!all.length){
+    return `<div class="board-image-fallback">Photo fabricant<br>à rechercher</div>`;
   }
 
-  return `<div class="board-gallery gallery-${Math.min(imgs.length,6)}">
+  const isCatalano=/catalano/i.test(p.manufacturer||"");
+  const imgs=isCatalano ? all.slice(0,5) : [all[0]];
+
+  if(imgs.length===1){
+    return `<figure class="board-single-image">
+      <img src="${imgs[0]}" alt="${p.designation||""}" loading="eager">
+    </figure>`;
+  }
+
+  return `<div class="board-gallery gallery-${Math.min(imgs.length,5)}">
     ${imgs.map((src,i)=>`
       <figure class="gallery-cell gallery-cell-${i+1}">
-        <img src="${src}" alt="${p.designation||""} · vue ${i+1}">
+        <img src="${src}" alt="${p.designation||""} · vue ${i+1}" loading="eager">
       </figure>`).join("")}
   </div>`;
 }
 function boardItemHtml(p,idx){
  const isManual=p.manufacturer==="Sélection libre";
  const visual=isManual
-   ?(p.image?`<div class="board-gallery gallery-1"><figure><img src="${p.image}" alt="${p.designation||""}"></figure></div>`:`<div class="board-image-fallback">Visuel<br>à ajouter</div>`)
+   ?(p.image?`<figure class="board-single-image"><img src="${p.image}" alt="${p.designation||""}" loading="eager"></figure>`:`<div class="board-image-fallback">Visuel<br>à ajouter</div>`)
    :boardVisualHtml(p);
  return `<article class="board-item board-item-${idx+1}">
    <div class="board-visual">${visual}</div>
