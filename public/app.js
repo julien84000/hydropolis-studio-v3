@@ -579,7 +579,7 @@ function quoteRows(){
 function quotePages(startNo){
   const rows=quoteRows();
   const f=projectFinancials();
-  const perPage=12;
+  const perPage=9;
   const pages=Math.max(1,Math.ceil(rows.length/perPage));
   let html="", no=startNo;
   for(let pg=0;pg<pages;pg++){
@@ -783,10 +783,41 @@ function boardItemHtml(p,idx){
   return `<article class="${cls}" data-parallax-layer="${0.018+(idx%4)*0.008}"><div class="board-visual ${p.manufacturer==="Catalano" && (p.pdfImages||p.images||[]).length>1?"board-visual-dual":""}">${(p.pdfImage||p.image)?((p.manufacturer==="Catalano" && (p.pdfImages||p.images||[]).length>1)?(p.pdfImages||p.images).slice(0,2).map((src,n)=>`<img src="${src}" alt="${p.designation} · vue ${n+1}">`).join(""):`<img src="${p.pdfImage||p.image}" alt="${p.designation}">`):`<div class="pdf-photo-missing">Photo fabricant<br>${exactFinishLabel(p)}</div>`}</div><div class="board-copy"><div class="maker">${p.manufacturer} · ${p.collection}</div><div class="title">${p.designation}</div><div class="finish">${p.finish}</div>${state.showClientPrices!==false?`<div class="price commercial-price">${commercialPriceHtml(p.totalPrice,p)}</div>`:""}${state.showSupplierReferences!==false?`<div class="refsmall">Réf. ${p.reference}${p.internalReference?" · complet avec partie à encastrer":""}</div>`:""}</div></article>`;
 }
 
+
+function coverMoodboardImages(){
+  const seen=new Set(), images=[];
+  for(const p of state.selected){
+    const candidates=[];
+    if(p.pdfImage)candidates.push(p.pdfImage);
+    if(p.image)candidates.push(p.image);
+    if(p.images && Array.isArray(p.images)) candidates.push(...p.images);
+    if(p.image2)candidates.push(p.image2);
+    for(const src of candidates){
+      if(!src || seen.has(src))continue;
+      seen.add(src);
+      images.push({src,manufacturer:p.manufacturer||"",designation:p.designation||"",finish:p.finish||""});
+      if(images.length>=7)return images;
+    }
+  }
+  return images;
+}
+function moodboardCoverHtml(){
+  const imgs=coverMoodboardImages();
+  if(!imgs.length){
+    return `<div class="cover-fallback"><div class="cover-mark">H</div><div class="cover-fallback-copy">Sélection Hydropolis</div></div>`;
+  }
+  const count=Math.min(imgs.length,7);
+  return `<div class="cover-moodboard moodboard-${count}">
+    ${imgs.slice(0,count).map((im,i)=>`<figure class="mood-item mood-item-${i+1}">
+      <img src="${im.src}" alt="${im.designation}">
+      <figcaption>${im.manufacturer}${im.finish?` · ${im.finish}`:""}</figcaption>
+    </figure>`).join("")}
+  </div>`;
+}
 function buildDocument(){
  let html=`<section class="page cover-page editorial-page" data-parallax-page>
   <div class="cover-ambient" data-parallax-layer="0.10"></div>
-  <div class="coverimg editorial-cover-image" data-parallax-layer="0.18">${state.project.cover?`<img src="${state.project.cover}">`:""}</div>
+  <div class="coverimg editorial-cover-image" data-parallax-layer="0.18">${state.project.cover?`<img class="cover-image" src="${state.project.cover}" alt="Couverture du projet">`:moodboardCoverHtml()}</div>
   <div class="brandcover editorial-cover-card" data-parallax-layer="-0.08">
     <div class="cover-kicker">MAISON HYDROPOLIS</div>
     <h2>Hydropolis</h2>
