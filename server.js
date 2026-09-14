@@ -11,7 +11,7 @@ app.use(express.static(path.join(__dirname,"public")));
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V4.4",
+  service:"Hydropolis Studio V7.0",
   time:new Date().toISOString()
 }));
 
@@ -229,8 +229,98 @@ async function resolveCatalanoProductUrl(manufacturerUrl,reference,originalDescr
   return manufacturerUrl;
 }
 
+
+let lefroySitemapMemo={at:0,html:""};
+async function fetchBrandPage(url,lang="en-GB,en;q=0.9"){
+  const r=await axios.get(url,{timeout:22000,maxRedirects:5,validateStatus:x=>x>=200&&x<400,headers:{"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/150 Safari/537.36","Accept-Language":lang}});
+  return String(r.data||"");
+}
+function hotbathBase(reference){
+  return String(reference||"").toUpperCase().replace(/^HB\./,"").replace(/\.IT$/," ").trim().split(".")[0].replace(/EXT$/," ").trim();
+}
+async function resolveHotbathProductUrl(reference){
+  const base=hotbathBase(reference);
+  if(!base)return "https://www.hotbath.it/fr/home";
+  try{
+    const searchUrl="https://www.hotbath.it/fr/searchproducts";
+    const html=await fetchBrandPage(searchUrl,"fr-FR,fr;q=0.9,en;q=0.7");
+    const $=cheerio.load(html);
+    let exact="",fallback="";
+    $("a[href*='/fr/produits/']").each((_,el)=>{
+      const href=absoluteUrl(searchUrl,$(el).attr("href"));
+      if(!href)return;
+      const txt=normalizeToken(($(el).text()||"")+" "+href);
+      const hrefBase=normalizeToken(base);
+      if(new RegExp("/"+base.replace(/[.*+?^${}()|[\\]\\]/g,"\\$&")+"(?:[/?#]|$)","i").test(href)) exact=exact||href;
+      else if(txt.includes(hrefBase)) fallback=fallback||href;
+    });
+    return exact||fallback||searchUrl;
+  }catch(e){
+    console.error("[hotbath-resolve]",e.message);
+    return "https://www.hotbath.it/fr/searchproducts";
+  }
+}
+function lefroyBase(reference){
+  let s=String(reference||"").toUpperCase().trim();
+  s=s.split("-")[0];
+  s=s.replace(/(AG|CP|NK|PB|BN|BB|AB|TA|GN|MR|WH|MW)$/i,"");
+  return s;
+}
+async function resolveLefroyProductUrl(reference,designation){
+  const base=lefroyBase(reference);
+  const m=base.match(/^([A-Z]+)(\d+[A-Z]?)$/);
+  const slug=m?`${m[1].toLowerCase()}-${m[2].toLowerCase()}`:base.toLowerCase().replace(/[^a-z0-9]+/g,"-");
+  try{
+    if(!lefroySitemapMemo.html || Date.now()-lefroySitemapMemo.at>6*60*60*1000){
+      lefroySitemapMemo={at:Date.now(),html:await fetchBrandPage("https://uk.lefroybrooks.com/sitemap.xml")};
+    }
+    const xml=lefroySitemapMemo.html;
+    const locs=[...xml.matchAll(/<loc>([^<]+)<\/loc>/gi)].map(x=>x[1].replace(/&amp;/g,"&"));
+    const exact=locs.find(u=>new RegExp("/"+slug.replace(/[.*+?^${}()|[\\]\\]/g,"\\$&")+"/?$","i").test(u));
+    if(exact)return exact;
+    const loose=locs.find(u=>normalizeToken(u).includes(normalizeToken(base)));
+    if(loose)return loose;
+  }catch(e){console.error("[lefroy-sitemap]",e.message)}
+  try{
+    const index="https://uk.lefroybrooks.com/by-product";
+    const html=await fetchBrandPage(index);
+    const $=cheerio.load(html);let best=null;
+    $("a[href]").each((_,el)=>{
+      const href=absoluteUrl(index,$(el).attr("href")); if(!href||!/lefroybrooks\.com/i.test(href))return;
+      const text=(($(el).text()||"")+" "+($(el).attr("title")||"")).trim();
+      const score=(normalizeToken(text).includes(normalizeToken(base))?2:0)+similarityScore(designation||"",text);
+      if(!best||score>best.score)best={href,score};
+    });
+    if(best&&best.score>=1)return best.href;
+  }catch(e){console.error("[lefroy-index]",e.message)}
+  return "https://uk.lefroybrooks.com/";
+}
+
+
+function recorModelFromData(reference,designation){
+  let s=String(reference||"").replace(/^RECOR-/i,"").split("-").slice(0,3).join(" ");
+  const known=["Grand Epoque","Roll Top","Carlton","Dual","Antique","Primrose","Slipper","Hudson","Lyra","Crosby","Gibson","Allen","Morgan","Epoque","Iris","Dakota","Eiffel","Siena","Canova","Chateau","Collins","Bali","Bavaria","Classic","Moritz","Fleming"];
+  const hay=normalizeToken((designation||"")+" "+s);
+  return known.find(x=>hay.includes(normalizeToken(x)))||"";
+}
+async function resolveRecorProductUrl(reference,designation){
+  const model=recorModelFromData(reference,designation);
+  if(!model)return "https://recor.pt/";
+  const slug=model.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+  const candidate=`https://recor.pt/product/${slug}-en/`;
+  try{
+    await fetchBrandPage(candidate);
+    return candidate;
+  }catch(e){
+    return "https://recor.pt/";
+  }
+}
+
 async function resolveManufacturerProductUrl(manufacturerUrl,reference,originalDescription,designation,collection){
   if(/catalano\.it/i.test(manufacturerUrl)) return resolveCatalanoProductUrl(manufacturerUrl,reference,originalDescription,designation,collection);
+  if(/hotbath\.it/i.test(manufacturerUrl)) return resolveHotbathProductUrl(reference);
+  if(/lefroybrooks\.com/i.test(manufacturerUrl)) return resolveLefroyProductUrl(reference,originalDescription||designation);
+  if(/recor\.pt/i.test(manufacturerUrl)) return resolveRecorProductUrl(reference,originalDescription||designation);
   if(!/coalbrookuk\.co\.uk/i.test(manufacturerUrl)) return manufacturerUrl;
 
   const base=String(reference||"").toUpperCase().replace(/(?:CP|GM|BB|BN)$/,"");
@@ -297,11 +387,27 @@ function finishExactInText(text,finishCode,finish,reference){
   const ref=normalizeToken(reference);
   if(ref && n.includes(ref)) return true;
   if(f && f.length>3 && n.includes(f)) return true;
+  const code=String(finishCode||"").toUpperCase();
+  const rawUpper=String(text||"").toUpperCase();
+  if(code && (rawUpper.includes("_"+code+".") || rawUpper.includes("-"+code+".") || rawUpper.includes("/"+code+".") || rawUpper.includes(" "+code+" "))) return true;
   const aliases={
     CP:["chrome","chromed"],
     BN:["brushed nickel"],
     BB:["brushed brass"],
     GM:["gunmetal"],
+    AG:["antique gold"],
+    NK:["silver nickel"],
+    PB:["polished brass"],
+    BN:["brushed silver nickel","brushed nickel"],
+    AB:["aged brass"],
+    TA:["taunton"],
+    MR:["xo mirror"],
+    BBP:["brushed brass pvd","laiton brosse pvd"],
+    BCP:["brushed copper pvd","cuivre brosse pvd"],
+    MBP:["matt black pvd","noir mat pvd"],
+    BGP:["brushed gunmetal pvd","gunmetal brosse pvd"],
+    IX:["brushed steel","acier brosse"],
+    CR:["chrome"],
     C3:["brushed nickel"],
     C50:["metal black"],
     C51:["brushed metal black"],
@@ -455,6 +561,44 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
 
 
 
+
+  function catalanoFinishTerms(finishCode,finish,reference){
+    const code=String(finishCode||"").replace(/\D/g,"");
+    const ref=String(reference||"").replace(/\D/g,"");
+    const suffix=(code||ref.slice(-4)).slice(-2);
+    const map={
+      "01":["glossy white","bianco lucido","white","bianco"],
+      "21":["satin bianco","bianco satinato","satin white","white satin"],
+      "22":["satin nero","nero satinato","nero","black","noir"],
+      "23":["satin cemento","cemento satinato","cemento","cement","ciment"],
+      "28":["satin acqua","acqua satinato","acqua","aqua"],
+      "29":["satin sabbia","sabbia satinato","sabbia","sand","sable"],
+      "30":["satin lino","lino satinato","lino","linen","lin"],
+      "31":["satin seta","seta satinato","seta","silk","soie"],
+      "32":["satin tortora","tortora satinato","tortora","taupe"]
+    };
+    const out=new Set();
+    const f=normalizeToken(finish||"");
+    if(f)out.add(f);
+    for(const x of (map[suffix]||[]))out.add(normalizeToken(x));
+    if(code){
+      out.add(code);
+      out.add(code.replace(/^0+/,""));
+    }
+    if(ref)out.add(ref);
+    return [...out].filter(Boolean);
+  }
+
+  function catalanoFinishMatchText(text,finishCode,finish,reference){
+    const n=normalizeToken(text||"");
+    const ref=String(reference||"").replace(/\D/g,"");
+    const code=String(finishCode||"").replace(/\D/g,"");
+    if(ref && n.replace(/\D/g,"").includes(ref))return true;
+    if(code && n.replace(/\D/g,"").includes(code))return true;
+    return catalanoFinishTerms(finishCode,finish,reference)
+      .some(t=>t.length>2 && n.includes(t));
+  }
+
   // Catalano: collect the real gallery from the resolved product page.
   // Important: Catalano commonly exposes the same visual through src/data-src/srcset
   // at several sizes. We deduplicate resized variants, but keep genuinely different views.
@@ -481,21 +625,24 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     function addCatalanoGallery(raw,alt="",title=""){
       const href=absoluteUrl(manufacturerUrl,raw);
       if(!href || !isImageUrl(href)) return;
-      const low=(href+" "+alt+" "+title).toLowerCase();
-      if(/logo|icon|sprite|avatar|flag|placeholder|loading|swatch|favicon|cookie|social|plus-feature/.test(low)) return;
+      const context=(href+" "+alt+" "+title);
+      const low=context.toLowerCase();
+      if(/logo|icon|sprite|avatar|flag|placeholder|loading|swatch|favicon|cookie|social|plus-feature|fitting|accessor/.test(low)) return;
       // Exclude tiny assets, finish chips and interface images.
       if(/[?&](?:w|width|h|height)=([1-9]\d?|1\d\d)(?:&|$)/i.test(href)) return;
       const key=catalanoCanonical(href);
       if(!key || gallerySeen.has(key)) return;
       gallerySeen.add(key);
+
+      const exactFinish=catalanoFinishMatchText(context,requested,finish,reference);
       catalanoGallery.push({
         url:href,
         source:"catalano-product-gallery",
-        score:9000-catalanoGallery.length,
-        finishMatch:"generic",
-        detectedFinishCode:null,
+        score:(exactFinish?12000:9000)-catalanoGallery.length,
+        finishMatch:exactFinish?"exact":"generic",
+        detectedFinishCode:exactFinish?requested:null,
         variationId:null,
-        attributes:{}
+        attributes:{alt,title,context}
       });
     }
 
@@ -719,12 +866,28 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
   const fallback=sorted.find(x=>x.finishMatch!=="exact")||null;
   let best=exact||fallback;
 
-  // Catalano: keep all genuinely distinct product-gallery views.
-  // The dedicated gallery is preferred over the generic candidate ranking.
+  // Catalano: the selected finish is authoritative.
+  // Never mix images from other finishes or generic collection/lifestyle galleries.
   const isCatalano=/catalano\.it/i.test(manufacturerUrl);
-  let productImages=isCatalano
-    ? (catalanoGallery.length ? catalanoGallery.slice(0,8) : sorted.filter(x=>x.url).slice(0,4))
-    : (best?[best]:[]);
+  let productImages=best?[best]:[];
+  if(isCatalano){
+    const exactFinishGallery=catalanoGallery.filter(x=>x.finishMatch==="exact");
+    const suffix=String(requested||reference||"").replace(/\D/g,"").slice(-2);
+    const isWhiteFinish=["01","21"].includes(suffix);
+
+    if(exactFinishGallery.length){
+      productImages=exactFinishGallery.slice(0,6);
+    }else if(isWhiteFinish){
+      // White product pages often use their default gallery without explicit finish metadata.
+      productImages=catalanoGallery.slice(0,2);
+    }else{
+      // For coloured finishes, do not pollute the dossier with unrelated lifestyle photos.
+      // If Catalano does not expose an exact-finish image server-side, keep only the best
+      // product visual instead of showing the whole page gallery.
+      const exactSorted=sorted.filter(x=>x.finishMatch==="exact");
+      productImages=(exactSorted.length?exactSorted:[best].filter(Boolean)).slice(0,2);
+    }
+  }
 
   // Évite les images cassées : on rapatrie l'image officielle choisie côté serveur
   // et on la renvoie directement au navigateur sous forme data URL.
@@ -758,7 +921,8 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     detectedFinishCode:best?.detectedFinishCode||null,
     drawing:!!drawing,
     candidates:sorted.length,
-    catalanoGallery:isCatalano?productImages.length:undefined
+    catalanoGallery:isCatalano?productImages.length:undefined,
+    catalanoExactFinish:isCatalano?catalanoGallery.filter(x=>x.finishMatch==="exact").length:undefined
   }));
 
   if(!exact){

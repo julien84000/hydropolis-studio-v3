@@ -1,19 +1,19 @@
-# Hydropolis Studio V6.8
+# Hydropolis Studio V7.1
 
-Correction du bug d'ajout de produits et de photos.
+Ajout Recor (recor.pt)
 
-Cause identifiée :
-- le cache fabricant stockait des images base64 dans localStorage ;
-- le navigateur atteignait sa limite (« exceeded the quota ») ;
-- cette exception interrompait addProduct avant renderRooms ;
-- le produit existait donc en mémoire et pouvait apparaître dans le dossier client, tout en n'apparaissant pas correctement dans « Projet par pièce ».
+Catalogue intégré :
+- 127 variantes de baignoires Recor
+- 69 accessoires / pieds / socles Recor
+- source : Recor Price List EUR, January 2026
 
-Corrections :
-- photos officielles fabricant stockées comme URLs proxy légères ;
-- plus de base64 pour les images fabricant ;
-- cache fabricant V6.8 protégé contre les dépassements de quota ;
-- anciens caches fabricant lourds supprimés automatiquement ;
-- saveState ne peut plus interrompre l'interface ;
-- produit affiché immédiatement dans « Projet par pièce » avant la recherche photo ;
-- l'onglet Projet par pièce se resynchronise à chaque ouverture ;
-- galerie Catalano multi-images conservée.
+Règles commerciales Recor :
+- les prix du PDF sont traités comme prix nets d'achat Hydropolis ;
+- prix public HT = prix net × 2,6 ;
+- chaque baignoire ajoute automatiquement 380 € HT de transport obligatoire ;
+- le transport Recor n'est pas remisé au client ;
+- le coût d'achat et la marge utilisent le prix net réel du PDF, pas un taux de remise estimé.
+
+Recherche fabricant :
+- résolution automatique vers les fiches officielles recor.pt/product/<modele>-en/ ;
+- récupération photo, fiche technique et brochure via le système fabricant existant.
