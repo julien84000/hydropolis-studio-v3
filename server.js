@@ -629,22 +629,33 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
   const fallback=sorted.find(x=>x.finishMatch!=="exact")||null;
   let best=exact||fallback;
 
+  // Catalano : certaines fiches officielles présentent deux vues produit utiles.
+  // On conserve jusqu’à deux images distinctes afin que le dossier client les affiche ensemble.
+  const isCatalano=/catalano\.it/i.test(manufacturerUrl);
+  let productImages=isCatalano ? sorted.filter(x=>x.url).slice(0,2) : (best?[best]:[]);
+
   // Évite les images cassées : on rapatrie l'image officielle choisie côté serveur
   // et on la renvoie directement au navigateur sous forme data URL.
-  if(best && /(?:coalbrookuk\.co\.uk|zucchettidesign\.it|assets\.zucchettidesign\.it|catalano\.it)/i.test(best.url||manufacturerUrl)){
+  async function embedOfficialImage(item){
+    if(!item) return item;
+    if(!/(?:coalbrookuk\.co\.uk|zucchettidesign\.it|assets\.zucchettidesign\.it|catalano\.it)/i.test(item.url||manufacturerUrl)) return item;
     try{
-      const ir=await axios.get(best.url,{
+      const ir=await axios.get(item.url,{
         responseType:"arraybuffer",timeout:18000,maxRedirects:5,
         headers:{"User-Agent":"Mozilla/5.0","Referer":new URL(manufacturerUrl).origin+"/"}
       });
       const ct=String(ir.headers["content-type"]||"image/jpeg");
       if(ct.startsWith("image/") && ir.data && ir.data.length<9000000){
-        best={...best,dataUrl:`data:${ct};base64,${Buffer.from(ir.data).toString("base64")}`};
+        return {...item,dataUrl:`data:${ct};base64,${Buffer.from(ir.data).toString("base64")}`};
       }
-    }catch(e){
-      console.warn("[manufacturer-image-embed]",e.message);
-    }
+    }catch(e){console.warn("[manufacturer-image-embed]",e.message);}
+    return item;
   }
+  if(best) best=await embedOfficialImage(best);
+  if(isCatalano){
+    productImages=await Promise.all(productImages.map(embedOfficialImage));
+    if(productImages.length) best=productImages[0];
+  }else productImages=best?[best]:[];
 
   console.log("[manufacturer-image]",JSON.stringify({
     reference,
@@ -669,6 +680,7 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
   return {
     manufacturerUrl,reference,finishCode:requested,finish,base,
     best,
+    images:productImages,
     exactFound:!!exact,
     drawing,
     technicalSheet,

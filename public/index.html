@@ -2,14 +2,15 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Hydropolis Studio V5.6 · Render</title><link rel="stylesheet" href="styles.css">
+<title>Hydropolis Studio V6.0 · Render</title><link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <div class="shell">
 <aside class="sidebar">
-  <div class="logo"><span>H</span><div><b>Hydropolis</b><small>Studio V5.6</small></div></div>
+  <div class="logo"><span>H</span><div><b>Hydropolis</b><small>Studio V6.0</small></div></div>
   <button class="nav active" data-view="catalog">Catalogue intelligent</button>
   <button class="nav" data-view="project">Projet par pièce</button>
+  <button class="nav" data-view="margin">Marge & devis</button>
   <button class="nav" data-view="preview">Présentation client</button>
   <div class="side-note"><b>Base active</b><span>Amphora · REEL · Tarif 2024</span><span id="catalogCount"></span><span id="imageCount"></span></div>
 </aside>
@@ -65,6 +66,40 @@
 
   <div class="section-head room-titlebar"><div><div class="eyebrow">Composition</div><h2>Pièces et éléments</h2></div><button class="btn primary" id="addRoomBtn">+ Ajouter une pièce</button></div>
   <div id="roomsEditor" class="rooms"></div>
+</section>
+
+
+<section id="view-margin" class="view">
+  <div class="commercial-grid">
+    <div class="card commercial-settings">
+      <div class="eyebrow">Paramètres commerciaux</div>
+      <h2>Remise client & conditions d'achat</h2>
+      <div class="fields two">
+        <label>Remise client (%)
+          <input id="clientDiscount" type="number" min="0" max="100" step="0.1" value="0">
+        </label>
+        <label>TVA devis (%)
+          <input id="quoteVatRate" type="number" min="0" max="100" step="0.1" value="20">
+        </label>
+        <label>Frais de port HT
+          <input id="shippingFee" type="number" min="0" step="1" value="0">
+        </label>
+      </div>
+      <div class="margin-note">La marge est calculée à partir des remises d'achat fournisseur ci-dessous. Les prix catalogue restent les prix de vente publics HT.</div>
+      <div id="supplierDiscounts" class="supplier-discounts"></div>
+    </div>
+    <div class="card commercial-summary">
+      <div class="eyebrow">Rentabilité du projet</div>
+      <h2>Vue marge</h2>
+      <div id="marginKpis" class="margin-kpis"></div>
+      <div id="marginWarning" class="margin-warning"></div>
+    </div>
+  </div>
+
+  <div class="card margin-detail-card">
+    <div class="section-head"><div><div class="eyebrow">Détail</div><h2>Marge par fabricant</h2></div></div>
+    <div id="marginByManufacturer"></div>
+  </div>
 </section>
 
 <section id="view-preview" class="view">

@@ -847,3 +847,95 @@ button,input,select,textarea{font:inherit}.shell{display:grid;grid-template-colu
 @media print{
  #document .board-item,#document .board-item:hover,#document .board-visual img,#document .board-item:hover .board-visual img{transform:none!important;filter:none!important;transition:none!important}
 }
+/* V5.7 — Catalano : deux vues officielles lorsqu'elles existent */
+#document .board-visual-dual{display:grid;grid-template-columns:1fr 1fr;gap:2mm;background:#fff}
+#document .board-visual-dual img{width:100%;height:100%;min-width:0;object-fit:contain;background:#f7f4ef}
+.product-image-dual{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.product-image-dual img{width:100%;height:100%;object-fit:contain}
+
+/* =========================================================
+   V5.8 — dashboard marge + devis final
+   ========================================================= */
+.commercial-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:18px;margin-bottom:18px}
+.supplier-discounts{display:grid;gap:8px;margin-top:18px}
+.supplier-discount-row{display:flex;align-items:center;justify-content:space-between;gap:16px;border-top:1px solid var(--line);padding:10px 0}
+.supplier-discount-row span:first-child{display:grid;gap:2px}
+.supplier-discount-row small{color:var(--muted);font-size:12px}
+.supplier-rate{display:flex;align-items:center;gap:6px}
+.supplier-rate input{width:92px;text-align:right}
+.supplier-rate em{font-style:normal;color:var(--muted)}
+.margin-note,.margin-warning{font-size:12px;line-height:1.45;color:var(--muted);margin-top:12px}
+.margin-warning:not(:empty){padding:10px 12px;background:#f8f4ed;border-left:2px solid var(--gold)}
+.margin-kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
+.margin-kpi{padding:14px;border:1px solid var(--line);display:grid;gap:6px;background:#fff}
+.margin-kpi span{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.margin-kpi strong{font-family:Georgia,serif;font-size:21px;font-weight:400}
+.margin-kpi small{font-size:11px;color:var(--muted);line-height:1.35}
+.margin-kpi.highlight{border-color:rgba(185,138,77,.65);background:#fcfaf6}
+.margin-detail-card{margin-top:18px}
+.margin-table-wrap{overflow:auto}
+.margin-table{width:100%;border-collapse:collapse;font-size:13px}
+.margin-table th,.margin-table td{padding:11px 9px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.margin-table th:first-child,.margin-table td:first-child{text-align:left}
+.margin-table th{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.margin-table td small{display:block;color:var(--muted)}
+.margin-table .negative{color:#9b3d31}
+.margin-empty{padding:18px;color:var(--muted);font-size:13px}
+
+/* Customer discount shown explicitly on editorial product cards */
+#document .commercial-price{display:flex;align-items:baseline;gap:1.7mm;flex-wrap:wrap}
+#document .commercial-price .price-list{text-decoration:line-through;color:#9c948b;font-weight:400}
+#document .commercial-price .price-discount{font-size:5pt;color:#a2733b;text-transform:uppercase;letter-spacing:.04em}
+#document .commercial-price strong{font-size:6pt}
+
+/* Final quote */
+#document .quote-page{padding:12mm 13mm 12mm!important;background:#fff!important;position:relative}
+#document .quote-topline{height:1.2px;background:#b98a4d;width:100%;margin-bottom:8mm}
+#document .quote-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8mm}
+#document .quote-head h2{font-family:Georgia,serif;font-size:22pt;font-weight:400;margin:1.4mm 0 1mm}
+#document .quote-head p{font-size:7pt;color:#756d64;margin:0}
+#document .quote-brand{font-family:Georgia,serif;color:#a2733b;font-size:13pt}
+#document .quote-table{width:100%;border-collapse:collapse;table-layout:fixed}
+#document .quote-table th{font-size:5.4pt;text-transform:uppercase;letter-spacing:.08em;color:#867d73;text-align:left;border-bottom:1px solid #bea47d;padding:2.2mm 1.5mm}
+#document .quote-table td{font-size:6.1pt;vertical-align:top;border-bottom:1px solid #ebe7e0;padding:2.4mm 1.5mm}
+#document .quote-table td:nth-last-child(-n+3),#document .quote-table th:nth-last-child(-n+3){text-align:right}
+#document .quote-table td b{display:block;font-family:Georgia,serif;font-size:6.7pt;font-weight:400}
+#document .quote-table td small{display:block;color:#8f877e;margin-top:.7mm;font-size:5.2pt}
+#document .quote-totals{margin-left:auto;margin-top:7mm;width:78mm;border-top:1px solid #b98a4d;padding-top:2mm}
+#document .quote-totals>div{display:flex;justify-content:space-between;gap:8mm;padding:1.8mm 0;font-size:7pt}
+#document .quote-totals .quote-discount{color:#9c6c35}
+#document .quote-totals .quote-total-ht{border-top:1px solid #ded7ce;margin-top:1mm;padding-top:2.4mm}
+#document .quote-totals .quote-grand-total{border-top:1.5px solid #342f2a;margin-top:1.5mm;padding-top:3mm;font-size:10pt;font-family:Georgia,serif}
+#document .quote-bottom{position:absolute;left:13mm;right:13mm;bottom:8mm;border-top:1px solid #b98a4d;padding-top:2mm;display:flex;justify-content:space-between;font-size:5.2pt;text-transform:uppercase;letter-spacing:.08em;color:#8e857b}
+@media(max-width:980px){
+ .commercial-grid{grid-template-columns:1fr}
+ .margin-kpis{grid-template-columns:1fr 1fr}
+}
+@media(max-width:620px){
+ .margin-kpis{grid-template-columns:1fr}
+ .supplier-discount-row{align-items:flex-end}
+}
+
+/* V5.9 */
+.commercial-settings .fields.two{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:900px){.commercial-settings .fields.two{grid-template-columns:1fr 1fr}}
+@media(max-width:620px){.commercial-settings .fields.two{grid-template-columns:1fr}}
+
+/* =========================================================
+   V6.0 — remises client par article
+   ========================================================= */
+.article-discount-panel{
+  min-width:165px;padding:9px 10px;border:1px solid var(--line);
+  background:#faf8f4;display:grid;gap:5px
+}
+.article-discount-panel label{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.article-discount-line{display:flex;align-items:center;gap:5px;margin-top:5px}
+.article-discount-line input{width:74px;padding:7px 8px;text-align:right}
+.article-discount-line em{font-style:normal;color:var(--muted)}
+.article-discount-panel>b{font-family:Georgia,serif;font-weight:400;font-size:14px}
+.article-discount-reset:disabled{opacity:.35;cursor:default}
+#document .quote-table th:nth-last-child(-n+4),
+#document .quote-table td:nth-last-child(-n+4){text-align:right}
+.commercial-settings .fields.two{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:900px){.commercial-settings .fields.two{grid-template-columns:1fr 1fr}}
+@media(max-width:620px){.commercial-settings .fields.two{grid-template-columns:1fr}}
