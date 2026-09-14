@@ -454,6 +454,96 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
   });
 
 
+
+  // Catalano: collect the real gallery from the resolved product page.
+  // Important: Catalano commonly exposes the same visual through src/data-src/srcset
+  // at several sizes. We deduplicate resized variants, but keep genuinely different views.
+  const catalanoGallery=[];
+  if(/catalano\.it/i.test(manufacturerUrl)){
+    const gallerySeen=new Set();
+
+    function catalanoCanonical(url){
+      if(!url) return "";
+      let out=absoluteUrl(manufacturerUrl,url);
+      if(!out) return "";
+      try{
+        const u=new URL(out);
+        // Width/height/transformation parameters must not turn one photo into many photos.
+        ["w","h","width","height","resize","fit","crop","quality","q"].forEach(k=>u.searchParams.delete(k));
+        u.hash="";
+        out=u.href;
+      }catch{}
+      // WordPress/resizer naming: foo-768x1024.jpg == foo.jpg for deduplication.
+      out=out.replace(/-\d{2,5}x\d{2,5}(?=\.(?:jpe?g|png|webp)(?:$|\?))/i,"");
+      return out.toLowerCase();
+    }
+
+    function addCatalanoGallery(raw,alt="",title=""){
+      const href=absoluteUrl(manufacturerUrl,raw);
+      if(!href || !isImageUrl(href)) return;
+      const low=(href+" "+alt+" "+title).toLowerCase();
+      if(/logo|icon|sprite|avatar|flag|placeholder|loading|swatch|favicon|cookie|social|plus-feature/.test(low)) return;
+      // Exclude tiny assets, finish chips and interface images.
+      if(/[?&](?:w|width|h|height)=([1-9]\d?|1\d\d)(?:&|$)/i.test(href)) return;
+      const key=catalanoCanonical(href);
+      if(!key || gallerySeen.has(key)) return;
+      gallerySeen.add(key);
+      catalanoGallery.push({
+        url:href,
+        source:"catalano-product-gallery",
+        score:9000-catalanoGallery.length,
+        finishMatch:"generic",
+        detectedFinishCode:null,
+        variationId:null,
+        attributes:{}
+      });
+    }
+
+    // Preserve DOM order: on Catalano this reflects the product gallery order.
+    $("picture").each((_,el)=>{
+      const $p=$(el);
+      $p.find("source").each((__,s)=>{
+        const ss=$(s).attr("srcset")||"";
+        // Prefer the largest candidate from each srcset.
+        const parts=ss.split(",").map(x=>x.trim()).filter(Boolean);
+        if(parts.length){
+          const last=parts[parts.length-1].split(/\s+/)[0];
+          addCatalanoGallery(last,$p.find("img").attr("alt")||"",$p.find("img").attr("title")||"");
+        }
+      });
+      const im=$p.find("img").first();
+      if(im.length){
+        const alt=im.attr("alt")||"", title=im.attr("title")||"";
+        for(const attr of ["data-large_image","data-original","data-lazy-src","data-src","src"]){
+          addCatalanoGallery(im.attr(attr),alt,title);
+        }
+        const ss=im.attr("srcset")||im.attr("data-srcset")||"";
+        const parts=ss.split(",").map(x=>x.trim()).filter(Boolean);
+        if(parts.length) addCatalanoGallery(parts[parts.length-1].split(/\s+/)[0],alt,title);
+      }
+    });
+
+    $("img").each((_,el)=>{
+      const im=$(el), alt=im.attr("alt")||"", title=im.attr("title")||"";
+      for(const attr of ["data-large_image","data-original","data-lazy-src","data-src","src"]){
+        addCatalanoGallery(im.attr(attr),alt,title);
+      }
+      for(const attr of ["srcset","data-srcset"]){
+        const ss=im.attr(attr)||"";
+        const parts=ss.split(",").map(x=>x.trim()).filter(Boolean);
+        if(parts.length) addCatalanoGallery(parts[parts.length-1].split(/\s+/)[0],alt,title);
+      }
+    });
+
+    // Some Catalano templates keep gallery URLs in inline JSON/CSS instead of <img>.
+    const catRaw=html.match(/https?:\\?\/\\?\/[^"'<>\\\s]+?\.(?:jpe?g|png|webp)(?:\\?[^"'<>\\\s]*)?/gi)||[];
+    for(const raw of catRaw){
+      addCatalanoGallery(raw.replace(/\\\//g,"/").replace(/&amp;/g,""));
+    }
+
+    catalanoGallery.forEach(x=>candidates.push(x));
+  }
+
   // Modern manufacturer sites (notably Zucchetti) keep product images in JSON/script payloads.
   // Extract official asset URLs even when there is no rendered <img> in the server-side HTML.
   const rawUrlRx=/https?:\\?\/\\?\/[^"'<>\\\s]+?\.(?:jpe?g|png|webp)(?:\\?[^"'<>\\\s]*)?/gi;
@@ -629,10 +719,12 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
   const fallback=sorted.find(x=>x.finishMatch!=="exact")||null;
   let best=exact||fallback;
 
-  // Catalano : certaines fiches officielles présentent deux vues produit utiles.
-  // On conserve jusqu’à deux images distinctes afin que le dossier client les affiche ensemble.
+  // Catalano: keep all genuinely distinct product-gallery views.
+  // The dedicated gallery is preferred over the generic candidate ranking.
   const isCatalano=/catalano\.it/i.test(manufacturerUrl);
-  let productImages=isCatalano ? sorted.filter(x=>x.url).slice(0,2) : (best?[best]:[]);
+  let productImages=isCatalano
+    ? (catalanoGallery.length ? catalanoGallery.slice(0,8) : sorted.filter(x=>x.url).slice(0,4))
+    : (best?[best]:[]);
 
   // Évite les images cassées : on rapatrie l'image officielle choisie côté serveur
   // et on la renvoie directement au navigateur sous forme data URL.
@@ -665,7 +757,8 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     variationId:best?.variationId||null,
     detectedFinishCode:best?.detectedFinishCode||null,
     drawing:!!drawing,
-    candidates:sorted.length
+    candidates:sorted.length,
+    catalanoGallery:isCatalano?productImages.length:undefined
   }));
 
   if(!exact){

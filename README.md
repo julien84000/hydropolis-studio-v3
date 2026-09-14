@@ -1,10 +1,11 @@
-# Hydropolis Studio V6.5
+# Hydropolis Studio V6.6
 
-Correction urgente :
-- restauration de l'affichage des photos produits dans les planches ;
-- l'image produit principale est désormais prioritaire sur pdfImage ;
-- chargement eager des images du dossier ;
-- dimensions explicites des zones visuelles pour éviter leur disparition ;
-- image entière avec object-fit: contain ;
-- une seule image pour Amphora / Coalbrook / Zucchetti sauf logique spécifique ;
-- Catalano affiche plusieurs vues uniquement lorsqu'elles sont réellement distinctes.
+Correction Catalano :
+- extraction dédiée de la galerie de la fiche produit Catalano ;
+- lecture des balises picture/source, srcset, data-src, data-lazy-src et des assets présents dans le HTML ;
+- suppression des doublons dus aux différentes tailles d'une même image ;
+- conservation des différentes vues réelles d'un même article (jusqu'à 8) ;
+- nouvelle clé de cache V6.6 pour ne pas réutiliser l'ancien résultat à une seule image ;
+- à l'ouverture de « Présentation client », les produits Catalano qui n'ont qu'une vue sont automatiquement réinterrogés ;
+- dans la planche, 2 images distinctes sont affichées en composition principale + vue complémentaire ;
+- les autres marques restent à une image principale.

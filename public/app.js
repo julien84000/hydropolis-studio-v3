@@ -103,9 +103,9 @@ async function autoCropForPdf(src){
   });
 }
 
-const manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v57")||"{}");
+const manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v66")||"{}");
 function manufacturerCacheKey(p){return `${p.manufacturer}|${p.reference}`;}
-function saveManufacturerCache(){localStorage.setItem("hydropolis-manufacturer-v57",JSON.stringify(manufacturerImageCache));}
+function saveManufacturerCache(){localStorage.setItem("hydropolis-manufacturer-v66",JSON.stringify(manufacturerImageCache));}
 function cachedManufacturerImage(p){return manufacturerImageCache[manufacturerCacheKey(p)]||null;}
 
 async function fetchManufacturerImage(p,force=false){
@@ -205,7 +205,7 @@ async function enrichSelectedPhoto(id,force=false){
       p.image=img.src;
       p.pdfImage=await autoCropForPdf(img.src);
       p.images=img.images||[img.src].filter(Boolean);
-      p.pdfImages=await Promise.all((p.images||[]).slice(0,2).map(autoCropForPdf));
+      p.pdfImages=await Promise.all((p.images||[]).slice(0,/catalano/i.test(p.manufacturer||"")?8:2).map(autoCropForPdf));
       p.imageSource=img.source;
       p.imageFinishMatch=img.finishMatch;
       p.imageStatus=imageBadge(img,p);
@@ -710,7 +710,45 @@ function bindProject(){
     refToggle.onchange=()=>{state.showSupplierReferences=refToggle.checked;saveState();};
   }
 }
-function showView(v){$$(".nav").forEach(n=>n.classList.toggle("active",n.dataset.view===v));$$(".view").forEach(x=>x.classList.remove("active"));$("#view-"+v).classList.add("active");let t={catalog:["Catalogue intelligent","Recherche puis ajout direct dans la pièce choisie."],project:["Projet par pièce","Chaque pièce contient ses produits catalogue et ses éléments libres."],margin:["Marge & devis","Pilotez la remise client, vos conditions d’achat et la marge du projet."],preview:["Présentation client","Mise en page automatique organisée pièce par pièce, avec devis récapitulatif final."]};$("#viewTitle").textContent=t[v][0];$("#viewSubtitle").textContent=t[v][1];if(v==="margin")renderMarginDashboard();if(v==="preview")buildDocument();}
+async function refreshCatalanoGalleries(){
+  const targets=(state.selected||[]).filter(p=>{
+    if(!/catalano/i.test(p.manufacturer||"") || p.customImage)return false;
+    return productVisuals(p).length<2;
+  });
+  for(const p of targets){
+    try{
+      const img=await fetchManufacturerImage(p,true);
+      if(img.src){
+        p.image=img.src;
+        p.images=(img.images&&img.images.length)?img.images:[img.src];
+        p.pdfImage=await autoCropForPdf(img.src);
+        p.pdfImages=await Promise.all((p.images||[]).slice(0,8).map(autoCropForPdf));
+        p.imageSource=img.source;
+        p.imageFinishMatch=img.finishMatch;
+        p.imageStatus=imageBadge(img,p);
+        p.imageNote=img.note;
+      }
+    }catch(e){
+      console.warn("[Catalano gallery refresh]",p.reference,e.message);
+    }
+  }
+  if(targets.length)saveState();
+}
+async function showView(v){
+  $$(".nav").forEach(n=>n.classList.toggle("active",n.dataset.view===v));
+  $$(".view").forEach(x=>x.classList.remove("active"));
+  $("#view-"+v).classList.add("active");
+  let t={catalog:["Catalogue intelligent","Recherche puis ajout direct dans la pièce choisie."],project:["Projet par pièce","Chaque pièce contient ses produits catalogue et ses éléments libres."],margin:["Marge & devis","Pilotez la remise client, vos conditions d’achat et la marge du projet."],preview:["Présentation client","Mise en page automatique organisée pièce par pièce, avec devis récapitulatif final."]};
+  $("#viewTitle").textContent=t[v][0];
+  $("#viewSubtitle").textContent=t[v][1];
+  if(v==="margin")renderMarginDashboard();
+  if(v==="preview"){
+    $("#viewSubtitle").textContent="Actualisation des visuels fabricant…";
+    await refreshCatalanoGalleries();
+    $("#viewSubtitle").textContent=t[v][1];
+    buildDocument();
+  }
+}
 function technicalDocumentPage(r,p,url,label,no){
   const src=`/api/pdf-page-image?url=${encodeURIComponent(url)}`;
   return `<section class="page drawing-page">
@@ -793,15 +831,14 @@ function productVisuals(p){
   const keyOf=src=>{
     if(!src || typeof src!=="string")return "";
     let s=src.trim();
+    if(/^data:/i.test(s)) return s.slice(0,220);
     try{
-      if(!/^data:/i.test(s)){
-        const u=new URL(s,location.href);
-        u.search="";u.hash="";s=u.href;
-      }
+      const u=new URL(s,location.href);
+      ["w","h","width","height","resize","fit","crop","quality","q"].forEach(k=>u.searchParams.delete(k));
+      u.hash="";
+      s=u.href;
     }catch(e){}
-    return s
-      .replace(/-\d{2,4}x\d{2,4}(?=\.(?:jpe?g|png|webp)(?:$|\?))/i,"")
-      .toLowerCase();
+    return s.replace(/-\d{2,5}x\d{2,5}(?=\.(?:jpe?g|png|webp)(?:$|\?))/i,"").toLowerCase();
   };
   const add=src=>{
     if(!src || typeof src!=="string")return;
@@ -810,12 +847,14 @@ function productVisuals(p){
     seen.add(k);out.push(src);
   };
 
-  // Main product image first. pdfImage may be a technical-document preview.
+  // Original official images first.
   add(p.image);
   if(Array.isArray(p.images))p.images.forEach(add);
   if(Array.isArray(p.imageGallery))p.imageGallery.forEach(add);
   add(p.image2);add(p.image3);add(p.image4);
-  add(p.pdfImage);
+
+  // Cropped/PDF image only as a fallback, otherwise it can duplicate a real photo.
+  if(!out.length) add(p.pdfImage);
   return out;
 }
 function boardVisualHtml(p){
