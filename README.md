@@ -1,10 +1,10 @@
-# Hydropolis Studio V6.2
+# Hydropolis Studio V6.3
 
-Correction du devis :
-- 9 lignes maximum par page de devis au lieu de 12 ;
-- zone basse réservée aux totaux ;
-- marge de sécurité entre GRAND TOTAL TTC, pied de page et numéro de page ;
-- bloc des totaux déclaré insécable à l'impression ;
-- footer protégé pour éviter les chevauchements visibles dans la V6.1.
-
-Toutes les fonctions V6.1 sont conservées.
+Modifications dossier client :
+- nouvelle grille éditoriale anti-chevauchement ;
+- chaque produit possède désormais une zone image et une zone texte indépendantes ;
+- les cadres s'adaptent à la composition et les images utilisent object-fit: contain pour respecter leur format ;
+- un produit peut afficher plusieurs vues dans sa propre zone ;
+- Catalano peut afficher jusqu'à 6 images d'un même article lorsqu'elles ont été récupérées ;
+- mise en page automatique différente pour 1, 2, 3, 4 ou 5 produits ;
+- toutes les fonctions V6.2 sont conservées.

@@ -775,12 +775,44 @@ function orderedPresentationGroups(items){
   if(buckets.AUTRES.length) groups.push({space:"AUTRES",label:"Accessoires & éléments complémentaires",intro:presentationSpaceIntro("AUTRES"),items:buckets.AUTRES});
   return groups;
 }
+function productVisuals(p){
+  const seen=new Set(), out=[];
+  const add=src=>{
+    if(!src || typeof src!=="string" || seen.has(src))return;
+    seen.add(src);out.push(src);
+  };
+  add(p.pdfImage);
+  add(p.image);
+  if(Array.isArray(p.images))p.images.forEach(add);
+  if(Array.isArray(p.imageGallery))p.imageGallery.forEach(add);
+  add(p.image2);add(p.image3);add(p.image4);
+  return out;
+}
+function boardVisualHtml(p){
+  const all=productVisuals(p);
+  const max=/catalano/i.test(p.manufacturer||"")?Math.min(all.length,6):Math.min(all.length,3);
+  const imgs=all.slice(0,max);
+  if(!imgs.length)return `<div class="board-image-fallback">Photo fabricant<br>à rechercher</div>`;
+  if(imgs.length===1)return `<div class="board-gallery gallery-1"><figure><img src="${imgs[0]}" alt="${p.designation||""}"></figure></div>`;
+  return `<div class="board-gallery gallery-${Math.min(imgs.length,6)}">
+    ${imgs.map((src,i)=>`<figure class="gallery-cell gallery-cell-${i+1}"><img src="${src}" alt="${p.designation||""} · vue ${i+1}"></figure>`).join("")}
+  </div>`;
+}
 function boardItemHtml(p,idx){
-  const cls=`board-item board-item-${idx+1}`;
-  if(p.manual){
-    return `<article class="${cls} manual-board-item" data-parallax-layer="${0.018+(idx%4)*0.008}"><div class="board-copy"><div class="maker">ÉLÉMENT DE PROJET</div><div class="title">${p.label}</div>${state.showClientPrices!==false?`<div class="price commercial-price">${commercialPriceHtml(p.price)}</div>`:""}</div></article>`;
-  }
-  return `<article class="${cls}" data-parallax-layer="${0.018+(idx%4)*0.008}"><div class="board-visual ${p.manufacturer==="Catalano" && (p.pdfImages||p.images||[]).length>1?"board-visual-dual":""}">${(p.pdfImage||p.image)?((p.manufacturer==="Catalano" && (p.pdfImages||p.images||[]).length>1)?(p.pdfImages||p.images).slice(0,2).map((src,n)=>`<img src="${src}" alt="${p.designation} · vue ${n+1}">`).join(""):`<img src="${p.pdfImage||p.image}" alt="${p.designation}">`):`<div class="pdf-photo-missing">Photo fabricant<br>${exactFinishLabel(p)}</div>`}</div><div class="board-copy"><div class="maker">${p.manufacturer} · ${p.collection}</div><div class="title">${p.designation}</div><div class="finish">${p.finish}</div>${state.showClientPrices!==false?`<div class="price commercial-price">${commercialPriceHtml(p.totalPrice,p)}</div>`:""}${state.showSupplierReferences!==false?`<div class="refsmall">Réf. ${p.reference}${p.internalReference?" · complet avec partie à encastrer":""}</div>`:""}</div></article>`;
+ const isManual=p.manufacturer==="Sélection libre";
+ const visual=isManual
+   ?(p.image?`<div class="board-gallery gallery-1"><figure><img src="${p.image}" alt="${p.designation||""}"></figure></div>`:`<div class="board-image-fallback">Visuel<br>à ajouter</div>`)
+   :boardVisualHtml(p);
+ return `<article class="board-item board-item-${idx+1}" data-parallax-layer="${idx%2?1.1:.75}">
+   <div class="board-visual">${visual}</div>
+   <div class="board-copy">
+     <div class="board-brand">${p.manufacturer||"Sélection"}${p.collection?` · ${p.collection}`:""}</div>
+     <h3>${p.designation}</h3>
+     ${p.finish?`<div class="board-finish">${p.finish}</div>`:""}
+     ${state.showSupplierReferences!==false && p.reference?`<div class="board-ref">Réf. ${p.reference}</div>`:""}
+     ${state.showClientPrices!==false?`<div class="price commercial-price">${commercialPriceHtml(p.totalPrice??p.price,p)}</div>`:""}
+   </div>
+ </article>`;
 }
 
 
