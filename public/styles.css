@@ -1452,3 +1452,15 @@ button,input,select,textarea{font:inherit}.shell{display:grid;grid-template-colu
 #document .board-gallery.gallery-2 .gallery-cell-2{
   grid-column:2!important;grid-row:1!important;
 }
+
+/* V6.7 — presentation resilience */
+#document .dossier-error-page{
+  display:grid;place-items:center;text-align:center;padding:25mm;
+  background:#fff;
+}
+#document .dossier-error-page h2{
+  font-family:Georgia,serif;font-weight:400;font-size:22pt;margin:0 0 4mm;
+}
+#document .dossier-error-page p{
+  font-size:8pt;color:#7d746a;max-width:140mm;
+}

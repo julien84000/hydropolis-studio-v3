@@ -715,38 +715,96 @@ async function refreshCatalanoGalleries(){
     if(!/catalano/i.test(p.manufacturer||"") || p.customImage)return false;
     return productVisuals(p).length<2;
   });
-  for(const p of targets){
+  if(!targets.length)return false;
+
+  const timeout=(ms)=>new Promise((_,reject)=>setTimeout(()=>reject(new Error("timeout")),ms));
+
+  const jobs=targets.map(async p=>{
     try{
-      const img=await fetchManufacturerImage(p,true);
-      if(img.src){
-        p.image=img.src;
-        p.images=(img.images&&img.images.length)?img.images:[img.src];
-        p.pdfImage=await autoCropForPdf(img.src);
-        p.pdfImages=await Promise.all((p.images||[]).slice(0,8).map(autoCropForPdf));
-        p.imageSource=img.source;
-        p.imageFinishMatch=img.finishMatch;
-        p.imageStatus=imageBadge(img,p);
-        p.imageNote=img.note;
+      const img=await Promise.race([fetchManufacturerImage(p,true),timeout(12000)]);
+      if(!img || !img.src)return false;
+
+      const nextImages=(img.images&&img.images.length)?img.images:[img.src];
+      // Never erase an existing working image/gallery while refreshing.
+      p.image=img.src || p.image;
+      if(nextImages.length)p.images=nextImages;
+
+      try{
+        p.pdfImage=await Promise.race([autoCropForPdf(p.image),timeout(6000)]);
+      }catch(e){
+        p.pdfImage=p.pdfImage||p.image;
       }
+
+      try{
+        p.pdfImages=await Promise.all((p.images||[]).slice(0,8).map(async src=>{
+          try{return await Promise.race([autoCropForPdf(src),timeout(6000)])}
+          catch(e){return src}
+        }));
+      }catch(e){}
+
+      p.imageSource=img.source||p.imageSource;
+      p.imageFinishMatch=img.finishMatch||p.imageFinishMatch;
+      p.imageStatus=imageBadge(img,p);
+      p.imageNote=img.note||p.imageNote;
+      return true;
     }catch(e){
       console.warn("[Catalano gallery refresh]",p.reference,e.message);
+      return false;
     }
-  }
-  if(targets.length)saveState();
+  });
+
+  const results=await Promise.allSettled(jobs);
+  const changed=results.some(r=>r.status==="fulfilled" && r.value===true);
+  if(changed)saveState();
+  return changed;
 }
-async function showView(v){
+function showView(v){
   $$(".nav").forEach(n=>n.classList.toggle("active",n.dataset.view===v));
   $$(".view").forEach(x=>x.classList.remove("active"));
   $("#view-"+v).classList.add("active");
-  let t={catalog:["Catalogue intelligent","Recherche puis ajout direct dans la pièce choisie."],project:["Projet par pièce","Chaque pièce contient ses produits catalogue et ses éléments libres."],margin:["Marge & devis","Pilotez la remise client, vos conditions d’achat et la marge du projet."],preview:["Présentation client","Mise en page automatique organisée pièce par pièce, avec devis récapitulatif final."]};
+
+  let t={
+    catalog:["Catalogue intelligent","Recherche puis ajout direct dans la pièce choisie."],
+    project:["Projet par pièce","Chaque pièce contient ses produits catalogue et ses éléments libres."],
+    margin:["Marge & devis","Pilotez la remise client, vos conditions d’achat et la marge du projet."],
+    preview:["Présentation client","Mise en page automatique organisée pièce par pièce, avec devis récapitulatif final."]
+  };
   $("#viewTitle").textContent=t[v][0];
   $("#viewSubtitle").textContent=t[v][1];
+
   if(v==="margin")renderMarginDashboard();
+
   if(v==="preview"){
-    $("#viewSubtitle").textContent="Actualisation des visuels fabricant…";
-    await refreshCatalanoGalleries();
-    $("#viewSubtitle").textContent=t[v][1];
-    buildDocument();
+    // Critical: never block the dossier on manufacturer network calls.
+    try{
+      buildDocument();
+    }catch(err){
+      console.error("[buildDocument]",err);
+      const host=$("#document");
+      if(host)host.innerHTML=`<section class="page dossier-error-page"><div><h2>Le dossier n’a pas pu être généré.</h2><p>${String(err.message||err)}</p></div></section>`;
+    }
+
+    const catalanoToRefresh=(state.selected||[]).some(p=>
+      /catalano/i.test(p.manufacturer||"") &&
+      !p.customImage &&
+      productVisuals(p).length<2
+    );
+
+    if(catalanoToRefresh){
+      $("#viewSubtitle").textContent="Dossier affiché · actualisation Catalano en arrière-plan…";
+      refreshCatalanoGalleries()
+        .then(changed=>{
+          if(changed && $("#view-preview").classList.contains("active")){
+            buildDocument();
+          }
+        })
+        .catch(err=>console.warn("[Catalano background refresh]",err))
+        .finally(()=>{
+          if($("#view-preview").classList.contains("active")){
+            $("#viewSubtitle").textContent=t.preview[1];
+          }
+        });
+    }
   }
 }
 function technicalDocumentPage(r,p,url,label,no){
