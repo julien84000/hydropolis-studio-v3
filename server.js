@@ -159,43 +159,84 @@ function coalbrookRangeSlug(collection){
   };
   return map[normalizeToken(collection||"")]||"";
 }
+async function fetchCoalbrookPage(url){
+  const r=await axios.get(url,{
+    timeout:22000,maxRedirects:5,validateStatus:x=>x>=200&&x<400,
+    headers:{
+      "User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/150 Safari/537.36",
+      "Accept-Language":"en-GB,en;q=0.9"
+    }
+  });
+  return String(r.data||"");
+}
+function coalbrookProductLinks(html,baseUrl){
+  const $=cheerio.load(html), seen=new Set(), out=[];
+  $("a[href*='/product/']").each((_,el)=>{
+    const href=absoluteUrl(baseUrl,$(el).attr("href"));
+    if(!href||seen.has(href))return;
+    seen.add(href);
+    const card=$(el).closest("article,li,.product,.card,.product-item,div");
+    out.push({
+      href,
+      text:(($(el).attr("aria-label")||"")+" "+($(el).attr("title")||"")+" "+$(el).text()+" "+card.text()).trim()
+    });
+  });
+  return out;
+}
 async function resolveManufacturerProductUrl(manufacturerUrl,reference,originalDescription,designation,collection){
   if(!/coalbrookuk\.co\.uk/i.test(manufacturerUrl)) return manufacturerUrl;
+
+  const base=String(reference||"").toUpperCase().replace(/(?:CP|GM|BB|BN)$/,"");
+  const wantedCollection=normalizeToken(collection||"");
+
   try{
+    // 1) Coalbrook's own keyword search. The product page itself contains the real SKU.
+    const searchUrl=`https://coalbrookuk.co.uk/products?keywords=${encodeURIComponent(base)}`;
+    const searchHtml=await fetchCoalbrookPage(searchUrl);
+    const searchLinks=coalbrookProductLinks(searchHtml,searchUrl);
+
+    for(const item of searchLinks.slice(0,12)){
+      try{
+        const html=await fetchCoalbrookPage(item.href);
+        const text=normalizeToken(cheerio.load(html)("body").text());
+        if(text.includes(normalizeToken(base))){
+          if(wantedCollection && ["bank","domo","decca","zurich"].includes(wantedCollection)){
+            if(!text.includes(wantedCollection)) continue;
+          }
+          return item.href;
+        }
+      }catch{}
+    }
+
+    // 2) Fallback: only search inside the requested official range and compare names.
     const slug=coalbrookRangeSlug(collection);
     const catalogue=slug
       ?`https://coalbrookuk.co.uk/range/${slug}`
-      :"https://coalbrookuk.co.uk/type/basin";
-    const r=await axios.get(catalogue,{
-      timeout:22000,maxRedirects:5,validateStatus:x=>x>=200&&x<400,
-      headers:{"User-Agent":"Mozilla/5.0","Accept-Language":"en-GB,en;q=0.9"}
-    });
-    const $=cheerio.load(String(r.data||""));
-    let target=String(originalDescription||designation||"");
-    target=target.replace(/^Coalbrook\s+/i,"");
+      :"https://coalbrookuk.co.uk/products";
+    const rangeHtml=await fetchCoalbrookPage(catalogue);
+    let target=String(originalDescription||designation||"")
+      .replace(/^Coalbrook\s+/i,"");
     if(collection){
       const safe=String(collection).replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
       target=target.replace(new RegExp("^"+safe+"\\s+","i"),"");
     }
     target=target.replace(/\s*-\s*(brushed brass|brushed nickel|chrome|gunmetal|matt white)\s*$/i,"");
 
-    const seen=new Set(), options=[];
-    $("a[href*='/product/']").each((_,el)=>{
-      const href=absoluteUrl(catalogue,$(el).attr("href"));
-      if(!href||seen.has(href)) return;
-      seen.add(href);
-      const card=$(el).closest("article,li,.product,.card,.product-item,div");
-      const text=(($(el).attr("aria-label")||"")+" "+($(el).attr("title")||"")+" "+$(el).text()+" "+card.text()).trim();
-      let score=similarityScore(target,text);
-      const A=new Set(productWords(target)),B=new Set(productWords(text));
-      let hits=0;for(const x of A)if(B.has(x))hits++;
-      if(A.size && hits===A.size)score+=1.5;
-      options.push({href,score,text:normalizeToken(text)});
-    });
-    options.sort((a,b)=>b.score-a.score);
-    const best=options[0],second=options[1];
-    if(best && best.score>=0.65 && (!second||best.score-second.score>=0.035||best.score>=1.45)){
-      return best.href;
+    const options=coalbrookProductLinks(rangeHtml,catalogue).map(x=>({
+      ...x,score:similarityScore(target,x.text)
+    })).sort((a,b)=>b.score-a.score);
+
+    for(const item of options.slice(0,10)){
+      if(item.score<0.52) break;
+      try{
+        const html=await fetchCoalbrookPage(item.href);
+        const text=normalizeToken(cheerio.load(html)("body").text());
+        // Exact SKU always wins. Otherwise require a strong title match in the correct range.
+        if(text.includes(normalizeToken(base)) || item.score>=0.82){
+          if(wantedCollection && ["bank","domo","decca","zurich"].includes(wantedCollection) && !text.includes(wantedCollection)) continue;
+          return item.href;
+        }
+      }catch{}
     }
     return "";
   }catch(e){
@@ -390,6 +431,29 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     });
   }
 
+  // Coalbrook: first look for the exact full SKU anywhere in the official page HTML.
+  // This is stricter and more reliable than guessing from image order.
+  if(/coalbrookuk\.co\.uk/i.test(manufacturerUrl)){
+    const fullRef=String(reference||"").toUpperCase();
+    const escaped=fullRef.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+    const rx=new RegExp(`https?:\\\\?\\/\\\\?\\/[^"'<>\\\\s]*${escaped}[^"'<>\\\\s]*\\.(?:jpe?g|png|webp)(?:\\\\?[^"'<>\\\\s]*)?`,"gi");
+    for(const raw of (html.match(rx)||[])){
+      let href=raw.replace(/\\\//g,"/").replace(/&amp;/g,"&");
+      try{href=decodeURIComponent(href)}catch{}
+      const low=href.toLowerCase();
+      if(/swatch|colour|color|chrome2|brushed-gunmetal|brushed-brass|brushed-nickel3/.test(low)) continue;
+      candidates.push({
+        url:href,
+        source:"coalbrook-exact-sku-image",
+        score:10000,
+        finishMatch:"exact",
+        detectedFinishCode:requested||null,
+        variationId:null,
+        attributes:{reference:fullRef}
+      });
+    }
+  }
+
   // Coalbrook: product pages expose the four real product images first, then four
   // circular finish swatches. The Excel reference can differ from the current web SKU,
   // so map the requested finish by the SKU suffix in the official image URL (CP/GM/BB/BN),
@@ -467,6 +531,25 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     }
   });
 
+  // Zucchetti fallback: official technical sheets use the base reference as PDF filename.
+  if(!technicalSheet && /zucchettidesign\.it/i.test(manufacturerUrl)){
+    const zbase=String(reference||"").split(".")[0].toUpperCase();
+    if(/^Z[A-Z0-9]+$/.test(zbase)){
+      const candidate=`https://assets.zucchettidesign.it/uploads/downloads/pdf/${zbase}.pdf`;
+      try{
+        const head=await axios.get(candidate,{
+          responseType:"arraybuffer",timeout:12000,maxRedirects:3,
+          validateStatus:x=>x>=200&&x<300,
+          headers:{"User-Agent":"Mozilla/5.0","Referer":"https://www.zucchettidesign.it/"}
+        });
+        const ct=String(head.headers["content-type"]||"");
+        if(ct.includes("pdf") && head.data?.length>1000){
+          technicalSheet={url:candidate,label:"Technical sheet",type:"pdf",source:"official-derived"};
+        }
+      }catch{}
+    }
+  }
+
   // DRAWING / DISEGNO / DESSIN TECHNIQUE.
   let drawing=null;
   $("a").each((_,el)=>{
@@ -474,12 +557,12 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     const label=normalizeToken($(el).text());
     const href=absoluteUrl(manufacturerUrl,$(el).attr("href"));
     if(!href) return;
-    const isDrawing=/\b(2d drawing|drawing|disegno|dessin|technical drawing|plan technique)\b/.test(label);
-    if(isDrawing && (isPdfUrl(href)||isImageUrl(href))){
+    const isDrawing=/\b(2d drawing|dwg file|drawing|disegno|dessin|technical drawing|plan technique)\b/.test(label);
+    if(isDrawing){
       drawing={
         url:href,
-        label:$(el).text().trim()||"DRAWING",
-        type:isPdfUrl(href)?"pdf":"image",
+        label:$(el).text().trim()||"Drawing 2D",
+        type:isPdfUrl(href)?"pdf":(isImageUrl(href)?"image":(/\.(dwg|dxf)(?:\?|$)/i.test(href)?"cad":"link")),
         source:"official-download"
       };
     }
@@ -494,7 +577,7 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
   const isCoalbrook=/coalbrookuk\.co\.uk/i.test(manufacturerUrl);
   const exact=sorted.find(x=>x.finishMatch==="exact" &&
     (!isAmphora || x.source.startsWith("woocommerce-variation")) &&
-    (!isCoalbrook || x.source==="coalbrook-product-image")
+    (!isCoalbrook || x.source==="coalbrook-product-image" || x.source==="coalbrook-exact-sku-image")
   )||null;
   const fallback=sorted.find(x=>x.finishMatch!=="exact")||null;
   let best=exact||fallback;

@@ -1,12 +1,12 @@
 {
   "name": "hydropolis-studio-v3",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "private": true,
   "description": "Hydropolis Studio V3 - Render test server",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "build": "node -e \"console.log('Hydropolis V5.0: options dossier client')\""
+    "build": "node -e \"console.log('Hydropolis V5.1: Coalbrook exact images + technical document choices')\""
   },
   "engines": {
     "node": ">=20"

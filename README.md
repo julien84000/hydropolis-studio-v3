@@ -1,20 +1,20 @@
-# Hydropolis Studio V5.0
+# Hydropolis Studio V5.1
 
-## Options d'édition du dossier client
+## Coalbrook — correctif renforcé des photos
+- recherche prioritaire avec le SKU exact sur le moteur officiel Coalbrook (`/products?keywords=...`) ;
+- vérification de la référence sur la fiche produit avant utilisation ;
+- contrôle de la collection Bank / Domo / Decca / Zurich ;
+- détection prioritaire des URLs d'image contenant la référence complète, ex. BA1005BB ;
+- les pastilles de finition restent exclues ;
+- cache fabricant V5.1 pour supprimer tous les anciens résultats.
 
-Deux cases à cocher sont ajoutées dans « Informations client » :
+## Éléments techniques
+Pour Coalbrook et Zucchetti, le projet propose désormais des cases indépendantes :
+- Inclure la fiche technique ;
+- Inclure la notice d'installation ;
+- Inclure le drawing 2D lorsqu'il est en PDF/image.
 
-- Afficher les prix
-- Afficher les références fournisseur
-
-Les deux choix sont indépendants et mémorisés avec le projet.
-
-Combinaisons possibles :
-- prix + références ;
-- prix sans références ;
-- références sans prix ;
-- ni prix ni références.
-
-Les réglages s'appliquent à l'aperçu et au PDF client.
-Lorsque « Afficher les prix » est désactivé, les prix des produits catalogue et des éléments libres sont masqués.
-Lorsque « Afficher les références fournisseur » est désactivé, les références sont également masquées sur les pages de drawing technique.
+Les fichiers DWG Coalbrook restent accessibles par lien mais ne sont pas rendus dans le PDF client.
+La fiche technique Coalbrook (Spec Sheet) peut être cochée et ajoutée au dossier client.
+Pour Zucchetti, un fallback officiel vers `assets.zucchettidesign.it/uploads/downloads/pdf/REFERENCE.pdf`
+est utilisé si le lien Technical Sheet n'est pas directement exposé dans le HTML.
