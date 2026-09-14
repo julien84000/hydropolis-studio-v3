@@ -103,9 +103,9 @@ async function autoCropForPdf(src){
   });
 }
 
-const manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v43")||"{}");
+const manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v45")||"{}");
 function manufacturerCacheKey(p){return `${p.manufacturer}|${p.reference}`;}
-function saveManufacturerCache(){localStorage.setItem("hydropolis-manufacturer-v43",JSON.stringify(manufacturerImageCache));}
+function saveManufacturerCache(){localStorage.setItem("hydropolis-manufacturer-v45",JSON.stringify(manufacturerImageCache));}
 function cachedManufacturerImage(p){return manufacturerImageCache[manufacturerCacheKey(p)]||null;}
 
 async function fetchManufacturerImage(p,force=false){
@@ -118,7 +118,11 @@ async function fetchManufacturerImage(p,force=false){
       manufacturerUrl:p.manufacturerUrl,
       reference:p.reference,
       finishCode:p.finishCode,
-      finish:p.finish
+      finish:p.finish,
+      designation:p.designation,
+      originalDescription:p.originalDescription||"",
+      collection:p.collection,
+      manufacturer:p.manufacturer
     })
   });
   const data=await r.json();
@@ -203,7 +207,32 @@ async function enrichSelectedPhoto(id,force=false){
 function loadState(){try{let s=JSON.parse(localStorage.getItem("hydropolis-v21"));if(s)Object.assign(state,s)}catch(e){}; if(!state.rooms?.length)state.rooms=[{id:"r1",title:"SDB MASTER",subtitle:"",manual:[]}];}
 function saveState(){localStorage.setItem("hydropolis-v21",JSON.stringify(state));}
 function unique(k){return [...new Set(CATALOG.map(x=>x[k]).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"fr"));}
-function initFilters(){[["manufacturerFilter","manufacturer"],["collectionFilter","collection"],["categoryFilter","category"],["finishFilter","finish"]].forEach(([id,k])=>unique(k).forEach(v=>{let o=document.createElement("option");o.value=v;o.textContent=v;$("#"+id).appendChild(o)}));$("#catalogCount").textContent=CATALOG.length+" références";$("#imageCount").textContent=new Set(CATALOG.filter(x=>x.image).map(x=>x.base)).size+" modèles avec photo fabricant";}
+function fillSelect(id,values,keepValue=true){
+ const el=$("#"+id); if(!el)return;
+ const previous=keepValue?el.value:"";
+ const first=el.querySelector("option");
+ const placeholder=first?first.cloneNode(true):new Option("Toutes","");
+ el.innerHTML=""; el.appendChild(placeholder); placeholder.value="";
+ values.filter(Boolean).sort((a,b)=>String(a).localeCompare(String(b),"fr",{sensitivity:"base"})).forEach(v=>{
+   const o=document.createElement("option");o.value=v;o.textContent=v;el.appendChild(o);
+ });
+ if(previous && values.includes(previous)) el.value=previous; else el.value="";
+}
+function valuesFor(key,manufacturer=""){
+ return [...new Set(CATALOG.filter(p=>!manufacturer||p.manufacturer===manufacturer).map(p=>p[key]).filter(Boolean))];
+}
+function updateDependentFilters(resetCollection=false){
+ const manufacturer=$("#manufacturerFilter").value;
+ fillSelect("collectionFilter",valuesFor("collection",manufacturer),!resetCollection);
+ fillSelect("categoryFilter",valuesFor("category",manufacturer),true);
+ fillSelect("finishFilter",valuesFor("finish",manufacturer),true);
+}
+function initFilters(){
+ fillSelect("manufacturerFilter",valuesFor("manufacturer"),false);
+ updateDependentFilters(false);
+ $("#catalogCount").textContent=CATALOG.length+" références";
+ $("#imageCount").textContent=new Set(CATALOG.filter(x=>x.image).map(x=>x.base)).size+" modèles avec photo fabricant";
+}
 function roomById(id){return state.rooms.find(r=>r.id===id)}
 function renderRoomSelect(){let cur=$("#targetRoom")?.value||state.rooms[0].id;$("#targetRoom").innerHTML=state.rooms.map(r=>`<option value="${r.id}">${r.title}</option>`).join(""); if(state.rooms.some(r=>r.id===cur))$("#targetRoom").value=cur;}
 function matches(p,q){let hay=[p.reference,p.base,p.designation,p.collection,p.manufacturer,p.finish,p.category].join(" ").toLowerCase();return q.toLowerCase().trim().split(/\s+/).filter(Boolean).every(w=>hay.includes(w));}
@@ -321,7 +350,16 @@ async function bootstrap(){
   loadState();initFilters();renderRoomSelect();bindProject();renderSelection();renderRooms();renderCatalog();
 }
 bootstrap();
-["searchInput","manufacturerFilter","collectionFilter","categoryFilter","finishFilter","targetRoom"].forEach(id=>$("#"+id).addEventListener("input",renderCatalog));
-$("#clearSearch").onclick=()=>{$("#searchInput").value="";["manufacturerFilter","collectionFilter","categoryFilter","finishFilter"].forEach(id=>$("#"+id).value="");renderCatalog();};
+["searchInput","collectionFilter","categoryFilter","finishFilter","targetRoom"].forEach(id=>$("#"+id).addEventListener("input",renderCatalog));
+$("#manufacturerFilter").addEventListener("input",()=>{
+  updateDependentFilters(true);
+  renderCatalog();
+});
+$("#clearSearch").onclick=()=>{
+  $("#searchInput").value="";
+  ["manufacturerFilter","collectionFilter","categoryFilter","finishFilter"].forEach(id=>$("#"+id).value="");
+  updateDependentFilters(true);
+  renderCatalog();
+};
 $("#newRoomQuick").onclick=newRoom;$("#addRoomBtn").onclick=newRoom;$("#goProjectBtn").onclick=()=>showView("project");$("#previewTopBtn").onclick=()=>showView("preview");$("#printBtn").onclick=()=>{buildDocument();setTimeout(()=>window.print(),100)};$("#saveBtn").onclick=exportJson;
 $$(".nav").forEach(n=>n.onclick=()=>showView(n.dataset.view));

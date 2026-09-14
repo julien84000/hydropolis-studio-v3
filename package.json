@@ -1,12 +1,12 @@
 {
   "name": "hydropolis-studio-v3",
-  "version": "4.3.0",
+  "version": "4.5.0",
   "private": true,
   "description": "Hydropolis Studio V3 - Render test server",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "build": "node -e \"console.log('Hydropolis V4.3: Amphora + Coalbrook + Zucchetti')\""
+    "build": "node -e \"console.log('Hydropolis V4.5: filtres fabricants d\u00e9pendants')\""
   },
   "engines": {
     "node": ">=20"

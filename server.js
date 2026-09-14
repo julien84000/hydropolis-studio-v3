@@ -11,7 +11,7 @@ app.use(express.static(path.join(__dirname,"public")));
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V4.3",
+  service:"Hydropolis Studio V4.4",
   time:new Date().toISOString()
 }));
 
@@ -141,22 +141,38 @@ function isPdfUrl(url){
 
 
 
-async function resolveManufacturerProductUrl(manufacturerUrl,reference){
-  if(!/coalbrookuk\.co\.uk/i.test(manufacturerUrl) || !/[?&]s=/i.test(manufacturerUrl)) return manufacturerUrl;
+function productWords(s){
+  const stop=new Set(["coalbrook","bank","domo","decca","zurich","chrome","brushed","nickel","brass","gunmetal","bathroom","uk","with","and","the","for","fixed","spout"]);
+  return normalizeToken(s).split(/[^a-z0-9]+/).filter(x=>x.length>2&&!stop.has(x));
+}
+function similarityScore(a,b){
+  const A=new Set(productWords(a)), B=new Set(productWords(b));
+  if(!A.size||!B.size) return 0;
+  let hit=0; for(const x of A) if(B.has(x)) hit++;
+  return hit/Math.max(1,Math.min(A.size,B.size));
+}
+async function resolveManufacturerProductUrl(manufacturerUrl,reference,originalDescription,designation){
+  if(!/coalbrookuk\.co\.uk/i.test(manufacturerUrl)) return manufacturerUrl;
   try{
-    const r=await axios.get(manufacturerUrl,{timeout:18000,headers:{"User-Agent":"Mozilla/5.0","Accept-Language":"en-GB,en;q=0.9"}});
+    // Coalbrook's WordPress-style ?s= URL returns 404. Resolve from its official product catalogue instead.
+    const catalogue="https://coalbrookuk.co.uk/products";
+    const r=await axios.get(catalogue,{timeout:22000,headers:{"User-Agent":"Mozilla/5.0","Accept-Language":"en-GB,en;q=0.9"}});
     const $=cheerio.load(String(r.data||""));
-    const base=String(reference||"").replace(/[A-Z]{2}$/i,"").toUpperCase();
-    let best="";
+    const target=originalDescription||designation||"";
+    let best={url:"",score:0};
     $("a[href*='/product/']").each((_,el)=>{
-      if(best) return;
-      const href=absoluteUrl(manufacturerUrl,$(el).attr("href"));
-      const text=normalizeToken($(el).closest("article,li,div").text()+" "+$(el).text()).toUpperCase();
-      if(text.includes(base) || text.includes(String(reference||"").toUpperCase())) best=href;
+      const href=absoluteUrl(catalogue,$(el).attr("href"));
+      if(!href) return;
+      const card=$(el).closest("article,li,.product,.card,div");
+      const text=(($(el).attr("aria-label")||"")+" "+($(el).attr("title")||"")+" "+$(el).text()+" "+card.text()).trim();
+      const score=similarityScore(target,text);
+      if(score>best.score) best={url:href,score};
     });
-    if(!best) best=absoluteUrl(manufacturerUrl,$("a[href*='/product/']").first().attr("href"));
-    return best||manufacturerUrl;
-  }catch{return manufacturerUrl;}
+    if(best.url && best.score>=0.45) return best.url;
+    return catalogue;
+  }catch{
+    return "https://coalbrookuk.co.uk/products";
+  }
 }
 function finishExactInText(text,finishCode,finish,reference){
   const n=normalizeToken(text);
@@ -183,10 +199,10 @@ function finishExactInText(text,finishCode,finish,reference){
   return (aliases[String(finishCode||"").toUpperCase()]||[]).some(x=>n.includes(normalizeToken(x)));
 }
 
-async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish}){
+async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,designation,originalDescription,collection,manufacturer}){
   const base=productBase(reference);
   const requested=String(finishCode||"").toUpperCase();
-  manufacturerUrl=await resolveManufacturerProductUrl(manufacturerUrl,reference);
+  manufacturerUrl=await resolveManufacturerProductUrl(manufacturerUrl,reference,originalDescription,designation);
 
   const page=await axios.get(manufacturerUrl,{
     timeout:22000,
@@ -310,6 +326,54 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish})
     }
   });
 
+
+  // Modern manufacturer sites (notably Zucchetti) keep product images in JSON/script payloads.
+  // Extract official asset URLs even when there is no rendered <img> in the server-side HTML.
+  const rawUrlRx=/https?:\\?\/\\?\/[^"'<>\\\s]+?\.(?:jpe?g|png|webp)(?:\\?[^"'<>\\\s]*)?/gi;
+  const rawMatches=html.match(rawUrlRx)||[];
+  for(const raw of rawMatches){
+    let href=raw.replace(/\\\//g,"/").replace(/&amp;/g,"&");
+    try{href=decodeURIComponent(href)}catch{}
+    if(!isImageUrl(href)) continue;
+    const low=href.toLowerCase();
+    if(/logo|icon|sprite|avatar|flag|placeholder|loading|swatch|favicon/.test(low)) continue;
+    let score=25;
+    if(/assets\.zucchettidesign\.it/i.test(href)) score+=70;
+    if(low.includes(base.toLowerCase())) score+=120;
+    if(low.includes(String(reference||"").toLowerCase())) score+=500;
+    const exact=finishExactInText(href,requested,finish,reference);
+    if(exact) score+=700;
+    candidates.push({
+      url:href,source:"official-script-asset",score,
+      finishMatch:exact?"exact":"generic",
+      detectedFinishCode:exact?requested:null,variationId:null,attributes:{}
+    });
+  }
+
+  // Coalbrook: once the correct official product page is resolved, its four main product
+  // images contain the exact SKU (e.g. BA1005BB-2000.png). This is a reliable finish match.
+  if(/coalbrookuk\.co\.uk/i.test(manufacturerUrl)){
+    $("img").each((_,el)=>{
+      const $img=$(el);
+      const attrs=["src","data-src","srcset","data-srcset"];
+      for(const attr of attrs){
+        const raw=$img.attr(attr)||"";
+        for(const part of raw.split(",")){
+          const candidate=part.trim().split(/\s+/)[0];
+          const href=absoluteUrl(manufacturerUrl,candidate);
+          if(!href || !/\.(?:jpe?g|png|webp)(?:\?|$)/i.test(href)) continue;
+          const low=href.toLowerCase();
+          if(!low.includes(String(reference||"").toLowerCase())) continue;
+          candidates.push({
+            url:href,source:"coalbrook-sku-image",score:2000,
+            finishMatch:"exact",detectedFinishCode:requested||null,
+            variationId:null,attributes:{}
+          });
+        }
+      }
+    });
+  }
+
   // DRAWING / DISEGNO / DESSIN TECHNIQUE.
   let drawing=null;
   $("a").each((_,el)=>{
@@ -317,7 +381,7 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish})
     const label=normalizeToken($(el).text());
     const href=absoluteUrl(manufacturerUrl,$(el).attr("href"));
     if(!href) return;
-    const isDrawing=/\b(drawing|disegno|dessin|technical drawing|plan technique)\b/.test(label);
+    const isDrawing=/\b(2d drawing|drawing|disegno|dessin|technical drawing|plan technique)\b/.test(label);
     if(isDrawing && (isPdfUrl(href)||isImageUrl(href))){
       drawing={
         url:href,
@@ -373,10 +437,10 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish})
 }
 
 app.post("/api/manufacturer-image",async(req,res)=>{
-  const {manufacturerUrl,reference,finishCode,finish}=req.body||{};
+  const {manufacturerUrl,reference,finishCode,finish,designation,originalDescription,collection,manufacturer}=req.body||{};
   if(!manufacturerUrl||!reference) return res.status(400).json({error:"manufacturerUrl et reference requis"});
   try{
-    res.json(await scrapeManufacturer({manufacturerUrl,reference,finishCode,finish}));
+    res.json(await scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,designation,originalDescription,collection,manufacturer}));
   }catch(e){
     res.status(502).json({
       error:"Impossible d'analyser la fiche fabricant",
@@ -455,4 +519,4 @@ app.get("/api/image-proxy",async(req,res)=>{
 });
 
 app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")));
-app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V4.3 on ${PORT}`));
+app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V4.4 on ${PORT}`));

@@ -1,19 +1,13 @@
-# Hydropolis Studio V4.3
+# Hydropolis Studio V4.5
 
-Ajout de deux fabricants au catalogue existant :
+## Filtrage dépendant par fabricant
+Quand un fabricant est sélectionné, les listes suivantes sont recalculées uniquement à partir de ses produits :
+- Collections
+- Catégories
+- Finitions
 
-- Amphora : catalogue existant conservé.
-- Coalbrook : 1483 références issues du tarif EUR août 2026.
-- Zucchetti : 12053 références issues du tarif valable à partir du 01/05/2026.
+Exemple : sélectionner Coalbrook n'affiche plus les collections Amphora ou Zucchetti.
+La même logique s'applique à chaque fabricant.
 
-## V4.3
-- terminologie produit et finitions affichées en français ;
-- prix fournisseur EUR/HT issus des fichiers fournis ;
-- recherche multi-marques par référence, désignation, collection, catégorie et finition ;
-- Coalbrook : détection des mentions `Requires ... rough sold separately` et ajout du corps d'encastrement lorsqu'il est présent dans le tarif ;
-- Zucchetti : détection `Trim Only` et lecture de la référence interne encodée dans le deep-link lorsqu'elle est disponible ;
-- liens vers les fiches officielles fabricants ;
-- récupération photo/drawing via le moteur fabricant existant, étendu à Coalbrook et Zucchetti ;
-- présentation client V4.2 conservée : fond blanc, image et texte centrés.
-
-Attention : lorsqu'un tarif indique qu'une partie interne est nécessaire mais que son prix/référence ne peut pas être résolu automatiquement, l'app conserve le produit mais ne fabrique aucun prix manquant.
+Le changement de fabricant remet la collection à « Toutes » afin d'éviter de conserver une collection incompatible.
+Le bouton de réinitialisation restaure les listes complètes.
