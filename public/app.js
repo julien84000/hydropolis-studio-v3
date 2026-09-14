@@ -359,31 +359,66 @@ function roomById(id){return state.rooms.find(r=>r.id===id)}
 function renderRoomSelect(){let cur=$("#targetRoom")?.value||state.rooms[0].id;$("#targetRoom").innerHTML=state.rooms.map(r=>`<option value="${r.id}">${r.title}</option>`).join(""); if(state.rooms.some(r=>r.id===cur))$("#targetRoom").value=cur;}
 function matches(p,q){let hay=[p.reference,p.base,p.designation,p.collection,p.manufacturer,p.finish,p.category].join(" ").toLowerCase();return q.toLowerCase().trim().split(/\s+/).filter(Boolean).every(w=>hay.includes(w));}
 function renderCatalog(){
- let q=$("#searchInput").value, fs={manufacturer:$("#manufacturerFilter").value,collection:$("#collectionFilter").value,category:$("#categoryFilter").value,finish:$("#finishFilter").value};
- let rows=CATALOG.filter(p=>matches(p,q)&&Object.entries(fs).every(([k,v])=>!v||p[k]===v));
- $("#resultCount").textContent=rows.length+" résultat"+(rows.length>1?"s":"");
- let room=roomById($("#targetRoom").value)||state.rooms[0];
- $("#results").innerHTML=rows.slice(0,100).map(p=>{
-   const cached=cachedManufacturerImage(p);
-   return `<article class="result">
-   <div class="catalog-thumb">${cached?`<img src="${cached.src}" alt="${p.reference}">`:`<div class="photo-missing"><b>Photo fabricant</b><br>${exactFinishLabel(p)}<br>à rechercher</div>`}</div>
-   <div><div class="r-top"><span class="ref">${p.reference}</span><span class="badge">${p.manufacturer}</span><span class="badge">${p.collection}</span><span class="badge">${p.category}</span></div>
-   <div class="designation">${p.designation}</div><div class="meta">${p.finish}</div>
-   <div class="manufacturer-tools">
-     <button class="tiny lookup-photo" data-ref="${p.reference}">${cached?"Actualiser la photo":"Trouver la photo fabricant"}</button>
-     <a class="source-link" target="_blank" href="${cached?.resolvedManufacturerUrl||p.manufacturerUrl}">Fiche officielle ↗</a>
-     ${cached?.technicalSheetUrl?`<a class="source-link technical-sheet-link" target="_blank" href="${cached.technicalSheetUrl}">Fiche technique ↗</a>`:""}
-     ${cached?.drawingUrl?`<a class="source-link drawing-result-link" target="_blank" href="${cached.drawingUrl}">Drawing 2D ↗</a>`:""}
-   </div>
-   <div class="photo-status">${cached?`<b>${imageBadge(cached,p)}</b>${cached.note?`<br>${cached.note}`:""}`:`Priorité au site officiel du fabricant.`}</div>
-   </div>
-   <div class="price-box"><div class="price">${euro(p.totalPrice)} HT</div>
-   ${p.internalReference?`<div class="internal">Ext. ${euro(p.price)} + ${p.internalReference} ${euro(p.internalPrice)}<br><b>interne ajouté automatiquement</b></div>`:`<div class="internal">Référence complète</div>`}
-   ${isRecorBathRequiringFeet(p)?`<div class="internal recor-config-hint"><b>Pieds obligatoires</b> · choix à l’ajout</div>`:""}
-   <button class="btn primary add" data-ref="${p.reference}" style="margin-top:9px">${isRecorBathRequiringFeet(p)?"Configurer + ajouter":"Ajouter à "+room.title}</button></div>
- </article>`}).join("")||`<div class="empty">Aucun résultat.</div>`;
- $$(".add").forEach(b=>b.onclick=()=>addCatalogProduct(b.dataset.ref,$("#targetRoom").value));
- $$(".lookup-photo").forEach(b=>b.onclick=()=>lookupCatalogPhoto(b.dataset.ref,b));
+ const results=$("#results");
+ const count=$("#resultCount");
+ if(!results)return;
+
+ try{
+   let q=$("#searchInput")?.value||"";
+   let fs={
+     manufacturer:$("#manufacturerFilter")?.value||"",
+     collection:$("#collectionFilter")?.value||"",
+     category:$("#categoryFilter")?.value||"",
+     finish:$("#finishFilter")?.value||""
+   };
+   let rows=CATALOG.filter(p=>{
+     try{
+       return matches(p,q)&&Object.entries(fs).every(([k,v])=>!v||p?.[k]===v);
+     }catch(e){
+       console.warn("[catalog row ignored]",p?.reference,e);
+       return false;
+     }
+   });
+
+   if(count)count.textContent=rows.length+" résultat"+(rows.length>1?"s":"");
+   let room=roomById($("#targetRoom")?.value)||state.rooms[0];
+
+   const cards=[];
+   for(const p of rows.slice(0,100)){
+     try{
+       const cached=cachedManufacturerImage(p);
+       const finishLabel=exactFinishLabel(p)||"";
+       const price=Number(p.totalPrice||0);
+       cards.push(`<article class="result">
+       <div class="catalog-thumb">${cached?.src?`<img src="${cached.src}" alt="${p.reference||""}">`:`<div class="photo-missing"><b>Photo fabricant</b><br>${finishLabel}<br>à rechercher</div>`}</div>
+       <div><div class="r-top"><span class="ref">${p.reference||""}</span><span class="badge">${p.manufacturer||""}</span><span class="badge">${p.collection||""}</span><span class="badge">${p.category||""}</span></div>
+       <div class="designation">${p.designation||""}</div><div class="meta">${p.finish||""}</div>
+       <div class="manufacturer-tools">
+         <button class="tiny lookup-photo" data-ref="${p.reference||""}">${cached?"Actualiser la photo":"Trouver la photo fabricant"}</button>
+         ${p.manufacturerUrl?`<a class="source-link" target="_blank" href="${cached?.resolvedManufacturerUrl||p.manufacturerUrl}">Fiche officielle ↗</a>`:""}
+         ${cached?.technicalSheetUrl?`<a class="source-link technical-sheet-link" target="_blank" href="${cached.technicalSheetUrl}">Fiche technique ↗</a>`:""}
+         ${cached?.drawingUrl?`<a class="source-link drawing-result-link" target="_blank" href="${cached.drawingUrl}">Drawing 2D ↗</a>`:""}
+       </div>
+       <div class="photo-status">${cached?`<b>${imageBadge(cached,p)}</b>${cached.note?`<br>${cached.note}`:""}`:`Priorité au site officiel du fabricant.`}</div>
+       </div>
+       <div class="price-box"><div class="price">${euro(price)} HT</div>
+       ${p.internalReference?`<div class="internal">Ext. ${euro(p.price)} + ${p.internalReference} ${euro(p.internalPrice)}<br><b>interne ajouté automatiquement</b></div>`:`<div class="internal">Référence complète</div>`}
+       ${isRecorBathRequiringFeet(p)?`<div class="internal recor-config-hint"><b>Pieds obligatoires</b> · choix à l’ajout</div>`:""}
+       <button class="btn primary add" data-ref="${p.reference||""}" style="margin-top:9px">${isRecorBathRequiringFeet(p)?"Configurer + ajouter":"Ajouter à "+(room?.title||"la pièce")}</button></div>
+       </article>`);
+     }catch(e){
+       console.error("[catalog card]",p?.reference,e);
+     }
+   }
+
+   results.innerHTML=cards.join("")||`<div class="empty">Aucun résultat.</div>`;
+   $$(".add").forEach(b=>b.onclick=()=>addCatalogProduct(b.dataset.ref,$("#targetRoom").value));
+   $$(".lookup-photo").forEach(b=>b.onclick=()=>lookupCatalogPhoto(b.dataset.ref,b));
+ }catch(e){
+   console.error("[renderCatalog]",e);
+   if(count)count.textContent="Erreur d’affichage du catalogue";
+   results.innerHTML=`<div class="empty"><b>Le catalogue n’a pas pu s’afficher.</b><br>Rechargez la page. Si le problème persiste, la console indique la référence en cause.</div>`;
+ }
 }
 
 function accessoryText(p){
@@ -1365,8 +1400,12 @@ async function loadSupplierCatalogs(){
     if(!r.ok) throw new Error("HTTP "+r.status);
     const extra=await r.json();
     if(Array.isArray(extra)) CATALOG.push(...extra);
-    console.log(`[catalog] ${extra.length} références Coalbrook + Zucchetti chargées`);
-  }catch(e){console.error("[catalog-extra]",e);}
+    console.log(`[catalog] ${extra.length} références fournisseurs chargées`);
+    return Array.isArray(extra)?extra.length:0;
+  }catch(e){
+    console.error("[catalog-extra]",e);
+    return 0;
+  }
 }
 function harmonizeSavedCatalogProducts(){
   const byRef=new Map(CATALOG.map(p=>[p.reference,p]));
@@ -1384,10 +1423,37 @@ function harmonizeSavedCatalogProducts(){
   }
 }
 async function bootstrap(){
-  await loadSupplierCatalogs();
+  // 1) Render immediately with the built-in Amphora catalogue.
+  // This prevents an empty catalogue while the large supplier JSON is loading.
   loadState();
   harmonizeSavedCatalogProducts();
-  initFilters();renderRoomSelect();bindProject();bindCommercial();renderSelection();renderRooms();renderCatalog();
+  initFilters();
+  renderRoomSelect();
+  bindProject();
+  bindCommercial();
+  renderSelection();
+  renderRooms();
+  renderCatalog();
+
+  const resultCount=$("#resultCount");
+  const catalogCount=$("#catalogCount");
+  if(resultCount) resultCount.textContent=`${CATALOG.length} références disponibles · chargement des autres marques…`;
+  if(catalogCount) catalogCount.textContent=`${CATALOG.length} références · chargement…`;
+
+  // 2) Load the 14 MB supplier catalogue in the background.
+  const added=await loadSupplierCatalogs();
+
+  // 3) Refresh all catalogue-dependent UI once loading is complete.
+  harmonizeSavedCatalogProducts();
+  initFilters();
+  renderRoomSelect();
+  renderCatalog();
+  renderSelection();
+  renderRooms();
+
+  if(resultCount && !added){
+    resultCount.textContent=`${CATALOG.length} références disponibles`;
+  }
 }
 bootstrap();
 ["searchInput","collectionFilter","categoryFilter","finishFilter","targetRoom"].forEach(id=>$("#"+id).addEventListener("input",renderCatalog));

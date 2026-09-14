@@ -1501,3 +1501,11 @@ button,input,select,textarea{font:inherit}.shell{display:grid;grid-template-colu
 .recor-config-actions{display:flex;justify-content:flex-end;gap:10px;border-top:1px solid var(--line);padding-top:15px;margin-top:4px}
 .recor-config-hint{color:#9b6c2f!important;margin-top:4px}
 @media(max-width:700px){.recor-choice-list{grid-template-columns:1fr}.recor-config-title,.recor-config-summary{align-items:flex-start;flex-direction:column}.recor-configurator{padding:17px}}
+
+/* V7.5 — catalogue loading resilience */
+#resultCount{
+  display:inline-block;
+  margin-left:8px;
+  color:var(--muted);
+  font-size:12px;
+}

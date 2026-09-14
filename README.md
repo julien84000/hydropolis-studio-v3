@@ -1,13 +1,15 @@
-# Hydropolis Studio V7.4
+# Hydropolis Studio V7.5
 
-Correction photos Recor :
-- résolution des fiches officielles recor.pt/product/<modele>-en/ conservée ;
-- nouveau lecteur spécifique des galeries WordPress Recor ;
-- récupération des images depuis og:image, img, srcset, picture/source, lazy-load,
-  background-image CSS et URLs d'assets présentes dans le HTML ;
-- classement prioritaire des images contenant le nom exact du modèle ;
-- exclusion des logos, icônes et visuels d'interface ;
-- jusqu'à deux visuels officiels Recor par baignoire ;
-- intégration Recor au système d'image embarquée côté serveur afin d'éviter les blocages anti-hotlink ;
-- cache fabricant V7.4 pour invalider les anciennes recherches Recor sans résultat ;
-- les images base64 temporaires ne sont toujours pas conservées dans localStorage.
+Correction critique : catalogue vide.
+
+Cause probable :
+- catalog_extra.json contient maintenant plus de 21 000 références et pèse environ 14 Mo ;
+- le démarrage attendait entièrement son téléchargement + parsing avant d'appeler renderCatalog ;
+- sur Render, cela pouvait laisser la zone Résultats entièrement vide pendant le chargement.
+
+Corrections :
+- Amphora s'affiche immédiatement dès l'ouverture ;
+- les autres marques se chargent ensuite en arrière-plan ;
+- après chargement, filtres et résultats sont actualisés automatiquement ;
+- renderCatalog est désormais défensif : une référence mal formée ne peut plus vider tout le catalogue ;
+- message d'erreur explicite si un problème d'affichage survient.
