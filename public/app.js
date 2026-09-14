@@ -775,11 +775,27 @@ function orderedPresentationGroups(items){
   if(buckets.AUTRES.length) groups.push({space:"AUTRES",label:"Accessoires & éléments complémentaires",intro:presentationSpaceIntro("AUTRES"),items:buckets.AUTRES});
   return groups;
 }
+function canonicalImageKey(src){
+  if(!src || typeof src!=="string") return "";
+  let s=src.trim();
+  try{
+    const u=new URL(s,location.href);
+    u.search="";
+    u.hash="";
+    s=u.href;
+  }catch(e){}
+  s=s.replace(/-\d{2,4}x\d{2,4}(?=\.(?:jpe?g|png|webp)$)/i,"");
+  s=s.replace(/([/_-])(?:thumb|thumbnail|small|medium|large|preview)(?=[/_\.-])/ig,"$1");
+  return s.toLowerCase();
+}
 function productVisuals(p){
   const seen=new Set(), out=[];
   const add=src=>{
-    if(!src || typeof src!=="string" || seen.has(src))return;
-    seen.add(src);out.push(src);
+    if(!src || typeof src!=="string")return;
+    const key=canonicalImageKey(src);
+    if(!key || seen.has(key))return;
+    seen.add(key);
+    out.push(src);
   };
   add(p.pdfImage);
   add(p.image);
@@ -790,12 +806,22 @@ function productVisuals(p){
 }
 function boardVisualHtml(p){
   const all=productVisuals(p);
-  const max=/catalano/i.test(p.manufacturer||"")?Math.min(all.length,6):Math.min(all.length,3);
-  const imgs=all.slice(0,max);
-  if(!imgs.length)return `<div class="board-image-fallback">Photo fabricant<br>à rechercher</div>`;
-  if(imgs.length===1)return `<div class="board-gallery gallery-1"><figure><img src="${imgs[0]}" alt="${p.designation||""}"></figure></div>`;
+  if(!all.length)return `<div class="board-image-fallback">Photo fabricant<br>à rechercher</div>`;
+
+  const isCatalano=/catalano/i.test(p.manufacturer||"");
+  const imgs=isCatalano ? all.slice(0,6) : all.slice(0,1);
+
+  if(imgs.length===1){
+    return `<div class="board-gallery gallery-1">
+      <figure><img src="${imgs[0]}" alt="${p.designation||""}"></figure>
+    </div>`;
+  }
+
   return `<div class="board-gallery gallery-${Math.min(imgs.length,6)}">
-    ${imgs.map((src,i)=>`<figure class="gallery-cell gallery-cell-${i+1}"><img src="${src}" alt="${p.designation||""} · vue ${i+1}"></figure>`).join("")}
+    ${imgs.map((src,i)=>`
+      <figure class="gallery-cell gallery-cell-${i+1}">
+        <img src="${src}" alt="${p.designation||""} · vue ${i+1}">
+      </figure>`).join("")}
   </div>`;
 }
 function boardItemHtml(p,idx){
@@ -803,7 +829,7 @@ function boardItemHtml(p,idx){
  const visual=isManual
    ?(p.image?`<div class="board-gallery gallery-1"><figure><img src="${p.image}" alt="${p.designation||""}"></figure></div>`:`<div class="board-image-fallback">Visuel<br>à ajouter</div>`)
    :boardVisualHtml(p);
- return `<article class="board-item board-item-${idx+1}" data-parallax-layer="${idx%2?1.1:.75}">
+ return `<article class="board-item board-item-${idx+1}">
    <div class="board-visual">${visual}</div>
    <div class="board-copy">
      <div class="board-brand">${p.manufacturer||"Sélection"}${p.collection?` · ${p.collection}`:""}</div>

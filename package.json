@@ -1,12 +1,12 @@
 {
   "name": "hydropolis-studio-v3",
-  "version": "6.3.0",
+  "version": "6.4.0",
   "private": true,
   "description": "Hydropolis Studio V3 - Render test server",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "build": "node -e \"console.log('Hydropolis V6.3: planches adaptatives + galeries Catalano')\""
+    "build": "node -e \"console.log('Hydropolis V6.4: planches sans doublons + images non coup\u00e9es')\""
   },
   "engines": {
     "node": ">=20"

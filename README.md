@@ -1,10 +1,11 @@
-# Hydropolis Studio V6.3
+# Hydropolis Studio V6.4
 
-Modifications dossier client :
-- nouvelle grille éditoriale anti-chevauchement ;
-- chaque produit possède désormais une zone image et une zone texte indépendantes ;
-- les cadres s'adaptent à la composition et les images utilisent object-fit: contain pour respecter leur format ;
-- un produit peut afficher plusieurs vues dans sa propre zone ;
-- Catalano peut afficher jusqu'à 6 images d'un même article lorsqu'elles ont été récupérées ;
-- mise en page automatique différente pour 1, 2, 3, 4 ou 5 produits ;
-- toutes les fonctions V6.2 sont conservées.
+Corrections des planches du dossier client :
+- aucune image produit ne doit être recadrée : toutes les images utilisent object-fit: contain ;
+- suppression renforcée des doublons d'images (même fichier avec tailles/paramètres URL différents) ;
+- pour Amphora, Coalbrook, Zucchetti et les sélections libres : une seule image principale par produit ;
+- pour Catalano : plusieurs images uniquement lorsqu'elles sont réellement différentes ;
+- Catalano peut afficher plusieurs vues distinctes dans un mini-moodboard interne ;
+- nouvelle composition stable : 3 produits en haut + 2 produits plus larges en bas lorsqu'il y a 5 produits ;
+- dispositions dédiées pour 1, 2, 3 ou 4 produits ;
+- séparation stricte entre zone visuelle et zone texte pour éviter tout chevauchement.
