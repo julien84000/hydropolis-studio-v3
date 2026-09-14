@@ -183,7 +183,54 @@ function coalbrookProductLinks(html,baseUrl){
   });
   return out;
 }
+
+async function fetchCatalanoPage(url){
+  const r=await axios.get(url,{timeout:22000,maxRedirects:5,validateStatus:x=>x>=200&&x<400,headers:{"User-Agent":"Mozilla/5.0","Accept-Language":"en-GB,en;q=0.9"}});
+  return String(r.data||"");
+}
+function catalanoProductLinks(html,baseUrl){
+  const $=cheerio.load(html),seen=new Set(),out=[];
+  $("a[href*='/products/']").each((_,el)=>{
+    const href=absoluteUrl(baseUrl,$(el).attr("href"));
+    if(!href||seen.has(href))return; seen.add(href);
+    out.push({href,text:(($(el).attr("title")||"")+" "+$(el).text()).trim()});
+  });
+  return out;
+}
+async function resolveCatalanoProductUrl(manufacturerUrl,reference,originalDescription,designation,collection){
+  const ref=String(reference||"").replace(/\D/g,"");
+  const base=ref.slice(0,6);
+  const coll=normalizeToken(collection||"");
+  const slug=coll.replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+  const starts=[];
+  if(slug && !/accessori vari|vasca/.test(coll)) starts.push(`https://www.catalano.it/en/all-collections/${slug}/`);
+  const text=normalizeToken((originalDescription||"")+" "+(designation||""));
+  if(/shower tray|receveur|doccia/.test(text)) starts.push("https://www.catalano.it/en/shower-trays/");
+  else if(/bathtub|baignoire|vasca/.test(text)) starts.push("https://www.catalano.it/en/bathtubs/");
+  else if(/wc|bidet|toilet/.test(text)) starts.push("https://www.catalano.it/en/wc-and-bidet/");
+  else if(/washbasin|lavabo|vasque/.test(text)) starts.push("https://www.catalano.it/en/washbasins/");
+  starts.push(manufacturerUrl||"https://www.catalano.it/en/");
+  const tried=new Set();
+  for(const start of starts){
+    if(!start||tried.has(start))continue; tried.add(start);
+    try{
+      const html=await fetchCatalanoPage(start);
+      const links=catalanoProductLinks(html,start).map(x=>({...x,score:similarityScore(originalDescription||designation,x.text)})).sort((a,b)=>b.score-a.score);
+      for(const item of links.slice(0,18)){
+        try{
+          const ph=await fetchCatalanoPage(item.href);
+          const body=normalizeToken(cheerio.load(ph)("body").text());
+          const digits=body.replace(/\D/g,"");
+          if((ref&&digits.includes(ref)) || (base&&digits.includes(base))) return item.href;
+        }catch{}
+      }
+    }catch{}
+  }
+  return manufacturerUrl;
+}
+
 async function resolveManufacturerProductUrl(manufacturerUrl,reference,originalDescription,designation,collection){
+  if(/catalano\.it/i.test(manufacturerUrl)) return resolveCatalanoProductUrl(manufacturerUrl,reference,originalDescription,designation,collection);
   if(!/coalbrookuk\.co\.uk/i.test(manufacturerUrl)) return manufacturerUrl;
 
   const base=String(reference||"").toUpperCase().replace(/(?:CP|GM|BB|BN)$/,"");
@@ -584,7 +631,7 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
 
   // Évite les images cassées : on rapatrie l'image officielle choisie côté serveur
   // et on la renvoie directement au navigateur sous forme data URL.
-  if(best && /(?:coalbrookuk\.co\.uk|zucchettidesign\.it|assets\.zucchettidesign\.it)/i.test(best.url||manufacturerUrl)){
+  if(best && /(?:coalbrookuk\.co\.uk|zucchettidesign\.it|assets\.zucchettidesign\.it|catalano\.it)/i.test(best.url||manufacturerUrl)){
     try{
       const ir=await axios.get(best.url,{
         responseType:"arraybuffer",timeout:18000,maxRedirects:5,
