@@ -17,3 +17,11 @@ Règles commerciales Recor :
 Recherche fabricant :
 - résolution automatique vers les fiches officielles recor.pt/product/<modele>-en/ ;
 - récupération photo, fiche technique et brochure via le système fabricant existant.
+
+
+## V7.2 — Recor : pieds obligatoires
+- Pour les baignoires Recor sur pieds (Carlton, Dual, Antique, Primrose, Slipper, Roll Top, Hudson, Lyra), le choix d’un jeu de pieds compatible est obligatoire.
+- L’app ne permet pas d’ouvrir/imprimer le dossier client tant que les pieds ne sont pas sélectionnés.
+- Un seul jeu de pieds peut être lié à chaque baignoire ; choisir un autre remplace le précédent.
+- Les vidages Recor compatibles sont proposés séparément en option et ne sont jamais ajoutés automatiquement.
+- La suppression de la baignoire supprime aussi ses accessoires liés.

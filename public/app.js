@@ -450,6 +450,65 @@ function basinAccessorySuggestions(p,roomId){
   </div>`;
 }
 
+
+function isRecorBathRequiringFeet(p){
+  return p?.manufacturer==="Recor" && p?.category==="Bain" && p?.collection==="Baignoires sur pieds" && !/collins/i.test(`${p.reference||""} ${p.designation||""}`);
+}
+function recorModelName(p){
+  const hay=normalizeText(`${p?.reference||""} ${p?.designation||""} ${p?.originalDescription||""}`);
+  const models=["Roll Top","Carlton","Dual","Antique","Primrose","Slipper","Hudson","Lyra"];
+  return models.find(m=>hay.includes(normalizeText(m)))||"";
+}
+function recorCompatibleFeet(p){
+  const model=recorModelName(p);
+  if(!model)return [];
+  return CATALOG.filter(c=>c.manufacturer==="Recor" && c.collection==="Pieds Recor" && normalizeText(c.supplierNote||"").includes(normalizeText(model)))
+    .sort((a,b)=>String(a.designation).localeCompare(String(b.designation),"fr") || String(a.finish).localeCompare(String(b.finish),"fr"));
+}
+function recorCompatibleWastes(p){
+  const model=recorModelName(p);
+  return CATALOG.filter(c=>{
+    if(c.manufacturer!=="Recor" || c.collection!=="Accessoires Recor")return false;
+    const t=normalizeText(`${c.designation||""} ${c.originalDescription||""}`);
+    if(!/vidage|waste/.test(t))return false;
+    const note=normalizeText(c.supplierNote||"");
+    if(/vidage classique|classic bathtub waste/.test(t)){
+      const excluded=["Gibson","Collins","Carlton","Siena","Epoque","Eiffel","Chateau","Moritz","Hudson"];
+      if(excluded.some(x=>normalizeText(model)===normalizeText(x)))return false;
+    }
+    return true;
+  }).sort((a,b)=>String(a.designation).localeCompare(String(b.designation),"fr") || String(a.finish).localeCompare(String(b.finish),"fr"));
+}
+function recorFeetSelected(p){
+  return state.selected.some(x=>x.roomId===p.roomId && x.accessoryFor===p.id && x.manufacturer==="Recor" && x.collection==="Pieds Recor");
+}
+function recorBathOptions(p,roomId){
+  if(!isRecorBathRequiringFeet(p))return "";
+  const feet=recorCompatibleFeet(p), wastes=recorCompatibleWastes(p);
+  const linked=state.selected.filter(x=>x.roomId===roomId && x.accessoryFor===p.id);
+  const selectedRefs=new Set(linked.map(x=>x.reference));
+  const option=(item,required=false)=>`<div class="accessory-option">
+    <div><b>${item.designation}</b><span>${item.finish||""} · ${item.reference}</span></div>
+    <div class="accessory-option-right"><strong>${euro(item.totalPrice)} HT</strong>${selectedRefs.has(item.reference)?`<span class="accessory-added">Sélectionné</span>`:`<button class="tiny add-accessory" data-ref="${item.reference}" data-room="${roomId}" data-parent="${p.id}">+ Choisir</button>`}</div>
+  </div>`;
+  const hasFeet=recorFeetSelected(p);
+  return `<div class="basin-accessories recor-bath-options ${hasFeet?"":"required-missing"}">
+    <div class="basin-accessories-head"><b>Pieds Recor ${hasFeet?"✓":"— choix obligatoire"}</b><span>Choisir un jeu de pieds compatible avec ${recorModelName(p)||"cette baignoire"}.</span></div>
+    ${feet.length?feet.map(x=>option(x,true)).join(""):`<div class="accessory-option unavailable"><div><b>Pieds compatibles non identifiés</b><span>Vérifier le modèle Recor.</span></div></div>`}
+    <div class="basin-accessories-head recor-option-head"><b>Vidage Recor</b><span>Optionnel — uniquement les vidages compatibles.</span></div>
+    ${wastes.length?wastes.map(x=>option(x,false)).join(""):`<div class="accessory-option unavailable"><div><b>Aucun vidage compatible identifié</b></div></div>`}
+  </div>`;
+}
+function incompleteRecorBaths(){
+  return state.selected.filter(p=>isRecorBathRequiringFeet(p) && !recorFeetSelected(p));
+}
+function validateRecorFeet(showAlert=true){
+  const missing=incompleteRecorBaths();
+  if(!missing.length)return true;
+  if(showAlert)alert(`Choix incomplet : ${missing.length} baignoire${missing.length>1?"s Recor n'ont":" Recor n'a"} pas encore de pieds. Sélectionnez obligatoirement les pieds avant de générer le dossier client.`);
+  return false;
+}
+
 async function addProduct(ref,roomId,parentId=""){
  const p=CATALOG.find(x=>x.reference===ref);if(!p)return;
  const cached=cachedManufacturerImage(p);
@@ -487,7 +546,10 @@ async function addProduct(ref,roomId,parentId=""){
    enrichSelectedPhoto(id,false).catch(err=>console.warn("[enrich after add]",err));
  }
 }
-function removeProduct(id){state.selected=state.selected.filter(x=>x.id!==id);saveState();renderSelection();renderRooms();renderMarginDashboard();}
+function removeProduct(id){
+  state.selected=state.selected.filter(x=>x.id!==id && x.accessoryFor!==id);
+  saveState();renderSelection();renderRooms();renderMarginDashboard();
+}
 
 function clampPercent(v){return Math.max(0,Math.min(100,Number(v)||0));}
 function clientDiscountRate(){return clampPercent(state.commercial?.clientDiscount||0);}
@@ -758,7 +820,7 @@ function renderRooms(){
         </div>
         <div class="price-total">${euro(p.totalPrice)} HT${p.mandatoryFreight?`<div class="tech">dont ${euro(p.mandatoryFreight)} de transport Recor obligatoire</div>`:""}<div class="tech">${p.imageStatus||p.imageSource||"Photo fabricant à rechercher"}</div>${p.imageNote?`<div class="tech">${p.imageNote}</div>`:""}</div>
         <button class="icon del-prod" data-id="${p.id}">×</button>
-        ${basinAccessorySuggestions(p,r.id)}
+        ${basinAccessorySuggestions(p,r.id)}${recorBathOptions(p,r.id)}
       </div>`).join(""):`<div class="room-empty">Aucun produit catalogue dans cette pièce.</div>`}</div>
    <div class="manual-zone"><b>Éléments libres de la pièce</b><div class="tech">Pour mobilier sur mesure, miroir, peinture, pose, décoration ou produit non encore référencé.</div>
       <div class="manual-add"><input class="manual-label" data-id="${r.id}" placeholder="Ex. Meuble vasque sur mesure"><input class="manual-price" data-id="${r.id}" type="number" step="0.01" placeholder="Prix HT"><button class="btn ghost manual-btn" data-id="${r.id}">Ajouter</button></div>
@@ -771,6 +833,10 @@ function renderRooms(){
  $$(".del-prod").forEach(b=>b.onclick=()=>removeProduct(b.dataset.id));
  $$(".add-accessory").forEach(b=>b.onclick=async()=>{
    b.disabled=true;
+   const candidate=CATALOG.find(x=>x.reference===b.dataset.ref);
+   if(candidate?.manufacturer==="Recor" && candidate?.collection==="Pieds Recor" && b.dataset.parent){
+     state.selected=state.selected.filter(x=>!(x.accessoryFor===b.dataset.parent && x.manufacturer==="Recor" && x.collection==="Pieds Recor"));
+   }
    await addProduct(b.dataset.ref,b.dataset.room,b.dataset.parent||"");
  });$$(".fallback-btn").forEach(b=>b.onclick=()=>useCatalogueFallback(b.dataset.id));$$(".enrich-btn").forEach(b=>b.onclick=()=>enrichSelectedPhoto(b.dataset.id,true));
  $$(".drawing-check").forEach(ch=>ch.onchange=()=>{let p=state.selected.find(x=>x.id===ch.dataset.id);if(!p)return;p.includeDrawing=ch.checked;saveState();});
@@ -854,6 +920,7 @@ async function refreshCatalanoGalleries(){
   return changed;
 }
 function showView(v){
+  if(v==="preview" && !validateRecorFeet(true)){v="project";}
   $$(".nav").forEach(n=>n.classList.toggle("active",n.dataset.view===v));
   $$(".view").forEach(x=>x.classList.remove("active"));
   $("#view-"+v).classList.add("active");
@@ -1228,5 +1295,5 @@ $("#clearSearch").onclick=()=>{
   updateDependentFilters(true);
   renderCatalog();
 };
-$("#newRoomQuick").onclick=newRoom;$("#addRoomBtn").onclick=newRoom;$("#goProjectBtn").onclick=()=>showView("project");$("#previewTopBtn").onclick=()=>showView("preview");$("#printBtn").onclick=()=>{buildDocument();setTimeout(()=>window.print(),100)};$("#saveBtn").onclick=exportJson;
+$("#newRoomQuick").onclick=newRoom;$("#addRoomBtn").onclick=newRoom;$("#goProjectBtn").onclick=()=>showView("project");$("#previewTopBtn").onclick=()=>showView("preview");$("#printBtn").onclick=()=>{if(!validateRecorFeet(true)){showView("project");return;}buildDocument();setTimeout(()=>window.print(),100)};$("#saveBtn").onclick=exportJson;
 $$(".nav").forEach(n=>n.onclick=()=>showView(n.dataset.view));

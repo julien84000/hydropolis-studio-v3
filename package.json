@@ -1,6 +1,6 @@
 {
   "name": "hydropolis-studio-v3",
-  "version": "7.1.0",
+  "version": "7.2.0",
   "private": true,
   "description": "Hydropolis Studio V3 - Render test server",
   "main": "server.js",
