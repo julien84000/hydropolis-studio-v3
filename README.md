@@ -1,28 +1,35 @@
-# Hydropolis Studio V10.4
+# Hydropolis Studio V11.0
 
-## Hotbath — stratégie de visuel en 3 niveaux
+## Nouvelle interface
+V11.0 refond l’interface dans un langage plus proche d’une application Apple : hiérarchie claire, espaces généreux, panneaux contextuels, actions principales évidentes et réduction du bruit visuel.
 
-1. **Photo officielle Hotbath** : priorité absolue.
-   - La finition n'est maintenant marquée « exacte » que si la page Hotbath affiche elle-même la référence avec le code finition demandé dans `#descrbar`.
-   - On ne considère plus automatiquement toute image Hotbath comme exacte.
+### Nouveau chrome
+- barre latérale compacte avec navigation iconographique ;
+- topbar translucide ;
+- bandeau projet permanent : client, commercial, total HT, remise et marge ;
+- identité Hydropolis plus éditoriale.
 
-2. **Recherche web par référence exacte** :
-   - bouton « Chercher finition sur le web » ;
-   - recherche avec référence complète + code finition + Hotbath ;
-   - l'image trouvée est clairement signalée « à vérifier » et n'est jamais présentée comme photo fabricant certifiée.
+### Catalogue intelligent
+- accès rapide aux marques sous forme de rail horizontal ;
+- les filtres stricts marque → collection/catégorie/finition restent actifs ;
+- résultats en cartes visuelles plutôt qu’en longues lignes ;
+- projet courant conservé en panneau latéral ;
+- fonctions fabricant, documents, recherche Hotbath et simulation de finition conservées.
 
-3. **Simulation de finition Hydropolis** :
-   - bouton « Simuler [finition] » lorsque l'on possède déjà un visuel produit ;
-   - traitement serveur léger qui conserve volumes, ombres et reflets et applique la teinte de finition Hotbath ;
-   - finitions gérées : CR, GN, AB, BB, WH, AI, BBP, BCP et MBP ;
-   - dans le dossier client, une simulation porte la mention discrète « Visuel de finition simulé · non contractuel ».
+### Projet par pièce
+- en-tête projet plus lisible ;
+- cartes de pièces de type board ;
+- total HT net visible par pièce ;
+- réglages avancés des articles restent repliés par défaut ;
+- délais, remises article, documents techniques et accessoires restent disponibles.
 
-## Documents Hotbath
-Les corrections V10.3 sont conservées :
-- Drawing JPG reconnu comme dessin technique ;
-- Technical info JPG/PDF reconnu ;
-- Instructions PDF reconnues ;
-- CAD distingué.
+### Marge & devis
+- indicateurs financiers plus lisibles et moins “tableur” ;
+- bandeau projet synchronisé avec la marge calculée.
 
-## Zucchetti
-La correction de rendu PDF multipage reste active : la page 3 est réellement rendue côté serveur.
+### Présentation client
+- aperçu A4 et export PDF inchangés fonctionnellement ;
+- format A4 paysage strict conservé.
+
+### Compatibilité
+Toute la logique V10.4 est conservée : PostgreSQL/Supabase, multi-utilisateurs, catalogues, Hotbath, Zucchetti page 3, Lefroy Brooks, Catalano, Recor, remises, frais de port, documents et traduction contrôlée.
