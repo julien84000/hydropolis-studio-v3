@@ -4,7 +4,7 @@ const state={project:{name:"",client:"",location:"",date:"",intro:"",cover:""},r
 const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
 
 // V11.7: keep the visible build number correct even if index.html was not re-uploaded.
-queueMicrotask(()=>{const el=document.querySelector(".v11-logo em");if(el)el.textContent="V11.11";document.title="Hydropolis Studio V11.11 · Render";});
+queueMicrotask(()=>{const el=document.querySelector(".v11-logo em");if(el)el.textContent="V11.12";document.title="Hydropolis Studio V11.12 · Render";});
 
 const cloud={
   token:localStorage.getItem("hydropolis-auth-token")||"",
@@ -599,15 +599,15 @@ async function autoCropForPdf(src){
 
 try{
   Object.keys(localStorage).forEach(k=>{
-    if(/^hydropolis-manufacturer-/i.test(k) && k!=="hydropolis-manufacturer-v1111")localStorage.removeItem(k);
+    if(/^hydropolis-manufacturer-/i.test(k) && k!=="hydropolis-manufacturer-v1112")localStorage.removeItem(k);
   });
 }catch(e){}
 let manufacturerImageCache={};
-try{manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v1111")||"{}")||{};}catch(e){manufacturerImageCache={};}
+try{manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v1112")||"{}")||{};}catch(e){manufacturerImageCache={};}
 function manufacturerCacheKey(p){return `${p.manufacturer}|${p.reference}`;}
 function saveManufacturerCache(){
   try{
-    localStorage.setItem("hydropolis-manufacturer-v1111",JSON.stringify(manufacturerImageCache));
+    localStorage.setItem("hydropolis-manufacturer-v1112",JSON.stringify(manufacturerImageCache));
   }catch(e){
     console.warn("[Hydropolis cache] quota dépassé, cache vidé",e);
     manufacturerImageCache={};
@@ -2819,7 +2819,9 @@ function isHotbathDrawingJpg(p){
 }
 function hotbathDrawingProxyUrl(p){
   if(!isHotbathDrawingJpg(p))return "";
-  return `/api/image-proxy?url=${encodeURIComponent(p.drawingUrl)}&referer=${encodeURIComponent(p.resolvedManufacturerUrl||p.manufacturerUrl||"https://www.hotbath.it/")}`;
+  const productUrl=p.resolvedManufacturerUrl||p.manufacturerUrl||"";
+  if(!productUrl)return "";
+  return `/api/hotbath-drawing-image?url=${encodeURIComponent(p.drawingUrl)}&productUrl=${encodeURIComponent(productUrl)}`;
 }
 
 function buildDocument(){
@@ -2912,18 +2914,27 @@ function buildDocument(){
      const hotbathJpg=isHotbathDrawingJpg(p);
      const drawingSrc=p.drawingType==="pdf"
        ?`/api/pdf-page-image?url=${encodeURIComponent(p.drawingUrl)}&page=${page}&scale=1.8`
-       :(hotbathJpg?p.drawingUrl:`/api/image-proxy?url=${encodeURIComponent(p.drawingUrl)}`);
-     const drawingFallback=hotbathJpg?hotbathDrawingProxyUrl(p):"";
+       :(hotbathJpg?hotbathDrawingProxyUrl(p):`/api/image-proxy?url=${encodeURIComponent(p.drawingUrl)}`);
+     const drawingFallback=hotbathJpg?p.drawingUrl:"";
 
      const drawingTitle=/zucchetti/i.test(p.manufacturer||"")
        ?"Dessin technique · page 3"
        :(/hotbath/i.test(p.manufacturer||"")?"Dessin technique":"Drawing technique");
+     if(hotbathJpg){
+       console.log("[Hotbath dossier drawing]",{
+         reference:p.reference,
+         includeDrawing:!!p.includeDrawing,
+         drawingUrl:p.drawingUrl,
+         productUrl:p.resolvedManufacturerUrl||p.manufacturerUrl||"",
+         renderUrl:drawingSrc
+       });
+     }
 
      html+=`<section class="page drawing-page">
        <div class="pagehead"><div><h2>${r.title} · ${drawingTitle}</h2><p>${p.manufacturer} ${p.collection}${state.showSupplierReferences!==false?` · ${p.reference}`:""}</p></div><div style="font-family:Georgia;color:var(--gold)">Hydropolis</div></div>
        <div class="drawing-sheet">
          <div class="drawing-meta"><div class="maker">${p.manufacturer} · ${p.collection}</div><div class="title">${p.designation}</div><div class="finish">${p.finish}</div>${state.showSupplierReferences!==false?`<div class="refsmall">Réf. ${p.reference}</div>`:""}</div>
-         <div class="drawing-visual"><img src="${drawingSrc}" ${drawingFallback?`data-drawing-fallback="${drawingFallback}"`:""} alt="${drawingTitle} ${p.reference}" referrerpolicy="no-referrer"></div>
+         <div class="drawing-visual"><img src="${drawingSrc}" ${drawingFallback?`data-drawing-fallback="${drawingFallback}" onerror="if(this.dataset.fallbackTried!=='1'){this.dataset.fallbackTried='1';this.src=this.dataset.drawingFallback}"`:""} alt="${drawingTitle} ${p.reference}" referrerpolicy="no-referrer"></div>
        </div>
        <div class="page-no">${no++}</div><div class="bottom"></div>
      </section>`;
@@ -3153,7 +3164,10 @@ function harmonizeSavedCatalogProducts(){
       p.installationGuideUrl="";
       p.installationGuideLabel="";
       p.includeInstallationGuide=false;
-      if(p.drawingUrl && p.drawingType==="image")p.includeDrawing=true;
+      if(p.drawingUrl && p.drawingType==="image"){
+        // Keep the user's per-product choice exactly as saved.
+        p.includeDrawing=!!p.includeDrawing;
+      }
     }
   }
 }
