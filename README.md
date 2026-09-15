@@ -1,29 +1,38 @@
-# Hydropolis Studio V11.1
+# Hydropolis Studio V11.3
 
-## Catalogue corrigé
+## Hotbath — nouvelle chaîne de récupération des visuels
 
-Cette version corrige les trois points constatés sur iPad après la V11.0.
+La priorité reste le site officiel Hotbath.
 
-### Photos automatiques
-Les cartes visibles chargent désormais automatiquement leur photo fabricant.
-Le chargement est progressif (IntersectionObserver) et limité à 2 requêtes simultanées
-pour ne pas saturer les sites fabricants ni Render.
+1. **Hotbath officiel**
+   - photo utilisée comme finition exacte uniquement si la référence affichée par Hotbath
+     dans la fiche correspond réellement au code finition demandé.
 
-### Vignettes plus compactes
-Le catalogue utilise maintenant une grille dynamique d'environ 185 px par carte.
-Sur iPad paysage, plusieurs produits peuvent être affichés sur une même ligne au lieu
-des deux grandes cartes de la V11.0.
+2. **Sawiday automatique**
+   - si Hotbath ne certifie pas le visuel de la finition, Hydropolis recherche automatiquement
+     la référence fournisseur exacte sur Sawiday ;
+   - exemple : `B008.BBP.IT` → `B008BBP`, `CB003MC.BCP.IT` → `CB003MCBCP` ;
+   - la page Sawiday elle-même doit contenir exactement ce numéro fournisseur avant que
+     la photo soit acceptée ;
+   - le visuel est identifié comme **Source secondaire Sawiday**, jamais comme photo officielle Hotbath.
 
-### Images correctement adaptées
-Un nouveau proxy serveur `/api/product-image-fit` :
-- récupère le visuel fabricant ;
-- détecte les grandes marges blanches ;
-- recadre automatiquement l'espace vide quand c'est pertinent ;
-- conserve le produit entier ;
-- renvoie une image optimisée pour les cartes.
+3. **Recherche web / simulation**
+   - les anciens outils restent disponibles en dernier recours.
 
-Les images utilisent toujours `object-fit: contain` : pas de rognage du produit.
+## Dessins techniques Hotbath
 
-### Héritage V11
-Toute la logique métier, les filtres fabricant, Hotbath, Zucchetti, Recor,
-les devis, marges, comptes utilisateurs et export client sont conservés.
+Les ressources Hotbath sont maintenant analysées explicitement par leur rubrique officielle :
+
+- `Drawing` → **JPG du dessin technique** ;
+- `Technical info` → fiche technique JPG/PDF ;
+- `Instructions` → notice PDF ;
+- `CAD` → DWG/IGS/STP/3DS.
+
+Le JPG présent dans **Drawing** est automatiquement coché **Inclure le dessin technique**
+lorsqu'un produit Hotbath est enrichi ou ajouté avec ses documents déjà en cache.
+
+Il apparaît ensuite dans la fiche produit du projet et dans le dossier client comme
+**Dessin technique**.
+
+## Zucchetti
+Correction conservée : page 3 du PDF technique utilisée comme dessin technique.
