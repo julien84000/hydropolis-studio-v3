@@ -719,7 +719,7 @@ app.post("/api/translate-product",requireAuth,async(req,res)=>{
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V11.4",
+  service:"Hydropolis Studio V11.5",
   database:USE_POSTGRES?"postgresql":"local-fallback",
   time:new Date().toISOString()
 }));
@@ -1216,20 +1216,43 @@ function compactRefText(v){
   return String(v||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
 }
 function sawidayProductLinksFromSearch(html,baseUrl){
-  const $s=cheerio.load(String(html||""));
+  const raw=String(html||"");
+  const $s=cheerio.load(raw);
   const links=[];
-  $s("a[href]").each((_,el)=>{
-    let href=$s(el).attr("href")||"";
-    if(!href)return;
-    href=decodeHtmlEntities(href);
-    try{
-      const u=new URL(href,baseUrl);
-      if(!/(^|\.)sawiday\.fr$/i.test(u.hostname))return;
-      if(!/^\/p\//i.test(u.pathname))return;
-      u.hash="";
-      links.push(u.href);
-    }catch{}
-  });
+
+  function pushCandidate(value){
+    if(!value)return;
+    let href=decodeHtmlEntities(String(value)).replace(/\\\//g,"/").trim();
+    // Search engines frequently wrap the destination URL in q/url/uddg parameters.
+    for(let pass=0;pass<3;pass++){
+      try{
+        const u=new URL(href,baseUrl);
+        const wrapped=u.searchParams.get("uddg")||u.searchParams.get("q")||u.searchParams.get("url")||u.searchParams.get("u");
+        if(wrapped && /sawiday\.fr/i.test(wrapped)){
+          href=decodeURIComponent(wrapped);
+          continue;
+        }
+        if(/(^|\.)sawiday\.fr$/i.test(u.hostname) && /^\/p\//i.test(u.pathname)){
+          u.hash="";
+          links.push(u.href);
+        }
+        break;
+      }catch{
+        try{href=decodeURIComponent(href)}catch{}
+        break;
+      }
+    }
+  }
+
+  $s("a[href]").each((_,el)=>pushCandidate($s(el).attr("href")||""));
+
+  // Also inspect raw search markup because RSS/XML and some engines do not expose
+  // result URLs as normal anchor hrefs.
+  const decoded=decodeHtmlEntities(raw).replace(/\\\//g,"/");
+  for(const m of decoded.matchAll(/https?:\/\/(?:www\.)?sawiday\.fr\/p\/[^\s"'<>\]&]+/gi)) pushCandidate(m[0]);
+  for(const m of decoded.matchAll(/https?%3A%2F%2F(?:www\.)?sawiday\.fr%2Fp%2F[^\s"'<>\]&]+/gi)){
+    try{pushCandidate(decodeURIComponent(m[0]))}catch{}
+  }
   return [...new Set(links)];
 }
 function sawidayImageCandidates(pageHtml,pageUrl,supplierRef,finishCode){
@@ -1241,11 +1264,15 @@ function sawidayImageCandidates(pageHtml,pageUrl,supplierRef,finishCode){
     const href=absoluteUrl(pageUrl,raw);
     if(!href || !isImageUrl(href))return;
     const low=String(href+" "+context).toLowerCase();
-    if(/logo|favicon|icon|sprite|payment|trustpilot|stars?|flag|placeholder|loading|video-thumbnail|youtube|facebook|instagram|pinterest|hotbath-logo/.test(low))return;
+    if(/logo|favicon|icon|sprite|payment|trustpilot|stars?|flag|placeholder|loading|video-thumbnail|youtube|facebook|instagram|pinterest|hotbath-logo|linkedinopengraph/.test(low))return;
+    // Sawiday publishes a generic social OG image before the real product OG image.
+    // It must never become a product photo.
+    if(/static\.rorix\.nl\/image\/content\//i.test(href))return;
     if(/[?&](?:w|width|h|height)=([1-9]\d?|1\d\d)(?:&|$)/i.test(href))return;
 
     let score=500;
-    if(source==="sawiday-metadata-image")score+=6000;
+    if(/static\.rorix\.nl\/image\/product\//i.test(href))score+=9000;
+    if(source==="sawiday-metadata-image")score+=3500;
     if(compactRefText(low).includes(wanted))score+=5000;
     if(/hotbath/i.test(low))score+=1400;
     if(/product|products|media|catalog|gallery|image|cdn/i.test(low))score+=700;
@@ -1308,51 +1335,59 @@ async function findSawidayHotbathImage(reference,finishCode,finish){
   if(!supplierRef)return null;
 
   const memoKey=supplierRef.toUpperCase();
-  if(sawidayHotbathMemo.has(memoKey))return sawidayHotbathMemo.get(memoKey);
+  const cached=sawidayHotbathMemo.get(memoKey);
+  if(cached){
+    if(cached.__negative){
+      // A search-engine block is often transient. Never keep a failed lookup forever.
+      if(Date.now()-cached.at<45000)return null;
+      sawidayHotbathMemo.delete(memoKey);
+    }else return cached;
+  }
 
   const searchQueries=[
-    `site:sawiday.fr/p/ "${supplierRef}" "Hotbath"`,
-    `site:sawiday.fr/p/ ${supplierRef} Hotbath`
+    `site:sawiday.fr/p/ "${supplierRef}"`,
+    `"${supplierRef}" Sawiday Hotbath`,
+    `${supplierRef} Hotbath Sawiday`
   ];
+
+  async function trySearch(engine,url){
+    try{
+      const html=await fetchBrandPage(url,"fr-FR,fr;q=0.9,en;q=0.7");
+      const links=sawidayProductLinksFromSearch(html,url);
+      console.log("[sawiday-search]",JSON.stringify({supplierRef,engine,links:links.length}));
+      return links;
+    }catch(e){
+      console.warn("[sawiday-search]",JSON.stringify({supplierRef,engine,error:e.message}));
+      return [];
+    }
+  }
 
   let productLinks=[];
   for(const q of searchQueries){
-    // Bing RSS is much less brittle than scraping the visual search page from Render.
-    try{
-      const rssUrl=`https://www.bing.com/search?format=rss&count=10&setlang=fr-fr&q=${encodeURIComponent(q)}`;
-      const rss=await fetchBrandPage(rssUrl,"fr-FR,fr;q=0.9,en;q=0.7");
-      const blocks=String(rss||"").match(/<item>[\s\S]*?<\/item>/gi)||[];
-      for(const block of blocks){
-        const m=block.match(/<link>(?:<!\[CDATA\[)?([^<\]]+)/i);
-        if(!m)continue;
-        const href=decodeHtmlEntities(m[1]).trim();
-        try{
-          const u=new URL(href);
-          if(/(^|\.)sawiday\.fr$/i.test(u.hostname) && /^\/p\//i.test(u.pathname)){
-            u.hash="";
-            productLinks.push(u.href);
-          }
-        }catch{}
-      }
-      productLinks=[...new Set(productLinks)];
-    }catch(e){
-      console.warn("[sawiday-rss]",supplierRef,e.message);
-    }
+    // 1) Bing RSS: cheap, server-friendly when indexed.
+    productLinks.push(...await trySearch("bing-rss",`https://www.bing.com/search?format=rss&count=20&setlang=fr-fr&q=${encodeURIComponent(q)}`));
+    productLinks=[...new Set(productLinks)];
+    if(productLinks.length)break;
 
-    if(!productLinks.length){
-      try{
-        const searchUrl=`https://www.bing.com/search?q=${encodeURIComponent(q)}&count=10&setlang=fr-fr`;
-        const searchHtml=await fetchBrandPage(searchUrl,"fr-FR,fr;q=0.9,en;q=0.7");
-        productLinks.push(...sawidayProductLinksFromSearch(searchHtml,searchUrl));
-        productLinks=[...new Set(productLinks)];
-      }catch(e){
-        console.warn("[sawiday-search]",supplierRef,e.message);
-      }
-    }
+    // 2) Bing HTML fallback.
+    productLinks.push(...await trySearch("bing-html",`https://www.bing.com/search?count=20&setlang=fr-fr&q=${encodeURIComponent(q)}`));
+    productLinks=[...new Set(productLinks)];
+    if(productLinks.length)break;
+
+    // 3) DuckDuckGo HTML. It normally exposes result targets in the uddg parameter.
+    productLinks.push(...await trySearch("duckduckgo",`https://html.duckduckgo.com/html/?q=${encodeURIComponent(q)}`));
+    productLinks=[...new Set(productLinks)];
+    if(productLinks.length)break;
+
+    // 4) Google HTML as final discovery route. We still validate the Sawiday page itself.
+    productLinks.push(...await trySearch("google",`https://www.google.com/search?num=20&hl=fr&q=${encodeURIComponent(q)}`));
+    productLinks=[...new Set(productLinks)];
     if(productLinks.length)break;
   }
 
-  for(const pageUrl of productLinks.slice(0,7)){
+  console.log("[sawiday-candidates]",JSON.stringify({supplierRef,count:productLinks.length,links:productLinks.slice(0,3)}));
+
+  for(const pageUrl of productLinks.slice(0,10)){
     try{
       const pageHtml=await fetchBrandPage(pageUrl,"fr-FR,fr;q=0.9,en;q=0.7");
       const $s=cheerio.load(pageHtml);
@@ -1360,13 +1395,12 @@ async function findSawidayHotbathImage(reference,finishCode,finish){
       const body=$s("body").text();
       const compact=compactRefText(title+" "+body+" "+pageHtml);
 
-      // Do not trust the search result alone: the Sawiday page itself must contain
-      // the exact Hotbath supplier number.
+      // The page itself, not the search result, must contain the exact supplier number.
       if(!compact.includes(compactRefText(supplierRef)))continue;
       if(!/hotbath/i.test(title+" "+body))continue;
 
       const images=sawidayImageCandidates(pageHtml,pageUrl,supplierRef,finishCode);
-      for(const item of images.slice(0,8)){
+      for(const item of images.slice(0,12)){
         if(await imageExists(item.url,pageUrl)){
           const result={
             ...item,
@@ -1379,6 +1413,7 @@ async function findSawidayHotbathImage(reference,finishCode,finish){
             }
           };
           sawidayHotbathMemo.set(memoKey,result);
+          console.log("[sawiday-hit]",JSON.stringify({supplierRef,pageUrl,image:item.url}));
           return result;
         }
       }
@@ -1387,7 +1422,8 @@ async function findSawidayHotbathImage(reference,finishCode,finish){
     }
   }
 
-  sawidayHotbathMemo.set(memoKey,null);
+  // Short negative TTL only; manual retry and later catalogue loads must be able to try again.
+  sawidayHotbathMemo.set(memoKey,{__negative:true,at:Date.now()});
   return null;
 }
 
@@ -1889,6 +1925,16 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
       if(/\/prodcateg\/\d+\/(?:cr|gn|ab|bb|wh|ai|bbp|bcp|mbp)\.jpe?g(?:\?|$)/i.test(href))return;
       if(/[?&](?:w|width|h|height)=([1-9]\d?|1\d\d)(?:&|$)/i.test(href))return;
 
+      // A real Hotbath product photo is tied to the article base in its filename/path.
+      // Reject finish chips, technical drawings and unrelated page imagery even if they
+      // appear close to finish text in the DOM.
+      let pathname="";
+      try{pathname=decodeURIComponent(new URL(href).pathname)}catch{pathname=href}
+      const compactPath=compactRefText(pathname);
+      const compactBase=compactRefText(hBase);
+      if(compactBase && !compactPath.includes(compactBase))return;
+      if(/(?:lt-rel|drawing|technical|_img(?:\.|_)|instruction|manual|cad|finish|finitur|swatch|colour|color|kleur|material|sample|texture)/i.test(pathname))return;
+
       let score=450;
       if(/og:image|twitter:image|metadata/.test(source+" "+context))score+=4500;
       if(hBase && text.includes(hBase))score+=2200;
@@ -2313,7 +2359,7 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     // Only after the exact-finish routes fail do we allow a live generic Hotbath image.
     const hotbathGeneric=sorted.filter(x=>
       x.finishMatch!=="exact" &&
-      (/^hotbath-/.test(String(x.source||"")) || /^official-/.test(String(x.source||"")))
+      /^hotbath-/.test(String(x.source||""))
     );
     fallback=await firstLiveImageCandidate(hotbathGeneric,manufacturerUrl,10);
     best=exact||fallback;
@@ -2406,6 +2452,7 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     hotbathSupplierRef:isHotbath?hotbathSawidaySupplierRef(reference,requested):undefined,
     sawiday:best?.source==="sawiday-exact-finish",
     bestHasEmbeddedData:!!best?.dataUrl,
+    strictHotbathProductImage:isHotbath?(/^hotbath-/.test(String(best?.source||""))):undefined,
     candidates:sorted.length,
     catalanoGallery:isCatalano?productImages.length:undefined,
     catalanoExactFinish:isCatalano?catalanoGallery.filter(x=>x.finishMatch==="exact").length:undefined,
@@ -2523,6 +2570,8 @@ app.post("/api/hotbath-web-image",async(req,res)=>{
 
   try{
     // 1) Same trusted secondary route as the automatic enrichment.
+    // A manual click is an explicit retry: clear any short-lived negative search cache.
+    sawidayHotbathMemo.delete(hotbathSawidaySupplierRef(reference,finishCode).toUpperCase());
     const sawiday=await findSawidayHotbathImage(reference,finishCode,finish);
     if(sawiday && await imageExists(sawiday.url,sawiday.attributes?.sourcePage)){
       return res.json({
@@ -2934,7 +2983,7 @@ app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")))
 async function startServer(){
   try{
     await initPersistentStore();
-    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.4 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
+    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.5 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
   }catch(e){
     console.error("[Hydropolis] Démarrage impossible :",e);
     process.exit(1);

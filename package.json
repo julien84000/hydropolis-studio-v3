@@ -1,12 +1,12 @@
 {
   "name": "hydropolis-studio-v3",
-  "version": "11.4.0",
+  "version": "11.5.0",
   "private": true,
   "description": "Hydropolis Studio V3 - Render test server",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "build": "node -e \"console.log('Hydropolis V11.4: Hotbath live validation + Sawiday fallback')\""
+    "build": "node -e \"console.log('Hydropolis V11.5: strict Hotbath photos + resilient Sawiday search')\""
   },
   "engines": {
     "node": ">=20"

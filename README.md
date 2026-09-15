@@ -1,39 +1,25 @@
-# Hydropolis Studio V11.4
+# Hydropolis Studio V11.5
 
-## Correctif Hotbath basé sur les logs Render
+Correctif Hotbath/Sawiday basé sur les logs Render V11.4.
 
-Les logs V11.3 montraient une séquence claire :
-- Hydropolis trouvait une URL dans la page Hotbath ;
-- la marquait à tort comme `exact:true` avec `source:"official-page"` ;
-- l'URL réelle répondait ensuite **404** lors de l'embed et du recadrage ;
-- comme l'image était déjà considérée « exacte », le fallback Sawiday n'était jamais exécuté.
+## Causes identifiées
 
-### V11.4
+1. Le fallback Hotbath acceptait encore des images génériques `official-page`, ce qui laissait passer les pastilles de finition.
+2. Une recherche Sawiday ayant échoué était mise en cache à `null` pour toute la durée du processus Render ; le bouton manuel ne pouvait donc plus réellement réessayer.
+3. Bing RSS seul ne suffit pas pour retrouver toutes les références Sawiday, alors que les pages existent et sont indexées.
+4. Sawiday publie une image OpenGraph générique avant l’image produit ; elle devait être exclue.
 
-1. **Une image Hotbath n'est plus acceptée sans test HTTP réel.**
-   Les meilleures candidates sont vérifiées avant d'être envoyées au navigateur.
+## V11.5
 
-2. **Les images génériques `official-page` ne peuvent plus certifier une finition Hotbath.**
-   Une photo officielle exacte doit provenir du parseur Hotbath dédié, porter le code
-   finition demandé et être réellement accessible.
+- Une photo Hotbath officielle générique doit maintenant contenir la référence de base dans son URL/nom de fichier.
+- Les pastilles de finition, dessins techniques, images `_img`, `lt-rel`, textures et éléments de page sont exclus.
+- Le fallback final n’accepte plus aucune candidate globale `official-page` pour Hotbath.
+- Recherche Sawiday multi-moteur : Bing RSS → Bing HTML → DuckDuckGo HTML → Google HTML.
+- Les redirections `q`, `url`, `uddg` et les URL encodées sont décodées.
+- La page Sawiday est toujours revalidée sur le numéro fournisseur Hotbath exact.
+- L’image sociale générique Sawiday `/image/content/` est rejetée ; `/image/product/` est fortement priorisée.
+- Un échec Sawiday n’est mémorisé que 45 secondes.
+- Le bouton manuel efface explicitement ce cache négatif avant de réessayer.
+- Les dessins techniques Hotbath JPG restent inchangés.
 
-3. **Sawiday devient réellement le fallback automatique de niveau 2.**
-   La recherche utilise d'abord Bing RSS (plus robuste côté Render), puis l'HTML en secours.
-   La page Sawiday doit contenir exactement le numéro fournisseur Hotbath.
-
-4. **Le bouton de recherche web utilise lui aussi Sawiday en priorité.**
-   La recherche d'images générique n'intervient qu'en dernier recours.
-
-5. **Aucune URL Hotbath 404 n'est conservée dans le cache navigateur.**
-   Si l'embed échoue, la vignette reste proprement sans image plutôt que d'afficher
-   l'icône d'image cassée.
-
-## Dessins techniques Hotbath
-
-La logique V11.3 est conservée :
-- `Drawing` = dessin technique JPG officiel ;
-- `Technical info` = fiche technique JPG/PDF ;
-- `Instructions` = notice PDF ;
-- `CAD` = fichiers DAO.
-
-Le Drawing JPG est automatiquement proposé/inclus lorsqu'il est disponible.
+Logs utiles ajoutés : `[sawiday-search]`, `[sawiday-candidates]`, `[sawiday-hit]`.
