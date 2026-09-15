@@ -1038,6 +1038,53 @@ function updateDependentFilters(resetCollection=false,resetCategory=false,resetF
     $("#finishFilter").value="";
   }
 }
+
+function renderBrandRail(){
+  const host=$("#brandRail");if(!host)return;
+  const current=$("#manufacturerFilter")?.value||"";
+  const makers=[...new Set(CATALOG.map(p=>p.manufacturer).filter(Boolean))]
+    .sort((a,b)=>String(a).localeCompare(String(b),"fr",{sensitivity:"base"}));
+  const all=["",...makers];
+  host.innerHTML=all.map(m=>`<button type="button" class="brand-chip ${m===current?"active":""}" data-maker="${m.replace(/"/g,"&quot;")}">${m||"Toutes les marques"}<small>${m?CATALOG.filter(p=>p.manufacturer===m).length.toLocaleString("fr-FR"):CATALOG.length.toLocaleString("fr-FR")}</small></button>`).join("");
+  $$(".brand-chip",host).forEach(btn=>btn.onclick=()=>{
+    const maker=btn.dataset.maker||"";
+    $("#manufacturerFilter").value=maker;
+    $("#collectionFilter").value="";
+    $("#categoryFilter").value="";
+    $("#finishFilter").value="";
+    updateDependentFilters(true,true,true);
+    renderBrandRail();
+    renderCatalog();
+  });
+}
+function syncBrandRail(){
+  const maker=$("#manufacturerFilter")?.value||"";
+  $$(".brand-chip").forEach(b=>b.classList.toggle("active",(b.dataset.maker||"")===maker));
+}
+function renderV11Overview(activeView=""){
+  const bar=$("#v11ProjectBar");
+  if(!bar)return;
+  const currentView=activeView || $$(".view").find(v=>v.classList.contains("active"))?.id?.replace("view-","") || "catalog";
+  bar.classList.toggle("hidden",currentView==="projects");
+
+  const f=projectFinancials();
+  const name=String(state.project?.name||"Projet sans nom").trim()||"Projet sans nom";
+  const client=String(state.project?.client||"—").trim()||"—";
+  const location=String(state.project?.location||"").trim();
+  const sales=String(cloud.user?.name||"—").trim()||"—";
+  const discount=Number(f.discountRate||0);
+  const margin=Number(f.marginOnSales||0);
+
+  if($("#v11ActiveProject"))$("#v11ActiveProject").textContent=name;
+  if($("#v11ClientKpi"))$("#v11ClientKpi").textContent=client;
+  if($("#v11SalesKpi"))$("#v11SalesKpi").textContent=sales;
+  if($("#v11TotalKpi"))$("#v11TotalKpi").textContent=`${euro(f.net)} HT`;
+  if($("#v11DiscountKpi"))$("#v11DiscountKpi").textContent=discount?`− ${discount.toLocaleString("fr-FR",{maximumFractionDigits:1})} %`:`0 %`;
+  if($("#v11MarginKpi"))$("#v11MarginKpi").textContent=f.productsNet?`${margin.toLocaleString("fr-FR",{maximumFractionDigits:1})} % · ${euro(f.margin)}`:"—";
+  if($("#v11ProjectHeroName"))$("#v11ProjectHeroName").textContent=name;
+  if($("#v11ProjectHeroMeta"))$("#v11ProjectHeroMeta").textContent=[client,location].filter(x=>x&&x!=="—").join(" · ")||"Projet Hydropolis";
+}
+
 function updateCatalogSidebar(){
   const makers=[...new Set(CATALOG.map(x=>x.manufacturer).filter(Boolean))]
     .sort((a,b)=>String(a).localeCompare(String(b),"fr",{sensitivity:"base"}));
@@ -1058,11 +1105,13 @@ function initFilters(){
  fillSelect("manufacturerFilter",valuesFor("manufacturer"),false);
  updateDependentFilters(false);
  updateCatalogSidebar();
+ renderBrandRail();
 }
 function roomById(id){return state.rooms.find(r=>r.id===id)}
 function renderRoomSelect(){let cur=$("#targetRoom")?.value||state.rooms[0].id;$("#targetRoom").innerHTML=state.rooms.map(r=>`<option value="${r.id}">${r.title}</option>`).join(""); if(state.rooms.some(r=>r.id===cur))$("#targetRoom").value=cur;}
 function matches(p,q){let hay=[p.reference,p.base,p.designation,p.collection,p.manufacturer,p.finish,p.category].join(" ").toLowerCase();return q.toLowerCase().trim().split(/\s+/).filter(Boolean).every(w=>hay.includes(w));}
 function renderCatalog(){
+ syncBrandRail();
  const results=$("#results");
  const count=$("#resultCount");
  if(!results)return;
@@ -1093,11 +1142,11 @@ function renderCatalog(){
        const cached=cachedManufacturerImage(p);
        const finishLabel=exactFinishLabel(p)||"";
        const price=Number(p.totalPrice||0);
-       cards.push(`<article class="result">
+       cards.push(`<article class="result v11-product-card">
        <div class="catalog-thumb">${cached?.src?`<img src="${cached.src}" alt="${p.reference||""}">`:`<div class="photo-missing"><b>Photo fabricant</b><br>${finishLabel}<br>à rechercher</div>`}</div>
        <div><div class="r-top"><span class="ref">${p.reference||""}</span><span class="badge">${p.manufacturer||""}</span><span class="badge">${p.collection||""}</span><span class="badge">${p.category||""}</span></div>
        <div class="designation">${p.designation||""}</div><div class="meta">${p.finish||""}</div>
-       <div class="manufacturer-tools">
+       <div class="manufacturer-tools v11-resource-tools">
          <button class="tiny lookup-photo" data-ref="${p.reference||""}">${cached?"Actualiser la photo":"Trouver la photo fabricant"}</button>
          ${hotbathNeedsFinishFallback(p,cached)?`<button class="tiny hotbath-web-photo" data-ref="${p.reference||""}">Chercher finition sur le web</button>`:""}
          ${hotbathNeedsFinishFallback(p,cached)&&cached?.remoteUrl?`<button class="tiny hotbath-sim-photo" data-ref="${p.reference||""}">Simuler ${p.finish||"la finition"}</button>`:""}
@@ -1107,7 +1156,7 @@ function renderCatalog(){
        </div>
        <div class="photo-status">${cached?`<b>${imageBadge(cached,p)}</b>${cached.note?`<br>${cached.note}`:""}`:`Priorité au site officiel du fabricant.`}</div>
        </div>
-       <div class="price-box"><div class="price">${euro(price)} HT</div>
+       <div class="price-box"><small class="v11-price-label">Prix public</small><div class="price">${euro(price)} HT</div>
        ${p.internalReference?`<div class="internal">Ext. ${euro(p.price)} + ${p.internalReference} ${euro(p.internalPrice)}<br><b>interne ajouté automatiquement</b></div>`:`<div class="internal">Référence complète</div>`}
        ${isRecorBathRequiringFeet(p)?`<div class="internal recor-config-hint"><b>Pieds obligatoires</b> · choix à l’ajout</div>`:""}
        <button class="btn primary add" data-ref="${p.reference||""}" style="margin-top:9px">${isRecorBathRequiringFeet(p)?"Configurer + ajouter":"Ajouter à "+(room?.title||"la pièce")}</button></div>
@@ -1652,6 +1701,7 @@ function renderMarginDashboard(){
     state.commercial.supplierDiscounts[inp.dataset.maker]=clampPercent(inp.value);
     saveState(); renderMarginDashboard();
   });
+  renderV11Overview();
 }
 function bindCommercial(){
   const cd=$("#clientDiscount"), vat=$("#quoteVatRate"), ship=$("#shippingFee"), supplierShip=$("#supplierShippingFee");
@@ -1781,6 +1831,7 @@ function quotePages(startNo){
 function renderSelection(){
  $("#selectionCount").textContent=state.rooms.length+" pièce"+(state.rooms.length>1?"s":"")+" · "+state.selected.length+" produit"+(state.selected.length>1?"s":"");
  $("#selectionMini").innerHTML=state.rooms.map(r=>{let ps=state.selected.filter(p=>p.roomId===r.id);return `<div class="mini"><b>${r.title}</b><div class="mini-room">${ps.length} produit${ps.length>1?"s":""}</div>${ps.slice(0,3).map(p=>`<div>${p.reference} · ${euro(p.totalPrice)}</div>`).join("")}</div>`}).join("");
+ renderV11Overview();
 }
 function newRoom(){let title=prompt("Nom de la pièce","SDB SUITE");if(!title)return;let id="r"+Date.now();state.rooms.push({id,title,subtitle:"",manual:[]});saveState();renderRoomSelect();renderSelection();renderRooms();renderMarginDashboard();$("#targetRoom").value=id;renderCatalog();}
 
@@ -1872,15 +1923,19 @@ function safeRecorBathOptions(p,roomId){
 function renderRoomsCore(){
  $("#roomsEditor").innerHTML=state.rooms.map((r,ri)=>{
    let ps=state.selected.filter(p=>p.roomId===r.id);
+   const roomProductsNet=ps.reduce((sum,p)=>sum+safeEffectiveSaleValue(p),0);
+   const roomManualNet=validManualItemsForRoom(r).reduce((sum,m)=>sum+Number(m.price||0)*(1-clientDiscountRate()/100),0);
+   const roomNet=roomProductsNet+roomManualNet;
    return `<article class="room-card">
-   <div class="room-head"><input class="room-title" data-id="${r.id}" value="${r.title}"><input class="room-sub" data-id="${r.id}" value="${r.subtitle||""}" placeholder="Sous-titre / ambiance">
-   <button class="btn ghost go-cat" data-id="${r.id}">+ Produit catalogue</button><button class="icon del-room" data-id="${r.id}">×</button></div>
+   <div class="room-head"><div class="room-title-stack"><input class="room-title" data-id="${r.id}" value="${r.title}"><input class="room-sub" data-id="${r.id}" value="${r.subtitle||""}" placeholder="Sous-titre / ambiance"><span>${ps.length} produit${ps.length>1?"s":""}</span></div>
+   <div class="room-total"><small>Total pièce</small><b>${euro(roomNet)} HT</b></div>
+   <button class="btn ghost go-cat" data-id="${r.id}">＋ Produit</button><button class="icon del-room" data-id="${r.id}" title="Supprimer la pièce">×</button></div>
    <div class="room-products">${ps.length?ps.map(p=>`
       <div class="room-product">
         <div class="room-prod-img"><label data-id="${p.id}">${p.image?`<img src="${p.image}">`:"＋ Photo"}<input class="prod-file" type="file" accept="image/*" hidden></label></div>
         <div><b>${p.designation}</b><div class="tech">${p.manufacturer} · ${p.collection} · ${p.reference} · <b>${safeExactFinishLabel(p)}</b></div>${p.internalReference?`<div class="tech">Complet avec ${p.internalReference}</div>`:""}
         <details class="article-editor">
-          <summary>Modifier l'article</summary>
+          <summary>Réglages de l’article</summary>
           <div class="article-editor-grid">
             <label class="designation-editor-label">Désignation
               <span class="designation-editor-row">
@@ -2150,7 +2205,7 @@ function renderRooms(){
 function bindProject(){
   [["projectName","name"],["clientName","client"],["projectLocation","location"],["projectDate","date"],["projectIntro","intro"]].forEach(([id,k])=>{
     $("#"+id).value=state.project[k]||"";
-    $("#"+id).oninput=()=>{state.project[k]=$("#"+id).value;saveState();};
+    $("#"+id).oninput=()=>{state.project[k]=$("#"+id).value;saveState();renderV11Overview();};
   });
   if(state.project.cover){
     $("#coverDrop").classList.add("has");
@@ -2159,7 +2214,7 @@ function bindProject(){
   $("#coverInput").onchange=async e=>{
     let f=e.target.files[0];if(!f)return;
     let data=await normalizeImageFile(f,2200,1500,.92);
-    state.project.cover=data;saveState();
+    state.project.cover=data;saveState();renderV11Overview();
     $("#coverDrop").classList.add("has");
     $("#coverDrop").style.backgroundImage=`url("${data}")`;
   };
@@ -2257,6 +2312,7 @@ function showView(v){
   };
   $("#viewTitle").textContent=t[v][0];
   $("#viewSubtitle").textContent=t[v][1];
+  renderV11Overview(v);
 
   if(v==="projects")renderProjectHub();
   if(v==="margin")renderMarginDashboard();
@@ -2714,6 +2770,7 @@ function refreshCatalogUiAfterChunk(){
   updateDependentFilters(false,false,false);
 
   updateCatalogSidebar();
+  renderBrandRail();
   renderCatalog();
 }
 
@@ -2857,6 +2914,7 @@ $("#manufacturerFilter").addEventListener("change",()=>{
   $("#categoryFilter").value="";
   $("#finishFilter").value="";
   updateDependentFilters(true,true,true);
+  renderBrandRail();
   renderCatalog();
 });
 $("#collectionFilter").addEventListener("change",()=>{
@@ -2874,11 +2932,13 @@ $("#clearSearch").onclick=()=>{
   $("#searchInput").value="";
   ["manufacturerFilter","collectionFilter","categoryFilter","finishFilter"].forEach(id=>$("#"+id).value="");
   updateDependentFilters(true,true,true);
+  renderBrandRail();
   renderCatalog();
 };
 $("#newRoomQuick").onclick=newRoom;
 $("#addRoomBtn").onclick=newRoom;
 $("#goProjectBtn").onclick=()=>showView("project");
+if($("#v11BackProjects"))$("#v11BackProjects").onclick=()=>showView("projects");
 $("#previewTopBtn").onclick=()=>showView("preview");
 $("#printBtn").onclick=()=>exportClientPdf().catch(e=>alert("Export PDF impossible : "+e.message));
 $("#exportPdfTopBtn").onclick=()=>exportClientPdf().catch(e=>alert("Export PDF impossible : "+e.message));
