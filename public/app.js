@@ -4,7 +4,7 @@ const state={project:{name:"",client:"",location:"",date:"",intro:"",cover:""},r
 const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
 
 // V11.7: keep the visible build number correct even if index.html was not re-uploaded.
-queueMicrotask(()=>{const el=document.querySelector(".v11-logo em");if(el)el.textContent="V11.7";document.title="Hydropolis Studio V11.7 · Render";});
+queueMicrotask(()=>{const el=document.querySelector(".v11-logo em");if(el)el.textContent="V11.8";document.title="Hydropolis Studio V11.8 · Render";});
 
 const cloud={
   token:localStorage.getItem("hydropolis-auth-token")||"",
@@ -599,15 +599,15 @@ async function autoCropForPdf(src){
 
 try{
   Object.keys(localStorage).forEach(k=>{
-    if(/^hydropolis-manufacturer-/i.test(k) && k!=="hydropolis-manufacturer-v117")localStorage.removeItem(k);
+    if(/^hydropolis-manufacturer-/i.test(k) && k!=="hydropolis-manufacturer-v118")localStorage.removeItem(k);
   });
 }catch(e){}
 let manufacturerImageCache={};
-try{manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v117")||"{}")||{};}catch(e){manufacturerImageCache={};}
+try{manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v118")||"{}")||{};}catch(e){manufacturerImageCache={};}
 function manufacturerCacheKey(p){return `${p.manufacturer}|${p.reference}`;}
 function saveManufacturerCache(){
   try{
-    localStorage.setItem("hydropolis-manufacturer-v117",JSON.stringify(manufacturerImageCache));
+    localStorage.setItem("hydropolis-manufacturer-v118",JSON.stringify(manufacturerImageCache));
   }catch(e){
     console.warn("[Hydropolis cache] quota dépassé, cache vidé",e);
     manufacturerImageCache={};
@@ -694,12 +694,12 @@ async function fetchManufacturerImage(p,force=false){
     cadDrawingUrl:data.cadDrawing?.url||"",
     cadDrawingLabel:data.cadDrawing?.label||"",
     cadDrawingType:data.cadDrawing?.type||"",
-    technicalSheetUrl:data.technicalSheet?.url||"",
-    technicalSheetLabel:data.technicalSheet?.label||"Fiche technique",
-    technicalSheetType:data.technicalSheet?.type||"",
-    technicalSheetPage:Number(data.technicalSheet?.page||1),
-    installationGuideUrl:data.installationGuide?.url||"",
-    installationGuideLabel:data.installationGuide?.label||"Notice d'installation",
+    technicalSheetUrl:/hotbath/i.test(p.manufacturer||"")?"":(data.technicalSheet?.url||""),
+    technicalSheetLabel:/hotbath/i.test(p.manufacturer||"")?"":(data.technicalSheet?.label||"Fiche technique"),
+    technicalSheetType:/hotbath/i.test(p.manufacturer||"")?"":(data.technicalSheet?.type||""),
+    technicalSheetPage:/hotbath/i.test(p.manufacturer||"")?1:Number(data.technicalSheet?.page||1),
+    installationGuideUrl:/hotbath/i.test(p.manufacturer||"")?"":(data.installationGuide?.url||""),
+    installationGuideLabel:/hotbath/i.test(p.manufacturer||"")?"":(data.installationGuide?.label||"Notice d'installation"),
     checkedAt:new Date().toISOString()
   };
 
@@ -996,11 +996,21 @@ async function enrichSelectedPhoto(id,force=false){
     p.cadDrawingUrl=img.cadDrawingUrl||p.cadDrawingUrl||"";
     p.cadDrawingLabel=img.cadDrawingLabel||p.cadDrawingLabel||"";
     p.cadDrawingType=img.cadDrawingType||p.cadDrawingType||"";
-    p.technicalSheetUrl=img.technicalSheetUrl||p.technicalSheetUrl||"";
-    p.technicalSheetLabel=img.technicalSheetLabel||p.technicalSheetLabel||"Fiche technique";
-    p.technicalSheetPage=Number(img.technicalSheetPage||p.technicalSheetPage||1);
-    p.installationGuideUrl=img.installationGuideUrl||p.installationGuideUrl||"";
-    p.installationGuideLabel=img.installationGuideLabel||p.installationGuideLabel||"Notice d'installation";
+    if(/hotbath/i.test(p.manufacturer||"")){
+      p.technicalSheetUrl="";
+      p.technicalSheetLabel="";
+      p.includeTechnicalSheet=false;
+      p.installationGuideUrl="";
+      p.installationGuideLabel="";
+      p.includeInstallationGuide=false;
+      if(p.drawingUrl && p.drawingType==="image")p.includeDrawing=true;
+    }else{
+      p.technicalSheetUrl=img.technicalSheetUrl||p.technicalSheetUrl||"";
+      p.technicalSheetLabel=img.technicalSheetLabel||p.technicalSheetLabel||"Fiche technique";
+      p.technicalSheetPage=Number(img.technicalSheetPage||p.technicalSheetPage||1);
+      p.installationGuideUrl=img.installationGuideUrl||p.installationGuideUrl||"";
+      p.installationGuideLabel=img.installationGuideLabel||p.installationGuideLabel||"Notice d'installation";
+    }
   }catch(e){
     p.imageStatus=p.image?"Photo existante conservée":"Photo fabricant non trouvée";
     p.imageNote=e.message;
@@ -1605,10 +1615,10 @@ async function addProduct(ref,roomId,parentId=""){
    drawingLabel:cached?.drawingLabel||"",
    drawingPage:Number(cached?.drawingPage||1),
    drawingSource:cached?.drawingSource||"",
-   technicalSheetUrl:cached?.technicalSheetUrl||"",
-   technicalSheetLabel:cached?.technicalSheetLabel||"Fiche technique",
-   installationGuideUrl:cached?.installationGuideUrl||"",
-   installationGuideLabel:cached?.installationGuideLabel||"Notice d'installation",
+   technicalSheetUrl:/hotbath/i.test(p.manufacturer||"")?"":(cached?.technicalSheetUrl||""),
+   technicalSheetLabel:/hotbath/i.test(p.manufacturer||"")?"":(cached?.technicalSheetLabel||"Fiche technique"),
+   installationGuideUrl:/hotbath/i.test(p.manufacturer||"")?"":(cached?.installationGuideUrl||""),
+   installationGuideLabel:/hotbath/i.test(p.manufacturer||"")?"":(cached?.installationGuideLabel||"Notice d'installation"),
    includeDrawing:!!(/hotbath/i.test(p.manufacturer||"") && cached?.drawingUrl && cached?.drawingType==="image"),includeTechnicalSheet:false,includeInstallationGuide:false,
    customImage:false,accessoryFor:parentId||""
  });
@@ -2123,7 +2133,7 @@ function renderRoomsCore(){
             <button class="tiny reset-article-text" data-id="${p.id}" type="button">Rétablir désignation + prix</button>
           </div>
         </details>
-        <div class="image-actions"><button class="tiny enrich-btn" data-id="${p.id}">${p.image?"Actualiser photo + documents":"Chercher photo + documents"}</button>${hotbathNeedsFinishFallback(p)?`<button class="tiny hotbath-web-selected" data-id="${p.id}">Chercher finition web</button>`:""}${hotbathNeedsFinishFallback(p)&&p.remoteImageUrl?`<button class="tiny hotbath-sim-selected" data-id="${p.id}">Simuler ${p.finish||"la finition"}</button>`:""}<a target="_blank" href="${p.resolvedManufacturerUrl||p.manufacturerUrl}">Fiche officielle ↗</a>${technicalSheetHref(p)?`<a target="_blank" class="technical-sheet-link" href="${technicalSheetHref(p)}">${p.customTechnicalSheet?"Fiche personnalisée":(/zucchetti/i.test(p.manufacturer||"")?"Fiche technique complète":"Fiche technique")} ↗</a>${technicalSheetIsPdf(p)&&!/zucchetti/i.test(p.manufacturer||"")?`<label class="drawing-toggle"><input type="checkbox" class="techsheet-check" data-id="${p.id}" ${p.includeTechnicalSheet?"checked":""}> Inclure la fiche technique</label>`:""}`:`<span class="tech">${/lefroy brooks/i.test(p.manufacturer||"")?"Fiche technique Lefroy à récupérer":"Fiche technique à récupérer"}</span>`}${p.installationGuideUrl?`<a target="_blank" href="${p.installationGuideUrl}">Notice installation ↗</a><label class="drawing-toggle"><input type="checkbox" class="install-check" data-id="${p.id}" ${p.includeInstallationGuide?"checked":""}> Inclure la notice</label>`:""}${p.drawingUrl?`<a target="_blank" href="${p.drawingUrl}">${/zucchetti/i.test(p.manufacturer||"")?"Dessin technique p.3":(/hotbath/i.test(p.manufacturer||"")?"Dessin technique Hotbath · JPG":"Drawing 2D")} ↗</a>${["pdf","image"].includes(p.drawingType)?`<label class="drawing-toggle"><input type="checkbox" class="drawing-check" data-id="${p.id}" ${p.includeDrawing?"checked":""}> ${/zucchetti/i.test(p.manufacturer||"")?"Inclure le dessin p.3":(/hotbath/i.test(p.manufacturer||"")?"Inclure le dessin technique":"Inclure le drawing")}</label>`:`<span class="tech">DWG consultable, non intégrable au PDF</span>`}`:`<span class="tech">${/hotbath/i.test(p.manufacturer||"")?"Dessin technique Hotbath à récupérer":"Drawing 2D à récupérer"}</span>`}${p.cadDrawingUrl?`<a target="_blank" href="${p.cadDrawingUrl}">Fichier 2D CAD ↗</a>`:""}${(!p.image && p.fallbackImage)?`<button class="tiny fallback-btn" data-id="${p.id}">Catalogue en secours</button>`:""}</div></div>
+        <div class="image-actions"><button class="tiny enrich-btn" data-id="${p.id}">${p.image?"Actualiser photo + documents":"Chercher photo + documents"}</button>${hotbathNeedsFinishFallback(p)?`<button class="tiny hotbath-web-selected" data-id="${p.id}">Chercher finition web</button>`:""}${hotbathNeedsFinishFallback(p)&&p.remoteImageUrl?`<button class="tiny hotbath-sim-selected" data-id="${p.id}">Simuler ${p.finish||"la finition"}</button>`:""}<a target="_blank" href="${p.resolvedManufacturerUrl||p.manufacturerUrl}">Fiche officielle ↗</a>${!/hotbath/i.test(p.manufacturer||"")?(technicalSheetHref(p)?`<a target="_blank" class="technical-sheet-link" href="${technicalSheetHref(p)}">${p.customTechnicalSheet?"Fiche personnalisée":(/zucchetti/i.test(p.manufacturer||"")?"Fiche technique complète":"Fiche technique")} ↗</a>${technicalSheetIsPdf(p)&&!/zucchetti/i.test(p.manufacturer||"")?`<label class="drawing-toggle"><input type="checkbox" class="techsheet-check" data-id="${p.id}" ${p.includeTechnicalSheet?"checked":""}> Inclure la fiche technique</label>`:""}`:`<span class="tech">${/lefroy brooks/i.test(p.manufacturer||"")?"Fiche technique Lefroy à récupérer":"Fiche technique à récupérer"}</span>`):""}${!/hotbath/i.test(p.manufacturer||"")&&p.installationGuideUrl?`<a target="_blank" href="${p.installationGuideUrl}">Notice installation ↗</a><label class="drawing-toggle"><input type="checkbox" class="install-check" data-id="${p.id}" ${p.includeInstallationGuide?"checked":""}> Inclure la notice</label>`:""}${p.drawingUrl?`<a target="_blank" href="${p.drawingUrl}">${/zucchetti/i.test(p.manufacturer||"")?"Dessin technique p.3":(/hotbath/i.test(p.manufacturer||"")?"Dessin technique Hotbath · JPG":"Drawing 2D")} ↗</a>${["pdf","image"].includes(p.drawingType)?`<label class="drawing-toggle"><input type="checkbox" class="drawing-check" data-id="${p.id}" ${p.includeDrawing?"checked":""}> ${/zucchetti/i.test(p.manufacturer||"")?"Inclure le dessin p.3":(/hotbath/i.test(p.manufacturer||"")?"Inclure le dessin technique":"Inclure le drawing")}</label>`:`<span class="tech">DWG consultable, non intégrable au PDF</span>`}`:`<span class="tech">${/hotbath/i.test(p.manufacturer||"")?"Dessin technique Hotbath à récupérer":"Drawing 2D à récupérer"}</span>`}${p.cadDrawingUrl?`<a target="_blank" href="${p.cadDrawingUrl}">Fichier 2D CAD ↗</a>`:""}${(!p.image && p.fallbackImage)?`<button class="tiny fallback-btn" data-id="${p.id}">Catalogue en secours</button>`:""}</div></div>
         <div class="article-leadtime-panel">
           <label>Délai
             <input class="article-leadtime-input" data-id="${p.id}" type="text" placeholder="ex. 3 à 4 semaines" value="${(p.leadTime||"").replace(/"/g,"&quot;")}">
@@ -2770,7 +2780,7 @@ function buildDocument(){
    // for Zucchetti, page 3 of the technical PDF is also the technical drawing.
    const emittedTechnicalDocs=new Set();
 
-   products.filter(p=>p.includeTechnicalSheet&&technicalSheetHref(p)&&technicalSheetIsPdf(p)).forEach(p=>{
+   products.filter(p=>!/hotbath/i.test(p.manufacturer||"")&&p.includeTechnicalSheet&&technicalSheetHref(p)&&technicalSheetIsPdf(p)).forEach(p=>{
      const page=/zucchetti/i.test(p.manufacturer||"")
        ?3
        :Math.max(1,Number(p.technicalSheetPage||1));
@@ -2783,12 +2793,16 @@ function buildDocument(){
    });
 
    // Optional official installation manuals.
-   products.filter(p=>p.includeInstallationGuide&&p.installationGuideUrl&&/\.pdf(?:\?|$)/i.test(p.installationGuideUrl)).forEach(p=>{
+   products.filter(p=>!/hotbath/i.test(p.manufacturer||"")&&p.includeInstallationGuide&&p.installationGuideUrl&&/\.pdf(?:\?|$)/i.test(p.installationGuideUrl)).forEach(p=>{
      html+=technicalDocumentPage(r,p,p.installationGuideUrl,"Notice d’installation",no++,1);
    });
 
    // Optional technical drawing pages, one page per selected product.
-   products.filter(p=>p.includeDrawing&&p.drawingUrl&&["pdf","image"].includes(p.drawingType)).forEach(p=>{
+   products.filter(p=>p.includeDrawing&&p.drawingUrl&&(
+     /hotbath/i.test(p.manufacturer||"")
+       ? p.drawingType==="image"
+       : ["pdf","image"].includes(p.drawingType)
+   )).forEach(p=>{
      const page=/zucchetti/i.test(p.manufacturer||"")
        ?3
        :Math.max(1,Number(p.drawingPage||1));
@@ -3020,6 +3034,15 @@ function harmonizeSavedCatalogProducts(){
     };
 
     Object.assign(p,c,runtime);
+    if(/hotbath/i.test(p.manufacturer||"")){
+      p.technicalSheetUrl="";
+      p.technicalSheetLabel="";
+      p.includeTechnicalSheet=false;
+      p.installationGuideUrl="";
+      p.installationGuideLabel="";
+      p.includeInstallationGuide=false;
+      if(p.drawingUrl && p.drawingType==="image")p.includeDrawing=true;
+    }
   }
 }
 async function startHydropolisWorkspace(){
