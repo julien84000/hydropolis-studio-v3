@@ -266,8 +266,30 @@ async function enrichSelectedPhoto(id,force=false){
 }
 
 function loadState(){
-  try{let s=JSON.parse(localStorage.getItem("hydropolis-v21"));if(s)Object.assign(state,s)}catch(e){}
-  if(!state.rooms?.length)state.rooms=[{id:"r1",title:"SDB MASTER",subtitle:"",manual:[]}];
+  try{
+    const raw=localStorage.getItem("hydropolis-v21");
+    const s=raw?JSON.parse(raw):null;
+    if(s && typeof s==="object")Object.assign(state,s);
+  }catch(e){
+    console.warn("[loadState]",e);
+  }
+
+  if(!Array.isArray(state.rooms))state.rooms=[];
+  state.rooms=state.rooms.filter(Boolean).map((r,i)=>({
+    id:r.id||`r${i+1}`,
+    title:r.title||`PIÈCE ${i+1}`,
+    subtitle:r.subtitle||"",
+    manual:Array.isArray(r.manual)?r.manual:[]
+  }));
+  if(!state.rooms.length)state.rooms=[{id:"r1",title:"SDB MASTER",subtitle:"",manual:[]}];
+
+  if(!Array.isArray(state.selected))state.selected=[];
+  state.selected=state.selected.filter(Boolean).map(p=>({
+    ...p,
+    id:p.id||(crypto.randomUUID?crypto.randomUUID():Math.random().toString(36)),
+    roomId:p.roomId||state.rooms[0].id
+  }));
+
   if(typeof state.showClientPrices!=="boolean")state.showClientPrices=true;
   if(typeof state.showSupplierReferences!=="boolean")state.showSupplierReferences=true;
 
@@ -288,7 +310,7 @@ function loadState(){
   state.commercial.vatRate=Math.max(0,Math.min(100,Number(state.commercial.vatRate)||20));
   state.commercial.shippingFee=Math.max(0,Number(state.commercial.shippingFee)||0);
 
-  (state.selected||[]).forEach(p=>{
+  state.selected.forEach(p=>{
     if(p.clientDiscountOverride!==undefined && p.clientDiscountOverride!==null && p.clientDiscountOverride!==""){
       p.clientDiscountOverride=Math.max(0,Math.min(100,Number(p.clientDiscountOverride)||0));
     }else{
@@ -937,7 +959,21 @@ function renderSelection(){
  $("#selectionMini").innerHTML=state.rooms.map(r=>{let ps=state.selected.filter(p=>p.roomId===r.id);return `<div class="mini"><b>${r.title}</b><div class="mini-room">${ps.length} produit${ps.length>1?"s":""}</div>${ps.slice(0,3).map(p=>`<div>${p.reference} · ${euro(p.totalPrice)}</div>`).join("")}</div>`}).join("");
 }
 function newRoom(){let title=prompt("Nom de la pièce","SDB SUITE");if(!title)return;let id="r"+Date.now();state.rooms.push({id,title,subtitle:"",manual:[]});saveState();renderRoomSelect();renderSelection();renderRooms();renderMarginDashboard();$("#targetRoom").value=id;renderCatalog();}
-function renderRooms(){
+
+function safeExactFinishLabel(p){
+  try{return exactFinishLabel(p)||p?.finish||""}catch(e){console.warn("[finish label]",p?.reference,e);return p?.finish||""}
+}
+function safeEffectiveSaleValue(p){
+  try{return effectiveSaleValue(p)}catch(e){console.warn("[sale value]",p?.reference,e);return Number(p?.totalPrice||0)}
+}
+function safeBasinAccessorySuggestions(p,roomId){
+  try{return basinAccessorySuggestions(p,roomId)||""}catch(e){console.warn("[basin accessories]",p?.reference,e);return ""}
+}
+function safeRecorBathOptions(p,roomId){
+  try{return recorBathOptions(p,roomId)||""}catch(e){console.warn("[Recor options]",p?.reference,e);return `<div class="room-inline-warning">Options Recor en cours de chargement.</div>`}
+}
+
+function renderRoomsCore(){
  $("#roomsEditor").innerHTML=state.rooms.map((r,ri)=>{
    let ps=state.selected.filter(p=>p.roomId===r.id);
    return `<article class="room-card">
@@ -946,7 +982,7 @@ function renderRooms(){
    <div class="room-products">${ps.length?ps.map(p=>`
       <div class="room-product">
         <div class="room-prod-img"><label data-id="${p.id}">${p.image?`<img src="${p.image}">`:"＋ Photo"}<input class="prod-file" type="file" accept="image/*" hidden></label></div>
-        <div><b>${p.designation}</b><div class="tech">${p.manufacturer} · ${p.collection} · ${p.reference} · <b>${exactFinishLabel(p)}</b></div>${p.internalReference?`<div class="tech">Complet avec ${p.internalReference}</div>`:""}
+        <div><b>${p.designation}</b><div class="tech">${p.manufacturer} · ${p.collection} · ${p.reference} · <b>${safeExactFinishLabel(p)}</b></div>${p.internalReference?`<div class="tech">Complet avec ${p.internalReference}</div>`:""}
         <div class="image-actions"><button class="tiny enrich-btn" data-id="${p.id}">${p.image?"Actualiser photo + documents":"Chercher photo + documents"}</button><a target="_blank" href="${p.resolvedManufacturerUrl||p.manufacturerUrl}">Fiche officielle ↗</a>${p.technicalSheetUrl?`<a target="_blank" class="technical-sheet-link" href="${p.technicalSheetUrl}">Fiche technique ↗</a><label class="drawing-toggle"><input type="checkbox" class="techsheet-check" data-id="${p.id}" ${p.includeTechnicalSheet?"checked":""}> Inclure la fiche technique</label>`:`<span class="tech">Fiche technique à récupérer</span>`}${p.installationGuideUrl?`<a target="_blank" href="${p.installationGuideUrl}">Notice installation ↗</a><label class="drawing-toggle"><input type="checkbox" class="install-check" data-id="${p.id}" ${p.includeInstallationGuide?"checked":""}> Inclure la notice</label>`:""}${p.drawingUrl?`<a target="_blank" href="${p.drawingUrl}">${p.drawingType==="cad"?"DWG":"Drawing 2D"} ↗</a>${["pdf","image"].includes(p.drawingType)?`<label class="drawing-toggle"><input type="checkbox" class="drawing-check" data-id="${p.id}" ${p.includeDrawing?"checked":""}> Inclure le drawing</label>`:`<span class="tech">DWG consultable, non intégrable au PDF</span>`}`:`<span class="tech">Drawing 2D à récupérer</span>`}${(!p.image && p.fallbackImage)?`<button class="tiny fallback-btn" data-id="${p.id}">Catalogue en secours</button>`:""}</div></div>
         <div class="article-discount-panel">
           <label>Remise client article
@@ -957,11 +993,11 @@ function renderRooms(){
             </span>
           </label>
           <div class="tech">${hasItemDiscountOverride(p)?`Remise spécifique : ${itemDiscountRate(p).toLocaleString("fr-FR",{maximumFractionDigits:1})}%`:`Utilise la remise globale : ${clientDiscountRate().toLocaleString("fr-FR",{maximumFractionDigits:1})}%`}</div>
-          <b>${euro(effectiveSaleValue(p))} HT net</b>
+          <b>${euro(safeEffectiveSaleValue(p))} HT net</b>
         </div>
         <div class="price-total">${euro(p.totalPrice)} HT${p.mandatoryFreight?`<div class="tech">dont ${euro(p.mandatoryFreight)} de transport Recor obligatoire</div>`:""}<div class="tech">${p.imageStatus||p.imageSource||"Photo fabricant à rechercher"}</div>${p.imageNote?`<div class="tech">${p.imageNote}</div>`:""}</div>
         <button class="icon del-prod" data-id="${p.id}">×</button>
-        ${basinAccessorySuggestions(p,r.id)}${recorBathOptions(p,r.id)}
+        ${safeBasinAccessorySuggestions(p,r.id)}${safeRecorBathOptions(p,r.id)}
       </div>`).join(""):`<div class="room-empty">Aucun produit catalogue dans cette pièce.</div>`}</div>
    <div class="manual-zone"><b>Éléments libres de la pièce</b><div class="tech">Pour mobilier sur mesure, miroir, peinture, pose, décoration ou produit non encore référencé.</div>
       <div class="manual-add"><input class="manual-label" data-id="${r.id}" placeholder="Ex. Meuble vasque sur mesure"><input class="manual-price" data-id="${r.id}" type="number" step="0.01" placeholder="Prix HT"><button class="btn ghost manual-btn" data-id="${r.id}">Ajouter</button></div>
@@ -999,6 +1035,57 @@ function renderRooms(){
  $$(".manual-btn").forEach(b=>b.onclick=()=>{let id=b.dataset.id, card=b.closest(".room-card"), lab=$(".manual-label",card).value.trim(), price=parseFloat($(".manual-price",card).value||0);if(!lab)return;let r=roomById(id);r.manual=r.manual||[];r.manual.push({label:lab,price});saveState();renderRooms();renderMarginDashboard();});
  $$(".del-manual").forEach(b=>b.onclick=()=>{roomById(b.dataset.room).manual.splice(+b.dataset.i,1);saveState();renderRooms();renderMarginDashboard();});
 }
+
+function renderRoomsFallback(error){
+  const host=$("#roomsEditor");
+  if(!host)return;
+
+  console.error("[renderRooms]",error);
+  const rooms=Array.isArray(state.rooms)?state.rooms:[];
+  const selected=Array.isArray(state.selected)?state.selected:[];
+
+  host.innerHTML=`<div class="project-render-warning">
+    <b>Affichage simplifié activé.</b>
+    <span>Une donnée produit a empêché l’affichage détaillé ; les produits du projet restent accessibles ci-dessous.</span>
+  </div>`+rooms.map(r=>{
+    const ps=selected.filter(p=>p.roomId===r.id);
+    return `<article class="room-card room-card-fallback">
+      <div class="room-head">
+        <input class="fallback-room-title" data-id="${r.id}" value="${r.title||""}">
+        <span></span>
+        <button class="btn ghost fallback-go-cat" data-id="${r.id}">+ Produit catalogue</button>
+      </div>
+      <div class="room-products">
+        ${ps.length?ps.map(p=>`<div class="room-product fallback-product">
+          <div class="room-prod-img">${p.image?`<img src="${p.image}" alt="">`:`<div class="photo-missing">Photo<br>à récupérer</div>`}</div>
+          <div><b>${p.designation||p.reference||"Produit"}</b><div class="tech">${p.manufacturer||""} · ${p.reference||""} · ${p.finish||""}</div></div>
+          <div class="price-total">${euro(p.totalPrice||0)} HT</div>
+          <button class="icon fallback-del-prod" data-id="${p.id}">×</button>
+        </div>`).join(""):`<div class="room-empty">Aucun produit catalogue dans cette pièce.</div>`}
+      </div>
+    </article>`;
+  }).join("");
+
+  $$(".fallback-room-title").forEach(x=>x.oninput=()=>{
+    const r=roomById(x.dataset.id);if(!r)return;
+    r.title=x.value;saveState();renderRoomSelect();renderSelection();
+  });
+  $$(".fallback-go-cat").forEach(b=>b.onclick=()=>{
+    showView("catalog");
+    if($("#targetRoom"))$("#targetRoom").value=b.dataset.id;
+    renderCatalog();
+  });
+  $$(".fallback-del-prod").forEach(b=>b.onclick=()=>removeProduct(b.dataset.id));
+}
+function renderRooms(){
+  try{
+    renderRoomsCore();
+  }catch(e){
+    renderRoomsFallback(e);
+  }
+}
+
+
 function bindProject(){
   [["projectName","name"],["clientName","client"],["projectLocation","location"],["projectDate","date"],["projectIntro","intro"]].forEach(([id,k])=>{
     $("#"+id).value=state.project[k]||"";
@@ -1394,38 +1481,120 @@ function initPreviewParallax(){
 }
 
 function exportJson(){let blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hydropolis-projet.json";a.click();}
+function refreshCatalogUiAfterChunk(){
+  const manufacturer=$("#manufacturerFilter");
+  const previousManufacturer=manufacturer?.value||"";
+
+  fillSelect("manufacturerFilter",valuesFor("manufacturer"),true);
+  if(previousManufacturer && valuesFor("manufacturer").includes(previousManufacturer)){
+    $("#manufacturerFilter").value=previousManufacturer;
+  }
+  updateDependentFilters(false);
+
+  const catalogCount=$("#catalogCount");
+  if(catalogCount)catalogCount.textContent=CATALOG.length+" références";
+
+  renderCatalog();
+}
+
 async function loadSupplierCatalogs(){
+  const countEl=$("#resultCount");
+  const catalogCount=$("#catalogCount");
+
+  let manifest;
   try{
-    const r=await fetch("/catalog_extra.json",{cache:"no-cache"});
-    if(!r.ok) throw new Error("HTTP "+r.status);
-    const extra=await r.json();
-    if(Array.isArray(extra)) CATALOG.push(...extra);
-    console.log(`[catalog] ${extra.length} références fournisseurs chargées`);
-    return Array.isArray(extra)?extra.length:0;
+    const mr=await fetch("/catalog_manifest.json",{cache:"no-cache"});
+    if(!mr.ok)throw new Error("manifest HTTP "+mr.status);
+    manifest=await mr.json();
   }catch(e){
-    console.error("[catalog-extra]",e);
+    console.error("[catalog manifest]",e);
+    if(countEl)countEl.textContent=`${CATALOG.length} références · autres catalogues indisponibles`;
     return 0;
   }
+
+  let loaded=0, failed=0;
+  const known=new Set(CATALOG.map(p=>`${p.manufacturer||""}|${p.reference||""}`));
+
+  const loadChunk=async(chunk)=>{
+    try{
+      const r=await fetch("/"+chunk.file,{cache:"force-cache"});
+      if(!r.ok)throw new Error(`HTTP ${r.status}`);
+      const rows=await r.json();
+      if(Array.isArray(rows)){
+        for(const p of rows){
+          const key=`${p?.manufacturer||""}|${p?.reference||""}`;
+          if(!known.has(key)){
+            known.add(key);CATALOG.push(p);loaded++;
+          }
+        }
+      }
+      harmonizeSavedCatalogProducts();
+      refreshCatalogUiAfterChunk();
+      renderSelection();
+      renderRooms();
+      return true;
+    }catch(e){
+      failed++;
+      console.error(`[catalog chunk] ${chunk.file}`,e);
+      return false;
+    }
+  };
+
+  const chunks=manifest.chunks||[];
+  const priority=chunks.filter(c=>!/^Zucchetti/i.test(c.label||""));
+  const zucchetti=chunks.filter(c=>/^Zucchetti/i.test(c.label||""));
+
+  if(countEl)countEl.textContent=`${CATALOG.length} références · chargement Coalbrook, Catalano, Hotbath, Lefroy Brooks et Recor…`;
+  await Promise.allSettled(priority.map(loadChunk));
+
+  for(let i=0;i<zucchetti.length;i+=3){
+    const batch=zucchetti.slice(i,i+3);
+    if(countEl)countEl.textContent=`${CATALOG.length} références · chargement Zucchetti ${i+1}-${Math.min(i+3,zucchetti.length)}/${zucchetti.length}…`;
+    await Promise.allSettled(batch.map(loadChunk));
+    await new Promise(resolve=>setTimeout(resolve,0));
+  }
+
+  harmonizeSavedCatalogProducts();
+  refreshCatalogUiAfterChunk();
+  renderSelection();
+  renderRooms();
+
+  if(countEl){
+    countEl.textContent=failed
+      ?`${CATALOG.length} références disponibles · ${failed} fichier(s) non chargé(s)`
+      :`${CATALOG.length} références disponibles`;
+  }
+  if(catalogCount)catalogCount.textContent=`${CATALOG.length} références`;
+  return loaded;
 }
 function harmonizeSavedCatalogProducts(){
+  const byKey=new Map(CATALOG.map(p=>[`${p.manufacturer||""}|${p.reference||""}`,p]));
   const byRef=new Map(CATALOG.map(p=>[p.reference,p]));
-  for(const room of state.rooms||[]){
-    for(const p of room.products||[]){
-      const c=byRef.get(p.reference);
-      if(!c)continue;
-      p.designation=c.designation||p.designation;
-      p.collection=c.collection||p.collection;
-      p.manufacturer=c.manufacturer||p.manufacturer;
-      p.finish=c.finish||p.finish;
-      p.category=c.category||p.category;
-      p.manufacturerUrl=c.manufacturerUrl||p.manufacturerUrl;
-    }
+
+  for(const p of state.selected||[]){
+    const c=byKey.get(`${p.manufacturer||""}|${p.reference||""}`)||byRef.get(p.reference);
+    if(!c)continue;
+
+    const runtime={
+      id:p.id,roomId:p.roomId,accessoryFor:p.accessoryFor,
+      image:p.image,images:p.images,pdfImage:p.pdfImage,pdfImages:p.pdfImages,
+      remoteImageUrl:p.remoteImageUrl,remoteImages:p.remoteImages,
+      imageSource:p.imageSource,imageFinishMatch:p.imageFinishMatch,imageStatus:p.imageStatus,imageNote:p.imageNote,
+      resolvedManufacturerUrl:p.resolvedManufacturerUrl,
+      drawingUrl:p.drawingUrl,drawingType:p.drawingType,drawingLabel:p.drawingLabel,
+      technicalSheetUrl:p.technicalSheetUrl,technicalSheetLabel:p.technicalSheetLabel,
+      installationGuideUrl:p.installationGuideUrl,installationGuideLabel:p.installationGuideLabel,
+      includeDrawing:p.includeDrawing,includeTechnicalSheet:p.includeTechnicalSheet,includeInstallationGuide:p.includeInstallationGuide,
+      customImage:p.customImage,clientDiscountOverride:p.clientDiscountOverride
+    };
+
+    Object.assign(p,c,runtime);
   }
 }
 async function bootstrap(){
-  // 1) Render immediately with the built-in Amphora catalogue.
-  // This prevents an empty catalogue while the large supplier JSON is loading.
   loadState();
+
+  // Built-in Amphora is usable immediately.
   harmonizeSavedCatalogProducts();
   initFilters();
   renderRoomSelect();
@@ -1437,23 +1606,15 @@ async function bootstrap(){
 
   const resultCount=$("#resultCount");
   const catalogCount=$("#catalogCount");
-  if(resultCount) resultCount.textContent=`${CATALOG.length} références disponibles · chargement des autres marques…`;
-  if(catalogCount) catalogCount.textContent=`${CATALOG.length} références · chargement…`;
+  if(resultCount)resultCount.textContent=`${CATALOG.length} références · chargement des autres marques…`;
+  if(catalogCount)catalogCount.textContent=`${CATALOG.length} références · chargement…`;
 
-  // 2) Load the 14 MB supplier catalogue in the background.
-  const added=await loadSupplierCatalogs();
+  // Supplier catalogues are deliberately split into small files and loaded one by one.
+  await loadSupplierCatalogs();
 
-  // 3) Refresh all catalogue-dependent UI once loading is complete.
   harmonizeSavedCatalogProducts();
-  initFilters();
-  renderRoomSelect();
-  renderCatalog();
   renderSelection();
   renderRooms();
-
-  if(resultCount && !added){
-    resultCount.textContent=`${CATALOG.length} références disponibles`;
-  }
 }
 bootstrap();
 ["searchInput","collectionFilter","categoryFilter","finishFilter","targetRoom"].forEach(id=>$("#"+id).addEventListener("input",renderCatalog));

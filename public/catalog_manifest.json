@@ -1,0 +1,66 @@
+{
+  "version": "7.6",
+  "total": 21113,
+  "chunks": [
+    {
+      "file": "catalog_coalbrook.json",
+      "label": "Coalbrook",
+      "count": 1483
+    },
+    {
+      "file": "catalog_catalano.json",
+      "label": "Catalano",
+      "count": 1430
+    },
+    {
+      "file": "catalog_hotbath.json",
+      "label": "Hotbath",
+      "count": 2554
+    },
+    {
+      "file": "catalog_lefroy_brooks.json",
+      "label": "Lefroy Brooks",
+      "count": 3397
+    },
+    {
+      "file": "catalog_recor.json",
+      "label": "Recor",
+      "count": 196
+    },
+    {
+      "file": "catalog_zucchetti_1.json",
+      "label": "Zucchetti 1/7",
+      "count": 2000
+    },
+    {
+      "file": "catalog_zucchetti_2.json",
+      "label": "Zucchetti 2/7",
+      "count": 2000
+    },
+    {
+      "file": "catalog_zucchetti_3.json",
+      "label": "Zucchetti 3/7",
+      "count": 2000
+    },
+    {
+      "file": "catalog_zucchetti_4.json",
+      "label": "Zucchetti 4/7",
+      "count": 2000
+    },
+    {
+      "file": "catalog_zucchetti_5.json",
+      "label": "Zucchetti 5/7",
+      "count": 2000
+    },
+    {
+      "file": "catalog_zucchetti_6.json",
+      "label": "Zucchetti 6/7",
+      "count": 2000
+    },
+    {
+      "file": "catalog_zucchetti_7.json",
+      "label": "Zucchetti 7/7",
+      "count": 53
+    }
+  ]
+}

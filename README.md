@@ -1,15 +1,11 @@
-# Hydropolis Studio V7.5
-
-Correction critique : catalogue vide.
-
-Cause probable :
-- catalog_extra.json contient maintenant plus de 21 000 références et pèse environ 14 Mo ;
-- le démarrage attendait entièrement son téléchargement + parsing avant d'appeler renderCatalog ;
-- sur Render, cela pouvait laisser la zone Résultats entièrement vide pendant le chargement.
+# Hydropolis Studio V7.7
 
 Corrections :
-- Amphora s'affiche immédiatement dès l'ouverture ;
-- les autres marques se chargent ensuite en arrière-plan ;
-- après chargement, filtres et résultats sont actualisés automatiquement ;
-- renderCatalog est désormais défensif : une référence mal formée ne peut plus vider tout le catalogue ;
-- message d'erreur explicite si un problème d'affichage survient.
+- « Projet par pièce » est désormais indépendant du chargement des catalogues ;
+- normalisation automatique des anciennes données rooms / selected au démarrage ;
+- correction de harmonizeSavedCatalogProducts : il mettait à jour room.products alors que les produits sont stockés dans state.selected ;
+- renderRooms est protégé : une seule donnée produit incorrecte ne peut plus faire disparaître toute la section ;
+- un affichage simplifié de secours apparaît si une erreur produit survient ;
+- les catalogues Coalbrook, Catalano, Hotbath, Lefroy Brooks et Recor chargent en parallèle ;
+- Zucchetti charge ensuite par lots de 3 fichiers ;
+- à chaque lot chargé, les produits déjà sélectionnés sont réhydratés et la section Projet par pièce se met à jour.
