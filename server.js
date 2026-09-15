@@ -719,7 +719,7 @@ app.post("/api/translate-product",requireAuth,async(req,res)=>{
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V11.8",
+  service:"Hydropolis Studio V11.9",
   database:USE_POSTGRES?"postgresql":"local-fallback",
   time:new Date().toISOString()
 }));
@@ -1393,7 +1393,7 @@ async function findSawidayHotbathImage(reference,finishCode,finish){
 
   let productLinks=[];
 
-  // V11.8: use Sawiday's own search endpoint first.
+  // V11.9: use Sawiday's own search endpoint first.
   // Search-engine HTML endpoints are frequently blocked from Render, while Sawiday
   // exposes a normal GET search form (tn_q) that returns the exact product page.
   const directSawidaySearchUrls=[
@@ -2243,7 +2243,7 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
 
 
 
-  // Hydropolis V11.8 — Hotbath client dossier policy:
+  // Hydropolis V11.9 — Hotbath client dossier policy:
   // keep only the official JPG from the "Drawing" section.
   // "Technical info" and "Instructions" are intentionally not surfaced
   // as dossier resources for Hotbath.
@@ -2491,6 +2491,8 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     variationId:best?.variationId||null,
     detectedFinishCode:best?.detectedFinishCode||null,
     drawing:!!drawing,
+    drawingUrl:drawing?.url||undefined,
+    drawingType:drawing?.type||undefined,
     hotbathSupplierRef:isHotbath?hotbathSawidaySupplierRef(reference,requested):undefined,
     hotbathCanonicalRef:isHotbath?hotbathLookupIdentity(reference,requested).canonical:undefined,
     sawiday:best?.source==="sawiday-exact-finish",
@@ -3004,6 +3006,10 @@ app.get("/api/product-image-fit",async(req,res)=>{
 app.get("/api/image-proxy",async(req,res)=>{
   const url=req.query.url;
   if(!url||!/^https?:\/\//i.test(url)) return res.status(400).send("URL invalide");
+  let referer=String(req.query.referer||"").trim();
+  if(!/^https?:\/\//i.test(referer)){
+    try{referer=new URL(url).origin+"/"}catch{referer=""}
+  }
   try{
     const r=await axios.get(url,{
       responseType:"arraybuffer",
@@ -3011,7 +3017,8 @@ app.get("/api/image-proxy",async(req,res)=>{
       maxRedirects:5,
       headers:{
         "User-Agent":"Mozilla/5.0",
-        "Referer":new URL(url).origin+"/"
+        "Accept":"image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
+        "Referer":referer
       }
     });
     const ct=String(r.headers["content-type"]||"image/jpeg");
@@ -3028,7 +3035,7 @@ app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")))
 async function startServer(){
   try{
     await initPersistentStore();
-    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.8 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
+    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.9 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
   }catch(e){
     console.error("[Hydropolis] Démarrage impossible :",e);
     process.exit(1);
