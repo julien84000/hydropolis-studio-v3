@@ -1540,20 +1540,44 @@ function quoteRows(){
 function quotePages(startNo){
   const rows=quoteRows();
   const f=projectFinancials();
+
+  // La colonne "Remise" n'apparaît dans le document client que si
+  // au moins une ligne bénéficie réellement d'une remise commerciale.
+  const showDiscountColumn=rows.some(row=>Number(row.discount)>0.0001);
+
   const perPage=9;
   const pages=Math.max(1,Math.ceil(rows.length/perPage));
   let html="", no=startNo;
+
+  const emptyColspan=
+    (state.showSupplierReferences!==false?1:0) +
+    6 + // Pièce, Désignation, Délai, Qté, PU HT, Total HT
+    (showDiscountColumn?1:0);
+
   for(let pg=0;pg<pages;pg++){
     const chunk=rows.slice(pg*perPage,(pg+1)*perPage);
     const last=pg===pages-1;
-    html+=`<section class="page quote-page">
+
+    html+=`<section class="page quote-page ${showDiscountColumn?"quote-with-discount":"quote-without-discount"}">
       <div class="quote-topline"></div>
       <div class="quote-head">
         <div><div class="section-kicker">DEVIS · ${state.project.name||"PROJET CLIENT"}</div><h2>Récapitulatif de la sélection${pages>1?` · ${pg+1}/${pages}`:""}</h2><p>${state.project.client||""}${state.project.location?` · ${state.project.location}`:""}</p></div>
         <div class="quote-brand">Hydropolis${salespersonContactLine()?`<small>${salespersonContactLine("<br>")}</small>`:""}</div>
       </div>
+
       <table class="quote-table">
-        <thead><tr><th>Pièce</th>${state.showSupplierReferences!==false?`<th>Référence</th>`:""}<th>Désignation</th><th>Délai</th><th>Qté</th><th>PU HT</th><th>Remise</th><th>Total HT</th></tr></thead>
+        <thead>
+          <tr>
+            <th>Pièce</th>
+            ${state.showSupplierReferences!==false?`<th>Référence</th>`:""}
+            <th>Désignation</th>
+            <th>Délai</th>
+            <th>Qté</th>
+            <th>PU HT</th>
+            ${showDiscountColumn?`<th>Remise</th>`:""}
+            <th>Total HT</th>
+          </tr>
+        </thead>
         <tbody>${chunk.map(row=>`
           <tr>
             <td>${row.room}</td>
@@ -1562,24 +1586,27 @@ function quotePages(startNo){
             <td>${row.leadTime||"—"}</td>
             <td>${row.qty}</td>
             <td>${euro(row.unit)}</td>
-            <td>${row.discount?`${row.discount.toLocaleString("fr-FR",{maximumFractionDigits:1})}%`:"—"}</td>
+            ${showDiscountColumn?`<td>${row.discount?`${row.discount.toLocaleString("fr-FR",{maximumFractionDigits:1})}%`:"—"}</td>`:""}
             <td>${euro(row.netUnit*row.qty)}</td>
-          </tr>`).join("") || `<tr><td colspan="${state.showSupplierReferences!==false?8:7}">Aucun produit sélectionné.</td></tr>`}
+          </tr>`).join("") || `<tr><td colspan="${emptyColspan}">Aucun produit sélectionné.</td></tr>`}
         </tbody>
       </table>
+
       ${last?`<div class="quote-totals">
         <div><span>Sous-total tarif HT</span><b>${euro(f.list)}</b></div>
-        ${f.discountAmount>0?`<div class="quote-discount"><span>Total remises commerciales</span><b>− ${euro(f.discountAmount)}</b></div>`:""}
+        ${f.discountAmount>0.005?`<div class="quote-discount"><span>Total remises commerciales</span><b>− ${euro(f.discountAmount)}</b></div>`:""}
         ${f.shipping>0?`<div><span>Frais de port HT</span><b>${euro(f.shipping)}</b></div>`:""}
         ${f.supplierShipping>0?`<div><span>Port fournisseur HT</span><b>${euro(f.supplierShipping)}</b></div>`:""}
         <div class="quote-total-ht"><span>Total HT</span><b>${euro(f.net)}</b></div>
         <div><span>TVA ${f.vatRate.toLocaleString("fr-FR",{maximumFractionDigits:1})}%</span><b>${euro(f.vat)}</b></div>
         <div class="quote-grand-total"><span>GRAND TOTAL TTC</span><b>${euro(f.ttc)}</b></div>
       </div>`:""}
+
       <div class="quote-bottom"><span>${salespersonContactLine()?`Maison Hydropolis · ${salespersonContactLine(" · ")}`:"Maison Hydropolis"}</span><span>Prix exprimés en euros · devis récapitulatif</span></div>
       <div class="page-no">${no++}</div>
     </section>`;
   }
+
   return {html,nextNo:no};
 }
 
@@ -1588,6 +1615,67 @@ function renderSelection(){
  $("#selectionMini").innerHTML=state.rooms.map(r=>{let ps=state.selected.filter(p=>p.roomId===r.id);return `<div class="mini"><b>${r.title}</b><div class="mini-room">${ps.length} produit${ps.length>1?"s":""}</div>${ps.slice(0,3).map(p=>`<div>${p.reference} · ${euro(p.totalPrice)}</div>`).join("")}</div>`}).join("");
 }
 function newRoom(){let title=prompt("Nom de la pièce","SDB SUITE");if(!title)return;let id="r"+Date.now();state.rooms.push({id,title,subtitle:"",manual:[]});saveState();renderRoomSelect();renderSelection();renderRooms();renderMarginDashboard();$("#targetRoom").value=id;renderCatalog();}
+
+
+const designationTranslationCache=new Map();
+
+function designationLooksNonFrench(text){
+  const s=String(text||"").trim().toLowerCase();
+  if(!s || s.length<4)return false;
+
+  // Strong French indicators: if present, don't clutter the editor with a translation action.
+  const french=/\b(mélangeur|mitigeur|robinet|lavabo|baignoire|douche|encastré|mural|bonde|siphon|manette|poignée|thermostatique|sur gorge|accessoire|porte-serviette|vasque|cuvette|abattant|colonne)\b/i;
+  if(french.test(s))return false;
+
+  // Typical wording found in the imported manufacturer catalogues.
+  const foreign=/\b(basin|mixer|wall mounted|deck mounted|concealed|thermostatic|valve|lever|handle|waste|bottle trap|shower|bath|filler|freestanding|washbasin|tap|spout|pop-up|flush|toilet|bidet|white|black|brushed|polished|with|without|mounted|classic)\b/i;
+  return foreign.test(s);
+}
+
+async function proposeFrenchDesignation(button){
+  const card=button.closest(".room-product");
+  const input=$(".edit-designation",card);
+  const status=$(".designation-translation-status",card);
+  if(!input)return;
+
+  const original=input.value.trim();
+  if(!original)return;
+
+  button.disabled=true;
+  const oldText=button.textContent;
+  button.textContent="Traduction…";
+  if(status)status.textContent="Analyse de la désignation…";
+
+  try{
+    let result=designationTranslationCache.get(original);
+    if(!result){
+      result=await apiFetch("/api/translate-product",{
+        method:"POST",
+        body:JSON.stringify({text:original})
+      });
+      designationTranslationCache.set(original,result);
+    }
+
+    if(result.alreadyFrench){
+      if(status)status.textContent="Cette désignation semble déjà être en français.";
+      return;
+    }
+
+    const translated=String(result.translation||"").trim();
+    if(translated && translated.toLowerCase()!==original.toLowerCase()){
+      input.value=translated;
+      input.classList.add("translation-proposed");
+      if(status)status.textContent="Proposition insérée — vérifiez-la puis cliquez sur « Enregistrer les modifications ».";
+    }else{
+      if(status)status.textContent="Aucune traduction pertinente trouvée.";
+    }
+  }catch(e){
+    if(status)status.textContent="Traduction indisponible : "+e.message;
+  }finally{
+    button.disabled=false;
+    button.textContent=oldText;
+  }
+}
 
 function safeExactFinishLabel(p){
   try{return exactFinishLabel(p)||p?.finish||""}catch(e){console.warn("[finish label]",p?.reference,e);return p?.finish||""}
@@ -1615,8 +1703,12 @@ function renderRoomsCore(){
         <details class="article-editor">
           <summary>Modifier l'article</summary>
           <div class="article-editor-grid">
-            <label>Désignation
-              <input class="edit-designation" data-id="${p.id}" type="text" value="${(p.designation||"").replace(/"/g,"&quot;")}">
+            <label class="designation-editor-label">Désignation
+              <span class="designation-editor-row">
+                <input class="edit-designation" data-id="${p.id}" type="text" value="${(p.designation||"").replace(/"/g,"&quot;")}">
+                ${designationLooksNonFrench(p.designation)?`<button class="tiny translate-designation-btn" data-id="${p.id}" type="button">Proposer en français</button>`:""}
+              </span>
+              <span class="designation-translation-status">${designationLooksNonFrench(p.designation)?"Désignation détectée comme probablement non française.":""}</span>
             </label>
             <label>Prix de vente HT${p.mandatoryFreight?" hors port obligatoire":""}
               <input class="edit-price" data-id="${p.id}" type="number" min="0" step="0.01" value="${articleMerchandisePrice(p)}">
@@ -1686,6 +1778,14 @@ function renderRoomsCore(){
  $$(".drawing-check").forEach(ch=>ch.onchange=()=>{let p=state.selected.find(x=>x.id===ch.dataset.id);if(!p)return;p.includeDrawing=ch.checked;saveState();});
  $$(".techsheet-check").forEach(ch=>ch.onchange=()=>{let p=state.selected.find(x=>x.id===ch.dataset.id);if(!p)return;p.includeTechnicalSheet=ch.checked;saveState();});
  $$(".install-check").forEach(ch=>ch.onchange=()=>{let p=state.selected.find(x=>x.id===ch.dataset.id);if(!p)return;p.includeInstallationGuide=ch.checked;saveState();});
+  $$(".translate-designation-btn").forEach(b=>b.onclick=()=>proposeFrenchDesignation(b));
+ $$(".edit-designation").forEach(inp=>inp.oninput=()=>{
+   const card=inp.closest(".room-product");
+   const status=$(".designation-translation-status",card);
+   if(inp.classList.contains("translation-proposed"))inp.classList.remove("translation-proposed");
+   if(status && !designationLooksNonFrench(inp.value))status.textContent="";
+ });
+
  $$(".save-article-edit").forEach(b=>b.onclick=()=>{
    const p=state.selected.find(x=>x.id===b.dataset.id);if(!p)return;
    const card=b.closest(".room-product");
@@ -2339,6 +2439,64 @@ function initPreviewParallax(){
   update();
 }
 
+
+async function waitForDocumentImages(timeoutMs=5000){
+  const imgs=[...document.querySelectorAll("#document img")];
+  if(!imgs.length)return;
+  await Promise.race([
+    Promise.all(imgs.map(img=>{
+      if(img.complete)return Promise.resolve();
+      return new Promise(resolve=>{
+        img.addEventListener("load",resolve,{once:true});
+        img.addEventListener("error",resolve,{once:true});
+      });
+    })),
+    new Promise(resolve=>setTimeout(resolve,timeoutMs))
+  ]);
+}
+async function exportClientPdf(){
+  if(!validateRecorFeet(true)){
+    showView("project");
+    return;
+  }
+
+  // The document is rebuilt immediately before export so the PDF always
+  // reflects the latest project data.
+  showView("preview");
+  buildDocument();
+
+  const btns=[$("#printBtn"),$("#exportPdfTopBtn")].filter(Boolean);
+  btns.forEach(b=>{b.disabled=true;b.dataset.oldText=b.textContent;b.textContent="Préparation du PDF…";});
+
+  const oldTitle=document.title;
+  const safeName=String(state.project?.name||"Dossier client Hydropolis")
+    .replace(/[\\/:*?"<>|]+/g," ")
+    .replace(/\s+/g," ")
+    .trim();
+  document.title=`${safeName} - Hydropolis`;
+
+  try{
+    if(document.fonts?.ready)await Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,1500))]);
+    await waitForDocumentImages(6000);
+
+    document.body.classList.add("pdf-exporting");
+    await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+    window.print();
+  }finally{
+    // afterprint is not consistently synchronous across browsers.
+    const restore=()=>{
+      document.body.classList.remove("pdf-exporting");
+      document.title=oldTitle;
+      btns.forEach(b=>{b.disabled=false;b.textContent=b.dataset.oldText||"Exporter PDF";});
+      window.removeEventListener("afterprint",restore);
+    };
+    window.addEventListener("afterprint",restore,{once:true});
+    setTimeout(()=>{
+      if(document.body.classList.contains("pdf-exporting"))restore();
+    },10000);
+  }
+}
+
 function exportJson(){let blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hydropolis-projet.json";a.click();}
 function refreshCatalogUiAfterChunk(){
   const manufacturer=$("#manufacturerFilter");
@@ -2492,7 +2650,13 @@ $("#clearSearch").onclick=()=>{
   updateDependentFilters(true);
   renderCatalog();
 };
-$("#newRoomQuick").onclick=newRoom;$("#addRoomBtn").onclick=newRoom;$("#goProjectBtn").onclick=()=>showView("project");$("#previewTopBtn").onclick=()=>showView("preview");$("#printBtn").onclick=()=>{if(!validateRecorFeet(true)){showView("project");return;}buildDocument();setTimeout(()=>window.print(),100)};$("#saveBtn").onclick=()=>saveCloudProject().catch(e=>alert(e.message));
+$("#newRoomQuick").onclick=newRoom;
+$("#addRoomBtn").onclick=newRoom;
+$("#goProjectBtn").onclick=()=>showView("project");
+$("#previewTopBtn").onclick=()=>showView("preview");
+$("#printBtn").onclick=()=>exportClientPdf().catch(e=>alert("Export PDF impossible : "+e.message));
+$("#exportPdfTopBtn").onclick=()=>exportClientPdf().catch(e=>alert("Export PDF impossible : "+e.message));
+$("#saveBtn").onclick=()=>saveCloudProject().catch(e=>alert(e.message));
 
 $("#setupForm").onsubmit=async e=>{
   e.preventDefault();setAuthError("");

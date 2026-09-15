@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Hydropolis Studio V9.7 · Render</title><link rel="stylesheet" href="styles.css">
+<title>Hydropolis Studio V10.0 · Render</title><link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
@@ -37,7 +37,7 @@
 
 <div class="shell">
 <aside class="sidebar">
-  <div class="logo"><span>H</span><div><b>Hydropolis</b><small>Studio V9.7</small></div></div>
+  <div class="logo"><span>H</span><div><b>Hydropolis</b><small>Studio V10.0</small></div></div>
   <button class="nav" data-view="projects">Mes projets</button>
   <button class="nav active" data-view="catalog">Catalogue intelligent</button>
   <button class="nav" data-view="project">Projet par pièce</button>
@@ -56,7 +56,12 @@
 <main>
 <header>
   <div><h1 id="viewTitle">Catalogue intelligent</h1><p id="viewSubtitle">Le serveur charge uniquement les contrôles nécessaires, sélectionne la finition puis capture le visuel rendu.</p></div>
-  <div class="head-actions"><span id="cloudProjectStatus" class="cloud-project-status"></span><button class="btn ghost" id="saveBtn">Enregistrer</button><button class="btn primary" id="previewTopBtn">Aperçu PDF</button></div>
+  <div class="head-actions">
+    <span id="cloudProjectStatus" class="cloud-project-status"></span>
+    <button class="btn ghost" id="saveBtn">Enregistrer</button>
+    <button class="btn ghost" id="previewTopBtn">Aperçu A4</button>
+    <button class="btn primary" id="exportPdfTopBtn">Exporter PDF</button>
+  </div>
 </header>
 
 
@@ -188,7 +193,13 @@
 </section>
 
 <section id="view-preview" class="view">
-  <div class="preview-toolbar"><div><b>Aperçu du dossier</b><span>Chaque pièce génère ses propres pages et ses propres produits.</span></div><button class="btn primary" id="printBtn">Imprimer / PDF</button></div>
+  <div class="preview-toolbar">
+    <div>
+      <b>Aperçu du dossier - A4 paysage</b>
+      <span>Chaque page du dossier est verrouillée au format A4 297 × 210 mm.</span>
+    </div>
+    <button class="btn primary" id="printBtn">Exporter PDF</button>
+  </div>
   <div class="preview-bg"><div id="document"></div></div>
 </section>
 </main>

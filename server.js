@@ -548,9 +548,98 @@ app.delete("/api/projects/:id",requireAuth,async(req,res)=>{
   }catch(e){res.status(500).json({error:"Suppression impossible"})}
 });
 
+
+function fallbackProductTranslationToFrench(text){
+  let s=String(text||"").trim();
+  if(!s)return "";
+
+  const replacements=[
+    [/\bwall mounted\b/gi,"mural"],
+    [/\bdeck mounted\b/gi,"sur gorge"],
+    [/\bconcealed\b/gi,"encastré"],
+    [/\bthermostatic valve\b/gi,"mitigeur thermostatique"],
+    [/\bthermostatic mixer\b/gi,"mitigeur thermostatique"],
+    [/\bbasin bridge mixer\b/gi,"mélangeur de lavabo à pont"],
+    [/\bbasin mixer\b/gi,"mélangeur de lavabo"],
+    [/\bbasin tap\b/gi,"robinet de lavabo"],
+    [/\bbasin\b/gi,"lavabo"],
+    [/\bbath filler\b/gi,"mélangeur de baignoire"],
+    [/\bbath mixer\b/gi,"mitigeur de baignoire"],
+    [/\bbath\b/gi,"baignoire"],
+    [/\bshower mixer\b/gi,"mitigeur de douche"],
+    [/\bshower valve\b/gi,"robinetterie de douche"],
+    [/\bhand shower\b/gi,"douchette"],
+    [/\bshower head\b/gi,"pomme de douche"],
+    [/\bshower\b/gi,"douche"],
+    [/\bbottle trap\b/gi,"siphon tasse"],
+    [/\bpop[- ]?up waste\b/gi,"bonde à tirette"],
+    [/\bbasin waste\b/gi,"bonde de lavabo"],
+    [/\bwaste kit\b/gi,"vidage"],
+    [/\bwaste\b/gi,"bonde"],
+    [/\bwhite levers?\b/gi,"manettes blanches"],
+    [/\bwhite handles?\b/gi,"poignées blanches"],
+    [/\blevers?\b/gi,"manettes"],
+    [/\bhandles?\b/gi,"poignées"],
+    [/\bwith\b/gi,"avec"],
+    [/\bwithout\b/gi,"sans"],
+    [/\bshut[- ]?off\b/gi,"robinet d’arrêt"],
+    [/\bthree hole\b/gi,"3 trous"],
+    [/\b3 hole\b/gi,"3 trous"],
+    [/\btwo hole\b/gi,"2 trous"],
+    [/\b2 hole\b/gi,"2 trous"],
+    [/\bsingle hole\b/gi,"monotrou"],
+    [/\bclassic\b/gi,"Classic"]
+  ];
+
+  for(const [rx,repl] of replacements)s=s.replace(rx,repl);
+  s=s.replace(/\s+/g," ").replace(/\s+([,;:])/g,"$1").trim();
+  return s;
+}
+
+app.post("/api/translate-product",requireAuth,async(req,res)=>{
+  const text=String(req.body?.text||"").trim();
+  if(!text)return res.status(400).json({error:"Désignation vide"});
+  if(text.length>350)return res.status(400).json({error:"Désignation trop longue"});
+
+  try{
+    const response=await axios.get("https://translate.googleapis.com/translate_a/single",{
+      params:{client:"gtx",sl:"auto",tl:"fr",dt:"t",q:text},
+      timeout:8000,
+      headers:{"User-Agent":"Hydropolis-Studio/10.0"}
+    });
+
+    const data=response.data;
+    const translated=Array.isArray(data?.[0])
+      ?data[0].map(x=>Array.isArray(x)?String(x[0]||""):"").join("").trim()
+      :"";
+    const detected=String(data?.[2]||"").toLowerCase();
+
+    if(translated){
+      return res.json({
+        original:text,
+        translation:translated,
+        detectedLanguage:detected||"auto",
+        alreadyFrench:detected==="fr",
+        source:"automatic"
+      });
+    }
+  }catch(e){
+    console.warn("[translation service]",e.message);
+  }
+
+  const fallback=fallbackProductTranslationToFrench(text);
+  res.json({
+    original:text,
+    translation:fallback||text,
+    detectedLanguage:"unknown",
+    alreadyFrench:false,
+    source:"hydropolis-glossary"
+  });
+});
+
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V9.7",
+  service:"Hydropolis Studio V10.0",
   database:USE_POSTGRES?"postgresql":"local-fallback",
   time:new Date().toISOString()
 }));
@@ -1814,7 +1903,7 @@ app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")))
 async function startServer(){
   try{
     await initPersistentStore();
-    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V9.7 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
+    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V10.0 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
   }catch(e){
     console.error("[Hydropolis] Démarrage impossible :",e);
     process.exit(1);

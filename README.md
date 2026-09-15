@@ -1,25 +1,23 @@
-# Hydropolis Studio V9.7
+# Hydropolis Studio V10.0
 
-Correction définitive de la page fantôme « Accessoires & éléments complémentaires ».
+## Traduction automatique des désignations
 
-La capture V9.6 a permis d'identifier la vraie cause :
-un ancien bug avait enregistré le produit catalogue lui-même une seconde fois dans
-« Éléments libres de la pièce ».
+Dans « Projet par pièce » → « Modifier l'article », Hydropolis détecte maintenant les désignations
+probablement non françaises.
 
-Exemple observé :
-- produit catalogue : Classic wall mounted kitchen bridge mixer — 950 € HT
-- ancien élément libre : Classic wall mounted kitchen bridge mixer with white levers — 950 € HT
+Exemple :
+`Classic wall mounted basin bridge mixer with white levers`
 
-Ce doublon était donc considéré comme un véritable élément libre par le dossier client.
+Un bouton `Proposer en français` apparaît à côté du champ Désignation.
 
-## V9.7
-- détecte les éléments libres qui doublonnent exactement un produit catalogue de la même pièce ;
-- les supprime automatiquement à l'ouverture du projet ;
-- enregistre automatiquement le projet nettoyé dans la base serveur ;
-- les exclut du dossier client ;
-- les exclut du devis ;
-- les exclut des calculs de total et de marge ;
-- les masque dans « Éléments libres » ;
-- empêche de recréer manuellement le même doublon à l'avenir.
+### Fonctionnement
+1. l'utilisateur clique sur `Proposer en français` ;
+2. Hydropolis demande une traduction automatique vers le français ;
+3. la proposition est placée dans le champ Désignation ;
+4. elle reste modifiable manuellement ;
+5. elle n'est appliquée au projet qu'après clic sur `Enregistrer les modifications`.
 
-Les vrais éléments libres (meuble sur mesure, miroir, peinture, pose, etc.) restent inchangés.
+Les désignations déjà françaises ne sont pas encombrées par le bouton.
+
+Un glossaire sanitaire Hydropolis est utilisé comme solution de secours si le service de traduction
+automatique n'est momentanément pas accessible.
