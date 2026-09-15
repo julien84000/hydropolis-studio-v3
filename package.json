@@ -1,12 +1,12 @@
 {
   "name": "hydropolis-studio-v3",
-  "version": "10.0.0",
+  "version": "10.4.0",
   "private": true,
   "description": "Hydropolis Studio V3 - Render test server",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "build": "node -e \"console.log('Hydropolis V10.0: traduction automatique des désignations')\""
+    "build": "node -e \"console.log('Hydropolis V10.4: Hotbath web fallback + simulation finition')\""
   },
   "engines": {
     "node": ">=20"

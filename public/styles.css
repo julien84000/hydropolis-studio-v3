@@ -2039,3 +2039,41 @@ button,input,select,textarea{font:inherit}.shell{display:grid;grid-template-colu
   .designation-editor-row{grid-template-columns:1fr}
   .translate-designation-btn{justify-self:start}
 }
+
+/* V10.1 — filtres fabricant dépendants + dessin Zucchetti page 3 */
+#finishFilter,
+#collectionFilter,
+#categoryFilter{
+  max-width:100%;
+}
+.image-actions .technical-sheet-link,
+.image-actions a{
+  white-space:nowrap;
+}
+
+/* V10.2 — filtres fabricant stricts et traduction contrôlée */
+.designation-translation-status{
+  display:block;
+  margin-top:5px;
+  line-height:1.35;
+}
+.translation-proposed{
+  outline:1px solid rgba(152,118,63,.35);
+}
+
+/* V10.4 — Hotbath web fallback + simulation de finition */
+.hotbath-web-photo,
+.hotbath-web-selected{
+  border-color:#c6aa7c!important;
+}
+.hotbath-sim-photo,
+.hotbath-sim-selected{
+  border-color:#9a8769!important;
+  background:#f7f1e7!important;
+}
+.board-simulation-note{
+  margin-top:3px;
+  font-size:6.7pt;
+  letter-spacing:.03em;
+  color:#8b7150;
+}

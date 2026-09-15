@@ -1,23 +1,28 @@
-# Hydropolis Studio V10.0
+# Hydropolis Studio V10.4
 
-## Traduction automatique des désignations
+## Hotbath — stratégie de visuel en 3 niveaux
 
-Dans « Projet par pièce » → « Modifier l'article », Hydropolis détecte maintenant les désignations
-probablement non françaises.
+1. **Photo officielle Hotbath** : priorité absolue.
+   - La finition n'est maintenant marquée « exacte » que si la page Hotbath affiche elle-même la référence avec le code finition demandé dans `#descrbar`.
+   - On ne considère plus automatiquement toute image Hotbath comme exacte.
 
-Exemple :
-`Classic wall mounted basin bridge mixer with white levers`
+2. **Recherche web par référence exacte** :
+   - bouton « Chercher finition sur le web » ;
+   - recherche avec référence complète + code finition + Hotbath ;
+   - l'image trouvée est clairement signalée « à vérifier » et n'est jamais présentée comme photo fabricant certifiée.
 
-Un bouton `Proposer en français` apparaît à côté du champ Désignation.
+3. **Simulation de finition Hydropolis** :
+   - bouton « Simuler [finition] » lorsque l'on possède déjà un visuel produit ;
+   - traitement serveur léger qui conserve volumes, ombres et reflets et applique la teinte de finition Hotbath ;
+   - finitions gérées : CR, GN, AB, BB, WH, AI, BBP, BCP et MBP ;
+   - dans le dossier client, une simulation porte la mention discrète « Visuel de finition simulé · non contractuel ».
 
-### Fonctionnement
-1. l'utilisateur clique sur `Proposer en français` ;
-2. Hydropolis demande une traduction automatique vers le français ;
-3. la proposition est placée dans le champ Désignation ;
-4. elle reste modifiable manuellement ;
-5. elle n'est appliquée au projet qu'après clic sur `Enregistrer les modifications`.
+## Documents Hotbath
+Les corrections V10.3 sont conservées :
+- Drawing JPG reconnu comme dessin technique ;
+- Technical info JPG/PDF reconnu ;
+- Instructions PDF reconnues ;
+- CAD distingué.
 
-Les désignations déjà françaises ne sont pas encombrées par le bouton.
-
-Un glossaire sanitaire Hydropolis est utilisé comme solution de secours si le service de traduction
-automatique n'est momentanément pas accessible.
+## Zucchetti
+La correction de rendu PDF multipage reste active : la page 3 est réellement rendue côté serveur.

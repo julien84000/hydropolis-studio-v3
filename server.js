@@ -549,51 +549,140 @@ app.delete("/api/projects/:id",requireAuth,async(req,res)=>{
 });
 
 
-function fallbackProductTranslationToFrench(text){
-  let s=String(text||"").trim();
-  if(!s)return "";
 
-  const replacements=[
+function controlledProductTranslationToFrench(text,context={}){
+  const original=String(text||"").trim();
+  if(!original)return {translation:"",confidence:"none",message:"Désignation vide."};
+
+  const manufacturer=String(context.manufacturer||"").trim();
+  let s=original;
+  let hits=0;
+
+  // Exact / near-exact sanitary phrases first. These are deliberately
+  // conservative: Hydropolis prefers no proposal to an approximate proposal.
+  const rules=[
+    // Lefroy Brooks / English
+    [/\bclassic black hand shower on sliding rail\b/gi,"douchette Classic noire sur barre coulissante"],
+    [/\bclassic white hand shower on sliding rail\b/gi,"douchette Classic blanche sur barre coulissante"],
+    [/\bclassic black hand shower on cradle\b/gi,"douchette Classic noire sur support"],
+    [/\bclassic white hand shower on cradle\b/gi,"douchette Classic blanche sur support"],
+    [/\bclassic black hand shower on wall bracket\b/gi,"douchette Classic noire sur support mural"],
+    [/\bclassic white hand shower on wall bracket\b/gi,"douchette Classic blanche sur support mural"],
+    [/\bsliding riser bracket for hand shower with classic black handle\b/gi,"support coulissant pour douchette avec poignée Classic noire"],
+    [/\bsliding riser bracket for hand shower with classic white handle\b/gi,"support coulissant pour douchette avec poignée Classic blanche"],
+    [/\bclassic black radiator stopcocks\b/gi,"robinets d’arrêt de radiateur Classic noirs"],
+    [/\bclassic white radiator stopcocks\b/gi,"robinets d’arrêt de radiateur Classic blancs"],
+    [/\bextended black ceramic cistern lever\b/gi,"levier rallongé de réservoir en céramique noire"],
+    [/\bextended white ceramic cistern lever\b/gi,"levier rallongé de réservoir en céramique blanche"],
+    [/\bblack ceramic cistern lever\b/gi,"levier de réservoir en céramique noire"],
+    [/\bwhite ceramic cistern lever\b/gi,"levier de réservoir en céramique blanche"],
+    [/\bblack ceramic cistern pull\s*&\s*chain\b/gi,"tirette et chaîne de réservoir en céramique noire"],
+    [/\bwhite ceramic cistern pull\s*&\s*chain\b/gi,"tirette et chaîne de réservoir en céramique blanche"],
+    [/\bwall mounted basin mixer\b/gi,"mitigeur de lavabo mural"],
+    [/\bdeck mounted basin mixer\b/gi,"mitigeur de lavabo sur gorge"],
+    [/\bthree hole basin mixer\b/gi,"mélangeur de lavabo 3 trous"],
+    [/\b3 hole basin mixer\b/gi,"mélangeur de lavabo 3 trous"],
+    [/\btwo hole basin mixer\b/gi,"mélangeur de lavabo 2 trous"],
+    [/\b2 hole basin mixer\b/gi,"mélangeur de lavabo 2 trous"],
+    [/\bsingle hole basin mixer\b/gi,"mitigeur de lavabo monotrou"],
+    [/\bbasin bridge mixer\b/gi,"mélangeur de lavabo à pont"],
+    [/\bbasin mixer\b/gi,"mitigeur de lavabo"],
+    [/\bbasin taps?\b/gi,"robinets de lavabo"],
+    [/\bbasin tap\b/gi,"robinet de lavabo"],
+    [/\bbath\/shower mixer\b/gi,"mitigeur bain-douche"],
+    [/\bbath shower mixer\b/gi,"mitigeur bain-douche"],
+    [/\bbath filler\b/gi,"mélangeur de baignoire"],
+    [/\bbath mixer\b/gi,"mitigeur de baignoire"],
+    [/\bshower mixer\b/gi,"mitigeur de douche"],
+    [/\bthermostatic shower valve\b/gi,"mitigeur thermostatique de douche"],
+    [/\bthermostatic valve\b/gi,"mitigeur thermostatique"],
+    [/\bhand shower\b/gi,"douchette"],
+    [/\bshower head\b/gi,"douche de tête"],
+    [/\bsliding rail\b/gi,"barre coulissante"],
+    [/\bwall bracket\b/gi,"support mural"],
+    [/\bdiverter\b/gi,"inverseur"],
+    [/\bbottle trap\b/gi,"siphon bouteille"],
+    [/\bclick clack waste\b/gi,"bonde clic-clac"],
+    [/\bpop[- ]?up waste\b/gi,"bonde à tirette"],
+    [/\bunslotted waste\b/gi,"bonde sans trop-plein"],
+    [/\bslotted waste\b/gi,"bonde avec trop-plein"],
+    [/\bbasin waste\b/gi,"bonde de lavabo"],
+    [/\bwaste kit\b/gi,"ensemble de vidage"],
     [/\bwall mounted\b/gi,"mural"],
     [/\bdeck mounted\b/gi,"sur gorge"],
     [/\bconcealed\b/gi,"encastré"],
-    [/\bthermostatic valve\b/gi,"mitigeur thermostatique"],
-    [/\bthermostatic mixer\b/gi,"mitigeur thermostatique"],
-    [/\bbasin bridge mixer\b/gi,"mélangeur de lavabo à pont"],
-    [/\bbasin mixer\b/gi,"mélangeur de lavabo"],
-    [/\bbasin tap\b/gi,"robinet de lavabo"],
-    [/\bbasin\b/gi,"lavabo"],
-    [/\bbath filler\b/gi,"mélangeur de baignoire"],
-    [/\bbath mixer\b/gi,"mitigeur de baignoire"],
-    [/\bbath\b/gi,"baignoire"],
-    [/\bshower mixer\b/gi,"mitigeur de douche"],
-    [/\bshower valve\b/gi,"robinetterie de douche"],
-    [/\bhand shower\b/gi,"douchette"],
-    [/\bshower head\b/gi,"pomme de douche"],
-    [/\bshower\b/gi,"douche"],
-    [/\bbottle trap\b/gi,"siphon tasse"],
-    [/\bpop[- ]?up waste\b/gi,"bonde à tirette"],
-    [/\bbasin waste\b/gi,"bonde de lavabo"],
-    [/\bwaste kit\b/gi,"vidage"],
-    [/\bwaste\b/gi,"bonde"],
-    [/\bwhite levers?\b/gi,"manettes blanches"],
-    [/\bwhite handles?\b/gi,"poignées blanches"],
-    [/\blevers?\b/gi,"manettes"],
-    [/\bhandles?\b/gi,"poignées"],
+    [/\bexposed\b/gi,"apparent"],
+    [/\bfreestanding\b/gi,"îlot"],
     [/\bwith\b/gi,"avec"],
     [/\bwithout\b/gi,"sans"],
-    [/\bshut[- ]?off\b/gi,"robinet d’arrêt"],
-    [/\bthree hole\b/gi,"3 trous"],
-    [/\b3 hole\b/gi,"3 trous"],
-    [/\btwo hole\b/gi,"2 trous"],
-    [/\b2 hole\b/gi,"2 trous"],
-    [/\bsingle hole\b/gi,"monotrou"],
-    [/\bclassic\b/gi,"Classic"]
+
+    // Zucchetti / Italian
+    [/\bmiscelatore lavabo\b/gi,"mitigeur de lavabo"],
+    [/\bmiscelatore bidet\b/gi,"mitigeur de bidet"],
+    [/\bmiscelatore vasca\b/gi,"mitigeur de baignoire"],
+    [/\bmiscelatore doccia\b/gi,"mitigeur de douche"],
+    [/\bdeviatore incasso\b/gi,"inverseur encastré"],
+    [/\bdeviatore\b/gi,"inverseur"],
+    [/\bporta doccetta\b/gi,"support de douchette"],
+    [/\bdoccetta\b/gi,"douchette"],
+    [/\bsoffione\b/gi,"douche de tête"],
+    [/\bbocca erogazione\b/gi,"bec verseur"],
+    [/\bbocca\b/gi,"bec"],
+    [/\bincasso\b/gi,"encastré"],
+    [/\bparete\b/gi,"mural"],
+    [/\bal piano\b/gi,"sur plan"],
+    [/\bda piano\b/gi,"sur plan"],
+    [/\bpiletta\b/gi,"bonde"],
+    [/\bscarico\b/gi,"vidage"],
+    [/\bper\b/gi,"pour"],
+
+    // Hotbath / Dutch
+    [/\bwastafelmengkraan\b/gi,"mitigeur de lavabo"],
+    [/\bwastafelkraan\b/gi,"robinet de lavabo"],
+    [/\bbadmengkraan\b/gi,"mitigeur de baignoire"],
+    [/\bdouchemengkraan\b/gi,"mitigeur de douche"],
+    [/\bhoofddouche\b/gi,"douche de tête"],
+    [/\bhanddouche\b/gi,"douchette"],
+    [/\binbouw\b/gi,"encastré"],
+    [/\bopbouw\b/gi,"apparent"],
+    [/\buitloop\b/gi,"bec"],
+    [/\bafvoer\b/gi,"vidage"]
   ];
 
-  for(const [rx,repl] of replacements)s=s.replace(rx,repl);
-  s=s.replace(/\s+/g," ").replace(/\s+([,;:])/g,"$1").trim();
-  return s;
+  for(const [rx,repl] of rules){
+    const before=s;
+    s=s.replace(rx,repl);
+    if(s!==before)hits++;
+  }
+
+  s=s
+    .replace(/\s+/g," ")
+    .replace(/\s+([,;:])/g,"$1")
+    .replace(/\s*-\s*/g," – ")
+    .trim();
+
+  // Any recognised foreign technical vocabulary left behind means the result
+  // is not safe enough to inject into the customer-facing designation.
+  const residualForeign=/\b(basin|mixer|mounted|deck|concealed|exposed|thermostatic|valve|lever|handle|waste|bottle|trap|shower|bath|filler|freestanding|washbasin|tap|spout|flush|white|black|brushed|polished|diverter|outlet|rail|cradle|bracket|cistern|stopcocks?|miscelatore|vasca|doccia|doccetta|soffione|incasso|parete|piano|bocca|piletta|scarico|deviatore|wastafel|mengkraan|inbouw|opbouw|hoofddouche|handdouche|uitloop|afvoer)\b/i;
+
+  const changed=s.toLowerCase()!==original.toLowerCase();
+  const safe=changed && hits>0 && !residualForeign.test(s);
+
+  if(safe){
+    return {
+      translation:s,
+      confidence:"high",
+      source:"hydropolis-controlled-glossary",
+      message:`Traduction contrôlée${manufacturer?` · ${manufacturer}`:""}`
+    };
+  }
+
+  return {
+    translation:"",
+    confidence:"low",
+    source:"hydropolis-controlled-glossary",
+    message:"Pas de traduction automatique suffisamment fiable pour cette désignation. Conservez l’original ou reformulez-la manuellement."
+  };
 }
 
 app.post("/api/translate-product",requireAuth,async(req,res)=>{
@@ -601,45 +690,36 @@ app.post("/api/translate-product",requireAuth,async(req,res)=>{
   if(!text)return res.status(400).json({error:"Désignation vide"});
   if(text.length>350)return res.status(400).json({error:"Désignation trop longue"});
 
-  try{
-    const response=await axios.get("https://translate.googleapis.com/translate_a/single",{
-      params:{client:"gtx",sl:"auto",tl:"fr",dt:"t",q:text},
-      timeout:8000,
-      headers:{"User-Agent":"Hydropolis-Studio/10.0"}
+  const french=/\b(mélangeur|mitigeur|robinet|lavabo|baignoire|douche|encastré|mural|bonde|siphon|thermostatique|vasque|cuvette|abattant)\b/i;
+  const foreign=/\b(basin|mixer|mounted|concealed|shower|bath|waste|miscelatore|vasca|doccia|incasso|wastafel|mengkraan|inbouw|hoofddouche|handdouche)\b/i;
+
+  if(french.test(text) && !foreign.test(text)){
+    return res.json({
+      original:text,
+      translation:text,
+      alreadyFrench:true,
+      confidence:"high",
+      source:"hydropolis-controlled-glossary"
     });
-
-    const data=response.data;
-    const translated=Array.isArray(data?.[0])
-      ?data[0].map(x=>Array.isArray(x)?String(x[0]||""):"").join("").trim()
-      :"";
-    const detected=String(data?.[2]||"").toLowerCase();
-
-    if(translated){
-      return res.json({
-        original:text,
-        translation:translated,
-        detectedLanguage:detected||"auto",
-        alreadyFrench:detected==="fr",
-        source:"automatic"
-      });
-    }
-  }catch(e){
-    console.warn("[translation service]",e.message);
   }
 
-  const fallback=fallbackProductTranslationToFrench(text);
+  const result=controlledProductTranslationToFrench(text,{
+    manufacturer:req.body?.manufacturer,
+    collection:req.body?.collection,
+    category:req.body?.category,
+    reference:req.body?.reference
+  });
+
   res.json({
     original:text,
-    translation:fallback||text,
-    detectedLanguage:"unknown",
     alreadyFrench:false,
-    source:"hydropolis-glossary"
+    ...result
   });
 });
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V10.0",
+  service:"Hydropolis Studio V10.4",
   database:USE_POSTGRES?"postgresql":"local-fallback",
   time:new Date().toISOString()
 }));
@@ -859,6 +939,7 @@ async function resolveCatalanoProductUrl(manufacturerUrl,reference,originalDescr
 }
 
 
+let hotbathSitemapMemo={at:0,locs:[]};
 let lefroySitemapMemo={at:0,html:""};
 async function fetchBrandPage(url,lang="en-GB,en;q=0.9"){
   const r=await axios.get(url,{timeout:22000,maxRedirects:5,validateStatus:x=>x>=200&&x<400,headers:{"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/150 Safari/537.36","Accept-Language":lang}});
@@ -870,18 +951,44 @@ function hotbathBase(reference){
 async function resolveHotbathProductUrl(reference){
   const base=hotbathBase(reference);
   if(!base)return "https://www.hotbath.it/fr/home";
+
+  const safeBase=base.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+  const exactRxFr=new RegExp(`/fr/produits/\\d+/${safeBase}(?:[/?#]|$)`,"i");
+  const exactRxEn=new RegExp(`/en/products/\\d+/${safeBase}(?:[/?#]|$)`,"i");
+  const token=normalizeToken(base);
+
+  try{
+    if(!hotbathSitemapMemo.locs.length || Date.now()-hotbathSitemapMemo.at>6*60*60*1000){
+      const xml=await fetchBrandPage("https://www.hotbath.it/sitemap.xml","fr-FR,fr;q=0.9,en;q=0.7");
+      const locs=[...String(xml||"").matchAll(/<loc>([^<]+)<\/loc>/gi)]
+        .map(x=>String(x[1]||"").replace(/&amp;/g,"&"));
+      hotbathSitemapMemo={at:Date.now(),locs};
+    }
+    const locs=hotbathSitemapMemo.locs||[];
+    const frExact=locs.find(u=>exactRxFr.test(u));
+    if(frExact)return frExact;
+    const enExact=locs.find(u=>exactRxEn.test(u));
+    if(enExact)return enExact;
+
+    const frLoose=locs.find(u=>/\/fr\/produits\//i.test(u) && normalizeToken(u).includes(token));
+    if(frLoose)return frLoose;
+    const enLoose=locs.find(u=>/\/en\/products\//i.test(u) && normalizeToken(u).includes(token));
+    if(enLoose)return enLoose;
+  }catch(e){
+    console.error("[hotbath-sitemap]",e.message);
+  }
+
   try{
     const searchUrl="https://www.hotbath.it/fr/searchproducts";
     const html=await fetchBrandPage(searchUrl,"fr-FR,fr;q=0.9,en;q=0.7");
     const $=cheerio.load(html);
     let exact="",fallback="";
-    $("a[href*='/fr/produits/']").each((_,el)=>{
+    $("a[href]").each((_,el)=>{
       const href=absoluteUrl(searchUrl,$(el).attr("href"));
       if(!href)return;
-      const txt=normalizeToken(($(el).text()||"")+" "+href);
-      const hrefBase=normalizeToken(base);
-      if(new RegExp("/"+base.replace(/[.*+?^${}()|[\\]\\]/g,"\\$&")+"(?:[/?#]|$)","i").test(href)) exact=exact||href;
-      else if(txt.includes(hrefBase)) fallback=fallback||href;
+      const txt=normalizeToken([$(el).text()||"",$(el).attr("title")||"",href].join(" "));
+      if(exactRxFr.test(href) || exactRxEn.test(href)) exact=exact||href;
+      else if(txt.includes(token) && /\/((fr\/produits)|(en\/products))\//i.test(href)) fallback=fallback||href;
     });
     return exact||fallback||searchUrl;
   }catch(e){
@@ -946,6 +1053,31 @@ async function resolveRecorProductUrl(reference,designation){
 }
 
 async function resolveManufacturerProductUrl(manufacturerUrl,reference,originalDescription,designation,collection){
+  if(/zucchettidesign\.it/i.test(manufacturerUrl)){
+    try{
+      const fullRef=String(reference||"").trim().toUpperCase();
+      const baseRef=fullRef.split(".")[0];
+      let target=manufacturerUrl||`https://www.zucchettidesign.it/en/products/${baseRef.toLowerCase()}`;
+
+      // Clinical/sanitary lever variants use a dedicated -h product page.
+      // Example: ZPA552.HC51 -> /products/zpa552-h?sku=ZPA552.HC51
+      const suffix=fullRef.includes(".")?fullRef.split(".").slice(1).join("."):"";
+      if(/^H[A-Z0-9]*$/i.test(suffix)){
+        const u0=new URL(target);
+        const clean=u0.pathname.replace(/\/+$/,"");
+        if(!/-h$/i.test(clean)){
+          u0.pathname=clean+"-h";
+          target=u0.href;
+        }
+      }
+
+      const u=new URL(target);
+      u.searchParams.set("sku",fullRef||baseRef);
+      return u.href;
+    }catch{
+      return manufacturerUrl;
+    }
+  }
   if(/catalano\.it/i.test(manufacturerUrl)) return resolveCatalanoProductUrl(manufacturerUrl,reference,originalDescription,designation,collection);
   if(/hotbath\.it/i.test(manufacturerUrl)) return resolveHotbathProductUrl(reference);
   if(/lefroybrooks\.com/i.test(manufacturerUrl)) return resolveLefroyProductUrl(reference,originalDescription||designation);
@@ -1447,6 +1579,145 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     });
   }
 
+
+  // Zucchetti: the selected SKU is passed in ?sku= above. Their current
+  // product pages expose imagery through a mix of <img>, <source>, metadata
+  // and JSON/script assets. Collect all those official product assets and
+  // strongly prefer URLs tied to the current product base.
+  if(/zucchettidesign\.it/i.test(manufacturerUrl)){
+    const zBase=String(reference||"").split(".")[0].toLowerCase();
+    const zRef=String(reference||"").toLowerCase();
+    const zPageText=normalizeToken($("body").text());
+    const zFinish=normalizeToken(finish||"");
+    const pageMatchesSku=
+      (!!zRef && zPageText.includes(normalizeToken(reference))) ||
+      (!!zBase && zPageText.includes(normalizeToken(zBase))) ||
+      (!!zFinish && zPageText.includes(zFinish));
+
+    function addZucchettiImage(raw,context="",source="zucchetti-product-image"){
+      const href=absoluteUrl(manufacturerUrl,raw);
+      if(!href || !isImageUrl(href))return;
+      const text=(href+" "+context).toLowerCase();
+      if(/logo|favicon|icon|sprite|placeholder|loading|cookie|social|swatch|finishings?|material|texture|flag/.test(text))return;
+      if(/[?&](?:w|width|h|height)=([1-9]\d?|1\d\d)(?:&|$)/i.test(href))return;
+
+      let score=650;
+      if(/assets\.zucchettidesign\.it/i.test(href))score+=450;
+      if(zBase && text.includes(zBase))score+=4000;
+      if(zRef && text.includes(zRef))score+=5000;
+      if(/product|prodotto|gallery|image|immagini/i.test(text))score+=300;
+
+      // Since this page was explicitly requested with the exact official SKU,
+      // a product asset on a matching SKU page is valid for the selected finish
+      // even when the CDN filename itself omits the finish code.
+      const exact=pageMatchesSku && pageMatchesFinish && !!String(finishCode||"");
+      candidates.push({
+        url:href,
+        source,
+        score:score+(exact?3000:0),
+        finishMatch:exact?"exact":"generic",
+        detectedFinishCode:exact?String(finishCode||"").toUpperCase():null,
+        variationId:null,
+        attributes:{context}
+      });
+    }
+
+    $("meta[property='og:image'],meta[name='twitter:image'],meta[property='twitter:image']").each((_,el)=>{
+      addZucchettiImage($(el).attr("content")||"","metadata","zucchetti-metadata-image");
+    });
+
+    $("picture,source").each((_,el)=>{
+      const node=$(el);
+      for(const attr of ["src","data-src","srcset","data-srcset"]){
+        const raw=node.attr(attr)||"";
+        for(const part of raw.split(",")){
+          const candidate=part.trim().split(/\s+/)[0];
+          if(candidate)addZucchettiImage(candidate,"picture source","zucchetti-picture-image");
+        }
+      }
+    });
+
+    $("img").each((_,el)=>{
+      const im=$(el);
+      if(im.closest("#finiture").length)return;
+      const ctx=[im.attr("alt"),im.attr("title"),im.attr("class")].filter(Boolean).join(" ");
+      for(const attr of ["data-large_image","data-original","data-lazy-src","data-src","src"]){
+        addZucchettiImage(im.attr(attr),ctx,"zucchetti-img");
+      }
+      for(const attr of ["srcset","data-srcset"]){
+        const raw=im.attr(attr)||"";
+        for(const part of raw.split(",")){
+          addZucchettiImage(part.trim().split(/\s+/)[0],ctx,"zucchetti-img-srcset");
+        }
+      }
+    });
+
+    // Assets embedded in hydrated JSON / scripts.
+    const zuRaw=html.match(/https?:\\?\/\\?\/(?:assets\.)?zucchettidesign\.it\/[^"'<>\\\s)]+?\.(?:jpe?g|png|webp)(?:\\?[^"'<>\\\s)]*)?/gi)||[];
+    for(const raw of zuRaw){
+      addZucchettiImage(raw.replace(/\\\//g,"/").replace(/&amp;/g,""),"inline json","zucchetti-json-image");
+    }
+  }
+
+  // Hotbath: the official page itself is already the product page for the selected
+  // reference, and the main visual is typically exposed through og:image plus a hero <img>.
+  // Finish chips are also present on the page, so strongly prioritise the hero metadata.
+  if(/hotbath\.it/i.test(manufacturerUrl)){
+    const hBase=String(reference||"").split(".")[0].toLowerCase();
+    const hRef=String(reference||"").toLowerCase();
+    const hPageText=normalizeToken($("body").text());
+    const displayedHotbathRef=normalizeToken($("#descrbar").first().text()||"");
+    const wantedHotbathRef=normalizeToken(`${String(reference||"").split(".")[0]}.${String(finishCode||"")}`);
+    const pageMatchesSku=(!!hRef && hPageText.includes(normalizeToken(reference))) || (!!hBase && hPageText.includes(normalizeToken(hBase)));
+    // Hotbath's URL is product-level, not finish-level. The finish is considered exact
+    // only when the page's own #descrbar explicitly displays the requested finish code.
+    const pageMatchesFinish=!!wantedHotbathRef && displayedHotbathRef.includes(wantedHotbathRef);
+
+    function addHotbathImage(raw,context="",source="hotbath-product-image"){
+      const href=absoluteUrl(manufacturerUrl,raw);
+      if(!href || !isImageUrl(href))return;
+      const text=(href+" "+context).toLowerCase();
+      if(/logo|favicon|icon|sprite|placeholder|loading|cookie|social|flag|pinterest|instagram|jsp\/template2\/images/.test(text))return;
+      if(/\/prodcateg\/\d+\/(?:cr|gn|ab|bb|wh|ai|bbp|bcp|mbp)\.jpe?g(?:\?|$)/i.test(href))return;
+      if(/[?&](?:w|width|h|height)=([1-9]\d?|1\d\d)(?:&|$)/i.test(href))return;
+
+      let score=450;
+      if(/og:image|twitter:image|metadata/.test(source+" "+context))score+=4500;
+      if(hBase && text.includes(hBase))score+=2200;
+      if(hRef && text.includes(hRef))score+=2600;
+      if(/hero|main|product|gallery|prodotto|cb\d+/i.test(text))score+=300;
+
+      const exact=pageMatchesSku && !!String(finishCode||"");
+      candidates.push({
+        url:href,
+        source,
+        score:score+(exact?3200:0),
+        finishMatch:exact?"exact":"generic",
+        detectedFinishCode:exact?String(finishCode||"").toUpperCase():null,
+        variationId:null,
+        attributes:{context}
+      });
+    }
+
+    $("meta[property='og:image'],meta[name='twitter:image'],meta[property='twitter:image']").each((_,el)=>{
+      addHotbathImage($(el).attr("content")||"","metadata","hotbath-metadata-image");
+    });
+
+    $("img").each((_,el)=>{
+      const im=$(el);
+      const ctx=[im.attr("alt"),im.attr("title"),im.attr("class")].filter(Boolean).join(" ");
+      for(const attr of ["data-large_image","data-original","data-lazy-src","data-src","src"]){
+        addHotbathImage(im.attr(attr),ctx,"hotbath-img");
+      }
+      for(const attr of ["srcset","data-srcset"]){
+        const raw=im.attr(attr)||"";
+        for(const part of raw.split(",")){
+          addHotbathImage(part.trim().split(/\s+/)[0],ctx,"hotbath-img-srcset");
+        }
+      }
+    });
+  }
+
   // Coalbrook: first look for the exact full SKU anywhere in the official page HTML.
   // This is stricter and more reliable than guessing from image order.
   if(/coalbrookuk\.co\.uk/i.test(manufacturerUrl)){
@@ -1519,30 +1790,91 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
   }
 
   // FICHES TECHNIQUES / SPEC SHEETS + NOTICE D'INSTALLATION.
-  // Coalbrook expose "Spec sheet" ; Zucchetti expose "Technical sheet".
+  // Hotbath often exposes the useful technical sheet as a JPG inside the
+  // “Drawing” area, with icon-only links instead of textual anchors.
+  function linkSemanticText(el){
+    const $el=$(el);
+    const bits=[
+      $el.text(),
+      $el.attr("title"),
+      $el.attr("aria-label"),
+      $el.attr("download"),
+      $el.attr("class"),
+      $el.parent().text(),
+      $el.parent().prev().text(),
+      $el.parent().parent().prev().text(),
+      $el.closest("section,article,div,li,p").children("h1,h2,h3,h4,strong").first().text()
+    ];
+    $el.find("img").each((_,img)=>{
+      bits.push($(img).attr("alt")||"");
+      bits.push($(img).attr("title")||"");
+      bits.push($(img).attr("aria-label")||"");
+      bits.push($(img).attr("class")||"");
+      bits.push(path.basename($(img).attr("src")||""));
+    });
+    return bits.filter(Boolean).join(" ");
+  }
+  function inferredDownloadType(href,hintRaw=""){
+    const hint=normalizeToken(hintRaw);
+    if(isPdfUrl(href) || /pdf/.test(hint)) return "pdf";
+    if(isImageUrl(href) || /(jpg|jpeg|png|image)/.test(hint)) return "image";
+    if(/\.(dwg|dxf|igs|stp|3ds|bim)(?:\?|$)/i.test(href) || /(dwg|dxf|igs|stp|3ds|bim|cad)/.test(hint)) return "cad";
+    return "link";
+  }
+
   let technicalSheet=null;
   let installationGuide=null;
-  $("a").each((_,el)=>{
-    const labelRaw=$(el).text().trim();
-    const label=normalizeToken(labelRaw);
+  let drawing=null;
+  let cadDrawing=null;
+  const isHotbath=/hotbath\.it/i.test(manufacturerUrl);
+
+  $("a[href]").each((_,el)=>{
     const href=absoluteUrl(manufacturerUrl,$(el).attr("href"));
     if(!href) return;
 
-    if(!technicalSheet && /\b(spec sheet|specification sheet|technical specification sheet|technical specifications?|technical sheet|technical data sheet|fiche technique)\b/.test(label)){
+    const rawText=($(el).text()||"").trim();
+    const hintRaw=linkSemanticText(el);
+    const hint=normalizeToken(rawText+" "+hintRaw+" "+href);
+    const type=inferredDownloadType(href,hintRaw);
+
+    const looksTechnical=/(spec sheet|specification sheet|technical specification sheet|technical specifications?|technical sheet|technical data sheet|technical info|fiche technique)/.test(hint);
+    const looksInstall=/(installation guide|installation servicing guide|installation and servicing guide|installation service guide|installation manual|installation manual warnings|servicing guide|instructions|notice d installation)/.test(hint);
+    const looksDrawing=/(2d drawing|dwg file|drawing|disegno|dessin|technical drawing|plan technique)/.test(hint);
+    const looksCad=/(cad|dwg|dxf|igs|stp|3ds|bim)/.test(hint) || /\.(dwg|dxf|igs|stp|3ds|bim)(?:\?|$)/i.test(href);
+
+    if(!technicalSheet && looksTechnical){
       technicalSheet={
         url:href,
-        label:labelRaw||"Fiche technique",
-        type:isPdfUrl(href)?"pdf":"link",
+        label:rawText||(/technical info/.test(hint)?"Technical info":"Fiche technique"),
+        type,
         source:/lefroybrooks\.com/i.test(manufacturerUrl)?"lefroy-official-download":"official-download"
       };
     }
 
-    if(!installationGuide && /\b(installation guide|installation servicing guide|installation and servicing guide|installation service guide|installation manual|installation manual warnings|servicing guide|instructions|notice d installation)\b/.test(label)){
+    if(!installationGuide && looksInstall){
       installationGuide={
         url:href,
-        label:labelRaw||"Notice d'installation",
-        type:isPdfUrl(href)?"pdf":"link",
+        label:rawText||"Notice d'installation",
+        type,
         source:/lefroybrooks\.com/i.test(manufacturerUrl)?"lefroy-official-download":"official-download"
+      };
+    }
+
+    if(!drawing && looksDrawing && (type==="pdf" || type==="image" || type==="cad" || type==="link")){
+      drawing={
+        url:href,
+        label:rawText||(/drawing/.test(hint)?"Drawing 2D":"Dessin technique"),
+        type,
+        source:"official-download"
+      };
+    }
+
+    if(!cadDrawing && looksCad && !looksInstall && !looksTechnical && (!drawing || type==="cad")){
+      cadDrawing={
+        url:href,
+        label:rawText||"Fichier 2D CAD",
+        type:type==="cad"?"cad":"link",
+        source:"official-download"
       };
     }
   });
@@ -1555,12 +1887,12 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
       const href=absoluteUrl(manufacturerUrl,$(el).attr("href"));
       if(!href)return;
       const raw=($(el).text()||"").trim();
-      const label=normalizeToken(raw);
+      const label=normalizeToken(raw+" "+linkSemanticText(el));
       const lowHref=href.toLowerCase();
 
       if(!technicalSheet &&
-         (/\btechnical specification sheet\b/.test(label) ||
-          /\btechnical specifications?\b/.test(label) ||
+         (/technical specification sheet/.test(label) ||
+          /technical specifications?/.test(label) ||
           /_technical_(?:specification_)?sheet/i.test(lowHref))){
         technicalSheet={
           url:href,
@@ -1571,9 +1903,9 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
       }
 
       if(!installationGuide &&
-         (/\binstallation servicing guide\b/.test(label) ||
-          /\binstallation and servicing guide\b/.test(label) ||
-          /\bservicing guide\b/.test(label) ||
+         (/installation servicing guide/.test(label) ||
+          /installation and servicing guide/.test(label) ||
+          /servicing guide/.test(label) ||
           /installation.*servic/i.test(lowHref))){
         installationGuide={
           url:href,
@@ -1589,13 +1921,13 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
       const base=lefroyBase(reference);
       const esc=base.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
       const patterns=[
-        new RegExp(`https?:\\\\?/\\\\?/[^"'<>\\\\s]+/s/${esc}[^"'<>\\\\s]*Technical[^"'<>\\\\s]*Specification[^"'<>\\\\s]*\\.pdf`,"i"),
-        new RegExp(`https?:\\\\?/\\\\?/[^"'<>\\\\s]+/s/${esc}[^"'<>\\\\s]*Technical[^"'<>\\\\s]*\\.pdf`,"i")
+        new RegExp(`https?:\\?/\\?/[^"'<>\\s]+/s/${esc}[^"'<>\\s]*Technical[^"'<>\\s]*Specification[^"'<>\\s]*\.pdf`,"i"),
+        new RegExp(`https?:\\?/\\?/[^"'<>\\s]+/s/${esc}[^"'<>\\s]*Technical[^"'<>\\s]*\.pdf`,"i")
       ];
       for(const rx of patterns){
-        const m=html.match(rx);
-        if(m){
-          const u=m[0].replace(/\\\//g,"/").replace(/&amp;/g,"&");
+        const x=html.match(rx);
+        if(x){
+          const u=x[0].replace(/\\//g,"/").replace(/&amp;/g,"&");
           technicalSheet={url:u,label:"Technical Specification Sheet",type:"pdf",source:"lefroy-html-download"};
           break;
         }
@@ -1622,23 +1954,37 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     }
   }
 
-  // DRAWING / DISEGNO / DESSIN TECHNIQUE.
-  let drawing=null;
-  $("a").each((_,el)=>{
-    if(drawing) return;
-    const label=normalizeToken($(el).text());
-    const href=absoluteUrl(manufacturerUrl,$(el).attr("href"));
-    if(!href) return;
-    const isDrawing=/\b(2d drawing|dwg file|drawing|disegno|dessin|technical drawing|plan technique)\b/.test(label);
-    if(isDrawing){
-      drawing={
-        url:href,
-        label:$(el).text().trim()||"Drawing 2D",
-        type:isPdfUrl(href)?"pdf":(isImageUrl(href)?"image":(/\.(dwg|dxf)(?:\?|$)/i.test(href)?"cad":"link")),
-        source:"official-download"
-      };
+  // Hotbath: the usable technical sheet is often the JPG inside “Drawing”.
+  // If the page also exposes a PDF in “Technical info”, keep both: the JPG for the
+  // drawing page and the PDF/JPG technical link as secondary documentation.
+  if(isHotbath){
+    if(!technicalSheet && drawing && ["image","pdf"].includes(drawing.type)){
+      technicalSheet={...drawing,label:"Fiche technique",source:"hotbath-drawing-fallback"};
     }
-  });
+    if(!drawing && technicalSheet && ["image","pdf"].includes(technicalSheet.type)){
+      drawing={...technicalSheet,label:"Drawing 2D",source:"hotbath-technical-fallback"};
+    }
+  }
+
+
+  // Zucchetti technical PDFs are multi-page. For Hydropolis the technical
+  // drawing to present is page 3 of that official PDF. Preserve the separate
+  // CAD/DXF download as an auxiliary link, but use PDF page 3 in the dossier.
+  if(/zucchettidesign\.it/i.test(manufacturerUrl) && technicalSheet?.type==="pdf"){
+    technicalSheet={...technicalSheet,page:3,previewPage:3};
+
+    if(drawing && ["cad","link"].includes(drawing.type)){
+      cadDrawing={...drawing};
+    }
+
+    drawing={
+      url:technicalSheet.url,
+      label:"Dessin technique · page 3",
+      type:"pdf",
+      page:3,
+      source:"zucchetti-technical-sheet-page-3"
+    };
+  }
 
   const sorted=uniqueBest(candidates).filter(x=>x.url).sort((a,b)=>{
     if(a.finishMatch!==b.finishMatch) return a.finishMatch==="exact"?-1:1;
@@ -1689,7 +2035,7 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
   // et on la renvoie directement au navigateur sous forme data URL.
   async function embedOfficialImage(item){
     if(!item) return item;
-    if(!/(?:coalbrookuk\.co\.uk|zucchettidesign\.it|assets\.zucchettidesign\.it|catalano\.it|recor\.pt)/i.test(item.url||manufacturerUrl)) return item;
+    if(!/(?:coalbrookuk\.co\.uk|zucchettidesign\.it|assets\.zucchettidesign\.it|catalano\.it|recor\.pt|hotbath\.it)/i.test(item.url||manufacturerUrl)) return item;
     try{
       const ir=await axios.get(item.url,{
         responseType:"arraybuffer",timeout:18000,maxRedirects:5,
@@ -1737,6 +2083,7 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     images:productImages,
     exactFound:!!exact,
     drawing,
+    cadDrawing,
     technicalSheet,
     installationGuide,
     candidates:sorted.slice(0,20),
@@ -1747,6 +2094,197 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
         :"Aucune photo officielle exploitable trouvée.")
   };
 }
+
+
+const hotbathWebImageCache=new Map();
+const finishSimulationCache=new Map();
+
+function hotbathFinishTarget(code){
+  const c=String(code||"").toUpperCase();
+  const map={
+    CR:{rgb:[205,207,207],strength:.74,label:"Chrome"},
+    GN:{rgb:[166,163,153],strength:.72,label:"Nickel brossé"},
+    AB:{rgb:[113,88,60],strength:.82,label:"Laiton vieilli"},
+    BB:{rgb:[166,139,86],strength:.78,label:"Laiton brossé"},
+    WH:{rgb:[232,229,220],strength:.84,label:"Blanc mat"},
+    AI:{rgb:[83,78,72],strength:.82,label:"Fer vieilli"},
+    BBP:{rgb:[181,146,69],strength:.82,label:"Laiton brossé PVD"},
+    BCP:{rgb:[151,91,67],strength:.84,label:"Cuivre brossé PVD"},
+    MBP:{rgb:[36,35,34],strength:.90,label:"Noir mat"}
+  };
+  return map[c]||null;
+}
+
+async function bingHotbathImageCandidates(reference,finishCode,finish){
+  const full=String(reference||"").replace(/\.IT$/i,"").trim();
+  const base=full.split(".")[0];
+  const code=String(finishCode||"").toUpperCase();
+  const query=[`"${full}"`,"Hotbath",code,finish||""].filter(Boolean).join(" ");
+  const searchUrl="https://www.bing.com/images/search";
+  const html=await fetchBrandPage(`${searchUrl}?q=${encodeURIComponent(query)}&form=HDRSC3`,"fr-FR,fr;q=0.9,en;q=0.7");
+  const $=cheerio.load(html);
+  const candidates=[];
+
+  $("a.iusc").each((_,el)=>{
+    const raw=$(el).attr("m")||"";
+    if(!raw)return;
+    try{
+      const m=JSON.parse(raw);
+      const image=String(m.murl||"");
+      const page=String(m.purl||"");
+      const title=String(m.t||m.desc||$(el).attr("aria-label")||"");
+      if(!/^https?:\/\//i.test(image))return;
+      const hay=normalizeToken([image,page,title].join(" "));
+      const compact=(v)=>normalizeToken(v).replace(/\s+/g,"");
+      let score=0;
+      if(compact(hay).includes(compact(full)))score+=5000;
+      if(compact(hay).includes(compact(base)))score+=1800;
+      if(code && compact(hay).includes(compact(code)))score+=1400;
+      if(finish && hay.includes(normalizeToken(finish)))score+=1000;
+      if(hay.includes("hotbath"))score+=900;
+      if(/hotbath\.it/i.test(page)||/hotbath\.it/i.test(image))score+=1500;
+      if(/pinterest|facebook|instagram|logo|icon|swatch|colour|color/i.test(image+" "+page))score-=3000;
+      candidates.push({image,page,title,score});
+    }catch{}
+  });
+
+  candidates.sort((a,b)=>b.score-a.score);
+  const checked=[];
+  for(const item of candidates.slice(0,12)){
+    if(item.score<1800)continue;
+    try{
+      const r=await axios.get(item.image,{
+        responseType:"arraybuffer",timeout:10000,maxRedirects:4,
+        validateStatus:x=>x>=200&&x<300,
+        headers:{"User-Agent":"Mozilla/5.0","Referer":item.page||"https://www.bing.com/"}
+      });
+      const ct=String(r.headers["content-type"]||"");
+      if(!ct.startsWith("image/") || !r.data || r.data.length<5000 || r.data.length>9000000)continue;
+      checked.push({...item,contentType:ct});
+      if(checked.length>=4)break;
+    }catch{}
+  }
+  return checked;
+}
+
+app.post("/api/hotbath-web-image",async(req,res)=>{
+  const reference=String(req.body?.reference||"").trim();
+  const finishCode=String(req.body?.finishCode||"").trim();
+  const finish=String(req.body?.finish||"").trim();
+  if(!reference)return res.status(400).json({error:"Référence Hotbath requise"});
+  const key=[reference,finishCode,finish].join("|").toLowerCase();
+
+  try{
+    let candidates=hotbathWebImageCache.get(key);
+    if(!candidates){
+      candidates=await bingHotbathImageCandidates(reference,finishCode,finish);
+      hotbathWebImageCache.set(key,candidates);
+    }
+    res.json({
+      reference,finishCode,finish,
+      candidates,
+      best:candidates[0]||null,
+      note:candidates.length
+        ?"Image trouvée sur le web par référence exacte. Vérification visuelle recommandée avant utilisation."
+        :"Aucune image web suffisamment fiable trouvée pour cette référence et cette finition."
+    });
+  }catch(e){
+    console.error("[hotbath-web-image]",e.message);
+    res.status(502).json({error:"Recherche web Hotbath impossible",detail:e.message});
+  }
+});
+
+app.get("/api/finish-simulation",async(req,res)=>{
+  const url=String(req.query.url||"");
+  const finish=String(req.query.finish||"").toUpperCase();
+  if(!/^https?:\/\//i.test(url))return res.status(400).send("URL image invalide");
+  const target=hotbathFinishTarget(finish);
+  if(!target)return res.status(400).send("Finition Hotbath non prise en charge");
+
+  const cacheKey=crypto.createHash("sha1").update(url+"|"+finish).digest("hex");
+  if(finishSimulationCache.has(cacheKey)){
+    const cached=finishSimulationCache.get(cacheKey);
+    res.set("Content-Type","image/jpeg");
+    res.set("Cache-Control","public, max-age=604800");
+    return res.send(cached);
+  }
+
+  try{
+    const r=await axios.get(url,{
+      responseType:"arraybuffer",timeout:18000,maxRedirects:5,
+      headers:{"User-Agent":"Mozilla/5.0","Referer":new URL(url).origin+"/"}
+    });
+    const ct=String(r.headers["content-type"]||"");
+    if(!ct.startsWith("image/"))return res.status(415).send("Ressource non image");
+
+    const {createCanvas,loadImage}=await import("@napi-rs/canvas");
+    const img=await loadImage(Buffer.from(r.data));
+    const maxDim=1800;
+    const ratio=Math.min(1,maxDim/Math.max(img.width,img.height));
+    const w=Math.max(1,Math.round(img.width*ratio));
+    const h=Math.max(1,Math.round(img.height*ratio));
+    const canvas=createCanvas(w,h);
+    const ctx=canvas.getContext("2d");
+    ctx.fillStyle="#fff";ctx.fillRect(0,0,w,h);
+    ctx.drawImage(img,0,0,w,h);
+
+    const data=ctx.getImageData(0,0,w,h);
+    const px=data.data;
+    const [tr,tg,tb]=target.rgb;
+
+    // Background estimate from four corners. This makes the simulation usable
+    // on Hotbath's light-background product photography without recolouring it.
+    const cornerAt=(x,y)=>{
+      const i=(y*w+x)*4;
+      return [px[i],px[i+1],px[i+2]];
+    };
+    const corners=[cornerAt(0,0),cornerAt(w-1,0),cornerAt(0,h-1),cornerAt(w-1,h-1)];
+    const bg=[
+      Math.round(corners.reduce((s,c)=>s+c[0],0)/4),
+      Math.round(corners.reduce((s,c)=>s+c[1],0)/4),
+      Math.round(corners.reduce((s,c)=>s+c[2],0)/4)
+    ];
+
+    for(let i=0;i<px.length;i+=4){
+      const r0=px[i],g0=px[i+1],b0=px[i+2],a=px[i+3];
+      if(a<12)continue;
+
+      const bgDist=Math.sqrt((r0-bg[0])**2+(g0-bg[1])**2+(b0-bg[2])**2);
+      const mx=Math.max(r0,g0,b0), mn=Math.min(r0,g0,b0);
+      const lum=.2126*r0+.7152*g0+.0722*b0;
+
+      // Preserve background and near-white studio areas.
+      if(bgDist<22 || (mx>242 && mn>232))continue;
+
+      // Preserve very dark contact shadows with a lighter influence.
+      const shadowFactor=lum<45?.35:1;
+      const metallic=target.strength*shadowFactor;
+
+      // Preserve the source's highlights and geometry by modulating target colour
+      // with the original luminance rather than painting a flat colour.
+      const shade=Math.max(.16,Math.min(1.34,lum/150));
+      const nr=Math.max(0,Math.min(255,tr*shade));
+      const ng=Math.max(0,Math.min(255,tg*shade));
+      const nb=Math.max(0,Math.min(255,tb*shade));
+
+      px[i]=Math.round(r0*(1-metallic)+nr*metallic);
+      px[i+1]=Math.round(g0*(1-metallic)+ng*metallic);
+      px[i+2]=Math.round(b0*(1-metallic)+nb*metallic);
+    }
+
+    ctx.putImageData(data,0,0);
+    const out=await canvas.encode("jpeg",90);
+    if(finishSimulationCache.size>80)finishSimulationCache.clear();
+    finishSimulationCache.set(cacheKey,out);
+    res.set("Content-Type","image/jpeg");
+    res.set("Cache-Control","public, max-age=604800");
+    res.set("X-Hydropolis-Simulation",target.label);
+    res.send(out);
+  }catch(e){
+    console.error("[finish-simulation]",e.message);
+    res.status(502).send("Simulation de finition impossible");
+  }
+});
 
 app.post("/api/manufacturer-image",async(req,res)=>{
   const {manufacturerUrl,reference,finishCode,finish,designation,originalDescription,collection,manufacturer}=req.body||{};
@@ -1857,9 +2395,11 @@ app.get("/api/pdf-page-image",async(req,res)=>{
       useSystemFonts:true
     });
     const pdf=await loadingTask.promise;
-    const page=await pdf.getPage(1);
+    const pageNumber=Math.max(1,Math.min(Number(pdf.numPages||1),Number.parseInt(String(req.query.page||"1"),10)||1));
+    const page=await pdf.getPage(pageNumber);
     const baseViewport=page.getViewport({scale:1});
-    const scale=Math.min(2.4, 2200/Math.max(baseViewport.width,baseViewport.height));
+    const askedScale=Math.max(1,Math.min(3.2,Number(req.query.scale||2.4)||2.4));
+    const scale=Math.min(askedScale, 2200/Math.max(baseViewport.width,baseViewport.height));
     const viewport=page.getViewport({scale});
     const canvas=createCanvas(Math.ceil(viewport.width),Math.ceil(viewport.height));
     const ctx=canvas.getContext("2d");
@@ -1903,7 +2443,7 @@ app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")))
 async function startServer(){
   try{
     await initPersistentStore();
-    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V10.0 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
+    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V10.4 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
   }catch(e){
     console.error("[Hydropolis] Démarrage impossible :",e);
     process.exit(1);
