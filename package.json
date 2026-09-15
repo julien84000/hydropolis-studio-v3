@@ -1,12 +1,12 @@
 {
   "name": "hydropolis-studio-v3",
-  "version": "9.4.0",
+  "version": "9.5.0",
   "private": true,
   "description": "Hydropolis Studio V3 - Render test server",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "build": "node -e \"console.log('Hydropolis V9.4: PostgreSQL / Supabase persistant')\""
+    "build": "node -e \"console.log('Hydropolis V9.5: accessoires optionnels uniquement si sélectionnés')\""
   },
   "engines": {
     "node": ">=20"

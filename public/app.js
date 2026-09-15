@@ -768,7 +768,13 @@ function loadState(override=null){
   }catch(e){console.warn("[loadState]",e);}
 
   if(!state.rooms?.length)state.rooms=[{id:"r1",title:"SDB MASTER",subtitle:"",manual:[]}];
-  state.rooms=state.rooms.map((r,i)=>({...r,id:r.id||`r${i+1}`,manual:Array.isArray(r.manual)?r.manual:[]}));
+  state.rooms=state.rooms.map((r,i)=>({
+    ...r,
+    id:r.id||`r${i+1}`,
+    manual:(Array.isArray(r.manual)?r.manual:[])
+      .filter(m=>m && String(m.label||"").trim())
+      .map(m=>({...m,label:String(m.label||"").trim(),price:Math.max(0,Number(m.price)||0)}))
+  }));
   state.selected=(state.selected||[]).filter(Boolean).map(p=>({...p,roomId:p.roomId||state.rooms[0].id}));
 
   if(typeof state.showClientPrices!=="boolean")state.showClientPrices=true;
@@ -1006,7 +1012,7 @@ function basinAccessorySuggestions(p,roomId){
   };
 
   return `<div class="basin-accessories">
-    <div class="basin-accessories-head"><b>Compléments lavabo assortis</b><span>Optionnels — même fabricant et même finition</span></div>
+    <div class="basin-accessories-head"><b>Compléments lavabo assortis</b><span>Suggestions uniquement — ajoutées au dossier seulement après clic sur « + Ajouter »</span></div>
     ${option("siphon",siphon)}
     ${option("bonde",bonde)}
   </div>`;
@@ -1057,7 +1063,7 @@ function recorBathOptions(p,roomId){
   return `<div class="basin-accessories recor-bath-options ${hasFeet?"":"required-missing"}">
     <div class="basin-accessories-head"><b>Pieds Recor ${hasFeet?"✓":"— choix obligatoire"}</b><span>Choisir un jeu de pieds compatible avec ${recorModelName(p)||"cette baignoire"}.</span></div>
     ${feet.length?feet.map(x=>option(x,true)).join(""):`<div class="accessory-option unavailable"><div><b>Pieds compatibles non identifiés</b><span>Vérifier le modèle Recor.</span></div></div>`}
-    <div class="basin-accessories-head recor-option-head"><b>Vidage Recor</b><span>Optionnel — uniquement les vidages compatibles.</span></div>
+    <div class="basin-accessories-head recor-option-head"><b>Vidage Recor</b><span>Suggestion optionnelle — ajoutée au dossier uniquement si sélectionnée.</span></div>
     ${wastes.length?wastes.map(x=>option(x,false)).join(""):`<div class="accessory-option unavailable"><div><b>Aucun vidage compatible identifié</b></div></div>`}
   </div>`;
 }
@@ -1395,7 +1401,7 @@ function bindCommercial(){
 function quoteRows(){
   const rows=[];
   for(const r of state.rooms){
-    const roomProducts=state.selected.filter(p=>p.roomId===r.id);
+    const roomProducts=selectedProductsForDocument(r.id);
     const grouped=new Map();
     roomProducts.forEach(p=>{
       const discount=effectiveDiscountRate(p);
@@ -1915,6 +1921,37 @@ function technicalDocumentPage(r,p,url,label,no){
   </section>`;
 }
 
+
+function isRealSelectedProduct(p){
+  if(!p || typeof p!=="object")return false;
+  // Defensive exclusions: suggestions shown in the editor must never enter the client dossier
+  // until they have actually been added to state.selected.
+  if(p.optionalSuggestion || p.suggestionOnly || p.pendingSelection || p.selected===false)return false;
+  return !!String(p.designation||p.reference||"").trim();
+}
+function selectedProductsForDocument(roomId){
+  return (state.selected||[]).filter(p=>p.roomId===roomId && isRealSelectedProduct(p));
+}
+function manualItemsForDocument(room){
+  return (room?.manual||[])
+    .filter(m=>m && String(m.label||"").trim())
+    .map((m,i)=>({
+      manual:true,
+      id:`manual-${room.id}-${i}`,
+      designation:String(m.label||"").trim(),
+      label:String(m.label||"").trim(),
+      manufacturer:"Sélection libre",
+      collection:"",
+      category:"Autres",
+      finish:"",
+      reference:"",
+      image:m.image||"",
+      images:m.image?[m.image]:[],
+      price:Math.max(0,Number(m.price)||0),
+      totalPrice:Math.max(0,Number(m.price)||0),
+      roomId:room.id
+    }));
+}
 function presentationSpace(p){
   const t=[p.category,p.designation,p.marketingDescription,p.originalDescription,p.collection]
     .filter(Boolean).join(" ").toLowerCase();
@@ -1951,7 +1988,11 @@ function presentationSpaceIntro(space){
 }
 function orderedPresentationGroups(items){
   const buckets={LAVABO:[],DOUCHE:[],BAIN:[],WC:[],AUTRES:[]};
-  items.forEach(p=>{
+  (items||[]).filter(p=>{
+    if(!p)return false;
+    if(p.manual)return !!String(p.designation||p.label||"").trim();
+    return isRealSelectedProduct(p);
+  }).forEach(p=>{
     const key=p.manual?"AUTRES":presentationSpace(p);
     (buckets[key]||buckets.AUTRES).push(p);
   });
@@ -2034,18 +2075,20 @@ function boardVisualHtml(p){
   </div>`;
 }
 function boardItemHtml(p,idx){
- const isManual=p.manufacturer==="Sélection libre";
+ const isManual=!!p.manual || p.manufacturer==="Sélection libre";
+ const designation=String(p.designation||p.label||"Élément libre").trim();
  const visual=isManual
-   ?(p.image?`<figure class="board-single-image"><img src="${p.image}" alt="${p.designation||""}" loading="eager"></figure>`:`<div class="board-image-fallback">Visuel<br>à ajouter</div>`)
+   ?(p.image?`<figure class="board-single-image"><img src="${p.image}" alt="${designation}" loading="eager"></figure>`:`<div class="board-image-fallback manual-board-fallback">Élément libre</div>`)
    :boardVisualHtml(p);
+ const priceValue=Math.max(0,Number(p.totalPrice??p.price)||0);
  return `<article class="board-item board-item-${idx+1}">
    <div class="board-visual">${visual}</div>
    <div class="board-copy">
-     <div class="board-brand">${p.manufacturer||"Sélection"}${p.collection?` · ${p.collection}`:""}</div>
-     <h3>${p.designation}</h3>
+     <div class="board-brand">${isManual?"Sélection libre":(p.manufacturer||"Sélection")}${!isManual&&p.collection?` · ${p.collection}`:""}</div>
+     <h3>${designation}</h3>
      ${p.finish?`<div class="board-finish">${p.finish}</div>`:""}
      ${state.showSupplierReferences!==false && p.reference?`<div class="board-ref">Réf. ${p.reference}</div>`:""}
-     ${state.showClientPrices!==false?`<div class="price commercial-price">${commercialPriceHtml(p.totalPrice??p.price,p)}</div>`:""}
+     ${state.showClientPrices!==false?`<div class="price commercial-price">${isManual?`${euro(priceValue)} HT`:commercialPriceHtml(p.totalPrice??p.price,p)}</div>`:""}
    </div>
  </article>`;
 }
@@ -2053,7 +2096,7 @@ function boardItemHtml(p,idx){
 
 function coverMoodboardImages(){
   const seen=new Set(), images=[];
-  for(const p of state.selected){
+  for(const p of (state.selected||[]).filter(isRealSelectedProduct)){
     const candidates=[];
     if(p.pdfImage)candidates.push(p.pdfImage);
     if(p.image)candidates.push(p.image);
@@ -2095,8 +2138,10 @@ function buildDocument(){
 </section>`,no=2;
 
  state.rooms.forEach(r=>{
-   let products=state.selected.filter(p=>p.roomId===r.id);
-   let items=[...products,...(r.manual||[]).map(m=>({manual:true,...m}))];
+   // IMPORTANT: suggestions displayed under a product are proposals only.
+   // They appear in the dossier strictly after the user clicks “Ajouter/Choisir”.
+   const products=selectedProductsForDocument(r.id);
+   const items=[...products,...manualItemsForDocument(r)];
 
    const groups=orderedPresentationGroups(items);
    if(!groups.length){

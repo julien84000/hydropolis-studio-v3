@@ -1872,3 +1872,14 @@ button,input,select,textarea{font:inherit}.shell{display:grid;grid-template-colu
   border-color:#b9d2b6;
   color:#4f6b4c;
 }
+
+/* V9.5 — dossier client : aucune suggestion optionnelle non sélectionnée */
+.manual-board-fallback{
+  display:grid;
+  place-items:center;
+  font-size:8pt;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:#8b8276;
+  background:#f5f1ea;
+}
