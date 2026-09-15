@@ -1,12 +1,12 @@
 {
   "name": "hydropolis-studio-v3",
-  "version": "11.11.0",
+  "version": "11.12.0",
   "private": true,
   "description": "Hydropolis Studio V3 - Render test server",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "build": "node -e \"console.log('Hydropolis V11.11: optional Hotbath Drawing JPG in client dossier')\""
+    "build": "node -e \"console.log('Hydropolis V11.12: Hotbath Drawing session proxy + optional inclusion')\""
   },
   "engines": {
     "node": ">=20"

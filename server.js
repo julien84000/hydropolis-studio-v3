@@ -719,7 +719,7 @@ app.post("/api/translate-product",requireAuth,async(req,res)=>{
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V11.11",
+  service:"Hydropolis Studio V11.12",
   database:USE_POSTGRES?"postgresql":"local-fallback",
   time:new Date().toISOString()
 }));
@@ -1393,7 +1393,7 @@ async function findSawidayHotbathImage(reference,finishCode,finish){
 
   let productLinks=[];
 
-  // V11.11: use Sawiday's own search endpoint first.
+  // V11.12: use Sawiday's own search endpoint first.
   // Search-engine HTML endpoints are frequently blocked from Render, while Sawiday
   // exposes a normal GET search form (tn_q) that returns the exact product page.
   const directSawidaySearchUrls=[
@@ -2243,7 +2243,7 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
 
 
 
-  // Hydropolis V11.11 — Hotbath client dossier policy:
+  // Hydropolis V11.12 — Hotbath client dossier policy:
   // keep only the official JPG from the "Drawing" section.
   // "Technical info" and "Instructions" are intentionally not surfaced
   // as dossier resources for Hotbath.
@@ -3003,6 +3003,124 @@ app.get("/api/product-image-fit",async(req,res)=>{
   }
 });
 
+
+app.get("/api/hotbath-drawing-image",async(req,res)=>{
+  const drawingUrl=String(req.query.url||"").trim();
+  const productUrl=String(req.query.productUrl||"").trim();
+
+  function isHotbathUrl(v){
+    try{
+      const u=new URL(v);
+      return /^https?:$/i.test(u.protocol) && /(^|\.)hotbath\.it$/i.test(u.hostname);
+    }catch{return false}
+  }
+
+  if(!isHotbathUrl(drawingUrl) || !isHotbathUrl(productUrl)){
+    return res.status(400).send("URL Hotbath invalide");
+  }
+
+  try{
+    const baseHeaders={
+      "User-Agent":"Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Version/17.0 Mobile/15E148 Safari/604.1",
+      "Accept-Language":"fr-FR,fr;q=0.9,en;q=0.7",
+      "Cache-Control":"no-cache"
+    };
+
+    // 1) Open the official product page first so Hotbath can establish the same
+    // session/cookies that are present when a user clicks Drawing in the browser.
+    const page=await axios.get(productUrl,{
+      timeout:18000,
+      maxRedirects:5,
+      validateStatus:s=>s>=200&&s<400,
+      headers:{
+        ...baseHeaders,
+        "Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+      }
+    });
+
+    const cookies=(page.headers?.["set-cookie"]||[])
+      .map(c=>String(c).split(";")[0])
+      .filter(Boolean)
+      .join("; ");
+
+    // Resolve the live Drawing href from the product page itself.
+    let liveDrawingUrl=drawingUrl;
+    try{
+      const $h=cheerio.load(String(page.data||""));
+      let found="";
+      $h(".attach").each((_,el)=>{
+        if(found)return;
+        const block=$h(el);
+        const title=normalizeToken(block.find(".titatt").first().text()||"");
+        if(title!=="drawing" && !/\bdrawing\b/.test(title))return;
+        block.find(".listatt a[href]").each((__,a)=>{
+          if(found)return;
+          const href=absoluteUrl(productUrl,$h(a).attr("href"));
+          if(href && /\.(?:jpe?g|png)(?:\?|$)/i.test(href))found=href;
+        });
+      });
+      if(found)liveDrawingUrl=found;
+    }catch{}
+
+    const attempts=[
+      {
+        "User-Agent":baseHeaders["User-Agent"],
+        "Accept":"image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
+        "Accept-Language":baseHeaders["Accept-Language"],
+        "Referer":productUrl,
+        ...(cookies?{"Cookie":cookies}:{})
+      },
+      {
+        "User-Agent":baseHeaders["User-Agent"],
+        "Accept":"image/*,*/*;q=0.8",
+        "Referer":productUrl
+      }
+    ];
+
+    let lastStatus=0;
+    let lastType="";
+    for(const headers of attempts){
+      try{
+        const img=await axios.get(liveDrawingUrl,{
+          responseType:"arraybuffer",
+          timeout:18000,
+          maxRedirects:5,
+          validateStatus:()=>true,
+          headers
+        });
+        lastStatus=img.status;
+        lastType=String(img.headers?.["content-type"]||"");
+        if(img.status>=200 && img.status<300 && lastType.startsWith("image/") && img.data?.byteLength>500){
+          console.log("[hotbath-drawing-image]",JSON.stringify({
+            status:img.status,
+            bytes:img.data.byteLength,
+            productUrl,
+            drawingUrl:liveDrawingUrl,
+            cookieSession:!!cookies
+          }));
+          res.set("Content-Type",lastType.split(";")[0]);
+          res.set("Cache-Control","public, max-age=86400");
+          return res.send(img.data);
+        }
+      }catch(e){
+        console.warn("[hotbath-drawing-image-attempt]",e.message);
+      }
+    }
+
+    console.warn("[hotbath-drawing-image-failed]",JSON.stringify({
+      productUrl,
+      drawingUrl:liveDrawingUrl,
+      status:lastStatus,
+      contentType:lastType,
+      cookieSession:!!cookies
+    }));
+    return res.status(502).send("Drawing Hotbath inaccessible");
+  }catch(e){
+    console.warn("[hotbath-drawing-image-page]",e.message);
+    return res.status(502).send("Drawing Hotbath inaccessible");
+  }
+});
+
 app.get("/api/image-proxy",async(req,res)=>{
   const url=req.query.url;
   if(!url||!/^https?:\/\//i.test(url)) return res.status(400).send("URL invalide");
@@ -3035,7 +3153,7 @@ app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")))
 async function startServer(){
   try{
     await initPersistentStore();
-    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.11 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
+    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.12 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
   }catch(e){
     console.error("[Hydropolis] Démarrage impossible :",e);
     process.exit(1);
