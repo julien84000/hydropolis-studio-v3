@@ -596,15 +596,15 @@ async function autoCropForPdf(src){
 
 try{
   Object.keys(localStorage).forEach(k=>{
-    if(/^hydropolis-manufacturer-/i.test(k) && k!=="hydropolis-manufacturer-v113")localStorage.removeItem(k);
+    if(/^hydropolis-manufacturer-/i.test(k) && k!=="hydropolis-manufacturer-v114")localStorage.removeItem(k);
   });
 }catch(e){}
 let manufacturerImageCache={};
-try{manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v113")||"{}")||{};}catch(e){manufacturerImageCache={};}
+try{manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v114")||"{}")||{};}catch(e){manufacturerImageCache={};}
 function manufacturerCacheKey(p){return `${p.manufacturer}|${p.reference}`;}
 function saveManufacturerCache(){
   try{
-    localStorage.setItem("hydropolis-manufacturer-v113",JSON.stringify(manufacturerImageCache));
+    localStorage.setItem("hydropolis-manufacturer-v114",JSON.stringify(manufacturerImageCache));
   }catch(e){
     console.warn("[Hydropolis cache] quota dépassé, cache vidé",e);
     manufacturerImageCache={};
@@ -755,16 +755,21 @@ async function useHotbathWebImageForCatalog(reference,button){
     const key=manufacturerCacheKey(p);
     const current=manufacturerImageCache[key]||{};
     const proxied=`/api/image-proxy?url=${encodeURIComponent(data.best.image)}`;
+    const isSawiday=data.best.source==="sawiday-exact-finish";
     manufacturerImageCache[key]={
       ...current,
       src:proxied,
       images:[proxied],
       remoteUrl:data.best.image,
       remoteImages:[data.best.image],
-      finishMatch:"web",
-      source:"Recherche web par référence exacte",
+      finishMatch:isSawiday?"exact":"web",
+      sourceKind:isSawiday?"sawiday-exact-finish":"web-search",
+      source:isSawiday?`Source secondaire Sawiday · finition ${p.finish}`:"Recherche web par référence exacte",
+      secondarySourceUrl:isSawiday?(data.best.page||""):"",
       webSourcePage:data.best.page||"",
-      note:"Image web trouvée par référence exacte · finition à vérifier visuellement."
+      note:isSawiday
+        ?`Référence fournisseur exacte ${data.best.supplierRef||""} vérifiée sur Sawiday.`
+        :"Image web trouvée par référence exacte · finition à vérifier visuellement."
     };
     saveManufacturerCache();renderCatalog();
   }catch(e){alert(e.message)}
@@ -796,10 +801,15 @@ async function useHotbathWebImageForProduct(id,button){
     const proxied=`/api/image-proxy?url=${encodeURIComponent(data.best.image)}`;
     p.image=proxied;p.images=[proxied];p.pdfImage=proxied;p.pdfImages=[proxied];
     p.remoteImageUrl=data.best.image;p.remoteImages=[data.best.image];
-    p.imageSource="Recherche web par référence exacte";
-    p.imageFinishMatch="web";
+    const isSawiday=data.best.source==="sawiday-exact-finish";
+    p.imageSource=isSawiday?`Source secondaire Sawiday · finition ${p.finish}`:"Recherche web par référence exacte";
+    p.imageSourceKind=isSawiday?"sawiday-exact-finish":"web-search";
+    p.secondarySourceUrl=isSawiday?(data.best.page||""):"";
+    p.imageFinishMatch=isSawiday?"exact":"web";
     p.imageSimulation=false;
-    p.imageNote="Image web trouvée par référence exacte · finition à vérifier visuellement.";
+    p.imageNote=isSawiday
+      ?`Référence fournisseur exacte ${data.best.supplierRef||""} vérifiée sur Sawiday.`
+      :"Image web trouvée par référence exacte · finition à vérifier visuellement.";
     p.webImageSourcePage=data.best.page||"";
     p.customImage=false;
     saveState();renderRooms();renderSelection();
