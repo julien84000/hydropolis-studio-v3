@@ -719,7 +719,7 @@ app.post("/api/translate-product",requireAuth,async(req,res)=>{
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V11.9",
+  service:"Hydropolis Studio V11.11",
   database:USE_POSTGRES?"postgresql":"local-fallback",
   time:new Date().toISOString()
 }));
@@ -1393,7 +1393,7 @@ async function findSawidayHotbathImage(reference,finishCode,finish){
 
   let productLinks=[];
 
-  // V11.9: use Sawiday's own search endpoint first.
+  // V11.11: use Sawiday's own search endpoint first.
   // Search-engine HTML endpoints are frequently blocked from Render, while Sawiday
   // exposes a normal GET search form (tn_q) that returns the exact product page.
   const directSawidaySearchUrls=[
@@ -2243,7 +2243,7 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
 
 
 
-  // Hydropolis V11.9 — Hotbath client dossier policy:
+  // Hydropolis V11.11 — Hotbath client dossier policy:
   // keep only the official JPG from the "Drawing" section.
   // "Technical info" and "Instructions" are intentionally not surfaced
   // as dossier resources for Hotbath.
@@ -3035,7 +3035,7 @@ app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")))
 async function startServer(){
   try{
     await initPersistentStore();
-    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.9 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
+    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.11 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
   }catch(e){
     console.error("[Hydropolis] Démarrage impossible :",e);
     process.exit(1);

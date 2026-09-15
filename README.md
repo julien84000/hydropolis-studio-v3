@@ -1,28 +1,19 @@
-# Hydropolis Studio V11.9
+# Hydropolis Studio V11.11
 
-## Correctif dossier client Hotbath — Drawing JPG
+## Hotbath — choix utilisateur pour le dessin technique
 
-La V11.8 avait bien supprimé les notices et Technical info Hotbath, mais un produit
-déjà ajouté au projet pouvait ne pas avoir encore son `drawingUrl` dans l'état du projet.
-Le catalogue connaissait le dessin, mais le dossier client ne le récupérait pas
-automatiquement.
+La V11.10 avait volontairement forcé le Drawing JPG Hotbath dans le dossier client
+pour résoudre le problème d'affichage. Cette version rétablit la règle métier correcte :
 
-### V11.9
+- Hydropolis récupère automatiquement le **Drawing JPG officiel Hotbath** ;
+- le lien reste visible dans la fiche produit ;
+- une case **« Inclure le dessin technique dans le dossier client »** permet de décider
+  article par article s'il doit apparaître dans le dossier ;
+- la case est **décochée par défaut pour les nouveaux produits** ;
+- le choix est sauvegardé avec le projet ;
+- décocher la case supprime la page Drawing du dossier client ;
+- cocher la case l'ajoute ;
+- le chargement direct Hotbath + fallback proxy de V11.10 est conservé.
 
-- lorsqu'on ouvre **Projet par pièce**, Hydropolis récupère en arrière-plan les Drawing JPG
-  Hotbath manquants ;
-- lorsqu'on ouvre **Présentation client**, le dossier est affiché immédiatement puis
-  Hydropolis récupère les Drawing JPG manquants et reconstruit automatiquement le dossier ;
-- un Drawing JPG Hotbath présent est automatiquement marqué `includeDrawing=true` ;
-- les anciennes options Technical info et Notice d'installation restent supprimées ;
-- le proxy image transmet maintenant la fiche produit Hotbath comme `Referer`, pour fiabiliser
-  le chargement du JPG dans l'aperçu et l'export ;
-- les logs `manufacturer-image` affichent maintenant `drawingUrl` et `drawingType`.
-
-### Règle Hotbath finale
-
-Dans le dossier client :
-- photo du produit ;
-- **Dessin technique officiel JPG issu de l'onglet Drawing** ;
-- aucune notice d'installation ;
-- aucune page Technical info.
+Pour Hotbath, `Technical info` et `Instructions` restent exclus du dossier client.
+Seul le Drawing JPG peut être inclus, sur choix de l'utilisateur.
