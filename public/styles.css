@@ -2408,3 +2408,14 @@ label{font-size:10px;color:#74716c;font-weight:600}
     min-height:122px!important;
   }
 }
+
+/* V11.2 — robustesse images Hotbath */
+.result.v11-product-card .catalog-thumb{
+  overflow:hidden!important;
+}
+.result.v11-product-card .catalog-thumb img{
+  display:block!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  margin:auto!important;
+}
