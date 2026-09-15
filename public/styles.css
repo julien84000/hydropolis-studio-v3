@@ -1883,3 +1883,8 @@ button,input,select,textarea{font:inherit}.shell{display:grid;grid-template-colu
   color:#8b8276;
   background:#f5f1ea;
 }
+
+/* V9.7 — nettoyage des anciens doublons d'éléments libres */
+.manual-zone .manual-item{
+  background:#fffdf9;
+}

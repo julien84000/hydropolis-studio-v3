@@ -147,6 +147,20 @@ async function openCloudProject(id){
     applyProjectState(data.project.data||{});
     saveState();
     await hydrateCustomAssets();
+
+    if(manualCleanupPending && cloud.currentProjectId){
+      try{
+        await apiFetch(`/api/projects/${encodeURIComponent(cloud.currentProjectId)}`,{
+          method:"PUT",
+          body:JSON.stringify({name:state.project.name||"Projet",data:compactStateForCloud()})
+        });
+        console.info("[Hydropolis] doublons historiques nettoyés et projet serveur corrigé.");
+      }catch(e){
+        console.warn("[manual cleanup save]",e);
+      }
+      manualCleanupPending=false;
+    }
+
     cloud.dirty=false;
     renderRoomSelect();bindProject();bindCommercial();renderSelection();renderRooms();renderCatalog();
     updateCloudStatus();
@@ -801,6 +815,10 @@ function loadState(override=null){
     if(p.catalogPrice===undefined || p.catalogPrice===null)p.catalogPrice=Number(p.price||0);
     if(typeof p.customTechnicalSheet!=="boolean")p.customTechnicalSheet=false;
   });
+
+  const cleaned=purgeDuplicateManualItems();
+  manualCleanupPending=cleaned>0;
+  if(cleaned)console.info(`[Hydropolis] ${cleaned} ancien(s) doublon(s) « élément libre » supprimé(s).`);
 }
 function saveState(){
   const compact={
@@ -1281,10 +1299,66 @@ function supplierDiscountRate(manufacturer){
   return clampPercent(state.commercial?.supplierDiscounts?.[manufacturer]||0);
 }
 function selectedCatalogTotal(){
-  return state.selected.reduce((sum,p)=>sum+articleListTotal(p),0);
+  return (state.selected||[]).filter(isRealSelectedProduct).reduce((sum,p)=>sum+articleListTotal(p),0);
 }
+
+let manualCleanupPending=false;
+
+function comparableManualText(v){
+  return String(v||"")
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g," ")
+    .trim()
+    .replace(/\s+/g," ");
+}
+function manualItemDuplicatesSelectedProduct(room,m){
+  if(!room || !m || !String(m.label||"").trim())return false;
+  const label=comparableManualText(m.label);
+  const manualPrice=Math.max(0,Number(m.price)||0);
+  const products=(state.selected||[]).filter(p=>p.roomId===room.id);
+
+  return products.some(p=>{
+    const names=[p.designation,p.originalDesignation]
+      .map(comparableManualText).filter(Boolean);
+    if(!names.includes(label))return false;
+
+    const freight=Math.max(0,Number(p.mandatoryFreight)||0);
+    const priceCandidates=[
+      Number(p.priceOverride),
+      Number(p.totalPrice),
+      Number(p.catalogTotalPrice),
+      Number(p.price),
+      Number(p.catalogPrice)
+    ].filter(Number.isFinite).map(x=>Math.max(0,x));
+
+    if(freight){
+      priceCandidates.push(...priceCandidates.map(x=>Math.max(0,x-freight)));
+    }
+    return priceCandidates.some(x=>Math.abs(x-manualPrice)<0.02);
+  });
+}
+function validManualItemsForRoom(room){
+  return (room?.manual||[]).filter(m=>
+    m && String(m.label||"").trim() && !manualItemDuplicatesSelectedProduct(room,m)
+  );
+}
+function purgeDuplicateManualItems(){
+  let removed=0;
+  for(const room of state.rooms||[]){
+    const before=Array.isArray(room.manual)?room.manual:[];
+    const clean=before.filter(m=>{
+      const keep=m && String(m.label||"").trim() && !manualItemDuplicatesSelectedProduct(room,m);
+      if(!keep)removed++;
+      return keep;
+    });
+    room.manual=clean;
+  }
+  return removed;
+}
+
 function selectedManualTotal(){
-  return (state.rooms||[]).reduce((sum,r)=>sum+(r.manual||[]).reduce((s,m)=>s+Number(m.price||0),0),0);
+  return (state.rooms||[]).reduce((sum,r)=>sum+validManualItemsForRoom(r).reduce((s,m)=>s+Number(m.price||0),0),0);
 }
 function quoteSubtotal(){
   return selectedCatalogTotal()+selectedManualTotal();
@@ -1302,14 +1376,14 @@ function purchaseCostFor(p){
   return catalogPurchaseBase(p)*(1-purchaseDiscountFor(p)/100)+freight;
 }
 function projectPurchaseCost(){
-  return state.selected.reduce((sum,p)=>sum+purchaseCostFor(p),0);
+  return (state.selected||[]).filter(isRealSelectedProduct).reduce((sum,p)=>sum+purchaseCostFor(p),0);
 }
 function projectFinancials(){
   const productList=selectedCatalogTotal();
   const manualList=selectedManualTotal();
   const list=productList+manualList;
 
-  const productsNet=state.selected.reduce((sum,p)=>sum+effectiveSaleValue(p),0);
+  const productsNet=(state.selected||[]).filter(isRealSelectedProduct).reduce((sum,p)=>sum+effectiveSaleValue(p),0);
   const manualNet=manualList*(1-clientDiscountRate()/100);
   const netBeforeShipping=productsNet+manualNet;
   const discountAmount=list-netBeforeShipping;
@@ -1444,7 +1518,7 @@ function quoteRows(){
       });
     }
     const mg=new Map();
-    (r.manual||[]).forEach(m=>{
+    validManualItemsForRoom(r).forEach(m=>{
       const leadTime=String(m.leadTime||"").trim();
       const key=[m.label,Number(m.price||0),leadTime].join("|");
       if(!mg.has(key)) mg.set(key,{...m,qty:0});
@@ -1594,7 +1668,7 @@ function renderRoomsCore(){
       </div>`).join(""):`<div class="room-empty">Aucun produit catalogue dans cette pièce.</div>`}</div>
    <div class="manual-zone"><b>Éléments libres de la pièce</b><div class="tech">Pour mobilier sur mesure, miroir, peinture, pose, décoration ou produit non encore référencé.</div>
       <div class="manual-add"><input class="manual-label" data-id="${r.id}" placeholder="Ex. Meuble vasque sur mesure"><input class="manual-price" data-id="${r.id}" type="number" step="0.01" placeholder="Prix HT"><button class="btn ghost manual-btn" data-id="${r.id}">Ajouter</button></div>
-      <div class="manual-list">${(r.manual||[]).map((m,mi)=>`<div class="manual-item"><span>${m.label}</span><b>${euro(m.price)} HT</b><button class="icon del-manual" data-room="${r.id}" data-i="${mi}">×</button></div>`).join("")}</div>
+      <div class="manual-list">${validManualItemsForRoom(r).map(m=>{const mi=(r.manual||[]).indexOf(m);return `<div class="manual-item"><span>${m.label}</span><b>${euro(m.price)} HT</b><button class="icon del-manual" data-room="${r.id}" data-i="${mi}">×</button></div>`}).join("")}</div>
    </div></article>`;}).join("");
  $$(".room-title").forEach(x=>x.oninput=()=>{roomById(x.dataset.id).title=x.value;saveState();renderRoomSelect();renderSelection();});
  $$(".room-sub").forEach(x=>x.oninput=()=>{roomById(x.dataset.id).subtitle=x.value;saveState();});
@@ -1724,7 +1798,21 @@ function renderRoomsCore(){
      saveState();renderRooms();renderSelection();
    }catch(err){console.warn("[prod-file]",err)}
  });
- $$(".manual-btn").forEach(b=>b.onclick=()=>{let id=b.dataset.id, card=b.closest(".room-card"), lab=$(".manual-label",card).value.trim(), price=parseFloat($(".manual-price",card).value||0);if(!lab)return;let r=roomById(id);r.manual=r.manual||[];r.manual.push({label:lab,price});saveState();renderRooms();renderMarginDashboard();});
+ $$(".manual-btn").forEach(b=>b.onclick=()=>{
+   const id=b.dataset.id,card=b.closest(".room-card");
+   const lab=$(".manual-label",card).value.trim();
+   const price=Math.max(0,parseFloat($(".manual-price",card).value||0)||0);
+   if(!lab)return;
+   const r=roomById(id);if(!r)return;
+   const probe={label:lab,price};
+   if(manualItemDuplicatesSelectedProduct(r,probe)){
+     alert("Cet article est déjà présent dans les produits catalogue de cette pièce. Il n'est pas ajouté une seconde fois comme élément libre.");
+     return;
+   }
+   r.manual=r.manual||[];
+   r.manual.push({label:lab,price});
+   saveState();renderRooms();renderMarginDashboard();
+ });
  $$(".del-manual").forEach(b=>b.onclick=()=>{roomById(b.dataset.room).manual.splice(+b.dataset.i,1);saveState();renderRooms();renderMarginDashboard();});
 }
 
@@ -1954,8 +2042,7 @@ function selectedProductsForDocument(roomId){
   return (state.selected||[]).filter(p=>p.roomId===roomId && isRealSelectedProduct(p));
 }
 function manualItemsForDocument(room){
-  return (room?.manual||[])
-    .filter(m=>m && String(m.label||"").trim())
+  return validManualItemsForRoom(room)
     .map((m,i)=>({
       manual:true,
       id:`manual-${room.id}-${i}`,
