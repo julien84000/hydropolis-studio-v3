@@ -2,6 +2,351 @@
 const CATALOG=[{"manufacturer":"Amphora","collection":"REEL","reference":"RE001.BB","base":"RE001","designation":"Mitigeur progressif pour lavabo, montage sur plan","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":565.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":565.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE001.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re001/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE001.BC","base":"RE001","designation":"Mitigeur progressif pour lavabo, montage sur plan","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":565.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":565.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE001.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re001/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE001.BS","base":"RE001","designation":"Mitigeur progressif pour lavabo, montage sur plan","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":390.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":390.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE001.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re001/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE001H.BB","base":"RE001H","designation":"Mitigeur progressif haut pour lavabo, montage sur plan","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":595.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":595.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE001H.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re001h/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE001H.BC","base":"RE001H","designation":"Mitigeur progressif haut pour lavabo, montage sur plan","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":595.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":595.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE001H.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re001h/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE001H.BS","base":"RE001H","designation":"Mitigeur progressif haut pour lavabo, montage sur plan","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":410.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":410.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE001H.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re001h/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE002.EXT.BB","base":"RE002","designation":"Mitigeur progressif mural pour lavabo","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":585.0,"currency":"€","vat":"HT","internalReference":"INT.01","internalPrice":125.0,"totalPrice":710.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE002.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re002/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE002.EXT.BC","base":"RE002","designation":"Mitigeur progressif mural pour lavabo","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":585.0,"currency":"€","vat":"HT","internalReference":"INT.01","internalPrice":125.0,"totalPrice":710.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE002.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re002/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE002.EXT.BS","base":"RE002","designation":"Mitigeur progressif mural pour lavabo","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":410.0,"currency":"€","vat":"HT","internalReference":"INT.01","internalPrice":125.0,"totalPrice":535.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE002.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re002/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE002L.EXT.BB","base":"RE002L","designation":"Mitigeur progressif mural pour lavabo, bec long","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":605.0,"currency":"€","vat":"HT","internalReference":"INT.01","internalPrice":125.0,"totalPrice":730.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE002L.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re002l/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE002L.EXT.BC","base":"RE002L","designation":"Mitigeur progressif mural pour lavabo, bec long","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":605.0,"currency":"€","vat":"HT","internalReference":"INT.01","internalPrice":125.0,"totalPrice":730.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE002L.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re002l/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE002L.EXT.BS","base":"RE002L","designation":"Mitigeur progressif mural pour lavabo, bec long","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":420.0,"currency":"€","vat":"HT","internalReference":"INT.01","internalPrice":125.0,"totalPrice":545.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE002L.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re002l/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE003.EXT.BB","base":"RE003","designation":"Mitigeur mural pour lavabo","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":655.0,"currency":"€","vat":"HT","internalReference":"INT.01","internalPrice":125.0,"totalPrice":780.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE003.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re003/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE003.EXT.BC","base":"RE003","designation":"Mitigeur mural pour lavabo","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":655.0,"currency":"€","vat":"HT","internalReference":"INT.01","internalPrice":125.0,"totalPrice":780.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE003.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re003/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE003.EXT.BS","base":"RE003","designation":"Mitigeur mural pour lavabo","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":465.0,"currency":"€","vat":"HT","internalReference":"INT.01","internalPrice":125.0,"totalPrice":590.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE003.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re003/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE003L.EXT.BB","base":"RE003L","designation":"Mitigeur mural pour lavabo, bec long","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":680.0,"currency":"€","vat":"HT","internalReference":"INT.01","internalPrice":125.0,"totalPrice":805.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE003L.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re003l/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE003L.EXT.BC","base":"RE003L","designation":"Mitigeur mural pour lavabo, bec long","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":680.0,"currency":"€","vat":"HT","internalReference":"INT.01","internalPrice":125.0,"totalPrice":805.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE003L.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re003l/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE003L.EXT.BS","base":"RE003L","designation":"Mitigeur mural pour lavabo, bec long","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":475.0,"currency":"€","vat":"HT","internalReference":"INT.01","internalPrice":125.0,"totalPrice":600.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE003L.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re003l/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE004.BB","base":"RE004","designation":"Mitigeur pour lavabo, montage sur plan","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":725.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":725.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE004.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re004/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE004.BC","base":"RE004","designation":"Mitigeur pour lavabo, montage sur plan","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":725.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":725.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE004.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re004/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE004.BS","base":"RE004","designation":"Mitigeur pour lavabo, montage sur plan","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":510.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":510.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE004.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re004/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE004H.BB","base":"RE004H","designation":"Mitigeur haut pour lavabo, montage sur plan","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":760.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":760.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE004H.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re004h/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE004H.BC","base":"RE004H","designation":"Mitigeur haut pour lavabo, montage sur plan","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":760.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":760.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE004H.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re004h/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE004H.BS","base":"RE004H","designation":"Mitigeur haut pour lavabo, montage sur plan","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":530.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":530.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE004H.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re004h/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE005.BB","base":"RE005","designation":"Mélangeur 3 trous pour lavabo, montage sur gorge","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":995.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":995.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE005.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re005/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE005.BC","base":"RE005","designation":"Mélangeur 3 trous pour lavabo, montage sur gorge","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":995.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":995.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE005.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re005/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE005.BS","base":"RE005","designation":"Mélangeur 3 trous pour lavabo, montage sur gorge","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":690.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":690.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE005.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re005/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE006.EXT.BB","base":"RE006","designation":"Mitigeur mural","finishCode":"BB","finish":"Noir brossé PVD","category":"Douche","price":440.0,"currency":"€","vat":"HT","internalReference":"INT.01","internalPrice":125.0,"totalPrice":565.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE006.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re006/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE006.EXT.BC","base":"RE006","designation":"Mitigeur mural","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Douche","price":440.0,"currency":"€","vat":"HT","internalReference":"INT.01","internalPrice":125.0,"totalPrice":565.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE006.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re006/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE006.EXT.BS","base":"RE006","designation":"Mitigeur mural","finishCode":"BS","finish":"Acier brossé","category":"Douche","price":335.0,"currency":"€","vat":"HT","internalReference":"INT.01","internalPrice":125.0,"totalPrice":460.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE006.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re006/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE007.EXT.BB","base":"RE007","designation":"Inverseur mural 2 voies","finishCode":"BB","finish":"Noir brossé PVD","category":"Douche","price":440.0,"currency":"€","vat":"HT","internalReference":"INT.03","internalPrice":125.0,"totalPrice":565.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE007.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re007/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE007.EXT.BC","base":"RE007","designation":"Inverseur mural 2 voies","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Douche","price":440.0,"currency":"€","vat":"HT","internalReference":"INT.03","internalPrice":125.0,"totalPrice":565.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE007.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re007/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE007.EXT.BS","base":"RE007","designation":"Inverseur mural 2 voies","finishCode":"BS","finish":"Acier brossé","category":"Douche","price":335.0,"currency":"€","vat":"HT","internalReference":"INT.03","internalPrice":125.0,"totalPrice":460.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE007.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re007/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE008.BB","base":"RE008","designation":"Mitigeur progressif pour bidet","finishCode":"BB","finish":"Noir brossé PVD","category":"Bidet","price":630.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":630.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE008.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re008/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE008.BC","base":"RE008","designation":"Mitigeur progressif pour bidet","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Bidet","price":630.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":630.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE008.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re008/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE008.BS","base":"RE008","designation":"Mitigeur progressif pour bidet","finishCode":"BS","finish":"Acier brossé","category":"Bidet","price":440.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":440.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE008.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re008/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE009.EXT.BB","base":"RE009","designation":"Inverseur mural 2 voies","finishCode":"BB","finish":"Noir brossé PVD","category":"Douche","price":415.0,"currency":"€","vat":"HT","internalReference":"INT.03","internalPrice":125.0,"totalPrice":540.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE009.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re009/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE009.EXT.BC","base":"RE009","designation":"Inverseur mural 2 voies","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Douche","price":415.0,"currency":"€","vat":"HT","internalReference":"INT.03","internalPrice":125.0,"totalPrice":540.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE009.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re009/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE009.EXT.BS","base":"RE009","designation":"Inverseur mural 2 voies","finishCode":"BS","finish":"Acier brossé","category":"Douche","price":320.0,"currency":"€","vat":"HT","internalReference":"INT.03","internalPrice":125.0,"totalPrice":445.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE009.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re009/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE010.EXT.BB","base":"RE010","designation":"Robinet d'arrêt mural","finishCode":"BB","finish":"Noir brossé PVD","category":"Accessoires","price":370.0,"currency":"€","vat":"HT","internalReference":"INT.02","internalPrice":160.0,"totalPrice":530.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE010.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re010/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE010.EXT.BC","base":"RE010","designation":"Robinet d'arrêt mural","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Accessoires","price":370.0,"currency":"€","vat":"HT","internalReference":"INT.02","internalPrice":160.0,"totalPrice":530.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE010.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re010/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE010.EXT.BS","base":"RE010","designation":"Robinet d'arrêt mural","finishCode":"BS","finish":"Acier brossé","category":"Accessoires","price":275.0,"currency":"€","vat":"HT","internalReference":"INT.02","internalPrice":160.0,"totalPrice":435.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE010.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re010/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE011.EXT.BB","base":"RE011","designation":"Mitigeur progressif mural","finishCode":"BB","finish":"Noir brossé PVD","category":"Accessoires","price":415.0,"currency":"€","vat":"HT","internalReference":"INT.01","internalPrice":125.0,"totalPrice":540.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE011.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re011/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE011.EXT.BC","base":"RE011","designation":"Mitigeur progressif mural","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Accessoires","price":415.0,"currency":"€","vat":"HT","internalReference":"INT.01","internalPrice":125.0,"totalPrice":540.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE011.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re011/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE011.EXT.BS","base":"RE011","designation":"Mitigeur progressif mural","finishCode":"BS","finish":"Acier brossé","category":"Accessoires","price":320.0,"currency":"€","vat":"HT","internalReference":"INT.01","internalPrice":125.0,"totalPrice":445.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE011.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re011/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE012.EXT.BB","base":"RE012","designation":"Mélangeur 3 trous mural pour lavabo","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":950.0,"currency":"€","vat":"HT","internalReference":"INT.04","internalPrice":320.0,"totalPrice":1270.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE012.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re012/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE012.EXT.BC","base":"RE012","designation":"Mélangeur 3 trous mural pour lavabo","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":950.0,"currency":"€","vat":"HT","internalReference":"INT.04","internalPrice":320.0,"totalPrice":1270.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE012.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re012/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE012.EXT.BS","base":"RE012","designation":"Mélangeur 3 trous mural pour lavabo","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":680.0,"currency":"€","vat":"HT","internalReference":"INT.04","internalPrice":320.0,"totalPrice":1000.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE012.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re012/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE012L.EXT.BB","base":"RE012L","designation":"Mélangeur 3 trous mural pour lavabo, bec long","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":975.0,"currency":"€","vat":"HT","internalReference":"INT.04","internalPrice":320.0,"totalPrice":1295.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE012L.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re012l/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE012L.EXT.BC","base":"RE012L","designation":"Mélangeur 3 trous mural pour lavabo, bec long","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":975.0,"currency":"€","vat":"HT","internalReference":"INT.04","internalPrice":320.0,"totalPrice":1295.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE012L.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re012l/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE012L.EXT.BS","base":"RE012L","designation":"Mélangeur 3 trous mural pour lavabo, bec long","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":670.0,"currency":"€","vat":"HT","internalReference":"INT.04","internalPrice":320.0,"totalPrice":990.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE012L.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re012l/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE013.BB","base":"RE013","designation":"Bec déverseur mural pour lavabo","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":220.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":220.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE013.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re013/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE013.BC","base":"RE013","designation":"Bec déverseur mural pour lavabo","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":220.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":220.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE013.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re013/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE013.BS","base":"RE013","designation":"Bec déverseur mural pour lavabo","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":135.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":135.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE013.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re013/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE013L.BB","base":"RE013L","designation":"Bec déverseur mural pour lavabo et baignoire","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":245.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":245.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE013L.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re013l/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE013L.BC","base":"RE013L","designation":"Bec déverseur mural pour lavabo et baignoire","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":245.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":245.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE013L.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re013l/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE013L.BS","base":"RE013L","designation":"Bec déverseur mural pour lavabo et baignoire","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":145.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":145.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE013L.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re013l/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE014.BB","base":"RE014","designation":"Bec déverseur pour lavabo, montage sur plan","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":250.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":250.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE014.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re014/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE014.BC","base":"RE014","designation":"Bec déverseur pour lavabo, montage sur plan","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":250.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":250.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE014.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re014/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE014.BS","base":"RE014","designation":"Bec déverseur pour lavabo, montage sur plan","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":175.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":175.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE014.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re014/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE014H.BB","base":"RE014H","designation":"Bec déverseur haut pour lavabo, montage sur plan","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":285.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":285.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE014H.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re014h/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE014H.BC","base":"RE014H","designation":"Bec déverseur haut pour lavabo, montage sur plan","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":285.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":285.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE014H.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re014h/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE014H.BS","base":"RE014H","designation":"Bec déverseur haut pour lavabo, montage sur plan","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":195.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":195.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE014H.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re014h/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE015.BB","base":"RE015","designation":"Ensemble bain sur gorge avec 2 mitigeurs, bec et douchette","finishCode":"BB","finish":"Noir brossé PVD","category":"Baignoire","price":1850.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1850.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE015.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re015/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE015.BC","base":"RE015","designation":"Ensemble bain sur gorge avec 2 mitigeurs, bec et douchette","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Baignoire","price":1850.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1850.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE015.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re015/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE015.BS","base":"RE015","designation":"Ensemble bain sur gorge avec 2 mitigeurs, bec et douchette","finishCode":"BS","finish":"Acier brossé","category":"Baignoire","price":1495.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1495.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE015.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re015/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE016.BB","base":"RE016","designation":"Robinet poussoir avec douchette pour WC","finishCode":"BB","finish":"Noir brossé PVD","category":"WC","price":705.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":705.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE016.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re016/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE016.BC","base":"RE016","designation":"Robinet poussoir avec douchette pour WC","finishCode":"BC","finish":"Cuivre brossé PVD","category":"WC","price":705.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":705.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE016.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re016/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE016.BS","base":"RE016","designation":"Robinet poussoir avec douchette pour WC","finishCode":"BS","finish":"Acier brossé","category":"WC","price":535.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":535.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE016.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re016/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE017.BB","base":"RE017","designation":"Ensemble bain sur gorge avec 2 mitigeurs et douchette","finishCode":"BB","finish":"Noir brossé PVD","category":"Baignoire","price":1600.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1600.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE017.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re017/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE017.BC","base":"RE017","designation":"Ensemble bain sur gorge avec 2 mitigeurs et douchette","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Baignoire","price":1600.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1600.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE017.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re017/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE017.BS","base":"RE017","designation":"Ensemble bain sur gorge avec 2 mitigeurs et douchette","finishCode":"BS","finish":"Acier brossé","category":"Baignoire","price":1320.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1320.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE017.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re017/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE018.EXT.BB","base":"RE018","designation":"Colonne de bain au sol avec 2 mitigeurs, bec et douchette magnétique","finishCode":"BB","finish":"Noir brossé PVD","category":"Baignoire","price":4370.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":4370.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE018.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re018/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE018.EXT.BC","base":"RE018","designation":"Colonne de bain au sol avec 2 mitigeurs, bec et douchette magnétique","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Baignoire","price":4370.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":4370.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE018.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re018/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE018.EXT.BS","base":"RE018","designation":"Colonne de bain au sol avec 2 mitigeurs, bec et douchette magnétique","finishCode":"BS","finish":"Acier brossé","category":"Baignoire","price":3340.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":3340.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE018.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re018/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE019.EXT.BB","base":"RE019","designation":"Mitigeur mural de baignoire avec bec au sol","finishCode":"BB","finish":"Noir brossé PVD","category":"Baignoire","price":1785.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1785.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE019.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re019/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE019.EXT.BC","base":"RE019","designation":"Mitigeur mural de baignoire avec bec au sol","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Baignoire","price":1785.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1785.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE019.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re019/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE019.EXT.BS","base":"RE019","designation":"Mitigeur mural de baignoire avec bec au sol","finishCode":"BS","finish":"Acier brossé","category":"Baignoire","price":1225.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1225.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE019.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re019/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE020.BB","base":"RE020","designation":"Mitigeur pour lavabo","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":505.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":505.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE020.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re020/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE020.BC","base":"RE020","designation":"Mitigeur pour lavabo","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":505.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":505.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE020.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re020/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE020.BS","base":"RE020","designation":"Mitigeur pour lavabo","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":315.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":315.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE020.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re020/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE020H.BB","base":"RE020H","designation":"Mitigeur haut pour lavabo","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":605.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":605.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE020H.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re020h/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE020H.BC","base":"RE020H","designation":"Mitigeur haut pour lavabo","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":605.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":605.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE020H.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re020h/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE020H.BS","base":"RE020H","designation":"Mitigeur haut pour lavabo","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":395.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":395.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE020H.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re020h/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE020M.BB","base":"RE020M","designation":"Mitigeur moyen pour lavabo","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":580.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":580.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE020M.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re020m/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE020M.BC","base":"RE020M","designation":"Mitigeur moyen pour lavabo","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":580.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":580.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE020M.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re020m/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE020M.BS","base":"RE020M","designation":"Mitigeur moyen pour lavabo","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":380.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":380.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE020M.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re020m/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE021.BB","base":"RE021","designation":"Mitigeur pour bidet","finishCode":"BB","finish":"Noir brossé PVD","category":"Bidet","price":605.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":605.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE021.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re021/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE021.BC","base":"RE021","designation":"Mitigeur pour bidet","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Bidet","price":605.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":605.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE021.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re021/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE021.BS","base":"RE021","designation":"Mitigeur pour bidet","finishCode":"BS","finish":"Acier brossé","category":"Bidet","price":410.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":410.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE021.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re021/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE022.EXT.BB","base":"RE022","designation":"Mitigeur progressif pour lavabo sur colonne au sol","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":1610.0,"currency":"€","vat":"HT","internalReference":"INT.05","internalPrice":175.0,"totalPrice":1785.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE022.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re022/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE022.EXT.BC","base":"RE022","designation":"Mitigeur progressif pour lavabo sur colonne au sol","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":1610.0,"currency":"€","vat":"HT","internalReference":"INT.05","internalPrice":175.0,"totalPrice":1785.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE022.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re022/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE022.EXT.BS","base":"RE022","designation":"Mitigeur progressif pour lavabo sur colonne au sol","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":1045.0,"currency":"€","vat":"HT","internalReference":"INT.05","internalPrice":175.0,"totalPrice":1220.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE022.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re022/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE024.BB","base":"RE024","designation":"Bec colonne au sol pour baignoire","finishCode":"BB","finish":"Noir brossé PVD","category":"Baignoire","price":1345.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1345.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE024.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re024/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE024.BC","base":"RE024","designation":"Bec colonne au sol pour baignoire","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Baignoire","price":1345.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1345.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE024.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re024/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE024.BS","base":"RE024","designation":"Bec colonne au sol pour baignoire","finishCode":"BS","finish":"Acier brossé","category":"Baignoire","price":890.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":890.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE024.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re024/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE025.EXT.BB","base":"RE025","designation":"Mitigeur thermostatique mural avec inverseur 2 voies","finishCode":"BB","finish":"Noir brossé PVD","category":"Douche","price":965.0,"currency":"€","vat":"HT","internalReference":"INT.25","internalPrice":510.0,"totalPrice":1475.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE025.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re025/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE025.EXT.BC","base":"RE025","designation":"Mitigeur thermostatique mural avec inverseur 2 voies","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Douche","price":965.0,"currency":"€","vat":"HT","internalReference":"INT.25","internalPrice":510.0,"totalPrice":1475.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE025.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re025/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE025.EXT.BS","base":"RE025","designation":"Mitigeur thermostatique mural avec inverseur 2 voies","finishCode":"BS","finish":"Acier brossé","category":"Douche","price":805.0,"currency":"€","vat":"HT","internalReference":"INT.25","internalPrice":510.0,"totalPrice":1315.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE025.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re025/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE027.EXT.BB","base":"RE027","designation":"Mitigeur thermostatique mural avec inverseur 3 voies","finishCode":"BB","finish":"Noir brossé PVD","category":"Douche","price":965.0,"currency":"€","vat":"HT","internalReference":"INT.27","internalPrice":530.0,"totalPrice":1495.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE027.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re027/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE027.EXT.BC","base":"RE027","designation":"Mitigeur thermostatique mural avec inverseur 3 voies","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Douche","price":965.0,"currency":"€","vat":"HT","internalReference":"INT.27","internalPrice":530.0,"totalPrice":1495.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE027.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re027/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE027.EXT.BS","base":"RE027","designation":"Mitigeur thermostatique mural avec inverseur 3 voies","finishCode":"BS","finish":"Acier brossé","category":"Douche","price":805.0,"currency":"€","vat":"HT","internalReference":"INT.27","internalPrice":530.0,"totalPrice":1335.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE027.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re027/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE029.EXT.BB","base":"RE029","designation":"Mitigeur thermostatique mural bain avec 2 robinets d’arrêt, bec et douchette magnétique","finishCode":"BB","finish":"Noir brossé PVD","category":"Baignoire","price":2695.0,"currency":"€","vat":"HT","internalReference":"INT.29","internalPrice":855.0,"totalPrice":3550.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE029.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re029/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE029.EXT.BC","base":"RE029","designation":"Mitigeur thermostatique mural bain avec 2 robinets d’arrêt, bec et douchette magnétique","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Baignoire","price":2695.0,"currency":"€","vat":"HT","internalReference":"INT.29","internalPrice":855.0,"totalPrice":3550.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE029.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re029/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE029.EXT.BS","base":"RE029","designation":"Mitigeur thermostatique mural bain avec 2 robinets d’arrêt, bec et douchette magnétique","finishCode":"BS","finish":"Acier brossé","category":"Baignoire","price":2085.0,"currency":"€","vat":"HT","internalReference":"INT.29","internalPrice":855.0,"totalPrice":2940.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE029.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re029/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE030.EXT.BB","base":"RE030","designation":"Mitigeur thermostatique mural bain avec 2 robinets d’arrêt et douchette magnétique","finishCode":"BB","finish":"Noir brossé PVD","category":"Baignoire","price":2570.0,"currency":"€","vat":"HT","internalReference":"INT.30","internalPrice":785.0,"totalPrice":3355.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE030.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re030/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE030.EXT.BC","base":"RE030","designation":"Mitigeur thermostatique mural bain avec 2 robinets d’arrêt et douchette magnétique","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Baignoire","price":2570.0,"currency":"€","vat":"HT","internalReference":"INT.30","internalPrice":785.0,"totalPrice":3355.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE030.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re030/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE030.EXT.BS","base":"RE030","designation":"Mitigeur thermostatique mural bain avec 2 robinets d’arrêt et douchette magnétique","finishCode":"BS","finish":"Acier brossé","category":"Baignoire","price":2015.0,"currency":"€","vat":"HT","internalReference":"INT.30","internalPrice":785.0,"totalPrice":2800.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE030.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re030/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE034.BB","base":"RE034","designation":"Kit douche avec prise d’eau, douchette magnétique et flexible","finishCode":"BB","finish":"Noir brossé PVD","category":"Douche","price":930.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":930.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE034.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re034/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE034.BC","base":"RE034","designation":"Kit douche avec prise d’eau, douchette magnétique et flexible","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Douche","price":930.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":930.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE034.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re034/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE034.BS","base":"RE034","designation":"Kit douche avec prise d’eau, douchette magnétique et flexible","finishCode":"BS","finish":"Acier brossé","category":"Douche","price":735.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":735.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE034.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re034/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE035.BB","base":"RE035","designation":"Barre coulissante avec flexible, douchette et coude de sortie","finishCode":"BB","finish":"Noir brossé PVD","category":"Douche","price":1435.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1435.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE035.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re035/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE035.BC","base":"RE035","designation":"Barre coulissante avec flexible, douchette et coude de sortie","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Douche","price":1435.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1435.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE035.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re035/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE035.BS","base":"RE035","designation":"Barre coulissante avec flexible, douchette et coude de sortie","finishCode":"BS","finish":"Acier brossé","category":"Douche","price":1105.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1105.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE035.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re035/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE036.BB","base":"RE036","designation":"Bras de douche mural","finishCode":"BB","finish":"Noir brossé PVD","category":"Douche","price":200.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":200.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE036.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re036/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE036.BC","base":"RE036","designation":"Bras de douche mural","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Douche","price":200.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":200.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE036.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re036/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE036.BS","base":"RE036","designation":"Bras de douche mural","finishCode":"BS","finish":"Acier brossé","category":"Douche","price":145.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":145.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE036.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re036/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE037.BB","base":"RE037","designation":"Bras de douche plafond 20 cm","finishCode":"BB","finish":"Noir brossé PVD","category":"Douche","price":160.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":160.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE037.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re037/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE037.BC","base":"RE037","designation":"Bras de douche plafond 20 cm","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Douche","price":160.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":160.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE037.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re037/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE037.BS","base":"RE037","designation":"Bras de douche plafond 20 cm","finishCode":"BS","finish":"Acier brossé","category":"Douche","price":105.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":105.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE037.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re037/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE038.BB","base":"RE038","designation":"Pomme de douche Rainjet Ø 200 mm","finishCode":"BB","finish":"Noir brossé PVD","category":"Douche","price":490.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":490.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE038.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re038/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE038.BC","base":"RE038","designation":"Pomme de douche Rainjet Ø 200 mm","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Douche","price":490.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":490.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE038.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re038/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE038.BS","base":"RE038","designation":"Pomme de douche Rainjet Ø 200 mm","finishCode":"BS","finish":"Acier brossé","category":"Douche","price":175.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":175.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE038.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re038/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE039.BB","base":"RE039","designation":"Pomme de douche","finishCode":"BB","finish":"Noir brossé PVD","category":"Douche","price":560.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":560.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE039.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re039/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE039.BC","base":"RE039","designation":"Pomme de douche","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Douche","price":560.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":560.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE039.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re039/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE039.BS","base":"RE039","designation":"Pomme de douche","finishCode":"BS","finish":"Acier brossé","category":"Douche","price":280.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":280.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE039.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re039/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE040.BB","base":"RE040","designation":"Pomme de douche murale triple jet","finishCode":"BB","finish":"Noir brossé PVD","category":"Douche","price":875.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":875.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE040.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re040/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE040.BC","base":"RE040","designation":"Pomme de douche murale triple jet","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Douche","price":875.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":875.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE040.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re040/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE040.BS","base":"RE040","designation":"Pomme de douche murale triple jet","finishCode":"BS","finish":"Acier brossé","category":"Douche","price":645.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":645.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE040.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re040/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE041.BB","base":"RE041","designation":"Pomme de douche monojet plafond","finishCode":"BB","finish":"Noir brossé PVD","category":"Douche","price":650.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":650.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE041.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re041/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE041.BC","base":"RE041","designation":"Pomme de douche monojet plafond","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Douche","price":650.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":650.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE041.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re041/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE041.BS","base":"RE041","designation":"Pomme de douche monojet plafond","finishCode":"BS","finish":"Acier brossé","category":"Douche","price":455.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":455.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE041.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re041/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE043.BB","base":"RE043","designation":"Vidage à pression pour lavabo","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":105.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":105.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE043.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re043/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE043.BC","base":"RE043","designation":"Vidage à pression pour lavabo","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":105.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":105.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE043.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re043/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE043.BS","base":"RE043","designation":"Vidage à pression pour lavabo","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":55.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":55.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE043.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re043/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE044.BB","base":"RE044","designation":"Siphon pour lavabo","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":365.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":365.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE044.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re044/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE044.BC","base":"RE044","designation":"Siphon pour lavabo","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":365.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":365.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE044.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re044/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE044.BS","base":"RE044","designation":"Siphon pour lavabo","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":195.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":195.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE044.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re044/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE045.BB","base":"RE045","designation":"Robinet équerre avec filtre","finishCode":"BB","finish":"Noir brossé PVD","category":"Accessoires","price":220.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":220.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"","imageSource":"","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re045/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE045.BC","base":"RE045","designation":"Robinet équerre avec filtre","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Accessoires","price":220.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":220.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"","imageSource":"","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re045/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE045.BS","base":"RE045","designation":"Robinet équerre avec filtre","finishCode":"BS","finish":"Acier brossé","category":"Accessoires","price":145.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":145.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"","imageSource":"","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re045/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE046.BB","base":"RE046","designation":"Plaque WC compatible Geberit / TECE","finishCode":"BB","finish":"Noir brossé PVD","category":"WC","price":410.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":410.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE046.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re046/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE046.BC","base":"RE046","designation":"Plaque WC compatible Geberit / TECE","finishCode":"BC","finish":"Cuivre brossé PVD","category":"WC","price":410.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":410.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE046.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re046/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE046.BS","base":"RE046","designation":"Plaque WC compatible Geberit / TECE","finishCode":"BS","finish":"Acier brossé","category":"WC","price":285.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":285.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE046.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re046/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE047.BB","base":"RE047","designation":"Vidage baignoire avec trop-plein","finishCode":"BB","finish":"Noir brossé PVD","category":"Baignoire","price":235.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":235.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE047.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re047/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE047.BC","base":"RE047","designation":"Vidage baignoire avec trop-plein","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Baignoire","price":235.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":235.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE047.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re047/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE047.BS","base":"RE047","designation":"Vidage baignoire avec trop-plein","finishCode":"BS","finish":"Acier brossé","category":"Baignoire","price":195.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":195.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE047.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re047/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE048.BB","base":"RE048","designation":"Vidage baignoire avec bec déverseur et trop-plein","finishCode":"BB","finish":"Noir brossé PVD","category":"Baignoire","price":410.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":410.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE048.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re048/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE048.BC","base":"RE048","designation":"Vidage baignoire avec bec déverseur et trop-plein","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Baignoire","price":410.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":410.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE048.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re048/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE048.BS","base":"RE048","designation":"Vidage baignoire avec bec déverseur et trop-plein","finishCode":"BS","finish":"Acier brossé","category":"Baignoire","price":355.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":355.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE048.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re048/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE049.BB","base":"RE049","designation":"Pomme de douche encastrée plafond Ø 38 cm","finishCode":"BB","finish":"Noir brossé PVD","category":"Douche","price":1435.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1435.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE049.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re049/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE049.BC","base":"RE049","designation":"Pomme de douche encastrée plafond Ø 38 cm","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Douche","price":1435.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1435.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE049.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re049/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE049.BS","base":"RE049","designation":"Pomme de douche encastrée plafond Ø 38 cm","finishCode":"BS","finish":"Acier brossé","category":"Douche","price":1030.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1030.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE049.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re049/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE050.BB","base":"RE050","designation":"Pomme de douche encastrée plafond Ø 50 cm","finishCode":"BB","finish":"Noir brossé PVD","category":"Douche","price":1605.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1605.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE050.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re050/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE050.BC","base":"RE050","designation":"Pomme de douche encastrée plafond Ø 50 cm","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Douche","price":1605.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1605.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE050.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re050/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE050.BS","base":"RE050","designation":"Pomme de douche encastrée plafond Ø 50 cm","finishCode":"BS","finish":"Acier brossé","category":"Douche","price":1200.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1200.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE050.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re050/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE051.BB","base":"RE051","designation":"Pomme de douche encastrée double jet 38 x 38 cm","finishCode":"BB","finish":"Noir brossé PVD","category":"Douche","price":1520.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1520.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE051.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re051/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE051.BC","base":"RE051","designation":"Pomme de douche encastrée double jet 38 x 38 cm","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Douche","price":1520.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1520.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE051.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re051/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE051.BS","base":"RE051","designation":"Pomme de douche encastrée double jet 38 x 38 cm","finishCode":"BS","finish":"Acier brossé","category":"Douche","price":1120.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1120.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE051.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re051/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE052.BB","base":"RE052","designation":"Douche cascade murale","finishCode":"BB","finish":"Noir brossé PVD","category":"Douche","price":895.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":895.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE052.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re052/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE052.BC","base":"RE052","designation":"Douche cascade murale","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Douche","price":895.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":895.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE052.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re052/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE052.BS","base":"RE052","designation":"Douche cascade murale","finishCode":"BS","finish":"Acier brossé","category":"Douche","price":605.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":605.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE052.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re052/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE053.BB","base":"RE053","designation":"Bras de douche mural","finishCode":"BB","finish":"Noir brossé PVD","category":"Douche","price":190.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":190.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE053.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re053/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE053.BC","base":"RE053","designation":"Bras de douche mural","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Douche","price":190.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":190.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE053.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re053/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE053.BS","base":"RE053","designation":"Bras de douche mural","finishCode":"BS","finish":"Acier brossé","category":"Douche","price":140.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":140.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE053.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re053/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE054.BB","base":"RE054","designation":"Bras de douche mural avec pomme intégrée","finishCode":"BB","finish":"Noir brossé PVD","category":"Douche","price":295.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":295.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE054.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re054/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE054.BC","base":"RE054","designation":"Bras de douche mural avec pomme intégrée","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Douche","price":295.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":295.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE054.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re054/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE054.BS","base":"RE054","designation":"Bras de douche mural avec pomme intégrée","finishCode":"BS","finish":"Acier brossé","category":"Douche","price":250.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":250.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE054.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re054/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE055.BB","base":"RE055","designation":"Bras de douche plafond avec pomme intégrée","finishCode":"BB","finish":"Noir brossé PVD","category":"Douche","price":245.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":245.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE055.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re055/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE055.BC","base":"RE055","designation":"Bras de douche plafond avec pomme intégrée","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Douche","price":245.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":245.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE055.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re055/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE055.BS","base":"RE055","designation":"Bras de douche plafond avec pomme intégrée","finishCode":"BS","finish":"Acier brossé","category":"Douche","price":210.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":210.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE055.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re055/"}];
 const state={project:{name:"",client:"",location:"",date:"",intro:"",cover:""},rooms:[{id:"r1",title:"SDB MASTER",subtitle:"Robinetterie & sanitaires",manual:[]}],selected:[],commercial:{clientDiscount:0,vatRate:20,shippingFee:0,supplierShippingFee:0,supplierDiscounts:{"Amphora":50,"Catalano":64,"Coalbrook":50,"Zucchetti":55,"Lefroy Brooks":50,"Hotbath":50,"Recor":61.5385}}};
 const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+
+const cloud={
+  token:localStorage.getItem("hydropolis-auth-token")||"",
+  user:null,
+  currentProjectId:null,
+  projects:[],
+  dirty:false,
+  loadingProject:false,
+  persistentConfigured:false,
+  started:false
+};
+
+function blankProjectState(){
+  return {
+    project:{name:"",client:"",location:"",date:"",intro:"",cover:""},
+    rooms:[{id:"r1",title:"SDB MASTER",subtitle:"Robinetterie & sanitaires",manual:[]}],
+    selected:[],
+    commercial:{
+      clientDiscount:0,vatRate:20,shippingFee:0,supplierShippingFee:0,
+      supplierDiscounts:{"Amphora":50,"Catalano":64,"Coalbrook":50,"Zucchetti":55,"Lefroy Brooks":50,"Hotbath":50,"Recor":61.5385}
+    },
+    showClientPrices:true,
+    showSupplierReferences:true
+  };
+}
+function stateStorageKey(){
+  if(cloud.user?.id && cloud.currentProjectId)return `hydropolis-v21:${cloud.user.id}:${cloud.currentProjectId}`;
+  return "hydropolis-v21";
+}
+function compactStateForCloud(){
+  const raw={
+    project:{...state.project},
+    rooms:JSON.parse(JSON.stringify(state.rooms||[])),
+    selected:(state.selected||[]).map(p=>{
+      const q={...p};
+      // blob: URLs point to local IndexedDB and cannot be used on another workstation.
+      for(const k of ["image","pdfImage","technicalSheetUrl"]){
+        if(typeof q[k]==="string" && q[k].startsWith("blob:"))q[k]="";
+      }
+      if(Array.isArray(q.images))q.images=q.images.filter(x=>typeof x==="string"&&!x.startsWith("blob:"));
+      if(Array.isArray(q.pdfImages))q.pdfImages=q.pdfImages.filter(x=>typeof x==="string"&&!x.startsWith("blob:"));
+      return q;
+    }),
+    commercial:JSON.parse(JSON.stringify(state.commercial||{})),
+    showClientPrices:state.showClientPrices!==false,
+    showSupplierReferences:state.showSupplierReferences!==false
+  };
+  return raw;
+}
+function applyProjectState(data){
+  const fresh=blankProjectState();
+  const src=(data && typeof data==="object")?data:{};
+  state.project={...fresh.project,...(src.project||{})};
+  state.rooms=Array.isArray(src.rooms)&&src.rooms.length?JSON.parse(JSON.stringify(src.rooms)):fresh.rooms;
+  state.selected=Array.isArray(src.selected)?JSON.parse(JSON.stringify(src.selected)):[];
+  state.commercial={...fresh.commercial,...(src.commercial||{})};
+  state.showClientPrices=typeof src.showClientPrices==="boolean"?src.showClientPrices:true;
+  state.showSupplierReferences=typeof src.showSupplierReferences==="boolean"?src.showSupplierReferences:true;
+  loadState(src);
+}
+async function apiFetch(url,options={}){
+  const headers={...(options.headers||{})};
+  if(cloud.token)headers.Authorization=`Bearer ${cloud.token}`;
+  if(options.body && !(options.body instanceof FormData) && !headers["Content-Type"])headers["Content-Type"]="application/json";
+  const r=await fetch(url,{...options,headers});
+  let data={};
+  try{data=await r.json()}catch{}
+  if(r.status===401 && !url.includes("/api/auth/")){
+    cloudLogout(false);
+    throw new Error("Session expirée");
+  }
+  if(!r.ok)throw new Error(data.error||data.detail||`Erreur ${r.status}`);
+  return data;
+}
+function setAuthError(msg=""){
+  const el=$("#authError");if(el)el.textContent=msg;
+}
+function showAuthMode(mode){
+  $("#authOverlay").classList.remove("hidden");
+  $("#setupForm").classList.toggle("hidden",mode!=="setup");
+  $("#loginForm").classList.toggle("hidden",mode!=="login");
+  setAuthError("");
+}
+function hideAuth(){
+  $("#authOverlay").classList.add("hidden");
+}
+function updateUserBox(){
+  const el=$("#userBox");if(!el)return;
+  if(!cloud.user){el.innerHTML="";return}
+  const contact=[cloud.user.title,cloud.user.phone,cloud.user.email].filter(Boolean).join(" · ");
+  el.innerHTML=`<div class="user-box-main"><b>${cloud.user.name}</b><small>@${cloud.user.username}${cloud.user.role==="admin"?" · Admin":""}</small>${contact?`<small>${contact}</small>`:""}</div>
+    <button class="tiny" id="logoutBtn">Déconnexion</button>`;
+  $("#logoutBtn").onclick=()=>cloudLogout(true);
+}
+function updateCloudStatus(text=""){
+  const el=$("#cloudProjectStatus");if(!el)return;
+  if(text){el.textContent=text;return}
+  const p=cloud.projects.find(x=>x.id===cloud.currentProjectId);
+  if(!p){el.textContent="Aucun projet ouvert";return}
+  el.textContent=`${p.name}${cloud.dirty?" · modifications non enregistrées":" · enregistré"}`;
+}
+function markCloudDirty(){
+  if(cloud.loadingProject || !cloud.currentProjectId)return;
+  cloud.dirty=true;
+  updateCloudStatus();
+}
+function cloudLogout(reload=true){
+  cloud.token="";cloud.user=null;cloud.currentProjectId=null;cloud.projects=[];
+  localStorage.removeItem("hydropolis-auth-token");
+  localStorage.removeItem("hydropolis-last-project");
+  if(reload)location.reload();
+  else showAuthMode("login");
+}
+async function checkAuth(){
+  try{
+    const status=await apiFetch("/api/auth/status");
+    cloud.persistentConfigured=!!status.persistentConfigured;
+    if(status.user){
+      cloud.user=status.user;
+      hideAuth();updateUserBox();
+      return true;
+    }
+    showAuthMode(status.setupRequired?"setup":"login");
+    return false;
+  }catch(e){
+    showAuthMode("login");setAuthError("Impossible de joindre le serveur : "+e.message);
+    return false;
+  }
+}
+async function loadCloudProjects(){
+  const data=await apiFetch("/api/projects");
+  cloud.projects=data.projects||[];
+  renderProjectHub();
+  updateCloudStatus();
+  return cloud.projects;
+}
+async function openCloudProject(id){
+  cloud.loadingProject=true;
+  try{
+    const data=await apiFetch(`/api/projects/${encodeURIComponent(id)}`);
+    cloud.currentProjectId=id;
+    localStorage.setItem("hydropolis-last-project",id);
+    applyProjectState(data.project.data||{});
+    saveState();
+    await hydrateCustomAssets();
+    cloud.dirty=false;
+    renderRoomSelect();bindProject();bindCommercial();renderSelection();renderRooms();renderCatalog();
+    updateCloudStatus();
+    showView("project");
+  }finally{
+    cloud.loadingProject=false;
+  }
+}
+async function saveCloudProject(){
+  if(!cloud.user)return;
+  if(!cloud.currentProjectId){
+    const created=await apiFetch("/api/projects",{
+      method:"POST",
+      body:JSON.stringify({name:state.project.name||"Nouveau projet",data:compactStateForCloud()})
+    });
+    cloud.currentProjectId=created.project.id;
+    localStorage.setItem("hydropolis-last-project",cloud.currentProjectId);
+  }else{
+    await apiFetch(`/api/projects/${encodeURIComponent(cloud.currentProjectId)}`,{
+      method:"PUT",
+      body:JSON.stringify({name:state.project.name||"Projet",data:compactStateForCloud()})
+    });
+  }
+  cloud.dirty=false;
+  await loadCloudProjects();
+  updateCloudStatus("Projet enregistré ✓");
+  setTimeout(()=>updateCloudStatus(),1200);
+}
+async function createCloudProject(){
+  const name=prompt("Nom du nouveau projet","Nouveau projet");
+  if(!name)return;
+  const data=blankProjectState();
+  data.project.name=name.trim();
+  const created=await apiFetch("/api/projects",{method:"POST",body:JSON.stringify({name,data})});
+  await loadCloudProjects();
+  await openCloudProject(created.project.id);
+}
+async function duplicateCloudProject(id){
+  const source=cloud.projects.find(p=>p.id===id);
+  const name=prompt("Nom de la copie",`${source?.name||"Projet"} — copie`);
+  if(!name)return;
+  await apiFetch(`/api/projects/${encodeURIComponent(id)}/duplicate`,{
+    method:"POST",body:JSON.stringify({name})
+  });
+  await loadCloudProjects();
+}
+async function deleteCloudProject(id){
+  const p=cloud.projects.find(x=>x.id===id);
+  if(!confirm(`Supprimer définitivement « ${p?.name||"ce projet"} » ?`))return;
+  await apiFetch(`/api/projects/${encodeURIComponent(id)}`,{method:"DELETE"});
+  if(cloud.currentProjectId===id){
+    cloud.currentProjectId=null;
+    localStorage.removeItem("hydropolis-last-project");
+    applyProjectState(blankProjectState());
+    cloud.dirty=false;
+  }
+  await loadCloudProjects();
+}
+async function importLegacyLocalProject(){
+  let legacy=null;
+  try{legacy=JSON.parse(localStorage.getItem("hydropolis-v21")||"null")}catch{}
+  if(!legacy)return alert("Aucun ancien projet local à importer sur cet ordinateur.");
+  const name=legacy?.project?.name||"Projet local importé";
+  const created=await apiFetch("/api/projects",{
+    method:"POST",body:JSON.stringify({name,data:legacy})
+  });
+  await loadCloudProjects();
+  await openCloudProject(created.project.id);
+}
+function formatProjectDate(s){
+  if(!s)return "";
+  try{return new Intl.DateTimeFormat("fr-FR",{dateStyle:"short",timeStyle:"short"}).format(new Date(s))}catch{return s}
+}
+
+function salespersonProfile(){
+  return {
+    name:String(cloud.user?.name||"").trim(),
+    title:String(cloud.user?.title||"").trim(),
+    email:String(cloud.user?.email||"").trim(),
+    phone:String(cloud.user?.phone||"").trim()
+  };
+}
+function salespersonContactLine(separator=" · "){
+  const s=salespersonProfile();
+  return [s.name,s.title,s.phone,s.email].filter(Boolean).join(separator);
+}
+function renderSalesProfile(){
+  if(!cloud.user)return;
+  const name=$("#salesProfileName"), title=$("#salesProfileTitle"), email=$("#salesProfileEmail"), phone=$("#salesProfilePhone");
+  if(name)name.value=cloud.user.name||"";
+  if(title)title.value=cloud.user.title||"";
+  if(email)email.value=cloud.user.email||"";
+  if(phone)phone.value=cloud.user.phone||"";
+}
+async function saveSalesProfile(){
+  const payload={
+    name:$("#salesProfileName")?.value||"",
+    title:$("#salesProfileTitle")?.value||"",
+    email:$("#salesProfileEmail")?.value||"",
+    phone:$("#salesProfilePhone")?.value||""
+  };
+  const status=$("#salesProfileStatus");
+  if(status)status.textContent="Enregistrement…";
+  const data=await apiFetch("/api/me/profile",{method:"PATCH",body:JSON.stringify(payload)});
+  cloud.user=data.user;
+  updateUserBox();
+  renderSalesProfile();
+  if(status){
+    status.textContent="Coordonnées enregistrées ✓";
+    setTimeout(()=>{if(status.textContent.includes("✓"))status.textContent=""},1800);
+  }
+  if($("#view-preview")?.classList.contains("active"))buildDocument();
+}
+function salespersonContactPage(no){
+  const s=salespersonProfile();
+  return `<section class="page contact-page editorial-page">
+    <div class="contact-topline"></div>
+    <div class="contact-content">
+      <div class="contact-thanks">MERCI</div>
+      <div class="contact-rule"></div>
+      <div class="contact-copy">Pour toute question concernant cette sélection,<br>votre interlocuteur Hydropolis reste à votre disposition.</div>
+      <div class="contact-person">
+        <div class="contact-monogram">H</div>
+        <div>
+          <div class="contact-name">${s.name||"Hydropolis"}</div>
+          ${s.title?`<div class="contact-title">${s.title}</div>`:""}
+          ${s.phone?`<div class="contact-line">Tél. ${s.phone}</div>`:""}
+          ${s.email?`<div class="contact-line">${s.email}</div>`:""}
+        </div>
+      </div>
+    </div>
+    <div class="contact-footer"><span>Maison Hydropolis</span><span>Votre projet · notre accompagnement</span></div>
+    <div class="page-no">${no}</div>
+  </section>`;
+}
+
+function renderProjectHub(){
+  const host=$("#projectCards");if(!host)return;
+  host.innerHTML=cloud.projects.length?cloud.projects.map(p=>`
+    <article class="project-cloud-card ${p.id===cloud.currentProjectId?"active":""}">
+      <div><div class="eyebrow">${p.id===cloud.currentProjectId?"Projet ouvert":"Projet"}</div>
+      <h3>${p.name}</h3><p>${p.client||"Aucun client renseigné"}</p>
+      <small>Mis à jour ${formatProjectDate(p.updatedAt)}</small></div>
+      <div class="project-card-actions">
+        <button class="btn primary cloud-open" data-id="${p.id}">Ouvrir</button>
+        <button class="btn ghost cloud-duplicate" data-id="${p.id}">Dupliquer</button>
+        <button class="tiny danger cloud-delete" data-id="${p.id}">Supprimer</button>
+      </div>
+    </article>`).join(""):`<div class="project-empty"><b>Aucun projet enregistré.</b><span>Créez votre premier projet ou importez le projet local présent sur cet ordinateur.</span></div>`;
+
+  $$(".cloud-open").forEach(b=>b.onclick=()=>openCloudProject(b.dataset.id).catch(e=>alert(e.message)));
+  $$(".cloud-duplicate").forEach(b=>b.onclick=()=>duplicateCloudProject(b.dataset.id).catch(e=>alert(e.message)));
+  $$(".cloud-delete").forEach(b=>b.onclick=()=>deleteCloudProject(b.dataset.id).catch(e=>alert(e.message)));
+
+  const warning=$("#cloudStorageWarning");
+  if(warning){
+    warning.classList.toggle("hidden",cloud.persistentConfigured);
+    warning.innerHTML=cloud.persistentConfigured?"":`<b>Stockage serveur non configuré comme persistant.</b> L'application fonctionne, mais pour une utilisation d'équipe sur Render il faut monter un disque persistant et définir <code>HYDRO_DATA_DIR</code> vers ce disque.`;
+  }
+  renderSalesProfile();
+  renderTeamAdmin();
+}
+async function renderTeamAdmin(){
+  const card=$("#teamAdminCard");if(!card)return;
+  card.classList.toggle("hidden",cloud.user?.role!=="admin");
+  if(cloud.user?.role!=="admin")return;
+  try{
+    const data=await apiFetch("/api/users");
+    const list=$("#teamList");
+    list.innerHTML=(data.users||[]).map(u=>`
+      <div class="team-row">
+        <div><b>${u.name}</b><small>@${u.username}${u.role==="admin"?" · Administrateur":""}</small><small>${[u.title,u.phone,u.email].filter(Boolean).join(" · ")||"Coordonnées à compléter"}</small></div>
+        <div>
+          <button class="tiny team-reset" data-id="${u.id}">Nouveau mot de passe</button>
+          ${u.id!==cloud.user.id?`<button class="tiny danger team-delete" data-id="${u.id}">Supprimer</button>`:""}
+        </div>
+      </div>`).join("");
+    $$(".team-reset").forEach(b=>b.onclick=async()=>{
+      const pwd=prompt("Nouveau mot de passe temporaire (6 caractères minimum)");
+      if(!pwd)return;
+      try{await apiFetch(`/api/users/${b.dataset.id}/password`,{method:"PATCH",body:JSON.stringify({password:pwd})});alert("Mot de passe modifié.");}
+      catch(e){alert(e.message)}
+    });
+    $$(".team-delete").forEach(b=>b.onclick=async()=>{
+      if(!confirm("Supprimer cet utilisateur et tous ses projets ?"))return;
+      try{await apiFetch(`/api/users/${b.dataset.id}`,{method:"DELETE"});await renderTeamAdmin();}
+      catch(e){alert(e.message)}
+    });
+  }catch(e){
+    $("#teamList").innerHTML=`<div class="auth-error">${e.message}</div>`;
+  }
+}
+async function afterAuthSuccess(payload){
+  cloud.token=payload.token;
+  cloud.user=payload.user;
+  localStorage.setItem("hydropolis-auth-token",cloud.token);
+  hideAuth();updateUserBox();
+  await startHydropolisWorkspace();
+}
+
 const euro=n=>new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR"}).format(Number(n||0)).replace(",00","");
 
 function normalizeImageFile(file,maxW=1600,maxH=1100,quality=.9){
@@ -332,45 +677,43 @@ async function enrichSelectedPhoto(id,force=false){
   renderSelection();
 }
 
-function loadState(){
+function loadState(override=null){
+  const fresh=blankProjectState();
+  state.project={...fresh.project};
+  state.rooms=JSON.parse(JSON.stringify(fresh.rooms));
+  state.selected=[];
+  state.commercial=JSON.parse(JSON.stringify(fresh.commercial));
+  state.showClientPrices=true;
+  state.showSupplierReferences=true;
+
   try{
-    const raw=localStorage.getItem("hydropolis-v21");
-    const s=raw?JSON.parse(raw):null;
-    if(s && typeof s==="object")Object.assign(state,s);
-  }catch(e){
-    console.warn("[loadState]",e);
-  }
+    let s=override;
+    if(!s){
+      const raw=localStorage.getItem(stateStorageKey());
+      s=raw?JSON.parse(raw):null;
+    }
+    if(s && typeof s==="object"){
+      state.project={...fresh.project,...(s.project||{})};
+      state.rooms=Array.isArray(s.rooms)&&s.rooms.length?JSON.parse(JSON.stringify(s.rooms)):fresh.rooms;
+      state.selected=Array.isArray(s.selected)?JSON.parse(JSON.stringify(s.selected)):[];
+      state.commercial={...fresh.commercial,...(s.commercial||{})};
+      state.showClientPrices=typeof s.showClientPrices==="boolean"?s.showClientPrices:true;
+      state.showSupplierReferences=typeof s.showSupplierReferences==="boolean"?s.showSupplierReferences:true;
+    }
+  }catch(e){console.warn("[loadState]",e);}
 
-  if(!Array.isArray(state.rooms))state.rooms=[];
-  state.rooms=state.rooms.filter(Boolean).map((r,i)=>({
-    id:r.id||`r${i+1}`,
-    title:r.title||`PIÈCE ${i+1}`,
-    subtitle:r.subtitle||"",
-    manual:Array.isArray(r.manual)?r.manual:[]
-  }));
-  if(!state.rooms.length)state.rooms=[{id:"r1",title:"SDB MASTER",subtitle:"",manual:[]}];
-
-  if(!Array.isArray(state.selected))state.selected=[];
-  state.selected=state.selected.filter(Boolean).map(p=>({
-    ...p,
-    id:p.id||(crypto.randomUUID?crypto.randomUUID():Math.random().toString(36)),
-    roomId:p.roomId||state.rooms[0].id
-  }));
+  if(!state.rooms?.length)state.rooms=[{id:"r1",title:"SDB MASTER",subtitle:"",manual:[]}];
+  state.rooms=state.rooms.map((r,i)=>({...r,id:r.id||`r${i+1}`,manual:Array.isArray(r.manual)?r.manual:[]}));
+  state.selected=(state.selected||[]).filter(Boolean).map(p=>({...p,roomId:p.roomId||state.rooms[0].id}));
 
   if(typeof state.showClientPrices!=="boolean")state.showClientPrices=true;
   if(typeof state.showSupplierReferences!=="boolean")state.showSupplierReferences=true;
 
-  if(!state.commercial || typeof state.commercial!=="object"){
-    state.commercial={clientDiscount:0,vatRate:20,shippingFee:0,supplierShippingFee:0,supplierDiscounts:{}};
-  }
-  if(!state.commercial.supplierDiscounts || typeof state.commercial.supplierDiscounts!=="object"){
-    state.commercial.supplierDiscounts={};
-  }
+  if(!state.commercial || typeof state.commercial!=="object")state.commercial=fresh.commercial;
+  if(!state.commercial.supplierDiscounts || typeof state.commercial.supplierDiscounts!=="object")state.commercial.supplierDiscounts={};
   const defaultSupplierDiscounts={"Amphora":50,"Catalano":64,"Coalbrook":50,"Zucchetti":55,"Lefroy Brooks":50,"Hotbath":50,"Recor":61.5385};
   Object.entries(defaultSupplierDiscounts).forEach(([maker,rate])=>{
-    if(state.commercial.supplierDiscounts[maker]===undefined || state.commercial.supplierDiscounts[maker]===null || state.commercial.supplierDiscounts[maker]===""){
-      state.commercial.supplierDiscounts[maker]=rate;
-    }
+    if(state.commercial.supplierDiscounts[maker]===undefined || state.commercial.supplierDiscounts[maker]===null || state.commercial.supplierDiscounts[maker]==="")state.commercial.supplierDiscounts[maker]=rate;
   });
 
   state.commercial.clientDiscount=Math.max(0,Math.min(100,Number(state.commercial.clientDiscount)||0));
@@ -381,9 +724,7 @@ function loadState(){
   state.selected.forEach(p=>{
     if(p.clientDiscountOverride!==undefined && p.clientDiscountOverride!==null && p.clientDiscountOverride!==""){
       p.clientDiscountOverride=Math.max(0,Math.min(100,Number(p.clientDiscountOverride)||0));
-    }else{
-      delete p.clientDiscountOverride;
-    }
+    }else delete p.clientDiscountOverride;
     if(typeof p.leadTime!=="string")p.leadTime="";
     if(p.catalogTotalPrice===undefined || p.catalogTotalPrice===null)p.catalogTotalPrice=Number(p.totalPrice||0);
     if(p.catalogPrice===undefined || p.catalogPrice===null)p.catalogPrice=Number(p.price||0);
@@ -406,7 +747,8 @@ function saveState(){
   };
   const payload=JSON.stringify(compact);
   try{
-    localStorage.setItem("hydropolis-v21",payload);
+    localStorage.setItem(stateStorageKey(),payload);
+    markCloudDirty();
     return true;
   }catch(e){
     console.warn("[Hydropolis storage] quota dépassé",e);
@@ -414,7 +756,7 @@ function saveState(){
       Object.keys(localStorage).forEach(k=>{
         if(/^hydropolis-manufacturer-/i.test(k))localStorage.removeItem(k);
       });
-      localStorage.setItem("hydropolis-v21",payload);
+      localStorage.setItem(stateStorageKey(),payload);
       return true;
     }catch(e2){
       console.warn("[Hydropolis storage] projet conservé en mémoire",e2);
@@ -443,11 +785,26 @@ function updateDependentFilters(resetCollection=false){
  fillSelect("categoryFilter",valuesFor("category",manufacturer),true);
  fillSelect("finishFilter",valuesFor("finish",manufacturer),true);
 }
+function updateCatalogSidebar(){
+  const makers=[...new Set(CATALOG.map(x=>x.manufacturer).filter(Boolean))]
+    .sort((a,b)=>String(a).localeCompare(String(b),"fr",{sensitivity:"base"}));
+  const manufacturerCount=$("#manufacturerCount");
+  const catalogCount=$("#catalogCount");
+  const manufacturerList=$("#manufacturerList");
+  const imageCount=$("#imageCount");
+
+  if(manufacturerCount)manufacturerCount.textContent=`${makers.length} fabricant${makers.length>1?"s":""} actif${makers.length>1?"s":""}`;
+  if(catalogCount)catalogCount.textContent=`${CATALOG.length.toLocaleString("fr-FR")} références`;
+  if(manufacturerList)manufacturerList.textContent=makers.join(" · ");
+  if(imageCount){
+    const photoRefs=CATALOG.filter(x=>x.image).length;
+    imageCount.textContent=photoRefs?`${photoRefs.toLocaleString("fr-FR")} références avec visuel catalogue`:"Photos fabricant recherchées à la demande";
+  }
+}
 function initFilters(){
  fillSelect("manufacturerFilter",valuesFor("manufacturer"),false);
  updateDependentFilters(false);
- $("#catalogCount").textContent=CATALOG.length+" références";
- $("#imageCount").textContent=new Set(CATALOG.filter(x=>x.image).map(x=>x.base)).size+" modèles avec photo fabricant";
+ updateCatalogSidebar();
 }
 function roomById(id){return state.rooms.find(r=>r.id===id)}
 function renderRoomSelect(){let cur=$("#targetRoom")?.value||state.rooms[0].id;$("#targetRoom").innerHTML=state.rooms.map(r=>`<option value="${r.id}">${r.title}</option>`).join(""); if(state.rooms.some(r=>r.id===cur))$("#targetRoom").value=cur;}
@@ -1027,7 +1384,7 @@ function quotePages(startNo){
       <div class="quote-topline"></div>
       <div class="quote-head">
         <div><div class="section-kicker">DEVIS · ${state.project.name||"PROJET CLIENT"}</div><h2>Récapitulatif de la sélection${pages>1?` · ${pg+1}/${pages}`:""}</h2><p>${state.project.client||""}${state.project.location?` · ${state.project.location}`:""}</p></div>
-        <div class="quote-brand">Hydropolis</div>
+        <div class="quote-brand">Hydropolis${salespersonContactLine()?`<small>${salespersonContactLine("<br>")}</small>`:""}</div>
       </div>
       <table class="quote-table">
         <thead><tr><th>Pièce</th>${state.showSupplierReferences!==false?`<th>Référence</th>`:""}<th>Désignation</th><th>Délai</th><th>Qté</th><th>PU HT</th><th>Remise</th><th>Total HT</th></tr></thead>
@@ -1053,7 +1410,7 @@ function quotePages(startNo){
         <div><span>TVA ${f.vatRate.toLocaleString("fr-FR",{maximumFractionDigits:1})}%</span><b>${euro(f.vat)}</b></div>
         <div class="quote-grand-total"><span>GRAND TOTAL TTC</span><b>${euro(f.ttc)}</b></div>
       </div>`:""}
-      <div class="quote-bottom"><span>Maison Hydropolis</span><span>Prix exprimés en euros · devis récapitulatif</span></div>
+      <div class="quote-bottom"><span>${salespersonContactLine()?`Maison Hydropolis · ${salespersonContactLine(" · ")}`:"Maison Hydropolis"}</span><span>Prix exprimés en euros · devis récapitulatif</span></div>
       <div class="page-no">${no++}</div>
     </section>`;
   }
@@ -1415,6 +1772,7 @@ function showView(v){
   $("#view-"+v).classList.add("active");
 
   let t={
+    projects:["Mes projets","Ouvrez, dupliquez ou créez vos projets personnels."],
     catalog:["Catalogue intelligent","Recherche puis ajout direct dans la pièce choisie."],
     project:["Projet par pièce","Chaque pièce contient ses produits catalogue et ses éléments libres."],
     margin:["Marge & devis","Pilotez la remise client, vos conditions d’achat et la marge du projet."],
@@ -1423,6 +1781,7 @@ function showView(v){
   $("#viewTitle").textContent=t[v][0];
   $("#viewSubtitle").textContent=t[v][1];
 
+  if(v==="projects")renderProjectHub();
   if(v==="margin")renderMarginDashboard();
   if(v==="project"){
     renderSelection();
@@ -1707,6 +2066,7 @@ function buildDocument(){
      </section>`;
    });
  });
+ html+=salespersonContactPage(no++);
  const quote=quotePages(no);
  html+=quote.html;
  no=quote.nextNo;
@@ -1756,9 +2116,7 @@ function refreshCatalogUiAfterChunk(){
   }
   updateDependentFilters(false);
 
-  const catalogCount=$("#catalogCount");
-  if(catalogCount)catalogCount.textContent=CATALOG.length+" références";
-
+  updateCatalogSidebar();
   renderCatalog();
 }
 
@@ -1829,7 +2187,7 @@ async function loadSupplierCatalogs(){
       ?`${CATALOG.length} références disponibles · ${failed} fichier(s) non chargé(s)`
       :`${CATALOG.length} références disponibles`;
   }
-  if(catalogCount)catalogCount.textContent=`${CATALOG.length} références`;
+  updateCatalogSidebar();
   return loaded;
 }
 function harmonizeSavedCatalogProducts(){
@@ -1856,31 +2214,37 @@ function harmonizeSavedCatalogProducts(){
     Object.assign(p,c,runtime);
   }
 }
-async function bootstrap(){
-  loadState();
-  await hydrateCustomAssets();
+async function startHydropolisWorkspace(){
+  if(cloud.started)return;
+  cloud.started=true;
 
-  // Built-in Amphora is usable immediately.
-  harmonizeSavedCatalogProducts();
-  initFilters();
-  renderRoomSelect();
-  bindProject();
-  bindCommercial();
-  renderSelection();
-  renderRooms();
-  renderCatalog();
+  await loadCloudProjects();
 
-  const resultCount=$("#resultCount");
-  const catalogCount=$("#catalogCount");
+  const last=localStorage.getItem("hydropolis-last-project");
+  const existing=cloud.projects.find(p=>p.id===last) || cloud.projects[0] || null;
+
+  if(existing){
+    await openCloudProject(existing.id);
+  }else{
+    loadState();
+    await hydrateCustomAssets();
+    harmonizeSavedCatalogProducts();
+    initFilters();renderRoomSelect();bindProject();bindCommercial();
+    renderSelection();renderRooms();renderCatalog();
+    showView("projects");
+  }
+
+  const resultCount=$("#resultCount"),catalogCount=$("#catalogCount");
   if(resultCount)resultCount.textContent=`${CATALOG.length} références · chargement des autres marques…`;
-  if(catalogCount)catalogCount.textContent=`${CATALOG.length} références · chargement…`;
+  updateCatalogSidebar();
 
-  // Supplier catalogues are deliberately split into small files and loaded one by one.
   await loadSupplierCatalogs();
-
   harmonizeSavedCatalogProducts();
-  renderSelection();
-  renderRooms();
+  renderSelection();renderRooms();renderCatalog();
+}
+async function bootstrap(){
+  const ok=await checkAuth();
+  if(ok)await startHydropolisWorkspace();
 }
 bootstrap();
 ["searchInput","collectionFilter","categoryFilter","finishFilter","targetRoom"].forEach(id=>$("#"+id).addEventListener("input",renderCatalog));
@@ -1894,5 +2258,57 @@ $("#clearSearch").onclick=()=>{
   updateDependentFilters(true);
   renderCatalog();
 };
-$("#newRoomQuick").onclick=newRoom;$("#addRoomBtn").onclick=newRoom;$("#goProjectBtn").onclick=()=>showView("project");$("#previewTopBtn").onclick=()=>showView("preview");$("#printBtn").onclick=()=>{if(!validateRecorFeet(true)){showView("project");return;}buildDocument();setTimeout(()=>window.print(),100)};$("#saveBtn").onclick=exportJson;
+$("#newRoomQuick").onclick=newRoom;$("#addRoomBtn").onclick=newRoom;$("#goProjectBtn").onclick=()=>showView("project");$("#previewTopBtn").onclick=()=>showView("preview");$("#printBtn").onclick=()=>{if(!validateRecorFeet(true)){showView("project");return;}buildDocument();setTimeout(()=>window.print(),100)};$("#saveBtn").onclick=()=>saveCloudProject().catch(e=>alert(e.message));
+
+$("#setupForm").onsubmit=async e=>{
+  e.preventDefault();setAuthError("");
+  try{
+    const payload=await apiFetch("/api/auth/setup",{
+      method:"POST",
+      body:JSON.stringify({
+        name:$("#setupName").value,
+        username:$("#setupUsername").value,
+        title:$("#setupTitle").value,
+        email:$("#setupEmail").value,
+        phone:$("#setupPhone").value,
+        password:$("#setupPassword").value
+      })
+    });
+    await afterAuthSuccess(payload);
+  }catch(err){setAuthError(err.message)}
+};
+$("#loginForm").onsubmit=async e=>{
+  e.preventDefault();setAuthError("");
+  try{
+    const payload=await apiFetch("/api/auth/login",{
+      method:"POST",
+      body:JSON.stringify({username:$("#loginUsername").value,password:$("#loginPassword").value})
+    });
+    await afterAuthSuccess(payload);
+  }catch(err){setAuthError(err.message)}
+};
+$("#newCloudProjectBtn").onclick=()=>createCloudProject().catch(e=>alert(e.message));
+$("#importLocalProjectBtn").onclick=()=>importLegacyLocalProject().catch(e=>alert(e.message));
+$("#createTeamUserBtn").onclick=async()=>{
+  try{
+    await apiFetch("/api/users",{
+      method:"POST",
+      body:JSON.stringify({
+        name:$("#teamName").value,
+        username:$("#teamUsername").value,
+        title:$("#teamTitle").value,
+        email:$("#teamEmail").value,
+        phone:$("#teamPhone").value,
+        password:$("#teamPassword").value
+      })
+    });
+    $("#teamName").value="";$("#teamUsername").value="";$("#teamTitle").value="";$("#teamEmail").value="";$("#teamPhone").value="";$("#teamPassword").value="";
+    await renderTeamAdmin();
+  }catch(e){alert(e.message)}
+};
+
+$("#saveSalesProfileBtn").onclick=()=>saveSalesProfile().catch(e=>{
+  const s=$("#salesProfileStatus");if(s)s.textContent=e.message;
+});
+
 $$(".nav").forEach(n=>n.onclick=()=>showView(n.dataset.view));

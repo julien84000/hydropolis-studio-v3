@@ -1,13 +1,12 @@
-# Hydropolis Studio V8.1
+# Hydropolis Studio V9.2
 
-Correction de l'affichage dans « Projet par pièce ».
+Correction de la zone « Base active » dans la barre latérale.
 
-## Correctif
-Sur les lignes produit, les blocs situés à droite (délai, remise client, prix, compléments assortis)
-étaient partiellement coupés, car la grille CSS n'avait pas assez de colonnes explicites.
+Elle affiche maintenant dynamiquement :
+- le nombre de fabricants réellement chargés ;
+- le nombre total de références disponibles ;
+- la liste des marques actives ;
+- l'état des visuels catalogue.
 
-Cette version :
-- redéfinit la grille `.room-product` avec des colonnes explicites ;
-- évite la création de colonnes implicites qui débordaient à droite ;
-- force les blocs « Compléments lavabo assortis » / options Recor à passer sur une ligne dédiée ;
-- améliore le comportement responsive sur écrans intermédiaires et mobiles.
+L'ancienne mention fixe « Amphora · REEL · Tarif 2024 » a été supprimée car elle donnait l'impression
+qu'Amphora était le seul catalogue disponible.

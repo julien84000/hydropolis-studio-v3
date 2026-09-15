@@ -1678,3 +1678,162 @@ button,input,select,textarea{font:inherit}.shell{display:grid;grid-template-colu
     max-width:none;
   }
 }
+
+/* =========================================================
+   V9.0 — multi-utilisateurs & projets serveur
+   ========================================================= */
+.hidden{display:none!important}
+.auth-overlay{
+  position:fixed;inset:0;z-index:50000;
+  display:grid;place-items:center;padding:24px;
+  background:linear-gradient(135deg,#171816 0%,#292720 100%);
+}
+.auth-card{
+  width:min(440px,calc(100vw - 32px));background:#fff;border-radius:18px;
+  padding:28px;box-shadow:0 30px 90px rgba(0,0,0,.35)
+}
+.auth-brand{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.auth-brand>span{
+  width:42px;height:42px;border:1px solid var(--gold);display:grid;place-items:center;
+  font-family:Georgia,serif;color:var(--gold);font-size:22px
+}
+.auth-brand div{display:grid}.auth-brand small{color:var(--muted)}
+.auth-form{display:grid;gap:13px}
+.auth-form h2{margin:4px 0 0;font-family:Georgia,serif;font-weight:400;font-size:25px}
+.auth-form p{margin:0 0 5px;color:var(--muted);font-size:12px;line-height:1.5}
+.auth-error{margin-top:12px;color:#9d4033;font-size:12px;min-height:18px}
+.user-box{
+  margin-top:auto;padding:12px;border-top:1px solid rgba(255,255,255,.09);
+  display:flex;justify-content:space-between;gap:8px;align-items:center
+}
+.user-box-main{display:grid;gap:2px;min-width:0}
+.user-box-main b{font-size:12px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-box-main small{font-size:10px;color:#aaa}
+.user-box .tiny{background:#252621;color:#eee;border-color:#444}
+.cloud-project-status{font-size:11px;color:var(--muted);max-width:260px;text-align:right}
+.projects-head{
+  display:flex;justify-content:space-between;align-items:flex-end;gap:18px;
+  margin-bottom:18px
+}
+.projects-head h2{margin:5px 0;font-size:25px}.projects-head p{margin:0;color:var(--muted)}
+.projects-actions{display:flex;gap:9px;flex-wrap:wrap}
+.project-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:24px}
+.project-cloud-card{
+  background:#fff;border:1px solid var(--line);border-radius:14px;padding:17px;
+  display:flex;justify-content:space-between;gap:16px;min-height:126px;
+  box-shadow:0 8px 24px rgba(20,20,15,.04)
+}
+.project-cloud-card.active{border-color:#c89b5c;box-shadow:0 0 0 1px #c89b5c inset}
+.project-cloud-card h3{font-family:Georgia,serif;font-weight:400;font-size:19px;margin:5px 0}
+.project-cloud-card p{font-size:12px;color:#625d55;margin:0 0 9px}
+.project-cloud-card small{font-size:10px;color:var(--muted)}
+.project-card-actions{display:flex;flex-direction:column;gap:7px;justify-content:flex-start}
+.project-empty{
+  grid-column:1/-1;border:1px dashed var(--line);border-radius:14px;padding:30px;
+  display:grid;gap:5px;text-align:center;color:var(--muted);background:#faf8f4
+}
+.project-empty b{color:#4b4842}
+.storage-warning{
+  margin:0 0 16px;padding:11px 13px;border-radius:10px;
+  background:#fff5df;border:1px solid #e2c287;color:#755526;font-size:12px;line-height:1.5
+}
+.storage-warning code{background:rgba(255,255,255,.65);padding:2px 5px;border-radius:4px}
+.team-admin{margin-top:22px}
+.team-create{
+  display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;margin-bottom:14px
+}
+.team-list{display:grid}
+.team-row{
+  display:flex;justify-content:space-between;gap:12px;align-items:center;
+  padding:10px 0;border-top:1px solid var(--line)
+}
+.team-row>div:first-child{display:grid;gap:2px}
+.team-row small{font-size:10px;color:var(--muted)}
+.team-row>div:last-child{display:flex;gap:7px}
+.danger{color:#9b4135!important;border-color:#d9b6af!important}
+@media(max-width:1100px){
+  .project-cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .team-create{grid-template-columns:1fr 1fr}
+}
+@media(max-width:720px){
+  .projects-head{align-items:stretch;flex-direction:column}
+  .project-cards{grid-template-columns:1fr}
+  .team-create{grid-template-columns:1fr}
+  .project-cloud-card{flex-direction:column}
+  .project-card-actions{flex-direction:row;flex-wrap:wrap}
+}
+
+/* =========================================================
+   V9.1 — profil commercial & coordonnées client
+   ========================================================= */
+.sales-profile-card{margin-top:18px}
+.profile-note{font-size:11px;color:var(--muted)}
+.sales-profile-grid{
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px
+}
+.profile-actions{display:flex;align-items:center;gap:12px;margin-top:14px}
+#salesProfileStatus{font-size:11px;color:#67755d}
+.team-create{grid-template-columns:repeat(3,minmax(0,1fr)) auto!important}
+.quote-brand{display:grid;justify-items:end;gap:3px}
+.quote-brand small{
+  font-family:Arial,sans-serif;font-size:5.5pt;line-height:1.35;
+  font-weight:400;color:#7c7369;text-align:right
+}
+.contact-page{
+  position:relative;background:#f7f2ea!important;overflow:hidden;
+}
+.contact-topline{
+  position:absolute;left:14mm;right:14mm;top:12mm;height:.35mm;background:#b58a4d
+}
+.contact-content{
+  position:absolute;left:28mm;right:28mm;top:40mm;bottom:28mm;
+  display:grid;grid-template-columns:1.15fr .85fr;
+  grid-template-rows:auto auto 1fr;column-gap:20mm;align-items:start
+}
+.contact-thanks{
+  grid-column:1/-1;font-family:Georgia,serif;font-size:42pt;letter-spacing:.04em;
+  font-weight:400;color:#2a2723
+}
+.contact-rule{
+  grid-column:1/-1;width:42mm;height:.45mm;background:#b58a4d;margin:7mm 0 10mm
+}
+.contact-copy{
+  font-family:Georgia,serif;font-size:15pt;line-height:1.45;color:#4b443d;
+  max-width:115mm
+}
+.contact-person{
+  display:flex;gap:8mm;align-items:flex-start;justify-self:end;
+  min-width:72mm;padding:9mm;border-top:.4mm solid #b58a4d
+}
+.contact-monogram{
+  width:15mm;height:15mm;border:.35mm solid #b58a4d;
+  display:grid;place-items:center;font-family:Georgia,serif;font-size:18pt;color:#b58a4d
+}
+.contact-name{font-family:Georgia,serif;font-size:15pt;margin-bottom:2mm}
+.contact-title{font-size:7pt;text-transform:uppercase;letter-spacing:.1em;color:#9b713d;margin-bottom:4mm}
+.contact-line{font-size:8pt;line-height:1.6;color:#504941}
+.contact-footer{
+  position:absolute;left:14mm;right:14mm;bottom:8mm;
+  display:flex;justify-content:space-between;border-top:.25mm solid #c9b18c;
+  padding-top:2.5mm;font-size:5pt;text-transform:uppercase;letter-spacing:.09em;color:#766d63
+}
+@media(max-width:1100px){
+  .sales-profile-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .team-create{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media(max-width:700px){
+  .sales-profile-grid,.team-create{grid-template-columns:1fr!important}
+}
+
+/* V9.2 — résumé dynamique des catalogues actifs */
+.side-note #manufacturerList{
+  line-height:1.45;
+  color:#c5b89f;
+}
+.side-note #manufacturerCount{
+  font-weight:700;
+  color:#f0e8d9;
+}
+.side-note #catalogCount{
+  color:#d7c7aa;
+}

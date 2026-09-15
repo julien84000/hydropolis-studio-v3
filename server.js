@@ -2,16 +2,329 @@ const express = require("express");
 const path = require("path");
 const axios = require("axios");
 const cheerio = require("cheerio");
+const fs = require("fs");
+const crypto = require("crypto");
 
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-app.use(express.json({limit:"4mb"}));
+app.use(express.json({limit:"12mb"}));
 app.use(express.static(path.join(__dirname,"public")));
+
+/* =========================================================
+   V9.0 — Comptes utilisateurs + projets serveur
+   ========================================================= */
+const HYDRO_DATA_DIR = process.env.HYDRO_DATA_DIR || path.join(__dirname,"data");
+const HYDRO_DB_FILE = path.join(HYDRO_DATA_DIR,"hydropolis-db.json");
+
+function ensureDataDir(){
+  fs.mkdirSync(HYDRO_DATA_DIR,{recursive:true});
+}
+function emptyDb(){
+  return {
+    meta:{createdAt:new Date().toISOString(),secret:crypto.randomBytes(32).toString("hex")},
+    users:[],
+    projects:[]
+  };
+}
+function readDb(){
+  ensureDataDir();
+  try{
+    if(!fs.existsSync(HYDRO_DB_FILE)){
+      const db=emptyDb();
+      writeDb(db);
+      return db;
+    }
+    const db=JSON.parse(fs.readFileSync(HYDRO_DB_FILE,"utf8"));
+    if(!db.meta)db.meta={};
+    if(!db.meta.secret)db.meta.secret=crypto.randomBytes(32).toString("hex");
+    if(!Array.isArray(db.users))db.users=[];
+    if(!Array.isArray(db.projects))db.projects=[];
+    return db;
+  }catch(e){
+    console.error("[db read]",e);
+    return emptyDb();
+  }
+}
+function writeDb(db){
+  ensureDataDir();
+  const tmp=HYDRO_DB_FILE+".tmp";
+  fs.writeFileSync(tmp,JSON.stringify(db,null,2),"utf8");
+  fs.renameSync(tmp,HYDRO_DB_FILE);
+}
+function normalizeUsername(v){
+  return String(v||"").trim().toLowerCase().replace(/\s+/g,".");
+}
+function hashPassword(password,salt=crypto.randomBytes(16).toString("hex")){
+  const hash=crypto.scryptSync(String(password||""),salt,64).toString("hex");
+  return {salt,hash};
+}
+function verifyPassword(password,user){
+  try{
+    const test=crypto.scryptSync(String(password||""),user.salt,64);
+    const saved=Buffer.from(user.passwordHash,"hex");
+    return saved.length===test.length && crypto.timingSafeEqual(saved,test);
+  }catch{return false}
+}
+function b64url(input){
+  return Buffer.from(input).toString("base64url");
+}
+function signToken(user){
+  const db=readDb();
+  const payload={
+    sub:user.id,
+    role:user.role||"user",
+    exp:Date.now()+1000*60*60*24*30
+  };
+  const body=b64url(JSON.stringify(payload));
+  const sig=crypto.createHmac("sha256",db.meta.secret).update(body).digest("base64url");
+  return body+"."+sig;
+}
+function parseToken(token){
+  try{
+    const [body,sig]=String(token||"").split(".");
+    if(!body||!sig)return null;
+    const db=readDb();
+    const expected=crypto.createHmac("sha256",db.meta.secret).update(body).digest("base64url");
+    if(sig.length!==expected.length || !crypto.timingSafeEqual(Buffer.from(sig),Buffer.from(expected)))return null;
+    const payload=JSON.parse(Buffer.from(body,"base64url").toString("utf8"));
+    if(!payload.exp || payload.exp<Date.now())return null;
+    return payload;
+  }catch{return null}
+}
+function authUser(req){
+  const raw=String(req.headers.authorization||"");
+  const token=raw.startsWith("Bearer ")?raw.slice(7):"";
+  const payload=parseToken(token);
+  if(!payload)return null;
+  const db=readDb();
+  const user=db.users.find(u=>u.id===payload.sub);
+  if(!user || user.disabled)return null;
+  return {
+    id:user.id,name:user.name,username:user.username,role:user.role||"user",
+    title:user.title||"",email:user.email||"",phone:user.phone||""
+  };
+}
+function requireAuth(req,res,next){
+  const user=authUser(req);
+  if(!user)return res.status(401).json({error:"Authentification requise"});
+  req.user=user;
+  next();
+}
+function requireAdmin(req,res,next){
+  if(!req.user || req.user.role!=="admin")return res.status(403).json({error:"Administrateur requis"});
+  next();
+}
+function publicUser(u){
+  return {
+    id:u.id,name:u.name,username:u.username,role:u.role||"user",
+    title:u.title||"",email:u.email||"",phone:u.phone||"",
+    createdAt:u.createdAt
+  };
+}
+function publicProject(p){
+  return {
+    id:p.id,name:p.name||"Projet sans nom",client:p.client||"",
+    updatedAt:p.updatedAt,createdAt:p.createdAt
+  };
+}
+
+app.get("/api/auth/status",(req,res)=>{
+  const db=readDb();
+  const user=authUser(req);
+  res.json({
+    setupRequired:db.users.length===0,
+    user:user||null,
+    persistentPath:HYDRO_DATA_DIR,
+    persistentConfigured:!!process.env.HYDRO_DATA_DIR
+  });
+});
+
+app.post("/api/auth/setup",(req,res)=>{
+  const db=readDb();
+  if(db.users.length)return res.status(409).json({error:"Le compte administrateur existe déjà"});
+  const name=String(req.body?.name||"").trim();
+  const username=normalizeUsername(req.body?.username);
+  const password=String(req.body?.password||"");
+  if(!name || username.length<3 || password.length<6){
+    return res.status(400).json({error:"Nom, identifiant (3 caractères) et mot de passe (6 caractères minimum) requis"});
+  }
+  const h=hashPassword(password);
+  const user={
+    id:crypto.randomUUID(),name,username,role:"admin",
+    title:String(req.body?.title||"").trim(),
+    email:String(req.body?.email||"").trim(),
+    phone:String(req.body?.phone||"").trim(),
+    salt:h.salt,passwordHash:h.hash,createdAt:new Date().toISOString()
+  };
+  db.users.push(user);
+  writeDb(db);
+  res.json({token:signToken(user),user:publicUser(user)});
+});
+
+app.post("/api/auth/login",(req,res)=>{
+  const db=readDb();
+  const username=normalizeUsername(req.body?.username);
+  const user=db.users.find(u=>u.username===username && !u.disabled);
+  if(!user || !verifyPassword(req.body?.password,user)){
+    return res.status(401).json({error:"Identifiant ou mot de passe incorrect"});
+  }
+  res.json({token:signToken(user),user:publicUser(user)});
+});
+
+app.get("/api/me",requireAuth,(req,res)=>res.json({user:req.user}));
+
+app.patch("/api/me/profile",requireAuth,(req,res)=>{
+  const db=readDb();
+  const user=db.users.find(u=>u.id===req.user.id);
+  if(!user)return res.status(404).json({error:"Utilisateur introuvable"});
+
+  const name=String(req.body?.name??user.name??"").trim();
+  const title=String(req.body?.title??user.title??"").trim();
+  const email=String(req.body?.email??user.email??"").trim();
+  const phone=String(req.body?.phone??user.phone??"").trim();
+
+  if(!name)return res.status(400).json({error:"Le nom du commercial est requis"});
+  if(email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){
+    return res.status(400).json({error:"Adresse e-mail invalide"});
+  }
+
+  user.name=name;
+  user.title=title;
+  user.email=email;
+  user.phone=phone;
+  writeDb(db);
+  res.json({user:publicUser(user)});
+});
+
+
+app.get("/api/users",requireAuth,requireAdmin,(req,res)=>{
+  const db=readDb();
+  res.json({users:db.users.map(publicUser)});
+});
+
+app.post("/api/users",requireAuth,requireAdmin,(req,res)=>{
+  const db=readDb();
+  const name=String(req.body?.name||"").trim();
+  const username=normalizeUsername(req.body?.username);
+  const password=String(req.body?.password||"");
+  if(!name || username.length<3 || password.length<6){
+    return res.status(400).json({error:"Nom, identifiant et mot de passe de 6 caractères minimum requis"});
+  }
+  if(db.users.some(u=>u.username===username)){
+    return res.status(409).json({error:"Cet identifiant existe déjà"});
+  }
+  const h=hashPassword(password);
+  const user={
+    id:crypto.randomUUID(),name,username,role:"user",
+    title:String(req.body?.title||"").trim(),
+    email:String(req.body?.email||"").trim(),
+    phone:String(req.body?.phone||"").trim(),
+    salt:h.salt,passwordHash:h.hash,createdAt:new Date().toISOString()
+  };
+  db.users.push(user);
+  writeDb(db);
+  res.json({user:publicUser(user)});
+});
+
+app.patch("/api/users/:id/password",requireAuth,requireAdmin,(req,res)=>{
+  const db=readDb();
+  const user=db.users.find(u=>u.id===req.params.id);
+  if(!user)return res.status(404).json({error:"Utilisateur introuvable"});
+  const password=String(req.body?.password||"");
+  if(password.length<6)return res.status(400).json({error:"6 caractères minimum"});
+  const h=hashPassword(password);
+  user.salt=h.salt;user.passwordHash=h.hash;
+  writeDb(db);
+  res.json({ok:true});
+});
+
+app.delete("/api/users/:id",requireAuth,requireAdmin,(req,res)=>{
+  if(req.params.id===req.user.id)return res.status(400).json({error:"Vous ne pouvez pas supprimer votre propre compte"});
+  const db=readDb();
+  const exists=db.users.some(u=>u.id===req.params.id);
+  if(!exists)return res.status(404).json({error:"Utilisateur introuvable"});
+  db.users=db.users.filter(u=>u.id!==req.params.id);
+  db.projects=db.projects.filter(p=>p.userId!==req.params.id);
+  writeDb(db);
+  res.json({ok:true});
+});
+
+app.get("/api/projects",requireAuth,(req,res)=>{
+  const db=readDb();
+  const projects=db.projects
+    .filter(p=>p.userId===req.user.id)
+    .sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt)))
+    .map(publicProject);
+  res.json({projects});
+});
+
+app.post("/api/projects",requireAuth,(req,res)=>{
+  const db=readDb();
+  const now=new Date().toISOString();
+  const data=(req.body?.data && typeof req.body.data==="object")?req.body.data:{};
+  const name=String(req.body?.name||data?.project?.name||"Nouveau projet").trim()||"Nouveau projet";
+  const project={
+    id:crypto.randomUUID(),userId:req.user.id,name,
+    client:String(data?.project?.client||""),
+    data,createdAt:now,updatedAt:now
+  };
+  db.projects.push(project);
+  writeDb(db);
+  res.json({project:publicProject(project)});
+});
+
+app.get("/api/projects/:id",requireAuth,(req,res)=>{
+  const db=readDb();
+  const project=db.projects.find(p=>p.id===req.params.id && p.userId===req.user.id);
+  if(!project)return res.status(404).json({error:"Projet introuvable"});
+  res.json({project:{...publicProject(project),data:project.data}});
+});
+
+app.put("/api/projects/:id",requireAuth,(req,res)=>{
+  const db=readDb();
+  const project=db.projects.find(p=>p.id===req.params.id && p.userId===req.user.id);
+  if(!project)return res.status(404).json({error:"Projet introuvable"});
+  if(req.body?.data && typeof req.body.data==="object"){
+    project.data=req.body.data;
+    project.name=String(req.body?.name||req.body.data?.project?.name||project.name||"Projet").trim()||"Projet";
+    project.client=String(req.body.data?.project?.client||"");
+  }else if(req.body?.name){
+    project.name=String(req.body.name).trim()||project.name;
+  }
+  project.updatedAt=new Date().toISOString();
+  writeDb(db);
+  res.json({project:publicProject(project)});
+});
+
+app.post("/api/projects/:id/duplicate",requireAuth,(req,res)=>{
+  const db=readDb();
+  const source=db.projects.find(p=>p.id===req.params.id && p.userId===req.user.id);
+  if(!source)return res.status(404).json({error:"Projet introuvable"});
+  const now=new Date().toISOString();
+  const copy={
+    ...source,id:crypto.randomUUID(),
+    name:String(req.body?.name||`${source.name} — copie`),
+    data:JSON.parse(JSON.stringify(source.data||{})),
+    createdAt:now,updatedAt:now
+  };
+  db.projects.push(copy);
+  writeDb(db);
+  res.json({project:publicProject(copy)});
+});
+
+app.delete("/api/projects/:id",requireAuth,(req,res)=>{
+  const db=readDb();
+  const before=db.projects.length;
+  db.projects=db.projects.filter(p=>!(p.id===req.params.id && p.userId===req.user.id));
+  if(db.projects.length===before)return res.status(404).json({error:"Projet introuvable"});
+  writeDb(db);
+  res.json({ok:true});
+});
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V7.0",
+  service:"Hydropolis Studio V9.1",
   time:new Date().toISOString()
 }));
 

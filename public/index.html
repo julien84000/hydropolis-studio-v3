@@ -2,24 +2,106 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Hydropolis Studio V8.1 · Render</title><link rel="stylesheet" href="styles.css">
+<title>Hydropolis Studio V9.2 · Render</title><link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
+<div id="authOverlay" class="auth-overlay">
+  <div class="auth-card">
+    <div class="auth-brand"><span>H</span><div><b>Hydropolis Studio</b><small>Espace équipe</small></div></div>
+
+    <form id="setupForm" class="auth-form hidden">
+      <div class="eyebrow">Première utilisation</div>
+      <h2>Créer le compte administrateur</h2>
+      <p>Ce compte pourra ensuite créer les accès de l'équipe.</p>
+      <label>Nom<input id="setupName" autocomplete="name" required></label>
+      <label>Identifiant<input id="setupUsername" autocomplete="username" required></label>
+      <label>Fonction<input id="setupTitle" placeholder="Commercial Hydropolis"></label>
+      <label>E-mail<input id="setupEmail" type="email" autocomplete="email" placeholder="prenom@hydropolis.fr"></label>
+      <label>Téléphone<input id="setupPhone" type="tel" autocomplete="tel" placeholder="06 …"></label>
+      <label>Mot de passe<input id="setupPassword" type="password" autocomplete="new-password" minlength="6" required></label>
+      <button class="btn primary wide" type="submit">Créer l'espace Hydropolis</button>
+    </form>
+
+    <form id="loginForm" class="auth-form hidden">
+      <div class="eyebrow">Connexion</div>
+      <h2>Accéder à mes projets</h2>
+      <label>Identifiant<input id="loginUsername" autocomplete="username" required></label>
+      <label>Mot de passe<input id="loginPassword" type="password" autocomplete="current-password" required></label>
+      <button class="btn primary wide" type="submit">Se connecter</button>
+    </form>
+
+    <div id="authError" class="auth-error"></div>
+  </div>
+</div>
+
 <div class="shell">
 <aside class="sidebar">
-  <div class="logo"><span>H</span><div><b>Hydropolis</b><small>Studio V8.1</small></div></div>
+  <div class="logo"><span>H</span><div><b>Hydropolis</b><small>Studio V9.2</small></div></div>
+  <button class="nav" data-view="projects">Mes projets</button>
   <button class="nav active" data-view="catalog">Catalogue intelligent</button>
   <button class="nav" data-view="project">Projet par pièce</button>
   <button class="nav" data-view="margin">Marge & devis</button>
   <button class="nav" data-view="preview">Présentation client</button>
-  <div class="side-note"><b>Base active</b><span>Amphora · REEL · Tarif 2024</span><span id="catalogCount"></span><span id="imageCount"></span></div>
+  <div id="userBox" class="user-box"></div>
+  <div class="side-note">
+  <b>Catalogues actifs</b>
+  <span id="manufacturerCount">Chargement…</span>
+  <span id="catalogCount"></span>
+  <span id="manufacturerList"></span>
+  <span id="imageCount"></span>
+</div>
 </aside>
 
 <main>
 <header>
   <div><h1 id="viewTitle">Catalogue intelligent</h1><p id="viewSubtitle">Le serveur charge uniquement les contrôles nécessaires, sélectionne la finition puis capture le visuel rendu.</p></div>
-  <div class="head-actions"><button class="btn ghost" id="saveBtn">Sauvegarder</button><button class="btn primary" id="previewTopBtn">Aperçu PDF</button></div>
+  <div class="head-actions"><span id="cloudProjectStatus" class="cloud-project-status"></span><button class="btn ghost" id="saveBtn">Enregistrer</button><button class="btn primary" id="previewTopBtn">Aperçu PDF</button></div>
 </header>
+
+
+<section id="view-projects" class="view">
+  <div class="projects-head">
+    <div><div class="eyebrow">Espace personnel</div><h2>Mes projets</h2><p>Chaque utilisateur ne voit que ses propres projets.</p></div>
+    <div class="projects-actions">
+      <button class="btn ghost" id="importLocalProjectBtn">Importer le projet local</button>
+      <button class="btn primary" id="newCloudProjectBtn">+ Nouveau projet</button>
+    </div>
+  </div>
+  <div id="cloudStorageWarning" class="storage-warning hidden"></div>
+  <div id="projectCards" class="project-cards"></div>
+
+  <div id="salesProfileCard" class="card sales-profile-card">
+    <div class="section-head">
+      <div><div class="eyebrow">Profil commercial</div><h2>Mes coordonnées client</h2></div>
+      <span class="profile-note">Utilisées dans le dossier client et le devis</span>
+    </div>
+    <div class="sales-profile-grid">
+      <label>Nom du commercial<input id="salesProfileName" autocomplete="name"></label>
+      <label>Fonction<input id="salesProfileTitle" placeholder="Commercial Hydropolis"></label>
+      <label>E-mail<input id="salesProfileEmail" type="email" autocomplete="email" placeholder="prenom@hydropolis.fr"></label>
+      <label>Téléphone<input id="salesProfilePhone" type="tel" autocomplete="tel" placeholder="06 …"></label>
+    </div>
+    <div class="profile-actions">
+      <button class="btn primary" id="saveSalesProfileBtn">Enregistrer mes coordonnées</button>
+      <span id="salesProfileStatus"></span>
+    </div>
+  </div>
+
+  <div id="teamAdminCard" class="card team-admin hidden">
+    <div class="section-head"><div><div class="eyebrow">Administration</div><h2>Équipe Hydropolis</h2></div></div>
+    <div class="team-create">
+      <input id="teamName" placeholder="Nom">
+      <input id="teamUsername" placeholder="Identifiant">
+      <input id="teamTitle" placeholder="Fonction">
+      <input id="teamEmail" type="email" placeholder="E-mail">
+      <input id="teamPhone" type="tel" placeholder="Téléphone">
+      <input id="teamPassword" type="password" placeholder="Mot de passe temporaire">
+      <button class="btn primary" id="createTeamUserBtn">Créer l'accès</button>
+    </div>
+    <div id="teamList" class="team-list"></div>
+  </div>
+</section>
 
 <section id="view-catalog" class="view active">
   <div class="search-card">
