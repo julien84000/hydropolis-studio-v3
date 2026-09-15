@@ -719,7 +719,7 @@ app.post("/api/translate-product",requireAuth,async(req,res)=>{
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V11.0",
+  service:"Hydropolis Studio V11.1.1",
   database:USE_POSTGRES?"postgresql":"local-fallback",
   time:new Date().toISOString()
 }));
@@ -2416,6 +2416,118 @@ app.get("/api/pdf-page-image",async(req,res)=>{
   }
 });
 
+
+const fittedImageCache=new Map();
+
+app.get("/api/product-image-fit",async(req,res)=>{
+  const url=String(req.query.url||"");
+  if(!url||!/^https?:\/\//i.test(url)) return res.status(400).send("URL invalide");
+
+  const cacheKey=crypto.createHash("sha1").update(url).digest("hex");
+  if(fittedImageCache.has(cacheKey)){
+    const hit=fittedImageCache.get(cacheKey);
+    res.set("Content-Type",hit.mime);
+    res.set("Cache-Control","public, max-age=604800");
+    return res.send(hit.data);
+  }
+
+  try{
+    const r=await axios.get(url,{
+      responseType:"arraybuffer",
+      timeout:18000,
+      maxRedirects:5,
+      headers:{
+        "User-Agent":"Mozilla/5.0",
+        "Referer":new URL(url).origin+"/"
+      }
+    });
+    const ct=String(r.headers["content-type"]||"");
+    if(!ct.startsWith("image/")) return res.status(415).send("Ressource non image");
+
+    const {createCanvas,loadImage}=await import("@napi-rs/canvas");
+    const img=await loadImage(Buffer.from(r.data));
+
+    const maxScan=1500;
+    const scanScale=Math.min(1,maxScan/Math.max(img.width,img.height));
+    const sw=Math.max(1,Math.round(img.width*scanScale));
+    const sh=Math.max(1,Math.round(img.height*scanScale));
+
+    const scan=createCanvas(sw,sh);
+    const sctx=scan.getContext("2d");
+    sctx.fillStyle="#fff";
+    sctx.fillRect(0,0,sw,sh);
+    sctx.drawImage(img,0,0,sw,sh);
+
+    const data=sctx.getImageData(0,0,sw,sh).data;
+    const corner=(x,y)=>{
+      const i=(y*sw+x)*4;
+      return [data[i],data[i+1],data[i+2]];
+    };
+    const corners=[
+      corner(0,0),corner(sw-1,0),corner(0,sh-1),corner(sw-1,sh-1)
+    ];
+    const bg=[
+      corners.reduce((a,c)=>a+c[0],0)/4,
+      corners.reduce((a,c)=>a+c[1],0)/4,
+      corners.reduce((a,c)=>a+c[2],0)/4
+    ];
+    const bgLight=(bg[0]+bg[1]+bg[2])/3;
+
+    let minX=sw,minY=sh,maxX=-1,maxY=-1;
+    if(bgLight>185){
+      for(let y=0;y<sh;y++){
+        for(let x=0;x<sw;x++){
+          const i=(y*sw+x)*4;
+          const a=data[i+3];
+          if(a<15)continue;
+          const dr=data[i]-bg[0], dg=data[i+1]-bg[1], db=data[i+2]-bg[2];
+          const dist=Math.sqrt(dr*dr+dg*dg+db*db);
+          const lum=.2126*data[i]+.7152*data[i+1]+.0722*data[i+2];
+          // Keep actual object + soft shadows, ignore large white/off-white margins.
+          if(dist>24 || lum<220){
+            if(x<minX)minX=x;if(x>maxX)maxX=x;
+            if(y<minY)minY=y;if(y>maxY)maxY=y;
+          }
+        }
+      }
+    }
+
+    let sx=0,sy=0,cw=sw,ch=sh;
+    if(maxX>=minX && maxY>=minY){
+      const bw=maxX-minX+1,bh=maxY-minY+1;
+      const objectArea=(bw*bh)/(sw*sh);
+      // Crop only if this actually removes meaningful empty margins.
+      if(objectArea<0.88){
+        const pad=Math.round(Math.max(bw,bh)*0.09);
+        minX=Math.max(0,minX-pad);minY=Math.max(0,minY-pad);
+        maxX=Math.min(sw-1,maxX+pad);maxY=Math.min(sh-1,maxY+pad);
+        sx=minX;sy=minY;cw=maxX-minX+1;ch=maxY-minY+1;
+      }
+    }
+
+    const outMax=1500;
+    const outScale=Math.min(2.2,outMax/Math.max(cw,ch));
+    const ow=Math.max(1,Math.round(cw*outScale));
+    const oh=Math.max(1,Math.round(ch*outScale));
+    const out=createCanvas(ow,oh);
+    const octx=out.getContext("2d");
+    octx.fillStyle="#f8f8f6";
+    octx.fillRect(0,0,ow,oh);
+    octx.drawImage(scan,sx,sy,cw,ch,0,0,ow,oh);
+
+    const encoded=await out.encode("jpeg",91);
+    if(fittedImageCache.size>120)fittedImageCache.clear();
+    fittedImageCache.set(cacheKey,{mime:"image/jpeg",data:encoded});
+
+    res.set("Content-Type","image/jpeg");
+    res.set("Cache-Control","public, max-age=604800");
+    res.send(encoded);
+  }catch(e){
+    console.error("[product-image-fit]",e.message);
+    res.status(502).send("Image inaccessible");
+  }
+});
+
 app.get("/api/image-proxy",async(req,res)=>{
   const url=req.query.url;
   if(!url||!/^https?:\/\//i.test(url)) return res.status(400).send("URL invalide");
@@ -2443,7 +2555,7 @@ app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")))
 async function startServer(){
   try{
     await initPersistentStore();
-    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.0 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
+    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.1.1 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
   }catch(e){
     console.error("[Hydropolis] Démarrage impossible :",e);
     process.exit(1);
