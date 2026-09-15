@@ -1,4 +1,12 @@
-# Hydropolis Studio V11.5
+# Hydropolis Studio V11.6
+
+## V11.6 — Hotbath / Sawiday direct
+- Recherche Sawiday directe via `https://www.sawiday.fr/chercher/?tn_q=REFERENCE` avant tout moteur externe.
+- Repli direct Sawiday Belgique via `/nl-be/zoeken/?tn_q=REFERENCE`.
+- Les moteurs Bing/DuckDuckGo/Google ne sont plus que des solutions de secours.
+- Accepte les pages produit Sawiday `.fr` et `.be`.
+- Cache images fabricant porté en `v116` pour forcer un nouvel enrichissement après déploiement.
+- Conservation du filtrage strict des pastilles de finition et visuels techniques Hotbath.
 
 Correctif Hotbath/Sawiday basé sur les logs Render V11.4.
 

@@ -719,7 +719,7 @@ app.post("/api/translate-product",requireAuth,async(req,res)=>{
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V11.5",
+  service:"Hydropolis Studio V11.6",
   database:USE_POSTGRES?"postgresql":"local-fallback",
   time:new Date().toISOString()
 }));
@@ -1228,11 +1228,11 @@ function sawidayProductLinksFromSearch(html,baseUrl){
       try{
         const u=new URL(href,baseUrl);
         const wrapped=u.searchParams.get("uddg")||u.searchParams.get("q")||u.searchParams.get("url")||u.searchParams.get("u");
-        if(wrapped && /sawiday\.fr/i.test(wrapped)){
+        if(wrapped && /sawiday\.(?:fr|be)/i.test(wrapped)){
           href=decodeURIComponent(wrapped);
           continue;
         }
-        if(/(^|\.)sawiday\.fr$/i.test(u.hostname) && /^\/p\//i.test(u.pathname)){
+        if(/(^|\.)sawiday\.(?:fr|be)$/i.test(u.hostname) && /^\/(?:[a-z]{2}-[a-z]{2}\/)?p\//i.test(u.pathname)){
           u.hash="";
           links.push(u.href);
         }
@@ -1363,7 +1363,23 @@ async function findSawidayHotbathImage(reference,finishCode,finish){
   }
 
   let productLinks=[];
-  for(const q of searchQueries){
+
+  // V11.6: use Sawiday's own search endpoint first.
+  // Search-engine HTML endpoints are frequently blocked from Render, while Sawiday
+  // exposes a normal GET search form (tn_q) that returns the exact product page.
+  const directSawidaySearchUrls=[
+    `https://www.sawiday.fr/chercher/?tn_q=${encodeURIComponent(supplierRef)}`,
+    `https://www.sawiday.be/nl-be/zoeken/?tn_q=${encodeURIComponent(supplierRef)}`
+  ];
+  for(const directUrl of directSawidaySearchUrls){
+    const engine=directUrl.includes("sawiday.fr")?"sawiday-fr-direct":"sawiday-be-direct";
+    productLinks.push(...await trySearch(engine,directUrl));
+    productLinks=[...new Set(productLinks)];
+    if(productLinks.length)break;
+  }
+
+  // External search engines are now fallback only.
+  for(const q of productLinks.length?[]:searchQueries){
     // 1) Bing RSS: cheap, server-friendly when indexed.
     productLinks.push(...await trySearch("bing-rss",`https://www.bing.com/search?format=rss&count=20&setlang=fr-fr&q=${encodeURIComponent(q)}`));
     productLinks=[...new Set(productLinks)];
@@ -2983,7 +2999,7 @@ app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")))
 async function startServer(){
   try{
     await initPersistentStore();
-    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.5 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
+    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.6 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
   }catch(e){
     console.error("[Hydropolis] Démarrage impossible :",e);
     process.exit(1);
