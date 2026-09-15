@@ -1,12 +1,12 @@
 {
   "name": "hydropolis-studio-v3",
-  "version": "7.8.0",
+  "version": "7.9.0",
   "private": true,
   "description": "Hydropolis Studio V3 - Render test server",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "build": "node -e \"console.log('Hydropolis V7.8: fiches techniques Lefroy Brooks')\""
+    "build": "node -e \"console.log('Hydropolis V7.9: port fournisseur + d\u00e9lai articles')\""
   },
   "engines": {
     "node": ">=20"

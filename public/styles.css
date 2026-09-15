@@ -1528,3 +1528,20 @@ button,input,select,textarea{font:inherit}.shell{display:grid;grid-template-colu
   margin-top:8px;padding:8px 10px;background:#fbf7ef;border:1px solid #ddc7a6;
   font-size:11px;color:#746552;border-radius:8px;
 }
+
+/* =========================================================
+   V7.9 — port fournisseur + délai par article
+   ========================================================= */
+.article-leadtime-panel{
+  min-width:165px;padding:9px 10px;border:1px solid var(--line);
+  background:#fff;display:grid;gap:5px
+}
+.article-leadtime-panel label{
+  display:grid;gap:5px;font-size:10px;text-transform:uppercase;
+  letter-spacing:.05em;color:var(--muted)
+}
+.article-leadtime-panel input{
+  min-width:145px;padding:7px 8px;font-size:12px;text-transform:none;letter-spacing:0
+}
+#document .quote-table th:nth-last-child(-n+5),
+#document .quote-table td:nth-last-child(-n+5){text-align:right}
