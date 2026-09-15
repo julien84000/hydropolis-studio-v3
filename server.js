@@ -719,7 +719,7 @@ app.post("/api/translate-product",requireAuth,async(req,res)=>{
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V11.3",
+  service:"Hydropolis Studio V11.4",
   database:USE_POSTGRES?"postgresql":"local-fallback",
   time:new Date().toISOString()
 }));
@@ -745,21 +745,40 @@ function uniqueBest(arr,key="url"){
   }
   return [...m.values()];
 }
+const imageLiveMemo=new Map();
 async function imageExists(url,referer){
+  const key=String(url||"");
+  if(!key)return false;
+  const cached=imageLiveMemo.get(key);
+  if(cached && Date.now()-cached.at<6*60*60*1000)return cached.ok;
   try{
     const r=await axios.get(url,{
       responseType:"arraybuffer",
-      timeout:9000,
-      maxRedirects:4,
+      timeout:10000,
+      maxRedirects:5,
       validateStatus:s=>s>=200&&s<300,
       headers:{
         "User-Agent":"Mozilla/5.0",
+        "Accept":"image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
         "Referer":referer||new URL(url).origin+"/"
       }
     });
     const ct=String(r.headers["content-type"]||"");
-    return ct.startsWith("image/") && r.data && r.data.byteLength>3000;
-  }catch{return false}
+    const ok=ct.startsWith("image/") && r.data && r.data.byteLength>3000;
+    imageLiveMemo.set(key,{at:Date.now(),ok});
+    if(imageLiveMemo.size>500)imageLiveMemo.clear();
+    return ok;
+  }catch(e){
+    imageLiveMemo.set(key,{at:Date.now(),ok:false});
+    return false;
+  }
+}
+async function firstLiveImageCandidate(list,defaultReferer,limit=10){
+  for(const item of (list||[]).slice(0,limit)){
+    const referer=item?.attributes?.sourcePage||defaultReferer;
+    if(await imageExists(item?.url,referer))return item;
+  }
+  return null;
 }
 function decodeHtmlEntities(s){
   return String(s||"")
@@ -1298,15 +1317,39 @@ async function findSawidayHotbathImage(reference,finishCode,finish){
 
   let productLinks=[];
   for(const q of searchQueries){
+    // Bing RSS is much less brittle than scraping the visual search page from Render.
     try{
-      const searchUrl=`https://www.bing.com/search?q=${encodeURIComponent(q)}&count=10&setlang=fr-fr`;
-      const searchHtml=await fetchBrandPage(searchUrl,"fr-FR,fr;q=0.9,en;q=0.7");
-      productLinks.push(...sawidayProductLinksFromSearch(searchHtml,searchUrl));
+      const rssUrl=`https://www.bing.com/search?format=rss&count=10&setlang=fr-fr&q=${encodeURIComponent(q)}`;
+      const rss=await fetchBrandPage(rssUrl,"fr-FR,fr;q=0.9,en;q=0.7");
+      const blocks=String(rss||"").match(/<item>[\s\S]*?<\/item>/gi)||[];
+      for(const block of blocks){
+        const m=block.match(/<link>(?:<!\[CDATA\[)?([^<\]]+)/i);
+        if(!m)continue;
+        const href=decodeHtmlEntities(m[1]).trim();
+        try{
+          const u=new URL(href);
+          if(/(^|\.)sawiday\.fr$/i.test(u.hostname) && /^\/p\//i.test(u.pathname)){
+            u.hash="";
+            productLinks.push(u.href);
+          }
+        }catch{}
+      }
       productLinks=[...new Set(productLinks)];
-      if(productLinks.length)break;
     }catch(e){
-      console.warn("[sawiday-search]",supplierRef,e.message);
+      console.warn("[sawiday-rss]",supplierRef,e.message);
     }
+
+    if(!productLinks.length){
+      try{
+        const searchUrl=`https://www.bing.com/search?q=${encodeURIComponent(q)}&count=10&setlang=fr-fr`;
+        const searchHtml=await fetchBrandPage(searchUrl,"fr-FR,fr;q=0.9,en;q=0.7");
+        productLinks.push(...sawidayProductLinksFromSearch(searchHtml,searchUrl));
+        productLinks=[...new Set(productLinks)];
+      }catch(e){
+        console.warn("[sawiday-search]",supplierRef,e.message);
+      }
+    }
+    if(productLinks.length)break;
   }
 
   for(const pageUrl of productLinks.slice(0,7)){
@@ -2234,27 +2277,53 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
 
   const isAmphora=/amphoradesign\.it/i.test(manufacturerUrl);
   const isCoalbrook=/coalbrookuk\.co\.uk/i.test(manufacturerUrl);
-  let exact=sorted.find(x=>x.finishMatch==="exact" &&
-    (!isAmphora || x.source.startsWith("woocommerce-variation")) &&
-    (!isCoalbrook || x.source==="coalbrook-product-image" || x.source==="coalbrook-exact-sku-image")
-  )||null;
-  const fallback=sorted.find(x=>x.finishMatch!=="exact")||null;
-  let best=exact||fallback;
 
-  // Hotbath secondary source: when the official product page does not certify the
-  // requested finish, look up the exact supplier reference on Sawiday automatically.
-  // Technical resources always remain sourced from Hotbath itself.
+  let exact=null;
+  let fallback=null;
+  let best=null;
   let sawidayExact=null;
-  if(isHotbath && !exact && requested){
-    try{
-      sawidayExact=await findSawidayHotbathImage(reference,requested,finish);
-      if(sawidayExact){
-        exact=sawidayExact;
-        best=sawidayExact;
+
+  if(isHotbath){
+    // Critical Hotbath rule:
+    // generic <img> nodes ("official-page") can contain finish text around the image,
+    // but that does NOT prove that the image URL itself is the requested finish.
+    // Also, Hotbath currently exposes some image URLs that return HTTP 404.
+    // Therefore an official exact image must come from the dedicated Hotbath parser,
+    // have the requested finish code, AND be live before we use it.
+    const hotbathOfficialExact=sorted.filter(x=>
+      x.finishMatch==="exact" &&
+      /^hotbath-/.test(String(x.source||"")) &&
+      String(x.detectedFinishCode||"").toUpperCase()===String(requested||"").toUpperCase()
+    );
+    exact=await firstLiveImageCandidate(hotbathOfficialExact,manufacturerUrl,8);
+
+    // If Hotbath does not provide a usable exact-finish image, Sawiday is the
+    // automatic secondary source. Its page must contain the exact supplier number.
+    if(!exact && requested){
+      try{
+        sawidayExact=await findSawidayHotbathImage(reference,requested,finish);
+        if(sawidayExact && await imageExists(sawidayExact.url,sawidayExact.attributes?.sourcePage)){
+          exact=sawidayExact;
+        }
+      }catch(e){
+        console.warn("[sawiday-fallback]",reference,requested,e.message);
       }
-    }catch(e){
-      console.warn("[sawiday-fallback]",reference,requested,e.message);
     }
+
+    // Only after the exact-finish routes fail do we allow a live generic Hotbath image.
+    const hotbathGeneric=sorted.filter(x=>
+      x.finishMatch!=="exact" &&
+      (/^hotbath-/.test(String(x.source||"")) || /^official-/.test(String(x.source||"")))
+    );
+    fallback=await firstLiveImageCandidate(hotbathGeneric,manufacturerUrl,10);
+    best=exact||fallback;
+  }else{
+    exact=sorted.find(x=>x.finishMatch==="exact" &&
+      (!isAmphora || x.source.startsWith("woocommerce-variation")) &&
+      (!isCoalbrook || x.source==="coalbrook-product-image" || x.source==="coalbrook-exact-sku-image")
+    )||null;
+    fallback=sorted.find(x=>x.finishMatch!=="exact")||null;
+    best=exact||fallback;
   }
 
   // Catalano: the selected finish is authoritative.
@@ -2305,14 +2374,26 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
       if(ct.startsWith("image/") && ir.data && ir.data.length<9000000){
         return {...item,dataUrl:`data:${ct};base64,${Buffer.from(ir.data).toString("base64")}`};
       }
-    }catch(e){console.warn("[manufacturer-image-embed]",e.message);}
+    }catch(e){
+      console.warn("[manufacturer-image-embed]",e.message);
+      if(isHotbath)return null;
+    }
     return item;
   }
   if(best) best=await embedOfficialImage(best);
+  if(isHotbath && !best && exact?.source==="sawiday-exact-finish"){
+    // A Sawiday page may change its CDN asset after discovery. Never leak a dead URL
+    // into the browser; downgrade cleanly rather than displaying a broken thumbnail.
+    exact=null;
+  }
   if(isCatalano || isRecor){
     productImages=await Promise.all(productImages.map(embedOfficialImage));
     if(productImages.length) best=productImages[0];
   }else productImages=best?[best]:[];
+
+  if(isHotbath){
+    productImages=best?[best]:[];
+  }
 
   console.log("[manufacturer-image]",JSON.stringify({
     reference,
@@ -2322,6 +2403,9 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     variationId:best?.variationId||null,
     detectedFinishCode:best?.detectedFinishCode||null,
     drawing:!!drawing,
+    hotbathSupplierRef:isHotbath?hotbathSawidaySupplierRef(reference,requested):undefined,
+    sawiday:best?.source==="sawiday-exact-finish",
+    bestHasEmbeddedData:!!best?.dataUrl,
     candidates:sorted.length,
     catalanoGallery:isCatalano?productImages.length:undefined,
     catalanoExactFinish:isCatalano?catalanoGallery.filter(x=>x.finishMatch==="exact").length:undefined,
@@ -2438,6 +2522,30 @@ app.post("/api/hotbath-web-image",async(req,res)=>{
   const key=[reference,finishCode,finish].join("|").toLowerCase();
 
   try{
+    // 1) Same trusted secondary route as the automatic enrichment.
+    const sawiday=await findSawidayHotbathImage(reference,finishCode,finish);
+    if(sawiday && await imageExists(sawiday.url,sawiday.attributes?.sourcePage)){
+      return res.json({
+        reference,finishCode,finish,
+        candidates:[{
+          image:sawiday.url,
+          page:sawiday.attributes?.sourcePage||"",
+          title:sawiday.attributes?.sawidayTitle||"",
+          source:"sawiday-exact-finish",
+          supplierRef:sawiday.attributes?.supplierRef||""
+        }],
+        best:{
+          image:sawiday.url,
+          page:sawiday.attributes?.sourcePage||"",
+          title:sawiday.attributes?.sawidayTitle||"",
+          source:"sawiday-exact-finish",
+          supplierRef:sawiday.attributes?.supplierRef||""
+        },
+        note:`Finition exacte trouvée sur Sawiday avec la référence fournisseur ${sawiday.attributes?.supplierRef||""}.`
+      });
+    }
+
+    // 2) Generic image search only if the exact Sawiday route did not resolve.
     let candidates=hotbathWebImageCache.get(key);
     if(!candidates){
       candidates=await bingHotbathImageCandidates(reference,finishCode,finish);
@@ -2826,7 +2934,7 @@ app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")))
 async function startServer(){
   try{
     await initPersistentStore();
-    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.3 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
+    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.4 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
   }catch(e){
     console.error("[Hydropolis] Démarrage impossible :",e);
     process.exit(1);
