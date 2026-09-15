@@ -8,7 +8,7 @@ const crypto = require("crypto");
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-app.use(express.json({limit:"12mb"}));
+app.use(express.json({limit:"20mb"}));
 app.use(express.static(path.join(__dirname,"public")));
 
 /* =========================================================
@@ -94,7 +94,7 @@ function parseToken(token){
 }
 function authUser(req){
   const raw=String(req.headers.authorization||"");
-  const token=raw.startsWith("Bearer ")?raw.slice(7):"";
+  const token=raw.startsWith("Bearer ")?raw.slice(7):String(req.query?.access||"");
   const payload=parseToken(token);
   if(!payload)return null;
   const db=readDb();
@@ -324,7 +324,7 @@ app.delete("/api/projects/:id",requireAuth,(req,res)=>{
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V9.1",
+  service:"Hydropolis Studio V9.3",
   time:new Date().toISOString()
 }));
 
@@ -1443,6 +1443,80 @@ app.post("/api/manufacturer-image",async(req,res)=>{
       detail:e.message
     });
   }
+});
+
+
+function safeAssetName(v){
+  const name=path.basename(String(v||""));
+  return /^[a-zA-Z0-9._-]+$/.test(name)?name:"";
+}
+function projectAssetDir(userId,projectId){
+  return path.join(HYDRO_DATA_DIR,"uploads",String(userId),String(projectId));
+}
+
+app.post("/api/projects/:id/assets/:productId/technical-sheet",requireAuth,(req,res)=>{
+  const db=readDb();
+  const project=db.projects.find(p=>p.id===req.params.id && p.userId===req.user.id);
+  if(!project)return res.status(404).json({error:"Projet introuvable"});
+
+  const fileName=String(req.body?.fileName||"fiche-technique.pdf");
+  const mime=String(req.body?.mime||"application/pdf").toLowerCase();
+  const dataBase64=String(req.body?.dataBase64||"").replace(/^data:application\/pdf;base64,/i,"");
+  if(!dataBase64)return res.status(400).json({error:"Fichier PDF manquant"});
+
+  let buf;
+  try{buf=Buffer.from(dataBase64,"base64")}catch{return res.status(400).json({error:"PDF invalide"})}
+  if(!buf.length || buf.length>10*1024*1024){
+    return res.status(413).json({error:"La fiche technique doit faire moins de 10 Mo"});
+  }
+  const isPdf=buf.subarray(0,5).toString("ascii")==="%PDF-";
+  if(!isPdf || mime!=="application/pdf"){
+    return res.status(415).json({error:"Seuls les fichiers PDF sont acceptés"});
+  }
+
+  const dir=projectAssetDir(req.user.id,project.id);
+  fs.mkdirSync(dir,{recursive:true});
+
+  const previous=safeAssetName(req.body?.previousFile);
+  if(previous){
+    try{fs.unlinkSync(path.join(dir,previous))}catch{}
+  }
+
+  const stored=`tech-${String(req.params.productId).replace(/[^a-zA-Z0-9_-]/g,"").slice(0,40)}-${crypto.randomUUID()}.pdf`;
+  fs.writeFileSync(path.join(dir,stored),buf);
+
+  res.json({
+    asset:{
+      file:stored,
+      name:path.basename(fileName)||"fiche-technique.pdf",
+      mime:"application/pdf",
+      size:buf.length
+    }
+  });
+});
+
+app.delete("/api/projects/:id/assets/:file",requireAuth,(req,res)=>{
+  const db=readDb();
+  const project=db.projects.find(p=>p.id===req.params.id && p.userId===req.user.id);
+  if(!project)return res.status(404).json({error:"Projet introuvable"});
+  const file=safeAssetName(req.params.file);
+  if(!file)return res.status(400).json({error:"Fichier invalide"});
+  try{fs.unlinkSync(path.join(projectAssetDir(req.user.id,project.id),file))}catch{}
+  res.json({ok:true});
+});
+
+app.get("/api/project-assets/:projectId/:file",requireAuth,(req,res)=>{
+  const db=readDb();
+  const project=db.projects.find(p=>p.id===req.params.projectId && p.userId===req.user.id);
+  if(!project)return res.status(404).send("Projet introuvable");
+  const file=safeAssetName(req.params.file);
+  if(!file)return res.status(400).send("Fichier invalide");
+  const full=path.join(projectAssetDir(req.user.id,project.id),file);
+  if(!fs.existsSync(full))return res.status(404).send("Fichier introuvable");
+  res.set("Content-Type","application/pdf");
+  res.set("Content-Disposition",`inline; filename="${file}"`);
+  res.set("Cache-Control","private, max-age=300");
+  res.sendFile(full);
 });
 
 app.get("/api/pdf-page-image",async(req,res)=>{

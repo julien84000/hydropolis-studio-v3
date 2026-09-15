@@ -1837,3 +1837,31 @@ button,input,select,textarea{font:inherit}.shell{display:grid;grid-template-colu
 .side-note #catalogCount{
   color:#d7c7aa;
 }
+
+/* =========================================================
+   V9.3 — upload fiche technique PDF fiable et partagé
+   ========================================================= */
+.tech-upload-row{
+  display:grid!important;
+  grid-template-columns:minmax(220px,1fr) minmax(180px,1fr) auto;
+  width:100%;
+  align-items:center;
+}
+.tech-upload-row input[type="file"]{
+  max-width:none!important;
+  width:100%;
+  padding:7px;
+  border:1px dashed var(--line);
+  border-radius:7px;
+  background:#fff;
+}
+.tech-upload-status{
+  font-size:10px;
+  color:#6f675d;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+@media(max-width:900px){
+  .tech-upload-row{grid-template-columns:1fr!important}
+}

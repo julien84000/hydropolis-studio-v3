@@ -221,6 +221,69 @@ function formatProjectDate(s){
   try{return new Intl.DateTimeFormat("fr-FR",{dateStyle:"short",timeStyle:"short"}).format(new Date(s))}catch{return s}
 }
 
+
+function technicalSheetHref(p){
+  if(p?.customTechnicalSheet && p?.technicalSheetAsset?.file && cloud.currentProjectId && cloud.token){
+    return `${location.origin}/api/project-assets/${encodeURIComponent(cloud.currentProjectId)}/${encodeURIComponent(p.technicalSheetAsset.file)}?access=${encodeURIComponent(cloud.token)}`;
+  }
+  return p?.technicalSheetUrl||"";
+}
+function technicalSheetIsPdf(p){
+  const url=technicalSheetHref(p);
+  return p?.technicalSheetType==="pdf" || !!p?.technicalSheetAsset?.file || /\.pdf(?:\?|$)/i.test(url);
+}
+function fileToBase64(file){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=()=>{
+      const raw=String(reader.result||"");
+      resolve(raw.includes(",")?raw.split(",").pop():raw);
+    };
+    reader.onerror=()=>reject(reader.error||new Error("Lecture du fichier impossible"));
+    reader.readAsDataURL(file);
+  });
+}
+async function uploadTechnicalSheet(p,file){
+  if(!file)return;
+  if(file.type!=="application/pdf" && !/\.pdf$/i.test(file.name||"")){
+    throw new Error("Choisissez une fiche technique au format PDF.");
+  }
+  if(file.size>10*1024*1024)throw new Error("Le PDF doit faire moins de 10 Mo.");
+
+  if(!cloud.currentProjectId){
+    await saveCloudProject();
+  }
+
+  const dataBase64=await fileToBase64(file);
+  const payload=await apiFetch(`/api/projects/${encodeURIComponent(cloud.currentProjectId)}/assets/${encodeURIComponent(p.id)}/technical-sheet`,{
+    method:"POST",
+    body:JSON.stringify({
+      fileName:file.name,
+      mime:"application/pdf",
+      dataBase64,
+      previousFile:p.technicalSheetAsset?.file||""
+    })
+  });
+
+  p.technicalSheetAsset=payload.asset;
+  p.technicalSheetUrl="";
+  p.technicalSheetLabel=file.name||"Fiche technique personnalisée";
+  p.technicalSheetType="pdf";
+  p.customTechnicalSheet=true;
+  p.includeTechnicalSheet=false;
+
+  saveState();
+  await saveCloudProject();
+}
+async function deleteCustomTechnicalSheet(p){
+  if(p?.technicalSheetAsset?.file && cloud.currentProjectId){
+    try{
+      await apiFetch(`/api/projects/${encodeURIComponent(cloud.currentProjectId)}/assets/${encodeURIComponent(p.technicalSheetAsset.file)}`,{method:"DELETE"});
+    }catch(e){console.warn("[delete technical sheet]",e)}
+  }
+  delete p.technicalSheetAsset;
+}
+
 function salespersonProfile(){
   return {
     name:String(cloud.user?.name||"").trim(),
@@ -1462,13 +1525,15 @@ function renderRoomsCore(){
               </span>
             </label>
             <label>Fiche technique — URL
-              <input class="edit-tech-url" data-id="${p.id}" type="url" placeholder="https://…" value="${p.customTechnicalSheet?"":((p.technicalSheetUrl||"").startsWith("blob:")?"":(p.technicalSheetUrl||"")).replace(/"/g,"&quot;")}">
+              <input class="edit-tech-url" data-id="${p.id}" type="url" placeholder="https://…" value="${((p.technicalSheetUrl||"").startsWith("blob:")?"":(p.technicalSheetUrl||"")).replace(/"/g,"&quot;")}">
             </label>
             <label class="editor-file-label">Fiche technique — PDF
-              <span class="editor-file-row">
-                <input class="edit-tech-file" data-id="${p.id}" type="file" accept="application/pdf,.pdf">
-                <button class="tiny reset-tech" data-id="${p.id}" type="button">Fiche fabricant</button>
+              <span class="editor-file-row tech-upload-row">
+                <input class="edit-tech-file" id="techfile-${p.id}" data-id="${p.id}" type="file" accept=".pdf,application/pdf">
+                <span class="tech-upload-status">${p.customTechnicalSheet?(p.technicalSheetAsset?.name||p.technicalSheetLabel||"PDF personnalisé chargé"):"Aucun PDF personnalisé"}</span>
+                <button class="tiny reset-tech" data-id="${p.id}" type="button">Rétablir la fiche fabricant</button>
               </span>
+              <span class="tech">PDF uniquement · 10 Mo maximum · enregistré avec le projet</span>
             </label>
           </div>
           <div class="article-editor-actions">
@@ -1476,7 +1541,7 @@ function renderRoomsCore(){
             <button class="tiny reset-article-text" data-id="${p.id}" type="button">Rétablir désignation + prix</button>
           </div>
         </details>
-        <div class="image-actions"><button class="tiny enrich-btn" data-id="${p.id}">${p.image?"Actualiser photo + documents":"Chercher photo + documents"}</button><a target="_blank" href="${p.resolvedManufacturerUrl||p.manufacturerUrl}">Fiche officielle ↗</a>${p.technicalSheetUrl?`<a target="_blank" class="technical-sheet-link" href="${p.technicalSheetUrl}">Fiche technique ↗</a><label class="drawing-toggle"><input type="checkbox" class="techsheet-check" data-id="${p.id}" ${p.includeTechnicalSheet?"checked":""}> Inclure la fiche technique</label>`:`<span class="tech">${/lefroy brooks/i.test(p.manufacturer||"")?"Fiche technique Lefroy à récupérer":"Fiche technique à récupérer"}</span>`}${p.installationGuideUrl?`<a target="_blank" href="${p.installationGuideUrl}">Notice installation ↗</a><label class="drawing-toggle"><input type="checkbox" class="install-check" data-id="${p.id}" ${p.includeInstallationGuide?"checked":""}> Inclure la notice</label>`:""}${p.drawingUrl?`<a target="_blank" href="${p.drawingUrl}">${p.drawingType==="cad"?"DWG":"Drawing 2D"} ↗</a>${["pdf","image"].includes(p.drawingType)?`<label class="drawing-toggle"><input type="checkbox" class="drawing-check" data-id="${p.id}" ${p.includeDrawing?"checked":""}> Inclure le drawing</label>`:`<span class="tech">DWG consultable, non intégrable au PDF</span>`}`:`<span class="tech">Drawing 2D à récupérer</span>`}${(!p.image && p.fallbackImage)?`<button class="tiny fallback-btn" data-id="${p.id}">Catalogue en secours</button>`:""}</div></div>
+        <div class="image-actions"><button class="tiny enrich-btn" data-id="${p.id}">${p.image?"Actualiser photo + documents":"Chercher photo + documents"}</button><a target="_blank" href="${p.resolvedManufacturerUrl||p.manufacturerUrl}">Fiche officielle ↗</a>${technicalSheetHref(p)?`<a target="_blank" class="technical-sheet-link" href="${technicalSheetHref(p)}">${p.customTechnicalSheet?"Fiche personnalisée":"Fiche technique"} ↗</a>${technicalSheetIsPdf(p)?`<label class="drawing-toggle"><input type="checkbox" class="techsheet-check" data-id="${p.id}" ${p.includeTechnicalSheet?"checked":""}> Inclure la fiche technique</label>`:""}`:`<span class="tech">${/lefroy brooks/i.test(p.manufacturer||"")?"Fiche technique Lefroy à récupérer":"Fiche technique à récupérer"}</span>`}${p.installationGuideUrl?`<a target="_blank" href="${p.installationGuideUrl}">Notice installation ↗</a><label class="drawing-toggle"><input type="checkbox" class="install-check" data-id="${p.id}" ${p.includeInstallationGuide?"checked":""}> Inclure la notice</label>`:""}${p.drawingUrl?`<a target="_blank" href="${p.drawingUrl}">${p.drawingType==="cad"?"DWG":"Drawing 2D"} ↗</a>${["pdf","image"].includes(p.drawingType)?`<label class="drawing-toggle"><input type="checkbox" class="drawing-check" data-id="${p.id}" ${p.includeDrawing?"checked":""}> Inclure le drawing</label>`:`<span class="tech">DWG consultable, non intégrable au PDF</span>`}`:`<span class="tech">Drawing 2D à récupérer</span>`}${(!p.image && p.fallbackImage)?`<button class="tiny fallback-btn" data-id="${p.id}">Catalogue en secours</button>`:""}</div></div>
         <div class="article-leadtime-panel">
           <label>Délai
             <input class="article-leadtime-input" data-id="${p.id}" type="text" placeholder="ex. 3 à 4 semaines" value="${(p.leadTime||"").replace(/"/g,"&quot;")}">
@@ -1557,33 +1622,47 @@ function renderRoomsCore(){
    saveState();renderRooms();
    enrichSelectedPhoto(p.id,true).catch(err=>console.warn("[reset photo]",err));
  });
- $$(".edit-tech-url").forEach(inp=>inp.onchange=()=>{
+ $$(".edit-tech-url").forEach(inp=>inp.onchange=async()=>{
    const p=state.selected.find(x=>x.id===inp.dataset.id);if(!p)return;
    const url=inp.value.trim();
    if(url){
+     await deleteCustomTechnicalSheet(p);
      p.technicalSheetUrl=url;p.technicalSheetLabel="Fiche technique personnalisée";
      p.technicalSheetType=/\.pdf(?:$|\?)/i.test(url)?"pdf":"link";
-     p.customTechnicalSheet=false;
+     p.customTechnicalSheet=false;p.includeTechnicalSheet=false;
    }
-   saveState();renderRooms();
+   saveState();
+   try{await saveCloudProject()}catch(err){console.warn("[technical url save]",err)}
+   renderRooms();
  });
  $$(".edit-tech-file").forEach(inp=>inp.onchange=async e=>{
    const p=state.selected.find(x=>x.id===inp.dataset.id);const f=e.target.files?.[0];
    if(!p||!f)return;
+   const row=inp.closest(".tech-upload-row");
+   const status=row?.querySelector(".tech-upload-status");
+   inp.disabled=true;
+   if(status)status.textContent="Envoi du PDF…";
    try{
-     await assetSet(`tech:${p.id}`,f);
-     p.technicalSheetUrl=URL.createObjectURL(f);
-     p.technicalSheetLabel=f.name||"Fiche technique personnalisée";
-     p.technicalSheetType="pdf";p.customTechnicalSheet=true;p.includeTechnicalSheet=false;
-     saveState();renderRooms();
-   }catch(err){console.warn("[custom technical sheet]",err)}
+     await uploadTechnicalSheet(p,f);
+     renderRooms();renderSelection();
+   }catch(err){
+     console.warn("[custom technical sheet]",err);
+     if(status)status.textContent=err.message;
+     alert(err.message);
+     inp.value="";
+     inp.disabled=false;
+   }
  });
  $$(".reset-tech").forEach(b=>b.onclick=async()=>{
    const p=state.selected.find(x=>x.id===b.dataset.id);if(!p)return;
+   b.disabled=true;
    await assetDelete(`tech:${p.id}`).catch(()=>{});
-   p.customTechnicalSheet=false;p.technicalSheetUrl="";p.technicalSheetLabel="Fiche technique";p.includeTechnicalSheet=false;
-   saveState();renderRooms();
-   enrichSelectedPhoto(p.id,true).catch(err=>console.warn("[reset technical]",err));
+   await deleteCustomTechnicalSheet(p);
+   p.customTechnicalSheet=false;p.technicalSheetUrl="";p.technicalSheetLabel="Fiche technique";p.technicalSheetType="";p.includeTechnicalSheet=false;
+   saveState();
+   try{await enrichSelectedPhoto(p.id,true)}catch(err){console.warn("[reset technical]",err)}
+   try{await saveCloudProject()}catch(err){console.warn("[reset technical save]",err)}
+   renderRooms();
  });
  $$(".article-leadtime-input").forEach(inp=>inp.onchange=()=>{
    const p=state.selected.find(x=>x.id===inp.dataset.id); if(!p)return;
@@ -2041,8 +2120,8 @@ function buildDocument(){
    });
 
    // Optional official technical sheets.
-   products.filter(p=>p.includeTechnicalSheet&&p.technicalSheetUrl&&/\.pdf(?:\?|$)/i.test(p.technicalSheetUrl)).forEach(p=>{
-     html+=technicalDocumentPage(r,p,p.technicalSheetUrl,"Fiche technique",no++);
+   products.filter(p=>p.includeTechnicalSheet&&technicalSheetHref(p)&&technicalSheetIsPdf(p)).forEach(p=>{
+     html+=technicalDocumentPage(r,p,technicalSheetHref(p),"Fiche technique",no++);
    });
 
    // Optional official installation manuals.
@@ -2208,7 +2287,7 @@ function harmonizeSavedCatalogProducts(){
       technicalSheetUrl:p.technicalSheetUrl,technicalSheetLabel:p.technicalSheetLabel,
       installationGuideUrl:p.installationGuideUrl,installationGuideLabel:p.installationGuideLabel,
       includeDrawing:p.includeDrawing,includeTechnicalSheet:p.includeTechnicalSheet,includeInstallationGuide:p.includeInstallationGuide,
-      customImage:p.customImage,clientDiscountOverride:p.clientDiscountOverride,leadTime:p.leadTime,priceOverride:p.priceOverride,originalDesignation:p.originalDesignation,catalogPrice:p.catalogPrice,catalogTotalPrice:p.catalogTotalPrice,customTechnicalSheet:p.customTechnicalSheet
+      customImage:p.customImage,clientDiscountOverride:p.clientDiscountOverride,leadTime:p.leadTime,priceOverride:p.priceOverride,originalDesignation:p.originalDesignation,catalogPrice:p.catalogPrice,catalogTotalPrice:p.catalogTotalPrice,customTechnicalSheet:p.customTechnicalSheet,technicalSheetAsset:p.technicalSheetAsset
     };
 
     Object.assign(p,c,runtime);
