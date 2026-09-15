@@ -596,15 +596,15 @@ async function autoCropForPdf(src){
 
 try{
   Object.keys(localStorage).forEach(k=>{
-    if(/^hydropolis-manufacturer-/i.test(k) && k!=="hydropolis-manufacturer-v104")localStorage.removeItem(k);
+    if(/^hydropolis-manufacturer-/i.test(k) && k!=="hydropolis-manufacturer-v111")localStorage.removeItem(k);
   });
 }catch(e){}
 let manufacturerImageCache={};
-try{manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v104")||"{}")||{};}catch(e){manufacturerImageCache={};}
+try{manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v111")||"{}")||{};}catch(e){manufacturerImageCache={};}
 function manufacturerCacheKey(p){return `${p.manufacturer}|${p.reference}`;}
 function saveManufacturerCache(){
   try{
-    localStorage.setItem("hydropolis-manufacturer-v104",JSON.stringify(manufacturerImageCache));
+    localStorage.setItem("hydropolis-manufacturer-v111",JSON.stringify(manufacturerImageCache));
   }catch(e){
     console.warn("[Hydropolis cache] quota dépassé, cache vidé",e);
     manufacturerImageCache={};
@@ -637,7 +637,7 @@ async function fetchManufacturerImage(p,force=false){
   const data=await r.json();
   if(!r.ok)throw new Error(data.detail||data.error||"Recherche fabricant impossible");
 
-  const toProxy=url=>url?`/api/image-proxy?url=${encodeURIComponent(url)}`:"";
+  const toProxy=url=>url?`/api/product-image-fit?url=${encodeURIComponent(url)}`:"";
   const src=data.best?.url?toProxy(data.best.url):"";
   const imageSources=(data.images||[]).map(x=>toProxy(x.url)).filter(Boolean);
 
@@ -647,9 +647,9 @@ async function fetchManufacturerImage(p,force=false){
     remoteUrl:data.best?.url||"",
     remoteImages:(data.images||[]).map(x=>x.url).filter(Boolean),
     resolvedManufacturerUrl:data.manufacturerUrl||p.manufacturerUrl||"",
-    src:embedded||src,
+    src:src||embedded,
     cacheSrc:src,
-    images:embeddedImages.length?embeddedImages:(imageSources.length?imageSources:(embedded?[embedded]:src?[src]:[])),
+    images:imageSources.length?imageSources:(embeddedImages.length?embeddedImages:(embedded?[embedded]:src?[src]:[])),
     cacheImages:imageSources.length?imageSources:(src?[src]:[]),
     finishMatch:data.best?.finishMatch||"",
     source:src
@@ -791,6 +791,94 @@ function simulateHotbathFinishForProduct(id,button){
   p.imageNote="Simulation de finition générée à partir d'un visuel produit. Visuel non contractuel.";
   p.customImage=false;
   saveState();renderRooms();renderSelection();
+}
+
+
+const catalogAutoPhotoAttempted=new Set();
+const catalogAutoPhotoQueue=[];
+let catalogAutoPhotoActive=0;
+const CATALOG_AUTO_PHOTO_CONCURRENCY=2;
+let catalogPhotoObserver=null;
+
+function updateCatalogCardPhoto(card,p,img){
+  if(!card || !p || !img)return;
+  const thumb=$(".catalog-thumb",card);
+  const info=$(".photo-status",card);
+  const button=$(".lookup-photo",card);
+
+  if(img.src && thumb){
+    thumb.classList.remove("is-loading");
+    thumb.innerHTML=`<img src="${img.src}" alt="${p.reference||""}" loading="lazy">`;
+  }
+  if(info){
+    info.innerHTML=img.src
+      ?`<b>${imageBadge(img,p)}</b>${img.note?`<br>${img.note}`:""}`
+      :`Photo officielle non trouvée${img.note?`<br>${img.note}`:""}`;
+  }
+  if(button)button.textContent=img.src?"Actualiser":"Réessayer";
+}
+
+function pumpCatalogAutoPhotos(){
+  while(catalogAutoPhotoActive<CATALOG_AUTO_PHOTO_CONCURRENCY && catalogAutoPhotoQueue.length){
+    const task=catalogAutoPhotoQueue.shift();
+    if(!task?.p || !task?.card || !document.body.contains(task.card))continue;
+
+    catalogAutoPhotoActive++;
+    const thumb=$(".catalog-thumb",task.card);
+    if(thumb)thumb.classList.add("is-loading");
+
+    fetchManufacturerImage(task.p,false)
+      .then(img=>updateCatalogCardPhoto(task.card,task.p,img))
+      .catch(err=>{
+        const info=$(".photo-status",task.card);
+        if(info)info.textContent="Photo non disponible automatiquement.";
+        console.warn("[catalog auto photo]",task.p.reference,err.message);
+      })
+      .finally(()=>{
+        if(thumb)thumb.classList.remove("is-loading");
+        catalogAutoPhotoActive--;
+        pumpCatalogAutoPhotos();
+      });
+  }
+}
+
+function enqueueCatalogAutoPhoto(ref,card){
+  const p=CATALOG.find(x=>x.reference===ref);
+  if(!p || cachedManufacturerImage(p)?.src)return;
+
+  const key=manufacturerCacheKey(p);
+  if(catalogAutoPhotoAttempted.has(key))return;
+  catalogAutoPhotoAttempted.add(key);
+
+  catalogAutoPhotoQueue.push({p,card});
+  pumpCatalogAutoPhotos();
+}
+
+function scheduleAutoCatalogPhotos(){
+  if(catalogPhotoObserver){
+    try{catalogPhotoObserver.disconnect()}catch{}
+    catalogPhotoObserver=null;
+  }
+
+  const cards=$$(".v11-product-card[data-ref]");
+  if(!cards.length)return;
+
+  if("IntersectionObserver" in window){
+    catalogPhotoObserver=new IntersectionObserver(entries=>{
+      entries.forEach(entry=>{
+        if(!entry.isIntersecting)return;
+        catalogPhotoObserver.unobserve(entry.target);
+        enqueueCatalogAutoPhoto(entry.target.dataset.ref,entry.target);
+      });
+    },{root:null,rootMargin:"450px 0px",threshold:.01});
+
+    cards.forEach(card=>{
+      const p=CATALOG.find(x=>x.reference===card.dataset.ref);
+      if(p && !cachedManufacturerImage(p)?.src)catalogPhotoObserver.observe(card);
+    });
+  }else{
+    cards.slice(0,10).forEach(card=>enqueueCatalogAutoPhoto(card.dataset.ref,card));
+  }
 }
 
 async function lookupCatalogPhoto(reference,button){
@@ -1142,8 +1230,8 @@ function renderCatalog(){
        const cached=cachedManufacturerImage(p);
        const finishLabel=exactFinishLabel(p)||"";
        const price=Number(p.totalPrice||0);
-       cards.push(`<article class="result v11-product-card">
-       <div class="catalog-thumb">${cached?.src?`<img src="${cached.src}" alt="${p.reference||""}">`:`<div class="photo-missing"><b>Photo fabricant</b><br>${finishLabel}<br>à rechercher</div>`}</div>
+       cards.push(`<article class="result v11-product-card" data-ref="${p.reference||""}">
+       <div class="catalog-thumb">${cached?.src?`<img src="${cached.src}" alt="${p.reference||""}" loading="lazy">`:`<div class="photo-missing"><b>Photo fabricant</b><br>${finishLabel}<br>à rechercher</div>`}</div>
        <div><div class="r-top"><span class="ref">${p.reference||""}</span><span class="badge">${p.manufacturer||""}</span><span class="badge">${p.collection||""}</span><span class="badge">${p.category||""}</span></div>
        <div class="designation">${p.designation||""}</div><div class="meta">${p.finish||""}</div>
        <div class="manufacturer-tools v11-resource-tools">
@@ -1171,6 +1259,7 @@ function renderCatalog(){
    $$(".lookup-photo").forEach(b=>b.onclick=()=>lookupCatalogPhoto(b.dataset.ref,b));
    $$(".hotbath-web-photo").forEach(b=>b.onclick=()=>useHotbathWebImageForCatalog(b.dataset.ref,b));
    $$(".hotbath-sim-photo").forEach(b=>b.onclick=()=>simulateHotbathFinishForCatalog(b.dataset.ref,b));
+   scheduleAutoCatalogPhotos();
  }catch(e){
    console.error("[renderCatalog]",e);
    if(count)count.textContent="Erreur d’affichage du catalogue";

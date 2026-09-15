@@ -2282,3 +2282,129 @@ label{font-size:10px;color:#74716c;font-weight:600}
   .v11-topbar{display:none!important}
   #document .page{width:297mm!important;height:210mm!important}
 }
+
+/* =========================================================
+   V11.1 — catalogue compact + photos automatiques
+   ========================================================= */
+
+/* More Apple-like compact density: 4-ish cards across on iPad landscape,
+   rather than two oversized cards. */
+.results{
+  display:grid!important;
+  grid-template-columns:repeat(auto-fill,minmax(185px,1fr))!important;
+  gap:10px!important;
+}
+.result.v11-product-card{
+  border-radius:12px!important;
+  min-height:0!important;
+}
+.result.v11-product-card .catalog-thumb{
+  width:100%!important;
+  height:138px!important;
+  min-height:138px!important;
+  padding:10px!important;
+  background:#f8f8f6!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+.result.v11-product-card .catalog-thumb img{
+  width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  transform:none!important;
+}
+.result.v11-product-card .catalog-thumb.is-loading{
+  position:relative;
+}
+.result.v11-product-card .catalog-thumb.is-loading:after{
+  content:"";
+  width:20px;height:20px;
+  border-radius:50%;
+  border:2px solid rgba(95,89,79,.14);
+  border-top-color:#b78a4c;
+  position:absolute;
+  animation:v11spin .8s linear infinite;
+}
+@keyframes v11spin{to{transform:rotate(360deg)}}
+
+.result.v11-product-card>div:nth-child(2){
+  padding:9px 10px 5px!important;
+}
+.result.v11-product-card .r-top{
+  gap:4px!important;
+}
+.result.v11-product-card .ref{
+  font-size:9.5px!important;
+}
+.result.v11-product-card .badge{
+  font-size:6.6px!important;
+  padding:2px 5px!important;
+}
+.result.v11-product-card .designation{
+  font-size:9.5px!important;
+  line-height:1.28!important;
+  margin:5px 0 3px!important;
+  min-height:24px;
+}
+.result.v11-product-card .meta{
+  font-size:7.8px!important;
+  min-height:10px;
+}
+.result.v11-product-card .v11-resource-tools{
+  margin-top:6px!important;
+  gap:4px!important;
+}
+.result.v11-product-card .v11-resource-tools .tiny,
+.result.v11-product-card .v11-resource-tools .source-link{
+  font-size:6.5px!important;
+  padding:3px 5px!important;
+}
+.result.v11-product-card .photo-status{
+  font-size:6.6px!important;
+  line-height:1.2!important;
+  min-height:16px;
+  max-height:24px!important;
+}
+.result.v11-product-card .price-box{
+  padding:6px 10px 9px!important;
+}
+.result.v11-product-card .price{
+  font-size:12px!important;
+}
+.result.v11-product-card .internal{
+  font-size:6.6px!important;
+  min-height:15px!important;
+}
+.result.v11-product-card .add{
+  min-height:32px;
+  padding:7px 8px!important;
+  border-radius:8px!important;
+  font-size:8px!important;
+}
+.photo-missing{
+  font-size:8px!important;
+  line-height:1.25;
+}
+
+/* Don't collapse to two giant cards on normal tablets. */
+@media(max-width:1450px){
+  .results{
+    grid-template-columns:repeat(auto-fill,minmax(185px,1fr))!important;
+  }
+}
+@media(max-width:900px){
+  .results{
+    grid-template-columns:repeat(auto-fill,minmax(165px,1fr))!important;
+  }
+}
+@media(max-width:620px){
+  .results{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+  .result.v11-product-card .catalog-thumb{
+    height:122px!important;
+    min-height:122px!important;
+  }
+}
