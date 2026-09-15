@@ -899,24 +899,80 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     const href=absoluteUrl(manufacturerUrl,$(el).attr("href"));
     if(!href) return;
 
-    if(!technicalSheet && /\b(spec sheet|technical sheet|technical data sheet|fiche technique)\b/.test(label)){
+    if(!technicalSheet && /\b(spec sheet|specification sheet|technical specification sheet|technical specifications?|technical sheet|technical data sheet|fiche technique)\b/.test(label)){
       technicalSheet={
         url:href,
         label:labelRaw||"Fiche technique",
         type:isPdfUrl(href)?"pdf":"link",
-        source:"official-download"
+        source:/lefroybrooks\.com/i.test(manufacturerUrl)?"lefroy-official-download":"official-download"
       };
     }
 
-    if(!installationGuide && /\b(installation guide|installation manual|installation manual warnings|instructions|notice d installation)\b/.test(label)){
+    if(!installationGuide && /\b(installation guide|installation servicing guide|installation and servicing guide|installation service guide|installation manual|installation manual warnings|servicing guide|instructions|notice d installation)\b/.test(label)){
       installationGuide={
         url:href,
         label:labelRaw||"Notice d'installation",
         type:isPdfUrl(href)?"pdf":"link",
-        source:"official-download"
+        source:/lefroybrooks\.com/i.test(manufacturerUrl)?"lefroy-official-download":"official-download"
       };
     }
   });
+
+
+  // Lefroy Brooks (Squarespace): product downloads are commonly served from /s/
+  // and labels use "Technical Specification Sheet" / "Installation & Servicing Guide".
+  if(/lefroybrooks\.com/i.test(manufacturerUrl)){
+    $("a[href]").each((_,el)=>{
+      const href=absoluteUrl(manufacturerUrl,$(el).attr("href"));
+      if(!href)return;
+      const raw=($(el).text()||"").trim();
+      const label=normalizeToken(raw);
+      const lowHref=href.toLowerCase();
+
+      if(!technicalSheet &&
+         (/\btechnical specification sheet\b/.test(label) ||
+          /\btechnical specifications?\b/.test(label) ||
+          /_technical_(?:specification_)?sheet/i.test(lowHref))){
+        technicalSheet={
+          url:href,
+          label:raw||"Technical Specification Sheet",
+          type:isPdfUrl(href)?"pdf":"link",
+          source:"lefroy-official-download"
+        };
+      }
+
+      if(!installationGuide &&
+         (/\binstallation servicing guide\b/.test(label) ||
+          /\binstallation and servicing guide\b/.test(label) ||
+          /\bservicing guide\b/.test(label) ||
+          /installation.*servic/i.test(lowHref))){
+        installationGuide={
+          url:href,
+          label:raw||"Installation & Servicing Guide",
+          type:isPdfUrl(href)?"pdf":"link",
+          source:"lefroy-official-download"
+        };
+      }
+    });
+
+    // Raw HTML fallback for Squarespace download URLs which may be injected in JSON.
+    if(!technicalSheet){
+      const base=lefroyBase(reference);
+      const esc=base.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+      const patterns=[
+        new RegExp(`https?:\\\\?/\\\\?/[^"'<>\\\\s]+/s/${esc}[^"'<>\\\\s]*Technical[^"'<>\\\\s]*Specification[^"'<>\\\\s]*\\.pdf`,"i"),
+        new RegExp(`https?:\\\\?/\\\\?/[^"'<>\\\\s]+/s/${esc}[^"'<>\\\\s]*Technical[^"'<>\\\\s]*\\.pdf`,"i")
+      ];
+      for(const rx of patterns){
+        const m=html.match(rx);
+        if(m){
+          const u=m[0].replace(/\\\//g,"/").replace(/&amp;/g,"&");
+          technicalSheet={url:u,label:"Technical Specification Sheet",type:"pdf",source:"lefroy-html-download"};
+          break;
+        }
+      }
+    }
+  }
 
   // Zucchetti fallback: official technical sheets use the base reference as PDF filename.
   if(!technicalSheet && /zucchettidesign\.it/i.test(manufacturerUrl)){

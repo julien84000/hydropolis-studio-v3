@@ -1,11 +1,21 @@
-# Hydropolis Studio V7.7
+# Hydropolis Studio V7.8
+
+Correction Lefroy Brooks — documents techniques.
+
+Le site Lefroy Brooks nomme ses documents :
+- Technical Specification Sheet
+- DWG File
+- Installation & Servicing Guide
+
+L'ancienne détection cherchait surtout « Technical sheet » / « Spec sheet » et ne reconnaissait
+donc pas correctement « Technical Specification Sheet ».
 
 Corrections :
-- « Projet par pièce » est désormais indépendant du chargement des catalogues ;
-- normalisation automatique des anciennes données rooms / selected au démarrage ;
-- correction de harmonizeSavedCatalogProducts : il mettait à jour room.products alors que les produits sont stockés dans state.selected ;
-- renderRooms est protégé : une seule donnée produit incorrecte ne peut plus faire disparaître toute la section ;
-- un affichage simplifié de secours apparaît si une erreur produit survient ;
-- les catalogues Coalbrook, Catalano, Hotbath, Lefroy Brooks et Recor chargent en parallèle ;
-- Zucchetti charge ensuite par lots de 3 fichiers ;
-- à chaque lot chargé, les produits déjà sélectionnés sont réhydratés et la section Projet par pièce se met à jour.
+- détection de « Technical Specification Sheet » et variantes ;
+- détection de « Installation & Servicing Guide » et variantes ;
+- fallback spécifique Squarespace /s/ pour les PDF Lefroy Brooks ;
+- récupération des DWG conservée ;
+- cache fabricant V7.8 pour invalider les anciennes réponses sans fiche technique ;
+- à l'ouverture de « Projet par pièce », les produits Lefroy Brooks déjà sélectionnés sans document
+  sont réinterrogés automatiquement en arrière-plan ;
+- une fois le PDF récupéré, la case « Inclure la fiche technique » devient disponible.

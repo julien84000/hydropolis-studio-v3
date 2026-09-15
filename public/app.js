@@ -105,15 +105,15 @@ async function autoCropForPdf(src){
 
 try{
   Object.keys(localStorage).forEach(k=>{
-    if(/^hydropolis-manufacturer-/i.test(k) && k!=="hydropolis-manufacturer-v74")localStorage.removeItem(k);
+    if(/^hydropolis-manufacturer-/i.test(k) && k!=="hydropolis-manufacturer-v78")localStorage.removeItem(k);
   });
 }catch(e){}
 let manufacturerImageCache={};
-try{manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v74")||"{}")||{};}catch(e){manufacturerImageCache={};}
+try{manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v78")||"{}")||{};}catch(e){manufacturerImageCache={};}
 function manufacturerCacheKey(p){return `${p.manufacturer}|${p.reference}`;}
 function saveManufacturerCache(){
   try{
-    localStorage.setItem("hydropolis-manufacturer-v74",JSON.stringify(manufacturerImageCache));
+    localStorage.setItem("hydropolis-manufacturer-v78",JSON.stringify(manufacturerImageCache));
   }catch(e){
     console.warn("[Hydropolis cache] quota dépassé, cache vidé",e);
     manufacturerImageCache={};
@@ -983,7 +983,7 @@ function renderRoomsCore(){
       <div class="room-product">
         <div class="room-prod-img"><label data-id="${p.id}">${p.image?`<img src="${p.image}">`:"＋ Photo"}<input class="prod-file" type="file" accept="image/*" hidden></label></div>
         <div><b>${p.designation}</b><div class="tech">${p.manufacturer} · ${p.collection} · ${p.reference} · <b>${safeExactFinishLabel(p)}</b></div>${p.internalReference?`<div class="tech">Complet avec ${p.internalReference}</div>`:""}
-        <div class="image-actions"><button class="tiny enrich-btn" data-id="${p.id}">${p.image?"Actualiser photo + documents":"Chercher photo + documents"}</button><a target="_blank" href="${p.resolvedManufacturerUrl||p.manufacturerUrl}">Fiche officielle ↗</a>${p.technicalSheetUrl?`<a target="_blank" class="technical-sheet-link" href="${p.technicalSheetUrl}">Fiche technique ↗</a><label class="drawing-toggle"><input type="checkbox" class="techsheet-check" data-id="${p.id}" ${p.includeTechnicalSheet?"checked":""}> Inclure la fiche technique</label>`:`<span class="tech">Fiche technique à récupérer</span>`}${p.installationGuideUrl?`<a target="_blank" href="${p.installationGuideUrl}">Notice installation ↗</a><label class="drawing-toggle"><input type="checkbox" class="install-check" data-id="${p.id}" ${p.includeInstallationGuide?"checked":""}> Inclure la notice</label>`:""}${p.drawingUrl?`<a target="_blank" href="${p.drawingUrl}">${p.drawingType==="cad"?"DWG":"Drawing 2D"} ↗</a>${["pdf","image"].includes(p.drawingType)?`<label class="drawing-toggle"><input type="checkbox" class="drawing-check" data-id="${p.id}" ${p.includeDrawing?"checked":""}> Inclure le drawing</label>`:`<span class="tech">DWG consultable, non intégrable au PDF</span>`}`:`<span class="tech">Drawing 2D à récupérer</span>`}${(!p.image && p.fallbackImage)?`<button class="tiny fallback-btn" data-id="${p.id}">Catalogue en secours</button>`:""}</div></div>
+        <div class="image-actions"><button class="tiny enrich-btn" data-id="${p.id}">${p.image?"Actualiser photo + documents":"Chercher photo + documents"}</button><a target="_blank" href="${p.resolvedManufacturerUrl||p.manufacturerUrl}">Fiche officielle ↗</a>${p.technicalSheetUrl?`<a target="_blank" class="technical-sheet-link" href="${p.technicalSheetUrl}">Fiche technique ↗</a><label class="drawing-toggle"><input type="checkbox" class="techsheet-check" data-id="${p.id}" ${p.includeTechnicalSheet?"checked":""}> Inclure la fiche technique</label>`:`<span class="tech">${/lefroy brooks/i.test(p.manufacturer||"")?"Fiche technique Lefroy à récupérer":"Fiche technique à récupérer"}</span>`}${p.installationGuideUrl?`<a target="_blank" href="${p.installationGuideUrl}">Notice installation ↗</a><label class="drawing-toggle"><input type="checkbox" class="install-check" data-id="${p.id}" ${p.includeInstallationGuide?"checked":""}> Inclure la notice</label>`:""}${p.drawingUrl?`<a target="_blank" href="${p.drawingUrl}">${p.drawingType==="cad"?"DWG":"Drawing 2D"} ↗</a>${["pdf","image"].includes(p.drawingType)?`<label class="drawing-toggle"><input type="checkbox" class="drawing-check" data-id="${p.id}" ${p.includeDrawing?"checked":""}> Inclure le drawing</label>`:`<span class="tech">DWG consultable, non intégrable au PDF</span>`}`:`<span class="tech">Drawing 2D à récupérer</span>`}${(!p.image && p.fallbackImage)?`<button class="tiny fallback-btn" data-id="${p.id}">Catalogue en secours</button>`:""}</div></div>
         <div class="article-discount-panel">
           <label>Remise client article
             <span class="article-discount-line">
@@ -1147,6 +1147,40 @@ async function refreshCatalanoGalleries(){
   if(changed)saveState();
   return changed;
 }
+
+async function refreshLefroyDocuments(){
+  const targets=(state.selected||[]).filter(p=>
+    /lefroy brooks/i.test(p.manufacturer||"") &&
+    (!p.technicalSheetUrl || !p.drawingUrl)
+  );
+  if(!targets.length)return false;
+
+  let changed=false;
+  for(const p of targets){
+    try{
+      const img=await fetchManufacturerImage(p,true);
+      if(!img)continue;
+      p.resolvedManufacturerUrl=img.resolvedManufacturerUrl||p.resolvedManufacturerUrl||p.manufacturerUrl||"";
+      p.technicalSheetUrl=img.technicalSheetUrl||p.technicalSheetUrl||"";
+      p.technicalSheetLabel=img.technicalSheetLabel||p.technicalSheetLabel||"Fiche technique";
+      p.drawingUrl=img.drawingUrl||p.drawingUrl||"";
+      p.drawingType=img.drawingType||p.drawingType||"";
+      p.drawingLabel=img.drawingLabel||p.drawingLabel||"";
+      p.installationGuideUrl=img.installationGuideUrl||p.installationGuideUrl||"";
+      p.installationGuideLabel=img.installationGuideLabel||p.installationGuideLabel||"Notice d'installation";
+      changed=true;
+    }catch(e){
+      console.warn("[Lefroy documents]",p.reference,e.message);
+    }
+  }
+  if(changed){
+    saveState();
+    renderRooms();
+    renderSelection();
+  }
+  return changed;
+}
+
 function showView(v){
   if(v==="preview" && !validateRecorFeet(true)){v="project";}
   $$(".nav").forEach(n=>n.classList.toggle("active",n.dataset.view===v));
@@ -1163,7 +1197,11 @@ function showView(v){
   $("#viewSubtitle").textContent=t[v][1];
 
   if(v==="margin")renderMarginDashboard();
-  if(v==="project"){renderSelection();renderRooms();}
+  if(v==="project"){
+    renderSelection();
+    renderRooms();
+    refreshLefroyDocuments().catch(e=>console.warn("[Lefroy background docs]",e));
+  }
 
   if(v==="preview"){
     // Critical: never block the dossier on manufacturer network calls.
