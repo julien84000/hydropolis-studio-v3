@@ -56,6 +56,73 @@ function useCatalogueFallback(productId){
 
 
 
+
+const HYDRO_ASSET_DB="hydropolis-assets-v1";
+function assetDb(){
+  return new Promise((resolve,reject)=>{
+    const req=indexedDB.open(HYDRO_ASSET_DB,1);
+    req.onupgradeneeded=()=>{
+      const db=req.result;
+      if(!db.objectStoreNames.contains("assets"))db.createObjectStore("assets");
+    };
+    req.onsuccess=()=>resolve(req.result);
+    req.onerror=()=>reject(req.error);
+  });
+}
+async function assetSet(key,blob){
+  const db=await assetDb();
+  return new Promise((resolve,reject)=>{
+    const tx=db.transaction("assets","readwrite");
+    tx.objectStore("assets").put(blob,key);
+    tx.oncomplete=()=>resolve(true);
+    tx.onerror=()=>reject(tx.error);
+  });
+}
+async function assetGet(key){
+  const db=await assetDb();
+  return new Promise((resolve,reject)=>{
+    const tx=db.transaction("assets","readonly");
+    const req=tx.objectStore("assets").get(key);
+    req.onsuccess=()=>resolve(req.result||null);
+    req.onerror=()=>reject(req.error);
+  });
+}
+async function assetDelete(key){
+  const db=await assetDb();
+  return new Promise((resolve,reject)=>{
+    const tx=db.transaction("assets","readwrite");
+    tx.objectStore("assets").delete(key);
+    tx.oncomplete=()=>resolve(true);
+    tx.onerror=()=>reject(tx.error);
+  });
+}
+async function hydrateCustomAssets(){
+  let changed=false;
+  for(const p of state.selected||[]){
+    try{
+      if(p.customImage){
+        const blob=await assetGet(`photo:${p.id}`);
+        if(blob){
+          const url=URL.createObjectURL(blob);
+          p.image=url;p.images=[url];p.pdfImage=url;p.pdfImages=[url];
+          changed=true;
+        }
+      }
+      if(p.customTechnicalSheet){
+        const blob=await assetGet(`tech:${p.id}`);
+        if(blob){
+          p.technicalSheetUrl=URL.createObjectURL(blob);
+          p.technicalSheetType="pdf";
+          changed=true;
+        }
+      }
+    }catch(e){
+      console.warn("[hydrate asset]",p.id,e);
+    }
+  }
+  return changed;
+}
+
 async function autoCropForPdf(src){
   return new Promise((resolve)=>{
     const img=new Image();
@@ -318,6 +385,9 @@ function loadState(){
       delete p.clientDiscountOverride;
     }
     if(typeof p.leadTime!=="string")p.leadTime="";
+    if(p.catalogTotalPrice===undefined || p.catalogTotalPrice===null)p.catalogTotalPrice=Number(p.totalPrice||0);
+    if(p.catalogPrice===undefined || p.catalogPrice===null)p.catalogPrice=Number(p.price||0);
+    if(typeof p.customTechnicalSheet!=="boolean")p.customTechnicalSheet=false;
   });
 }
 function saveState(){
@@ -680,6 +750,11 @@ async function addProduct(ref,roomId,parentId=""){
 
  state.selected.push({
    ...p,id,roomId,
+   catalogPrice:Number(p.price||0),
+   catalogTotalPrice:Number(p.totalPrice||0),
+   priceOverride:null,
+   originalDesignation:p.designation||"",
+   customTechnicalSheet:false,
    image:cached?.src||"",
    images:cached?.images||[cached?.src].filter(Boolean),
    pdfImage:cached?.src||"",
@@ -729,9 +804,27 @@ function effectiveDiscountRate(p){
   const own=itemDiscountRate(p);
   return own===null?clientDiscountRate():own;
 }
+
+function hasPriceOverride(p){
+  return p && p.priceOverride!==undefined && p.priceOverride!==null && p.priceOverride!=="";
+}
+function articleMerchandisePrice(p){
+  if(hasPriceOverride(p))return Math.max(0,Number(p.priceOverride)||0);
+  const freight=Math.max(0,Number(p?.mandatoryFreight)||0);
+  return Math.max(0,Number(p?.totalPrice||0)-freight);
+}
+function articleListTotal(p){
+  return articleMerchandisePrice(p)+Math.max(0,Number(p?.mandatoryFreight)||0);
+}
+function catalogPurchaseBase(p){
+  const freight=Math.max(0,Number(p?.mandatoryFreight)||0);
+  const original=Number(p?.catalogTotalPrice ?? p?.totalPrice ?? 0);
+  return Math.max(0,original-freight);
+}
+
 function effectiveSaleValue(p){
   const freight=Math.max(0,Number(p?.mandatoryFreight)||0);
-  const merchandise=Math.max(0,Number(p?.price ?? p?.totalPrice)||0);
+  const merchandise=articleMerchandisePrice(p);
   return merchandise*(1-effectiveDiscountRate(p)/100)+freight;
 }
 
@@ -739,7 +832,7 @@ function supplierDiscountRate(manufacturer){
   return clampPercent(state.commercial?.supplierDiscounts?.[manufacturer]||0);
 }
 function selectedCatalogTotal(){
-  return state.selected.reduce((sum,p)=>sum+Number(p.totalPrice||0),0);
+  return state.selected.reduce((sum,p)=>sum+articleListTotal(p),0);
 }
 function selectedManualTotal(){
   return (state.rooms||[]).reduce((sum,r)=>sum+(r.manual||[]).reduce((s,m)=>s+Number(m.price||0),0),0);
@@ -756,8 +849,8 @@ function purchaseDiscountFor(p){
 function purchaseCostFor(p){
   const freight=Math.max(0,Number(p?.mandatoryFreight)||0);
   const explicit=Number(p?.purchasePrice);
-  if(Number.isFinite(explicit) && explicit>=0) return explicit+freight;
-  return Number(p.totalPrice||0)*(1-purchaseDiscountFor(p)/100);
+  if(Number.isFinite(explicit) && explicit>=0)return explicit+freight;
+  return catalogPurchaseBase(p)*(1-purchaseDiscountFor(p)/100)+freight;
 }
 function projectPurchaseCost(){
   return state.selected.reduce((sum,p)=>sum+purchaseCostFor(p),0);
@@ -797,7 +890,7 @@ function projectFinancials(){
 function commercialPriceHtml(value,p=null){
   const d=p?effectiveDiscountRate(p):clientDiscountRate();
   const freight=p?Math.max(0,Number(p.mandatoryFreight)||0):0;
-  const merchandise=p?Math.max(0,Number(p.price ?? value)||0):Number(value||0);
+  const merchandise=p?articleMerchandisePrice(p):Number(value||0);
   const listTotal=merchandise+freight;
   const netMerchandise=merchandise*(1-d/100);
   const netTotal=netMerchandise+freight;
@@ -805,7 +898,7 @@ function commercialPriceHtml(value,p=null){
   if(!d){
     return freight
       ? `<strong>${euro(listTotal)} HT</strong><span class="price-discount">dont ${euro(freight)} port obligatoire</span>`
-      : `${euro(value)} HT`;
+      : `${euro(listTotal)} HT`;
   }
 
   const own=p?itemDiscountRate(p):null;
@@ -853,7 +946,7 @@ function renderMarginDashboard(){
   if(detail){
     const rows=makers.map(m=>{
       const ps=state.selected.filter(p=>p.manufacturer===m);
-      const list=ps.reduce((s,p)=>s+Number(p.totalPrice||0),0);
+      const list=ps.reduce((s,p)=>s+articleListTotal(p),0);
       const sale=ps.reduce((s,p)=>s+effectiveSaleValue(p),0);
       const cost=ps.reduce((s,p)=>s+purchaseCostFor(p),0);
       const mg=sale-cost;
@@ -894,7 +987,7 @@ function quoteRows(){
       rows.push({
         room:r.title,reference:p.reference,designation:p.designation,finish:p.finish,
         manufacturer:p.manufacturer,qty:p.qty,
-        unit:Number(p.totalPrice||0),
+        unit:articleListTotal(p),
         netUnit:effectiveSaleValue(p),
         freight:p._freight||0,
         leadTime:p._leadTime||"",
@@ -996,6 +1089,36 @@ function renderRoomsCore(){
       <div class="room-product">
         <div class="room-prod-img"><label data-id="${p.id}">${p.image?`<img src="${p.image}">`:"＋ Photo"}<input class="prod-file" type="file" accept="image/*" hidden></label></div>
         <div><b>${p.designation}</b><div class="tech">${p.manufacturer} · ${p.collection} · ${p.reference} · <b>${safeExactFinishLabel(p)}</b></div>${p.internalReference?`<div class="tech">Complet avec ${p.internalReference}</div>`:""}
+        <details class="article-editor">
+          <summary>Modifier l'article</summary>
+          <div class="article-editor-grid">
+            <label>Désignation
+              <input class="edit-designation" data-id="${p.id}" type="text" value="${(p.designation||"").replace(/"/g,"&quot;")}">
+            </label>
+            <label>Prix de vente HT${p.mandatoryFreight?" hors port obligatoire":""}
+              <input class="edit-price" data-id="${p.id}" type="number" min="0" step="0.01" value="${articleMerchandisePrice(p)}">
+            </label>
+            <label class="editor-file-label">Photo
+              <span class="editor-file-row">
+                <input class="edit-photo-file" data-id="${p.id}" type="file" accept="image/*">
+                <button class="tiny reset-photo" data-id="${p.id}" type="button">Photo fabricant</button>
+              </span>
+            </label>
+            <label>Fiche technique — URL
+              <input class="edit-tech-url" data-id="${p.id}" type="url" placeholder="https://…" value="${p.customTechnicalSheet?"":((p.technicalSheetUrl||"").startsWith("blob:")?"":(p.technicalSheetUrl||"")).replace(/"/g,"&quot;")}">
+            </label>
+            <label class="editor-file-label">Fiche technique — PDF
+              <span class="editor-file-row">
+                <input class="edit-tech-file" data-id="${p.id}" type="file" accept="application/pdf,.pdf">
+                <button class="tiny reset-tech" data-id="${p.id}" type="button">Fiche fabricant</button>
+              </span>
+            </label>
+          </div>
+          <div class="article-editor-actions">
+            <button class="tiny save-article-edit" data-id="${p.id}" type="button">Enregistrer les modifications</button>
+            <button class="tiny reset-article-text" data-id="${p.id}" type="button">Rétablir désignation + prix</button>
+          </div>
+        </details>
         <div class="image-actions"><button class="tiny enrich-btn" data-id="${p.id}">${p.image?"Actualiser photo + documents":"Chercher photo + documents"}</button><a target="_blank" href="${p.resolvedManufacturerUrl||p.manufacturerUrl}">Fiche officielle ↗</a>${p.technicalSheetUrl?`<a target="_blank" class="technical-sheet-link" href="${p.technicalSheetUrl}">Fiche technique ↗</a><label class="drawing-toggle"><input type="checkbox" class="techsheet-check" data-id="${p.id}" ${p.includeTechnicalSheet?"checked":""}> Inclure la fiche technique</label>`:`<span class="tech">${/lefroy brooks/i.test(p.manufacturer||"")?"Fiche technique Lefroy à récupérer":"Fiche technique à récupérer"}</span>`}${p.installationGuideUrl?`<a target="_blank" href="${p.installationGuideUrl}">Notice installation ↗</a><label class="drawing-toggle"><input type="checkbox" class="install-check" data-id="${p.id}" ${p.includeInstallationGuide?"checked":""}> Inclure la notice</label>`:""}${p.drawingUrl?`<a target="_blank" href="${p.drawingUrl}">${p.drawingType==="cad"?"DWG":"Drawing 2D"} ↗</a>${["pdf","image"].includes(p.drawingType)?`<label class="drawing-toggle"><input type="checkbox" class="drawing-check" data-id="${p.id}" ${p.includeDrawing?"checked":""}> Inclure le drawing</label>`:`<span class="tech">DWG consultable, non intégrable au PDF</span>`}`:`<span class="tech">Drawing 2D à récupérer</span>`}${(!p.image && p.fallbackImage)?`<button class="tiny fallback-btn" data-id="${p.id}">Catalogue en secours</button>`:""}</div></div>
         <div class="article-leadtime-panel">
           <label>Délai
@@ -1014,7 +1137,7 @@ function renderRoomsCore(){
           <div class="tech">${hasItemDiscountOverride(p)?`Remise spécifique : ${itemDiscountRate(p).toLocaleString("fr-FR",{maximumFractionDigits:1})}%`:`Utilise la remise globale : ${clientDiscountRate().toLocaleString("fr-FR",{maximumFractionDigits:1})}%`}</div>
           <b>${euro(safeEffectiveSaleValue(p))} HT net</b>
         </div>
-        <div class="price-total">${euro(p.totalPrice)} HT${p.mandatoryFreight?`<div class="tech">dont ${euro(p.mandatoryFreight)} de transport Recor obligatoire</div>`:""}<div class="tech">${p.imageStatus||p.imageSource||"Photo fabricant à rechercher"}</div>${p.imageNote?`<div class="tech">${p.imageNote}</div>`:""}</div>
+        <div class="price-total">${euro(articleListTotal(p))} HT${p.mandatoryFreight?`<div class="tech">dont ${euro(p.mandatoryFreight)} de transport Recor obligatoire</div>`:""}<div class="tech">${p.imageStatus||p.imageSource||"Photo fabricant à rechercher"}</div>${p.imageNote?`<div class="tech">${p.imageNote}</div>`:""}</div>
         <button class="icon del-prod" data-id="${p.id}">×</button>
         ${safeBasinAccessorySuggestions(p,r.id)}${safeRecorBathOptions(p,r.id)}
       </div>`).join(""):`<div class="room-empty">Aucun produit catalogue dans cette pièce.</div>`}</div>
@@ -1038,6 +1161,73 @@ function renderRoomsCore(){
  $$(".drawing-check").forEach(ch=>ch.onchange=()=>{let p=state.selected.find(x=>x.id===ch.dataset.id);if(!p)return;p.includeDrawing=ch.checked;saveState();});
  $$(".techsheet-check").forEach(ch=>ch.onchange=()=>{let p=state.selected.find(x=>x.id===ch.dataset.id);if(!p)return;p.includeTechnicalSheet=ch.checked;saveState();});
  $$(".install-check").forEach(ch=>ch.onchange=()=>{let p=state.selected.find(x=>x.id===ch.dataset.id);if(!p)return;p.includeInstallationGuide=ch.checked;saveState();});
+ $$(".save-article-edit").forEach(b=>b.onclick=()=>{
+   const p=state.selected.find(x=>x.id===b.dataset.id);if(!p)return;
+   const card=b.closest(".room-product");
+   const d=$(".edit-designation",card)?.value.trim();
+   const pr=$(".edit-price",card)?.value;
+   if(d)p.designation=d;
+   if(pr!==undefined && pr!=="")p.priceOverride=Math.max(0,Number(pr)||0);
+   saveState();renderRooms();renderSelection();renderMarginDashboard();
+ });
+ $$(".reset-article-text").forEach(b=>b.onclick=()=>{
+   const p=state.selected.find(x=>x.id===b.dataset.id);if(!p)return;
+   if(p.originalDesignation)p.designation=p.originalDesignation;
+   else{
+     const c=CATALOG.find(x=>x.reference===p.reference && x.manufacturer===p.manufacturer);
+     if(c?.designation)p.designation=c.designation;
+   }
+   p.priceOverride=null;
+   saveState();renderRooms();renderSelection();renderMarginDashboard();
+ });
+ $$(".edit-photo-file").forEach(inp=>inp.onchange=async e=>{
+   const p=state.selected.find(x=>x.id===inp.dataset.id);const f=e.target.files?.[0];
+   if(!p||!f)return;
+   try{
+     const normalized=await normalizeImageFile(f,1800,1400,.92);
+     const blob=await (await fetch(normalized)).blob();
+     await assetSet(`photo:${p.id}`,blob);
+     const url=URL.createObjectURL(blob);
+     p.image=url;p.images=[url];p.pdfImage=url;p.pdfImages=[url];
+     p.imageSource="Photo personnalisée";p.customImage=true;p.imageStatus="Photo personnalisée";
+     saveState();renderRooms();renderSelection();
+   }catch(err){console.warn("[custom photo]",err)}
+ });
+ $$(".reset-photo").forEach(b=>b.onclick=async()=>{
+   const p=state.selected.find(x=>x.id===b.dataset.id);if(!p)return;
+   await assetDelete(`photo:${p.id}`).catch(()=>{});
+   p.customImage=false;p.image="";p.images=[];p.pdfImage="";p.pdfImages=[];
+   saveState();renderRooms();
+   enrichSelectedPhoto(p.id,true).catch(err=>console.warn("[reset photo]",err));
+ });
+ $$(".edit-tech-url").forEach(inp=>inp.onchange=()=>{
+   const p=state.selected.find(x=>x.id===inp.dataset.id);if(!p)return;
+   const url=inp.value.trim();
+   if(url){
+     p.technicalSheetUrl=url;p.technicalSheetLabel="Fiche technique personnalisée";
+     p.technicalSheetType=/\.pdf(?:$|\?)/i.test(url)?"pdf":"link";
+     p.customTechnicalSheet=false;
+   }
+   saveState();renderRooms();
+ });
+ $$(".edit-tech-file").forEach(inp=>inp.onchange=async e=>{
+   const p=state.selected.find(x=>x.id===inp.dataset.id);const f=e.target.files?.[0];
+   if(!p||!f)return;
+   try{
+     await assetSet(`tech:${p.id}`,f);
+     p.technicalSheetUrl=URL.createObjectURL(f);
+     p.technicalSheetLabel=f.name||"Fiche technique personnalisée";
+     p.technicalSheetType="pdf";p.customTechnicalSheet=true;p.includeTechnicalSheet=false;
+     saveState();renderRooms();
+   }catch(err){console.warn("[custom technical sheet]",err)}
+ });
+ $$(".reset-tech").forEach(b=>b.onclick=async()=>{
+   const p=state.selected.find(x=>x.id===b.dataset.id);if(!p)return;
+   await assetDelete(`tech:${p.id}`).catch(()=>{});
+   p.customTechnicalSheet=false;p.technicalSheetUrl="";p.technicalSheetLabel="Fiche technique";p.includeTechnicalSheet=false;
+   saveState();renderRooms();
+   enrichSelectedPhoto(p.id,true).catch(err=>console.warn("[reset technical]",err));
+ });
  $$(".article-leadtime-input").forEach(inp=>inp.onchange=()=>{
    const p=state.selected.find(x=>x.id===inp.dataset.id); if(!p)return;
    p.leadTime=String(inp.value||"").trim();
@@ -1056,7 +1246,19 @@ function renderRoomsCore(){
    delete p.clientDiscountOverride;
    saveState(); renderRooms(); renderMarginDashboard();
  });
- $$(".prod-file").forEach(inp=>inp.onchange=async e=>{let f=e.target.files[0];if(!f)return;let data=await normalizeImageFile(f,1600,1200,.9);let p=state.selected.find(x=>x.id===inp.parentElement.dataset.id);p.image=data;p.images=[data];p.pdfImage=await autoCropForPdf(data);p.pdfImages=[p.pdfImage];p.imageSource="Photo personnalisée";p.customImage=true;saveState();renderRooms();});
+ $$(".prod-file").forEach(inp=>inp.onchange=async e=>{
+   const f=e.target.files?.[0];if(!f)return;
+   const p=state.selected.find(x=>x.id===inp.parentElement.dataset.id);if(!p)return;
+   try{
+     const data=await normalizeImageFile(f,1800,1400,.92);
+     const blob=await (await fetch(data)).blob();
+     await assetSet(`photo:${p.id}`,blob);
+     const url=URL.createObjectURL(blob);
+     p.image=url;p.images=[url];p.pdfImage=url;p.pdfImages=[url];
+     p.imageSource="Photo personnalisée";p.customImage=true;p.imageStatus="Photo personnalisée";
+     saveState();renderRooms();renderSelection();
+   }catch(err){console.warn("[prod-file]",err)}
+ });
  $$(".manual-btn").forEach(b=>b.onclick=()=>{let id=b.dataset.id, card=b.closest(".room-card"), lab=$(".manual-label",card).value.trim(), price=parseFloat($(".manual-price",card).value||0);if(!lab)return;let r=roomById(id);r.manual=r.manual||[];r.manual.push({label:lab,price});saveState();renderRooms();renderMarginDashboard();});
  $$(".del-manual").forEach(b=>b.onclick=()=>{roomById(b.dataset.room).manual.splice(+b.dataset.i,1);saveState();renderRooms();renderMarginDashboard();});
 }
@@ -1084,7 +1286,7 @@ function renderRoomsFallback(error){
         ${ps.length?ps.map(p=>`<div class="room-product fallback-product">
           <div class="room-prod-img">${p.image?`<img src="${p.image}" alt="">`:`<div class="photo-missing">Photo<br>à récupérer</div>`}</div>
           <div><b>${p.designation||p.reference||"Produit"}</b><div class="tech">${p.manufacturer||""} · ${p.reference||""} · ${p.finish||""}</div></div>
-          <div class="price-total">${euro(p.totalPrice||0)} HT</div>
+          <div class="price-total">${euro(articleListTotal(p))} HT</div>
           <button class="icon fallback-del-prod" data-id="${p.id}">×</button>
         </div>`).join(""):`<div class="room-empty">Aucun produit catalogue dans cette pièce.</div>`}
       </div>
@@ -1648,7 +1850,7 @@ function harmonizeSavedCatalogProducts(){
       technicalSheetUrl:p.technicalSheetUrl,technicalSheetLabel:p.technicalSheetLabel,
       installationGuideUrl:p.installationGuideUrl,installationGuideLabel:p.installationGuideLabel,
       includeDrawing:p.includeDrawing,includeTechnicalSheet:p.includeTechnicalSheet,includeInstallationGuide:p.includeInstallationGuide,
-      customImage:p.customImage,clientDiscountOverride:p.clientDiscountOverride,leadTime:p.leadTime
+      customImage:p.customImage,clientDiscountOverride:p.clientDiscountOverride,leadTime:p.leadTime,priceOverride:p.priceOverride,originalDesignation:p.originalDesignation,catalogPrice:p.catalogPrice,catalogTotalPrice:p.catalogTotalPrice,customTechnicalSheet:p.customTechnicalSheet
     };
 
     Object.assign(p,c,runtime);
@@ -1656,6 +1858,7 @@ function harmonizeSavedCatalogProducts(){
 }
 async function bootstrap(){
   loadState();
+  await hydrateCustomAssets();
 
   // Built-in Amphora is usable immediately.
   harmonizeSavedCatalogProducts();

@@ -1545,3 +1545,136 @@ button,input,select,textarea{font:inherit}.shell{display:grid;grid-template-colu
 }
 #document .quote-table th:nth-last-child(-n+5),
 #document .quote-table td:nth-last-child(-n+5){text-align:right}
+
+/* =========================================================
+   V8.0 — édition complète d'un article
+   ========================================================= */
+.article-editor{
+  margin-top:9px;border:1px solid var(--line);border-radius:9px;
+  background:#fbfaf7;overflow:hidden
+}
+.article-editor summary{
+  cursor:pointer;padding:8px 10px;font-size:10px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.06em;color:#8b632f
+}
+.article-editor[open] summary{border-bottom:1px solid var(--line)}
+.article-editor-grid{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px;padding:10px
+}
+.article-editor-grid label{
+  display:grid;gap:5px;font-size:10px;text-transform:uppercase;
+  letter-spacing:.04em;color:var(--muted)
+}
+.article-editor-grid input[type="text"],
+.article-editor-grid input[type="number"],
+.article-editor-grid input[type="url"]{
+  width:100%;box-sizing:border-box;padding:8px 9px;
+  font-size:12px;text-transform:none;letter-spacing:0
+}
+.editor-file-label{grid-column:span 2}
+.editor-file-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.editor-file-row input[type="file"]{font-size:11px;max-width:420px}
+.article-editor-actions{
+  display:flex;gap:8px;flex-wrap:wrap;padding:0 10px 10px
+}
+@media(max-width:800px){
+ .article-editor-grid{grid-template-columns:1fr}
+ .editor-file-label{grid-column:auto}
+}
+
+
+/* =========================================================
+   V8.1 — correction affichage Projet par pièce (colonnes à droite)
+   ========================================================= */
+.room-product{
+  grid-template-columns:85px minmax(360px,1fr) 175px 175px 150px 38px !important;
+  align-items:start !important;
+}
+.room-product > *{
+  min-width:0;
+}
+.room-product > div:nth-child(2){
+  min-width:0;
+}
+.room-product .price-total{
+  min-width:0;
+  align-self:start;
+  text-align:right;
+  line-height:1.35;
+  word-break:break-word;
+}
+.article-leadtime-panel,
+.article-discount-panel{
+  min-width:0 !important;
+  width:100%;
+  box-sizing:border-box;
+  align-self:start;
+}
+.article-leadtime-panel input,
+.article-discount-line input{
+  width:100%;
+  min-width:0 !important;
+  box-sizing:border-box;
+}
+.article-discount-line{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto auto;
+}
+.image-actions{
+  max-width:100%;
+}
+.image-actions a,
+.image-actions .tech,
+.image-actions .drawing-toggle{
+  min-width:0;
+}
+.basin-accessories,
+.recor-bath-options,
+.room-inline-warning{
+  grid-column:2 / -1 !important;
+  width:auto;
+  min-width:0;
+}
+@media (max-width: 1500px){
+  .room-product{
+    grid-template-columns:85px minmax(280px,1fr) 165px 165px 135px 38px !important;
+    gap:10px;
+  }
+}
+@media (max-width: 1260px){
+  .room-product{
+    grid-template-columns:85px minmax(0,1fr) 150px 38px !important;
+  }
+  .article-leadtime-panel,
+  .article-discount-panel,
+  .room-product .price-total{
+    grid-column:2 / 4;
+    justify-self:start;
+    text-align:left;
+    max-width:340px;
+  }
+  .basin-accessories,
+  .recor-bath-options,
+  .room-inline-warning{
+    grid-column:1 / -1 !important;
+  }
+}
+@media (max-width: 900px){
+  .room-product{
+    grid-template-columns:1fr !important;
+  }
+  .room-prod-img{
+    width:100%;
+    max-width:140px;
+  }
+  .room-product .price-total,
+  .article-leadtime-panel,
+  .article-discount-panel,
+  .basin-accessories,
+  .recor-bath-options,
+  .room-inline-warning{
+    grid-column:auto !important;
+    max-width:none;
+  }
+}

@@ -1,10 +1,13 @@
-# Hydropolis Studio V7.9
+# Hydropolis Studio V8.1
 
-Nouveautés :
-- nouveau champ projet « Port fournisseur HT » dans Marge & devis ;
-- ligne « Port fournisseur HT » ajoutée au devis final ;
-- ce port est intégré au Total HT / TVA / TTC ;
-- il est traité comme refacturé à l'identique et n'altère donc pas la marge produits ;
-- nouveau champ manuel « Délai » sur chaque article sélectionné ;
-- exemple : « 3 à 4 semaines », « Sur stock », « 8 semaines » ;
-- le délai est sauvegardé avec l'article et affiché dans une nouvelle colonne « Délai » du devis.
+Correction de l'affichage dans « Projet par pièce ».
+
+## Correctif
+Sur les lignes produit, les blocs situés à droite (délai, remise client, prix, compléments assortis)
+étaient partiellement coupés, car la grille CSS n'avait pas assez de colonnes explicites.
+
+Cette version :
+- redéfinit la grille `.room-product` avec des colonnes explicites ;
+- évite la création de colonnes implicites qui débordaient à droite ;
+- force les blocs « Compléments lavabo assortis » / options Recor à passer sur une ligne dédiée ;
+- améliore le comportement responsive sur écrans intermédiaires et mobiles.
