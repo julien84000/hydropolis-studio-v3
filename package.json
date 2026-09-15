@@ -1,12 +1,12 @@
 {
   "name": "hydropolis-studio-v3",
-  "version": "9.3.0",
+  "version": "9.4.0",
   "private": true,
   "description": "Hydropolis Studio V3 - Render test server",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "build": "node -e \"console.log('Hydropolis V9.3: upload fiches techniques PDF serveur')\""
+    "build": "node -e \"console.log('Hydropolis V9.4: PostgreSQL / Supabase persistant')\""
   },
   "engines": {
     "node": ">=20"
@@ -16,6 +16,7 @@
     "cheerio": "^1.0.0",
     "express": "^4.21.2",
     "pdfjs-dist": "^5.4.149",
-    "@napi-rs/canvas": "^0.1.80"
+    "@napi-rs/canvas": "^0.1.80",
+    "pg": "^8.13.1"
   }
 }

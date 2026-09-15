@@ -4,6 +4,7 @@ const axios = require("axios");
 const cheerio = require("cheerio");
 const fs = require("fs");
 const crypto = require("crypto");
+const { Pool } = require("pg");
 
 const app = express();
 const PORT = process.env.PORT || 10000;
@@ -12,32 +13,36 @@ app.use(express.json({limit:"20mb"}));
 app.use(express.static(path.join(__dirname,"public")));
 
 /* =========================================================
-   V9.0 — Comptes utilisateurs + projets serveur
+   V9.4 — Comptes + projets persistants PostgreSQL / Supabase
    ========================================================= */
 const HYDRO_DATA_DIR = process.env.HYDRO_DATA_DIR || path.join(__dirname,"data");
 const HYDRO_DB_FILE = path.join(HYDRO_DATA_DIR,"hydropolis-db.json");
+const DATABASE_URL = String(process.env.DATABASE_URL||"").trim();
+const USE_POSTGRES = /^postgres(?:ql)?:\/\//i.test(DATABASE_URL);
+const TOKEN_SECRET = process.env.HYDRO_TOKEN_SECRET || crypto
+  .createHash("sha256")
+  .update(DATABASE_URL || "hydropolis-local-fallback")
+  .digest("hex");
+
+const pgPool = USE_POSTGRES ? new Pool({
+  connectionString:DATABASE_URL,
+  ssl:{rejectUnauthorized:false},
+  max:5,
+  idleTimeoutMillis:30000,
+  connectionTimeoutMillis:15000
+}) : null;
 
 function ensureDataDir(){
   fs.mkdirSync(HYDRO_DATA_DIR,{recursive:true});
 }
 function emptyDb(){
-  return {
-    meta:{createdAt:new Date().toISOString(),secret:crypto.randomBytes(32).toString("hex")},
-    users:[],
-    projects:[]
-  };
+  return {users:[],projects:[]};
 }
 function readDb(){
   ensureDataDir();
   try{
-    if(!fs.existsSync(HYDRO_DB_FILE)){
-      const db=emptyDb();
-      writeDb(db);
-      return db;
-    }
+    if(!fs.existsSync(HYDRO_DB_FILE))return emptyDb();
     const db=JSON.parse(fs.readFileSync(HYDRO_DB_FILE,"utf8"));
-    if(!db.meta)db.meta={};
-    if(!db.meta.secret)db.meta.secret=crypto.randomBytes(32).toString("hex");
     if(!Array.isArray(db.users))db.users=[];
     if(!Array.isArray(db.projects))db.projects=[];
     return db;
@@ -51,6 +56,51 @@ function writeDb(db){
   const tmp=HYDRO_DB_FILE+".tmp";
   fs.writeFileSync(tmp,JSON.stringify(db,null,2),"utf8");
   fs.renameSync(tmp,HYDRO_DB_FILE);
+}
+async function initPersistentStore(){
+  if(!USE_POSTGRES){
+    console.warn("[Hydropolis] DATABASE_URL absent — fallback fichier local non persistant.");
+    return false;
+  }
+  await pgPool.query(`
+    CREATE TABLE IF NOT EXISTS hydropolis_users(
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      username TEXT NOT NULL UNIQUE,
+      role TEXT NOT NULL DEFAULT 'user',
+      title TEXT NOT NULL DEFAULT '',
+      email TEXT NOT NULL DEFAULT '',
+      phone TEXT NOT NULL DEFAULT '',
+      salt TEXT NOT NULL,
+      password_hash TEXT NOT NULL,
+      disabled BOOLEAN NOT NULL DEFAULT FALSE,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE TABLE IF NOT EXISTS hydropolis_projects(
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL REFERENCES hydropolis_users(id) ON DELETE CASCADE,
+      name TEXT NOT NULL,
+      client TEXT NOT NULL DEFAULT '',
+      data JSONB NOT NULL DEFAULT '{}'::jsonb,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS hydropolis_projects_user_idx
+      ON hydropolis_projects(user_id,updated_at DESC);
+    CREATE TABLE IF NOT EXISTS hydropolis_assets(
+      project_id TEXT NOT NULL REFERENCES hydropolis_projects(id) ON DELETE CASCADE,
+      user_id TEXT NOT NULL REFERENCES hydropolis_users(id) ON DELETE CASCADE,
+      file TEXT NOT NULL,
+      product_id TEXT NOT NULL DEFAULT '',
+      name TEXT NOT NULL DEFAULT '',
+      mime TEXT NOT NULL DEFAULT 'application/octet-stream',
+      data BYTEA NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      PRIMARY KEY(project_id,file)
+    );
+  `);
+  console.log("[Hydropolis] PostgreSQL/Supabase prêt.");
+  return true;
 }
 function normalizeUsername(v){
   return String(v||"").trim().toLowerCase().replace(/\s+/g,".");
@@ -66,50 +116,234 @@ function verifyPassword(password,user){
     return saved.length===test.length && crypto.timingSafeEqual(saved,test);
   }catch{return false}
 }
-function b64url(input){
-  return Buffer.from(input).toString("base64url");
-}
+function b64url(input){return Buffer.from(input).toString("base64url")}
 function signToken(user){
-  const db=readDb();
-  const payload={
-    sub:user.id,
-    role:user.role||"user",
-    exp:Date.now()+1000*60*60*24*30
-  };
+  const payload={sub:user.id,role:user.role||"user",exp:Date.now()+1000*60*60*24*30};
   const body=b64url(JSON.stringify(payload));
-  const sig=crypto.createHmac("sha256",db.meta.secret).update(body).digest("base64url");
+  const sig=crypto.createHmac("sha256",TOKEN_SECRET).update(body).digest("base64url");
   return body+"."+sig;
 }
 function parseToken(token){
   try{
     const [body,sig]=String(token||"").split(".");
     if(!body||!sig)return null;
-    const db=readDb();
-    const expected=crypto.createHmac("sha256",db.meta.secret).update(body).digest("base64url");
+    const expected=crypto.createHmac("sha256",TOKEN_SECRET).update(body).digest("base64url");
     if(sig.length!==expected.length || !crypto.timingSafeEqual(Buffer.from(sig),Buffer.from(expected)))return null;
     const payload=JSON.parse(Buffer.from(body,"base64url").toString("utf8"));
     if(!payload.exp || payload.exp<Date.now())return null;
     return payload;
   }catch{return null}
 }
-function authUser(req){
+function mapPgUser(r){
+  if(!r)return null;
+  return {
+    id:r.id,name:r.name,username:r.username,role:r.role||"user",
+    title:r.title||"",email:r.email||"",phone:r.phone||"",
+    salt:r.salt,passwordHash:r.password_hash,disabled:!!r.disabled,
+    createdAt:r.created_at instanceof Date?r.created_at.toISOString():String(r.created_at||"")
+  };
+}
+function mapPgProject(r){
+  if(!r)return null;
+  return {
+    id:r.id,userId:r.user_id,name:r.name||"Projet sans nom",client:r.client||"",
+    data:r.data||{},
+    createdAt:r.created_at instanceof Date?r.created_at.toISOString():String(r.created_at||""),
+    updatedAt:r.updated_at instanceof Date?r.updated_at.toISOString():String(r.updated_at||"")
+  };
+}
+
+async function storeCountUsers(){
+  if(USE_POSTGRES){
+    const q=await pgPool.query("SELECT COUNT(*)::int AS n FROM hydropolis_users");
+    return Number(q.rows[0]?.n||0);
+  }
+  return readDb().users.length;
+}
+async function storeFindUserById(id){
+  if(USE_POSTGRES){
+    const q=await pgPool.query("SELECT * FROM hydropolis_users WHERE id=$1 LIMIT 1",[id]);
+    return mapPgUser(q.rows[0]);
+  }
+  return readDb().users.find(u=>u.id===id)||null;
+}
+async function storeFindUserByUsername(username){
+  if(USE_POSTGRES){
+    const q=await pgPool.query("SELECT * FROM hydropolis_users WHERE username=$1 LIMIT 1",[username]);
+    return mapPgUser(q.rows[0]);
+  }
+  return readDb().users.find(u=>u.username===username)||null;
+}
+async function storeListUsers(){
+  if(USE_POSTGRES){
+    const q=await pgPool.query("SELECT * FROM hydropolis_users ORDER BY created_at ASC");
+    return q.rows.map(mapPgUser);
+  }
+  return readDb().users;
+}
+async function storeCreateUser(user){
+  if(USE_POSTGRES){
+    await pgPool.query(
+      `INSERT INTO hydropolis_users
+       (id,name,username,role,title,email,phone,salt,password_hash,disabled,created_at)
+       VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
+      [user.id,user.name,user.username,user.role||"user",user.title||"",user.email||"",user.phone||"",
+       user.salt,user.passwordHash,!!user.disabled,user.createdAt||new Date().toISOString()]
+    );
+    return user;
+  }
+  const db=readDb();db.users.push(user);writeDb(db);return user;
+}
+async function storeUpdateUserProfile(id,patch){
+  if(USE_POSTGRES){
+    const q=await pgPool.query(
+      `UPDATE hydropolis_users SET name=$2,title=$3,email=$4,phone=$5
+       WHERE id=$1 RETURNING *`,
+      [id,patch.name,patch.title||"",patch.email||"",patch.phone||""]
+    );
+    return mapPgUser(q.rows[0]);
+  }
+  const db=readDb(),u=db.users.find(x=>x.id===id);if(!u)return null;
+  Object.assign(u,patch);writeDb(db);return u;
+}
+async function storeUpdatePassword(id,salt,passwordHash){
+  if(USE_POSTGRES){
+    const q=await pgPool.query(
+      "UPDATE hydropolis_users SET salt=$2,password_hash=$3 WHERE id=$1 RETURNING id",
+      [id,salt,passwordHash]
+    );
+    return !!q.rowCount;
+  }
+  const db=readDb(),u=db.users.find(x=>x.id===id);if(!u)return false;
+  u.salt=salt;u.passwordHash=passwordHash;writeDb(db);return true;
+}
+async function storeDeleteUser(id){
+  if(USE_POSTGRES){
+    const q=await pgPool.query("DELETE FROM hydropolis_users WHERE id=$1",[id]);
+    return q.rowCount>0;
+  }
+  const db=readDb(),before=db.users.length;
+  db.users=db.users.filter(u=>u.id!==id);
+  db.projects=db.projects.filter(p=>p.userId!==id);
+  writeDb(db);return db.users.length<before;
+}
+
+async function storeListProjects(userId){
+  if(USE_POSTGRES){
+    const q=await pgPool.query(
+      "SELECT * FROM hydropolis_projects WHERE user_id=$1 ORDER BY updated_at DESC",[userId]
+    );
+    return q.rows.map(mapPgProject);
+  }
+  return readDb().projects.filter(p=>p.userId===userId)
+    .sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt)));
+}
+async function storeGetProject(userId,id){
+  if(USE_POSTGRES){
+    const q=await pgPool.query(
+      "SELECT * FROM hydropolis_projects WHERE id=$1 AND user_id=$2 LIMIT 1",[id,userId]
+    );
+    return mapPgProject(q.rows[0]);
+  }
+  return readDb().projects.find(p=>p.id===id&&p.userId===userId)||null;
+}
+async function storeCreateProject(project){
+  if(USE_POSTGRES){
+    await pgPool.query(
+      `INSERT INTO hydropolis_projects(id,user_id,name,client,data,created_at,updated_at)
+       VALUES($1,$2,$3,$4,$5::jsonb,$6,$7)`,
+      [project.id,project.userId,project.name,project.client||"",JSON.stringify(project.data||{}),
+       project.createdAt,project.updatedAt]
+    );
+    return project;
+  }
+  const db=readDb();db.projects.push(project);writeDb(db);return project;
+}
+async function storeUpdateProject(userId,id,{name,client,data}){
+  if(USE_POSTGRES){
+    const q=await pgPool.query(
+      `UPDATE hydropolis_projects
+       SET name=COALESCE($3,name),client=COALESCE($4,client),
+           data=COALESCE($5::jsonb,data),updated_at=NOW()
+       WHERE id=$1 AND user_id=$2 RETURNING *`,
+      [id,userId,name??null,client??null,data===undefined?null:JSON.stringify(data)]
+    );
+    return mapPgProject(q.rows[0]);
+  }
+  const db=readDb(),p=db.projects.find(x=>x.id===id&&x.userId===userId);if(!p)return null;
+  if(name!==undefined)p.name=name;if(client!==undefined)p.client=client;if(data!==undefined)p.data=data;
+  p.updatedAt=new Date().toISOString();writeDb(db);return p;
+}
+async function storeDeleteProject(userId,id){
+  if(USE_POSTGRES){
+    const q=await pgPool.query("DELETE FROM hydropolis_projects WHERE id=$1 AND user_id=$2",[id,userId]);
+    return q.rowCount>0;
+  }
+  const db=readDb(),before=db.projects.length;
+  db.projects=db.projects.filter(p=>!(p.id===id&&p.userId===userId));writeDb(db);
+  return db.projects.length<before;
+}
+async function storeAssetPut(userId,projectId,asset){
+  if(USE_POSTGRES){
+    await pgPool.query(
+      `INSERT INTO hydropolis_assets(project_id,user_id,file,product_id,name,mime,data,created_at)
+       VALUES($1,$2,$3,$4,$5,$6,$7,NOW())
+       ON CONFLICT(project_id,file) DO UPDATE SET
+       product_id=EXCLUDED.product_id,name=EXCLUDED.name,mime=EXCLUDED.mime,
+       data=EXCLUDED.data,created_at=NOW()`,
+      [projectId,userId,asset.file,asset.productId||"",asset.name||"",asset.mime||"application/pdf",asset.data]
+    );
+    return true;
+  }
+  const dir=path.join(HYDRO_DATA_DIR,"uploads",String(userId),String(projectId));
+  fs.mkdirSync(dir,{recursive:true});fs.writeFileSync(path.join(dir,asset.file),asset.data);return true;
+}
+async function storeAssetDelete(userId,projectId,file){
+  if(USE_POSTGRES){
+    await pgPool.query(
+      "DELETE FROM hydropolis_assets WHERE project_id=$1 AND user_id=$2 AND file=$3",
+      [projectId,userId,file]
+    );
+    return true;
+  }
+  try{fs.unlinkSync(path.join(HYDRO_DATA_DIR,"uploads",String(userId),String(projectId),file))}catch{}
+  return true;
+}
+async function storeAssetGet(userId,projectId,file){
+  if(USE_POSTGRES){
+    const q=await pgPool.query(
+      `SELECT file,name,mime,data FROM hydropolis_assets
+       WHERE project_id=$1 AND user_id=$2 AND file=$3 LIMIT 1`,
+      [projectId,userId,file]
+    );
+    return q.rows[0]||null;
+  }
+  const full=path.join(HYDRO_DATA_DIR,"uploads",String(userId),String(projectId),file);
+  if(!fs.existsSync(full))return null;
+  return {file,name:file,mime:"application/pdf",data:fs.readFileSync(full)};
+}
+
+async function authUser(req){
   const raw=String(req.headers.authorization||"");
   const token=raw.startsWith("Bearer ")?raw.slice(7):String(req.query?.access||"");
   const payload=parseToken(token);
   if(!payload)return null;
-  const db=readDb();
-  const user=db.users.find(u=>u.id===payload.sub);
+  const user=await storeFindUserById(payload.sub);
   if(!user || user.disabled)return null;
   return {
     id:user.id,name:user.name,username:user.username,role:user.role||"user",
     title:user.title||"",email:user.email||"",phone:user.phone||""
   };
 }
-function requireAuth(req,res,next){
-  const user=authUser(req);
-  if(!user)return res.status(401).json({error:"Authentification requise"});
-  req.user=user;
-  next();
+async function requireAuth(req,res,next){
+  try{
+    const user=await authUser(req);
+    if(!user)return res.status(401).json({error:"Authentification requise"});
+    req.user=user;next();
+  }catch(e){
+    console.error("[auth]",e);
+    res.status(500).json({error:"Erreur d'authentification"});
+  }
 }
 function requireAdmin(req,res,next){
   if(!req.user || req.user.role!=="admin")return res.status(403).json({error:"Administrateur requis"});
@@ -118,8 +352,7 @@ function requireAdmin(req,res,next){
 function publicUser(u){
   return {
     id:u.id,name:u.name,username:u.username,role:u.role||"user",
-    title:u.title||"",email:u.email||"",phone:u.phone||"",
-    createdAt:u.createdAt
+    title:u.title||"",email:u.email||"",phone:u.phone||"",createdAt:u.createdAt
   };
 }
 function publicProject(p){
@@ -129,202 +362,196 @@ function publicProject(p){
   };
 }
 
-app.get("/api/auth/status",(req,res)=>{
-  const db=readDb();
-  const user=authUser(req);
-  res.json({
-    setupRequired:db.users.length===0,
-    user:user||null,
-    persistentPath:HYDRO_DATA_DIR,
-    persistentConfigured:!!process.env.HYDRO_DATA_DIR
-  });
+app.get("/api/auth/status",async(req,res)=>{
+  try{
+    const count=await storeCountUsers();
+    const user=await authUser(req);
+    res.json({
+      setupRequired:count===0,
+      user:user||null,
+      persistentPath:USE_POSTGRES?"Supabase PostgreSQL":HYDRO_DATA_DIR,
+      persistentConfigured:USE_POSTGRES,
+      storage:USE_POSTGRES?"postgresql":"local-file"
+    });
+  }catch(e){
+    console.error("[auth status]",e);
+    res.status(500).json({error:"Connexion à la base impossible",detail:e.message});
+  }
 });
 
-app.post("/api/auth/setup",(req,res)=>{
-  const db=readDb();
-  if(db.users.length)return res.status(409).json({error:"Le compte administrateur existe déjà"});
-  const name=String(req.body?.name||"").trim();
-  const username=normalizeUsername(req.body?.username);
-  const password=String(req.body?.password||"");
-  if(!name || username.length<3 || password.length<6){
-    return res.status(400).json({error:"Nom, identifiant (3 caractères) et mot de passe (6 caractères minimum) requis"});
+app.post("/api/auth/setup",async(req,res)=>{
+  try{
+    if(await storeCountUsers())return res.status(409).json({error:"Le compte administrateur existe déjà"});
+    const name=String(req.body?.name||"").trim();
+    const username=normalizeUsername(req.body?.username);
+    const password=String(req.body?.password||"");
+    if(!name || username.length<3 || password.length<6){
+      return res.status(400).json({error:"Nom, identifiant (3 caractères) et mot de passe (6 caractères minimum) requis"});
+    }
+    const h=hashPassword(password);
+    const user={
+      id:crypto.randomUUID(),name,username,role:"admin",
+      title:String(req.body?.title||"").trim(),
+      email:String(req.body?.email||"").trim(),
+      phone:String(req.body?.phone||"").trim(),
+      salt:h.salt,passwordHash:h.hash,disabled:false,createdAt:new Date().toISOString()
+    };
+    await storeCreateUser(user);
+    res.json({token:signToken(user),user:publicUser(user)});
+  }catch(e){
+    console.error("[setup]",e);
+    const duplicate=e?.code==="23505";
+    res.status(duplicate?409:500).json({error:duplicate?"Cet identifiant existe déjà":"Impossible de créer le compte",detail:e.message});
   }
-  const h=hashPassword(password);
-  const user={
-    id:crypto.randomUUID(),name,username,role:"admin",
-    title:String(req.body?.title||"").trim(),
-    email:String(req.body?.email||"").trim(),
-    phone:String(req.body?.phone||"").trim(),
-    salt:h.salt,passwordHash:h.hash,createdAt:new Date().toISOString()
-  };
-  db.users.push(user);
-  writeDb(db);
-  res.json({token:signToken(user),user:publicUser(user)});
 });
 
-app.post("/api/auth/login",(req,res)=>{
-  const db=readDb();
-  const username=normalizeUsername(req.body?.username);
-  const user=db.users.find(u=>u.username===username && !u.disabled);
-  if(!user || !verifyPassword(req.body?.password,user)){
-    return res.status(401).json({error:"Identifiant ou mot de passe incorrect"});
+app.post("/api/auth/login",async(req,res)=>{
+  try{
+    const username=normalizeUsername(req.body?.username);
+    const user=await storeFindUserByUsername(username);
+    if(!user || user.disabled || !verifyPassword(req.body?.password,user)){
+      return res.status(401).json({error:"Identifiant ou mot de passe incorrect"});
+    }
+    res.json({token:signToken(user),user:publicUser(user)});
+  }catch(e){
+    console.error("[login]",e);
+    res.status(500).json({error:"Connexion impossible"});
   }
-  res.json({token:signToken(user),user:publicUser(user)});
 });
 
 app.get("/api/me",requireAuth,(req,res)=>res.json({user:req.user}));
 
-app.patch("/api/me/profile",requireAuth,(req,res)=>{
-  const db=readDb();
-  const user=db.users.find(u=>u.id===req.user.id);
-  if(!user)return res.status(404).json({error:"Utilisateur introuvable"});
+app.patch("/api/me/profile",requireAuth,async(req,res)=>{
+  try{
+    const current=await storeFindUserById(req.user.id);
+    if(!current)return res.status(404).json({error:"Utilisateur introuvable"});
+    const name=String(req.body?.name??current.name??"").trim();
+    const title=String(req.body?.title??current.title??"").trim();
+    const email=String(req.body?.email??current.email??"").trim();
+    const phone=String(req.body?.phone??current.phone??"").trim();
+    if(!name)return res.status(400).json({error:"Le nom du commercial est requis"});
+    if(email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))return res.status(400).json({error:"Adresse e-mail invalide"});
+    const user=await storeUpdateUserProfile(req.user.id,{name,title,email,phone});
+    res.json({user:publicUser(user)});
+  }catch(e){res.status(500).json({error:"Enregistrement impossible",detail:e.message})}
+});
 
-  const name=String(req.body?.name??user.name??"").trim();
-  const title=String(req.body?.title??user.title??"").trim();
-  const email=String(req.body?.email??user.email??"").trim();
-  const phone=String(req.body?.phone??user.phone??"").trim();
+app.get("/api/users",requireAuth,requireAdmin,async(req,res)=>{
+  try{res.json({users:(await storeListUsers()).map(publicUser)})}
+  catch(e){res.status(500).json({error:"Impossible de charger l'équipe"})}
+});
 
-  if(!name)return res.status(400).json({error:"Le nom du commercial est requis"});
-  if(email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){
-    return res.status(400).json({error:"Adresse e-mail invalide"});
+app.post("/api/users",requireAuth,requireAdmin,async(req,res)=>{
+  try{
+    const name=String(req.body?.name||"").trim();
+    const username=normalizeUsername(req.body?.username);
+    const password=String(req.body?.password||"");
+    if(!name || username.length<3 || password.length<6){
+      return res.status(400).json({error:"Nom, identifiant et mot de passe de 6 caractères minimum requis"});
+    }
+    if(await storeFindUserByUsername(username))return res.status(409).json({error:"Cet identifiant existe déjà"});
+    const h=hashPassword(password);
+    const user={
+      id:crypto.randomUUID(),name,username,role:"user",
+      title:String(req.body?.title||"").trim(),
+      email:String(req.body?.email||"").trim(),
+      phone:String(req.body?.phone||"").trim(),
+      salt:h.salt,passwordHash:h.hash,disabled:false,createdAt:new Date().toISOString()
+    };
+    await storeCreateUser(user);
+    res.json({user:publicUser(user)});
+  }catch(e){
+    const duplicate=e?.code==="23505";
+    res.status(duplicate?409:500).json({error:duplicate?"Cet identifiant existe déjà":"Création impossible",detail:e.message});
   }
-
-  user.name=name;
-  user.title=title;
-  user.email=email;
-  user.phone=phone;
-  writeDb(db);
-  res.json({user:publicUser(user)});
 });
 
-
-app.get("/api/users",requireAuth,requireAdmin,(req,res)=>{
-  const db=readDb();
-  res.json({users:db.users.map(publicUser)});
+app.patch("/api/users/:id/password",requireAuth,requireAdmin,async(req,res)=>{
+  try{
+    const password=String(req.body?.password||"");
+    if(password.length<6)return res.status(400).json({error:"6 caractères minimum"});
+    const h=hashPassword(password);
+    if(!await storeUpdatePassword(req.params.id,h.salt,h.hash))return res.status(404).json({error:"Utilisateur introuvable"});
+    res.json({ok:true});
+  }catch(e){res.status(500).json({error:"Modification impossible"})}
 });
 
-app.post("/api/users",requireAuth,requireAdmin,(req,res)=>{
-  const db=readDb();
-  const name=String(req.body?.name||"").trim();
-  const username=normalizeUsername(req.body?.username);
-  const password=String(req.body?.password||"");
-  if(!name || username.length<3 || password.length<6){
-    return res.status(400).json({error:"Nom, identifiant et mot de passe de 6 caractères minimum requis"});
-  }
-  if(db.users.some(u=>u.username===username)){
-    return res.status(409).json({error:"Cet identifiant existe déjà"});
-  }
-  const h=hashPassword(password);
-  const user={
-    id:crypto.randomUUID(),name,username,role:"user",
-    title:String(req.body?.title||"").trim(),
-    email:String(req.body?.email||"").trim(),
-    phone:String(req.body?.phone||"").trim(),
-    salt:h.salt,passwordHash:h.hash,createdAt:new Date().toISOString()
-  };
-  db.users.push(user);
-  writeDb(db);
-  res.json({user:publicUser(user)});
+app.delete("/api/users/:id",requireAuth,requireAdmin,async(req,res)=>{
+  try{
+    if(req.params.id===req.user.id)return res.status(400).json({error:"Vous ne pouvez pas supprimer votre propre compte"});
+    if(!await storeDeleteUser(req.params.id))return res.status(404).json({error:"Utilisateur introuvable"});
+    res.json({ok:true});
+  }catch(e){res.status(500).json({error:"Suppression impossible"})}
 });
 
-app.patch("/api/users/:id/password",requireAuth,requireAdmin,(req,res)=>{
-  const db=readDb();
-  const user=db.users.find(u=>u.id===req.params.id);
-  if(!user)return res.status(404).json({error:"Utilisateur introuvable"});
-  const password=String(req.body?.password||"");
-  if(password.length<6)return res.status(400).json({error:"6 caractères minimum"});
-  const h=hashPassword(password);
-  user.salt=h.salt;user.passwordHash=h.hash;
-  writeDb(db);
-  res.json({ok:true});
+app.get("/api/projects",requireAuth,async(req,res)=>{
+  try{res.json({projects:(await storeListProjects(req.user.id)).map(publicProject)})}
+  catch(e){res.status(500).json({error:"Impossible de charger les projets",detail:e.message})}
 });
 
-app.delete("/api/users/:id",requireAuth,requireAdmin,(req,res)=>{
-  if(req.params.id===req.user.id)return res.status(400).json({error:"Vous ne pouvez pas supprimer votre propre compte"});
-  const db=readDb();
-  const exists=db.users.some(u=>u.id===req.params.id);
-  if(!exists)return res.status(404).json({error:"Utilisateur introuvable"});
-  db.users=db.users.filter(u=>u.id!==req.params.id);
-  db.projects=db.projects.filter(p=>p.userId!==req.params.id);
-  writeDb(db);
-  res.json({ok:true});
+app.post("/api/projects",requireAuth,async(req,res)=>{
+  try{
+    const now=new Date().toISOString();
+    const data=(req.body?.data && typeof req.body.data==="object")?req.body.data:{};
+    const name=String(req.body?.name||data?.project?.name||"Nouveau projet").trim()||"Nouveau projet";
+    const project={
+      id:crypto.randomUUID(),userId:req.user.id,name,
+      client:String(data?.project?.client||""),data,createdAt:now,updatedAt:now
+    };
+    await storeCreateProject(project);
+    res.json({project:publicProject(project)});
+  }catch(e){res.status(500).json({error:"Création du projet impossible",detail:e.message})}
 });
 
-app.get("/api/projects",requireAuth,(req,res)=>{
-  const db=readDb();
-  const projects=db.projects
-    .filter(p=>p.userId===req.user.id)
-    .sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt)))
-    .map(publicProject);
-  res.json({projects});
+app.get("/api/projects/:id",requireAuth,async(req,res)=>{
+  try{
+    const project=await storeGetProject(req.user.id,req.params.id);
+    if(!project)return res.status(404).json({error:"Projet introuvable"});
+    res.json({project:{...publicProject(project),data:project.data}});
+  }catch(e){res.status(500).json({error:"Lecture du projet impossible"})}
 });
 
-app.post("/api/projects",requireAuth,(req,res)=>{
-  const db=readDb();
-  const now=new Date().toISOString();
-  const data=(req.body?.data && typeof req.body.data==="object")?req.body.data:{};
-  const name=String(req.body?.name||data?.project?.name||"Nouveau projet").trim()||"Nouveau projet";
-  const project={
-    id:crypto.randomUUID(),userId:req.user.id,name,
-    client:String(data?.project?.client||""),
-    data,createdAt:now,updatedAt:now
-  };
-  db.projects.push(project);
-  writeDb(db);
-  res.json({project:publicProject(project)});
+app.put("/api/projects/:id",requireAuth,async(req,res)=>{
+  try{
+    const current=await storeGetProject(req.user.id,req.params.id);
+    if(!current)return res.status(404).json({error:"Projet introuvable"});
+    const data=(req.body?.data && typeof req.body.data==="object")?req.body.data:undefined;
+    const name=data
+      ? String(req.body?.name||data?.project?.name||current.name||"Projet").trim()||"Projet"
+      : (req.body?.name?String(req.body.name).trim():undefined);
+    const client=data?String(data?.project?.client||""):undefined;
+    const project=await storeUpdateProject(req.user.id,req.params.id,{name,client,data});
+    res.json({project:publicProject(project)});
+  }catch(e){res.status(500).json({error:"Enregistrement du projet impossible",detail:e.message})}
 });
 
-app.get("/api/projects/:id",requireAuth,(req,res)=>{
-  const db=readDb();
-  const project=db.projects.find(p=>p.id===req.params.id && p.userId===req.user.id);
-  if(!project)return res.status(404).json({error:"Projet introuvable"});
-  res.json({project:{...publicProject(project),data:project.data}});
+app.post("/api/projects/:id/duplicate",requireAuth,async(req,res)=>{
+  try{
+    const source=await storeGetProject(req.user.id,req.params.id);
+    if(!source)return res.status(404).json({error:"Projet introuvable"});
+    const now=new Date().toISOString();
+    const copy={
+      id:crypto.randomUUID(),userId:req.user.id,
+      name:String(req.body?.name||`${source.name} — copie`),
+      client:source.client||"",data:JSON.parse(JSON.stringify(source.data||{})),
+      createdAt:now,updatedAt:now
+    };
+    await storeCreateProject(copy);
+    res.json({project:publicProject(copy)});
+  }catch(e){res.status(500).json({error:"Duplication impossible",detail:e.message})}
 });
 
-app.put("/api/projects/:id",requireAuth,(req,res)=>{
-  const db=readDb();
-  const project=db.projects.find(p=>p.id===req.params.id && p.userId===req.user.id);
-  if(!project)return res.status(404).json({error:"Projet introuvable"});
-  if(req.body?.data && typeof req.body.data==="object"){
-    project.data=req.body.data;
-    project.name=String(req.body?.name||req.body.data?.project?.name||project.name||"Projet").trim()||"Projet";
-    project.client=String(req.body.data?.project?.client||"");
-  }else if(req.body?.name){
-    project.name=String(req.body.name).trim()||project.name;
-  }
-  project.updatedAt=new Date().toISOString();
-  writeDb(db);
-  res.json({project:publicProject(project)});
-});
-
-app.post("/api/projects/:id/duplicate",requireAuth,(req,res)=>{
-  const db=readDb();
-  const source=db.projects.find(p=>p.id===req.params.id && p.userId===req.user.id);
-  if(!source)return res.status(404).json({error:"Projet introuvable"});
-  const now=new Date().toISOString();
-  const copy={
-    ...source,id:crypto.randomUUID(),
-    name:String(req.body?.name||`${source.name} — copie`),
-    data:JSON.parse(JSON.stringify(source.data||{})),
-    createdAt:now,updatedAt:now
-  };
-  db.projects.push(copy);
-  writeDb(db);
-  res.json({project:publicProject(copy)});
-});
-
-app.delete("/api/projects/:id",requireAuth,(req,res)=>{
-  const db=readDb();
-  const before=db.projects.length;
-  db.projects=db.projects.filter(p=>!(p.id===req.params.id && p.userId===req.user.id));
-  if(db.projects.length===before)return res.status(404).json({error:"Projet introuvable"});
-  writeDb(db);
-  res.json({ok:true});
+app.delete("/api/projects/:id",requireAuth,async(req,res)=>{
+  try{
+    if(!await storeDeleteProject(req.user.id,req.params.id))return res.status(404).json({error:"Projet introuvable"});
+    res.json({ok:true});
+  }catch(e){res.status(500).json({error:"Suppression impossible"})}
 });
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V9.3",
+  service:"Hydropolis Studio V9.4",
+  database:USE_POSTGRES?"postgresql":"local-fallback",
   time:new Date().toISOString()
 }));
 
@@ -1450,73 +1677,68 @@ function safeAssetName(v){
   const name=path.basename(String(v||""));
   return /^[a-zA-Z0-9._-]+$/.test(name)?name:"";
 }
-function projectAssetDir(userId,projectId){
-  return path.join(HYDRO_DATA_DIR,"uploads",String(userId),String(projectId));
-}
 
-app.post("/api/projects/:id/assets/:productId/technical-sheet",requireAuth,(req,res)=>{
-  const db=readDb();
-  const project=db.projects.find(p=>p.id===req.params.id && p.userId===req.user.id);
-  if(!project)return res.status(404).json({error:"Projet introuvable"});
+app.post("/api/projects/:id/assets/:productId/technical-sheet",requireAuth,async(req,res)=>{
+  try{
+    const project=await storeGetProject(req.user.id,req.params.id);
+    if(!project)return res.status(404).json({error:"Projet introuvable"});
 
-  const fileName=String(req.body?.fileName||"fiche-technique.pdf");
-  const mime=String(req.body?.mime||"application/pdf").toLowerCase();
-  const dataBase64=String(req.body?.dataBase64||"").replace(/^data:application\/pdf;base64,/i,"");
-  if(!dataBase64)return res.status(400).json({error:"Fichier PDF manquant"});
+    const fileName=String(req.body?.fileName||"fiche-technique.pdf");
+    const mime=String(req.body?.mime||"application/pdf").toLowerCase();
+    const dataBase64=String(req.body?.dataBase64||"").replace(/^data:application\/pdf;base64,/i,"");
+    if(!dataBase64)return res.status(400).json({error:"Fichier PDF manquant"});
 
-  let buf;
-  try{buf=Buffer.from(dataBase64,"base64")}catch{return res.status(400).json({error:"PDF invalide"})}
-  if(!buf.length || buf.length>10*1024*1024){
-    return res.status(413).json({error:"La fiche technique doit faire moins de 10 Mo"});
-  }
-  const isPdf=buf.subarray(0,5).toString("ascii")==="%PDF-";
-  if(!isPdf || mime!=="application/pdf"){
-    return res.status(415).json({error:"Seuls les fichiers PDF sont acceptés"});
-  }
-
-  const dir=projectAssetDir(req.user.id,project.id);
-  fs.mkdirSync(dir,{recursive:true});
-
-  const previous=safeAssetName(req.body?.previousFile);
-  if(previous){
-    try{fs.unlinkSync(path.join(dir,previous))}catch{}
-  }
-
-  const stored=`tech-${String(req.params.productId).replace(/[^a-zA-Z0-9_-]/g,"").slice(0,40)}-${crypto.randomUUID()}.pdf`;
-  fs.writeFileSync(path.join(dir,stored),buf);
-
-  res.json({
-    asset:{
-      file:stored,
-      name:path.basename(fileName)||"fiche-technique.pdf",
-      mime:"application/pdf",
-      size:buf.length
+    let buf;
+    try{buf=Buffer.from(dataBase64,"base64")}catch{return res.status(400).json({error:"PDF invalide"})}
+    if(!buf.length || buf.length>10*1024*1024)return res.status(413).json({error:"La fiche technique doit faire moins de 10 Mo"});
+    if(buf.subarray(0,5).toString("ascii")!=="%PDF-" || mime!=="application/pdf"){
+      return res.status(415).json({error:"Seuls les fichiers PDF sont acceptés"});
     }
-  });
+
+    const previous=safeAssetName(req.body?.previousFile);
+    if(previous)await storeAssetDelete(req.user.id,project.id,previous);
+
+    const stored=`tech-${String(req.params.productId).replace(/[^a-zA-Z0-9_-]/g,"").slice(0,40)}-${crypto.randomUUID()}.pdf`;
+    await storeAssetPut(req.user.id,project.id,{
+      file:stored,productId:req.params.productId,
+      name:path.basename(fileName)||"fiche-technique.pdf",
+      mime:"application/pdf",data:buf
+    });
+
+    res.json({asset:{file:stored,name:path.basename(fileName)||"fiche-technique.pdf",mime:"application/pdf",size:buf.length}});
+  }catch(e){
+    console.error("[technical upload]",e);
+    res.status(500).json({error:"Enregistrement de la fiche technique impossible",detail:e.message});
+  }
 });
 
-app.delete("/api/projects/:id/assets/:file",requireAuth,(req,res)=>{
-  const db=readDb();
-  const project=db.projects.find(p=>p.id===req.params.id && p.userId===req.user.id);
-  if(!project)return res.status(404).json({error:"Projet introuvable"});
-  const file=safeAssetName(req.params.file);
-  if(!file)return res.status(400).json({error:"Fichier invalide"});
-  try{fs.unlinkSync(path.join(projectAssetDir(req.user.id,project.id),file))}catch{}
-  res.json({ok:true});
+app.delete("/api/projects/:id/assets/:file",requireAuth,async(req,res)=>{
+  try{
+    const project=await storeGetProject(req.user.id,req.params.id);
+    if(!project)return res.status(404).json({error:"Projet introuvable"});
+    const file=safeAssetName(req.params.file);
+    if(!file)return res.status(400).json({error:"Fichier invalide"});
+    await storeAssetDelete(req.user.id,project.id,file);
+    res.json({ok:true});
+  }catch(e){res.status(500).json({error:"Suppression du fichier impossible"})}
 });
 
-app.get("/api/project-assets/:projectId/:file",requireAuth,(req,res)=>{
-  const db=readDb();
-  const project=db.projects.find(p=>p.id===req.params.projectId && p.userId===req.user.id);
-  if(!project)return res.status(404).send("Projet introuvable");
-  const file=safeAssetName(req.params.file);
-  if(!file)return res.status(400).send("Fichier invalide");
-  const full=path.join(projectAssetDir(req.user.id,project.id),file);
-  if(!fs.existsSync(full))return res.status(404).send("Fichier introuvable");
-  res.set("Content-Type","application/pdf");
-  res.set("Content-Disposition",`inline; filename="${file}"`);
-  res.set("Cache-Control","private, max-age=300");
-  res.sendFile(full);
+app.get("/api/project-assets/:projectId/:file",requireAuth,async(req,res)=>{
+  try{
+    const project=await storeGetProject(req.user.id,req.params.projectId);
+    if(!project)return res.status(404).send("Projet introuvable");
+    const file=safeAssetName(req.params.file);
+    if(!file)return res.status(400).send("Fichier invalide");
+    const asset=await storeAssetGet(req.user.id,project.id,file);
+    if(!asset)return res.status(404).send("Fichier introuvable");
+    res.set("Content-Type",asset.mime||"application/pdf");
+    res.set("Content-Disposition",`inline; filename="${safeAssetName(asset.name)||file}"`);
+    res.set("Cache-Control","private, max-age=300");
+    res.send(asset.data);
+  }catch(e){
+    console.error("[asset read]",e);
+    res.status(500).send("Lecture du fichier impossible");
+  }
 });
 
 app.get("/api/pdf-page-image",async(req,res)=>{
@@ -1589,4 +1811,13 @@ app.get("/api/image-proxy",async(req,res)=>{
 });
 
 app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")));
-app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V4.4 on ${PORT}`));
+async function startServer(){
+  try{
+    await initPersistentStore();
+    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V9.4 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
+  }catch(e){
+    console.error("[Hydropolis] Démarrage impossible :",e);
+    process.exit(1);
+  }
+}
+startServer();

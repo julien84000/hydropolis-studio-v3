@@ -1,21 +1,29 @@
-# Hydropolis Studio V9.3
+# Hydropolis Studio V9.4 — PostgreSQL / Supabase
 
-Correction de l'upload des fiches techniques personnalisées.
+Cette version utilise automatiquement `DATABASE_URL` lorsqu'elle est définie dans Render.
 
-## Problème corrigé
-Dans les versions précédentes, un PDF chargé manuellement était enregistré uniquement dans le navigateur
-avec une URL `blob:`. Cette URL n'était pas exploitable correctement par le générateur du dossier client
-et n'était pas partagée avec les autres postes.
+## Données désormais persistantes dans Supabase PostgreSQL
+- compte administrateur ;
+- comptes des commerciaux ;
+- coordonnées des commerciaux ;
+- projets de chaque utilisateur ;
+- données de devis / sélections / délais ;
+- fiches techniques PDF personnalisées (stockées en BYTEA).
 
-## V9.3
-- « Modifier l'article » accepte un PDF de fiche technique jusqu'à 10 Mo ;
-- le PDF est envoyé au serveur et rattaché au projet + à l'article ;
-- le nom du fichier chargé est affiché dans l'éditeur ;
-- le lien « Fiche personnalisée » permet de l'ouvrir ;
-- la case « Inclure la fiche technique » fonctionne avec le PDF personnalisé ;
-- la première page du PDF peut être intégrée dans le dossier client ;
-- le PDF est accessible à l'utilisateur propriétaire du projet ;
-- « Rétablir la fiche fabricant » supprime la fiche personnalisée et recherche à nouveau le document officiel.
+Au démarrage, Hydropolis crée automatiquement ses tables :
+- `hydropolis_users`
+- `hydropolis_projects`
+- `hydropolis_assets`
 
-Important : pour conserver les PDF après un redéploiement Render, `HYDRO_DATA_DIR` doit être placé
-sur un disque persistant, comme indiqué dans la page « Mes projets ».
+Aucune commande SQL manuelle n'est nécessaire.
+
+## Fonctionnement
+- si `DATABASE_URL` est présente et valide : PostgreSQL est utilisé ;
+- si elle est absente : fallback fichier local (uniquement pour test).
+
+Dans « Mes projets », le bandeau indique maintenant :
+`Stockage persistant actif — PostgreSQL / Supabase`
+lorsque la connexion est opérationnelle.
+
+Après installation de V9.4, le compte administrateur devra être créé une dernière fois
+si la base Supabase est encore vide. Il restera ensuite enregistré lors des futurs déploiements.

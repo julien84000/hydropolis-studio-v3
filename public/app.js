@@ -366,8 +366,10 @@ function renderProjectHub(){
 
   const warning=$("#cloudStorageWarning");
   if(warning){
-    warning.classList.toggle("hidden",cloud.persistentConfigured);
-    warning.innerHTML=cloud.persistentConfigured?"":`<b>Stockage serveur non configuré comme persistant.</b> L'application fonctionne, mais pour une utilisation d'équipe sur Render il faut monter un disque persistant et définir <code>HYDRO_DATA_DIR</code> vers ce disque.`;
+    warning.classList.remove("hidden");warning.classList.toggle("storage-ok",cloud.persistentConfigured);
+    warning.innerHTML=cloud.persistentConfigured
+      ?`<b>Stockage persistant actif.</b> Comptes et projets sont enregistrés dans PostgreSQL / Supabase.`
+      :`<b>Stockage persistant non configuré.</b> Ajoutez <code>DATABASE_URL</code> dans Render avant une utilisation en équipe.`;
   }
   renderSalesProfile();
   renderTeamAdmin();

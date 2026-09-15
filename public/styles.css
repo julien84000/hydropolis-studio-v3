@@ -1865,3 +1865,10 @@ button,input,select,textarea{font:inherit}.shell{display:grid;grid-template-colu
 @media(max-width:900px){
   .tech-upload-row{grid-template-columns:1fr!important}
 }
+
+/* V9.4 — statut stockage PostgreSQL */
+.storage-warning.storage-ok{
+  background:#eef6ed;
+  border-color:#b9d2b6;
+  color:#4f6b4c;
+}
