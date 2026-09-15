@@ -4,7 +4,7 @@ const state={project:{name:"",client:"",location:"",date:"",intro:"",cover:""},r
 const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
 
 // V11.7: keep the visible build number correct even if index.html was not re-uploaded.
-queueMicrotask(()=>{const el=document.querySelector(".v11-logo em");if(el)el.textContent="V11.8";document.title="Hydropolis Studio V11.8 · Render";});
+queueMicrotask(()=>{const el=document.querySelector(".v11-logo em");if(el)el.textContent="V11.9";document.title="Hydropolis Studio V11.9 · Render";});
 
 const cloud={
   token:localStorage.getItem("hydropolis-auth-token")||"",
@@ -599,15 +599,15 @@ async function autoCropForPdf(src){
 
 try{
   Object.keys(localStorage).forEach(k=>{
-    if(/^hydropolis-manufacturer-/i.test(k) && k!=="hydropolis-manufacturer-v118")localStorage.removeItem(k);
+    if(/^hydropolis-manufacturer-/i.test(k) && k!=="hydropolis-manufacturer-v119")localStorage.removeItem(k);
   });
 }catch(e){}
 let manufacturerImageCache={};
-try{manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v118")||"{}")||{};}catch(e){manufacturerImageCache={};}
+try{manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v119")||"{}")||{};}catch(e){manufacturerImageCache={};}
 function manufacturerCacheKey(p){return `${p.manufacturer}|${p.reference}`;}
 function saveManufacturerCache(){
   try{
-    localStorage.setItem("hydropolis-manufacturer-v118",JSON.stringify(manufacturerImageCache));
+    localStorage.setItem("hydropolis-manufacturer-v119",JSON.stringify(manufacturerImageCache));
   }catch(e){
     console.warn("[Hydropolis cache] quota dépassé, cache vidé",e);
     manufacturerImageCache={};
@@ -2427,6 +2427,55 @@ async function refreshCatalanoGalleries(){
   return changed;
 }
 
+
+async function refreshHotbathDrawings(){
+  const targets=(state.selected||[]).filter(p=>
+    /hotbath/i.test(p.manufacturer||"") &&
+    (!p.drawingUrl || p.drawingType!=="image" || !p.includeDrawing)
+  );
+  if(!targets.length)return false;
+
+  let changed=false;
+  for(const p of targets){
+    try{
+      const img=await fetchManufacturerImage(p,true);
+      if(!img)continue;
+
+      p.resolvedManufacturerUrl=img.resolvedManufacturerUrl||p.resolvedManufacturerUrl||p.manufacturerUrl||"";
+
+      // Hotbath dossier policy: only the official JPG from "Drawing".
+      p.technicalSheetUrl="";
+      p.technicalSheetLabel="";
+      p.includeTechnicalSheet=false;
+      p.installationGuideUrl="";
+      p.installationGuideLabel="";
+      p.includeInstallationGuide=false;
+
+      if(img.drawingUrl && img.drawingType==="image"){
+        p.drawingUrl=img.drawingUrl;
+        p.drawingType="image";
+        p.drawingLabel=img.drawingLabel||"Dessin technique Hotbath";
+        p.drawingPage=1;
+        p.drawingSource=img.drawingSource||"hotbath-drawing-jpg";
+        p.includeDrawing=true;
+        changed=true;
+        console.log("[Hotbath drawing ready]",p.reference,p.drawingUrl);
+      }else{
+        console.warn("[Hotbath drawing missing]",p.reference);
+      }
+    }catch(e){
+      console.warn("[Hotbath drawing refresh]",p.reference,e.message);
+    }
+  }
+
+  if(changed){
+    saveState();
+    renderRooms();
+    renderSelection();
+  }
+  return changed;
+}
+
 async function refreshLefroyDocuments(){
   const targets=(state.selected||[]).filter(p=>
     /lefroy brooks/i.test(p.manufacturer||"") &&
@@ -2483,6 +2532,7 @@ function showView(v){
     renderSelection();
     renderRooms();
     refreshLefroyDocuments().catch(e=>console.warn("[Lefroy background docs]",e));
+    refreshHotbathDrawings().catch(e=>console.warn("[Hotbath background drawings]",e));
   }
 
   if(v==="preview"){
@@ -2493,6 +2543,27 @@ function showView(v){
       console.error("[buildDocument]",err);
       const host=$("#document");
       if(host)host.innerHTML=`<section class="page dossier-error-page"><div><h2>Le dossier n’a pas pu être généré.</h2><p>${String(err.message||err)}</p></div></section>`;
+    }
+
+    const hotbathDrawingsToRefresh=(state.selected||[]).some(p=>
+      /hotbath/i.test(p.manufacturer||"") &&
+      (!p.drawingUrl || p.drawingType!=="image" || !p.includeDrawing)
+    );
+
+    if(hotbathDrawingsToRefresh){
+      $("#viewSubtitle").textContent="Dossier affiché · récupération des dessins techniques Hotbath…";
+      refreshHotbathDrawings()
+        .then(changed=>{
+          if(changed && $("#view-preview").classList.contains("active")){
+            buildDocument();
+          }
+        })
+        .catch(err=>console.warn("[Hotbath preview drawing refresh]",err))
+        .finally(()=>{
+          if($("#view-preview").classList.contains("active")){
+            $("#viewSubtitle").textContent=t.preview[1];
+          }
+        });
     }
 
     const catalanoToRefresh=(state.selected||[]).some(p=>
@@ -2751,6 +2822,16 @@ function buildDocument(){
    // IMPORTANT: suggestions displayed under a product are proposals only.
    // They appear in the dossier strictly after the user clicks “Ajouter/Choisir”.
    const products=selectedProductsForDocument(r.id);
+
+  // Hotbath: the official Drawing JPG is the only technical document in the client dossier.
+  // If it is already present in project state, include it automatically.
+  products.forEach(p=>{
+    if(/hotbath/i.test(p.manufacturer||"") && p.drawingUrl && p.drawingType==="image"){
+      p.includeDrawing=true;
+      p.includeTechnicalSheet=false;
+      p.includeInstallationGuide=false;
+    }
+  });
    const items=[...products,...manualItemsForDocument(r)];
 
    const groups=orderedPresentationGroups(items);
@@ -2812,7 +2893,7 @@ function buildDocument(){
 
      const drawingSrc=p.drawingType==="pdf"
        ?`/api/pdf-page-image?url=${encodeURIComponent(p.drawingUrl)}&page=${page}&scale=1.8`
-       :`/api/image-proxy?url=${encodeURIComponent(p.drawingUrl)}`;
+       :`/api/image-proxy?url=${encodeURIComponent(p.drawingUrl)}&referer=${encodeURIComponent(p.resolvedManufacturerUrl||p.manufacturerUrl||"https://www.hotbath.it/")}`;
 
      const drawingTitle=/zucchetti/i.test(p.manufacturer||"")
        ?"Dessin technique · page 3"
