@@ -955,10 +955,16 @@ function isBasinTap(p){
 }
 function accessoryKind(p){
   const t=accessoryText(p);
-  const spare=/replacement|spare|part of|body|locknut|rod|tube|sleeve|cap\b|vitone|deviatore/.test(t);
-  if(spare) return "";
+
+  // A complete accessory must win over generic component words.
+  // Example Lefroy Brooks LB1302:
+  // "Basin bottle trap ... with 300 mm extension tube".
+  // The old rule rejected it solely because the text contained "tube".
   if(/siphon|bottle trap/.test(t) && !/without trap/.test(t)) return "siphon";
   if(/bonde|basin waste|lavabo waste|waste/.test(t) && !/shower tray|bath|baignoire|without trap/.test(t)) return "bonde";
+
+  const spare=/replacement|spare|part of|body|locknut|rod|tube|sleeve|cap\b|vitone|deviatore/.test(t);
+  if(spare) return "";
   return "";
 }
 function compatibleFinish(source,candidate){
@@ -988,6 +994,21 @@ function accessoryScore(source,candidate,kind){
   return score;
 }
 function matchingAccessory(source,kind){
+  // Lefroy Brooks — curated basin accessories.
+  // LB1302 = basin bottle trap / siphon tasse.
+  // LB1327 = basin waste kit.
+  if(source?.manufacturer==="Lefroy Brooks"){
+    const base=kind==="siphon"?"LB1302":kind==="bonde"?"LB1327":"";
+    if(base){
+      const exact=CATALOG.find(c=>
+        c.manufacturer==="Lefroy Brooks" &&
+        (c.base===base || String(c.reference||"").startsWith(base)) &&
+        compatibleFinish(source,c)
+      );
+      if(exact)return exact;
+    }
+  }
+
   return CATALOG
     .filter(c=>c.reference!==source.reference && c.manufacturer===source.manufacturer && accessoryKind(c)===kind)
     .map(c=>({c,score:accessoryScore(source,c,kind)}))
@@ -1005,7 +1026,7 @@ function basinAccessorySuggestions(p,roomId){
     if(!item) return `<div class="accessory-option unavailable"><div><b>${label}</b><span>Aucune référence assortie identifiée dans le tarif ${p.manufacturer}.</span></div></div>`;
     const already=selectedRefs.has(item.reference);
     return `<div class="accessory-option">
-      <div><b>${label}</b><span>${item.designation} · ${item.reference} · ${item.finish||p.finish}</span></div>
+      <div><b>${label}</b><span>${p.manufacturer==="Lefroy Brooks" && kind==="siphon"?"Siphon tasse / bottle trap":item.designation} · ${item.reference} · ${item.finish||p.finish}</span></div>
       <div class="accessory-option-right"><strong>${euro(item.totalPrice)} HT</strong>
       ${already?`<span class="accessory-added">Déjà ajouté</span>`:`<button class="tiny add-accessory" data-ref="${item.reference}" data-room="${roomId}" data-parent="${p.id}">+ Ajouter</button>`}</div>
     </div>`;

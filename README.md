@@ -1,18 +1,22 @@
-# Hydropolis Studio V9.5
+# Hydropolis Studio V9.6
 
-Correction du dossier client concernant les accessoires optionnels.
+Correction des accessoires Lefroy Brooks.
 
-## Comportement corrigé
-Les compléments proposés sous un produit (siphon, bonde, vidage Recor, etc.) sont des suggestions.
-Ils ne doivent apparaître ni dans le dossier client, ni dans le devis, ni dans le moodboard tant que
-l'utilisateur n'a pas cliqué sur « + Ajouter » / « + Choisir ».
+## LB1302
+Le tarif Lefroy Brooks contient bien :
+- LB1302CP — Chromé — 170 € HT
+- LB1302NK — Nickel argenté — 199 € HT
+- LB1302PB — Laiton poli — 218 € HT
+- LB1302AG — Or antique — 275 € HT
 
-V9.5 force cette règle dans :
-- les planches du dossier client ;
-- le moodboard de couverture ;
-- le devis final.
+Il s'agit du « Basin bottle trap (1¼") with 300 mm extension tube »,
+c'est-à-dire le siphon tasse / siphon bouteille pour lavabo.
 
-## Autre correction
-Les « éléments libres » sont maintenant transformés correctement pour la présentation client.
-Les anciens éléments vides/corrompus qui produisaient une page
-« Accessoires & éléments complémentaires » avec `undefined` sont filtrés automatiquement.
+L'ancienne détection l'écartait à tort parce que sa désignation contient le mot « tube »,
+classé comme pièce détachée.
+
+V9.6 :
+- reconnaît d'abord les accessoires complets « bottle trap » avant les mots génériques de pièce détachée ;
+- force pour Lefroy Brooks la proposition LB1302 comme siphon assorti ;
+- conserve exactement la même finition que le robinet ;
+- conserve LB1327 comme bonde lavabo assortie.
