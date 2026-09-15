@@ -3,6 +3,9 @@ const CATALOG=[{"manufacturer":"Amphora","collection":"REEL","reference":"RE001.
 const state={project:{name:"",client:"",location:"",date:"",intro:"",cover:""},rooms:[{id:"r1",title:"SDB MASTER",subtitle:"Robinetterie & sanitaires",manual:[]}],selected:[],commercial:{clientDiscount:0,vatRate:20,shippingFee:0,supplierShippingFee:0,supplierDiscounts:{"Amphora":50,"Catalano":64,"Coalbrook":50,"Zucchetti":55,"Lefroy Brooks":50,"Hotbath":50,"Recor":61.5385}}};
 const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
 
+// V11.7: keep the visible build number correct even if index.html was not re-uploaded.
+queueMicrotask(()=>{const el=document.querySelector(".v11-logo em");if(el)el.textContent="V11.7";document.title="Hydropolis Studio V11.7 · Render";});
+
 const cloud={
   token:localStorage.getItem("hydropolis-auth-token")||"",
   user:null,
@@ -596,15 +599,15 @@ async function autoCropForPdf(src){
 
 try{
   Object.keys(localStorage).forEach(k=>{
-    if(/^hydropolis-manufacturer-/i.test(k) && k!=="hydropolis-manufacturer-v116")localStorage.removeItem(k);
+    if(/^hydropolis-manufacturer-/i.test(k) && k!=="hydropolis-manufacturer-v117")localStorage.removeItem(k);
   });
 }catch(e){}
 let manufacturerImageCache={};
-try{manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v116")||"{}")||{};}catch(e){manufacturerImageCache={};}
+try{manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v117")||"{}")||{};}catch(e){manufacturerImageCache={};}
 function manufacturerCacheKey(p){return `${p.manufacturer}|${p.reference}`;}
 function saveManufacturerCache(){
   try{
-    localStorage.setItem("hydropolis-manufacturer-v116",JSON.stringify(manufacturerImageCache));
+    localStorage.setItem("hydropolis-manufacturer-v117",JSON.stringify(manufacturerImageCache));
   }catch(e){
     console.warn("[Hydropolis cache] quota dépassé, cache vidé",e);
     manufacturerImageCache={};
