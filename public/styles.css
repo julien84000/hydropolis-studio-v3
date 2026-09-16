@@ -2103,3 +2103,7 @@ button,input,select,textarea{font:inherit}.shell{display:grid;grid-template-colu
 }
 
 /* V10.13 — Hotbath: Sanitairkamer rapide + correctif finition */
+
+/* V10.14 — Recor configurator atomic add */
+.recor-configurator-overlay{z-index:20000!important;}
+.recor-config-confirm:disabled{opacity:.55;cursor:not-allowed;}

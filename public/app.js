@@ -604,15 +604,15 @@ async function autoCropForPdf(src){
 
 try{
   Object.keys(localStorage).forEach(k=>{
-    if(/^hydropolis-manufacturer-/i.test(k) && k!=="hydropolis-manufacturer-v113")localStorage.removeItem(k);
+    if(/^hydropolis-manufacturer-/i.test(k) && k!=="hydropolis-manufacturer-v114")localStorage.removeItem(k);
   });
 }catch(e){}
 let manufacturerImageCache={};
-try{manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v113")||"{}")||{};}catch(e){manufacturerImageCache={};}
+try{manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v114")||"{}")||{};}catch(e){manufacturerImageCache={};}
 function manufacturerCacheKey(p){return `${p.manufacturer}|${p.reference}`;}
 function saveManufacturerCache(){
   try{
-    localStorage.setItem("hydropolis-manufacturer-v113",JSON.stringify(manufacturerImageCache));
+    localStorage.setItem("hydropolis-manufacturer-v114",JSON.stringify(manufacturerImageCache));
   }catch(e){
     console.warn("[Hydropolis cache] quota dépassé, cache vidé",e);
     manufacturerImageCache={};
@@ -1481,7 +1481,61 @@ function closeRecorConfigurator(){
   const el=document.getElementById("recorConfigurator");
   if(el)el.remove();
 }
+function normalizedRoomId(roomId){
+  return roomById(roomId)?.id || state.rooms[0]?.id || roomId || "";
+}
+function createSelectedProductRecord(p,roomId,parentId=""){
+  if(!p)return null;
+  const targetRoomId=normalizedRoomId(roomId);
+  const cached=cachedManufacturerImage(p);
+  const id=crypto.randomUUID?crypto.randomUUID():Math.random().toString(36);
+  return {
+    ...p,id,roomId:targetRoomId,
+    catalogPrice:Number(p.price||0),
+    catalogTotalPrice:Number(p.totalPrice||0),
+    priceOverride:null,
+    originalDesignation:p.designation||"",
+    customTechnicalSheet:false,
+    image:cached?.src||"",
+    images:cached?.images||[cached?.src].filter(Boolean),
+    pdfImage:cached?.src||"",
+    pdfImages:cached?.images||[cached?.src].filter(Boolean),
+    remoteImageUrl:cached?.remoteUrl||"",
+    remoteImages:cached?.remoteImages||[],
+    imageSource:cached?.source||"Photo fabricant à rechercher",
+    imageFinishMatch:cached?.finishMatch||"",
+    imageStatus:cached?imageBadge(cached,p):"Recherche fabricant…",
+    resolvedManufacturerUrl:cached?.resolvedManufacturerUrl||p.manufacturerUrl||"",
+    drawingUrl:cached?.drawingUrl||"",
+    drawingType:cached?.drawingType||"",
+    drawingLabel:cached?.drawingLabel||"",
+    technicalSheetUrl:cached?.technicalSheetUrl||"",
+    technicalSheetLabel:cached?.technicalSheetLabel||"Fiche technique",
+    installationGuideUrl:cached?.installationGuideUrl||"",
+    installationGuideLabel:cached?.installationGuideLabel||"Notice d'installation",
+    includeDrawing:false,includeTechnicalSheet:false,includeInstallationGuide:false,
+    customImage:false,accessoryFor:parentId||""
+  };
+}
+function commitSelectedRecords(records,{showProject=false}={}){
+  const valid=(records||[]).filter(Boolean);
+  if(!valid.length)return [];
+  state.selected.push(...valid);
+  saveState();
+  renderSelection();
+  renderRooms();
+  renderMarginDashboard();
+  if(showProject)showView("project");
+  for(const item of valid){
+    if(!item.image){
+      enrichSelectedPhoto(item.id,false).catch(err=>console.warn("[enrich after add]",item.reference,err));
+    }
+  }
+  return valid.map(x=>x.id);
+}
+
 function openRecorBathConfigurator(p,roomId){
+  const targetRoomId=normalizedRoomId(roomId);
   const feet=recorCompatibleFeet(p);
   const wastes=recorCompatibleWastes(p);
   closeRecorConfigurator();
@@ -1499,7 +1553,7 @@ function openRecorBathConfigurator(p,roomId){
       <div class="recor-config-title"><b>1. Pieds</b><span>Obligatoire — un seul choix</span></div>
       <div class="recor-choice-list">
         ${feet.length?feet.map((x,i)=>`<label class="recor-choice required-choice">
-          <input type="radio" name="recorFeet" value="${x.reference}" ${i===0?'':''}>
+          <input type="radio" name="recorFeet" value="${x.reference}">
           <span class="recor-choice-main"><b>${recorOptionDisplay(x)}</b><small>${x.reference}</small></span>
           <strong>${euro(x.totalPrice)} HT</strong>
         </label>`).join(''):`<div class="recor-no-choice">Aucun pied compatible n’a été identifié pour ce modèle.</div>`}
@@ -1523,28 +1577,57 @@ function openRecorBathConfigurator(p,roomId){
   </div>`;
   document.body.appendChild(overlay);
 
+  console.log('[Recor configurator open]',{
+    reference:p.reference,
+    roomId:targetRoomId,
+    model:recorModelName(p),
+    feet:feet.map(x=>x.reference),
+    wastes:wastes.map(x=>x.reference)
+  });
+
   const close=()=>closeRecorConfigurator();
   overlay.querySelector('.recor-config-close').onclick=close;
   overlay.querySelector('.recor-config-cancel').onclick=close;
   overlay.addEventListener('click',e=>{if(e.target===overlay)close();});
 
   const confirmBtn=overlay.querySelector('.recor-config-confirm');
-  if(confirmBtn)confirmBtn.onclick=async()=>{
-    const foot=overlay.querySelector('input[name="recorFeet"]:checked');
+  if(confirmBtn)confirmBtn.onclick=()=>{
+    const footInput=overlay.querySelector('input[name="recorFeet"]:checked');
     const err=overlay.querySelector('.recor-config-error');
-    if(!foot){
+    if(!footInput){
       err.textContent='Sélectionnez obligatoirement un jeu de pieds.';
       return;
     }
+    const foot=CATALOG.find(x=>x.reference===footInput.value);
+    if(!foot){
+      err.textContent='Le jeu de pieds sélectionné est introuvable dans le catalogue.';
+      return;
+    }
+    const wasteRefs=[...overlay.querySelectorAll('input[name="recorWaste"]:checked')].map(x=>x.value);
+    const wastesSelected=wasteRefs.map(ref=>CATALOG.find(x=>x.reference===ref)).filter(Boolean);
+
     err.textContent='';
     confirmBtn.disabled=true;
     confirmBtn.textContent='Ajout en cours…';
     try{
-      const bathId=await addProduct(p.reference,roomId,'');
-      if(!bathId)throw new Error('La baignoire n’a pas pu être ajoutée.');
-      await addProduct(foot.value,roomId,bathId);
-      const wasteRefs=[...overlay.querySelectorAll('input[name="recorWaste"]:checked')].map(x=>x.value);
-      for(const ref of wasteRefs)await addProduct(ref,roomId,bathId);
+      // Atomic add: create the full Recor configuration before rendering/saving.
+      // This avoids the intermediate "bath without feet" state that could be
+      // overwritten or rejected by the project rendering/sync flow.
+      const bathRecord=createSelectedProductRecord(p,targetRoomId,"");
+      if(!bathRecord)throw new Error('La baignoire n’a pas pu être préparée.');
+      const footRecord=createSelectedProductRecord(foot,targetRoomId,bathRecord.id);
+      if(!footRecord)throw new Error('Les pieds n’ont pas pu être préparés.');
+      const wasteRecords=wastesSelected.map(x=>createSelectedProductRecord(x,targetRoomId,bathRecord.id)).filter(Boolean);
+
+      const ids=commitSelectedRecords([bathRecord,footRecord,...wasteRecords],{showProject:false});
+      if(!ids.length)throw new Error('La configuration n’a pas pu être ajoutée.');
+      console.log('[Recor configurator add]',{
+        bath:p.reference,
+        bathId:bathRecord.id,
+        foot:foot.reference,
+        wastes:wastesSelected.map(x=>x.reference),
+        roomId:targetRoomId
+      });
       closeRecorConfigurator();
       showView('project');
     }catch(e){
@@ -1556,58 +1639,24 @@ function openRecorBathConfigurator(p,roomId){
   };
   overlay.querySelector('input[name="recorFeet"]')?.focus();
 }
+
 function addCatalogProduct(ref,roomId){
   const p=CATALOG.find(x=>x.reference===ref);
   if(!p)return;
+  const targetRoomId=normalizedRoomId(roomId);
   if(isRecorBathRequiringFeet(p)){
-    openRecorBathConfigurator(p,roomId);
+    openRecorBathConfigurator(p,targetRoomId);
     return;
   }
-  addProduct(ref,roomId);
+  addProduct(ref,targetRoomId);
 }
 
 async function addProduct(ref,roomId,parentId=""){
- const p=CATALOG.find(x=>x.reference===ref);if(!p)return;
- const cached=cachedManufacturerImage(p);
- const id=crypto.randomUUID?crypto.randomUUID():Math.random().toString(36);
-
- state.selected.push({
-   ...p,id,roomId,
-   catalogPrice:Number(p.price||0),
-   catalogTotalPrice:Number(p.totalPrice||0),
-   priceOverride:null,
-   originalDesignation:p.designation||"",
-   customTechnicalSheet:false,
-   image:cached?.src||"",
-   images:cached?.images||[cached?.src].filter(Boolean),
-   pdfImage:cached?.src||"",
-   pdfImages:cached?.images||[cached?.src].filter(Boolean),
-   remoteImageUrl:cached?.remoteUrl||"",
-   remoteImages:cached?.remoteImages||[],
-   imageSource:cached?.source||"Photo fabricant à rechercher",
-   imageFinishMatch:cached?.finishMatch||"",
-   imageStatus:cached?imageBadge(cached,p):"Recherche fabricant…",
-   resolvedManufacturerUrl:cached?.resolvedManufacturerUrl||p.manufacturerUrl||"",
-   drawingUrl:cached?.drawingUrl||"",
-   drawingType:cached?.drawingType||"",
-   drawingLabel:cached?.drawingLabel||"",
-   technicalSheetUrl:cached?.technicalSheetUrl||"",
-   technicalSheetLabel:cached?.technicalSheetLabel||"Fiche technique",
-   installationGuideUrl:cached?.installationGuideUrl||"",
-   installationGuideLabel:cached?.installationGuideLabel||"Notice d'installation",
-   includeDrawing:false,includeTechnicalSheet:false,includeInstallationGuide:false,
-   customImage:false,accessoryFor:parentId||""
- });
-
- saveState();
- renderSelection();
- renderRooms();
- renderMarginDashboard();
-
- if(!cached){
-   enrichSelectedPhoto(id,false).catch(err=>console.warn("[enrich after add]",err));
- }
- return id;
+  const p=CATALOG.find(x=>x.reference===ref);if(!p)return null;
+  const record=createSelectedProductRecord(p,roomId,parentId);
+  if(!record)return null;
+  commitSelectedRecords([record]);
+  return record.id;
 }
 function removeProduct(id){
   state.selected=state.selected.filter(x=>x.id!==id && x.accessoryFor!==id);

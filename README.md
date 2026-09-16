@@ -1,20 +1,16 @@
-# Hydropolis Studio V10.13
+# Hydropolis Studio V10.14
 
-## Hotbath / Sanitairkamer — correctif vitesse
+## Correctif Recor — baignoires sur pieds
 
-La V10.12 pouvait devenir très lente à cause d'une erreur JavaScript serveur visible dans les logs :
-`textFinish is not defined`. Cette erreur se produisait sur chaque page candidate Sanitairkamer et
-forçait Hydropolis à continuer à parcourir toutes les variantes de finition.
+Le configurateur Recor ajoute désormais la baignoire, le jeu de pieds obligatoire et les éventuels accessoires **en une seule opération atomique** avant le rendu et la sauvegarde du projet.
 
-### V10.13
-- correction de l'erreur `textFinish is not defined` ;
-- classement des URLs Sanitairkamer par la finition recherchée avant d'ouvrir les pages ;
-- prise en compte du code article attendu (`B008GN`, `B008BC`, `B008BBP`, etc.) et du libellé finition dans le slug ;
-- maximum de 6 pages candidates au lieu de 16 ;
-- en pratique, si l'URL de la bonne finition est trouvée, une seule page est ouverte ;
-- validation de seulement 2 images maximum sur la page correspondant à la bonne finition ;
-- arrêt immédiat dès qu'une image exacte et accessible est trouvée ;
-- une page d'une mauvaise finition n'est plus validée image par image ;
-- cache navigateur fabricant renouvelé en V10.13.
+Corrections :
+- normalisation de la pièce cible avant ajout ;
+- suppression de l’état intermédiaire « baignoire sans pieds » ;
+- ajout baignoire + pieds + vidage en un seul commit ;
+- conservation du lien `accessoryFor` entre la baignoire et ses pieds/vidage ;
+- retour automatique vers « Projet par pièce » après validation ;
+- logs dédiés `[Recor configurator open]` et `[Recor configurator add]` ;
+- z-index renforcé pour la fenêtre de configuration.
 
-Les documents techniques Hotbath continuent d'être récupérés depuis le site officiel Hotbath.
+Les pieds restent obligatoires pour les modèles concernés. Collins reste exclu de cette règle car ses pieds sont déjà intégrés dans la référence.
