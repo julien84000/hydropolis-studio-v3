@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Hydropolis Studio V11.12 · Render</title><link rel="stylesheet" href="styles.css">
+<title>Hydropolis Studio V10.6 · Render</title><link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
@@ -37,14 +37,12 @@
 
 <div class="shell">
 <aside class="sidebar">
-  <div class="logo v11-logo"><span>H</span><div><b>Hydropolis</b><small>STUDIO</small><em>V11.12</em></div></div>
-  <nav class="v11-nav-stack" aria-label="Navigation principale">
-    <button class="nav" data-view="projects"><span class="nav-symbol">▣</span><span>Mes projets</span></button>
-    <button class="nav active" data-view="catalog"><span class="nav-symbol">▤</span><span>Catalogue intelligent</span></button>
-    <button class="nav" data-view="project"><span class="nav-symbol">□</span><span>Projet par pièce</span></button>
-    <button class="nav" data-view="margin"><span class="nav-symbol">◫</span><span>Marge & devis</span></button>
-    <button class="nav" data-view="preview"><span class="nav-symbol">▧</span><span>Présentation client</span></button>
-  </nav>
+  <div class="logo"><span>H</span><div><b>Hydropolis</b><small>Studio V10.6</small></div></div>
+  <button class="nav" data-view="projects">Mes projets</button>
+  <button class="nav active" data-view="catalog">Catalogue intelligent</button>
+  <button class="nav" data-view="project">Projet par pièce</button>
+  <button class="nav" data-view="margin">Marge & devis</button>
+  <button class="nav" data-view="preview">Présentation client</button>
   <div id="userBox" class="user-box"></div>
   <div class="side-note">
   <b>Catalogues actifs</b>
@@ -56,23 +54,15 @@
 </aside>
 
 <main>
-<header class="v11-topbar">
-  <div class="v11-heading"><h1 id="viewTitle">Catalogue intelligent</h1><p id="viewSubtitle">Recherche puis ajout direct dans la pièce choisie.</p></div>
+<header>
+  <div><h1 id="viewTitle">Catalogue intelligent</h1><p id="viewSubtitle">Le serveur charge uniquement les contrôles nécessaires, sélectionne la finition puis capture le visuel rendu.</p></div>
   <div class="head-actions">
     <span id="cloudProjectStatus" class="cloud-project-status"></span>
-    <button class="btn ghost" id="saveBtn"><span class="btn-symbol">⌘</span> Enregistrer</button>
+    <button class="btn ghost" id="saveBtn">Enregistrer</button>
     <button class="btn ghost" id="previewTopBtn">Aperçu A4</button>
-    <button class="btn primary" id="exportPdfTopBtn"><span class="btn-symbol">⇩</span> Exporter PDF</button>
+    <button class="btn primary" id="exportPdfTopBtn">Exporter PDF</button>
   </div>
 </header>
-<div id="v11ProjectBar" class="v11-projectbar">
-  <div class="v11-project-context"><span class="v11-back-dot"></span><div><small>Projet actif</small><strong id="v11ActiveProject">Projet sans nom</strong></div></div>
-  <div class="v11-kpi"><small>Client</small><strong id="v11ClientKpi">—</strong></div>
-  <div class="v11-kpi"><small>Commercial</small><strong id="v11SalesKpi">—</strong></div>
-  <div class="v11-kpi"><small>Total HT</small><strong id="v11TotalKpi">0 €</strong></div>
-  <div class="v11-kpi"><small>Remise</small><strong id="v11DiscountKpi">0 %</strong></div>
-  <div class="v11-kpi"><small>Marge estimée</small><strong id="v11MarginKpi">—</strong></div>
-</div>
 
 
 <section id="view-projects" class="view">
@@ -124,9 +114,8 @@
       <div><span class="eyebrow">Ajouter les produits dans</span><select id="targetRoom"></select></div>
       <button class="btn ghost" id="newRoomQuick">+ Nouvelle pièce</button>
     </div>
-    <div class="search-line v11-search-line"><span class="search-glyph">⌕</span><input id="searchInput" autofocus placeholder="Rechercher une référence, une collection, une marque…"><button class="btn ghost" id="clearSearch">Effacer</button></div>
-    <div id="brandRail" class="brand-rail" aria-label="Accès rapide fabricants"></div>
-    <div class="filters v11-filters">
+    <div class="search-line"><input id="searchInput" autofocus placeholder="Référence, désignation, collection, fabricant…"><button class="btn primary" id="clearSearch">Effacer</button></div>
+    <div class="filters">
       <select id="manufacturerFilter"><option value="">Tous fabricants</option></select>
       <select id="collectionFilter"><option value="">Toutes collections</option></select>
       <select id="categoryFilter"><option value="">Toutes catégories</option></select>
@@ -140,14 +129,7 @@
 </section>
 
 <section id="view-project" class="view">
-  <div class="v11-project-hero">
-    <button class="v11-back-projects" id="v11BackProjects" type="button">← Tous mes projets</button>
-    <div class="v11-project-hero-row">
-      <div><h2 id="v11ProjectHeroName">Projet sans nom</h2><p id="v11ProjectHeroMeta">Projet Hydropolis</p></div>
-      <span class="v11-status-pill"><i></i> En cours</span>
-    </div>
-  </div>
-  <div class="grid2 v11-project-info-grid">
+  <div class="grid2">
     <div class="card"><div class="eyebrow">Projet</div><h2>Informations client</h2>
       <div class="fields two">
         <label>Nom du projet<input id="projectName" placeholder="Villa Saint-Rémy"></label>
@@ -169,7 +151,7 @@
     </div>
   </div>
 
-  <div class="section-head room-titlebar"><div><div class="eyebrow">Composition</div><h2>Pièces et espaces</h2><span>Organisez la sélection par zone et accédez aux réglages seulement lorsque nécessaire.</span></div><button class="btn primary" id="addRoomBtn">＋ Ajouter une pièce</button></div>
+  <div class="section-head room-titlebar"><div><div class="eyebrow">Composition</div><h2>Pièces et éléments</h2></div><button class="btn primary" id="addRoomBtn">+ Ajouter une pièce</button></div>
   <div id="roomsEditor" class="rooms"></div>
 </section>
 
@@ -213,7 +195,7 @@
 <section id="view-preview" class="view">
   <div class="preview-toolbar">
     <div>
-      <b>Présentation client · aperçu A4 paysage</b>
+      <b>Aperçu du dossier - A4 paysage</b>
       <span>Chaque page du dossier est verrouillée au format A4 297 × 210 mm.</span>
     </div>
     <button class="btn primary" id="printBtn">Exporter PDF</button>

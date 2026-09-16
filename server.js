@@ -719,7 +719,7 @@ app.post("/api/translate-product",requireAuth,async(req,res)=>{
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V11.12",
+  service:"Hydropolis Studio V10.6",
   database:USE_POSTGRES?"postgresql":"local-fallback",
   time:new Date().toISOString()
 }));
@@ -745,40 +745,21 @@ function uniqueBest(arr,key="url"){
   }
   return [...m.values()];
 }
-const imageLiveMemo=new Map();
 async function imageExists(url,referer){
-  const key=String(url||"");
-  if(!key)return false;
-  const cached=imageLiveMemo.get(key);
-  if(cached && Date.now()-cached.at<6*60*60*1000)return cached.ok;
   try{
     const r=await axios.get(url,{
       responseType:"arraybuffer",
-      timeout:10000,
-      maxRedirects:5,
+      timeout:9000,
+      maxRedirects:4,
       validateStatus:s=>s>=200&&s<300,
       headers:{
         "User-Agent":"Mozilla/5.0",
-        "Accept":"image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
         "Referer":referer||new URL(url).origin+"/"
       }
     });
     const ct=String(r.headers["content-type"]||"");
-    const ok=ct.startsWith("image/") && r.data && r.data.byteLength>3000;
-    imageLiveMemo.set(key,{at:Date.now(),ok});
-    if(imageLiveMemo.size>500)imageLiveMemo.clear();
-    return ok;
-  }catch(e){
-    imageLiveMemo.set(key,{at:Date.now(),ok:false});
-    return false;
-  }
-}
-async function firstLiveImageCandidate(list,defaultReferer,limit=10){
-  for(const item of (list||[]).slice(0,limit)){
-    const referer=item?.attributes?.sourcePage||defaultReferer;
-    if(await imageExists(item?.url,referer))return item;
-  }
-  return null;
+    return ct.startsWith("image/") && r.data && r.data.byteLength>3000;
+  }catch{return false}
 }
 function decodeHtmlEntities(s){
   return String(s||"")
@@ -964,36 +945,8 @@ async function fetchBrandPage(url,lang="en-GB,en;q=0.9"){
   const r=await axios.get(url,{timeout:22000,maxRedirects:5,validateStatus:x=>x>=200&&x<400,headers:{"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/150 Safari/537.36","Accept-Language":lang}});
   return String(r.data||"");
 }
-function hotbathLookupIdentity(reference,finishCode=""){
-  let raw=String(reference||"").toUpperCase().trim();
-  raw=raw.replace(/^HB\./,"");
-  // .IT is a supplier/tariff suffix only. It is NOT part of the Hotbath web SKU.
-  raw=raw.replace(/\.IT$/i,"").trim();
-
-  const parts=raw.split(".").map(x=>x.trim()).filter(Boolean);
-  let base=(parts[0]||"").replace(/[^A-Z0-9-]/g,"");
-  base=base.replace(/EXT$/i,"");
-
-  let finish=String(finishCode||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
-  if(!finish){
-    finish=(parts.find((x,i)=>i>0 && !/^(?:IT|EXT|INT)$/i.test(x))||"")
-      .toUpperCase().replace(/[^A-Z0-9]/g,"");
-  }
-  if(finish==="IT")finish="";
-
-  const canonical=finish?`${base}.${finish}`:base;
-  const supplierRef=`${base}${finish}`.replace(/[^A-Z0-9-]/g,"");
-
-  return {
-    original:String(reference||"").trim(),
-    base,
-    finishCode:finish,
-    canonical,
-    supplierRef
-  };
-}
 function hotbathBase(reference){
-  return hotbathLookupIdentity(reference).base;
+  return String(reference||"").toUpperCase().replace(/^HB\./,"").replace(/\.IT$/," ").trim().split(".")[0].replace(/EXT$/," ").trim();
 }
 async function resolveHotbathProductUrl(reference){
   const base=hotbathBase(reference);
@@ -1228,256 +1181,6 @@ function finishExactInText(text,finishCode,finish,reference){
     P91:["brushed pvd copper"]
   };
   return (aliases[String(finishCode||"").toUpperCase()]||[]).some(x=>n.includes(normalizeToken(x)));
-}
-
-
-const sawidayHotbathMemo=new Map();
-
-function hotbathSawidaySupplierRef(reference,finishCode=""){
-  return hotbathLookupIdentity(reference,finishCode).supplierRef;
-}
-function compactRefText(v){
-  return String(v||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
-}
-function sawidayProductLinksFromSearch(html,baseUrl){
-  const raw=String(html||"");
-  const $s=cheerio.load(raw);
-  const links=[];
-
-  function pushCandidate(value){
-    if(!value)return;
-    let href=decodeHtmlEntities(String(value)).replace(/\\\//g,"/").trim();
-    // Search engines frequently wrap the destination URL in q/url/uddg parameters.
-    for(let pass=0;pass<3;pass++){
-      try{
-        const u=new URL(href,baseUrl);
-        const wrapped=u.searchParams.get("uddg")||u.searchParams.get("q")||u.searchParams.get("url")||u.searchParams.get("u");
-        if(wrapped && /sawiday\.(?:fr|be)/i.test(wrapped)){
-          href=decodeURIComponent(wrapped);
-          continue;
-        }
-        if(/(^|\.)sawiday\.(?:fr|be)$/i.test(u.hostname) && /^\/(?:[a-z]{2}-[a-z]{2}\/)?p\//i.test(u.pathname)){
-          u.hash="";
-          links.push(u.href);
-        }
-        break;
-      }catch{
-        try{href=decodeURIComponent(href)}catch{}
-        break;
-      }
-    }
-  }
-
-  $s("a[href]").each((_,el)=>pushCandidate($s(el).attr("href")||""));
-
-  // Also inspect raw search markup because RSS/XML and some engines do not expose
-  // result URLs as normal anchor hrefs.
-  const decoded=decodeHtmlEntities(raw).replace(/\\\//g,"/");
-  for(const m of decoded.matchAll(/https?:\/\/(?:www\.)?sawiday\.fr\/p\/[^\s"'<>\]&]+/gi)) pushCandidate(m[0]);
-  for(const m of decoded.matchAll(/https?%3A%2F%2F(?:www\.)?sawiday\.fr%2Fp%2F[^\s"'<>\]&]+/gi)){
-    try{pushCandidate(decodeURIComponent(m[0]))}catch{}
-  }
-  return [...new Set(links)];
-}
-function sawidayImageCandidates(pageHtml,pageUrl,supplierRef,finishCode){
-  const raw=String(pageHtml||"");
-  const $s=cheerio.load(raw);
-  const out=[];
-  const wanted=compactRefText(supplierRef);
-
-  function toHighRes(url){
-    return String(url||"")
-      .replace(/\/(?:80x80|105x105|160x160|240x240|320x320|480x480|600x600|800x800|1000x1000)\//i,"/2000x2000/");
-  }
-  function fingerprint(url){
-    const m=String(url||"").match(/\/(?:\d+x\d+)\/([a-f0-9]{20,}\.(?:jpe?g|png|webp))/i);
-    return m?m[1].toLowerCase():"";
-  }
-  function add(url,score,origin,articleNo=""){
-    const href=absoluteUrl(pageUrl,url);
-    if(!href || !isImageUrl(href))return;
-    if(!/static\.rorix\.nl\/image\/product\//i.test(href))return;
-    if(/static\.rorix\.nl\/image\/content\//i.test(href))return;
-
-    out.push({
-      url:href,
-      source:"sawiday-exact-finish",
-      score,
-      finishMatch:"exact",
-      detectedFinishCode:String(finishCode||"").toUpperCase()||null,
-      variationId:null,
-      attributes:{
-        supplierRef,
-        sourcePage:pageUrl,
-        origin,
-        articleNo,
-        resolution:/\/2000x2000\//i.test(href)?"2000x2000":"source"
-      }
-    });
-  }
-
-  // The product page publishes a generic social OG image first and its own
-  // product image second. Use ONLY product OG images, never images from
-  // recommendations lower in the page.
-  const ogProduct=[];
-  $s("meta[property='og:image']").each((_,el)=>{
-    const href=absoluteUrl(pageUrl,$s(el).attr("content")||"");
-    if(href && /static\.rorix\.nl\/image\/product\//i.test(href)){
-      ogProduct.push(href);
-    }
-  });
-
-  const bodyText=$s("body").text();
-  const articleMatch=bodyText.match(/\bSW\d{5,}\b/i);
-  const articleNo=articleMatch?articleMatch[0].toUpperCase():"";
-  const primary=ogProduct[0]||"";
-  const primaryFp=fingerprint(primary);
-
-  if(primary){
-    add(toHighRes(primary),30000,"sawiday-primary-og-highres",articleNo);
-    add(primary,12000,"sawiday-primary-og",articleNo);
-  }
-
-  // Sawiday also exposes the 2000x2000 gallery URLs in the page.
-  // Keep only URLs belonging to the primary image fingerprint or the page's
-  // own SW article number. This excludes "alternative products" and
-  // "together with" product images.
-  const decoded=decodeHtmlEntities(raw).replace(/\\\//g,"/");
-  const urls=decoded.match(/https?:\/\/static\.rorix\.nl\/image\/product\/[^"'<>\\\s]+?\.(?:jpe?g|png|webp)(?:\?[^"'<>\\\s]*)?/gi)||[];
-
-  for(const url of urls){
-    const fp=fingerprint(url);
-    const compactUrl=compactRefText(url);
-    const samePrimary=!!primaryFp && fp===primaryFp;
-    const sameArticle=!!articleNo && compactUrl.includes(compactRefText(articleNo));
-    if(!samePrimary && !sameArticle)continue;
-
-    const high=toHighRes(url);
-    add(high,/\/2000x2000\//i.test(high)?28000:18000,"sawiday-own-gallery",articleNo);
-  }
-
-  return uniqueBest(out).sort((a,b)=>b.score-a.score);
-}
-
-async function findSawidayHotbathImage(reference,finishCode,finish){
-  const supplierRef=hotbathSawidaySupplierRef(reference,finishCode);
-  if(!supplierRef)return null;
-
-  const memoKey=supplierRef.toUpperCase();
-  const cached=sawidayHotbathMemo.get(memoKey);
-  if(cached){
-    if(cached.__negative){
-      // A search-engine block is often transient. Never keep a failed lookup forever.
-      if(Date.now()-cached.at<45000)return null;
-      sawidayHotbathMemo.delete(memoKey);
-    }else return cached;
-  }
-
-  const searchQueries=[
-    `site:sawiday.fr/p/ "${supplierRef}"`,
-    `"${supplierRef}" Sawiday Hotbath`,
-    `${supplierRef} Hotbath Sawiday`
-  ];
-
-  async function trySearch(engine,url){
-    try{
-      const html=await fetchBrandPage(url,"fr-FR,fr;q=0.9,en;q=0.7");
-      const links=sawidayProductLinksFromSearch(html,url);
-      console.log("[sawiday-search]",JSON.stringify({supplierRef,engine,links:links.length}));
-      return links;
-    }catch(e){
-      console.warn("[sawiday-search]",JSON.stringify({supplierRef,engine,error:e.message}));
-      return [];
-    }
-  }
-
-  let productLinks=[];
-
-  // V11.12: use Sawiday's own search endpoint first.
-  // Search-engine HTML endpoints are frequently blocked from Render, while Sawiday
-  // exposes a normal GET search form (tn_q) that returns the exact product page.
-  const directSawidaySearchUrls=[
-    `https://www.sawiday.fr/chercher/?tn_q=${encodeURIComponent(supplierRef)}`,
-    `https://www.sawiday.be/nl-be/zoeken/?tn_q=${encodeURIComponent(supplierRef)}`
-  ];
-  for(const directUrl of directSawidaySearchUrls){
-    const engine=directUrl.includes("sawiday.fr")?"sawiday-fr-direct":"sawiday-be-direct";
-    productLinks.push(...await trySearch(engine,directUrl));
-    productLinks=[...new Set(productLinks)];
-    if(productLinks.length)break;
-  }
-
-  // External search engines are now fallback only.
-  for(const q of productLinks.length?[]:searchQueries){
-    // 1) Bing RSS: cheap, server-friendly when indexed.
-    productLinks.push(...await trySearch("bing-rss",`https://www.bing.com/search?format=rss&count=20&setlang=fr-fr&q=${encodeURIComponent(q)}`));
-    productLinks=[...new Set(productLinks)];
-    if(productLinks.length)break;
-
-    // 2) Bing HTML fallback.
-    productLinks.push(...await trySearch("bing-html",`https://www.bing.com/search?count=20&setlang=fr-fr&q=${encodeURIComponent(q)}`));
-    productLinks=[...new Set(productLinks)];
-    if(productLinks.length)break;
-
-    // 3) DuckDuckGo HTML. It normally exposes result targets in the uddg parameter.
-    productLinks.push(...await trySearch("duckduckgo",`https://html.duckduckgo.com/html/?q=${encodeURIComponent(q)}`));
-    productLinks=[...new Set(productLinks)];
-    if(productLinks.length)break;
-
-    // 4) Google HTML as final discovery route. We still validate the Sawiday page itself.
-    productLinks.push(...await trySearch("google",`https://www.google.com/search?num=20&hl=fr&q=${encodeURIComponent(q)}`));
-    productLinks=[...new Set(productLinks)];
-    if(productLinks.length)break;
-  }
-
-  console.log("[sawiday-candidates]",JSON.stringify({supplierRef,count:productLinks.length,links:productLinks.slice(0,3)}));
-
-  for(const pageUrl of productLinks.slice(0,10)){
-    try{
-      const pageHtml=await fetchBrandPage(pageUrl,"fr-FR,fr;q=0.9,en;q=0.7");
-      const $s=cheerio.load(pageHtml);
-      const title=$s("title").first().text()+" "+$s("h1").first().text();
-      const body=$s("body").text();
-      const wanted=compactRefText(supplierRef);
-      const compactTitle=compactRefText(title);
-      const specText=[
-        $s("#product-specifications").text(),
-        $s("[id*='specification']").text(),
-        $s("[class*='specification']").text()
-      ].join(" ");
-      const compactSpecs=compactRefText(specText);
-
-      // Strict match: the supplier number must belong to THIS product page.
-      // Do not accept a match found only in recommendations/alternative products.
-      if(!compactTitle.includes(wanted) && !compactSpecs.includes(wanted))continue;
-      if(!/hotbath/i.test(title+" "+body))continue;
-
-      const images=sawidayImageCandidates(pageHtml,pageUrl,supplierRef,finishCode);
-      for(const item of images.slice(0,12)){
-        if(await imageExists(item.url,pageUrl)){
-          const result={
-            ...item,
-            attributes:{
-              ...(item.attributes||{}),
-              supplierRef,
-              sourcePage:pageUrl,
-              sawidayTitle:title.trim(),
-              finish:String(finish||"")
-            }
-          };
-          sawidayHotbathMemo.set(memoKey,result);
-          console.log("[sawiday-hit]",JSON.stringify({supplierRef,pageUrl,image:item.url}));
-          return result;
-        }
-      }
-    }catch(e){
-      console.warn("[sawiday-product]",supplierRef,e.message);
-    }
-  }
-
-  // Short negative TTL only; manual retry and later catalogue loads must be able to try again.
-  sawidayHotbathMemo.set(memoKey,{__negative:true,at:Date.now()});
-  return null;
 }
 
 async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,designation,originalDescription,collection,manufacturer}){
@@ -1907,7 +1610,7 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
       // Since this page was explicitly requested with the exact official SKU,
       // a product asset on a matching SKU page is valid for the selected finish
       // even when the CDN filename itself omits the finish code.
-      const exact=pageMatchesSku && !!String(finishCode||"");
+      const exact=pageMatchesSku && pageMatchesFinish && !!String(finishCode||"");
       candidates.push({
         url:href,
         source,
@@ -1956,52 +1659,63 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     }
   }
 
-  // Hotbath: normalize the tariff reference before any web matching.
-  // Example: AC003H.MBP.IT -> AC003H.MBP on hotbath.it.
+  // Hotbath: the official page itself is already the product page for the selected
+  // reference, and the main visual is typically exposed through og:image plus a hero <img>.
+  // Finish chips are also present on the page, so strongly prioritise the hero metadata.
   if(/hotbath\.it/i.test(manufacturerUrl)){
-    const hid=hotbathLookupIdentity(reference,finishCode);
-    const hBase=String(hid.base||"").toLowerCase();
+    const hBase=String(reference||"").split(".")[0].toLowerCase();
+    const hRef=String(reference||"").toLowerCase();
     const hPageText=normalizeToken($("body").text());
-    const displayedHotbathRef=String($("#descrbar").first().text()||"").trim();
-    const displayedCompact=compactRefText(displayedHotbathRef);
-    const wantedCompact=compactRefText(hid.canonical);
+    const displayedHotbathRef=normalizeToken($("#descrbar").first().text()||"");
+    const wantedHotbathRef=normalizeToken(`${String(reference||"").split(".")[0]}.${String(finishCode||"")}`);
+    const pageMatchesSku=(!!hRef && hPageText.includes(normalizeToken(reference))) || (!!hBase && hPageText.includes(normalizeToken(hBase)));
+    // Hotbath's URL is product-level, not finish-level. The finish is considered exact
+    // only when the page's own #descrbar explicitly displays the requested finish code.
+    const pageMatchesFinish=!!wantedHotbathRef && displayedHotbathRef.includes(wantedHotbathRef);
 
-    const pageMatchesSku=!!hBase && (
-      normalizeToken($("h1").first().text()||"")===normalizeToken(hid.base) ||
-      hPageText.includes(normalizeToken(hid.base))
-    );
-    const pageMatchesFinish=!!hid.finishCode && displayedCompact===wantedCompact;
-
-    function addHotbathMainImage(raw){
+    function addHotbathImage(raw,context="",source="hotbath-product-image"){
       const href=absoluteUrl(manufacturerUrl,raw);
       if(!href || !isImageUrl(href))return;
+      const text=(href+" "+context).toLowerCase();
+      if(/logo|favicon|icon|sprite|placeholder|loading|cookie|social|flag|pinterest|instagram|jsp\/template2\/images/.test(text))return;
+      if(/\/prodcateg\/\d+\/(?:cr|gn|ab|bb|wh|ai|bbp|bcp|mbp)\.jpe?g(?:\?|$)/i.test(href))return;
+      if(/[?&](?:w|width|h|height)=([1-9]\d?|1\d\d)(?:&|$)/i.test(href))return;
 
-      let pathname="";
-      try{pathname=decodeURIComponent(new URL(href).pathname)}catch{pathname=href}
-      const compactPath=compactRefText(pathname);
-      if(hBase && !compactPath.includes(compactRefText(hBase)))return;
-      if(/(?:-LT|LT-REL|DRAWING|TECHNICAL|_IMG|INSTRUCTION|MANUAL|CAD|FINISH|FINITUR|SWATCH|COLOUR|COLOR|KLEUR|MATERIAL|SAMPLE|TEXTURE)/i.test(pathname))return;
+      let score=450;
+      if(/og:image|twitter:image|metadata/.test(source+" "+context))score+=4500;
+      if(hBase && text.includes(hBase))score+=2200;
+      if(hRef && text.includes(hRef))score+=2600;
+      if(/hero|main|product|gallery|prodotto|cb\d+/i.test(text))score+=300;
 
-      const exact=pageMatchesSku && pageMatchesFinish;
+      const exact=pageMatchesSku && !!String(finishCode||"");
       candidates.push({
         url:href,
-        source:"hotbath-main-image",
-        score:exact?12000:3000,
+        source,
+        score:score+(exact?3200:0),
         finishMatch:exact?"exact":"generic",
-        detectedFinishCode:exact?hid.finishCode:null,
+        detectedFinishCode:exact?String(finishCode||"").toUpperCase():null,
         variationId:null,
-        attributes:{
-          canonicalReference:hid.canonical,
-          displayedReference:displayedHotbathRef,
-          context:"Hotbath #imgprod"
-        }
+        attributes:{context}
       });
     }
 
-    // The actual product photo is explicitly in #imgprod.
-    // Do not scan all <img> nodes: that is what previously let finish swatches
-    // and unrelated technical assets leak into the catalogue.
-    $("#imgprod img[src]").each((_,el)=>addHotbathMainImage($(el).attr("src")||""));
+    $("meta[property='og:image'],meta[name='twitter:image'],meta[property='twitter:image']").each((_,el)=>{
+      addHotbathImage($(el).attr("content")||"","metadata","hotbath-metadata-image");
+    });
+
+    $("img").each((_,el)=>{
+      const im=$(el);
+      const ctx=[im.attr("alt"),im.attr("title"),im.attr("class")].filter(Boolean).join(" ");
+      for(const attr of ["data-large_image","data-original","data-lazy-src","data-src","src"]){
+        addHotbathImage(im.attr(attr),ctx,"hotbath-img");
+      }
+      for(const attr of ["srcset","data-srcset"]){
+        const raw=im.attr(attr)||"";
+        for(const part of raw.split(",")){
+          addHotbathImage(part.trim().split(/\s+/)[0],ctx,"hotbath-img-srcset");
+        }
+      }
+    });
   }
 
   // Coalbrook: first look for the exact full SKU anywhere in the official page HTML.
@@ -2166,92 +1880,6 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
   });
 
 
-
-  // Hotbath official product pages have a deterministic resources layout:
-  // .attach > .titatt = Drawing / Technical info / Instructions / CAD.
-  // The technical drawing requested by Hydropolis is the JPG in the Drawing block.
-  if(isHotbath){
-    $(".attach").each((_,el)=>{
-      const block=$(el);
-      const section=normalizeToken(block.find(".titatt").first().text()||"");
-      if(!section)return;
-
-      const links=block.find(".listatt a[href]").map((__,a)=>{
-        const href=absoluteUrl(manufacturerUrl,$(a).attr("href"));
-        const hint=normalizeToken([
-          $(a).attr("title")||"",
-          $(a).text()||"",
-          $(a).find("img").attr("alt")||"",
-          href||""
-        ].join(" "));
-        return {href,hint};
-      }).get().filter(x=>x.href);
-
-      if(section==="drawing" || /\bdrawing\b/.test(section)){
-        const jpg=links.find(x=>/\.(?:jpe?g|png)(?:\?|$)/i.test(x.href));
-        if(jpg){
-          drawing={
-            url:jpg.href,
-            label:"Dessin technique Hotbath",
-            type:"image",
-            page:1,
-            source:"hotbath-drawing-jpg"
-          };
-        }
-      }
-
-      if(/\btechnical info\b/.test(section)){
-        const pdf=links.find(x=>isPdfUrl(x.href));
-        const image=links.find(x=>isImageUrl(x.href));
-        const chosen=pdf||image;
-        if(chosen){
-          technicalSheet={
-            url:chosen.href,
-            label:"Fiche technique Hotbath",
-            type:isPdfUrl(chosen.href)?"pdf":"image",
-            source:"hotbath-technical-info"
-          };
-        }
-      }
-
-      if(/\binstructions?\b/.test(section)){
-        const pdf=links.find(x=>isPdfUrl(x.href));
-        if(pdf){
-          installationGuide={
-            url:pdf.href,
-            label:"Notice d'installation Hotbath",
-            type:"pdf",
-            source:"hotbath-instructions"
-          };
-        }
-      }
-
-      if(section==="cad" || /\bcad\b/.test(section)){
-        const cad=links.find(x=>/\.dwg(?:\?|$)/i.test(x.href))
-          ||links.find(x=>/\.(?:dxf|igs|stp|3ds)(?:\?|$)/i.test(x.href));
-        if(cad){
-          cadDrawing={
-            url:cad.href,
-            label:"Fichier 2D CAD Hotbath",
-            type:"cad",
-            source:"hotbath-cad"
-          };
-        }
-      }
-    });
-  }
-
-
-
-  // Hydropolis V11.12 — Hotbath client dossier policy:
-  // keep only the official JPG from the "Drawing" section.
-  // "Technical info" and "Instructions" are intentionally not surfaced
-  // as dossier resources for Hotbath.
-  if(isHotbath){
-    technicalSheet=null;
-    installationGuide=null;
-  }
-
   // Lefroy Brooks (Squarespace): product downloads are commonly served from /s/
   // and labels use "Technical Specification Sheet" / "Installation & Servicing Guide".
   if(/lefroybrooks\.com/i.test(manufacturerUrl)){
@@ -2365,54 +1993,12 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
 
   const isAmphora=/amphoradesign\.it/i.test(manufacturerUrl);
   const isCoalbrook=/coalbrookuk\.co\.uk/i.test(manufacturerUrl);
-
-  let exact=null;
-  let fallback=null;
-  let best=null;
-  let sawidayExact=null;
-
-  if(isHotbath){
-    const hid=hotbathLookupIdentity(reference,requested);
-
-    // 1) Official Hotbath is accepted as exact only when #descrbar is the exact
-    // normalized web reference (without the tariff suffix .IT).
-    const hotbathOfficialExact=sorted.filter(x=>
-      x.finishMatch==="exact" &&
-      x.source==="hotbath-main-image" &&
-      String(x.detectedFinishCode||"").toUpperCase()===String(hid.finishCode||"").toUpperCase()
-    );
-    exact=await firstLiveImageCandidate(hotbathOfficialExact,manufacturerUrl,4);
-
-    // 2) Otherwise use Sawiday with the exact supplier code (AC003HBBP etc.).
-    if(!exact && hid.finishCode){
-      try{
-        sawidayExact=await findSawidayHotbathImage(reference,hid.finishCode,finish);
-        if(sawidayExact && await imageExists(sawidayExact.url,sawidayExact.attributes?.sourcePage)){
-          exact=sawidayExact;
-        }
-      }catch(e){
-        console.warn("[sawiday-fallback]",hid.canonical,e.message);
-      }
-    }
-
-    // Safety rule: when a finish is requested, NEVER substitute another colour
-    // with a generic Hotbath image. Better no photo than a wrong finish.
-    if(hid.finishCode){
-      fallback=null;
-      best=exact;
-    }else{
-      const hotbathGeneric=sorted.filter(x=>x.source==="hotbath-main-image");
-      fallback=await firstLiveImageCandidate(hotbathGeneric,manufacturerUrl,4);
-      best=fallback;
-    }
-  }else{
-    exact=sorted.find(x=>x.finishMatch==="exact" &&
-      (!isAmphora || x.source.startsWith("woocommerce-variation")) &&
-      (!isCoalbrook || x.source==="coalbrook-product-image" || x.source==="coalbrook-exact-sku-image")
-    )||null;
-    fallback=sorted.find(x=>x.finishMatch!=="exact")||null;
-    best=exact||fallback;
-  }
+  const exact=sorted.find(x=>x.finishMatch==="exact" &&
+    (!isAmphora || x.source.startsWith("woocommerce-variation")) &&
+    (!isCoalbrook || x.source==="coalbrook-product-image" || x.source==="coalbrook-exact-sku-image")
+  )||null;
+  const fallback=sorted.find(x=>x.finishMatch!=="exact")||null;
+  let best=exact||fallback;
 
   // Catalano: the selected finish is authoritative.
   // Never mix images from other finishes or generic collection/lifestyle galleries.
@@ -2449,39 +2035,24 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
   // et on la renvoie directement au navigateur sous forme data URL.
   async function embedOfficialImage(item){
     if(!item) return item;
-    if(item.source!=="sawiday-exact-finish" && !/(?:coalbrookuk\.co\.uk|zucchettidesign\.it|assets\.zucchettidesign\.it|catalano\.it|recor\.pt|hotbath\.it|sawiday\.fr)/i.test(item.url||manufacturerUrl)) return item;
+    if(!/(?:coalbrookuk\.co\.uk|zucchettidesign\.it|assets\.zucchettidesign\.it|catalano\.it|recor\.pt|hotbath\.it)/i.test(item.url||manufacturerUrl)) return item;
     try{
       const ir=await axios.get(item.url,{
         responseType:"arraybuffer",timeout:18000,maxRedirects:5,
-        headers:{
-          "User-Agent":"Mozilla/5.0",
-          "Referer":item.attributes?.sourcePage||new URL(manufacturerUrl).origin+"/"
-        }
+        headers:{"User-Agent":"Mozilla/5.0","Referer":new URL(manufacturerUrl).origin+"/"}
       });
       const ct=String(ir.headers["content-type"]||"image/jpeg");
       if(ct.startsWith("image/") && ir.data && ir.data.length<9000000){
         return {...item,dataUrl:`data:${ct};base64,${Buffer.from(ir.data).toString("base64")}`};
       }
-    }catch(e){
-      console.warn("[manufacturer-image-embed]",e.message);
-      if(isHotbath)return null;
-    }
+    }catch(e){console.warn("[manufacturer-image-embed]",e.message);}
     return item;
   }
   if(best) best=await embedOfficialImage(best);
-  if(isHotbath && !best && exact?.source==="sawiday-exact-finish"){
-    // A Sawiday page may change its CDN asset after discovery. Never leak a dead URL
-    // into the browser; downgrade cleanly rather than displaying a broken thumbnail.
-    exact=null;
-  }
   if(isCatalano || isRecor){
     productImages=await Promise.all(productImages.map(embedOfficialImage));
     if(productImages.length) best=productImages[0];
   }else productImages=best?[best]:[];
-
-  if(isHotbath){
-    productImages=best?[best]:[];
-  }
 
   console.log("[manufacturer-image]",JSON.stringify({
     reference,
@@ -2491,14 +2062,6 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     variationId:best?.variationId||null,
     detectedFinishCode:best?.detectedFinishCode||null,
     drawing:!!drawing,
-    drawingUrl:drawing?.url||undefined,
-    drawingType:drawing?.type||undefined,
-    hotbathSupplierRef:isHotbath?hotbathSawidaySupplierRef(reference,requested):undefined,
-    hotbathCanonicalRef:isHotbath?hotbathLookupIdentity(reference,requested).canonical:undefined,
-    sawiday:best?.source==="sawiday-exact-finish",
-    imageResolution:best?.attributes?.resolution||undefined,
-    bestHasEmbeddedData:!!best?.dataUrl,
-    strictHotbathProductImage:isHotbath?(/^hotbath-/.test(String(best?.source||""))):undefined,
     candidates:sorted.length,
     catalanoGallery:isCatalano?productImages.length:undefined,
     catalanoExactFinish:isCatalano?catalanoGallery.filter(x=>x.finishMatch==="exact").length:undefined,
@@ -2524,14 +2087,11 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     technicalSheet,
     installationGuide,
     candidates:sorted.slice(0,20),
-    secondarySourceUrl:best?.source==="sawiday-exact-finish"?(best.attributes?.sourcePage||""):"",
-    note:exact?.source==="sawiday-exact-finish"
-      ?`Photo de finition trouvée sur Sawiday · référence fournisseur exacte ${exact.attributes?.supplierRef||""}. Source secondaire.`
-      :exact
-        ?`Photo officielle fabricant correspondant à la finition ${requested}, associée à la variation fabricant.`
-        :(best
-          ?"Visuel officiel trouvé, mais aucune donnée fabricant ne permet de certifier cette finition."
-          :"Aucune photo officielle exploitable trouvée.")
+    note:exact
+      ?`Photo officielle fabricant correspondant à la finition ${requested}, associée à la variation fabricant.`
+      :(best
+        ?"Visuel officiel trouvé, mais aucune donnée fabricant ne permet de certifier cette finition."
+        :"Aucune photo officielle exploitable trouvée.")
   };
 }
 
@@ -2556,10 +2116,9 @@ function hotbathFinishTarget(code){
 }
 
 async function bingHotbathImageCandidates(reference,finishCode,finish){
-  const hid=hotbathLookupIdentity(reference,finishCode);
-  const full=hid.canonical;
-  const base=hid.base;
-  const code=hid.finishCode;
+  const full=String(reference||"").replace(/\.IT$/i,"").trim();
+  const base=full.split(".")[0];
+  const code=String(finishCode||"").toUpperCase();
   const query=[`"${full}"`,"Hotbath",code,finish||""].filter(Boolean).join(" ");
   const searchUrl="https://www.bing.com/images/search";
   const html=await fetchBrandPage(`${searchUrl}?q=${encodeURIComponent(query)}&form=HDRSC3`,"fr-FR,fr;q=0.9,en;q=0.7");
@@ -2616,32 +2175,6 @@ app.post("/api/hotbath-web-image",async(req,res)=>{
   const key=[reference,finishCode,finish].join("|").toLowerCase();
 
   try{
-    // 1) Same trusted secondary route as the automatic enrichment.
-    // A manual click is an explicit retry: clear any short-lived negative search cache.
-    sawidayHotbathMemo.delete(hotbathSawidaySupplierRef(reference,finishCode).toUpperCase());
-    const sawiday=await findSawidayHotbathImage(reference,finishCode,finish);
-    if(sawiday && await imageExists(sawiday.url,sawiday.attributes?.sourcePage)){
-      return res.json({
-        reference,finishCode,finish,
-        candidates:[{
-          image:sawiday.url,
-          page:sawiday.attributes?.sourcePage||"",
-          title:sawiday.attributes?.sawidayTitle||"",
-          source:"sawiday-exact-finish",
-          supplierRef:sawiday.attributes?.supplierRef||""
-        }],
-        best:{
-          image:sawiday.url,
-          page:sawiday.attributes?.sourcePage||"",
-          title:sawiday.attributes?.sawidayTitle||"",
-          source:"sawiday-exact-finish",
-          supplierRef:sawiday.attributes?.supplierRef||""
-        },
-        note:`Finition exacte trouvée sur Sawiday avec la référence fournisseur ${sawiday.attributes?.supplierRef||""}.`
-      });
-    }
-
-    // 2) Generic image search only if the exact Sawiday route did not resolve.
     let candidates=hotbathWebImageCache.get(key);
     if(!candidates){
       candidates=await bingHotbathImageCandidates(reference,finishCode,finish);
@@ -2883,251 +2416,9 @@ app.get("/api/pdf-page-image",async(req,res)=>{
   }
 });
 
-
-const fittedImageCache=new Map();
-
-app.get("/api/product-image-fit",async(req,res)=>{
-  const url=String(req.query.url||"");
-  if(!url||!/^https?:\/\//i.test(url)) return res.status(400).send("URL invalide");
-
-  const cacheKey=crypto.createHash("sha1").update(url).digest("hex");
-  if(fittedImageCache.has(cacheKey)){
-    const hit=fittedImageCache.get(cacheKey);
-    res.set("Content-Type",hit.mime);
-    res.set("Cache-Control","public, max-age=604800");
-    return res.send(hit.data);
-  }
-
-  let raw=null;
-  let rawContentType="image/jpeg";
-  try{
-    const r=await axios.get(url,{
-      responseType:"arraybuffer",
-      timeout:18000,
-      maxRedirects:5,
-      headers:{
-        "User-Agent":"Mozilla/5.0",
-        "Accept":"image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
-        "Referer":/hotbath\.it/i.test(url)?"https://www.hotbath.it/":new URL(url).origin+"/"
-      }
-    });
-    raw=Buffer.from(r.data);
-    rawContentType=String(r.headers["content-type"]||"image/jpeg").split(";")[0];
-    if(!rawContentType.startsWith("image/")) return res.status(415).send("Ressource non image");
-  }catch(e){
-    console.error("[product-image-fit fetch]",e.message);
-    return res.status(502).send("Image inaccessible");
-  }
-
-  try{
-    const {createCanvas,loadImage}=await import("@napi-rs/canvas");
-    const img=await loadImage(raw);
-
-    const maxScan=1500;
-    const scanScale=Math.min(1,maxScan/Math.max(img.width,img.height));
-    const sw=Math.max(1,Math.round(img.width*scanScale));
-    const sh=Math.max(1,Math.round(img.height*scanScale));
-
-    const scan=createCanvas(sw,sh);
-    const sctx=scan.getContext("2d");
-    sctx.fillStyle="#fff";
-    sctx.fillRect(0,0,sw,sh);
-    sctx.drawImage(img,0,0,sw,sh);
-
-    const data=sctx.getImageData(0,0,sw,sh).data;
-    const corner=(x,y)=>{
-      const i=(y*sw+x)*4;
-      return [data[i],data[i+1],data[i+2]];
-    };
-    const corners=[corner(0,0),corner(sw-1,0),corner(0,sh-1),corner(sw-1,sh-1)];
-    const bg=[
-      corners.reduce((a,c)=>a+c[0],0)/4,
-      corners.reduce((a,c)=>a+c[1],0)/4,
-      corners.reduce((a,c)=>a+c[2],0)/4
-    ];
-    const bgLight=(bg[0]+bg[1]+bg[2])/3;
-
-    let minX=sw,minY=sh,maxX=-1,maxY=-1;
-    if(bgLight>185){
-      for(let y=0;y<sh;y++){
-        for(let x=0;x<sw;x++){
-          const i=(y*sw+x)*4;
-          const a=data[i+3];
-          if(a<15)continue;
-          const dr=data[i]-bg[0],dg=data[i+1]-bg[1],db=data[i+2]-bg[2];
-          const dist=Math.sqrt(dr*dr+dg*dg+db*db);
-          const lum=.2126*data[i]+.7152*data[i+1]+.0722*data[i+2];
-          if(dist>24 || lum<220){
-            if(x<minX)minX=x;if(x>maxX)maxX=x;
-            if(y<minY)minY=y;if(y>maxY)maxY=y;
-          }
-        }
-      }
-    }
-
-    let sx=0,sy=0,cw=sw,ch=sh;
-    if(maxX>=minX && maxY>=minY){
-      const bw=maxX-minX+1,bh=maxY-minY+1;
-      const objectArea=(bw*bh)/(sw*sh);
-      if(objectArea<0.88){
-        const pad=Math.round(Math.max(bw,bh)*0.09);
-        minX=Math.max(0,minX-pad);minY=Math.max(0,minY-pad);
-        maxX=Math.min(sw-1,maxX+pad);maxY=Math.min(sh-1,maxY+pad);
-        sx=minX;sy=minY;cw=maxX-minX+1;ch=maxY-minY+1;
-      }
-    }
-
-    const outMax=1500;
-    const outScale=Math.min(2.2,outMax/Math.max(cw,ch));
-    const ow=Math.max(1,Math.round(cw*outScale));
-    const oh=Math.max(1,Math.round(ch*outScale));
-    const out=createCanvas(ow,oh);
-    const octx=out.getContext("2d");
-    octx.fillStyle="#f8f8f6";
-    octx.fillRect(0,0,ow,oh);
-    octx.drawImage(scan,sx,sy,cw,ch,0,0,ow,oh);
-
-    const encoded=await out.encode("jpeg",91);
-    if(fittedImageCache.size>120)fittedImageCache.clear();
-    fittedImageCache.set(cacheKey,{mime:"image/jpeg",data:encoded});
-
-    res.set("Content-Type","image/jpeg");
-    res.set("Cache-Control","public, max-age=604800");
-    return res.send(encoded);
-  }catch(e){
-    console.warn("[product-image-fit decode] raw fallback:",e.message);
-    res.set("Content-Type",rawContentType);
-    res.set("Cache-Control","public, max-age=86400");
-    res.set("X-Hydropolis-Image-Fallback","raw");
-    return res.send(raw);
-  }
-});
-
-
-app.get("/api/hotbath-drawing-image",async(req,res)=>{
-  const drawingUrl=String(req.query.url||"").trim();
-  const productUrl=String(req.query.productUrl||"").trim();
-
-  function isHotbathUrl(v){
-    try{
-      const u=new URL(v);
-      return /^https?:$/i.test(u.protocol) && /(^|\.)hotbath\.it$/i.test(u.hostname);
-    }catch{return false}
-  }
-
-  if(!isHotbathUrl(drawingUrl) || !isHotbathUrl(productUrl)){
-    return res.status(400).send("URL Hotbath invalide");
-  }
-
-  try{
-    const baseHeaders={
-      "User-Agent":"Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Version/17.0 Mobile/15E148 Safari/604.1",
-      "Accept-Language":"fr-FR,fr;q=0.9,en;q=0.7",
-      "Cache-Control":"no-cache"
-    };
-
-    // 1) Open the official product page first so Hotbath can establish the same
-    // session/cookies that are present when a user clicks Drawing in the browser.
-    const page=await axios.get(productUrl,{
-      timeout:18000,
-      maxRedirects:5,
-      validateStatus:s=>s>=200&&s<400,
-      headers:{
-        ...baseHeaders,
-        "Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
-      }
-    });
-
-    const cookies=(page.headers?.["set-cookie"]||[])
-      .map(c=>String(c).split(";")[0])
-      .filter(Boolean)
-      .join("; ");
-
-    // Resolve the live Drawing href from the product page itself.
-    let liveDrawingUrl=drawingUrl;
-    try{
-      const $h=cheerio.load(String(page.data||""));
-      let found="";
-      $h(".attach").each((_,el)=>{
-        if(found)return;
-        const block=$h(el);
-        const title=normalizeToken(block.find(".titatt").first().text()||"");
-        if(title!=="drawing" && !/\bdrawing\b/.test(title))return;
-        block.find(".listatt a[href]").each((__,a)=>{
-          if(found)return;
-          const href=absoluteUrl(productUrl,$h(a).attr("href"));
-          if(href && /\.(?:jpe?g|png)(?:\?|$)/i.test(href))found=href;
-        });
-      });
-      if(found)liveDrawingUrl=found;
-    }catch{}
-
-    const attempts=[
-      {
-        "User-Agent":baseHeaders["User-Agent"],
-        "Accept":"image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
-        "Accept-Language":baseHeaders["Accept-Language"],
-        "Referer":productUrl,
-        ...(cookies?{"Cookie":cookies}:{})
-      },
-      {
-        "User-Agent":baseHeaders["User-Agent"],
-        "Accept":"image/*,*/*;q=0.8",
-        "Referer":productUrl
-      }
-    ];
-
-    let lastStatus=0;
-    let lastType="";
-    for(const headers of attempts){
-      try{
-        const img=await axios.get(liveDrawingUrl,{
-          responseType:"arraybuffer",
-          timeout:18000,
-          maxRedirects:5,
-          validateStatus:()=>true,
-          headers
-        });
-        lastStatus=img.status;
-        lastType=String(img.headers?.["content-type"]||"");
-        if(img.status>=200 && img.status<300 && lastType.startsWith("image/") && img.data?.byteLength>500){
-          console.log("[hotbath-drawing-image]",JSON.stringify({
-            status:img.status,
-            bytes:img.data.byteLength,
-            productUrl,
-            drawingUrl:liveDrawingUrl,
-            cookieSession:!!cookies
-          }));
-          res.set("Content-Type",lastType.split(";")[0]);
-          res.set("Cache-Control","public, max-age=86400");
-          return res.send(img.data);
-        }
-      }catch(e){
-        console.warn("[hotbath-drawing-image-attempt]",e.message);
-      }
-    }
-
-    console.warn("[hotbath-drawing-image-failed]",JSON.stringify({
-      productUrl,
-      drawingUrl:liveDrawingUrl,
-      status:lastStatus,
-      contentType:lastType,
-      cookieSession:!!cookies
-    }));
-    return res.status(502).send("Drawing Hotbath inaccessible");
-  }catch(e){
-    console.warn("[hotbath-drawing-image-page]",e.message);
-    return res.status(502).send("Drawing Hotbath inaccessible");
-  }
-});
-
 app.get("/api/image-proxy",async(req,res)=>{
   const url=req.query.url;
   if(!url||!/^https?:\/\//i.test(url)) return res.status(400).send("URL invalide");
-  let referer=String(req.query.referer||"").trim();
-  if(!/^https?:\/\//i.test(referer)){
-    try{referer=new URL(url).origin+"/"}catch{referer=""}
-  }
   try{
     const r=await axios.get(url,{
       responseType:"arraybuffer",
@@ -3135,8 +2426,7 @@ app.get("/api/image-proxy",async(req,res)=>{
       maxRedirects:5,
       headers:{
         "User-Agent":"Mozilla/5.0",
-        "Accept":"image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
-        "Referer":referer
+        "Referer":new URL(url).origin+"/"
       }
     });
     const ct=String(r.headers["content-type"]||"image/jpeg");
@@ -3153,7 +2443,7 @@ app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")))
 async function startServer(){
   try{
     await initPersistentStore();
-    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.12 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
+    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V10.6 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
   }catch(e){
     console.error("[Hydropolis] Démarrage impossible :",e);
     process.exit(1);
