@@ -719,7 +719,7 @@ app.post("/api/translate-product",requireAuth,async(req,res)=>{
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V10.9",
+  service:"Hydropolis Studio V10.10",
   database:USE_POSTGRES?"postgresql":"local-fallback",
   time:new Date().toISOString()
 }));
@@ -2151,21 +2151,29 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
 
         for(const item of webCandidates){
           const hay=compact([item.image,item.page,item.title].join(" "));
-          const exactReferenceMatch=!!fullCompact && hay.includes(fullCompact);
+          const exactReferenceMatch=!!item.exactReferenceMatch || (!!fullCompact && hay.includes(fullCompact));
           const baseMatch=!!baseCompact && hay.includes(baseCompact);
           if(!baseMatch)continue;
+          const isSanitair=/sanitairkamer/.test(item.source||item.page||item.image||"");
+          const resolvedSource=isSanitair
+            ?(exactReferenceMatch?"sanitairkamer-exact":"sanitairkamer-generic")
+            :(exactReferenceMatch?"hotbath-web-exact":"hotbath-web-generic");
+          const resolvedFinishMatch=exactReferenceMatch?"exact":(isSanitair?"web":"generic");
 
           candidates.push({
             url:item.image,
-            source:exactReferenceMatch?"hotbath-web-exact":"hotbath-web-generic",
-            score:exactReferenceMatch?15000:4500,
-            finishMatch:exactReferenceMatch?"web":"generic",
-            detectedFinishCode:exactReferenceMatch?hp.finishCode:null,
+            page:item.page||"",
+            title:item.title||"",
+            source:resolvedSource,
+            score:exactReferenceMatch?(isSanitair?17000:15000):(isSanitair?6000:4500),
+            finishMatch:resolvedFinishMatch,
+            detectedFinishCode:(exactReferenceMatch || isSanitair)?hp.finishCode:null,
             variationId:null,
             attributes:{
               sourcePage:item.page||"",
               title:item.title||"",
-              exactReferenceMatch
+              exactReferenceMatch,
+              provider:isSanitair?"sanitairkamer":"web"
             }
           });
         }
@@ -2191,15 +2199,15 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
 
   if(isHotbath){
     const officialExact=sorted.find(x=>x.source==="hotbath-main-product-image" && x.finishMatch==="exact")||null;
-    const sanitairExact=sorted.find(x=>/sanitairkamer/.test(x.source||x.page||x.url||"") && x.finishMatch==="web")||null;
-    const webExact=sorted.find(x=>x.source==="hotbath-web-exact")||null;
+    const sanitairExact=sorted.find(x=>/sanitairkamer/.test(x.source||x.page||x.url||"") && x.finishMatch==="exact")||null;
+    const webExact=sorted.find(x=>x.source==="hotbath-web-exact" && x.finishMatch==="exact")||null;
     const sanitairGeneric=sorted.find(x=>/sanitairkamer/.test(x.source||x.page||x.url||""))||null;
     const officialGeneric=sorted.find(x=>x.source==="hotbath-main-product-image")||null;
     const webGeneric=sorted.find(x=>x.source==="hotbath-web-generic")||null;
 
-    exact=officialExact||sanitairExact;
-    fallback=sanitairExact||webExact||sanitairGeneric||officialGeneric||webGeneric||null;
-    best=officialExact||sanitairExact||webExact||sanitairGeneric||officialGeneric||webGeneric||null;
+    exact=sanitairExact||officialExact||webExact||null;
+    fallback=sanitairGeneric||webExact||officialGeneric||webGeneric||null;
+    best=sanitairExact||officialExact||webExact||sanitairGeneric||officialGeneric||webGeneric||null;
   }
 
   // Catalano: the selected finish is authoritative.
@@ -2306,7 +2314,7 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     note:isHotbath
       ?(best?.source==="hotbath-main-product-image" && best.finishMatch==="exact"
         ?`Photo officielle Hotbath certifiée pour ${hotbathReferenceParts(reference,requested).lookup}.`
-        :(/sanitairkamer/.test((best?.source||"")+" "+(best?.url||"")) && best?.finishMatch==="web")
+        :(/sanitairkamer/.test((best?.source||"")+" "+(best?.url||"")) && (/sanitairkamer/.test((best?.source||"")+" "+(best?.url||"")+" "+(best?.page||"")) ? best?.finishMatch==="exact" || best?.finishMatch==="web" : best?.finishMatch==="web"))
           ?`L'image Hotbath officielle n'était pas exploitable. Un visuel Sanitairkamer correspondant à la référence ${hotbathReferenceParts(reference,requested).lookup} a été retenu.`
           :best?.source==="hotbath-web-exact"
             ?`L'image officielle Hotbath n'était pas exploitable ou ne correspondait pas à la finition. Un visuel web correspondant à la référence exacte ${hotbathReferenceParts(reference,requested).lookup} a été retenu.`
@@ -2357,30 +2365,55 @@ function hotbathFinishAliases(code,finish=""){
     BB:["bb","laiton brosse","laiton brossé","brushed brass","geborsteld messing","messing geborsteld"],
     WH:["wh","blanc mat","mat white","wit mat","mat wit"],
     AI:["ai","fer vieilli","aged iron","verouderd ijzer"],
-    BBP:["bbp","laiton brosse pvd","laiton brossé pvd","brushed brass pvd","geborsteld messing pvd","messing geborsteld pvd"],
-    BCP:["bcp","cuivre brosse pvd","cuivre brossé pvd","brushed copper pvd","koper geborsteld","geborsteld koper","geborsteld koper pvd"],
-    MBP:["mbp","noir mat pvd","mat black pvd","zwart mat pvd","mat zwart pvd"]
+    BBP:["bbp","bb","laiton brosse pvd","laiton brossé pvd","brushed brass pvd","geborsteld messing pvd","messing geborsteld pvd"],
+    BCP:["bcp","bc","cuivre brosse pvd","cuivre brossé pvd","brushed copper pvd","koper geborsteld","geborsteld koper","geborsteld koper pvd"],
+    MBP:["mbp","mb","noir mat pvd","mat black pvd","zwart mat pvd","mat zwart pvd"]
   };
   return [...new Set([finish,target?.label,...(map[c]||[])].filter(Boolean).map(x=>normalizeToken(x)).filter(Boolean))];
 }
+function hotbathFinishReferenceVariants(code=""){
+  const c=String(code||"").toUpperCase().trim();
+  const variants=new Set([c]);
+  if(/^[A-Z]{2,4}P$/.test(c)) variants.add(c.slice(0,-1));
+  if(c==="BCP") variants.add("BC");
+  if(c==="BBP") variants.add("BB");
+  if(c==="MBP") variants.add("MB");
+  return [...variants].filter(Boolean);
+}
 async function bingHotbathPageCandidates(reference,finishCode,finish,siteHost=""){
   const hp=hotbathReferenceParts(reference,finishCode);
-  const query=[siteHost?`site:${siteHost}`:"",'"Hotbath"',`"${hp.base}"`,finish||"",hp.finishCode||""].filter(Boolean).join(" ");
-  const html=await fetchBrandPage(`https://www.bing.com/search?q=${encodeURIComponent(query)}&form=QBLH`,`fr-FR,fr;q=0.9,en;q=0.7,nl;q=0.6`);
-  const $=cheerio.load(html);
+  const finishVariants=hotbathFinishReferenceVariants(hp.finishCode||finishCode);
+  const finishTerms=hotbathFinishAliases(hp.finishCode||finishCode,finish).slice(0,4);
+  const queries=[
+    [siteHost?`site:${siteHost}`:"", '"Hotbath"', `"${hp.base}"`, finishTerms[0]||""].filter(Boolean).join(" "),
+    [siteHost?`site:${siteHost}`:"", '"Hotbath"', `"${hp.base}"`].filter(Boolean).join(" "),
+    ...finishVariants.map(code=>[siteHost?`site:${siteHost}`:"", '"Hotbath"', `"${hp.base}${code}"`].filter(Boolean).join(" ")),
+    ...finishVariants.map(code=>[siteHost?`site:${siteHost}`:"", '"Hotbath"', `"${hp.base}"`, `"${code}"`].filter(Boolean).join(" "))
+  ].filter(Boolean);
   const urls=[];
-  $('li.b_algo h2 a[href], li.b_algo a[href], a[href]').each((_,el)=>{
-    const href=String($(el).attr('href')||'').trim();
-    if(!/^https?:\/\//i.test(href))return;
+  for(const query of queries.slice(0,6)){
     try{
-      const u=new URL(href);
-      if(siteHost && !u.hostname.includes(siteHost))return;
-      if(urls.includes(u.href))return;
-      urls.push(u.href);
-    }catch{}
-  });
+      const html=await fetchBrandPage(`https://www.bing.com/search?q=${encodeURIComponent(query)}&form=QBLH`,`fr-FR,fr;q=0.9,en;q=0.7,nl;q=0.6`);
+      const $=cheerio.load(html);
+      $('li.b_algo h2 a[href], li.b_algo a[href], a[href]').each((_,el)=>{
+        const href=String($(el).attr('href')||'').trim();
+        if(!/^https?:\/\//i.test(href))return;
+        try{
+          const u=new URL(href);
+          if(siteHost && !u.hostname.includes(siteHost))return;
+          if(urls.includes(u.href))return;
+          urls.push(u.href);
+        }catch{}
+      });
+      if(urls.length>=8)break;
+    }catch(e){
+      console.warn('[bing-hotbath-page-candidates]',JSON.stringify({reference:hp.lookup,query,error:e.message}));
+    }
+  }
+  console.log('[hotbath-sanitair-search]',JSON.stringify({reference:hp.lookup,base:hp.base,finishCode:hp.finishCode,queries:queries.slice(0,6),candidates:urls.slice(0,8)}));
   return urls.slice(0,8);
 }
+
 function extractSanitairkamerPageCandidate(html,pageUrl,reference,finishCode,finish){
   const $=cheerio.load(html);
   const hp=hotbathReferenceParts(reference,finishCode);
@@ -2436,6 +2469,7 @@ async function sanitairkamerHotbathImageCandidates(reference,finishCode,finish){
     try{
       const html=await fetchBrandPage(pageUrl,'nl-NL,nl;q=0.9,en;q=0.7');
       const pageCandidates=extractSanitairkamerPageCandidate(html,pageUrl,reference,finishCode,finish);
+      console.log('[hotbath-sanitair-page]',JSON.stringify({reference,pageUrl,candidates:pageCandidates.map(x=>({image:x.image,score:x.score,exact:x.exactReferenceMatch})).slice(0,4)}));
       for(const cand of pageCandidates){
         const check=await validateRemoteImage(cand.image,pageUrl);
         if(!check.ok)continue;
@@ -2448,6 +2482,7 @@ async function sanitairkamerHotbathImageCandidates(reference,finishCode,finish){
     }
   }
   gathered.sort((a,b)=>b.score-a.score);
+  console.log('[hotbath-sanitair-result]',JSON.stringify({reference,finishCode,count:gathered.length,best:gathered[0]||null}));
   return gathered;
 }
 async function findHotbathWebImageCandidates(reference,finishCode,finish){
@@ -2827,7 +2862,7 @@ app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")))
 async function startServer(){
   try{
     await initPersistentStore();
-    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V10.9 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
+    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V10.10 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
   }catch(e){
     console.error("[Hydropolis] Démarrage impossible :",e);
     process.exit(1);

@@ -604,15 +604,15 @@ async function autoCropForPdf(src){
 
 try{
   Object.keys(localStorage).forEach(k=>{
-    if(/^hydropolis-manufacturer-/i.test(k) && k!=="hydropolis-manufacturer-v109")localStorage.removeItem(k);
+    if(/^hydropolis-manufacturer-/i.test(k) && k!=="hydropolis-manufacturer-v110")localStorage.removeItem(k);
   });
 }catch(e){}
 let manufacturerImageCache={};
-try{manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v109")||"{}")||{};}catch(e){manufacturerImageCache={};}
+try{manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v110")||"{}")||{};}catch(e){manufacturerImageCache={};}
 function manufacturerCacheKey(p){return `${p.manufacturer}|${p.reference}`;}
 function saveManufacturerCache(){
   try{
-    localStorage.setItem("hydropolis-manufacturer-v109",JSON.stringify(manufacturerImageCache));
+    localStorage.setItem("hydropolis-manufacturer-v110",JSON.stringify(manufacturerImageCache));
   }catch(e){
     console.warn("[Hydropolis cache] quota dépassé, cache vidé",e);
     manufacturerImageCache={};
@@ -663,13 +663,17 @@ async function fetchManufacturerImage(p,force=false){
     cacheImages:imageSources.length?imageSources:(src?[src]:[]),
     finishMatch:data.best?.finishMatch||"",
     source:src
-      ?(data.best?.finishMatch==="exact"
-        ?`Site officiel fabricant · finition ${p.finish}`
-        :data.best?.finishMatch==="web"
-          ?`Recherche web · référence exacte ${normalizeSupplierReferenceForLookup(p.reference,p.manufacturer)}`
-          :(/hotbath/i.test(p.manufacturer||"")
-            ?`Site officiel fabricant · dernier recours`
-            :"Site officiel fabricant · visuel produit générique"))
+      ?(/sanitairkamer/i.test((data.best?.source||"")+" "+(data.best?.page||"")+" "+(data.best?.url||""))
+        ?(data.best?.finishMatch==="exact"
+          ?`Sanitairkamer · finition ${p.finish}`
+          :`Sanitairkamer · produit trouvé, finition à vérifier`)
+        :(data.best?.finishMatch==="exact"
+          ?`Site officiel fabricant · finition ${p.finish}`
+          :data.best?.finishMatch==="web"
+            ?`Recherche web · référence exacte ${normalizeSupplierReferenceForLookup(p.reference,p.manufacturer)}`
+            :(/hotbath/i.test(p.manufacturer||"")
+              ?`Site officiel fabricant · dernier recours`
+              :"Site officiel fabricant · visuel produit générique")))
       :"",
     note:(data.note||"") + ((/hotbath/i.test(p.manufacturer||"") && data.lookupReference && data.lookupReference!==p.reference)
       ?`
@@ -707,9 +711,10 @@ Référence technique utilisée : ${data.lookupReference} (suffixe catalogue ign
 function imageBadge(img,p){
   if(!img)return `Photo fabricant à rechercher`;
   if(img.finishMatch==="simulated")return `≈ Simulation de finition · ${p.finish}`;
-  if(img.finishMatch==="web")return /sanitairkamer/i.test(img.source||"")
-    ?`✓ Sanitairkamer · ${normalizeSupplierReferenceForLookup(p.reference,p.manufacturer)}`
-    :`✓ Image web · référence exacte ${normalizeSupplierReferenceForLookup(p.reference,p.manufacturer)}`;
+  if(/sanitairkamer/i.test((img.source||"")+" "+(img.page||"")+" "+(img.url||"")))return img.finishMatch==="exact"
+    ?`✓ Sanitairkamer · ${p.finish}`
+    :`✓ Sanitairkamer · ${normalizeSupplierReferenceForLookup(p.reference,p.manufacturer)}`;
+  if(img.finishMatch==="web")return `✓ Image web · référence exacte ${normalizeSupplierReferenceForLookup(p.reference,p.manufacturer)}`;
   return img.finishMatch==="exact"
     ?`✓ Photo officielle · ${p.finish}`
     :(/hotbath/i.test(p?.manufacturer||"")
