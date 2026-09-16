@@ -1,12 +1,12 @@
 {
   "name": "hydropolis-studio-v3",
-  "version": "10.8.0",
+  "version": "10.9.0",
   "private": true,
   "description": "Hydropolis Studio V3 - Render test server",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "build": "node -e \"console.log('Hydropolis V10.8: Hotbath images robustes + Drawing JPG')\""
+    "build": "node -e \"console.log('Hydropolis V10.9: Hotbath via Sanitairkamer')\""
   },
   "engines": {
     "node": ">=20"

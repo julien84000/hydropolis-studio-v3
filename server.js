@@ -719,7 +719,7 @@ app.post("/api/translate-product",requireAuth,async(req,res)=>{
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V10.8",
+  service:"Hydropolis Studio V10.9",
   database:USE_POSTGRES?"postgresql":"local-fallback",
   time:new Date().toISOString()
 }));
@@ -2144,7 +2144,7 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     const hasOfficialExact=candidates.some(x=>x.finishMatch==="exact");
     if(!hasOfficialExact && hp.base){
       try{
-        const webCandidates=await bingHotbathImageCandidates(reference,requested,finish);
+        const webCandidates=await findHotbathWebImageCandidates(reference,requested,finish);
         const compact=v=>normalizeToken(v).replace(/\s+/g,"");
         const fullCompact=compact(hp.lookup);
         const baseCompact=compact(hp.base);
@@ -2191,13 +2191,15 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
 
   if(isHotbath){
     const officialExact=sorted.find(x=>x.source==="hotbath-main-product-image" && x.finishMatch==="exact")||null;
+    const sanitairExact=sorted.find(x=>/sanitairkamer/.test(x.source||x.page||x.url||"") && x.finishMatch==="web")||null;
     const webExact=sorted.find(x=>x.source==="hotbath-web-exact")||null;
+    const sanitairGeneric=sorted.find(x=>/sanitairkamer/.test(x.source||x.page||x.url||""))||null;
     const officialGeneric=sorted.find(x=>x.source==="hotbath-main-product-image")||null;
     const webGeneric=sorted.find(x=>x.source==="hotbath-web-generic")||null;
 
-    exact=officialExact;
-    fallback=webExact||officialGeneric||webGeneric||null;
-    best=officialExact||webExact||officialGeneric||webGeneric||null;
+    exact=officialExact||sanitairExact;
+    fallback=sanitairExact||webExact||sanitairGeneric||officialGeneric||webGeneric||null;
+    best=officialExact||sanitairExact||webExact||sanitairGeneric||officialGeneric||webGeneric||null;
   }
 
   // Catalano: the selected finish is authoritative.
@@ -2304,12 +2306,14 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     note:isHotbath
       ?(best?.source==="hotbath-main-product-image" && best.finishMatch==="exact"
         ?`Photo officielle Hotbath certifiée pour ${hotbathReferenceParts(reference,requested).lookup}.`
-        :best?.source==="hotbath-web-exact"
-          ?`L'image officielle Hotbath n'était pas exploitable ou ne correspondait pas à la finition. Un visuel web correspondant à la référence exacte ${hotbathReferenceParts(reference,requested).lookup} a été retenu.`
-          :best?.source==="hotbath-main-product-image"
-            ?`Photo officielle Hotbath du bon produit utilisée en dernier recours. La finition ${requested||finish||"sélectionnée"} n'est pas certifiée.`
-            :best
-              ?`Visuel web du bon produit utilisé en dernier recours ; finition à vérifier.`
+        :(/sanitairkamer/.test((best?.source||"")+" "+(best?.url||"")) && best?.finishMatch==="web")
+          ?`L'image Hotbath officielle n'était pas exploitable. Un visuel Sanitairkamer correspondant à la référence ${hotbathReferenceParts(reference,requested).lookup} a été retenu.`
+          :best?.source==="hotbath-web-exact"
+            ?`L'image officielle Hotbath n'était pas exploitable ou ne correspondait pas à la finition. Un visuel web correspondant à la référence exacte ${hotbathReferenceParts(reference,requested).lookup} a été retenu.`
+            :best?.source==="hotbath-main-product-image"
+              ?`Photo officielle Hotbath du bon produit utilisée en dernier recours. La finition ${requested||finish||"sélectionnée"} n'est pas certifiée.`
+              :best
+                ?`Visuel web du bon produit utilisé en dernier recours ; finition à vérifier.`
               :`Aucune image Hotbath exploitable trouvée : les liens image de la fiche officielle peuvent être obsolètes (404).`)
       :(exact
         ?`Photo officielle fabricant correspondant à la finition ${requested}, associée à la variation fabricant.`
@@ -2337,6 +2341,141 @@ function hotbathFinishTarget(code){
     MBP:{rgb:[36,35,34],strength:.90,label:"Noir mat"}
   };
   return map[c]||null;
+}
+
+
+function normalizeCompact(v){
+  return normalizeToken(v).replace(/\s+/g,"");
+}
+function hotbathFinishAliases(code,finish=""){
+  const c=String(code||"").toUpperCase();
+  const target=hotbathFinishTarget(c);
+  const map={
+    CR:["cr","chrome","chromé","chrome polished","chroom"],
+    GN:["gn","nickel brosse","nickel brossé","nickel brushed","geborsteld nikkel","nikkel geborsteld"],
+    AB:["ab","laiton vieilli","aged brass","verouderd messing","messing verouderd"],
+    BB:["bb","laiton brosse","laiton brossé","brushed brass","geborsteld messing","messing geborsteld"],
+    WH:["wh","blanc mat","mat white","wit mat","mat wit"],
+    AI:["ai","fer vieilli","aged iron","verouderd ijzer"],
+    BBP:["bbp","laiton brosse pvd","laiton brossé pvd","brushed brass pvd","geborsteld messing pvd","messing geborsteld pvd"],
+    BCP:["bcp","cuivre brosse pvd","cuivre brossé pvd","brushed copper pvd","koper geborsteld","geborsteld koper","geborsteld koper pvd"],
+    MBP:["mbp","noir mat pvd","mat black pvd","zwart mat pvd","mat zwart pvd"]
+  };
+  return [...new Set([finish,target?.label,...(map[c]||[])].filter(Boolean).map(x=>normalizeToken(x)).filter(Boolean))];
+}
+async function bingHotbathPageCandidates(reference,finishCode,finish,siteHost=""){
+  const hp=hotbathReferenceParts(reference,finishCode);
+  const query=[siteHost?`site:${siteHost}`:"",'"Hotbath"',`"${hp.base}"`,finish||"",hp.finishCode||""].filter(Boolean).join(" ");
+  const html=await fetchBrandPage(`https://www.bing.com/search?q=${encodeURIComponent(query)}&form=QBLH`,`fr-FR,fr;q=0.9,en;q=0.7,nl;q=0.6`);
+  const $=cheerio.load(html);
+  const urls=[];
+  $('li.b_algo h2 a[href], li.b_algo a[href], a[href]').each((_,el)=>{
+    const href=String($(el).attr('href')||'').trim();
+    if(!/^https?:\/\//i.test(href))return;
+    try{
+      const u=new URL(href);
+      if(siteHost && !u.hostname.includes(siteHost))return;
+      if(urls.includes(u.href))return;
+      urls.push(u.href);
+    }catch{}
+  });
+  return urls.slice(0,8);
+}
+function extractSanitairkamerPageCandidate(html,pageUrl,reference,finishCode,finish){
+  const $=cheerio.load(html);
+  const hp=hotbathReferenceParts(reference,finishCode);
+  const baseCompact=normalizeCompact(hp.base);
+  const finishTerms=hotbathFinishAliases(hp.finishCode||finishCode,finish);
+  const pageTitle=String($('h1').first().text()||$('title').text()||'').trim();
+  const breadcrumb=String($('.breadcrumbs,.breadcrumb').first().text()||'').trim();
+  const bodyText=normalizeToken([pageTitle,breadcrumb,$('body').text()].join(' '));
+  const exactBase=baseCompact && normalizeCompact(bodyText).includes(baseCompact);
+  const exactFinish=finishTerms.some(t=>t && bodyText.includes(t));
+  const gallery=[];
+  function push(raw,ctx='',prio=0){
+    const href=absoluteUrl(pageUrl,raw);
+    if(!href || !isImageUrl(href))return;
+    const hay=normalizeToken((href+' '+ctx));
+    if(/logo|icon|sprite|placeholder|favicon|trustpilot|klarna|paypal|review|rating|banner|avatar/.test(hay))return;
+    if(/tekening|drawing|schema|dimension|afmeting|maatvoering/.test(hay))return;
+    if(/accessoire|toebehoren|aanbevolen|specialisten/.test(hay))prio-=5000;
+    let score=2000+prio;
+    if(exactBase)score+=2500;
+    if(exactFinish)score+=2500;
+    if(hay.includes('hotbath'))score+=500;
+    if(baseCompact && normalizeCompact(hay).includes(baseCompact))score+=1200;
+    for(const t of finishTerms){ if(t && hay.includes(t)){ score+=800; break; } }
+    if(/gallery|product|fotorama|media|image|main/.test(hay))score+=700;
+    gallery.push({image:href,page:pageUrl,title:pageTitle,score,exactReferenceMatch:!!(exactBase&&exactFinish),source:'sanitairkamer'});
+  }
+  $('meta[property="og:image"]').each((_,el)=>push($(el).attr('content')||'', 'og:image', 1800));
+  $('meta[name="twitter:image"]').each((_,el)=>push($(el).attr('content')||'', 'twitter:image', 1200));
+  $('[data-gallery-role], .gallery-placeholder, .fotorama, .product.media, .product-item-info').find('img[src],img[data-src],source[srcset]').each((_,el)=>{
+    const raw=$(el).attr('src')||$(el).attr('data-src')||String($(el).attr('srcset')||'').split(',')[0].trim().split(' ')[0]||'';
+    const ctx=[$(el).attr('alt')||'', $(el).attr('title')||'', $(el).closest('div,li,a').attr('class')||''].join(' ');
+    push(raw,ctx,900);
+  });
+  $('img[src], img[data-src]').each((_,el)=>{
+    const raw=$(el).attr('src')||$(el).attr('data-src')||'';
+    const ctx=[$(el).attr('alt')||'', $(el).attr('title')||'', $(el).closest('section,div,li').attr('class')||''].join(' ');
+    push(raw,ctx,0);
+  });
+  const uniq=[]; const seen=new Set();
+  for(const g of gallery.sort((a,b)=>b.score-a.score)){
+    if(seen.has(g.image))continue;
+    seen.add(g.image);
+    uniq.push(g);
+    if(uniq.length>=6)break;
+  }
+  return uniq;
+}
+async function sanitairkamerHotbathImageCandidates(reference,finishCode,finish){
+  const urls=await bingHotbathPageCandidates(reference,finishCode,finish,'sanitairkamer.nl');
+  const gathered=[];
+  for(const pageUrl of urls){
+    try{
+      const html=await fetchBrandPage(pageUrl,'nl-NL,nl;q=0.9,en;q=0.7');
+      const pageCandidates=extractSanitairkamerPageCandidate(html,pageUrl,reference,finishCode,finish);
+      for(const cand of pageCandidates){
+        const check=await validateRemoteImage(cand.image,pageUrl);
+        if(!check.ok)continue;
+        gathered.push({...cand,contentType:check.contentType,source:'sanitairkamer'});
+        if(gathered.length>=6)break;
+      }
+      if(gathered.length>=6)break;
+    }catch(e){
+      console.warn('[sanitairkamer-hotbath-page]',JSON.stringify({pageUrl,error:e.message}));
+    }
+  }
+  gathered.sort((a,b)=>b.score-a.score);
+  return gathered;
+}
+async function findHotbathWebImageCandidates(reference,finishCode,finish){
+  const combined=[];
+  try{
+    const sanit=await sanitairkamerHotbathImageCandidates(reference,finishCode,finish);
+    for(const item of sanit){
+      combined.push({...item,prioritySource:'sanitairkamer'});
+    }
+  }catch(e){
+    console.warn('[sanitairkamer-hotbath]',e.message);
+  }
+  try{
+    const generic=await bingHotbathImageCandidates(reference,finishCode,finish);
+    for(const item of generic){
+      combined.push({...item,prioritySource:item.prioritySource||'web'});
+    }
+  }catch(e){
+    console.warn('[hotbath-web-generic]',e.message);
+  }
+  combined.sort((a,b)=>b.score-a.score);
+  const uniq=[]; const seen=new Set();
+  for(const c of combined){
+    if(seen.has(c.image))continue;
+    seen.add(c.image);
+    uniq.push(c);
+  }
+  return uniq;
 }
 
 async function bingHotbathImageCandidates(reference,finishCode,finish){
@@ -2404,10 +2543,11 @@ app.post("/api/hotbath-web-image",async(req,res)=>{
   try{
     let candidates=hotbathWebImageCache.get(key);
     if(!candidates){
-      candidates=await bingHotbathImageCandidates(reference,finishCode,finish);
+      candidates=await findHotbathWebImageCandidates(reference,finishCode,finish);
       hotbathWebImageCache.set(key,candidates);
     }
     const exactCandidates=candidates.filter(x=>x.exactReferenceMatch);
+    const sanitairCandidates=candidates.filter(x=>/sanitairkamer/.test(x.source||x.page||x.image||""));
     res.json({
       reference,finishCode,finish,
       candidates,
@@ -2416,10 +2556,14 @@ app.post("/api/hotbath-web-image",async(req,res)=>{
       best:exactCandidates[0]||candidates[0]||null,
       exactFound:exactCandidates.length>0,
       note:exactCandidates.length
-        ?"Image web trouvée avec la référence Hotbath exacte."
-        :(candidates.length
-          ?"Visuel web du bon produit trouvé, mais la finition exacte n'est pas certifiée."
-          :"Aucune image web suffisamment fiable trouvée pour cette référence et cette finition.")
+        ?(/sanitairkamer/.test((exactCandidates[0]?.source||"")+" "+(exactCandidates[0]?.page||""))
+          ?"Image Sanitairkamer trouvée avec la référence Hotbath et la finition correspondante."
+          :"Image web trouvée avec la référence Hotbath exacte.")
+        :(sanitairCandidates.length
+          ?"Visuel Sanitairkamer du bon produit trouvé, mais la finition exacte n'est pas certifiée."
+          :(candidates.length
+            ?"Visuel web du bon produit trouvé, mais la finition exacte n'est pas certifiée."
+            :"Aucune image web suffisamment fiable trouvée pour cette référence et cette finition."))
     });
   }catch(e){
     console.error("[hotbath-web-image]",e.message);
@@ -2683,7 +2827,7 @@ app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")))
 async function startServer(){
   try{
     await initPersistentStore();
-    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V10.8 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
+    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V10.9 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
   }catch(e){
     console.error("[Hydropolis] Démarrage impossible :",e);
     process.exit(1);

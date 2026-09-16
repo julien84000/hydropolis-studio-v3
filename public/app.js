@@ -604,15 +604,15 @@ async function autoCropForPdf(src){
 
 try{
   Object.keys(localStorage).forEach(k=>{
-    if(/^hydropolis-manufacturer-/i.test(k) && k!=="hydropolis-manufacturer-v108")localStorage.removeItem(k);
+    if(/^hydropolis-manufacturer-/i.test(k) && k!=="hydropolis-manufacturer-v109")localStorage.removeItem(k);
   });
 }catch(e){}
 let manufacturerImageCache={};
-try{manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v108")||"{}")||{};}catch(e){manufacturerImageCache={};}
+try{manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v109")||"{}")||{};}catch(e){manufacturerImageCache={};}
 function manufacturerCacheKey(p){return `${p.manufacturer}|${p.reference}`;}
 function saveManufacturerCache(){
   try{
-    localStorage.setItem("hydropolis-manufacturer-v108",JSON.stringify(manufacturerImageCache));
+    localStorage.setItem("hydropolis-manufacturer-v109",JSON.stringify(manufacturerImageCache));
   }catch(e){
     console.warn("[Hydropolis cache] quota dépassé, cache vidé",e);
     manufacturerImageCache={};
@@ -707,7 +707,9 @@ Référence technique utilisée : ${data.lookupReference} (suffixe catalogue ign
 function imageBadge(img,p){
   if(!img)return `Photo fabricant à rechercher`;
   if(img.finishMatch==="simulated")return `≈ Simulation de finition · ${p.finish}`;
-  if(img.finishMatch==="web")return `✓ Image web · référence exacte ${normalizeSupplierReferenceForLookup(p.reference,p.manufacturer)}`;
+  if(img.finishMatch==="web")return /sanitairkamer/i.test(img.source||"")
+    ?`✓ Sanitairkamer · ${normalizeSupplierReferenceForLookup(p.reference,p.manufacturer)}`
+    :`✓ Image web · référence exacte ${normalizeSupplierReferenceForLookup(p.reference,p.manufacturer)}`;
   return img.finishMatch==="exact"
     ?`✓ Photo officielle · ${p.finish}`
     :(/hotbath/i.test(p?.manufacturer||"")
@@ -798,9 +800,9 @@ async function useHotbathWebImageForCatalog(reference,button){
       remoteUrl:data.best.image,
       remoteImages:[data.best.image],
       finishMatch:"web",
-      source:"Recherche web par référence exacte",
+      source:/sanitairkamer\.nl/i.test((data.best.page||"")+" "+(data.best.image||""))?"Sanitairkamer · référence produit":"Recherche web par référence exacte",
       webSourcePage:data.best.page||"",
-      note:"Image web trouvée par référence exacte · finition à vérifier visuellement."
+      note:/sanitairkamer\.nl/i.test((data.best.page||"")+" "+(data.best.image||""))?"Image Sanitairkamer retenue en priorité pour cette référence Hotbath.":"Image web trouvée par référence exacte · finition à vérifier visuellement."
     };
     saveManufacturerCache();renderCatalog();
   }catch(e){
@@ -853,10 +855,10 @@ async function useHotbathWebImageForProduct(id,button){
     const proxied=`/api/image-proxy?url=${encodeURIComponent(data.best.image)}`;
     p.image=proxied;p.images=[proxied];p.pdfImage=proxied;p.pdfImages=[proxied];
     p.remoteImageUrl=data.best.image;p.remoteImages=[data.best.image];
-    p.imageSource="Recherche web par référence exacte";
+    p.imageSource=/sanitairkamer\.nl/i.test((data.best.page||"")+" "+(data.best.image||""))?"Sanitairkamer · référence produit":"Recherche web par référence exacte";
     p.imageFinishMatch="web";
     p.imageSimulation=false;
-    p.imageNote="Image web trouvée par référence exacte · finition à vérifier visuellement.";
+    p.imageNote=/sanitairkamer\.nl/i.test((data.best.page||"")+" "+(data.best.image||""))?"Image Sanitairkamer retenue en priorité pour cette référence Hotbath.":"Image web trouvée par référence exacte · finition à vérifier visuellement.";
     p.webImageSourcePage=data.best.page||"";
     p.customImage=false;
     saveState();renderRooms();renderSelection();
@@ -909,7 +911,7 @@ async function lookupCatalogPhoto(reference,button){
       const officialFallback=img?.src?{...img}:null;
       try{
         const web=await searchHotbathWebImage(p);
-        const candidate=web.bestExact || (!officialFallback?web.best:null);
+        const candidate=web.bestExact || web.best || null;
         if(candidate?.image){
           const proxied=`/api/image-proxy?url=${encodeURIComponent(candidate.image)}`;
           img={
@@ -919,9 +921,11 @@ async function lookupCatalogPhoto(reference,button){
             remoteUrl:candidate.image,
             remoteImages:[candidate.image],
             finishMatch:web.bestExact?"web":"generic",
-            source:web.bestExact
-              ?`Recherche web · référence exacte ${normalizeSupplierReferenceForLookup(p.reference,p.manufacturer)}`
-              :"Recherche web · visuel produit générique",
+            source:/sanitairkamer\.nl/i.test((candidate.page||"")+" "+(candidate.image||""))
+              ?`Sanitairkamer · ${web.bestExact?"référence exacte":"visuel produit"}`
+              :(web.bestExact
+                ?`Recherche web · référence exacte ${normalizeSupplierReferenceForLookup(p.reference,p.manufacturer)}`
+                :"Recherche web · visuel produit générique"),
             note:web.note||""
           };
           const key=manufacturerCacheKey(p);
@@ -973,7 +977,7 @@ async function enrichSelectedPhoto(id,force=false){
       const officialFallback=img?.src?{...img}:null;
       try{
         const web=await searchHotbathWebImage(p);
-        const candidate=web.bestExact || (!officialFallback?web.best:null);
+        const candidate=web.bestExact || web.best || null;
         if(candidate?.image){
           const proxied=`/api/image-proxy?url=${encodeURIComponent(candidate.image)}`;
           img={
@@ -983,9 +987,11 @@ async function enrichSelectedPhoto(id,force=false){
             remoteUrl:candidate.image,
             remoteImages:[candidate.image],
             finishMatch:web.bestExact?"web":"generic",
-            source:web.bestExact
-              ?`Recherche web · référence exacte ${normalizeSupplierReferenceForLookup(p.reference,p.manufacturer)}`
-              :"Recherche web · visuel produit générique",
+            source:/sanitairkamer\.nl/i.test((candidate.page||"")+" "+(candidate.image||""))
+              ?`Sanitairkamer · ${web.bestExact?"référence exacte":"visuel produit"}`
+              :(web.bestExact
+                ?`Recherche web · référence exacte ${normalizeSupplierReferenceForLookup(p.reference,p.manufacturer)}`
+                :"Recherche web · visuel produit générique"),
             note:web.note||img.note||""
           };
         }else if(officialFallback){
