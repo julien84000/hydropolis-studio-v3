@@ -719,7 +719,7 @@ app.post("/api/translate-product",requireAuth,async(req,res)=>{
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V10.15",
+  service:"Hydropolis Studio V10.16",
   database:USE_POSTGRES?"postgresql":"local-fallback",
   time:new Date().toISOString()
 }));
@@ -1636,83 +1636,157 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
   }
 
 
-  // Zucchetti: the selected SKU is passed in ?sku= above. Their current
-  // product pages expose imagery through a mix of <img>, <source>, metadata
-  // and JSON/script assets. Collect all those official product assets and
-  // strongly prefer URLs tied to the current product base.
+  // V10.16 — Zucchetti: current site is Nuxt/3D and the selected SKU is carried
+  // in ?sku=. Keep the SKU as the authoritative product/finish signal, while
+  // aggressively excluding finish swatches, suggested products and collection imagery.
   if(/zucchettidesign\.it/i.test(manufacturerUrl)){
-    const zBase=String(reference||"").split(".")[0].toLowerCase();
-    const zRef=String(reference||"").toLowerCase();
+    const zFullRef=String(reference||"").trim().toUpperCase();
+    const zBase=String(zFullRef.split(".")[0]||"").toUpperCase();
+    const zRequested=String(finishCode||zFullRef.split(".").slice(1).join(".")||"").toUpperCase();
     const zPageText=normalizeToken($("body").text());
-    const zFinish=normalizeToken(finish||"");
-    const pageMatchesSku=
-      (!!zRef && zPageText.includes(normalizeToken(reference))) ||
-      (!!zBase && zPageText.includes(normalizeToken(zBase))) ||
-      (!!zFinish && zPageText.includes(zFinish));
+    const zFinishText=normalizeToken(finish||"");
+    let zSkuFromUrl="";
+    try{zSkuFromUrl=String(new URL(manufacturerUrl).searchParams.get("sku")||"").toUpperCase()}catch{}
 
-    function addZucchettiImage(raw,context="",source="zucchetti-product-image"){
+    const zSkuInPage=(()=>{
+      const body=$("body").text()||"";
+      const m=body.match(/Unique\s+code\s*([A-Z0-9.]+)/i);
+      return String(m?.[1]||"").toUpperCase();
+    })();
+    const pageMatchesSku=(
+      (!!zSkuFromUrl && zSkuFromUrl===zFullRef) ||
+      (!!zSkuInPage && zSkuInPage===zFullRef) ||
+      (!!zFullRef && zPageText.includes(normalizeToken(zFullRef))) ||
+      (!!zBase && zPageText.includes(normalizeToken(zBase)))
+    );
+    const pageMatchesFinish=(
+      !zRequested ||
+      (!!zSkuFromUrl && zSkuFromUrl===zFullRef) ||
+      (!!zSkuInPage && zSkuInPage===zFullRef) ||
+      (!!zRequested && zPageText.includes(normalizeToken(zRequested))) ||
+      (!!zFinishText && zPageText.includes(zFinishText))
+    );
+
+    function zFilename(href){
+      try{return decodeURIComponent(new URL(href).pathname.split("/").pop()||"").toUpperCase()}catch{return String(href||"").toUpperCase()}
+    }
+    function zForeignProductCode(href){
+      const file=zFilename(href);
+      // Real Zucchetti product references normally combine letters + 3–6 digits.
+      // If the filename clearly names another product, reject it.
+      const codes=[...file.matchAll(/(?:^|[^A-Z0-9])([A-Z]{1,4}\d{3,6})(?=[^A-Z0-9]|$)/g)].map(m=>m[1]);
+      return codes.some(code=>code!==zBase);
+    }
+    function zLooksLikeSwatch(href,context=""){
+      const file=zFilename(href);
+      const low=(String(href||"")+" "+String(context||"")).toLowerCase();
+      if(/swatch|finiture|finishing|finishings|material|texture|product-thumb-finishings/.test(low))return true;
+      // Current Zucchetti finish chips are often simply XP91.jpg / C3.jpg / X.jpg.
+      const bare=file.replace(/\.(?:JPE?G|PNG|WEBP).*$/i,"");
+      if(zRequested && bare===zRequested)return true;
+      if(/^(?:X|XP\d+|C\d+|N\d+|P\d+|W\d+|HC\d+)$/.test(bare))return true;
+      return false;
+    }
+    function zHasBase(href,context=""){
+      const hay=(String(href||"")+" "+String(context||"")).toUpperCase();
+      return !!zBase && hay.includes(zBase);
+    }
+    function zHasExactFinish(href,context=""){
+      if(!zRequested)return false;
+      const hay=(String(href||"")+" "+String(context||"")).toUpperCase();
+      if(hay.includes(zFullRef))return true;
+      const escaped=zRequested.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+      return new RegExp(`(?:[._/-]|^)${escaped}(?:[._/-]|$)`,"i").test(hay);
+    }
+
+    function addZucchettiImage(raw,context="",source="zucchetti-product-image",bonus=0){
       const href=absoluteUrl(manufacturerUrl,raw);
       if(!href || !isImageUrl(href))return;
       const text=(href+" "+context).toLowerCase();
-      if(/logo|favicon|icon|sprite|placeholder|loading|cookie|social|swatch|finishings?|material|texture|flag/.test(text))return;
+      if(/logo|favicon|icon|sprite|placeholder|loading|cookie|social|flag/.test(text))return;
+      if(zLooksLikeSwatch(href,context))return;
+      if(zForeignProductCode(href))return;
       if(/[?&](?:w|width|h|height)=([1-9]\d?|1\d\d)(?:&|$)/i.test(href))return;
 
-      let score=650;
-      if(/assets\.zucchettidesign\.it/i.test(href))score+=450;
-      if(zBase && text.includes(zBase))score+=4000;
-      if(zRef && text.includes(zRef))score+=5000;
+      const baseMatch=zHasBase(href,context);
+      const finishAssetMatch=zHasExactFinish(href,context);
+      let score=600+bonus;
+      if(/assets\.zucchettidesign\.it/i.test(href))score+=500;
+      if(baseMatch)score+=6500;
+      if(finishAssetMatch)score+=5000;
+      if(source==="zucchetti-metadata-image")score+=1800;
       if(/product|prodotto|gallery|image|immagini/i.test(text))score+=300;
 
-      // Since this page was explicitly requested with the exact official SKU,
-      // a product asset on a matching SKU page is valid for the selected finish
-      // even when the CDN filename itself omits the finish code.
-      const exact=pageMatchesSku && pageMatchesFinish && !!String(finishCode||"");
+      // The ?sku= page guarantees the requested SKU, but an asset is certified
+      // for that finish only when the asset itself names the full SKU/finish.
+      // Generic product imagery remains a valid fallback, not a false exact match.
+      const exact=pageMatchesSku && pageMatchesFinish && baseMatch && finishAssetMatch && !!zRequested;
       candidates.push({
         url:href,
         source,
-        score:score+(exact?3000:0),
+        score:score+(exact?4000:0),
         finishMatch:exact?"exact":"generic",
-        detectedFinishCode:exact?String(finishCode||"").toUpperCase():null,
+        detectedFinishCode:exact?zRequested:null,
         variationId:null,
-        attributes:{context}
+        attributes:{context,sku:zSkuFromUrl||zSkuInPage||zFullRef,baseMatch,finishAssetMatch}
       });
     }
 
+    // Metadata is the safest generic product fallback on the current 3D pages.
     $("meta[property='og:image'],meta[name='twitter:image'],meta[property='twitter:image']").each((_,el)=>{
-      addZucchettiImage($(el).attr("content")||"","metadata","zucchetti-metadata-image");
+      addZucchettiImage($(el).attr("content")||"","metadata","zucchetti-metadata-image",2500);
     });
 
+    // Do not harvest the finishing selector or suggested-product / collection cards.
     $("picture,source").each((_,el)=>{
       const node=$(el);
+      if(node.closest(".swatches,.swatch,.product-thumb-finishings,.suggested,.archive--container").length)return;
+      const ctx=[node.attr("alt"),node.attr("title"),node.attr("class"),node.parent().attr("class")].filter(Boolean).join(" ");
       for(const attr of ["src","data-src","srcset","data-srcset"]){
         const raw=node.attr(attr)||"";
         for(const part of raw.split(",")){
           const candidate=part.trim().split(/\s+/)[0];
-          if(candidate)addZucchettiImage(candidate,"picture source","zucchetti-picture-image");
+          if(candidate)addZucchettiImage(candidate,ctx,"zucchetti-picture-image",700);
         }
       }
     });
 
     $("img").each((_,el)=>{
       const im=$(el);
-      if(im.closest("#finiture").length)return;
-      const ctx=[im.attr("alt"),im.attr("title"),im.attr("class")].filter(Boolean).join(" ");
+      if(im.closest(".swatches,.swatch,.product-thumb-finishings,.suggested,.archive--container").length)return;
+      const ctx=[im.attr("alt"),im.attr("title"),im.attr("class"),im.parent().attr("class")].filter(Boolean).join(" ");
       for(const attr of ["data-large_image","data-original","data-lazy-src","data-src","src"]){
-        addZucchettiImage(im.attr(attr),ctx,"zucchetti-img");
+        addZucchettiImage(im.attr(attr),ctx,"zucchetti-img",500);
       }
       for(const attr of ["srcset","data-srcset"]){
         const raw=im.attr(attr)||"";
         for(const part of raw.split(",")){
-          addZucchettiImage(part.trim().split(/\s+/)[0],ctx,"zucchetti-img-srcset");
+          addZucchettiImage(part.trim().split(/\s+/)[0],ctx,"zucchetti-img-srcset",500);
         }
       }
     });
 
-    // Assets embedded in hydrated JSON / scripts.
+    // Nuxt payload / inline JSON can contain product downloads that are not rendered
+    // as normal <img> nodes. Keep only assets belonging to this product base.
     const zuRaw=html.match(/https?:\\?\/\\?\/(?:assets\.)?zucchettidesign\.it\/[^"'<>\\\s)]+?\.(?:jpe?g|png|webp)(?:\\?[^"'<>\\\s)]*)?/gi)||[];
     for(const raw of zuRaw){
-      addZucchettiImage(raw.replace(/\\\//g,"/").replace(/&amp;/g,""),"inline json","zucchetti-json-image");
+      const href=raw.replace(/\\\//g,"/").replace(/&amp;/g,"&");
+      if(!zHasBase(href,""))continue;
+      addZucchettiImage(href,"inline json","zucchetti-json-image",1200);
     }
+
+    console.log("[zucchetti-image]",JSON.stringify({
+      reference:zFullRef,
+      sku:zSkuFromUrl||zSkuInPage||"",
+      finishCode:zRequested,
+      pageMatchesSku,
+      pageMatchesFinish,
+      candidates:candidates
+        .filter(x=>String(x.source||"").startsWith("zucchetti-"))
+        .sort((a,b)=>b.score-a.score)
+        .slice(0,8)
+        .map(x=>({url:x.url,source:x.source,score:x.score,finishMatch:x.finishMatch,baseMatch:x.attributes?.baseMatch,finishAssetMatch:x.attributes?.finishAssetMatch}))
+    }));
   }
 
   // Hotbath: dedicated extraction only.
@@ -2066,9 +2140,17 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
 
   // Zucchetti fallback: official technical sheets use the base reference as PDF filename.
   if(!technicalSheet && /zucchettidesign\.it/i.test(manufacturerUrl)){
-    const zbase=String(reference||"").split(".")[0].toUpperCase();
+    const zfull=String(reference||"").toUpperCase();
+    const zbase=String(zfull.split(".")[0]||"");
+    // Some current products expose their sheet as e.g. ZP8087.X.pdf while the
+    // sellable SKU is ZP8087.XP91. Try the structural base first, then bare base.
+    const zCandidates=[];
     if(/^Z[A-Z0-9]+$/.test(zbase)){
-      const candidate=`https://assets.zucchettidesign.it/uploads/downloads/pdf/${zbase}.pdf`;
+      if(/\.X[A-Z0-9]*$/i.test(zfull))zCandidates.push(`${zbase}.X`);
+      zCandidates.push(zbase);
+    }
+    for(const zpdf of [...new Set(zCandidates)]){
+      const candidate=`https://assets.zucchettidesign.it/uploads/downloads/pdf/${zpdf}.pdf`;
       try{
         const head=await axios.get(candidate,{
           responseType:"arraybuffer",timeout:12000,maxRedirects:3,
@@ -2078,6 +2160,7 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
         const ct=String(head.headers["content-type"]||"");
         if(ct.includes("pdf") && head.data?.length>1000){
           technicalSheet={url:candidate,label:"Technical sheet",type:"pdf",source:"official-derived"};
+          break;
         }
       }catch{}
     }
@@ -3006,7 +3089,7 @@ app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")))
 async function startServer(){
   try{
     await initPersistentStore();
-    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V10.15 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
+    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V10.16 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
   }catch(e){
     console.error("[Hydropolis] Démarrage impossible :",e);
     process.exit(1);

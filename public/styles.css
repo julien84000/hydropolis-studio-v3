@@ -2111,3 +2111,5 @@ button,input,select,textarea{font:inherit}.shell{display:grid;grid-template-colu
 /* V10.15 — correctif ajout baignoires Recor */
 .recor-configurator-overlay{pointer-events:auto!important;}
 .recor-configurator{pointer-events:auto;}
+
+/* V10.16 — correctif récupération images Zucchetti */
