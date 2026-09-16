@@ -604,15 +604,15 @@ async function autoCropForPdf(src){
 
 try{
   Object.keys(localStorage).forEach(k=>{
-    if(/^hydropolis-manufacturer-/i.test(k) && k!=="hydropolis-manufacturer-v107")localStorage.removeItem(k);
+    if(/^hydropolis-manufacturer-/i.test(k) && k!=="hydropolis-manufacturer-v108")localStorage.removeItem(k);
   });
 }catch(e){}
 let manufacturerImageCache={};
-try{manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v107")||"{}")||{};}catch(e){manufacturerImageCache={};}
+try{manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v108")||"{}")||{};}catch(e){manufacturerImageCache={};}
 function manufacturerCacheKey(p){return `${p.manufacturer}|${p.reference}`;}
 function saveManufacturerCache(){
   try{
-    localStorage.setItem("hydropolis-manufacturer-v107",JSON.stringify(manufacturerImageCache));
+    localStorage.setItem("hydropolis-manufacturer-v108",JSON.stringify(manufacturerImageCache));
   }catch(e){
     console.warn("[Hydropolis cache] quota dépassé, cache vidé",e);
     manufacturerImageCache={};
@@ -665,14 +665,16 @@ async function fetchManufacturerImage(p,force=false){
     source:src
       ?(data.best?.finishMatch==="exact"
         ?`Site officiel fabricant · finition ${p.finish}`
-        :(/hotbath/i.test(p.manufacturer||"")
-          ?`Site officiel fabricant · dernier recours`
-          :"Site officiel fabricant · visuel produit générique"))
+        :data.best?.finishMatch==="web"
+          ?`Recherche web · référence exacte ${normalizeSupplierReferenceForLookup(p.reference,p.manufacturer)}`
+          :(/hotbath/i.test(p.manufacturer||"")
+            ?`Site officiel fabricant · dernier recours`
+            :"Site officiel fabricant · visuel produit générique"))
       :"",
     note:(data.note||"") + ((/hotbath/i.test(p.manufacturer||"") && data.lookupReference && data.lookupReference!==p.reference)
       ?`
 Référence technique utilisée : ${data.lookupReference} (suffixe catalogue ignoré).`
-      :"") + ((src && data.best?.finishMatch!=="exact" && /hotbath/i.test(p.manufacturer||""))
+      :"") + ((src && data.best?.finishMatch!=="exact" && data.best?.finishMatch!=="web" && /hotbath/i.test(p.manufacturer||""))
       ?((data.note?"\n":"")+"Dernier recours Hotbath : photo officielle fournisseur conservée même si la finition exacte n'est pas certifiée.")
       :""),
     drawingUrl:data.drawing?.url||"",
@@ -705,7 +707,7 @@ Référence technique utilisée : ${data.lookupReference} (suffixe catalogue ign
 function imageBadge(img,p){
   if(!img)return `Photo fabricant à rechercher`;
   if(img.finishMatch==="simulated")return `≈ Simulation de finition · ${p.finish}`;
-  if(img.finishMatch==="web")return `⚠ Image web · ${p.finish} à vérifier`;
+  if(img.finishMatch==="web")return `✓ Image web · référence exacte ${normalizeSupplierReferenceForLookup(p.reference,p.manufacturer)}`;
   return img.finishMatch==="exact"
     ?`✓ Photo officielle · ${p.finish}`
     :(/hotbath/i.test(p?.manufacturer||"")
@@ -896,20 +898,62 @@ async function lookupCatalogPhoto(reference,button){
   const info=$(".photo-status",card);
   button.disabled=true;
   button.textContent="Recherche…";
-  if(info)info.textContent="Interrogation du site fabricant…";
+  if(info)info.textContent="Recherche du meilleur visuel…";
+
   try{
-    const img=await fetchManufacturerImage(p,true);
-    if(img.src){
-      thumb.innerHTML=`<img src="${img.src}" alt="${p.reference}">`;
+    let img=await fetchManufacturerImage(p,true);
+
+    // Hotbath order:
+    // 1. official exact; 2. web exact; 3. official generic; 4. web generic.
+    if(/hotbath/i.test(p.manufacturer||"") && (!img.src || img.finishMatch!=="exact")){
+      const officialFallback=img?.src?{...img}:null;
+      try{
+        const web=await searchHotbathWebImage(p);
+        const candidate=web.bestExact || (!officialFallback?web.best:null);
+        if(candidate?.image){
+          const proxied=`/api/image-proxy?url=${encodeURIComponent(candidate.image)}`;
+          img={
+            ...(img||{}),
+            src:proxied,
+            images:[proxied],
+            remoteUrl:candidate.image,
+            remoteImages:[candidate.image],
+            finishMatch:web.bestExact?"web":"generic",
+            source:web.bestExact
+              ?`Recherche web · référence exacte ${normalizeSupplierReferenceForLookup(p.reference,p.manufacturer)}`
+              :"Recherche web · visuel produit générique",
+            note:web.note||""
+          };
+          const key=manufacturerCacheKey(p);
+          manufacturerImageCache[key]=img;
+          saveManufacturerCache();
+        }else if(officialFallback){
+          img=officialFallback;
+        }
+      }catch(e){
+        if(officialFallback)img=officialFallback;
+      }
+    }
+
+    if(img?.src){
+      thumb.innerHTML=`<img src="${img.src}" alt="${p.reference}" class="catalog-live-image">`;
+      const rendered=$(".catalog-live-image",thumb);
+      if(rendered){
+        rendered.onerror=()=>{
+          thumb.innerHTML=`<div class="photo-missing"><b>Photo indisponible</b><br>${p.finish||""}</div>`;
+          if(info)info.textContent="Le visuel distant est indisponible. Aucune image cassée n'est conservée.";
+        };
+      }
       if(info)info.innerHTML=`<b>${imageBadge(img,p)}</b>${img.note?`<br>${img.note}`:""}`;
       button.textContent="Actualiser la photo";
     }else{
-      if(info)info.innerHTML=`Aucune photo officielle certifiée.${img.note?`<br>${img.note}`:""}${img.technicalSheetUrl?`<br><b>Fiche technique disponible.</b>`:""}`;
+      thumb.innerHTML=`<div class="photo-missing"><b>Photo fabricant</b><br>${p.finish||""}<br>indisponible</div>`;
+      if(info)info.innerHTML=`Aucun visuel exploitable trouvé.${img?.note?`<br>${img.note}`:""}${img?.technicalSheetUrl?`<br><b>Fiche technique disponible.</b>`:""}`;
       button.textContent="Réessayer";
     }
     renderCatalog();
   }catch(e){
-    if(info)info.textContent="Aucune photo officielle trouvée : "+e.message;
+    if(info)info.textContent="Aucune photo exploitable : "+e.message;
     button.textContent="Réessayer";
   }finally{
     button.disabled=false;
@@ -919,11 +963,39 @@ async function lookupCatalogPhoto(reference,button){
 async function enrichSelectedPhoto(id,force=false){
   const p=state.selected.find(x=>x.id===id);
   if(!p)return;
-  p.imageStatus="Recherche sur le site fabricant…";
+  p.imageStatus="Recherche du meilleur visuel…";
   renderRooms();
 
   try{
-    const img=await fetchManufacturerImage(p,force);
+    let img=await fetchManufacturerImage(p,force);
+
+    if(/hotbath/i.test(p.manufacturer||"") && (!img.src || img.finishMatch!=="exact")){
+      const officialFallback=img?.src?{...img}:null;
+      try{
+        const web=await searchHotbathWebImage(p);
+        const candidate=web.bestExact || (!officialFallback?web.best:null);
+        if(candidate?.image){
+          const proxied=`/api/image-proxy?url=${encodeURIComponent(candidate.image)}`;
+          img={
+            ...img,
+            src:proxied,
+            images:[proxied],
+            remoteUrl:candidate.image,
+            remoteImages:[candidate.image],
+            finishMatch:web.bestExact?"web":"generic",
+            source:web.bestExact
+              ?`Recherche web · référence exacte ${normalizeSupplierReferenceForLookup(p.reference,p.manufacturer)}`
+              :"Recherche web · visuel produit générique",
+            note:web.note||img.note||""
+          };
+        }else if(officialFallback){
+          img=officialFallback;
+        }
+      }catch(e){
+        if(officialFallback)img=officialFallback;
+      }
+    }
+
     if(img.src){
       p.image=img.src;
       p.images=img.images||[img.src].filter(Boolean);
@@ -934,10 +1006,12 @@ async function enrichSelectedPhoto(id,force=false){
       p.imageSource=img.source;
       p.imageFinishMatch=img.finishMatch;
       p.imageStatus=imageBadge(img,p);
+      p.imageSimulation=false;
       p.customImage=false;
     }else if(!p.image){
-      p.imageStatus="Photo fabricant non certifiée";
+      p.imageStatus="Photo fabricant indisponible";
     }
+
     p.imageNote=img.note;
     p.resolvedManufacturerUrl=img.resolvedManufacturerUrl||p.resolvedManufacturerUrl||p.manufacturerUrl||"";
     p.drawingUrl=img.drawingUrl||p.drawingUrl||"";
@@ -949,6 +1023,7 @@ async function enrichSelectedPhoto(id,force=false){
     p.cadDrawingType=img.cadDrawingType||p.cadDrawingType||"";
     p.technicalSheetUrl=img.technicalSheetUrl||p.technicalSheetUrl||"";
     p.technicalSheetLabel=img.technicalSheetLabel||p.technicalSheetLabel||"Fiche technique";
+    p.technicalSheetType=img.technicalSheetType||p.technicalSheetType||"";
     p.technicalSheetPage=Number(img.technicalSheetPage||p.technicalSheetPage||1);
     p.installationGuideUrl=img.installationGuideUrl||p.installationGuideUrl||"";
     p.installationGuideLabel=img.installationGuideLabel||p.installationGuideLabel||"Notice d'installation";
@@ -1189,7 +1264,7 @@ function renderCatalog(){
        const finishLabel=exactFinishLabel(p)||"";
        const price=Number(p.totalPrice||0);
        cards.push(`<article class="result">
-       <div class="catalog-thumb">${cached?.src?`<img src="${cached.src}" alt="${p.reference||""}">`:`<div class="photo-missing"><b>Photo fabricant</b><br>${finishLabel}<br>à rechercher</div>`}</div>
+       <div class="catalog-thumb" data-ref="${p.reference||""}">${cached?.src?`<img src="${cached.src}" alt="${p.reference||""}" class="catalog-cached-image">`:`<div class="photo-missing"><b>Photo fabricant</b><br>${finishLabel}<br>à rechercher</div>`}</div>
        <div><div class="r-top"><span class="ref">${p.reference||""}</span><span class="badge">${p.manufacturer||""}</span><span class="badge">${p.collection||""}</span><span class="badge">${p.category||""}</span></div>
        <div class="designation">${p.designation||""}</div><div class="meta">${p.finish||""}</div>
        <div class="manufacturer-tools">
@@ -1217,6 +1292,13 @@ function renderCatalog(){
    $$(".lookup-photo").forEach(b=>b.onclick=()=>lookupCatalogPhoto(b.dataset.ref,b));
    $$(".hotbath-web-photo").forEach(b=>b.onclick=()=>useHotbathWebImageForCatalog(b.dataset.ref,b));
    $$(".hotbath-sim-photo").forEach(b=>b.onclick=()=>simulateHotbathFinishForCatalog(b.dataset.ref,b));
+   $$(".catalog-cached-image").forEach(img=>{
+     img.onerror=()=>{
+       const wrap=img.closest(".catalog-thumb");
+       const p=CATALOG.find(x=>x.reference===wrap?.dataset.ref);
+       if(wrap)wrap.innerHTML=`<div class="photo-missing"><b>Photo indisponible</b><br>${p?.finish||""}</div>`;
+     };
+   });
  }catch(e){
    console.error("[renderCatalog]",e);
    if(count)count.textContent="Erreur d’affichage du catalogue";
@@ -1972,7 +2054,7 @@ function renderRoomsCore(){
    <button class="btn ghost go-cat" data-id="${r.id}">+ Produit catalogue</button><button class="icon del-room" data-id="${r.id}">×</button></div>
    <div class="room-products">${ps.length?ps.map(p=>`
       <div class="room-product">
-        <div class="room-prod-img"><label data-id="${p.id}">${p.image?`<img src="${p.image}">`:"＋ Photo"}<input class="prod-file" type="file" accept="image/*" hidden></label></div>
+        <div class="room-prod-img"><label data-id="${p.id}">${p.image?`<img src="${p.image}" class="room-live-image" data-id="${p.id}">`:"＋ Photo"}<input class="prod-file" type="file" accept="image/*" hidden></label></div>
         <div><b>${p.designation}</b><div class="tech">${p.manufacturer} · ${p.collection} · ${p.reference} · <b>${safeExactFinishLabel(p)}</b></div>${p.internalReference?`<div class="tech">Complet avec ${p.internalReference}</div>`:""}
         <details class="article-editor">
           <summary>Modifier l'article</summary>
@@ -2051,6 +2133,15 @@ function renderRoomsCore(){
  });$$(".fallback-btn").forEach(b=>b.onclick=()=>useCatalogueFallback(b.dataset.id));$$(".enrich-btn").forEach(b=>b.onclick=()=>enrichSelectedPhoto(b.dataset.id,true));
  $$(".hotbath-web-selected").forEach(b=>b.onclick=()=>useHotbathWebImageForProduct(b.dataset.id,b));
  $$(".hotbath-sim-selected").forEach(b=>b.onclick=()=>simulateHotbathFinishForProduct(b.dataset.id,b));
+ $$(".room-live-image").forEach(img=>{
+   img.onerror=()=>{
+     const label=img.closest("label");
+     if(label){
+       img.remove();
+       label.insertAdjacentText("afterbegin","Photo indisponible");
+     }
+   };
+ });
  $$(".drawing-check").forEach(ch=>ch.onchange=()=>{let p=state.selected.find(x=>x.id===ch.dataset.id);if(!p)return;p.includeDrawing=ch.checked;saveState();});
  $$(".techsheet-check").forEach(ch=>ch.onchange=()=>{let p=state.selected.find(x=>x.id===ch.dataset.id);if(!p)return;p.includeTechnicalSheet=ch.checked;saveState();});
  $$(".install-check").forEach(ch=>ch.onchange=()=>{let p=state.selected.find(x=>x.id===ch.dataset.id);if(!p)return;p.includeInstallationGuide=ch.checked;saveState();});

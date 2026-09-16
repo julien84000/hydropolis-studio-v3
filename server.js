@@ -719,7 +719,7 @@ app.post("/api/translate-product",requireAuth,async(req,res)=>{
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V10.7",
+  service:"Hydropolis Studio V10.8",
   database:USE_POSTGRES?"postgresql":"local-fallback",
   time:new Date().toISOString()
 }));
@@ -1213,6 +1213,29 @@ function finishExactInText(text,finishCode,finish,reference){
   return (aliases[String(finishCode||"").toUpperCase()]||[]).some(x=>n.includes(normalizeToken(x)));
 }
 
+
+async function validateRemoteImage(url,referer=""){
+  if(!url || !/^https?:\/\//i.test(url))return {ok:false,status:0};
+  try{
+    const r=await axios.get(url,{
+      responseType:"arraybuffer",
+      timeout:12000,
+      maxRedirects:4,
+      validateStatus:()=>true,
+      headers:{
+        "User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/150 Safari/537.36",
+        "Accept":"image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
+        "Referer":referer||new URL(url).origin+"/"
+      }
+    });
+    const ct=String(r.headers["content-type"]||"").toLowerCase();
+    const ok=r.status>=200 && r.status<300 && ct.startsWith("image/") && r.data && r.data.length>3500;
+    return {ok,status:r.status,contentType:ct,size:r.data?.length||0,data:ok?Buffer.from(r.data):null};
+  }catch(e){
+    return {ok:false,status:Number(e.response?.status||0),error:e.message};
+  }
+}
+
 async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,designation,originalDescription,collection,manufacturer}){
   const base=productBase(reference);
   const requested=String(finishCode||"").toUpperCase();
@@ -1326,6 +1349,9 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
   });
 
   $("img").each((_,el)=>{
+    // Hotbath has a dedicated extractor below. Do not let generic parsing
+    // classify finish swatches as exact product photography.
+    if(/hotbath\.it/i.test(manufacturerUrl))return;
     const $img=$(el);
     const alt=($img.attr("alt")||"").toLowerCase();
     const title=($img.attr("title")||"").toLowerCase();
@@ -1689,8 +1715,10 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     }
   }
 
-  // Hotbath: normalise catalogue refs before matching. The trailing .IT is a
-  // catalogue/country suffix and must never participate in image/document matching.
+  // Hotbath: dedicated extraction only.
+  // Important: the public product page can expose broken legacy images and finish
+  // swatches. We therefore isolate the real hero asset, verify it later, and never
+  // allow a swatch to certify a finish.
   if(/hotbath\.it/i.test(manufacturerUrl)){
     const hp=hotbathReferenceParts(reference,finishCode);
     const hBase=hp.base.toLowerCase();
@@ -1698,61 +1726,53 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     const displayedHotbathRef=normalizeHotbathReference($("#descrbar").first().text()||"");
     const displayedNorm=normalizeToken(displayedHotbathRef);
     const pageTitleBase=normalizeToken($("h1").first().text()||"");
-    const pageMatchesSku=!!hBase && (pageTitleBase===normalizeToken(hp.base) || displayedNorm.startsWith(normalizeToken(hp.base)));
-    // Exact finish only when Hotbath itself displays BASE.FINISH on the page.
-    // BASE.FINISH.IT and BASE.FINISH are therefore treated identically.
+    const pageMatchesSku=!!hBase && (
+      pageTitleBase===normalizeToken(hp.base) ||
+      displayedNorm.startsWith(normalizeToken(hp.base))
+    );
     const pageMatchesFinish=!!hp.finishCode && displayedNorm===hLookup;
 
-    function addHotbathImage(raw,context="",source="hotbath-product-image",priority=0){
+    // Remove any candidates that might have been collected by generic/variation logic
+    // before we reached this brand-specific block.
+    candidates.splice(0,candidates.length);
+
+    function addHotbathProductImage(raw,context="",source="hotbath-main-product-image",priority=0){
       const href=normalizeHotbathAssetUrl(raw,manufacturerUrl);
       if(!href || !isImageUrl(href))return;
-      const text=(href+" "+context).toLowerCase();
-      if(/logo|favicon|icon|sprite|placeholder|loading|cookie|social|flag|pinterest|instagram|jsp\/template2\/images/.test(text))return;
-      // Finish chips are colour swatches, not product photography.
+      const low=(href+" "+context).toLowerCase();
+      if(/logo|favicon|icon|sprite|placeholder|loading|cookie|social|flag|pinterest|instagram|jsp\/template2\/images/.test(low))return;
       if(/\/prodcateg\/\d+\/(?:cr|gn|ab|bb|wh|ai|bbp|bcp|mbp)\.jpe?g(?:\?|$)/i.test(href))return;
-      if(/[?&](?:w|width|h|height)=([1-9]\d?|1\d\d)(?:&|$)/i.test(href))return;
 
-      let score=500+priority;
-      if(source==="hotbath-main-product-image")score+=7000;
-      if(/metadata/.test(source))score+=1000;
-      if(hBase && text.includes(hBase))score+=2200;
-      if(/hero|main|product|gallery|prodotto/i.test(text))score+=300;
+      let score=1000+priority;
+      if(source==="hotbath-main-product-image")score+=10000;
+      if(hBase && low.includes(hBase))score+=2200;
 
-      const exact=pageMatchesSku && pageMatchesFinish;
+      const exact=pageMatchesSku && pageMatchesFinish && source==="hotbath-main-product-image";
       candidates.push({
         url:href,
         source,
-        score:score+(exact?4000:0),
+        score:score+(exact?6000:0),
         finishMatch:exact?"exact":"generic",
         detectedFinishCode:exact?hp.finishCode:null,
         variationId:null,
-        attributes:{context,normalizedReference:hp.normalized,displayedReference:displayedHotbathRef}
+        attributes:{
+          context,
+          normalizedReference:hp.normalized,
+          displayedReference:displayedHotbathRef,
+          pageMatchesFinish
+        }
       });
     }
 
-    // The authoritative product visual on Hotbath lives in #imgprod.
+    // Only the image inside #imgprod is the official product photo.
     $("#imgprod img[src]").each((_,el)=>{
       const im=$(el);
-      addHotbathImage(im.attr("src")||"",im.attr("alt")||"","hotbath-main-product-image",3000);
-    });
-
-    $("meta[property='og:image'],meta[name='twitter:image'],meta[property='twitter:image']").each((_,el)=>{
-      addHotbathImage($(el).attr("content")||"","metadata","hotbath-metadata-image",500);
-    });
-
-    $("img").each((_,el)=>{
-      const im=$(el);
-      if(im.closest("#finiture").length || im.closest(".attach").length || im.closest("header,footer").length)return;
-      const ctx=[im.attr("alt"),im.attr("title"),im.attr("class")].filter(Boolean).join(" ");
-      for(const attr of ["data-large_image","data-original","data-lazy-src","data-src","src"]){
-        addHotbathImage(im.attr(attr),ctx,"hotbath-img");
-      }
-      for(const attr of ["srcset","data-srcset"]){
-        const raw=im.attr(attr)||"";
-        for(const part of raw.split(",")){
-          addHotbathImage(part.trim().split(/\s+/)[0],ctx,"hotbath-img-srcset");
-        }
-      }
+      addHotbathProductImage(
+        im.attr("src")||"",
+        im.attr("alt")||"",
+        "hotbath-main-product-image",
+        4000
+      );
     });
   }
 
@@ -1854,9 +1874,9 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
   }
   function inferredDownloadType(href,hintRaw=""){
     const hint=normalizeToken(hintRaw);
-    if(isPdfUrl(href) || /pdf/.test(hint)) return "pdf";
-    if(isImageUrl(href) || /(jpg|jpeg|png|image)/.test(hint)) return "image";
-    if(/\.(dwg|dxf|igs|stp|3ds|bim)(?:\?|$)/i.test(href) || /(dwg|dxf|igs|stp|3ds|bim|cad)/.test(hint)) return "cad";
+    if(isPdfUrl(href) || /\bpdf\b/.test(hint)) return "pdf";
+    if(isImageUrl(href) || /\b(jpg|jpeg|png|image)\b/.test(hint)) return "image";
+    if(/\.(dwg|dxf|igs|stp|3ds|bim)(?:\?|$)/i.test(href) || /\b(dwg|dxf|igs|stp|3ds|bim|cad)\b/.test(hint)) return "cad";
     return "link";
   }
 
@@ -1865,6 +1885,77 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
   let drawing=null;
   let cadDrawing=null;
   const isHotbath=/hotbath\.it/i.test(manufacturerUrl);
+
+  // Hotbath documentation is structured into labelled .attach blocks.
+  // Use the DOM structure directly instead of inferring from icon filenames.
+  if(isHotbath){
+    $("#data .attach").each((_,box)=>{
+      const b=$(box);
+      const heading=normalizeToken(b.find(".titatt").first().text()||"");
+
+      if(heading==="drawing" || heading.includes("drawing")){
+        const link=b.find("a[href]").filter((__,a)=>{
+          const h=normalizeHotbathAssetUrl($(a).attr("href"),manufacturerUrl);
+          return !!h && isImageUrl(h);
+        }).first();
+        const href=normalizeHotbathAssetUrl(link.attr("href"),manufacturerUrl);
+        if(href){
+          drawing={
+            url:href,
+            label:"Drawing 2D · JPG",
+            type:"image",
+            source:"hotbath-drawing-jpg"
+          };
+          // User requirement: for Hotbath, the technical sheet used in Hydropolis
+          // is precisely the JPG exposed in the Drawing section.
+          technicalSheet={
+            url:href,
+            label:"Fiche technique · Drawing JPG",
+            type:"image",
+            source:"hotbath-drawing-jpg"
+          };
+        }
+      }
+
+      if(heading.includes("instructions")){
+        const link=b.find("a[href]").filter((__,a)=>{
+          const h=normalizeHotbathAssetUrl($(a).attr("href"),manufacturerUrl);
+          return !!h && isPdfUrl(h);
+        }).first();
+        const href=normalizeHotbathAssetUrl(link.attr("href"),manufacturerUrl);
+        if(href){
+          installationGuide={
+            url:href,
+            label:"Notice d'installation",
+            type:"pdf",
+            source:"hotbath-instructions"
+          };
+        }
+      }
+
+      if(heading==="cad" || heading.includes("cad")){
+        let chosen=null;
+        b.find("a[href]").each((__,a)=>{
+          const href=normalizeHotbathAssetUrl($(a).attr("href"),manufacturerUrl);
+          if(!href)return;
+          const title=String($(a).attr("title")||"").toLowerCase();
+          if(!chosen || title==="dwg"){
+            if(/\.(?:dwg|dxf|igs|stp|3ds)(?:\?|$)/i.test(href)){
+              chosen={href,title};
+            }
+          }
+        });
+        if(chosen){
+          cadDrawing={
+            url:chosen.href,
+            label:chosen.title==="dwg"?"Fichier DWG":"Fichier CAD",
+            type:"cad",
+            source:"hotbath-cad"
+          };
+        }
+      }
+    });
+  }
 
   $("a[href]").each((_,el)=>{
     const href=absoluteUrl(manufacturerUrl,$(el).attr("href"));
@@ -1875,15 +1966,15 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     const hint=normalizeToken(rawText+" "+hintRaw+" "+href);
     const type=inferredDownloadType(href,hintRaw);
 
-    const looksTechnical=/(spec sheet|specification sheet|technical specification sheet|technical specifications?|technical sheet|technical data sheet|technical info|fiche technique)/.test(hint);
-    const looksInstall=/(installation guide|installation servicing guide|installation and servicing guide|installation service guide|installation manual|installation manual warnings|servicing guide|instructions|notice d installation)/.test(hint);
-    const looksDrawing=/(2d drawing|dwg file|drawing|disegno|dessin|technical drawing|plan technique)/.test(hint);
-    const looksCad=/(cad|dwg|dxf|igs|stp|3ds|bim)/.test(hint) || /\.(dwg|dxf|igs|stp|3ds|bim)(?:\?|$)/i.test(href);
+    const looksTechnical=/\b(spec sheet|specification sheet|technical specification sheet|technical specifications?|technical sheet|technical data sheet|technical info|fiche technique)\b/.test(hint);
+    const looksInstall=/\b(installation guide|installation servicing guide|installation and servicing guide|installation service guide|installation manual|installation manual warnings|servicing guide|instructions|notice d installation)\b/.test(hint);
+    const looksDrawing=/\b(2d drawing|dwg file|drawing|disegno|dessin|technical drawing|plan technique)\b/.test(hint);
+    const looksCad=/\b(cad|dwg|dxf|igs|stp|3ds|bim)\b/.test(hint) || /\.(dwg|dxf|igs|stp|3ds|bim)(?:\?|$)/i.test(href);
 
     if(!technicalSheet && looksTechnical){
       technicalSheet={
         url:href,
-        label:rawText||(/technical info/.test(hint)?"Technical info":"Fiche technique"),
+        label:rawText||(/\btechnical info\b/.test(hint)?"Technical info":"Fiche technique"),
         type,
         source:/lefroybrooks\.com/i.test(manufacturerUrl)?"lefroy-official-download":"official-download"
       };
@@ -1901,7 +1992,7 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     if(!drawing && looksDrawing && (type==="pdf" || type==="image" || type==="cad" || type==="link")){
       drawing={
         url:href,
-        label:rawText||(/drawing/.test(hint)?"Drawing 2D":"Dessin technique"),
+        label:rawText||(/\bdrawing\b/.test(hint)?"Drawing 2D":"Dessin technique"),
         type,
         source:"official-download"
       };
@@ -1929,8 +2020,8 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
       const lowHref=href.toLowerCase();
 
       if(!technicalSheet &&
-         (/technical specification sheet/.test(label) ||
-          /technical specifications?/.test(label) ||
+         (/\btechnical specification sheet\b/.test(label) ||
+          /\btechnical specifications?\b/.test(label) ||
           /_technical_(?:specification_)?sheet/i.test(lowHref))){
         technicalSheet={
           url:href,
@@ -1941,9 +2032,9 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
       }
 
       if(!installationGuide &&
-         (/installation servicing guide/.test(label) ||
-          /installation and servicing guide/.test(label) ||
-          /servicing guide/.test(label) ||
+         (/\binstallation servicing guide\b/.test(label) ||
+          /\binstallation and servicing guide\b/.test(label) ||
+          /\bservicing guide\b/.test(label) ||
           /installation.*servic/i.test(lowHref))){
         installationGuide={
           url:href,
@@ -1992,16 +2083,16 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     }
   }
 
-  // Hotbath: the usable technical sheet is often the JPG inside “Drawing”.
-  // If the page also exposes a PDF in “Technical info”, keep both: the JPG for the
-  // drawing page and the PDF/JPG technical link as secondary documentation.
-  if(isHotbath){
-    if(!technicalSheet && drawing && ["image","pdf"].includes(drawing.type)){
-      technicalSheet={...drawing,label:"Fiche technique",source:"hotbath-drawing-fallback"};
-    }
-    if(!drawing && technicalSheet && ["image","pdf"].includes(technicalSheet.type)){
-      drawing={...technicalSheet,label:"Drawing 2D",source:"hotbath-technical-fallback"};
-    }
+  // Hotbath: keep the explicit Drawing JPG as both drawing and technical sheet.
+  // If the current Hotbath page does not expose it, generic parsing may still
+  // provide a secondary document, but it must never replace an identified Drawing JPG.
+  if(isHotbath && drawing?.source==="hotbath-drawing-jpg"){
+    technicalSheet={
+      url:drawing.url,
+      label:"Fiche technique · Drawing JPG",
+      type:"image",
+      source:"hotbath-drawing-jpg"
+    };
   }
 
 
@@ -2024,6 +2115,66 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     };
   }
 
+  // Hotbath pages currently contain legacy asset links that can return 404.
+  // Validate the hero image before it can ever reach the browser.
+  if(isHotbath){
+    const official=[...candidates].sort((a,b)=>b.score-a.score);
+    candidates.splice(0,candidates.length);
+
+    for(const item of official){
+      const check=await validateRemoteImage(item.url,manufacturerUrl);
+      if(check.ok){
+        candidates.push({
+          ...item,
+          validated:true,
+          validatedContentType:check.contentType
+        });
+        // One live official hero is enough.
+        break;
+      }
+      console.warn("[hotbath-official-image]",JSON.stringify({
+        reference,
+        url:item.url,
+        status:check.status||0,
+        error:check.error||""
+      }));
+    }
+
+    const hp=hotbathReferenceParts(reference,requested);
+    const hasOfficialExact=candidates.some(x=>x.finishMatch==="exact");
+    if(!hasOfficialExact && hp.base){
+      try{
+        const webCandidates=await bingHotbathImageCandidates(reference,requested,finish);
+        const compact=v=>normalizeToken(v).replace(/\s+/g,"");
+        const fullCompact=compact(hp.lookup);
+        const baseCompact=compact(hp.base);
+
+        for(const item of webCandidates){
+          const hay=compact([item.image,item.page,item.title].join(" "));
+          const exactReferenceMatch=!!fullCompact && hay.includes(fullCompact);
+          const baseMatch=!!baseCompact && hay.includes(baseCompact);
+          if(!baseMatch)continue;
+
+          candidates.push({
+            url:item.image,
+            source:exactReferenceMatch?"hotbath-web-exact":"hotbath-web-generic",
+            score:exactReferenceMatch?15000:4500,
+            finishMatch:exactReferenceMatch?"web":"generic",
+            detectedFinishCode:exactReferenceMatch?hp.finishCode:null,
+            variationId:null,
+            attributes:{
+              sourcePage:item.page||"",
+              title:item.title||"",
+              exactReferenceMatch
+            }
+          });
+        }
+      }catch(e){
+        console.warn("[hotbath-auto-web]",e.message);
+      }
+    }
+  }
+
   const sorted=uniqueBest(candidates).filter(x=>x.url).sort((a,b)=>{
     if(a.finishMatch!==b.finishMatch) return a.finishMatch==="exact"?-1:1;
     return b.score-a.score;
@@ -2031,12 +2182,23 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
 
   const isAmphora=/amphoradesign\.it/i.test(manufacturerUrl);
   const isCoalbrook=/coalbrookuk\.co\.uk/i.test(manufacturerUrl);
-  const exact=sorted.find(x=>x.finishMatch==="exact" &&
+  let exact=sorted.find(x=>x.finishMatch==="exact" &&
     (!isAmphora || x.source.startsWith("woocommerce-variation")) &&
     (!isCoalbrook || x.source==="coalbrook-product-image" || x.source==="coalbrook-exact-sku-image")
   )||null;
-  const fallback=sorted.find(x=>x.finishMatch!=="exact")||null;
+  let fallback=sorted.find(x=>x.finishMatch!=="exact")||null;
   let best=exact||fallback;
+
+  if(isHotbath){
+    const officialExact=sorted.find(x=>x.source==="hotbath-main-product-image" && x.finishMatch==="exact")||null;
+    const webExact=sorted.find(x=>x.source==="hotbath-web-exact")||null;
+    const officialGeneric=sorted.find(x=>x.source==="hotbath-main-product-image")||null;
+    const webGeneric=sorted.find(x=>x.source==="hotbath-web-generic")||null;
+
+    exact=officialExact;
+    fallback=webExact||officialGeneric||webGeneric||null;
+    best=officialExact||webExact||officialGeneric||webGeneric||null;
+  }
 
   // Catalano: the selected finish is authoritative.
   // Never mix images from other finishes or generic collection/lifestyle galleries.
@@ -2087,6 +2249,20 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     return item;
   }
   if(best) best=await embedOfficialImage(best);
+
+  if(isHotbath && best && /hotbath\.it/i.test(best.url||"") && !best.dataUrl){
+    // A Hotbath official asset without embedded bytes is not trustworthy:
+    // its page may still reference a 404 legacy file.
+    const check=await validateRemoteImage(best.url,manufacturerUrl);
+    if(!check.ok){
+      console.warn("[hotbath-best-image-dead]",JSON.stringify({reference,url:best.url,status:check.status||0}));
+      const webAlternative=sorted.find(x=>x.source==="hotbath-web-exact" || x.source==="hotbath-web-generic")||null;
+      best=webAlternative;
+    }else if(check.data){
+      best={...best,dataUrl:`data:${check.contentType};base64,${check.data.toString("base64")}`};
+    }
+  }
+
   if(isCatalano || isRecor){
     productImages=await Promise.all(productImages.map(embedOfficialImage));
     if(productImages.length) best=productImages[0];
@@ -2125,15 +2301,21 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     technicalSheet,
     installationGuide,
     candidates:sorted.slice(0,20),
-    note:exact
-      ?(/hotbath\.it/i.test(manufacturerUrl)
-        ?`Photo officielle Hotbath correspondant à la référence normalisée ${hotbathReferenceParts(reference,requested).lookup}.`
-        :`Photo officielle fabricant correspondant à la finition ${requested}, associée à la variation fabricant.`)
-      :(best
-        ?(/hotbath\.it/i.test(manufacturerUrl)
-          ?`Photo officielle Hotbath du bon produit, mais la finition ${requested||finish||"sélectionnée"} n'est pas certifiée sur cette fiche.`
-          :"Visuel officiel trouvé, mais aucune donnée fabricant ne permet de certifier cette finition.")
-        :"Aucune photo officielle exploitable trouvée.")
+    note:isHotbath
+      ?(best?.source==="hotbath-main-product-image" && best.finishMatch==="exact"
+        ?`Photo officielle Hotbath certifiée pour ${hotbathReferenceParts(reference,requested).lookup}.`
+        :best?.source==="hotbath-web-exact"
+          ?`L'image officielle Hotbath n'était pas exploitable ou ne correspondait pas à la finition. Un visuel web correspondant à la référence exacte ${hotbathReferenceParts(reference,requested).lookup} a été retenu.`
+          :best?.source==="hotbath-main-product-image"
+            ?`Photo officielle Hotbath du bon produit utilisée en dernier recours. La finition ${requested||finish||"sélectionnée"} n'est pas certifiée.`
+            :best
+              ?`Visuel web du bon produit utilisé en dernier recours ; finition à vérifier.`
+              :`Aucune image Hotbath exploitable trouvée : les liens image de la fiche officielle peuvent être obsolètes (404).`)
+      :(exact
+        ?`Photo officielle fabricant correspondant à la finition ${requested}, associée à la variation fabricant.`
+        :(best
+          ?"Visuel officiel trouvé, mais aucune donnée fabricant ne permet de certifier cette finition."
+          :"Aucune photo officielle exploitable trouvée."))
   };
 }
 
@@ -2187,7 +2369,8 @@ async function bingHotbathImageCandidates(reference,finishCode,finish){
       if(hay.includes("hotbath"))score+=900;
       if(/hotbath\.it/i.test(page)||/hotbath\.it/i.test(image))score+=1500;
       if(/pinterest|facebook|instagram|logo|icon|swatch|colour|color/i.test(image+" "+page))score-=3000;
-      candidates.push({image,page,title,score});
+      const exactReferenceMatch=!!full && compact(hay).includes(compact(full));
+      candidates.push({image,page,title,score,exactReferenceMatch});
     }catch{}
   });
 
@@ -2224,13 +2407,19 @@ app.post("/api/hotbath-web-image",async(req,res)=>{
       candidates=await bingHotbathImageCandidates(reference,finishCode,finish);
       hotbathWebImageCache.set(key,candidates);
     }
+    const exactCandidates=candidates.filter(x=>x.exactReferenceMatch);
     res.json({
       reference,finishCode,finish,
       candidates,
-      best:candidates[0]||null,
-      note:candidates.length
-        ?"Image trouvée sur le web par référence exacte. Vérification visuelle recommandée avant utilisation."
-        :"Aucune image web suffisamment fiable trouvée pour cette référence et cette finition."
+      exactCandidates,
+      bestExact:exactCandidates[0]||null,
+      best:exactCandidates[0]||candidates[0]||null,
+      exactFound:exactCandidates.length>0,
+      note:exactCandidates.length
+        ?"Image web trouvée avec la référence Hotbath exacte."
+        :(candidates.length
+          ?"Visuel web du bon produit trouvé, mais la finition exacte n'est pas certifiée."
+          :"Aucune image web suffisamment fiable trouvée pour cette référence et cette finition.")
     });
   }catch(e){
     console.error("[hotbath-web-image]",e.message);
@@ -2494,7 +2683,7 @@ app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")))
 async function startServer(){
   try{
     await initPersistentStore();
-    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V10.7 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
+    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V10.8 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
   }catch(e){
     console.error("[Hydropolis] Démarrage impossible :",e);
     process.exit(1);

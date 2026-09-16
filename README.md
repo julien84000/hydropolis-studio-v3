@@ -1,52 +1,30 @@
-# Hydropolis Studio V10.7
+# Hydropolis Studio V10.8
 
-## Hotbath — stratégie de visuel en 3 niveaux
+## Hotbath — correctif images
 
-1. **Photo officielle Hotbath** : priorité absolue.
-   - La finition n'est maintenant marquée « exacte » que si la page Hotbath affiche elle-même la référence avec le code finition demandé dans `#descrbar`.
-   - On ne considère plus automatiquement toute image Hotbath comme exacte.
+Cette version corrige le problème observé dans V10.7 : le site Hotbath peut encore référencer
+des fichiers image historiques qui renvoient HTTP 404.
 
-2. **Recherche web par référence exacte** :
-   - bouton « Chercher finition sur le web » ;
-   - recherche avec référence complète + code finition + Hotbath ;
-   - l'image trouvée est clairement signalée « à vérifier » et n'est jamais présentée comme photo fabricant certifiée.
+### Nouvelle logique
+1. Le suffixe catalogue `.IT` reste affiché mais n'est jamais utilisé pour le matching technique.
+2. Les pastilles de finition Hotbath (`BBP.jpg`, `BCP.jpg`, etc.) sont totalement exclues des photos produit.
+3. Seule l'image principale de `#imgprod` est considérée comme photo officielle fournisseur.
+4. Cette image est testée côté serveur avant affichage ; une URL 404 n'est plus envoyée au navigateur.
+5. Si la finition officielle exacte n'est pas exploitable, Hydropolis recherche automatiquement une image web avec la référence exacte.
+6. Si aucune image exacte n'est trouvée mais que la photo fournisseur officielle fonctionne, cette dernière est conservée en dernier recours, même avec une finition différente.
+7. Une image distante en erreur est remplacée par un placeholder propre : aucune icône d'image cassée.
 
-3. **Simulation de finition Hydropolis** :
-   - bouton « Simuler [finition] » lorsque l'on possède déjà un visuel produit ;
-   - traitement serveur léger qui conserve volumes, ombres et reflets et applique la teinte de finition Hotbath ;
-   - finitions gérées : CR, GN, AB, BB, WH, AI, BBP, BCP et MBP ;
-   - dans le dossier client, une simulation porte la mention discrète « Visuel de finition simulé · non contractuel ».
+## Hotbath — documents techniques
 
-## Documents Hotbath
-Les corrections V10.3 sont conservées :
-- Drawing JPG reconnu comme dessin technique ;
-- Technical info JPG/PDF reconnu ;
-- Instructions PDF reconnues ;
-- CAD distingué.
+Le parsing est désormais explicite :
+- section `Drawing` → JPG utilisé comme **Drawing 2D** ;
+- ce même JPG est aussi utilisé comme **fiche technique Hotbath**, conformément au besoin métier ;
+- section `Instructions` → notice PDF ;
+- section `CAD` → fichier CAD/DWG séparé.
 
 ## Zucchetti
-La correction de rendu PDF multipage reste active : la page 3 est réellement rendue côté serveur.
 
-
-## Nouveau comportement Hotbath (dernier recours)
-- si la bonne finition n'est pas trouvée sur le web ;
-- ou si aucune simulation n'est possible ;
-- Hydropolis conserve automatiquement la **photo officielle fournisseur** en dernier recours, même si la finition affichée n'est pas la bonne ;
-- le visuel est signalé côté interface comme **photo fournisseur · finition non certifiée**.
-
-
-## V10.6 — mention client Hotbath
-Dans le dossier client, les visuels Hotbath dont la finition n'est pas certifiée — y compris les simulations — ne portent plus une formulation technique.
-La mention affichée est désormais simplement : **« Visuel non contractuel »**.
-
-La logique interne reste inchangée : dans le projet, Hydropolis continue de distinguer photo exacte, photo fournisseur avec finition non certifiée, image web et simulation.
-
-
-## V10.7 — normalisation des références Hotbath
-- la référence commerciale reste affichée telle quelle, par exemple `AC003.BBP.IT` ;
-- pour les recherches techniques, Hydropolis utilise `AC003.BBP` ;
-- les suffixes pays/langue finaux `.IT`, `.FR`, `.EN`, `.UK`, `.GB`, `.DE`, `.ES`, `.NL` sont ignorés pour le matching ;
-- la référence racine `AC003` sert à trouver la vraie fiche produit Hotbath ;
-- la finition `BBP` est comparée à la référence affichée par Hotbath dans `#descrbar` ;
-- une photo n'est marquée « finition exacte » que si cette référence normalisée correspond réellement ;
-- le cache images passe en V10.7 afin d'éliminer les anciens faux positifs liés à `.IT`.
+Les corrections précédentes restent inchangées :
+- image par SKU ;
+- fiche PDF multipage ;
+- page 3 réellement rendue comme dessin technique.

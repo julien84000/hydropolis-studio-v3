@@ -2089,3 +2089,15 @@ button,input,select,textarea{font:inherit}.shell{display:grid;grid-template-colu
 }
 
 /* V10.7 — Hotbath: .IT est ignoré pour le matching technique, mais conservé à l'affichage. */
+
+/* V10.8 — Hotbath : aucune image cassée affichée */
+.catalog-thumb img,
+.room-prod-img img{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+.photo-missing{
+  text-align:center;
+}
