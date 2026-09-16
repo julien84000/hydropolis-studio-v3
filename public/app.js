@@ -604,15 +604,15 @@ async function autoCropForPdf(src){
 
 try{
   Object.keys(localStorage).forEach(k=>{
-    if(/^hydropolis-manufacturer-/i.test(k) && k!=="hydropolis-manufacturer-v110")localStorage.removeItem(k);
+    if(/^hydropolis-manufacturer-/i.test(k) && k!=="hydropolis-manufacturer-v111")localStorage.removeItem(k);
   });
 }catch(e){}
 let manufacturerImageCache={};
-try{manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v110")||"{}")||{};}catch(e){manufacturerImageCache={};}
+try{manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v111")||"{}")||{};}catch(e){manufacturerImageCache={};}
 function manufacturerCacheKey(p){return `${p.manufacturer}|${p.reference}`;}
 function saveManufacturerCache(){
   try{
-    localStorage.setItem("hydropolis-manufacturer-v110",JSON.stringify(manufacturerImageCache));
+    localStorage.setItem("hydropolis-manufacturer-v111",JSON.stringify(manufacturerImageCache));
   }catch(e){
     console.warn("[Hydropolis cache] quota dépassé, cache vidé",e);
     manufacturerImageCache={};
@@ -904,8 +904,8 @@ async function lookupCatalogPhoto(reference,button){
   const thumb=$(".catalog-thumb",card);
   const info=$(".photo-status",card);
   button.disabled=true;
-  button.textContent="Recherche…";
-  if(info)info.textContent="Recherche du meilleur visuel…";
+  button.textContent="Recherche Sanitairkamer…";
+  if(info)info.textContent="Recherche Sanitairkamer par référence produit…";
 
   try{
     let img=await fetchManufacturerImage(p,true);

@@ -2101,3 +2101,5 @@ button,input,select,textarea{font:inherit}.shell{display:grid;grid-template-colu
 .photo-missing{
   text-align:center;
 }
+
+/* V10.11 — Hotbath: recherche Sanitairkamer par référence de base uniquement */

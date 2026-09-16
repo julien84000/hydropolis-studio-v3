@@ -1,16 +1,31 @@
-# Hydropolis Studio V10.10
+# Hydropolis Studio V10.11
 
-## Hotbath — priorité Sanitairkamer
+## Correctif Hotbath / Sanitairkamer
 
-Cette version donne la priorité aux visuels produit récupérés sur **sanitairkamer.nl** pour Hotbath.
+La recherche de photo Hotbath respecte désormais strictement la règle suivante :
 
-### Nouvelle logique photo Hotbath
-1. Normalisation de la référence : suppression du suffixe pays/langue (`.IT`, `.FR`, etc.) et séparation du code finition.
-2. Recherche prioritaire sur `sanitairkamer.nl` avec la **référence de base** (ex. `B008`) ; la finition est ensuite déduite via le contenu de la page (titre, breadcrumbs, sélecteur couleur).
-3. Sélection de l'image produit principale en excluant logos, vignettes accessoires et dessins techniques.
-4. Si aucun résultat exploitable n'est trouvé sur Sanitairkamer, repli sur la recherche web existante.
-5. En dernier recours seulement : photo officielle fournisseur Hotbath, même si la finition n'est pas certifiée.
+- `B008.GN.IT` → recherche Sanitairkamer avec **B008 uniquement** ;
+- `B008.BCP.IT` → recherche Sanitairkamer avec **B008 uniquement** ;
+- le suffixe `.IT` et le code finition ne sont jamais envoyés dans la recherche initiale ;
+- une fois les pages du produit `B008` trouvées, Hydropolis lit chaque variante et choisit celle correspondant à la finition demandée.
 
-### Important
-- Les **documents techniques Hotbath** restent récupérés depuis la fiche officielle Hotbath.
-- Les suffixes comme `.IT` ne servent plus à la recherche d'image.
+### Décodage de finition
+Hydropolis utilise à la fois le libellé couleur et l'article Sanitairkamer :
+- GN → `B008GN` / nickel brossé ;
+- CR → `B008CR` / chrome ;
+- BBP → `B008BBP` / laiton brossé PVD ;
+- BCP → `B008BCP` ou `B008BC` / cuivre brossé PVD ;
+- MBP → `B008MBP` / noir mat PVD.
+
+### Recherche de page
+1. recherche interne Sanitairkamer `q=B008` ;
+2. si nécessaire, moteur externe avec uniquement `Hotbath + B008` ;
+3. analyse de toutes les pages candidates jusqu'à trouver la bonne finition ;
+4. fallback web puis Hotbath officiel uniquement si aucune variante Sanitairkamer correcte n'est exploitable.
+
+### Logs
+- `hotbath-sanitair-base-search` : montre la base réellement recherchée ;
+- `hotbath-sanitair-page` : montre l'article Sanitairkamer et si la finition correspond ;
+- `hotbath-sanitair-result` : montre le visuel retenu.
+
+Le cache fabricant passe en `v111` afin de ne pas réutiliser les échecs Hotbath des versions précédentes.

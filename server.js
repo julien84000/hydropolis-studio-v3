@@ -719,7 +719,7 @@ app.post("/api/translate-product",requireAuth,async(req,res)=>{
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V10.10",
+  service:"Hydropolis Studio V10.11",
   database:USE_POSTGRES?"postgresql":"local-fallback",
   time:new Date().toISOString()
 }));
@@ -2359,72 +2359,129 @@ function hotbathFinishAliases(code,finish=""){
   const c=String(code||"").toUpperCase();
   const target=hotbathFinishTarget(c);
   const map={
-    CR:["cr","chrome","chromé","chrome polished","chroom"],
-    GN:["gn","nickel brosse","nickel brossé","nickel brushed","geborsteld nikkel","nikkel geborsteld"],
-    AB:["ab","laiton vieilli","aged brass","verouderd messing","messing verouderd"],
-    BB:["bb","laiton brosse","laiton brossé","brushed brass","geborsteld messing","messing geborsteld"],
-    WH:["wh","blanc mat","mat white","wit mat","mat wit"],
-    AI:["ai","fer vieilli","aged iron","verouderd ijzer"],
-    BBP:["bbp","bb","laiton brosse pvd","laiton brossé pvd","brushed brass pvd","geborsteld messing pvd","messing geborsteld pvd"],
-    BCP:["bcp","bc","cuivre brosse pvd","cuivre brossé pvd","brushed copper pvd","koper geborsteld","geborsteld koper","geborsteld koper pvd"],
-    MBP:["mbp","mb","noir mat pvd","mat black pvd","zwart mat pvd","mat zwart pvd"]
+    CR:["chrome","chromé","chrome polished","chroom"],
+    GN:["nickel brosse","nickel brossé","nickel brushed","geborsteld nikkel","nikkel geborsteld"],
+    AB:["laiton vieilli","aged brass","verouderd messing","messing verouderd"],
+    BB:["laiton brosse","laiton brossé","brushed brass","geborsteld messing","messing geborsteld"],
+    WH:["blanc mat","mat white","wit mat","mat wit"],
+    AI:["fer vieilli","aged iron","verouderd ijzer"],
+    BBP:["laiton brosse pvd","laiton brossé pvd","brushed brass pvd","geborsteld messing pvd","messing geborsteld pvd"],
+    BCP:["cuivre brosse pvd","cuivre brossé pvd","brushed copper pvd","koper geborsteld pvd","geborsteld koper pvd","koper geborsteld","geborsteld koper"],
+    MBP:["noir mat pvd","noir brosse pvd","mat black pvd","brushed black pvd","zwart mat pvd","geborsteld zwart pvd","mat zwart pvd"]
   };
-  return [...new Set([finish,target?.label,...(map[c]||[])].filter(Boolean).map(x=>normalizeToken(x)).filter(Boolean))];
+  return [...new Set([finish,target?.label,...(map[c]||[])]
+    .filter(Boolean)
+    .map(x=>normalizeToken(x))
+    .filter(x=>x && x.length>2))];
 }
 function hotbathFinishReferenceVariants(code=""){
   const c=String(code||"").toUpperCase().trim();
-  const variants=new Set([c]);
-  if(/^[A-Z]{2,4}P$/.test(c)) variants.add(c.slice(0,-1));
-  if(c==="BCP") variants.add("BC");
-  if(c==="BBP") variants.add("BB");
-  if(c==="MBP") variants.add("MB");
-  return [...variants].filter(Boolean);
+  const map={
+    // Sanitairkamer sometimes uses BC for Hotbath's BCP copper finish.
+    BCP:["BCP","BC"],
+    BBP:["BBP"],
+    MBP:["MBP"]
+  };
+  return map[c]||[c].filter(Boolean);
 }
-async function bingHotbathPageCandidates(reference,finishCode,finish,siteHost=""){
+async function sanitairkamerBasePageCandidates(reference,finishCode=""){
   const hp=hotbathReferenceParts(reference,finishCode);
-  const finishVariants=hotbathFinishReferenceVariants(hp.finishCode||finishCode);
-  const finishTerms=hotbathFinishAliases(hp.finishCode||finishCode,finish).slice(0,4);
-  const queries=[
-    [siteHost?`site:${siteHost}`:"", '"Hotbath"', `"${hp.base}"`, finishTerms[0]||""].filter(Boolean).join(" "),
-    [siteHost?`site:${siteHost}`:"", '"Hotbath"', `"${hp.base}"`].filter(Boolean).join(" "),
-    ...finishVariants.map(code=>[siteHost?`site:${siteHost}`:"", '"Hotbath"', `"${hp.base}${code}"`].filter(Boolean).join(" ")),
-    ...finishVariants.map(code=>[siteHost?`site:${siteHost}`:"", '"Hotbath"', `"${hp.base}"`, `"${code}"`].filter(Boolean).join(" "))
-  ].filter(Boolean);
+  const base=String(hp.base||"").toUpperCase();
+  if(!base)return [];
+
   const urls=[];
-  for(const query of queries.slice(0,6)){
+  const addUrl=(raw)=>{
+    const href=String(raw||"").trim();
+    if(!/^https?:\/\//i.test(href))return;
     try{
-      const html=await fetchBrandPage(`https://www.bing.com/search?q=${encodeURIComponent(query)}&form=QBLH`,`fr-FR,fr;q=0.9,en;q=0.7,nl;q=0.6`);
+      const u=new URL(href);
+      if(!/sanitairkamer\.nl$/i.test(u.hostname) && !/\.sanitairkamer\.nl$/i.test(u.hostname))return;
+      const hay=normalizeCompact(u.href);
+      if(!hay.includes(normalizeCompact(base)))return;
+      if(!/\.html(?:$|[?#])/i.test(u.href))return;
+      if(!urls.includes(u.href))urls.push(u.href);
+    }catch{}
+  };
+
+  // 1) PRIORITY: Sanitairkamer's own search, using ONLY the Hotbath base reference.
+  // No .IT suffix and no finish code are ever sent here.
+  const internalSearchUrls=[
+    `https://sanitairkamer.nl/catalogsearch/result/?q=${encodeURIComponent(base)}`,
+    `https://sanitairkamer.nl/catalogsearch/result/index/?q=${encodeURIComponent(base)}`
+  ];
+  for(const searchUrl of internalSearchUrls){
+    try{
+      const html=await fetchBrandPage(searchUrl,'nl-NL,nl;q=0.9,en;q=0.7');
       const $=cheerio.load(html);
-      $('li.b_algo h2 a[href], li.b_algo a[href], a[href]').each((_,el)=>{
-        const href=String($(el).attr('href')||'').trim();
-        if(!/^https?:\/\//i.test(href))return;
-        try{
-          const u=new URL(href);
-          if(siteHost && !u.hostname.includes(siteHost))return;
-          if(urls.includes(u.href))return;
-          urls.push(u.href);
-        }catch{}
+      $('a[href]').each((_,el)=>{
+        const href=absoluteUrl(searchUrl,$(el).attr('href'));
+        const text=normalizeCompact([$(el).text()||'',$(el).attr('title')||'',href||''].join(' '));
+        if(text.includes(normalizeCompact(base)))addUrl(href);
       });
-      if(urls.length>=8)break;
+      if(urls.length>=12)break;
     }catch(e){
-      console.warn('[bing-hotbath-page-candidates]',JSON.stringify({reference:hp.lookup,query,error:e.message}));
+      console.warn('[hotbath-sanitair-internal-search]',JSON.stringify({base,url:searchUrl,error:e.message}));
     }
   }
-  console.log('[hotbath-sanitair-search]',JSON.stringify({reference:hp.lookup,base:hp.base,finishCode:hp.finishCode,queries:queries.slice(0,6),candidates:urls.slice(0,8)}));
-  return urls.slice(0,8);
+
+  // 2) Fallback discovery through a public search engine, STILL using the base only.
+  if(urls.length<4){
+    const query=`site:sanitairkamer.nl "Hotbath" "${base}"`;
+    try{
+      const html=await fetchBrandPage(`https://www.bing.com/search?q=${encodeURIComponent(query)}&form=QBLH`,'nl-NL,nl;q=0.9,en;q=0.7');
+      const $=cheerio.load(html);
+      $('a[href]').each((_,el)=>{
+        const raw=String($(el).attr('href')||'').trim();
+        if(/^https?:\/\//i.test(raw))addUrl(raw);
+      });
+    }catch(e){
+      console.warn('[hotbath-sanitair-base-bing]',JSON.stringify({base,error:e.message}));
+    }
+    console.log('[hotbath-sanitair-base-search]',JSON.stringify({reference:hp.display,base,query,candidates:urls.slice(0,16)}));
+  }else{
+    console.log('[hotbath-sanitair-base-search]',JSON.stringify({reference:hp.display,base,query:`Sanitairkamer internal search: ${base}`,candidates:urls.slice(0,16)}));
+  }
+
+  return urls.slice(0,16);
 }
 
 function extractSanitairkamerPageCandidate(html,pageUrl,reference,finishCode,finish){
   const $=cheerio.load(html);
   const hp=hotbathReferenceParts(reference,finishCode);
-  const baseCompact=normalizeCompact(hp.base);
+  const base=String(hp.base||"").toUpperCase();
+  const baseCompact=normalizeCompact(base);
+  const finishVariants=hotbathFinishReferenceVariants(hp.finishCode||finishCode);
   const finishTerms=hotbathFinishAliases(hp.finishCode||finishCode,finish);
   const pageTitle=String($('h1').first().text()||$('title').text()||'').trim();
   const breadcrumb=String($('.breadcrumbs,.breadcrumb').first().text()||'').trim();
-  const bodyText=normalizeToken([pageTitle,breadcrumb,$('body').text()].join(' '));
-  const exactBase=baseCompact && normalizeCompact(bodyText).includes(baseCompact);
-  const exactFinish=finishTerms.some(t=>t && bodyText.includes(t));
+  const rawBody=[$('body').text(),pageTitle,breadcrumb].join(' ');
+  const bodyText=normalizeToken(rawBody);
+  const bodyCompact=normalizeCompact(rawBody);
+
+  // Sanitairkamer's article number is the most reliable way to map a colour variant.
+  // Examples: B008GN, B008CR, B008BBP, and B008BC for Hotbath BCP.
+  let articleNumber="";
+  const articlePatterns=[
+    /Artikelnummer\s*[:|]?\s*([A-Z0-9._-]+)/i,
+    /\|\s*([A-Z0-9._-]{4,})\s*(?:\n|$)/i
+  ];
+  for(const rx of articlePatterns){
+    const mm=rawBody.match(rx);
+    if(mm?.[1]){articleNumber=String(mm[1]).toUpperCase().replace(/[^A-Z0-9]/g,'');break;}
+  }
+  if(!articleNumber){
+    const urlCompact=String(pageUrl||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+    const possible=[base,...finishVariants.map(v=>base+v)].sort((a,b)=>b.length-a.length);
+    articleNumber=possible.find(v=>urlCompact.includes(v))||"";
+  }
+
+  const exactBase=!!baseCompact && (bodyCompact.includes(baseCompact) || normalizeCompact(pageUrl).includes(baseCompact));
+  const skuExact=finishVariants.some(code=>articleNumber===`${base}${code}` || bodyCompact.includes(normalizeCompact(`${base}${code}`)));
+  const textFinish=finishTerms.some(term=>term && bodyText.includes(term));
+  const exactFinish=!!(skuExact || textFinish);
+  const pageExact=exactBase && exactFinish;
   const gallery=[];
+
   function push(raw,ctx='',prio=0){
     const href=absoluteUrl(pageUrl,raw);
     if(!href || !isImageUrl(href))return;
@@ -2434,25 +2491,36 @@ function extractSanitairkamerPageCandidate(html,pageUrl,reference,finishCode,fin
     if(/accessoire|toebehoren|aanbevolen|specialisten/.test(hay))prio-=5000;
     let score=2000+prio;
     if(exactBase)score+=2500;
-    if(exactFinish)score+=2500;
+    if(pageExact)score+=6000;
+    if(skuExact)score+=2500;
     if(hay.includes('hotbath'))score+=500;
     if(baseCompact && normalizeCompact(hay).includes(baseCompact))score+=1200;
-    for(const t of finishTerms){ if(t && hay.includes(t)){ score+=800; break; } }
     if(/gallery|product|fotorama|media|image|main/.test(hay))score+=700;
-    gallery.push({image:href,page:pageUrl,title:pageTitle,score,exactReferenceMatch:!!(exactBase&&exactFinish),source:'sanitairkamer'});
+    gallery.push({
+      image:href,
+      page:pageUrl,
+      title:pageTitle,
+      articleNumber,
+      score,
+      exactReferenceMatch:pageExact,
+      exactFinish:pageExact,
+      source:'sanitairkamer'
+    });
   }
-  $('meta[property="og:image"]').each((_,el)=>push($(el).attr('content')||'', 'og:image', 1800));
-  $('meta[name="twitter:image"]').each((_,el)=>push($(el).attr('content')||'', 'twitter:image', 1200));
+
+  $('meta[property="og:image"]').each((_,el)=>push($(el).attr('content')||'', 'og:image', 2200));
+  $('meta[name="twitter:image"]').each((_,el)=>push($(el).attr('content')||'', 'twitter:image', 1600));
   $('[data-gallery-role], .gallery-placeholder, .fotorama, .product.media, .product-item-info').find('img[src],img[data-src],source[srcset]').each((_,el)=>{
     const raw=$(el).attr('src')||$(el).attr('data-src')||String($(el).attr('srcset')||'').split(',')[0].trim().split(' ')[0]||'';
     const ctx=[$(el).attr('alt')||'', $(el).attr('title')||'', $(el).closest('div,li,a').attr('class')||''].join(' ');
-    push(raw,ctx,900);
+    push(raw,ctx,1200);
   });
   $('img[src], img[data-src]').each((_,el)=>{
     const raw=$(el).attr('src')||$(el).attr('data-src')||'';
     const ctx=[$(el).attr('alt')||'', $(el).attr('title')||'', $(el).closest('section,div,li').attr('class')||''].join(' ');
     push(raw,ctx,0);
   });
+
   const uniq=[]; const seen=new Set();
   for(const g of gallery.sort((a,b)=>b.score-a.score)){
     if(seen.has(g.image))continue;
@@ -2460,31 +2528,59 @@ function extractSanitairkamerPageCandidate(html,pageUrl,reference,finishCode,fin
     uniq.push(g);
     if(uniq.length>=6)break;
   }
+  uniq.pageInfo={pageUrl,pageTitle,articleNumber,exactBase,skuExact,textFinish,exactFinish:pageExact};
   return uniq;
 }
+
 async function sanitairkamerHotbathImageCandidates(reference,finishCode,finish){
-  const urls=await bingHotbathPageCandidates(reference,finishCode,finish,'sanitairkamer.nl');
-  const gathered=[];
+  const hp=hotbathReferenceParts(reference,finishCode);
+  const urls=await sanitairkamerBasePageCandidates(reference,finishCode);
+  const exact=[];
+  const generic=[];
+
   for(const pageUrl of urls){
     try{
       const html=await fetchBrandPage(pageUrl,'nl-NL,nl;q=0.9,en;q=0.7');
       const pageCandidates=extractSanitairkamerPageCandidate(html,pageUrl,reference,finishCode,finish);
-      console.log('[hotbath-sanitair-page]',JSON.stringify({reference,pageUrl,candidates:pageCandidates.map(x=>({image:x.image,score:x.score,exact:x.exactReferenceMatch})).slice(0,4)}));
+      const info=pageCandidates.pageInfo||{};
+      console.log('[hotbath-sanitair-page]',JSON.stringify({
+        reference:hp.display,
+        base:hp.base,
+        finishCode:hp.finishCode,
+        pageUrl,
+        articleNumber:info.articleNumber||"",
+        exactFinish:!!info.exactFinish,
+        candidates:pageCandidates.map(x=>({image:x.image,score:x.score,exact:x.exactReferenceMatch})).slice(0,3)
+      }));
+
       for(const cand of pageCandidates){
         const check=await validateRemoteImage(cand.image,pageUrl);
         if(!check.ok)continue;
-        gathered.push({...cand,contentType:check.contentType,source:'sanitairkamer'});
-        if(gathered.length>=6)break;
+        const final={...cand,contentType:check.contentType,source:'sanitairkamer'};
+        if(cand.exactReferenceMatch)exact.push(final); else generic.push(final);
+        if(exact.length>=3)break;
       }
-      if(gathered.length>=6)break;
+      // Once the correct finish page yielded live product images, stop.
+      if(exact.length>=1)break;
     }catch(e){
       console.warn('[sanitairkamer-hotbath-page]',JSON.stringify({pageUrl,error:e.message}));
     }
   }
-  gathered.sort((a,b)=>b.score-a.score);
-  console.log('[hotbath-sanitair-result]',JSON.stringify({reference,finishCode,count:gathered.length,best:gathered[0]||null}));
-  return gathered;
+
+  exact.sort((a,b)=>b.score-a.score);
+  generic.sort((a,b)=>b.score-a.score);
+  const result=[...exact,...generic].slice(0,8);
+  console.log('[hotbath-sanitair-result]',JSON.stringify({
+    reference:hp.display,
+    base:hp.base,
+    finishCode:hp.finishCode,
+    exactCount:exact.length,
+    fallbackCount:generic.length,
+    best:result[0]||null
+  }));
+  return result;
 }
+
 async function findHotbathWebImageCandidates(reference,finishCode,finish){
   const combined=[];
   try{
@@ -2862,7 +2958,7 @@ app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")))
 async function startServer(){
   try{
     await initPersistentStore();
-    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V10.10 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
+    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V10.11 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
   }catch(e){
     console.error("[Hydropolis] Démarrage impossible :",e);
     process.exit(1);
