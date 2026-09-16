@@ -2107,3 +2107,7 @@ button,input,select,textarea{font:inherit}.shell{display:grid;grid-template-colu
 /* V10.14 — Recor configurator atomic add */
 .recor-configurator-overlay{z-index:20000!important;}
 .recor-config-confirm:disabled{opacity:.55;cursor:not-allowed;}
+
+/* V10.15 — correctif ajout baignoires Recor */
+.recor-configurator-overlay{pointer-events:auto!important;}
+.recor-configurator{pointer-events:auto;}

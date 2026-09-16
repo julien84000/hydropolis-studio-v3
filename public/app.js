@@ -604,15 +604,15 @@ async function autoCropForPdf(src){
 
 try{
   Object.keys(localStorage).forEach(k=>{
-    if(/^hydropolis-manufacturer-/i.test(k) && k!=="hydropolis-manufacturer-v114")localStorage.removeItem(k);
+    if(/^hydropolis-manufacturer-/i.test(k) && k!=="hydropolis-manufacturer-v115")localStorage.removeItem(k);
   });
 }catch(e){}
 let manufacturerImageCache={};
-try{manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v114")||"{}")||{};}catch(e){manufacturerImageCache={};}
+try{manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v115")||"{}")||{};}catch(e){manufacturerImageCache={};}
 function manufacturerCacheKey(p){return `${p.manufacturer}|${p.reference}`;}
 function saveManufacturerCache(){
   try{
-    localStorage.setItem("hydropolis-manufacturer-v114",JSON.stringify(manufacturerImageCache));
+    localStorage.setItem("hydropolis-manufacturer-v115",JSON.stringify(manufacturerImageCache));
   }catch(e){
     console.warn("[Hydropolis cache] quota dépassé, cache vidé",e);
     manufacturerImageCache={};
@@ -1299,7 +1299,15 @@ function renderCatalog(){
    }
 
    results.innerHTML=cards.join("")||`<div class="empty">Aucun résultat.</div>`;
-   $$(".add").forEach(b=>b.onclick=()=>addCatalogProduct(b.dataset.ref,$("#targetRoom").value));
+   $$(".add").forEach(b=>b.onclick=()=>{
+     try{
+       const targetRoom=$("#targetRoom")?.value||state.rooms[0]?.id||"";
+       addCatalogProduct(b.dataset.ref,targetRoom);
+     }catch(e){
+       console.error("[catalog add]",b.dataset.ref,e);
+       alert(`Impossible d’ajouter cet article : ${e.message||"erreur inconnue"}`);
+     }
+   });
    $$(".lookup-photo").forEach(b=>b.onclick=()=>lookupCatalogPhoto(b.dataset.ref,b));
    $$(".hotbath-web-photo").forEach(b=>b.onclick=()=>useHotbathWebImageForCatalog(b.dataset.ref,b));
    $$(".hotbath-sim-photo").forEach(b=>b.onclick=()=>simulateHotbathFinishForCatalog(b.dataset.ref,b));
@@ -1315,6 +1323,15 @@ function renderCatalog(){
    if(count)count.textContent="Erreur d’affichage du catalogue";
    results.innerHTML=`<div class="empty"><b>Le catalogue n’a pas pu s’afficher.</b><br>Rechargez la page. Si le problème persiste, la console indique la référence en cause.</div>`;
  }
+}
+
+function normalizeText(value){
+  return String(value||"")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g,"")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g," ")
+    .trim();
 }
 
 function accessoryText(p){
@@ -1456,7 +1473,7 @@ function recorBathOptions(p,roomId){
   </div>`;
   const hasFeet=recorFeetSelected(p);
   return `<div class="basin-accessories recor-bath-options ${hasFeet?"":"required-missing"}">
-    <div class="basin-accessories-head"><b>Pieds Recor ${hasFeet?"✓":"— choix obligatoire"}</b><span>Choisir un jeu de pieds compatible avec ${recorModelName(p)||"cette baignoire"}.</span></div>
+    <div class="basin-accessories-head"><b>Pieds Recor ${hasFeet?"✓":"— choix obligatoire"}</b><span>Choisir un jeu de pieds compatible avec ${model||"cette baignoire"}.</span></div>
     ${feet.length?feet.map(x=>option(x,true)).join(""):`<div class="accessory-option unavailable"><div><b>Pieds compatibles non identifiés</b><span>Vérifier le modèle Recor.</span></div></div>`}
     <div class="basin-accessories-head recor-option-head"><b>Vidage Recor</b><span>Suggestion optionnelle — ajoutée au dossier uniquement si sélectionnée.</span></div>
     ${wastes.length?wastes.map(x=>option(x,false)).join(""):`<div class="accessory-option unavailable"><div><b>Aucun vidage compatible identifié</b></div></div>`}
@@ -1536,9 +1553,11 @@ function commitSelectedRecords(records,{showProject=false}={}){
 
 function openRecorBathConfigurator(p,roomId){
   const targetRoomId=normalizedRoomId(roomId);
+  const model=recorModelName(p);
   const feet=recorCompatibleFeet(p);
   const wastes=recorCompatibleWastes(p);
   closeRecorConfigurator();
+  console.log("[Recor configurator data]",{reference:p.reference,roomId:targetRoomId,model,feet:feet.length,wastes:wastes.length});
 
   const overlay=document.createElement("div");
   overlay.id="recorConfigurator";
@@ -1580,7 +1599,7 @@ function openRecorBathConfigurator(p,roomId){
   console.log('[Recor configurator open]',{
     reference:p.reference,
     roomId:targetRoomId,
-    model:recorModelName(p),
+    model,
     feet:feet.map(x=>x.reference),
     wastes:wastes.map(x=>x.reference)
   });
@@ -1642,9 +1661,13 @@ function openRecorBathConfigurator(p,roomId){
 
 function addCatalogProduct(ref,roomId){
   const p=CATALOG.find(x=>x.reference===ref);
-  if(!p)return;
+  if(!p){
+    console.warn("[catalog add] référence introuvable",ref);
+    return;
+  }
   const targetRoomId=normalizedRoomId(roomId);
   if(isRecorBathRequiringFeet(p)){
+    console.log("[Recor configurator request]",{reference:p.reference,roomId:targetRoomId,model:recorModelName(p)});
     openRecorBathConfigurator(p,targetRoomId);
     return;
   }

@@ -1,16 +1,15 @@
-# Hydropolis Studio V10.14
+# Hydropolis Studio V10.15
 
-## Correctif Recor — baignoires sur pieds
+## Correctif Recor — bouton « Configurer + ajouter »
 
-Le configurateur Recor ajoute désormais la baignoire, le jeu de pieds obligatoire et les éventuels accessoires **en une seule opération atomique** avant le rendu et la sauvegarde du projet.
+La cause du bouton inactif a été identifiée : le configurateur Recor appelait `normalizeText()` pour trouver les pieds et vidages compatibles, mais cette fonction n'existait pas dans le JavaScript client. Le clic provoquait donc une erreur avant l'ouverture de la fenêtre de configuration.
 
-Corrections :
-- normalisation de la pièce cible avant ajout ;
-- suppression de l’état intermédiaire « baignoire sans pieds » ;
-- ajout baignoire + pieds + vidage en un seul commit ;
-- conservation du lien `accessoryFor` entre la baignoire et ses pieds/vidage ;
-- retour automatique vers « Projet par pièce » après validation ;
-- logs dédiés `[Recor configurator open]` et `[Recor configurator add]` ;
-- z-index renforcé pour la fenêtre de configuration.
+### Corrections
+- ajout de la fonction `normalizeText()` ;
+- ouverture du configurateur Recor rétablie ;
+- recherche des pieds compatibles Carlton, Dual, Roll Top, etc. ;
+- ajout atomique baignoire + pieds obligatoires + vidage optionnel ;
+- messages d'erreur visibles si un problème client survient ;
+- logs `Recor configurator request`, `Recor configurator data`, `Recor configurator open` et `Recor configurator add`.
 
-Les pieds restent obligatoires pour les modèles concernés. Collins reste exclu de cette règle car ses pieds sont déjà intégrés dans la référence.
+Les corrections Hotbath/Sanitairkamer des versions précédentes sont conservées.
