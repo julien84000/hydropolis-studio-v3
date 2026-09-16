@@ -604,15 +604,15 @@ async function autoCropForPdf(src){
 
 try{
   Object.keys(localStorage).forEach(k=>{
-    if(/^hydropolis-manufacturer-/i.test(k) && k!=="hydropolis-manufacturer-v111")localStorage.removeItem(k);
+    if(/^hydropolis-manufacturer-/i.test(k) && k!=="hydropolis-manufacturer-v113")localStorage.removeItem(k);
   });
 }catch(e){}
 let manufacturerImageCache={};
-try{manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v111")||"{}")||{};}catch(e){manufacturerImageCache={};}
+try{manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v113")||"{}")||{};}catch(e){manufacturerImageCache={};}
 function manufacturerCacheKey(p){return `${p.manufacturer}|${p.reference}`;}
 function saveManufacturerCache(){
   try{
-    localStorage.setItem("hydropolis-manufacturer-v111",JSON.stringify(manufacturerImageCache));
+    localStorage.setItem("hydropolis-manufacturer-v113",JSON.stringify(manufacturerImageCache));
   }catch(e){
     console.warn("[Hydropolis cache] quota dépassé, cache vidé",e);
     manufacturerImageCache={};
@@ -712,8 +712,8 @@ function imageBadge(img,p){
   if(!img)return `Photo fabricant à rechercher`;
   if(img.finishMatch==="simulated")return `≈ Simulation de finition · ${p.finish}`;
   if(/sanitairkamer/i.test((img.source||"")+" "+(img.page||"")+" "+(img.url||"")))return img.finishMatch==="exact"
-    ?`✓ Sanitairkamer · ${p.finish}`
-    :`✓ Sanitairkamer · ${normalizeSupplierReferenceForLookup(p.reference,p.manufacturer)}`;
+    ?`✓ Sanitairkamer · finition ${p.finish}`
+    :`Sanitairkamer · finition non certifiée`;
   if(img.finishMatch==="web")return `✓ Image web · référence exacte ${normalizeSupplierReferenceForLookup(p.reference,p.manufacturer)}`;
   return img.finishMatch==="exact"
     ?`✓ Photo officielle · ${p.finish}`
