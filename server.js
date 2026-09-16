@@ -719,7 +719,7 @@ app.post("/api/translate-product",requireAuth,async(req,res)=>{
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V10.6",
+  service:"Hydropolis Studio V10.7",
   database:USE_POSTGRES?"postgresql":"local-fallback",
   time:new Date().toISOString()
 }));
@@ -945,11 +945,41 @@ async function fetchBrandPage(url,lang="en-GB,en;q=0.9"){
   const r=await axios.get(url,{timeout:22000,maxRedirects:5,validateStatus:x=>x>=200&&x<400,headers:{"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/150 Safari/537.36","Accept-Language":lang}});
   return String(r.data||"");
 }
+function normalizeHotbathReference(reference){
+  // Keep the commercial reference untouched elsewhere, but remove trailing
+  // country/language suffixes before any technical lookup or finish matching.
+  // Example: AC003.BBP.IT -> AC003.BBP.
+  let s=String(reference||"").toUpperCase().trim().replace(/^HB\./,"");
+  s=s.replace(/\.(?:IT|FR|EN|UK|GB|DE|ES|NL)$/i,"");
+  return s.replace(/\.+$/,"" ).trim();
+}
+function hotbathReferenceParts(reference,explicitFinishCode=""){
+  const normalized=normalizeHotbathReference(reference);
+  const parts=normalized.split(".").filter(Boolean);
+  const base=String(parts[0]||"").replace(/EXT$/i,"").trim();
+  const finishCode=String(explicitFinishCode||parts[1]||"").toUpperCase().trim();
+  return {
+    display:String(reference||"").trim(),
+    normalized,
+    base,
+    finishCode,
+    lookup:finishCode?`${base}.${finishCode}`:base
+  };
+}
 function hotbathBase(reference){
-  return String(reference||"").toUpperCase().replace(/^HB\./,"").replace(/\.IT$/," ").trim().split(".")[0].replace(/EXT$/," ").trim();
+  return hotbathReferenceParts(reference).base;
+}
+function normalizeHotbathAssetUrl(raw,baseUrl){
+  const href=absoluteUrl(baseUrl,raw);
+  if(!href)return null;
+  try{
+    const u=new URL(href);
+    u.pathname=u.pathname.replace(/\/{2,}/g,"/");
+    return u.href;
+  }catch{return href}
 }
 async function resolveHotbathProductUrl(reference){
-  const base=hotbathBase(reference);
+  const {base}=hotbathReferenceParts(reference);
   if(!base)return "https://www.hotbath.it/fr/home";
 
   const safeBase=base.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
@@ -1659,52 +1689,60 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     }
   }
 
-  // Hotbath: the official page itself is already the product page for the selected
-  // reference, and the main visual is typically exposed through og:image plus a hero <img>.
-  // Finish chips are also present on the page, so strongly prioritise the hero metadata.
+  // Hotbath: normalise catalogue refs before matching. The trailing .IT is a
+  // catalogue/country suffix and must never participate in image/document matching.
   if(/hotbath\.it/i.test(manufacturerUrl)){
-    const hBase=String(reference||"").split(".")[0].toLowerCase();
-    const hRef=String(reference||"").toLowerCase();
-    const hPageText=normalizeToken($("body").text());
-    const displayedHotbathRef=normalizeToken($("#descrbar").first().text()||"");
-    const wantedHotbathRef=normalizeToken(`${String(reference||"").split(".")[0]}.${String(finishCode||"")}`);
-    const pageMatchesSku=(!!hRef && hPageText.includes(normalizeToken(reference))) || (!!hBase && hPageText.includes(normalizeToken(hBase)));
-    // Hotbath's URL is product-level, not finish-level. The finish is considered exact
-    // only when the page's own #descrbar explicitly displays the requested finish code.
-    const pageMatchesFinish=!!wantedHotbathRef && displayedHotbathRef.includes(wantedHotbathRef);
+    const hp=hotbathReferenceParts(reference,finishCode);
+    const hBase=hp.base.toLowerCase();
+    const hLookup=normalizeToken(hp.lookup);
+    const displayedHotbathRef=normalizeHotbathReference($("#descrbar").first().text()||"");
+    const displayedNorm=normalizeToken(displayedHotbathRef);
+    const pageTitleBase=normalizeToken($("h1").first().text()||"");
+    const pageMatchesSku=!!hBase && (pageTitleBase===normalizeToken(hp.base) || displayedNorm.startsWith(normalizeToken(hp.base)));
+    // Exact finish only when Hotbath itself displays BASE.FINISH on the page.
+    // BASE.FINISH.IT and BASE.FINISH are therefore treated identically.
+    const pageMatchesFinish=!!hp.finishCode && displayedNorm===hLookup;
 
-    function addHotbathImage(raw,context="",source="hotbath-product-image"){
-      const href=absoluteUrl(manufacturerUrl,raw);
+    function addHotbathImage(raw,context="",source="hotbath-product-image",priority=0){
+      const href=normalizeHotbathAssetUrl(raw,manufacturerUrl);
       if(!href || !isImageUrl(href))return;
       const text=(href+" "+context).toLowerCase();
       if(/logo|favicon|icon|sprite|placeholder|loading|cookie|social|flag|pinterest|instagram|jsp\/template2\/images/.test(text))return;
+      // Finish chips are colour swatches, not product photography.
       if(/\/prodcateg\/\d+\/(?:cr|gn|ab|bb|wh|ai|bbp|bcp|mbp)\.jpe?g(?:\?|$)/i.test(href))return;
       if(/[?&](?:w|width|h|height)=([1-9]\d?|1\d\d)(?:&|$)/i.test(href))return;
 
-      let score=450;
-      if(/og:image|twitter:image|metadata/.test(source+" "+context))score+=4500;
+      let score=500+priority;
+      if(source==="hotbath-main-product-image")score+=7000;
+      if(/metadata/.test(source))score+=1000;
       if(hBase && text.includes(hBase))score+=2200;
-      if(hRef && text.includes(hRef))score+=2600;
-      if(/hero|main|product|gallery|prodotto|cb\d+/i.test(text))score+=300;
+      if(/hero|main|product|gallery|prodotto/i.test(text))score+=300;
 
-      const exact=pageMatchesSku && !!String(finishCode||"");
+      const exact=pageMatchesSku && pageMatchesFinish;
       candidates.push({
         url:href,
         source,
-        score:score+(exact?3200:0),
+        score:score+(exact?4000:0),
         finishMatch:exact?"exact":"generic",
-        detectedFinishCode:exact?String(finishCode||"").toUpperCase():null,
+        detectedFinishCode:exact?hp.finishCode:null,
         variationId:null,
-        attributes:{context}
+        attributes:{context,normalizedReference:hp.normalized,displayedReference:displayedHotbathRef}
       });
     }
 
+    // The authoritative product visual on Hotbath lives in #imgprod.
+    $("#imgprod img[src]").each((_,el)=>{
+      const im=$(el);
+      addHotbathImage(im.attr("src")||"",im.attr("alt")||"","hotbath-main-product-image",3000);
+    });
+
     $("meta[property='og:image'],meta[name='twitter:image'],meta[property='twitter:image']").each((_,el)=>{
-      addHotbathImage($(el).attr("content")||"","metadata","hotbath-metadata-image");
+      addHotbathImage($(el).attr("content")||"","metadata","hotbath-metadata-image",500);
     });
 
     $("img").each((_,el)=>{
       const im=$(el);
+      if(im.closest("#finiture").length || im.closest(".attach").length || im.closest("header,footer").length)return;
       const ctx=[im.attr("alt"),im.attr("title"),im.attr("class")].filter(Boolean).join(" ");
       for(const attr of ["data-large_image","data-original","data-lazy-src","data-src","src"]){
         addHotbathImage(im.attr(attr),ctx,"hotbath-img");
@@ -2088,9 +2126,13 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     installationGuide,
     candidates:sorted.slice(0,20),
     note:exact
-      ?`Photo officielle fabricant correspondant à la finition ${requested}, associée à la variation fabricant.`
+      ?(/hotbath\.it/i.test(manufacturerUrl)
+        ?`Photo officielle Hotbath correspondant à la référence normalisée ${hotbathReferenceParts(reference,requested).lookup}.`
+        :`Photo officielle fabricant correspondant à la finition ${requested}, associée à la variation fabricant.`)
       :(best
-        ?"Visuel officiel trouvé, mais aucune donnée fabricant ne permet de certifier cette finition."
+        ?(/hotbath\.it/i.test(manufacturerUrl)
+          ?`Photo officielle Hotbath du bon produit, mais la finition ${requested||finish||"sélectionnée"} n'est pas certifiée sur cette fiche.`
+          :"Visuel officiel trouvé, mais aucune donnée fabricant ne permet de certifier cette finition.")
         :"Aucune photo officielle exploitable trouvée.")
   };
 }
@@ -2116,10 +2158,11 @@ function hotbathFinishTarget(code){
 }
 
 async function bingHotbathImageCandidates(reference,finishCode,finish){
-  const full=String(reference||"").replace(/\.IT$/i,"").trim();
-  const base=full.split(".")[0];
-  const code=String(finishCode||"").toUpperCase();
-  const query=[`"${full}"`,"Hotbath",code,finish||""].filter(Boolean).join(" ");
+  const hp=hotbathReferenceParts(reference,finishCode);
+  const full=hp.lookup;
+  const base=hp.base;
+  const code=hp.finishCode;
+  const query=[`"${full}"`,`"${base}"`,"Hotbath",code,finish||""].filter(Boolean).join(" ");
   const searchUrl="https://www.bing.com/images/search";
   const html=await fetchBrandPage(`${searchUrl}?q=${encodeURIComponent(query)}&form=HDRSC3`,"fr-FR,fr;q=0.9,en;q=0.7");
   const $=cheerio.load(html);
@@ -2172,7 +2215,8 @@ app.post("/api/hotbath-web-image",async(req,res)=>{
   const finishCode=String(req.body?.finishCode||"").trim();
   const finish=String(req.body?.finish||"").trim();
   if(!reference)return res.status(400).json({error:"Référence Hotbath requise"});
-  const key=[reference,finishCode,finish].join("|").toLowerCase();
+  const hp=hotbathReferenceParts(reference,finishCode);
+  const key=[hp.lookup,finish].join("|").toLowerCase();
 
   try{
     let candidates=hotbathWebImageCache.get(key);
@@ -2287,10 +2331,17 @@ app.get("/api/finish-simulation",async(req,res)=>{
 });
 
 app.post("/api/manufacturer-image",async(req,res)=>{
-  const {manufacturerUrl,reference,finishCode,finish,designation,originalDescription,collection,manufacturer}=req.body||{};
+  const {manufacturerUrl,reference,lookupReference,finishCode,finish,designation,originalDescription,collection,manufacturer}=req.body||{};
   if(!manufacturerUrl||!reference) return res.status(400).json({error:"manufacturerUrl et reference requis"});
   try{
-    res.json(await scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,designation,originalDescription,collection,manufacturer}));
+    const technicalReference=/hotbath/i.test(manufacturer||"")
+      ?normalizeHotbathReference(lookupReference||reference)
+      :reference;
+    const result=await scrapeManufacturer({manufacturerUrl,reference:technicalReference,finishCode,finish,designation,originalDescription,collection,manufacturer});
+    // Preserve the commercial catalogue reference for the browser/UI.
+    result.displayReference=reference;
+    result.lookupReference=technicalReference;
+    res.json(result);
   }catch(e){
     res.status(502).json({
       error:"Impossible d'analyser la fiche fabricant",
@@ -2443,7 +2494,7 @@ app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")))
 async function startServer(){
   try{
     await initPersistentStore();
-    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V10.6 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
+    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V10.7 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
   }catch(e){
     console.error("[Hydropolis] Démarrage impossible :",e);
     process.exit(1);

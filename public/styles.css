@@ -2087,3 +2087,5 @@ button,input,select,textarea{font:inherit}.shell{display:grid;grid-template-colu
   font-style:italic;
   font-weight:400;
 }
+
+/* V10.7 — Hotbath: .IT est ignoré pour le matching technique, mais conservé à l'affichage. */

@@ -454,12 +454,20 @@ function normalizeImageFile(file,maxW=1600,maxH=1100,quality=.9){
 }
 
 
-function finishCodeFromReference(ref){
-  const m=String(ref||"").match(/\.(BS|BB|BC)$/i);
+function normalizeSupplierReferenceForLookup(ref,manufacturer=""){
+  let s=String(ref||"").trim();
+  if(/hotbath/i.test(manufacturer||"")){
+    s=s.replace(/\.(?:IT|FR|EN|UK|GB|DE|ES|NL)$/i,"");
+  }
+  return s;
+}
+function finishCodeFromReference(ref,manufacturer=""){
+  const s=normalizeSupplierReferenceForLookup(ref,manufacturer);
+  const m=s.match(/\.([A-Z0-9]{2,4})$/i);
   return m?m[1].toUpperCase():"";
 }
 function exactFinishLabel(p){
-  const code=finishCodeFromReference(p.reference);
+  const code=String(p.finishCode||finishCodeFromReference(p.reference,p.manufacturer)||"").toUpperCase();
   return code ? `${code} · ${p.finish}` : p.finish;
 }
 function preferredImageFor(p){
@@ -596,15 +604,15 @@ async function autoCropForPdf(src){
 
 try{
   Object.keys(localStorage).forEach(k=>{
-    if(/^hydropolis-manufacturer-/i.test(k) && k!=="hydropolis-manufacturer-v106")localStorage.removeItem(k);
+    if(/^hydropolis-manufacturer-/i.test(k) && k!=="hydropolis-manufacturer-v107")localStorage.removeItem(k);
   });
 }catch(e){}
 let manufacturerImageCache={};
-try{manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v106")||"{}")||{};}catch(e){manufacturerImageCache={};}
+try{manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v107")||"{}")||{};}catch(e){manufacturerImageCache={};}
 function manufacturerCacheKey(p){return `${p.manufacturer}|${p.reference}`;}
 function saveManufacturerCache(){
   try{
-    localStorage.setItem("hydropolis-manufacturer-v106",JSON.stringify(manufacturerImageCache));
+    localStorage.setItem("hydropolis-manufacturer-v107",JSON.stringify(manufacturerImageCache));
   }catch(e){
     console.warn("[Hydropolis cache] quota dépassé, cache vidé",e);
     manufacturerImageCache={};
@@ -625,7 +633,8 @@ async function fetchManufacturerImage(p,force=false){
     body:JSON.stringify({
       manufacturerUrl:p.manufacturerUrl,
       reference:p.reference,
-      finishCode:p.finishCode,
+      lookupReference:normalizeSupplierReferenceForLookup(p.reference,p.manufacturer),
+      finishCode:p.finishCode||finishCodeFromReference(p.reference,p.manufacturer),
       finish:p.finish,
       designation:p.designation,
       originalDescription:p.originalDescription||"",
@@ -647,6 +656,7 @@ async function fetchManufacturerImage(p,force=false){
     remoteUrl:data.best?.url||"",
     remoteImages:(data.images||[]).map(x=>x.url).filter(Boolean),
     resolvedManufacturerUrl:data.manufacturerUrl||p.manufacturerUrl||"",
+    lookupReference:data.lookupReference||normalizeSupplierReferenceForLookup(p.reference,p.manufacturer),
     src:embedded||src,
     cacheSrc:src,
     images:embeddedImages.length?embeddedImages:(imageSources.length?imageSources:(embedded?[embedded]:src?[src]:[])),
@@ -659,7 +669,10 @@ async function fetchManufacturerImage(p,force=false){
           ?`Site officiel fabricant · dernier recours`
           :"Site officiel fabricant · visuel produit générique"))
       :"",
-    note:(data.note||"") + ((src && data.best?.finishMatch!=="exact" && /hotbath/i.test(p.manufacturer||""))
+    note:(data.note||"") + ((/hotbath/i.test(p.manufacturer||"") && data.lookupReference && data.lookupReference!==p.reference)
+      ?`
+Référence technique utilisée : ${data.lookupReference} (suffixe catalogue ignoré).`
+      :"") + ((src && data.best?.finishMatch!=="exact" && /hotbath/i.test(p.manufacturer||""))
       ?((data.note?"\n":"")+"Dernier recours Hotbath : photo officielle fournisseur conservée même si la finition exacte n'est pas certifiée.")
       :""),
     drawingUrl:data.drawing?.url||"",
@@ -749,8 +762,8 @@ async function searchHotbathWebImage(p){
     method:"POST",
     headers:{"Content-Type":"application/json"},
     body:JSON.stringify({
-      reference:p.reference,
-      finishCode:p.finishCode,
+      reference:normalizeSupplierReferenceForLookup(p.reference,p.manufacturer),
+      finishCode:p.finishCode||finishCodeFromReference(p.reference,p.manufacturer),
       finish:p.finish
     })
   });

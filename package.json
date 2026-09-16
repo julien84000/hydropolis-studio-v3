@@ -1,12 +1,12 @@
 {
   "name": "hydropolis-studio-v3",
-  "version": "10.6.0",
+  "version": "10.7.0",
   "private": true,
   "description": "Hydropolis Studio V3 - Render test server",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "build": "node -e \"console.log('Hydropolis V10.6: libellé client visuel non contractuel')\""
+    "build": "node -e \"console.log('Hydropolis V10.7: normalisation références Hotbath')\""
   },
   "engines": {
     "node": ">=20"

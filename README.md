@@ -1,4 +1,4 @@
-# Hydropolis Studio V10.6
+# Hydropolis Studio V10.7
 
 ## Hotbath — stratégie de visuel en 3 niveaux
 
@@ -40,3 +40,13 @@ Dans le dossier client, les visuels Hotbath dont la finition n'est pas certifié
 La mention affichée est désormais simplement : **« Visuel non contractuel »**.
 
 La logique interne reste inchangée : dans le projet, Hydropolis continue de distinguer photo exacte, photo fournisseur avec finition non certifiée, image web et simulation.
+
+
+## V10.7 — normalisation des références Hotbath
+- la référence commerciale reste affichée telle quelle, par exemple `AC003.BBP.IT` ;
+- pour les recherches techniques, Hydropolis utilise `AC003.BBP` ;
+- les suffixes pays/langue finaux `.IT`, `.FR`, `.EN`, `.UK`, `.GB`, `.DE`, `.ES`, `.NL` sont ignorés pour le matching ;
+- la référence racine `AC003` sert à trouver la vraie fiche produit Hotbath ;
+- la finition `BBP` est comparée à la référence affichée par Hotbath dans `#descrbar` ;
+- une photo n'est marquée « finition exacte » que si cette référence normalisée correspond réellement ;
+- le cache images passe en V10.7 afin d'éliminer les anciens faux positifs liés à `.IT`.
