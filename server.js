@@ -789,7 +789,7 @@ app.get("/api/catalog/search",requireAuth,async(req,res)=>{
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V11.18",
+  service:"Hydropolis Studio V11.19",
   database:USE_POSTGRES?"postgresql":"local-fallback",
   time:new Date().toISOString()
 }));
@@ -1139,17 +1139,38 @@ function recorModelFromData(reference,designation){
   const hay=normalizeToken((designation||"")+" "+s);
   return known.find(x=>hay.includes(normalizeToken(x)))||"";
 }
+const recorResolvedUrlMemo=new Map();
 async function resolveRecorProductUrl(reference,designation){
   const model=recorModelFromData(reference,designation);
-  if(!model)return "https://recor.pt/";
-  const slug=model.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
-  const candidate=`https://recor.pt/product/${slug}-en/`;
-  try{
-    await fetchBrandPage(candidate);
-    return candidate;
-  }catch(e){
-    return "https://recor.pt/";
+  if(!model)return null;
+  const memoKey=normalizeToken(model);
+  if(recorResolvedUrlMemo.has(memoKey))return recorResolvedUrlMemo.get(memoKey);
+
+  const slug=model.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+  const candidates=[
+    `https://recor.pt/product/${slug}-en/`,
+    `https://recor.pt/product/${slug}/`,
+    `https://recor.pt/product/${slug}-pt/`
+  ];
+
+  for(const candidate of candidates){
+    try{
+      const html=await fetchBrandPage(candidate);
+      const $r=cheerio.load(html);
+      const title=($r("h1.product_title").first().text()||$r("h1.entry-title").first().text()||$r("title").first().text()||"").trim();
+      const bodyHint=($r(".woocommerce-product-details__short-description").first().text()||"").trim();
+      const pageToken=normalizeToken(`${title} ${bodyHint}`);
+      if(pageToken.includes(normalizeToken(model))){
+        recorResolvedUrlMemo.set(memoKey,candidate);
+        return candidate;
+      }
+    }catch(e){}
   }
+
+  // Do not fall back to the Recor home page. A generic/home-page image is worse than
+  // no image because it can silently attach the wrong product and often a thumbnail.
+  recorResolvedUrlMemo.set(memoKey,null);
+  return null;
 }
 
 async function resolveManufacturerProductUrl(manufacturerUrl,reference,originalDescription,designation,collection){
@@ -1591,6 +1612,23 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
       candidates.push(item);
     }
 
+    // V11.19 — Recor official WooCommerce gallery is authoritative. Its anchor href
+    // and data-large_image attributes point to the real high-resolution source (often
+    // 900×900 or larger), whereas data-thumb/src frequently expose 100–300 px derivatives.
+    $(".woocommerce-product-gallery__wrapper .woocommerce-product-gallery__image").each((_,el)=>{
+      const cell=$(el);
+      const anchor=cell.find("a[href]").first().attr("href");
+      if(anchor)addRecor(anchor,"woocommerce-product-gallery official full image",6000);
+      const im=cell.find("img").first();
+      if(im.length){
+        addRecor(im.attr("data-large_image"),"woocommerce-product-gallery data-large_image",5800);
+        addRecor(im.attr("data-src"),"woocommerce-product-gallery data-src",2400);
+        const ss=im.attr("srcset")||im.attr("data-srcset")||"";
+        const parts=ss.split(",").map(x=>x.trim()).filter(Boolean);
+        if(parts.length)addRecor(parts[parts.length-1].split(/\s+/)[0],"woocommerce-product-gallery srcset largest",2200);
+      }
+    });
+
     // Metadata often points to the main product photo.
     $("meta[property='og:image'],meta[property='og:image:secure_url'],meta[name='twitter:image']").each((_,el)=>{
       addRecor($(el).attr("content"),"meta product image",350);
@@ -1679,7 +1717,7 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
       .some(t=>t.length>2 && n.includes(t));
   }
 
-  // Catalano V11.18: official site first, exact product page only.
+  // Catalano V11.19: official site first, exact product page only.
   // The current Catalano template exposes:
   //   - #product-gallery: the official lifestyle/product gallery for this product page
   //   - .product-finishes a[data-interaction]: an exact previewSrc per catalogue code/finish
@@ -2483,13 +2521,19 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
   let productImages=best?[best]:[];
 
   if(isRecor && recorGallery.length){
-    const recorSorted=uniqueBest(recorGallery).sort((x,y)=>y.score-x.score);
-    productImages=recorSorted.slice(0,2);
+    const recorSorted=uniqueBest(recorGallery)
+      .sort((x,y)=>(y.score-x.score)||((y._quality||0)-(x._quality||0)));
+    const officialGallery=recorSorted.filter(x=>/woocommerce-product-gallery/.test(String(x.source||"")+" "+String(x.attributes?.context||"")) || x.score>=2500);
+    const pool=officialGallery.length?officialGallery:recorSorted;
+    // Keep several full-resolution official views for the client dossier, but never
+    // deliberately choose a tiny WordPress thumbnail when a real product image exists.
+    const acceptable=pool.filter(x=>(x._quality||0)>=250000 || !/-\d{2,4}x\d{2,4}\.(?:jpe?g|png|webp)(?:$|\?)/i.test(String(x.url||"")));
+    productImages=(acceptable.length?acceptable:pool).slice(0,4);
     best=productImages[0]||best;
   }
 
   if(isCatalano){
-    // V11.18: Catalano's official product page is authoritative. Keep every distinct
+    // V11.19: Catalano's official product page is authoritative. Keep every distinct
     // image from that product page for the client dossier. The exact code/finish preview,
     // when Catalano exposes one, was inserted first and remains the principal image.
     productImages=catalanoGallery.slice();
@@ -2513,7 +2557,15 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
       });
       const ct=String(ir.headers["content-type"]||"image/jpeg");
       if(ct.startsWith("image/") && ir.data && ir.data.length<9000000){
-        return {...item,dataUrl:`data:${ct};base64,${Buffer.from(ir.data).toString("base64")}`};
+        const bytes=Buffer.from(ir.data);
+        let pixelWidth=0,pixelHeight=0;
+        try{
+          const {loadImage}=await import("@napi-rs/canvas");
+          const decoded=await loadImage(bytes);
+          pixelWidth=Number(decoded.width||0);
+          pixelHeight=Number(decoded.height||0);
+        }catch(e){}
+        return {...item,pixelWidth,pixelHeight,dataUrl:`data:${ct};base64,${bytes.toString("base64")}`};
       }
     }catch(e){console.warn("[manufacturer-image-embed]",e.message);}
     return item;
@@ -2535,7 +2587,23 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
 
   if(isCatalano || isRecor){
     productImages=await Promise.all(productImages.map(embedOfficialImage));
-    if(productImages.length) best=productImages[0];
+    if(isRecor){
+      const measured=productImages.filter(x=>Number(x.pixelWidth||0)>0 && Number(x.pixelHeight||0)>0);
+      const hd=productImages.filter(x=>{
+        const w=Number(x.pixelWidth||0), h=Number(x.pixelHeight||0);
+        if(!w||!h)return true; // keep unmeasured only if decoding metadata is unavailable
+        return Math.max(w,h)>=800 && Math.min(w,h)>=500;
+      });
+      // If dimensions were measurable, never knowingly return a thumbnail. Prefer an
+      // empty result to a fuzzy 100–300 px image in a premium client dossier.
+      if(measured.length && !hd.length){
+        productImages=[];
+        best=null;
+      }else{
+        productImages=hd.sort((a,b)=>((b.pixelWidth||0)*(b.pixelHeight||0))-((a.pixelWidth||0)*(a.pixelHeight||0)));
+        if(productImages.length)best=productImages[0];
+      }
+    }else if(productImages.length) best=productImages[0];
   }else productImages=best?[best]:[];
 
   console.log("[manufacturer-image]",JSON.stringify({
@@ -2589,6 +2657,10 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
         ?(best
           ?`Galerie récupérée en priorité sur la fiche produit officielle Catalano : ${productImages.length} image(s) distincte(s) disponible(s) pour ce produit. L'image de la référence/finition exacte est placée en premier lorsqu'elle est fournie par Catalano.`
           :"Aucune image exploitable n'a été trouvée sur la fiche produit officielle Catalano.")
+      :isRecor
+        ?(best
+          ?`Galerie haute définition récupérée sur la fiche produit officielle Recor : ${productImages.length} vue(s). Les miniatures WordPress sont écartées lorsqu'une image pleine résolution est disponible.`
+          :"Aucune image haute définition exploitable n'a été trouvée sur une fiche produit Recor exacte.")
       :(exact
         ?`Photo officielle fabricant correspondant à la finition ${requested}, associée à la variation fabricant.`
         :(best
@@ -3358,7 +3430,7 @@ app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")))
 async function startServer(){
   try{
     await initPersistentStore();
-    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.18 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
+    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.19 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
   }catch(e){
     console.error("[Hydropolis] Démarrage impossible :",e);
     process.exit(1);

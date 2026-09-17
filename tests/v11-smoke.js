@@ -5,7 +5,7 @@ const root=path.resolve(__dirname,'..');
 const read=f=>fs.readFileSync(path.join(root,f),'utf8');
 const json=f=>JSON.parse(read(f));
 
-assert.equal(json('package.json').version,'11.18.0');
+assert.equal(json('package.json').version,'11.19.0');
 for(const f of ['public/sw.js','public/manifest.webmanifest','public/manufacturers_manifest.json'])assert(fs.existsSync(path.join(root,f)),`${f} missing`);
 
 const manifest=json('public/catalog_manifest.json');
@@ -32,9 +32,9 @@ assert(app.includes('sanitairkamer'),'Hotbath Sanitairkamer fallback missing');
 console.log(`V11 smoke OK · ${total.toLocaleString('fr-FR')} lignes · ${unique.size.toLocaleString('fr-FR')} références uniques · ${makers.size} fabricants`);
 
 const html=read('public/index.html');
-for(const anchor of ['view-dashboard','view-favorites','view-compare','view-exports','dashboardSearchInput','favoritesGrid','compareViewGrid'])assert(html.includes(anchor),`missing V11.18 UI anchor ${anchor}`);
+for(const anchor of ['view-dashboard','view-favorites','view-compare','view-exports','dashboardSearchInput','favoritesGrid','compareViewGrid'])assert(html.includes(anchor),`missing V11.19 UI anchor ${anchor}`);
 const css=read('public/styles.css');
-for(const cls of ['dashboard-hero','dashboard-category-grid','ecosystem-card','favorite-toggle','compare-view-table','exports-grid-v11'])assert(css.includes(cls),`missing V11.18 style ${cls}`);
+for(const cls of ['dashboard-hero','dashboard-category-grid','ecosystem-card','favorite-toggle','compare-view-table','exports-grid-v11'])assert(css.includes(cls),`missing V11.19 style ${cls}`);
 
 assert(app.includes('catalanoClientGalleryPages'),'Catalano full client gallery pages missing');
 assert(app.includes('catalanoGalleryComplete'),'Catalano gallery completeness tracking missing');
@@ -50,3 +50,12 @@ for(const f of ['aster.jpg','ball-claw.jpg','wood.jpg','imperial.jpg','lion.jpg'
 }
 assert(app.includes('recorChoiceVisual'),'Recor visual chooser helper missing');
 assert(css.includes('recor-choice-thumb'),'Recor visual chooser styles missing');
+
+// V11.19 Recor HD regression guards
+assert(server.includes('woocommerce-product-gallery official full image'),'Recor HD official gallery extraction missing');
+assert(server.includes('Do not fall back to the Recor home page'),'Recor exact-page guard missing');
+assert(app.includes('hydropolis-manufacturer-v119'),'Recor/manufacturer image cache was not invalidated for V11.19');
+assert(app.includes('recorImageQualityVersion=2'),'Recor HD migration marker missing');
+assert(app.includes('refreshLegacyRecorBathImages'),'Legacy Recor project auto-refresh missing');
+
+assert(server.includes('pixelWidth') && server.includes('Math.max(w,h)>=800'),'Recor actual-pixel HD guard missing');

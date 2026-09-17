@@ -705,15 +705,15 @@ async function autoCropForPdf(src){
 
 try{
   Object.keys(localStorage).forEach(k=>{
-    if(/^hydropolis-manufacturer-/i.test(k) && k!=="hydropolis-manufacturer-v116")localStorage.removeItem(k);
+    if(/^hydropolis-manufacturer-/i.test(k) && k!=="hydropolis-manufacturer-v119")localStorage.removeItem(k);
   });
 }catch(e){}
 let manufacturerImageCache={};
-try{manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v116")||"{}")||{};}catch(e){manufacturerImageCache={};}
+try{manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v119")||"{}")||{};}catch(e){manufacturerImageCache={};}
 function manufacturerCacheKey(p){return `${p.manufacturer}|${p.reference}`;}
 function saveManufacturerCache(){
   try{
-    localStorage.setItem("hydropolis-manufacturer-v116",JSON.stringify(manufacturerImageCache));
+    localStorage.setItem("hydropolis-manufacturer-v119",JSON.stringify(manufacturerImageCache));
   }catch(e){
     console.warn("[Hydropolis cache] quota dépassé, cache vidé",e);
     manufacturerImageCache={};
@@ -1125,6 +1125,7 @@ async function enrichSelectedPhoto(id,force=false){
       p.imageStatus=imageBadge(img,p);
       p.imageSimulation=false;
       p.customImage=false;
+      if(/recor/i.test(p.manufacturer||"") && p.category==="Bain")p.recorImageQualityVersion=2;
     }else if(!p.image){
       p.imageStatus="Photo fabricant indisponible";
     }
@@ -3520,12 +3521,21 @@ function harmonizeSavedCatalogProducts(){
       technicalSheetUrl:p.technicalSheetUrl,technicalSheetLabel:p.technicalSheetLabel,technicalSheetPage:p.technicalSheetPage,
       installationGuideUrl:p.installationGuideUrl,installationGuideLabel:p.installationGuideLabel,
       includeDrawing:p.includeDrawing,includeTechnicalSheet:p.includeTechnicalSheet,includeInstallationGuide:p.includeInstallationGuide,
-      customImage:p.customImage,imageSimulation:p.imageSimulation,imageSource:p.imageSource,imageFinishMatch:p.imageFinishMatch,imageNote:p.imageNote,remoteImageUrl:p.remoteImageUrl,remoteImages:p.remoteImages,webImageSourcePage:p.webImageSourcePage,clientDiscountOverride:p.clientDiscountOverride,leadTime:p.leadTime,priceOverride:p.priceOverride,originalDesignation:p.originalDesignation,catalogPrice:p.catalogPrice,catalogTotalPrice:p.catalogTotalPrice,customTechnicalSheet:p.customTechnicalSheet,technicalSheetAsset:p.technicalSheetAsset,catalanoGalleryComplete:p.catalanoGalleryComplete,catalanoGallerySource:p.catalanoGallerySource
+      customImage:p.customImage,imageSimulation:p.imageSimulation,imageSource:p.imageSource,imageFinishMatch:p.imageFinishMatch,imageNote:p.imageNote,remoteImageUrl:p.remoteImageUrl,remoteImages:p.remoteImages,webImageSourcePage:p.webImageSourcePage,clientDiscountOverride:p.clientDiscountOverride,leadTime:p.leadTime,priceOverride:p.priceOverride,originalDesignation:p.originalDesignation,catalogPrice:p.catalogPrice,catalogTotalPrice:p.catalogTotalPrice,customTechnicalSheet:p.customTechnicalSheet,technicalSheetAsset:p.technicalSheetAsset,catalanoGalleryComplete:p.catalanoGalleryComplete,catalanoGallerySource:p.catalanoGallerySource,recorImageQualityVersion:p.recorImageQualityVersion
     };
 
     Object.assign(p,c,runtime);
   }
 }
+async function refreshLegacyRecorBathImages(){
+  if(!navigator.onLine)return;
+  const baths=(state.selected||[]).filter(p=>p && p.manufacturer==="Recor" && p.category==="Bain" && !p.customImage && Number(p.recorImageQualityVersion||0)<2);
+  if(!baths.length)return;
+  for(const p of baths){
+    try{await enrichSelectedPhoto(p.id,true)}catch(e){console.warn("[Recor HD refresh]",p.reference,e)}
+  }
+}
+
 async function startHydropolisWorkspace(){
   if(cloud.started)return;
   cloud.started=true;
@@ -3553,6 +3563,7 @@ async function startHydropolisWorkspace(){
 
   await loadSupplierCatalogs();
   harmonizeSavedCatalogProducts();
+  await refreshLegacyRecorBathImages();
   renderSelection();renderRooms();renderCatalog();
 }
 async function bootstrap(){
