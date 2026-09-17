@@ -1,6 +1,6 @@
 {
   "name": "Hydropolis Studio",
-  "version": "11.22.0",
+  "version": "11.25.0",
   "base": {
     "archive": "Hydropolis_Studio_V10.16_Update.zip",
     "sha256": "415242ad95036f7db3e76844ec2fea8a5c8d916c1a8c1617350847c32507d5cd"
@@ -9,29 +9,24 @@
     "archive": "Hydropolis_Studio_V11.12_Update.zip",
     "sha256": "1cdfcf0f1e30b11c40df1786232243c35993a9e9af18827a697cacd49253141d"
   },
-  "catalogRows": 21284,
-  "uniqueManufacturerReferences": 21280,
+  "catalogRows": 68600,
+  "uniqueManufacturerReferences": 68596,
   "manufacturers": [
     "Amphora",
     "Catalano",
     "Coalbrook",
+    "Gessi",
     "Hotbath",
     "Lefroy Brooks",
+    "Nicolazzi",
     "Recor",
+    "Ritmonio",
     "Zucchetti"
   ],
   "validation": {
     "syntax": "passed",
-    "v11Smoke": "passed",
-    "catalog": "passed: 21284 rows / 21280 unique manufacturer-reference pairs / 7 manufacturers",
-    "uiStatic": "passed",
-    "v10FunctionPreservation": "passed: 171/171 client functions and 101/101 server functions preserved by declaration",
-    "runtimeServer": "not-run: npm dependencies are not installed in the generation environment",
-    "v11_15FunctionPreservation": "passed: client 208/208 preserved; server 111/111 preserved",
-    "v11_16FunctionPreservation": "passed: client 209/209 preserved; server 111/111 preserved",
-    "recorVisuals": "passed: 45/50 feet variants mapped to supplied style images; 12/12 pedestal rows mapped; Lyra remains without supplied visual",
-    "v11_18FunctionPreservation": "passed: client 214/214 preserved; server 112/112 preserved",
-    "v11_21FunctionPreservation": "passed: all named client/server functions from V11.21 preserved; V11.22 adds Recor protected-PDF helpers"
+    "smoke": "passed",
+    "runtime": "not-run (dependencies not installed in build container)"
   },
   "designEvolution": "Apple/Canva-inspired ecosystem + Catalano official-first galleries + visual Recor feet configurator",
   "catalano": {
@@ -54,7 +49,7 @@
     "behavior": "visual chooser for mandatory feet; local images are style references and are included with selected foot in client dossier",
     "offline": "assets included in service-worker shell cache"
   },
-  "releaseNotes": "RELEASE_NOTES_V11.22.md",
+  "releaseNotes": "RELEASE_NOTES_V11.25.md",
   "recorImagesV1119": {
     "priority": "exact Recor product page + WooCommerce full-resolution gallery anchors/data-large_image",
     "fallback": "no Recor home-page image fallback",
@@ -63,12 +58,53 @@
     "clientDossier": "bath dominant; selected feet as small visual; waste text-only",
     "pixelGuard": "when dimensions are measurable: max side >= 800 px and min side >= 500 px; otherwise reject thumbnail result"
   },
-  "build": "V11.22",
-  "notes": "Recor technical PDF anti-bot/session-aware rendering fix.",
+  "build": "V11.25",
+  "notes": "Nicolazzi and Gessi integrated with pricing uplifts, 50% supplier discounts, official finish swatches, official-site image/document resolvers.",
   "recorTechnicalPdfV1122": {
     "productPageSession": "open exact Recor product page first and reuse set-cookie session",
     "liveDrawingUrl": "refresh Technical drawing PDF href from official product page",
     "validation": "require real %PDF signature before pdf.js rendering",
     "clientDossier": "pass exact Recor product page URL to PDF renderer"
+  },
+  "ritmonio": {
+    "catalogRows": 16082,
+    "pricing": "PL39 2025 × 1.05 public price",
+    "purchaseDiscount": "55%",
+    "visualRule": "use official product photo with finish swatch badge when finish-specific photography is unavailable",
+    "sourceTariffLines": 20378,
+    "deduplication": "20,378 tariff lines consolidated to unique article references; compatibleCollections retained",
+    "exactSwatchAssets": [
+      "CRL",
+      "IX",
+      "CRB",
+      "BLX",
+      "DOR",
+      "GOX",
+      "CHX",
+      "BRX",
+      "C03",
+      "C04",
+      "F31",
+      "F32",
+      "F33",
+      "F34",
+      "F36",
+      "F37",
+      "F45",
+      "F46"
+    ],
+    "offline": "18 finish assets in service worker shell"
+  },
+  "nicolazzi": {
+    "catalogRows": 15023,
+    "pricing": "Listino 2024 × 1.25",
+    "purchaseDiscount": "50%",
+    "visualRule": "official product image + exact Nicolazzi finish swatch when finish-specific photography is unavailable"
+  },
+  "gessi": {
+    "catalogRows": 16211,
+    "pricing": "Tarif Général 2026 / Kitchen 2025 / Emporio 2025 × 1.06",
+    "purchaseDiscount": "50%",
+    "visualRule": "finish-specific official photo when available; otherwise official product photo + exact Gessi finish swatch"
   }
 }

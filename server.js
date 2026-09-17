@@ -789,7 +789,7 @@ app.get("/api/catalog/search",requireAuth,async(req,res)=>{
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V11.21",
+  service:"Hydropolis Studio V11.23",
   database:USE_POSTGRES?"postgresql":"local-fallback",
   time:new Date().toISOString()
 }));
@@ -962,7 +962,63 @@ function coalbrookProductLinks(html,baseUrl){
   });
   return out;
 }
+function ritmonioReferenceBase(reference=""){
+  return String(reference||"").toUpperCase().trim().replace(/(CRL|CRB|BLX|DOR|GOX|CHX|BRX|C03|C04|F31|F32|F33|F34|F36|F37|F45|F46|F47|INOX|IBX|ICX|F44|OTL|SPZ|LUC|ICM|SIX|DIX|F40|F38|EIX|PIX|CEM|LIX|TIX|CIX|NIX|FIX|BIX|IX)$/,'');
+}
+function ritmonioProductLinks(html,baseUrl){
+  const $=cheerio.load(html), seen=new Set(), out=[];
+  $("a").each((_,el)=>{
+    const href=absoluteUrl(baseUrl,$(el).attr("href"));
+    if(!href||seen.has(href))return;
+    let u;try{u=new URL(href)}catch{return}
+    if(!/(^|\.)ritmonio\.it$/i.test(u.hostname))return;
+    if(!/\/(?:prodotto|product)\//i.test(u.pathname))return;
+    seen.add(href);
+    const card=$(el).closest("article,li,.product,.card,.product-item,div");
+    out.push({href,text:([$(el).attr("aria-label"),$(el).attr("title"),$(el).text(),card.text()].filter(Boolean).join(" ")).replace(/\s+/g," ").trim()});
+  });
+  return out;
+}
+async function resolveRitmonioProductUrl(reference,designation="",collection=""){
+  const ref=String(reference||"").toUpperCase().trim();
+  if(!ref)return "https://www.ritmonio.it/it/ricerca/";
+  const base=ritmonioReferenceBase(ref)||ref;
+  const collectionSlug=String(collection||"")
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
 
+  // Current Ritmonio site exposes article links on each official series page.
+  // Prefer that deterministic path over general web/search-engine matching.
+  if(collectionSlug){
+    const seriesPages=[
+      `https://www.ritmonio.it/it/bath-shower/bath/${collectionSlug}/`,
+      `https://www.ritmonio.it/it/bath-shower/shower/${collectionSlug}/`,
+      `https://www.ritmonio.it/it/bath-shower/kitchen/${collectionSlug}/`,
+      `https://www.ritmonio.it/it/${collectionSlug}/`
+    ];
+    for(const pageUrl of seriesPages){
+      try{
+        const html=await fetchBrandPage(pageUrl,"it-IT,it;q=0.9,en;q=0.7");
+        const links=ritmonioProductLinks(html,pageUrl);
+        const exact=links.find(x=>normalizeToken(x.text).includes(normalizeToken(base)) || normalizeToken(x.href).includes(normalizeToken(base)));
+        if(exact)return exact.href;
+      }catch{}
+    }
+  }
+
+  // Official search page fallback. Never substitute a third-party source.
+  const searchUrl="https://www.ritmonio.it/it/ricerca/";
+  try{
+    const html=await fetchBrandPage(searchUrl,"it-IT,it;q=0.9,en;q=0.7");
+    const links=ritmonioProductLinks(html,searchUrl);
+    const exact=links.find(x=>normalizeToken(x.text).includes(normalizeToken(base)) || normalizeToken(x.href).includes(normalizeToken(base)));
+    if(exact)return exact.href;
+  }catch(e){ console.warn("[ritmonio-resolve]",e.message); }
+
+  // A bare product endpoint still allows generic attachment discovery to use the
+  // predictable official product-image path while the UI keeps the official search link.
+  return "https://www.ritmonio.it/it/bath-shower/prodotto/";
+}
 async function fetchCatalanoPage(url){
   const r=await axios.get(url,{timeout:22000,maxRedirects:5,validateStatus:x=>x>=200&&x<400,headers:{"User-Agent":"Mozilla/5.0","Accept-Language":"en-GB,en;q=0.9"}});
   return String(r.data||"");
@@ -1173,6 +1229,68 @@ async function resolveRecorProductUrl(reference,designation){
   return null;
 }
 
+
+function nicolazziRefBase(reference=""){
+  return String(reference||"").toUpperCase().trim()
+    .replace(/(CR|NL|OG|OS|OL|GO|COP|RG|SG|CB|NS|BN|NKN|TB|RA|FV|DB|DBM|BZ|AG|GB|GF|SE|RED|BLU|YE|HE|NEM|BIM|VP|PNK|ND|TY|RP|GRF|BICOLORE)(?=[A-Z0-9]*$)/,'..');
+}
+function officialSiteLinks(html,baseUrl,hostPattern){
+  const $=cheerio.load(html), seen=new Set(), out=[];
+  $("a[href]").each((_,a)=>{
+    const href=absoluteUrl(baseUrl,$(a).attr("href")); if(!href||seen.has(href))return;
+    let u;try{u=new URL(href)}catch{return}
+    if(!hostPattern.test(u.hostname))return;
+    seen.add(href);
+    const card=$(a).closest("article,li,.product,.product-small,.card,.woocommerce-LoopProduct-link,div");
+    const txt=[$(a).attr("title"),$(a).attr("aria-label"),$(a).text(),card.text()].filter(Boolean).join(" ").replace(/\s+/g," ").trim();
+    out.push({href,text:txt});
+  });
+  return out;
+}
+async function resolveNicolazziProductUrl(reference,designation="",collection=""){
+  const raw=String(reference||"").toUpperCase().trim();
+  const base=nicolazziRefBase(raw);
+  const series=String(collection||"").trim().toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+  const targets=[];
+  if(series)targets.push(`https://www.nicolazzi.it/en/categoria-prodotto/modern/${series}/`,`https://www.nicolazzi.it/en/categoria-prodotto/classic/${series}/`,`https://www.nicolazzi.it/en/categoria-prodotto/${series}/`);
+  targets.push(`https://www.nicolazzi.it/en/?s=${encodeURIComponent(base.replace(/\.\./g,''))}&post_type=product`);
+  let fallback="";
+  for(const url of targets){
+    try{
+      const html=await fetchBrandPage(url,"en-GB,en;q=0.9,it;q=0.7");
+      const links=officialSiteLinks(html,url,/(^|\.)nicolazzi\.it$/i)
+        .filter(x=>/\/prodotto\//i.test(new URL(x.href).pathname)||/\/en\/prodotto\//i.test(new URL(x.href).pathname));
+      const key=normalizeToken(base.replace(/\.\./g,''));
+      for(const l of links){
+        if(!fallback)fallback=l.href;
+        const nt=normalizeToken(l.text);
+        if((key&&nt.includes(key)) || similarityScore(designation||collection||raw,l.text)>=0.78) return l.href;
+      }
+    }catch(e){console.warn("[nicolazzi-resolve]",e.message)}
+  }
+  return fallback||"https://www.nicolazzi.it/en/";
+}
+async function resolveGessiProductUrl(reference,designation="",collection=""){
+  // Gessi exposes current finish/product data through the official public site and
+  // Area Pro. Keep the public manufacturer page as authoritative fallback; generic
+  // scraper then harvests exact images/documents whenever a direct product page is exposed.
+  const ref=String(reference||"").split("#")[0].trim();
+  const q=encodeURIComponent(ref);
+  const candidates=[`https://www.gessi.com/fr/search?q=${q}`,`https://www.gessi.com/en/search?q=${q}`,`https://www.gessi.com/fr`];
+  for(const url of candidates){
+    try{
+      const html=await fetchBrandPage(url,"fr-FR,fr;q=0.9,en;q=0.8,it;q=0.7");
+      const links=officialSiteLinks(html,url,/(^|\.)gessi\.com$/i);
+      const key=normalizeToken(ref);
+      const exact=links.find(x=>normalizeToken(x.text).includes(key));
+      if(exact)return exact.href;
+      const ranked=links.map(x=>({...x,score:similarityScore(designation||collection||ref,x.text)})).sort((a,b)=>b.score-a.score);
+      if(ranked[0]?.score>=0.82)return ranked[0].href;
+    }catch(e){console.warn("[gessi-resolve]",e.message)}
+  }
+  return "https://www.gessi.com/fr";
+}
+
 async function resolveManufacturerProductUrl(manufacturerUrl,reference,originalDescription,designation,collection){
   if(/zucchettidesign\.it/i.test(manufacturerUrl)){
     try{
@@ -1201,6 +1319,9 @@ async function resolveManufacturerProductUrl(manufacturerUrl,reference,originalD
   }
   if(/catalano\.it/i.test(manufacturerUrl)) return resolveCatalanoProductUrl(manufacturerUrl,reference,originalDescription,designation,collection);
   if(/hotbath\.it/i.test(manufacturerUrl)) return resolveHotbathProductUrl(reference);
+  if(/ritmonio\.it/i.test(manufacturerUrl)) return resolveRitmonioProductUrl(reference,originalDescription||designation,collection);
+  if(/nicolazzi\.it/i.test(manufacturerUrl)) return resolveNicolazziProductUrl(reference,originalDescription||designation,collection);
+  if(/gessi\.com/i.test(manufacturerUrl)) return resolveGessiProductUrl(reference,originalDescription||designation,collection);
   if(/lefroybrooks\.com/i.test(manufacturerUrl)) return resolveLefroyProductUrl(reference,originalDescription||designation);
   if(/recor\.pt/i.test(manufacturerUrl)) return resolveRecorProductUrl(reference,originalDescription||designation);
   if(!/coalbrookuk\.co\.uk/i.test(manufacturerUrl)) return manufacturerUrl;
@@ -1358,6 +1479,31 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
 
   const candidates=[];
   const variationDebug=[];
+
+  // Ritmonio product photography follows a stable manufacturer path keyed by the
+  // base article code. It is intentionally generic with respect to finish: the
+  // client UI overlays the requested official finish swatch beside the product.
+  if(/ritmonio\.it/i.test(manufacturerUrl)){
+    const ritBase=ritmonioReferenceBase(reference);
+    if(ritBase){
+      candidates.push({
+        url:`https://www.ritmonio.it/wp-content/uploads/products/attachments/images/${encodeURIComponent(ritBase)}.jpg`,
+        source:"ritmonio-official-product-image",
+        score:19000,
+        finishMatch:"generic",
+        detectedFinishCode:null,
+        variationId:null,
+        attributes:{base:ritBase,finishPresentation:"official-swatch-overlay"}
+      });
+    }
+  }
+
+  if(/nicolazzi\.it/i.test(manufacturerUrl) || /gessi\.com/i.test(manufacturerUrl)){
+    // Prefer manufacturer-hosted open-graph/product-gallery assets. Finish-specific
+    // matches are scored by the standard finishExactInText machinery below.
+    const og=absoluteUrl(manufacturerUrl,$('meta[property="og:image"]').attr('content')||'');
+    if(og&&isImageUrl(og))candidates.push({url:og,source:/nicolazzi/i.test(manufacturerUrl)?"nicolazzi-official-og":"gessi-official-og",score:900,finishMatch:"generic",detectedFinishCode:null,variationId:null,attributes:{official:true}});
+  }
   const finishOptionMap=buildFinishOptionMap($);
 
   function pushVariation(v,source="woocommerce-variation"){
@@ -2501,6 +2647,12 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
   let fallback=sorted.find(x=>x.finishMatch!=="exact")||null;
   let best=exact||fallback;
 
+  const isRitmonio=/ritmonio\.it/i.test(manufacturerUrl);
+  if(isRitmonio){
+    const ritmonioOfficial=sorted.find(x=>x.source==="ritmonio-official-product-image")||null;
+    if(ritmonioOfficial){exact=null;fallback=ritmonioOfficial;best=ritmonioOfficial;}
+  }
+
   if(isHotbath){
     const officialExact=sorted.find(x=>x.source==="hotbath-main-product-image" && x.finishMatch==="exact")||null;
     const sanitairExact=sorted.find(x=>/sanitairkamer/.test(x.source||x.page||x.url||"") && x.finishMatch==="exact")||null;
@@ -3284,7 +3436,7 @@ const REMOTE_HOST_SUFFIXES=[
   // image/file CDN hosts, not from coalbrookuk.co.uk itself. Keep the allowlist
   // deliberately narrow to Coalbrook-owned hostnames rather than all svdcdn.com.
   "coalbrook-bathrooms.transforms.svdcdn.com","coalbrook-bathrooms.files.svdcdn.com",
-  "catalano.it","recor.pt","amphoradesign.it","sanitairkamer.nl",
+  "catalano.it","recor.pt","amphoradesign.it","sanitairkamer.nl","ritmonio.it","nicolazzi.it","gessi.com","gwebassets.gessi.com",
   // Lefroy Brooks is hosted on Squarespace. Product imagery is served from
   // these dedicated CDN hosts while product pages/downloads stay on lefroybrooks.com.
   "images.squarespace-cdn.com","static1.squarespace.com","file.squarespace-cdn.com"
@@ -3523,7 +3675,7 @@ app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")))
 async function startServer(){
   try{
     await initPersistentStore();
-    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.21 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
+    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.23 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
   }catch(e){
     console.error("[Hydropolis] Démarrage impossible :",e);
     process.exit(1);
