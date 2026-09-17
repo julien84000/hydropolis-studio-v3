@@ -1,8 +1,8 @@
-# Hydropolis Studio V11.14
+# Hydropolis Studio V11.15
 
-Hydropolis Studio V11.14 est construit sur **V10.16**, la dernière base stable auditée, avec réintégration contrôlée des apports utiles de la branche V11.12. Il ne s'agit pas d'une réécriture : les projets par pièce, devis/remises/marges, dossier client A4, comptes utilisateurs, PostgreSQL/Supabase et connecteurs fabricants existants sont conservés.
+Hydropolis Studio V11.15 est construit sur **V10.16**, la dernière base stable auditée, avec réintégration contrôlée des apports utiles de la branche V11.12. Il ne s'agit pas d'une réécriture : les projets par pièce, devis/remises/marges, dossier client A4, comptes utilisateurs, PostgreSQL/Supabase et connecteurs fabricants existants sont conservés.
 
-## Ce que V11.14 ajoute
+## Ce que V11.15 ajoute
 
 - nouvel accueil visuel Hydropolis Studio inspiré des principes d’ergonomie Apple/Canva ;
 - navigation simplifiée avec Accueil, Catalogue, Projets, Favoris, Comparateur et Exports ;

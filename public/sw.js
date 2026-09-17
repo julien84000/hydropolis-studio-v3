@@ -1,5 +1,5 @@
-const CACHE="hydropolis-v11-14-shell";
-const CATALOG_CACHE="hydropolis-v11-14-catalogs";
+const CACHE="hydropolis-v11-15-shell";
+const CATALOG_CACHE="hydropolis-v11-15-catalogs";
 const SHELL=["/","/index.html","/styles.css","/app.js","/catalog_manifest.json","/manufacturers_manifest.json","/amphora_catalog.json","/manifest.webmanifest"];
 
 self.addEventListener("install",event=>event.waitUntil(

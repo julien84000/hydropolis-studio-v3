@@ -5,7 +5,7 @@ const root=path.resolve(__dirname,'..');
 const read=f=>fs.readFileSync(path.join(root,f),'utf8');
 const json=f=>JSON.parse(read(f));
 
-assert.equal(json('package.json').version,'11.14.0');
+assert.equal(json('package.json').version,'11.15.0');
 for(const f of ['public/sw.js','public/manifest.webmanifest','public/manufacturers_manifest.json'])assert(fs.existsSync(path.join(root,f)),`${f} missing`);
 
 const manifest=json('public/catalog_manifest.json');
@@ -22,7 +22,7 @@ assert(unique.size>=21280,'unexpected catalog deduplication regression');
 const app=read('public/app.js');
 for(const symbol of ['renderCompareDock','renderCompareView','renderDashboardEcosystem','renderFavoritesView','toggleFavorite','smartAlternativesFor','requestServerSearch','exportExcel','exportMoodboard','registerOfflineSupport','offlineProjectListKey','hotbathDrawingProxyUrl'])assert(app.includes(symbol),`missing V11 app feature ${symbol}`);
 const server=read('server.js');
-for(const symbol of ['/api/catalog/search','session_version','storeCopyAssets','safeRemoteGet','REMOTE_HOST_SUFFIXES','/api/hotbath-drawing-image'])assert(server.includes(symbol),`missing V11 server feature ${symbol}`);
+for(const symbol of ['/api/catalog/search','session_version','storeCopyAssets','safeRemoteGet','REMOTE_HOST_SUFFIXES','/api/hotbath-drawing-image','lefroy-squarespace-variant','images.squarespace-cdn.com'])assert(server.includes(symbol),`missing V11 server feature ${symbol}`);
 assert(!app.includes('Number(saved.settings?.vatRate)||20'),'VAT 0% regression guard failed');
 assert(app.includes('raw=p?.purchasePrice') && app.includes('raw===null||raw===undefined||raw===""'),'null purchasePrice regression guard missing');
 assert(app.includes('return (room?.manual||[]).filter(m=>m && String(m.label||"").trim())'),'manual-line preservation guard missing');
@@ -32,6 +32,6 @@ assert(app.includes('sanitairkamer'),'Hotbath Sanitairkamer fallback missing');
 console.log(`V11 smoke OK · ${total.toLocaleString('fr-FR')} lignes · ${unique.size.toLocaleString('fr-FR')} références uniques · ${makers.size} fabricants`);
 
 const html=read('public/index.html');
-for(const anchor of ['view-dashboard','view-favorites','view-compare','view-exports','dashboardSearchInput','favoritesGrid','compareViewGrid'])assert(html.includes(anchor),`missing V11.14 UI anchor ${anchor}`);
+for(const anchor of ['view-dashboard','view-favorites','view-compare','view-exports','dashboardSearchInput','favoritesGrid','compareViewGrid'])assert(html.includes(anchor),`missing V11.15 UI anchor ${anchor}`);
 const css=read('public/styles.css');
-for(const cls of ['dashboard-hero','dashboard-category-grid','ecosystem-card','favorite-toggle','compare-view-table','exports-grid-v11'])assert(css.includes(cls),`missing V11.14 style ${cls}`);
+for(const cls of ['dashboard-hero','dashboard-category-grid','ecosystem-card','favorite-toggle','compare-view-table','exports-grid-v11'])assert(css.includes(cls),`missing V11.15 style ${cls}`);

@@ -1,8 +1,8 @@
 {
   "name": "hydropolis-studio-v3",
-  "version": "11.14.0",
+  "version": "11.15.0",
   "private": true,
-  "description": "Hydropolis Studio V11.14 - intuitive Apple/Canva-inspired bathroom specification ecosystem",
+  "description": "Hydropolis Studio V11.15 - intuitive Apple/Canva-inspired bathroom specification ecosystem",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

@@ -789,7 +789,7 @@ app.get("/api/catalog/search",requireAuth,async(req,res)=>{
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V11.14",
+  service:"Hydropolis Studio V11.15",
   database:USE_POSTGRES?"postgresql":"local-fallback",
   time:new Date().toISOString()
 }));
@@ -1445,6 +1445,67 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
       });
     }
   });
+
+  // Lefroy Brooks: Squarespace exposes the finish-specific image in the
+  // product variant JSON and in #productGallery. Generic <img> parsing alone is
+  // insufficient because the imagery lives on images.squarespace-cdn.com and
+  // the selected finish must be matched to the SKU suffix (AG/CP/NK/PB/etc.).
+  if(/lefroybrooks\.com/i.test(manufacturerUrl)){
+    const lefroyRequested=String(requested||finishCode||"").toUpperCase().trim();
+    const lefroyBaseRef=lefroyBase(reference);
+    const lefroyBaseToken=normalizeToken(lefroyBaseRef);
+
+    function addLefroyImage(raw,context="",source="lefroy-squarespace-gallery",bonus=0,explicitCode=""){
+      const href=absoluteUrl(manufacturerUrl,raw);
+      if(!href || !isImageUrl(href))return;
+      const low=(href+" "+context).toLowerCase();
+      if(/logo|favicon|icon|sprite|placeholder|loading|cookie|social|transparent\+lion/.test(low))return;
+      const norm=normalizeToken(href+" "+context);
+      const baseMatch=!!lefroyBaseToken && norm.includes(lefroyBaseToken);
+      const suffix=(explicitCode || ((href.match(/(?:_|-|\s)(AG|CP|NK|PB|GN|MR|WH|MW)(?:\.|_|-|\?|$)/i)||[])[1]) || "").toUpperCase();
+      const exact=!!lefroyRequested && suffix===lefroyRequested;
+      const score=900+bonus+(baseMatch?1800:0)+(exact?9000:0);
+      candidates.push({
+        url:href,
+        source,
+        score,
+        finishMatch:exact?"exact":"generic",
+        detectedFinishCode:suffix||null,
+        variationId:null,
+        attributes:{baseMatch,context}
+      });
+    }
+
+    $("[data-variants]").each((_,el)=>{
+      const raw=$(el).attr("data-variants")||"";
+      if(!raw)return;
+      let variants=[];
+      try{variants=JSON.parse(raw)}catch{
+        try{variants=JSON.parse(decodeHtmlEntities(raw))}catch{}
+      }
+      if(!Array.isArray(variants))return;
+      for(const v of variants){
+        const sku=String(v?.sku||"").toUpperCase().replace(/\s+/g,"");
+        let code="";
+        const m=sku.match(/(AG|CP|NK|PB|GN|MR|WH|MW)$/i);
+        if(m)code=m[1].toUpperCase();
+        const asset=v?.mainImage?.assetUrl || v?.mainImage?.url || "";
+        if(asset)addLefroyImage(asset,sku,"lefroy-squarespace-variant",6000,code);
+      }
+    });
+
+    $("#productGallery img, .product-gallery img, .main-image img").each((_,el)=>{
+      const im=$(el);
+      const ctx=[im.attr("alt"),im.attr("title"),im.attr("data-image")].filter(Boolean).join(" ");
+      for(const attr of ["data-image","data-src","src"]){
+        addLefroyImage(im.attr(attr),ctx,"lefroy-squarespace-gallery",2500);
+      }
+    });
+
+    $("meta[property='og:image'],meta[name='twitter:image'],link[rel='image_src']").each((_,el)=>{
+      addLefroyImage($(el).attr("content")||$(el).attr("href"),"metadata","lefroy-squarespace-meta",1200);
+    });
+  }
 
   // Recor uses a WordPress gallery where the useful bathtub photo may live in
   // srcset, <source>, og:image, data-lazy attributes or CSS background-image.
@@ -2398,7 +2459,7 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
   // et on la renvoie directement au navigateur sous forme data URL.
   async function embedOfficialImage(item){
     if(!item) return item;
-    if(!/(?:coalbrookuk\.co\.uk|zucchettidesign\.it|assets\.zucchettidesign\.it|catalano\.it|recor\.pt|hotbath\.it)/i.test(item.url||manufacturerUrl)) return item;
+    if(!/(?:coalbrookuk\.co\.uk|zucchettidesign\.it|assets\.zucchettidesign\.it|catalano\.it|recor\.pt|hotbath\.it|lefroybrooks\.com|images\.squarespace-cdn\.com|static1\.squarespace\.com)/i.test(item.url||manufacturerUrl)) return item;
     try{
       const ir=await axios.get(item.url,{
         responseType:"arraybuffer",timeout:18000,maxRedirects:5,
@@ -3092,7 +3153,10 @@ function isPrivateIp(ip){
 }
 const REMOTE_HOST_SUFFIXES=[
   "zucchettidesign.it","zucchettikos.it","lefroybrooks.com","hotbath.it",
-  "coalbrookuk.co.uk","catalano.it","recor.pt","amphoradesign.it","sanitairkamer.nl"
+  "coalbrookuk.co.uk","catalano.it","recor.pt","amphoradesign.it","sanitairkamer.nl",
+  // Lefroy Brooks is hosted on Squarespace. Product imagery is served from
+  // these dedicated CDN hosts while product pages/downloads stay on lefroybrooks.com.
+  "images.squarespace-cdn.com","static1.squarespace.com","file.squarespace-cdn.com"
 ];
 function isAllowedHydropolisRemoteHost(hostname){
   const h=String(hostname||"").toLowerCase().replace(/\.$/,"");
@@ -3242,7 +3306,7 @@ app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")))
 async function startServer(){
   try{
     await initPersistentStore();
-    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.14 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
+    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.15 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
   }catch(e){
     console.error("[Hydropolis] Démarrage impossible :",e);
     process.exit(1);
