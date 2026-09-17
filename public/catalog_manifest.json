@@ -62,5 +62,7 @@
       "label": "Zucchetti 7/7",
       "count": 53
     }
-  ]
+  ],
+  "engineVersion": "11.13.0",
+  "manufacturersManifest": "manufacturers_manifest.json"
 }

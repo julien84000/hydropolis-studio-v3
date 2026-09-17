@@ -2,7 +2,8 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Hydropolis Studio V10.16 · Render</title><link rel="stylesheet" href="styles.css">
+<meta name="theme-color" content="#1c1d1b"><link rel="manifest" href="manifest.webmanifest">
+<title>Hydropolis Studio V11.14 · Render</title><link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
@@ -37,12 +38,18 @@
 
 <div class="shell">
 <aside class="sidebar">
-  <div class="logo"><span>H</span><div><b>Hydropolis</b><small>Studio V10.16</small></div></div>
-  <button class="nav" data-view="projects">Mes projets</button>
-  <button class="nav active" data-view="catalog">Catalogue intelligent</button>
-  <button class="nav" data-view="project">Projet par pièce</button>
-  <button class="nav" data-view="margin">Marge & devis</button>
-  <button class="nav" data-view="preview">Présentation client</button>
+  <div class="logo v11-logo"><span>H</span><div><b>Hydropolis</b><small>STUDIO</small><em>V11.14</em></div></div>
+  <nav class="v11-nav-stack" aria-label="Navigation principale">
+    <button class="nav active" data-view="dashboard"><span class="nav-symbol">✦</span><span>Accueil</span></button>
+    <button class="nav" data-view="catalog"><span class="nav-symbol">▤</span><span>Catalogue</span></button>
+    <button class="nav" data-view="projects"><span class="nav-symbol">▣</span><span>Mes projets</span></button>
+    <button class="nav" data-view="favorites"><span class="nav-symbol">♡</span><span>Favoris</span></button>
+    <button class="nav" data-view="compare"><span class="nav-symbol">⇄</span><span>Comparateur</span></button>
+    <button class="nav" data-view="exports"><span class="nav-symbol">⇩</span><span>Exports</span></button>
+    <button class="nav" data-view="project"><span class="nav-symbol">□</span><span>Projet par pièce</span></button>
+    <button class="nav" data-view="margin"><span class="nav-symbol">◫</span><span>Marge & devis</span></button>
+    <button class="nav" data-view="preview"><span class="nav-symbol">▧</span><span>Présentation client</span></button>
+  </nav>
   <div id="userBox" class="user-box"></div>
   <div class="side-note">
   <b>Catalogues actifs</b>
@@ -54,15 +61,26 @@
 </aside>
 
 <main>
-<header>
-  <div><h1 id="viewTitle">Catalogue intelligent</h1><p id="viewSubtitle">Le serveur charge uniquement les contrôles nécessaires, sélectionne la finition puis capture le visuel rendu.</p></div>
+<header class="v11-topbar">
+  <div class="v11-heading"><h1 id="viewTitle">Hydropolis Studio V11</h1><p id="viewSubtitle">Un écosystème plus intuitif, inspiré d’Apple et de Canva.</p></div>
   <div class="head-actions">
+    <span id="networkStatus" class="network-status online">En ligne</span>
     <span id="cloudProjectStatus" class="cloud-project-status"></span>
-    <button class="btn ghost" id="saveBtn">Enregistrer</button>
+    <button class="btn ghost" id="saveBtn"><span class="btn-symbol">⌘</span> Enregistrer</button>
     <button class="btn ghost" id="previewTopBtn">Aperçu A4</button>
-    <button class="btn primary" id="exportPdfTopBtn">Exporter PDF</button>
+    <button class="btn ghost" id="exportExcelTopBtn">Excel</button>
+    <button class="btn ghost" id="exportMoodboardTopBtn">Moodboard</button>
+    <button class="btn primary" id="exportPdfTopBtn"><span class="btn-symbol">⇩</span> Exporter PDF</button>
   </div>
 </header>
+<div id="v11ProjectBar" class="v11-projectbar">
+  <div class="v11-project-context"><span class="v11-back-dot"></span><div><small>Projet actif</small><strong id="v11ActiveProject">Projet sans nom</strong></div></div>
+  <div class="v11-kpi"><small>Client</small><strong id="v11ClientKpi">—</strong></div>
+  <div class="v11-kpi"><small>Commercial</small><strong id="v11SalesKpi">—</strong></div>
+  <div class="v11-kpi"><small>Total HT</small><strong id="v11TotalKpi">0 €</strong></div>
+  <div class="v11-kpi"><small>Remise</small><strong id="v11DiscountKpi">0 %</strong></div>
+  <div class="v11-kpi"><small>Marge estimée</small><strong id="v11MarginKpi">—</strong></div>
+</div>
 
 
 <section id="view-projects" class="view">
@@ -108,28 +126,126 @@
   </div>
 </section>
 
-<section id="view-catalog" class="view active">
+
+<section id="view-dashboard" class="view active">
+  <div class="dashboard-shell">
+    <section class="dashboard-hero card">
+      <div class="dashboard-copy">
+        <div class="eyebrow">Nouvelle génération</div>
+        <h2>Bonjour,</h2>
+        <p class="dashboard-lead">Des idées à la réalité. Un écosystème plus fluide pour concevoir, sélectionner et sublimer vos projets.</p>
+        <div class="dashboard-search-shortcut">
+          <input id="dashboardSearchInput" placeholder="Rechercher un produit, une référence, une marque…">
+          <button class="btn ghost" id="dashboardSearchBtn">Rechercher</button>
+        </div>
+        <div class="dashboard-mini-kpis">
+          <div><small>Projet actif</small><strong id="dashboardProjectName">Projet sans nom</strong></div>
+          <div><small>Références</small><strong id="dashboardCatalogKpi">—</strong></div>
+          <div><small>Favoris</small><strong id="dashboardFavoritesKpi">0</strong></div>
+        </div>
+      </div>
+      <div class="dashboard-hero-visual">
+        <div class="dashboard-laptop-card">
+          <div class="dashboard-ui-top"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+          <div class="dashboard-ui-body">
+            <div class="dashboard-ui-sidebar">
+              <b>Hydropolis</b><span>Studio</span>
+              <small>Catalogue</small><small>Projets</small><small>Comparateur</small><small>Exports</small>
+            </div>
+            <div class="dashboard-ui-main">
+              <div class="dashboard-ui-title">Hydropolis Studio V11</div>
+              <div class="dashboard-ui-grid">
+                <div class="ui-block tall"></div><div class="ui-block"></div><div class="ui-block"></div><div class="ui-block"></div>
+              </div>
+              <div class="dashboard-ui-row">
+                <div class="ui-line"></div><div class="ui-line short"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="dashboard-categories">
+      <div class="section-head"><div><b>Univers produits</b><span>Accès rapide aux catégories clés.</span></div></div>
+      <div id="dashboardCategories" class="dashboard-category-grid"></div>
+    </section>
+
+    <section class="dashboard-insights-grid">
+      <div class="card dashboard-panel">
+        <div class="section-head"><div><b>Inspirations du moment</b><span>Sélections rapides pour vos projets.</span></div></div>
+        <div id="dashboardInspirations" class="dashboard-inspiration-grid"></div>
+      </div>
+      <div class="card dashboard-panel">
+        <div class="section-head"><div><b>Produit mis en avant</b><span>Un raccourci vers votre sélection.</span></div></div>
+        <div id="dashboardSpotlight" class="dashboard-spotlight"></div>
+      </div>
+    </section>
+
+    <section class="dashboard-features-grid">
+      <article class="card ecosystem-card"><div class="ecosystem-icon">⌕</div><h3>Recherche multi-sources</h3><p>Un moteur plus intelligent, plus complet.</p><button class="btn ghost ecosystem-action" data-go-view="catalog">Ouvrir le catalogue</button></article>
+      <article class="card ecosystem-card"><div class="ecosystem-icon">✦</div><h3>Suggestions intelligentes</h3><p>Des alternatives pertinentes pour aller plus loin.</p><button class="btn ghost ecosystem-action" data-go-view="catalog" data-suggest="1">Explorer</button></article>
+      <article class="card ecosystem-card"><div class="ecosystem-icon">⇄</div><h3>Comparatif produit</h3><p>Visualisez et choisissez en un coup d’œil.</p><button class="btn ghost ecosystem-action" data-go-view="compare">Voir le comparateur</button></article>
+      <article class="card ecosystem-card"><div class="ecosystem-icon">◌</div><h3>Prix, finitions, disponibilités</h3><p>Des informations fiables et toujours à jour.</p><button class="btn ghost ecosystem-action" data-go-view="catalog">Consulter</button></article>
+      <article class="card ecosystem-card"><div class="ecosystem-icon">⇩</div><h3>Exports enrichis</h3><p>PDF, Excel, moodboard et visuels HD.</p><button class="btn ghost ecosystem-action" data-go-view="exports">Accéder aux exports</button></article>
+    </section>
+  </div>
+</section>
+
+<section id="view-favorites" class="view">
+  <div class="section-head"><div><div class="eyebrow">Sélection</div><h2>Mes favoris</h2><span>Conservez vos produits préférés pour les retrouver en un clic.</span></div></div>
+  <div id="favoritesGrid" class="results favorites-grid"></div>
+</section>
+
+<section id="view-compare" class="view">
+  <div class="section-head"><div><div class="eyebrow">Comparaison</div><h2>Comparatif produit</h2><span>Comparez jusqu’à 4 produits.</span></div><button class="btn ghost" id="compareClearViewBtn">Vider la sélection</button></div>
+  <div id="compareViewGrid" class="compare-view-grid"></div>
+</section>
+
+<section id="view-exports" class="view">
+  <div class="section-head"><div><div class="eyebrow">Sorties</div><h2>Exports enrichis</h2><span>Diffusez votre projet en PDF, Excel et moodboard.</span></div></div>
+  <div class="exports-grid-v11">
+    <article class="card export-card"><div class="ecosystem-icon">⇩</div><h3>PDF dossier client</h3><p>Présentation A4 paysage avec pièces, produits et devis.</p><button class="btn primary" id="exportsPdfBtn">Exporter le PDF</button></article>
+    <article class="card export-card"><div class="ecosystem-icon">▤</div><h3>Excel & chiffrage</h3><p>Liste détaillée des articles et synthèse financière.</p><button class="btn primary" id="exportsExcelBtn">Exporter Excel</button></article>
+    <article class="card export-card"><div class="ecosystem-icon">▣</div><h3>Moodboard PNG</h3><p>Planche d’inspiration à partager rapidement.</p><button class="btn primary" id="exportsMoodboardBtn">Générer le moodboard</button></article>
+  </div>
+</section>
+
+<section id="view-catalog" class="view">
   <div class="search-card">
     <div class="target-row">
       <div><span class="eyebrow">Ajouter les produits dans</span><select id="targetRoom"></select></div>
       <button class="btn ghost" id="newRoomQuick">+ Nouvelle pièce</button>
     </div>
-    <div class="search-line"><input id="searchInput" autofocus placeholder="Référence, désignation, collection, fabricant…"><button class="btn primary" id="clearSearch">Effacer</button></div>
-    <div class="filters">
+    <div class="search-line v11-search-line"><span class="search-glyph">⌕</span><input id="searchInput" autofocus placeholder="Rechercher une référence, une collection, une marque…"><button class="btn ghost" id="clearSearch">Effacer</button></div>
+    <div id="brandRail" class="brand-rail" aria-label="Accès rapide fabricants"></div>
+    <div class="filters v11-filters">
       <select id="manufacturerFilter"><option value="">Tous fabricants</option></select>
       <select id="collectionFilter"><option value="">Toutes collections</option></select>
       <select id="categoryFilter"><option value="">Toutes catégories</option></select>
       <select id="finishFilter"><option value="">Toutes finitions</option></select>
     </div>
   </div>
+  <div id="searchSourceBar" class="search-source-bar">
+    <span class="source-pill active">Catalogue local</span><span class="source-pill">Index serveur</span><span class="source-pill">Cache hors ligne</span><span id="searchModeNote">Recherche fédérée prête</span>
+  </div>
+  <div id="smartSuggestionPanel" class="smart-suggestion-panel hidden"></div>
   <div class="catalog-layout">
     <div><div class="section-head"><div><b>Résultats</b><span id="resultCount"></span></div></div><div id="results" class="results"></div></div>
     <aside class="basket"><div class="section-head"><div><b>Projet</b><span id="selectionCount"></span></div></div><div id="selectionMini"></div><button class="btn primary wide" id="goProjectBtn">Voir les pièces</button></aside>
   </div>
+  <div id="compareDock" class="compare-dock hidden"></div>
 </section>
 
 <section id="view-project" class="view">
-  <div class="grid2">
+  <div class="v11-project-hero">
+    <button class="v11-back-projects" id="v11BackProjects" type="button">← Tous mes projets</button>
+    <div class="v11-project-hero-row">
+      <div><h2 id="v11ProjectHeroName">Projet sans nom</h2><p id="v11ProjectHeroMeta">Projet Hydropolis</p></div>
+      <span class="v11-status-pill"><i></i> En cours</span>
+    </div>
+  </div>
+  <div class="grid2 v11-project-info-grid">
     <div class="card"><div class="eyebrow">Projet</div><h2>Informations client</h2>
       <div class="fields two">
         <label>Nom du projet<input id="projectName" placeholder="Villa Saint-Rémy"></label>
@@ -151,7 +267,7 @@
     </div>
   </div>
 
-  <div class="section-head room-titlebar"><div><div class="eyebrow">Composition</div><h2>Pièces et éléments</h2></div><button class="btn primary" id="addRoomBtn">+ Ajouter une pièce</button></div>
+  <div class="section-head room-titlebar"><div><div class="eyebrow">Composition</div><h2>Pièces et espaces</h2><span>Organisez la sélection par zone et accédez aux réglages seulement lorsque nécessaire.</span></div><button class="btn primary" id="addRoomBtn">＋ Ajouter une pièce</button></div>
   <div id="roomsEditor" class="rooms"></div>
 </section>
 
@@ -195,7 +311,7 @@
 <section id="view-preview" class="view">
   <div class="preview-toolbar">
     <div>
-      <b>Aperçu du dossier - A4 paysage</b>
+      <b>Présentation client · aperçu A4 paysage</b>
       <span>Chaque page du dossier est verrouillée au format A4 297 × 210 mm.</span>
     </div>
     <button class="btn primary" id="printBtn">Exporter PDF</button>
@@ -204,5 +320,6 @@
 </section>
 </main>
 </div>
+<div id="compareModal" class="compare-modal hidden" aria-hidden="true"></div>
 <script src="app.js"></script>
 </body></html>

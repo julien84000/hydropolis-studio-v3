@@ -1,0 +1,32 @@
+{
+  "name": "Hydropolis Studio",
+  "version": "11.14.0",
+  "base": {
+    "archive": "Hydropolis_Studio_V10.16_Update.zip",
+    "sha256": "415242ad95036f7db3e76844ec2fea8a5c8d916c1a8c1617350847c32507d5cd"
+  },
+  "selectiveMergeReference": {
+    "archive": "Hydropolis_Studio_V11.12_Update.zip",
+    "sha256": "1cdfcf0f1e30b11c40df1786232243c35993a9e9af18827a697cacd49253141d"
+  },
+  "catalogRows": 21284,
+  "uniqueManufacturerReferences": 21280,
+  "manufacturers": [
+    "Amphora",
+    "Catalano",
+    "Coalbrook",
+    "Hotbath",
+    "Lefroy Brooks",
+    "Recor",
+    "Zucchetti"
+  ],
+  "validation": {
+    "syntax": "passed: server.js, public/app.js, public/sw.js",
+    "v11Smoke": "passed",
+    "catalog": "passed: 21284 rows / 21280 unique manufacturer-reference pairs / 7 manufacturers",
+    "uiStatic": "passed: no duplicate IDs; all navigation views have matching sections",
+    "v10FunctionPreservation": "passed: 171/171 client functions and 101/101 server functions preserved by declaration",
+    "runtimeServer": "not-run: npm dependencies are not installed in the generation environment"
+  },
+  "designEvolution": "Apple/Canva-inspired ecosystem: dashboard, favorites, comparison workspace, export hub"
+}

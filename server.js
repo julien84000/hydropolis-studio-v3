@@ -4,6 +4,8 @@ const axios = require("axios");
 const cheerio = require("cheerio");
 const fs = require("fs");
 const crypto = require("crypto");
+const dns = require("dns").promises;
+const net = require("net");
 const { Pool } = require("pg");
 
 const app = express();
@@ -74,8 +76,10 @@ async function initPersistentStore(){
       salt TEXT NOT NULL,
       password_hash TEXT NOT NULL,
       disabled BOOLEAN NOT NULL DEFAULT FALSE,
+      session_version INTEGER NOT NULL DEFAULT 1,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
+    ALTER TABLE hydropolis_users ADD COLUMN IF NOT EXISTS session_version INTEGER NOT NULL DEFAULT 1;
     CREATE TABLE IF NOT EXISTS hydropolis_projects(
       id TEXT PRIMARY KEY,
       user_id TEXT NOT NULL REFERENCES hydropolis_users(id) ON DELETE CASCADE,
@@ -118,7 +122,7 @@ function verifyPassword(password,user){
 }
 function b64url(input){return Buffer.from(input).toString("base64url")}
 function signToken(user){
-  const payload={sub:user.id,role:user.role||"user",exp:Date.now()+1000*60*60*24*30};
+  const payload={sub:user.id,role:user.role||"user",sv:Number(user.sessionVersion||1),exp:Date.now()+1000*60*60*24*30};
   const body=b64url(JSON.stringify(payload));
   const sig=crypto.createHmac("sha256",TOKEN_SECRET).update(body).digest("base64url");
   return body+"."+sig;
@@ -139,7 +143,7 @@ function mapPgUser(r){
   return {
     id:r.id,name:r.name,username:r.username,role:r.role||"user",
     title:r.title||"",email:r.email||"",phone:r.phone||"",
-    salt:r.salt,passwordHash:r.password_hash,disabled:!!r.disabled,
+    salt:r.salt,passwordHash:r.password_hash,disabled:!!r.disabled,sessionVersion:Number(r.session_version||1),
     createdAt:r.created_at instanceof Date?r.created_at.toISOString():String(r.created_at||"")
   };
 }
@@ -185,10 +189,10 @@ async function storeCreateUser(user){
   if(USE_POSTGRES){
     await pgPool.query(
       `INSERT INTO hydropolis_users
-       (id,name,username,role,title,email,phone,salt,password_hash,disabled,created_at)
-       VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
+       (id,name,username,role,title,email,phone,salt,password_hash,disabled,session_version,created_at)
+       VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
       [user.id,user.name,user.username,user.role||"user",user.title||"",user.email||"",user.phone||"",
-       user.salt,user.passwordHash,!!user.disabled,user.createdAt||new Date().toISOString()]
+       user.salt,user.passwordHash,!!user.disabled,Number(user.sessionVersion||1),user.createdAt||new Date().toISOString()]
     );
     return user;
   }
@@ -209,13 +213,13 @@ async function storeUpdateUserProfile(id,patch){
 async function storeUpdatePassword(id,salt,passwordHash){
   if(USE_POSTGRES){
     const q=await pgPool.query(
-      "UPDATE hydropolis_users SET salt=$2,password_hash=$3 WHERE id=$1 RETURNING id",
+      "UPDATE hydropolis_users SET salt=$2,password_hash=$3,session_version=session_version+1 WHERE id=$1 RETURNING id",
       [id,salt,passwordHash]
     );
     return !!q.rowCount;
   }
   const db=readDb(),u=db.users.find(x=>x.id===id);if(!u)return false;
-  u.salt=salt;u.passwordHash=passwordHash;writeDb(db);return true;
+  u.salt=salt;u.passwordHash=passwordHash;u.sessionVersion=Number(u.sessionVersion||1)+1;writeDb(db);return true;
 }
 async function storeDeleteUser(id){
   if(USE_POSTGRES){
@@ -323,6 +327,25 @@ async function storeAssetGet(userId,projectId,file){
   return {file,name:file,mime:"application/pdf",data:fs.readFileSync(full)};
 }
 
+
+async function storeCopyAssets(userId,sourceProjectId,destProjectId){
+  if(USE_POSTGRES){
+    await pgPool.query(`INSERT INTO hydropolis_assets(project_id,user_id,file,product_id,name,mime,data,created_at)
+      SELECT $3,user_id,file,product_id,name,mime,data,NOW() FROM hydropolis_assets
+      WHERE project_id=$1 AND user_id=$2 ON CONFLICT(project_id,file) DO NOTHING`,[sourceProjectId,userId,destProjectId]);
+    return true;
+  }
+  const src=path.join(HYDRO_DATA_DIR,"uploads",String(userId),String(sourceProjectId));
+  const dst=path.join(HYDRO_DATA_DIR,"uploads",String(userId),String(destProjectId));
+  if(!fs.existsSync(src))return true;
+  fs.mkdirSync(dst,{recursive:true});
+  for(const name of fs.readdirSync(src)){
+    const safe=path.basename(name);const from=path.join(src,safe),to=path.join(dst,safe);
+    if(fs.statSync(from).isFile())fs.copyFileSync(from,to);
+  }
+  return true;
+}
+
 async function authUser(req){
   const raw=String(req.headers.authorization||"");
   const token=raw.startsWith("Bearer ")?raw.slice(7):String(req.query?.access||"");
@@ -330,6 +353,7 @@ async function authUser(req){
   if(!payload)return null;
   const user=await storeFindUserById(payload.sub);
   if(!user || user.disabled)return null;
+  if(Number(payload.sv||1)!==Number(user.sessionVersion||1))return null;
   return {
     id:user.id,name:user.name,username:user.username,role:user.role||"user",
     title:user.title||"",email:user.email||"",phone:user.phone||""
@@ -394,7 +418,7 @@ app.post("/api/auth/setup",async(req,res)=>{
       title:String(req.body?.title||"").trim(),
       email:String(req.body?.email||"").trim(),
       phone:String(req.body?.phone||"").trim(),
-      salt:h.salt,passwordHash:h.hash,disabled:false,createdAt:new Date().toISOString()
+      salt:h.salt,passwordHash:h.hash,disabled:false,sessionVersion:1,createdAt:new Date().toISOString()
     };
     await storeCreateUser(user);
     res.json({token:signToken(user),user:publicUser(user)});
@@ -456,7 +480,7 @@ app.post("/api/users",requireAuth,requireAdmin,async(req,res)=>{
       title:String(req.body?.title||"").trim(),
       email:String(req.body?.email||"").trim(),
       phone:String(req.body?.phone||"").trim(),
-      salt:h.salt,passwordHash:h.hash,disabled:false,createdAt:new Date().toISOString()
+      salt:h.salt,passwordHash:h.hash,disabled:false,sessionVersion:1,createdAt:new Date().toISOString()
     };
     await storeCreateUser(user);
     res.json({user:publicUser(user)});
@@ -537,6 +561,10 @@ app.post("/api/projects/:id/duplicate",requireAuth,async(req,res)=>{
       createdAt:now,updatedAt:now
     };
     await storeCreateProject(copy);
+    try{await storeCopyAssets(req.user.id,source.id,copy.id)}catch(assetError){
+      await storeDeleteProject(req.user.id,copy.id).catch(()=>{});
+      throw assetError;
+    }
     res.json({project:publicProject(copy)});
   }catch(e){res.status(500).json({error:"Duplication impossible",detail:e.message})}
 });
@@ -717,9 +745,51 @@ app.post("/api/translate-product",requireAuth,async(req,res)=>{
   });
 });
 
+
+let catalogSearchIndexPromise=null;
+async function loadCatalogSearchIndex(){
+  if(catalogSearchIndexPromise)return catalogSearchIndexPromise;
+  catalogSearchIndexPromise=Promise.resolve().then(()=>{
+    const manifest=JSON.parse(fs.readFileSync(path.join(__dirname,"public","catalog_manifest.json"),"utf8"));
+    const files=["amphora_catalog.json",...(manifest.chunks||[]).map(c=>c.file)];
+    const items=[];const seen=new Set();
+    for(const file of files){
+      try{
+        const rows=JSON.parse(fs.readFileSync(path.join(__dirname,"public",file),"utf8"));
+        for(const p of Array.isArray(rows)?rows:[]){
+          const key=`${p.manufacturer||""}|${p.reference||""}`;if(seen.has(key))continue;seen.add(key);items.push(p);
+        }
+      }catch(e){console.warn("[catalog-index]",file,e.message)}
+    }
+    return items;
+  });
+  return catalogSearchIndexPromise;
+}
+function foldSearch(v){return String(v||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase()}
+app.get("/api/catalog/search",requireAuth,async(req,res)=>{
+  try{
+    const items=await loadCatalogSearchIndex();
+    const q=foldSearch(req.query.q).trim().split(/\s+/).filter(Boolean);
+    const manufacturer=String(req.query.manufacturer||"");const collection=String(req.query.collection||"");const category=String(req.query.category||"");const finish=String(req.query.finish||"");
+    const limit=Math.max(1,Math.min(200,Number(req.query.limit)||120));
+    const matched=[];
+    for(const p of items){
+      if(manufacturer&&p.manufacturer!==manufacturer)continue;if(collection&&p.collection!==collection)continue;if(category&&p.category!==category)continue;if(finish&&p.finish!==finish)continue;
+      const hay=foldSearch([p.reference,p.base,p.designation,p.collection,p.manufacturer,p.finish,p.category,p.originalDescription,p.marketingDescription].filter(Boolean).join(" "));
+      if(q.length&&!q.every(w=>hay.includes(w)))continue;
+      matched.push(p);
+    }
+    matched.sort((a,b)=>{
+      const aq=foldSearch(a.reference),bq=foldSearch(b.reference),raw=foldSearch(req.query.q).trim();
+      return Number(bq===raw)-Number(aq===raw)||Number(bq.startsWith(raw))-Number(aq.startsWith(raw))||String(a.manufacturer).localeCompare(String(b.manufacturer),"fr");
+    });
+    res.json({source:"server-catalog-index",total:matched.length,items:matched.slice(0,limit)});
+  }catch(e){res.status(500).json({error:"Recherche catalogue impossible",detail:e.message})}
+});
+
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V10.16",
+  service:"Hydropolis Studio V11.14",
   database:USE_POSTGRES?"postgresql":"local-fallback",
   time:new Date().toISOString()
 }));
@@ -1636,7 +1706,7 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
   }
 
 
-  // V10.16 — Zucchetti: current site is Nuxt/3D and the selected SKU is carried
+  // V11.13 — Zucchetti: current site is Nuxt/3D and the selected SKU is carried
   // in ?sku=. Keep the SKU as the authoritative product/finish signal, while
   // aggressively excluding finish swatches, suggested products and collection imagery.
   if(/zucchettidesign\.it/i.test(manufacturerUrl)){
@@ -3014,14 +3084,53 @@ app.get("/api/project-assets/:projectId/:file",requireAuth,async(req,res)=>{
   }
 });
 
+
+function isPrivateIp(ip){
+  if(!ip)return true;
+  if(net.isIP(ip)===4){const a=ip.split(".").map(Number);return a[0]===10||a[0]===127||a[0]===0||(a[0]===169&&a[1]===254)||(a[0]===172&&a[1]>=16&&a[1]<=31)||(a[0]===192&&a[1]===168)}
+  const v=String(ip).toLowerCase();return v==="::1"||v.startsWith("fe80:")||v.startsWith("fc")||v.startsWith("fd")||v==="::";
+}
+const REMOTE_HOST_SUFFIXES=[
+  "zucchettidesign.it","zucchettikos.it","lefroybrooks.com","hotbath.it",
+  "coalbrookuk.co.uk","catalano.it","recor.pt","amphoradesign.it","sanitairkamer.nl"
+];
+function isAllowedHydropolisRemoteHost(hostname){
+  const h=String(hostname||"").toLowerCase().replace(/\.$/,"");
+  return REMOTE_HOST_SUFFIXES.some(s=>h===s||h.endsWith("."+s));
+}
+function assertAllowedHydropolisRemote(raw){
+  const u=new URL(raw);
+  if(!isAllowedHydropolisRemoteHost(u.hostname))throw new Error("Domaine distant non autorisé");
+  return u;
+}
+
+async function assertPublicHttpUrl(raw){
+  const u=new URL(String(raw||""));if(!/^https?:$/.test(u.protocol))throw new Error("Protocole refusé");
+  const host=u.hostname.toLowerCase();if(host==="localhost"||host.endsWith(".localhost")||host.endsWith(".local"))throw new Error("Destination locale refusée");
+  if(net.isIP(host)){if(isPrivateIp(host))throw new Error("Adresse privée refusée")}
+  else{const addrs=await dns.lookup(host,{all:true,verbatim:true});if(!addrs.length||addrs.some(x=>isPrivateIp(x.address)))throw new Error("Destination privée refusée")}
+  return u;
+}
+async function safeRemoteGet(raw,options={}){
+  let current=(await assertPublicHttpUrl(raw)).toString();
+  for(let i=0;i<4;i++){
+    const r=await axios.get(current,{...options,maxRedirects:0,validateStatus:s=>s>=200&&s<400});
+    if(r.status>=300&&r.status<400&&r.headers.location){current=(await assertPublicHttpUrl(new URL(r.headers.location,current).toString())).toString();continue}
+    return r;
+  }
+  throw new Error("Trop de redirections");
+}
+
 app.get("/api/pdf-page-image",async(req,res)=>{
   const url=req.query.url;
   if(!url||!/^https?:\/\//i.test(url)) return res.status(400).send("URL invalide");
   try{
-    const r=await axios.get(url,{
+    assertAllowedHydropolisRemote(url);
+    const r=await safeRemoteGet(url,{
       responseType:"arraybuffer",
       timeout:22000,
-      maxRedirects:5,
+      maxContentLength:20*1024*1024,
+      maxBodyLength:20*1024*1024,
       headers:{
         "User-Agent":"Mozilla/5.0",
         "Referer":new URL(url).origin+"/"
@@ -3062,14 +3171,58 @@ app.get("/api/pdf-page-image",async(req,res)=>{
   }
 });
 
+app.get("/api/hotbath-drawing-image",async(req,res)=>{
+  const drawingUrl=String(req.query.url||"").trim();
+  const productUrl=String(req.query.productUrl||"").trim();
+  function isHotbathUrl(v){
+    try{const u=new URL(v);return /^https?:$/i.test(u.protocol) && /(^|\.)hotbath\.it$/i.test(u.hostname)}catch{return false}
+  }
+  if(!isHotbathUrl(drawingUrl)||!isHotbathUrl(productUrl))return res.status(400).send("URL Hotbath invalide");
+  try{
+    const baseHeaders={
+      "User-Agent":"Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Version/17.0 Mobile/15E148 Safari/604.1",
+      "Accept-Language":"fr-FR,fr;q=0.9,en;q=0.7","Cache-Control":"no-cache"
+    };
+    const page=await safeRemoteGet(productUrl,{
+      timeout:18000,maxContentLength:4*1024*1024,maxBodyLength:4*1024*1024,
+      headers:{...baseHeaders,"Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"}
+    });
+    const cookies=(page.headers?.["set-cookie"]||[]).map(c=>String(c).split(";")[0]).filter(Boolean).join("; ");
+    let liveDrawingUrl=drawingUrl;
+    try{
+      const $h=cheerio.load(String(page.data||""));let found="";
+      $h(".attach").each((_,el)=>{
+        if(found)return;const block=$h(el);const title=normalizeToken(block.find(".titatt").first().text()||"");
+        if(title!=="drawing"&&!/\bdrawing\b/.test(title))return;
+        block.find(".listatt a[href]").each((__,a)=>{if(found)return;const href=absoluteUrl(productUrl,$h(a).attr("href"));if(href&&isHotbathUrl(href)&&/\.(?:jpe?g|png)(?:\?|$)/i.test(href))found=href});
+      });
+      if(found)liveDrawingUrl=found;
+    }catch{}
+    const attempts=[
+      {"User-Agent":baseHeaders["User-Agent"],"Accept":"image/avif,image/webp,image/apng,image/*,*/*;q=0.8","Accept-Language":baseHeaders["Accept-Language"],"Referer":productUrl,...(cookies?{"Cookie":cookies}:{})},
+      {"User-Agent":baseHeaders["User-Agent"],"Accept":"image/*,*/*;q=0.8","Referer":productUrl}
+    ];
+    for(const headers of attempts){
+      try{
+        const img=await safeRemoteGet(liveDrawingUrl,{responseType:"arraybuffer",timeout:18000,maxContentLength:12*1024*1024,maxBodyLength:12*1024*1024,headers});
+        const type=String(img.headers?.["content-type"]||"");
+        if(img.status>=200&&img.status<300&&type.startsWith("image/")&&img.data?.byteLength>500){res.set("Content-Type",type.split(";")[0]);res.set("Cache-Control","public, max-age=86400");return res.send(img.data)}
+      }catch(e){console.warn("[hotbath-drawing-image-attempt]",e.message)}
+    }
+    return res.status(502).send("Drawing Hotbath inaccessible");
+  }catch(e){console.warn("[hotbath-drawing-image-page]",e.message);return res.status(502).send("Drawing Hotbath inaccessible")}
+});
+
 app.get("/api/image-proxy",async(req,res)=>{
   const url=req.query.url;
   if(!url||!/^https?:\/\//i.test(url)) return res.status(400).send("URL invalide");
   try{
-    const r=await axios.get(url,{
+    assertAllowedHydropolisRemote(url);
+    const r=await safeRemoteGet(url,{
       responseType:"arraybuffer",
       timeout:18000,
-      maxRedirects:5,
+      maxContentLength:15*1024*1024,
+      maxBodyLength:15*1024*1024,
       headers:{
         "User-Agent":"Mozilla/5.0",
         "Referer":new URL(url).origin+"/"
@@ -3089,7 +3242,7 @@ app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")))
 async function startServer(){
   try{
     await initPersistentStore();
-    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V10.16 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
+    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.14 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
   }catch(e){
     console.error("[Hydropolis] Démarrage impossible :",e);
     process.exit(1);
