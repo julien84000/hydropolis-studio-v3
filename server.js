@@ -3316,23 +3316,109 @@ async function safeRemoteGet(raw,options={}){
   throw new Error("Trop de redirections");
 }
 
+const RECOR_BROWSER_UA="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36";
+function bufferStartsWithPdf(data){
+  try{
+    const b=Buffer.isBuffer(data)?data:Buffer.from(data||[]);
+    return b.subarray(0,5).toString("ascii")==="%PDF-";
+  }catch{return false}
+}
+function recorProductPageUrl(raw){
+  try{
+    const u=new URL(String(raw||""));
+    return /(^|\.)recor\.pt$/i.test(u.hostname) && /^\/product\//i.test(u.pathname) ? u.toString() : "";
+  }catch{return ""}
+}
+async function fetchRecorProtectedPdf(pdfUrl,productUrl){
+  let livePdf=String(pdfUrl||"");
+  let cookie="";
+  const pageUrl=recorProductPageUrl(productUrl);
+
+  // Recor's product pages are normally reachable from Render while direct wp-content
+  // PDF requests can be challenged. Open the official product page first, collect the
+  // session cookies and refresh the Technical drawing URL from the live DOM.
+  if(pageUrl){
+    try{
+      assertAllowedHydropolisRemote(pageUrl);
+      const page=await safeRemoteGet(pageUrl,{
+        timeout:18000,maxContentLength:4*1024*1024,maxBodyLength:4*1024*1024,
+        headers:{
+          "User-Agent":RECOR_BROWSER_UA,
+          "Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+          "Accept-Language":"en-GB,en;q=0.9,fr;q=0.7",
+          "Cache-Control":"no-cache",
+          "Pragma":"no-cache"
+        }
+      });
+      cookie=(page.headers?.["set-cookie"]||[]).map(c=>String(c).split(";")[0]).filter(Boolean).join("; ");
+      const $r=cheerio.load(String(page.data||""));
+      let found="";
+      $r("a[href]").each((_,a)=>{
+        if(found)return;
+        const href=absoluteUrl(pageUrl,$r(a).attr("href"));
+        if(!href || !/^https?:\/\/(?:www\.)?recor\.pt\//i.test(href) || !isPdfUrl(href))return;
+        const semantic=normalizeToken(($r(a).text()||"")+" "+($r(a).parent().text()||"")+" "+href);
+        if(/technical drawing|technical.*drawing|drawing.*pdf|plan technique|dessin technique/.test(semantic))found=href;
+      });
+      if(found)livePdf=found;
+    }catch(e){
+      console.warn("[recor-pdf-session]",e.message);
+    }
+  }
+
+  const candidates=[...new Set([livePdf,String(pdfUrl||"")].filter(Boolean))];
+  let lastError="PDF Recor inaccessible";
+  for(const candidate of candidates){
+    try{
+      const u=assertAllowedHydropolisRemote(candidate);
+      if(!/(^|\.)recor\.pt$/i.test(u.hostname))throw new Error("Hôte PDF Recor invalide");
+      const r=await safeRemoteGet(candidate,{
+        responseType:"arraybuffer",timeout:26000,maxContentLength:24*1024*1024,maxBodyLength:24*1024*1024,
+        headers:{
+          "User-Agent":RECOR_BROWSER_UA,
+          "Accept":"application/pdf,application/octet-stream;q=0.9,*/*;q=0.7",
+          "Accept-Language":"en-GB,en;q=0.9,fr;q=0.7",
+          "Referer":pageUrl||"https://recor.pt/",
+          "Cache-Control":"no-cache",
+          "Pragma":"no-cache",
+          "Sec-Fetch-Dest":"document",
+          "Sec-Fetch-Mode":"navigate",
+          "Sec-Fetch-Site":"same-origin",
+          ...(cookie?{"Cookie":cookie}:{})
+        }
+      });
+      const ct=String(r.headers?.["content-type"]||"").toLowerCase();
+      if(bufferStartsWithPdf(r.data))return {data:r.data,url:candidate,contentType:ct};
+      const preview=Buffer.from(r.data||[]).subarray(0,220).toString("utf8").replace(/\s+/g," ");
+      lastError=/please wait|verified|challenge|cloudflare/i.test(preview)
+        ?"Recor a renvoyé sa page de vérification anti-bot à la place du PDF"
+        :`Réponse Recor non PDF (${ct||"type inconnu"})`;
+    }catch(e){lastError=e.message||lastError}
+  }
+  throw new Error(lastError);
+}
+
 app.get("/api/pdf-page-image",async(req,res)=>{
   const url=req.query.url;
   if(!url||!/^https?:\/\//i.test(url)) return res.status(400).send("URL invalide");
   try{
     assertAllowedHydropolisRemote(url);
-    const r=await safeRemoteGet(url,{
-      responseType:"arraybuffer",
-      timeout:22000,
-      maxContentLength:20*1024*1024,
-      maxBodyLength:20*1024*1024,
-      headers:{
-        "User-Agent":"Mozilla/5.0",
-        "Referer":new URL(url).origin+"/"
-      }
-    });
-    const ct=String(r.headers["content-type"]||"");
-    if(!ct.includes("pdf") && !isPdfUrl(url)) return res.status(415).send("Ressource non PDF");
+    const isRecorPdf=/(^|\.)recor\.pt$/i.test(new URL(url).hostname);
+    const fetched=isRecorPdf
+      ?await fetchRecorProtectedPdf(url,String(req.query.productUrl||""))
+      :await safeRemoteGet(url,{
+        responseType:"arraybuffer",
+        timeout:22000,
+        maxContentLength:20*1024*1024,
+        maxBodyLength:20*1024*1024,
+        headers:{
+          "User-Agent":"Mozilla/5.0",
+          "Referer":new URL(url).origin+"/"
+        }
+      });
+    const data=fetched.data;
+    const ct=String(fetched.contentType||fetched.headers?.["content-type"]||"");
+    if(!bufferStartsWithPdf(data) && !ct.includes("pdf")) return res.status(415).send("Ressource non PDF");
 
     const [{getDocument},{createCanvas}] = await Promise.all([
       import("pdfjs-dist/legacy/build/pdf.mjs"),
@@ -3340,7 +3426,7 @@ app.get("/api/pdf-page-image",async(req,res)=>{
     ]);
 
     const loadingTask=getDocument({
-      data:new Uint8Array(r.data),
+      data:new Uint8Array(data),
       disableWorker:true,
       useSystemFonts:true
     });

@@ -1,8 +1,8 @@
 {
   "name": "hydropolis-studio-v3",
-  "version": "11.21.0",
+  "version": "11.22.0",
   "private": true,
-  "description": "Hydropolis Studio V11.21 - Coalbrook official CDN image delivery fix",
+  "description": "Hydropolis Studio V11.22 - Recor protected technical PDF rendering fix",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

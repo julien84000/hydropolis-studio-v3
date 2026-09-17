@@ -2714,3 +2714,7 @@ main{background:transparent}
   .recor-client-addon{padding:5px}
   .recor-client-addon img{height:48px}
 }
+
+/* V11.22 — fallback propre si un PDF fabricant bloque temporairement le rendu serveur */
+.drawing-pdf-fallback{min-height:180px;width:100%;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;border:1px dashed #d7c9b6;background:#fbf8f3;color:#9a6b2f;font-weight:700;text-decoration:none}
+.drawing-pdf-fallback[hidden]{display:none!important}

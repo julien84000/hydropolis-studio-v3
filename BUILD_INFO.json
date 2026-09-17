@@ -1,6 +1,6 @@
 {
   "name": "Hydropolis Studio",
-  "version": "11.21.0",
+  "version": "11.22.0",
   "base": {
     "archive": "Hydropolis_Studio_V10.16_Update.zip",
     "sha256": "415242ad95036f7db3e76844ec2fea8a5c8d916c1a8c1617350847c32507d5cd"
@@ -30,7 +30,8 @@
     "v11_15FunctionPreservation": "passed: client 208/208 preserved; server 111/111 preserved",
     "v11_16FunctionPreservation": "passed: client 209/209 preserved; server 111/111 preserved",
     "recorVisuals": "passed: 45/50 feet variants mapped to supplied style images; 12/12 pedestal rows mapped; Lyra remains without supplied visual",
-    "v11_18FunctionPreservation": "passed: client 214/214 preserved; server 112/112 preserved"
+    "v11_18FunctionPreservation": "passed: client 214/214 preserved; server 112/112 preserved",
+    "v11_21FunctionPreservation": "passed: all named client/server functions from V11.21 preserved; V11.22 adds Recor protected-PDF helpers"
   },
   "designEvolution": "Apple/Canva-inspired ecosystem + Catalano official-first galleries + visual Recor feet configurator",
   "catalano": {
@@ -53,7 +54,7 @@
     "behavior": "visual chooser for mandatory feet; local images are style references and are included with selected foot in client dossier",
     "offline": "assets included in service-worker shell cache"
   },
-  "releaseNotes": "RELEASE_NOTES_V11.21.md",
+  "releaseNotes": "RELEASE_NOTES_V11.22.md",
   "recorImagesV1119": {
     "priority": "exact Recor product page + WooCommerce full-resolution gallery anchors/data-large_image",
     "fallback": "no Recor home-page image fallback",
@@ -62,6 +63,12 @@
     "clientDossier": "bath dominant; selected feet as small visual; waste text-only",
     "pixelGuard": "when dimensions are measurable: max side >= 800 px and min side >= 500 px; otherwise reject thumbnail result"
   },
-  "build": "V11.21",
-  "notes": "Coalbrook CDN proxy allowlist fix for official product images."
+  "build": "V11.22",
+  "notes": "Recor technical PDF anti-bot/session-aware rendering fix.",
+  "recorTechnicalPdfV1122": {
+    "productPageSession": "open exact Recor product page first and reuse set-cookie session",
+    "liveDrawingUrl": "refresh Technical drawing PDF href from official product page",
+    "validation": "require real %PDF signature before pdf.js rendering",
+    "clientDossier": "pass exact Recor product page URL to PDF renderer"
+  }
 }

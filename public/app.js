@@ -2949,14 +2949,25 @@ function showView(v){
     }
   }
 }
+function pdfPageImageProxyUrl(p,url,pageNumber=1,scale=1.8){
+  const page=Math.max(1,Number(pageNumber)||1);
+  const qs=new URLSearchParams({url:String(url||""),page:String(page),scale:String(scale)});
+  // Recor protects static PDF files with an anti-bot layer. Giving the server the
+  // exact product page lets it establish the same official-site session first.
+  if(/recor/i.test(p?.manufacturer||"")){
+    const productUrl=String(p?.resolvedManufacturerUrl||"");
+    if(/^https?:\/\/(?:www\.)?recor\.pt\/product\//i.test(productUrl))qs.set("productUrl",productUrl);
+  }
+  return `/api/pdf-page-image?${qs.toString()}`;
+}
 function technicalDocumentPage(r,p,url,label,no,pageNumber=1){
   const page=Math.max(1,Number(pageNumber)||1);
-  const src=`/api/pdf-page-image?url=${encodeURIComponent(url)}&page=${page}&scale=1.8`;
+  const src=pdfPageImageProxyUrl(p,url,page,1.8);
   return `<section class="page drawing-page">
     <div class="pagehead"><div><h2>${esc(r.title)} · ${esc(label)}</h2><p>${esc(p.manufacturer)} ${esc(p.collection)}${state.showSupplierReferences!==false?` · ${esc(p.reference)}`:""}</p></div><div style="font-family:Georgia;color:var(--gold)">Hydropolis</div></div>
     <div class="drawing-sheet">
       <div class="drawing-meta"><div class="maker">${esc(p.manufacturer)} · ${esc(p.collection)}</div><div class="title">${esc(p.designation)}</div><div class="finish">${esc(p.finish)}</div>${state.showSupplierReferences!==false?`<div class="refsmall">Réf. ${esc(p.reference)}</div>`:""}</div>
-      <div class="drawing-visual"><img src="${src}" alt="${label} ${p.reference}"></div>
+      <div class="drawing-visual"><img src="${src}" alt="${label} ${p.reference}" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><a class="drawing-pdf-fallback" href="${esc(url)}" target="_blank" rel="noopener" hidden>Ouvrir le document technique officiel ↗</a></div>
     </div>
     <div class="page-no">${no}</div><div class="bottom"></div>
   </section>`;
@@ -3330,7 +3341,7 @@ function buildDocument(){
 
      const hotbathJpg=isHotbathDrawingJpg(p);
      const drawingSrc=p.drawingType==="pdf"
-       ?`/api/pdf-page-image?url=${encodeURIComponent(p.drawingUrl)}&page=${page}&scale=1.8`
+       ?pdfPageImageProxyUrl(p,p.drawingUrl,page,1.8)
        :(hotbathJpg?hotbathDrawingProxyUrl(p):`/api/image-proxy?url=${encodeURIComponent(p.drawingUrl)}`);
      const drawingFallback=hotbathJpg?p.drawingUrl:"";
 
@@ -3342,7 +3353,7 @@ function buildDocument(){
        <div class="pagehead"><div><h2>${r.title} · ${drawingTitle}</h2><p>${p.manufacturer} ${p.collection}${state.showSupplierReferences!==false?` · ${p.reference}`:""}</p></div><div style="font-family:Georgia;color:var(--gold)">Hydropolis</div></div>
        <div class="drawing-sheet">
          <div class="drawing-meta"><div class="maker">${esc(p.manufacturer)} · ${esc(p.collection)}</div><div class="title">${esc(p.designation)}</div><div class="finish">${esc(p.finish)}</div>${state.showSupplierReferences!==false?`<div class="refsmall">Réf. ${esc(p.reference)}</div>`:""}</div>
-         <div class="drawing-visual"><img src="${drawingSrc}" ${drawingFallback?`data-drawing-fallback="${drawingFallback}" onerror="if(this.dataset.fallbackTried!=='1'){this.dataset.fallbackTried='1';this.src=this.dataset.drawingFallback}"`:""} alt="${drawingTitle} ${p.reference}" referrerpolicy="no-referrer"></div>
+         <div class="drawing-visual"><img src="${drawingSrc}" ${drawingFallback?`data-drawing-fallback="${drawingFallback}" onerror="if(this.dataset.fallbackTried!=='1'){this.dataset.fallbackTried='1';this.src=this.dataset.drawingFallback}else{this.hidden=true;this.nextElementSibling.hidden=false}"`:`onerror="this.hidden=true;this.nextElementSibling.hidden=false"`} alt="${drawingTitle} ${p.reference}" referrerpolicy="no-referrer"><a class="drawing-pdf-fallback" href="${esc(p.drawingUrl)}" target="_blank" rel="noopener" hidden>Ouvrir le drawing officiel ↗</a></div>
        </div>
        <div class="page-no">${no++}</div><div class="bottom"></div>
      </section>`;

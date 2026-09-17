@@ -1,8 +1,8 @@
-# Hydropolis Studio V11.21
+# Hydropolis Studio V11.22
 
-Hydropolis Studio V11.21 est construit sur **V10.16**, la dernière base stable auditée, avec réintégration contrôlée des apports utiles de la branche V11.12. Il ne s'agit pas d'une réécriture : les projets par pièce, devis/remises/marges, dossier client A4, comptes utilisateurs, PostgreSQL/Supabase et connecteurs fabricants existants sont conservés.
+Hydropolis Studio V11.22 est construit sur **V10.16**, la dernière base stable auditée, avec réintégration contrôlée des apports utiles de la branche V11.12. Il ne s'agit pas d'une réécriture : les projets par pièce, devis/remises/marges, dossier client A4, comptes utilisateurs, PostgreSQL/Supabase et connecteurs fabricants existants sont conservés.
 
-## Ce que V11.21 ajoute
+## Ce que V11.22 ajoute
 
 - nouvel accueil visuel Hydropolis Studio inspiré des principes d’ergonomie Apple/Canva ;
 - navigation simplifiée avec Accueil, Catalogue, Projets, Favoris, Comparateur et Exports ;
@@ -61,3 +61,7 @@ Les photos Coalbrook sont trouvées sur la fiche produit officielle mais sont se
 - Le port Recor est automatiquement agrégé dans « Port fournisseur HT ».
 - Les prix et désignations du dossier client n’affichent plus le port au niveau de la baignoire.
 - Le devis conserve une ligne séparée « Port fournisseur HT ».
+
+
+## Recor V11.22 — PDF techniques protégés
+Le rendu des drawings PDF Recor ouvre désormais la fiche produit officielle avant le PDF, réutilise la session/cookies du fabricant et relit le lien « Technical drawing » en direct. Le serveur vérifie également la signature `%PDF-` avant de transmettre le document à pdf.js. Si Recor bloque malgré tout temporairement la conversion, le dossier affiche un lien propre vers le PDF officiel au lieu d'une image cassée.
