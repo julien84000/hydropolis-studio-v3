@@ -789,7 +789,7 @@ app.get("/api/catalog/search",requireAuth,async(req,res)=>{
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V11.15",
+  service:"Hydropolis Studio V11.17",
   database:USE_POSTGRES?"postgresql":"local-fallback",
   time:new Date().toISOString()
 }));
@@ -1313,7 +1313,7 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
   if(!manufacturerUrl){
     return {
       image:null, exact:false, drawing:null, technicalSheet:null, installationGuide:null,
-      note:"Aucune photo Coalbrook certifiée : la fiche produit exacte n’a pas pu être identifiée sans ambiguïté."
+      note:`Aucune photo ${manufacturer||"fabricant"} certifiée : la fiche produit exacte n’a pas pu être identifiée sans ambiguïté.`
     };
   }
 
@@ -1650,12 +1650,17 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
       .some(t=>t.length>2 && n.includes(t));
   }
 
-  // Catalano: collect the real gallery from the resolved product page.
-  // Important: Catalano commonly exposes the same visual through src/data-src/srcset
-  // at several sizes. We deduplicate resized variants, but keep genuinely different views.
+  // Catalano V11.17: official site first, exact product page only.
+  // The current Catalano template exposes:
+  //   - #product-gallery: the official lifestyle/product gallery for this product page
+  //   - .product-finishes a[data-interaction]: an exact previewSrc per catalogue code/finish
+  //   - #product-preview: the current preview fallback.
+  // We deliberately ignore fittings, related products and collection grids.
   const catalanoGallery=[];
+  let catalanoExactPreview=null;
   if(/catalano\.it/i.test(manufacturerUrl)){
     const gallerySeen=new Set();
+    const referenceDigits=String(reference||"").replace(/\D/g,"");
 
     function catalanoCanonical(url){
       if(!url) return "";
@@ -1663,80 +1668,98 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
       if(!out) return "";
       try{
         const u=new URL(out);
-        // Width/height/transformation parameters must not turn one photo into many photos.
         ["w","h","width","height","resize","fit","crop","quality","q"].forEach(k=>u.searchParams.delete(k));
         u.hash="";
         out=u.href;
       }catch{}
-      // WordPress/resizer naming: foo-768x1024.jpg == foo.jpg for deduplication.
       out=out.replace(/-\d{2,5}x\d{2,5}(?=\.(?:jpe?g|png|webp)(?:$|\?))/i,"");
       return out.toLowerCase();
     }
 
-    function addCatalanoGallery(raw,alt="",title=""){
+    function addCatalanoGallery(raw,alt="",title="",opts={}){
       const href=absoluteUrl(manufacturerUrl,raw);
-      if(!href || !isImageUrl(href)) return;
-      const context=(href+" "+alt+" "+title);
+      if(!href || !isImageUrl(href)) return null;
+      const context=(href+" "+alt+" "+title+" "+(opts.context||""));
       const low=context.toLowerCase();
-      if(/logo|icon|sprite|avatar|flag|placeholder|loading|swatch|favicon|cookie|social|plus-feature|fitting|accessor/.test(low)) return;
-      // Exclude tiny assets, finish chips and interface images.
-      if(/[?&](?:w|width|h|height)=([1-9]\d?|1\d\d)(?:&|$)/i.test(href)) return;
+      if(/logo|icon|sprite|avatar|flag|placeholder|loading|swatch|favicon|cookie|social|plus-feature|fitting|accessor/.test(low)) return null;
+      if(/[?&](?:w|width|h|height)=([1-9]\d?|1\d\d)(?:&|$)/i.test(href)) return null;
       const key=catalanoCanonical(href);
-      if(!key || gallerySeen.has(key)) return;
+      if(!key || gallerySeen.has(key)) return null;
       gallerySeen.add(key);
 
-      const exactFinish=catalanoFinishMatchText(context,requested,finish,reference);
-      catalanoGallery.push({
+      const explicitExact=opts.exact===true;
+      const exactFinish=explicitExact || catalanoFinishMatchText(context,requested,finish,reference);
+      const item={
         url:href,
-        source:"catalano-product-gallery",
-        score:(exactFinish?12000:9000)-catalanoGallery.length,
+        source:opts.source||"catalano-official-product-gallery",
+        score:Number(opts.score||(exactFinish?15000:10000))-catalanoGallery.length,
         finishMatch:exactFinish?"exact":"generic",
         detectedFinishCode:exactFinish?requested:null,
         variationId:null,
-        attributes:{alt,title,context}
-      });
+        attributes:{alt,title,context,officialPage:true}
+      };
+      catalanoGallery.push(item);
+      if(opts.exact===true)catalanoExactPreview=item;
+      return item;
     }
 
-    // Preserve DOM order: on Catalano this reflects the product gallery order.
-    $("picture").each((_,el)=>{
-      const $p=$(el);
-      $p.find("source").each((__,s)=>{
-        const ss=$(s).attr("srcset")||"";
-        // Prefer the largest candidate from each srcset.
-        const parts=ss.split(",").map(x=>x.trim()).filter(Boolean);
-        if(parts.length){
-          const last=parts[parts.length-1].split(/\s+/)[0];
-          addCatalanoGallery(last,$p.find("img").attr("alt")||"",$p.find("img").attr("title")||"");
+    // 1) Exact reference/finish preview from Catalano's own product code row.
+    $(".product-finishes").each((_,section)=>{
+      $(section).find(".product-code").each((__,codeEl)=>{
+        const codeDigits=String($(codeEl).text()||"").replace(/\D/g,"");
+        if(!codeDigits || !referenceDigits || codeDigits!==referenceDigits)return;
+        const row=$(codeEl).closest("div");
+        const interaction=row.find("a[data-interaction]").attr("data-interaction")||"";
+        if(!interaction)return;
+        let parsed=null;
+        try{parsed=JSON.parse(interaction)}catch{
+          try{parsed=JSON.parse(decodeHtmlEntities(interaction))}catch{}
         }
+        const preview=parsed?.previewSrc||parsed?.previewURL||parsed?.image||"";
+        if(preview)addCatalanoGallery(preview,$(codeEl).text(),finish||"",{
+          exact:true,source:"catalano-official-exact-preview",score:22000,context:codeDigits
+        });
       });
-      const im=$p.find("img").first();
-      if(im.length){
-        const alt=im.attr("alt")||"", title=im.attr("title")||"";
-        for(const attr of ["data-large_image","data-original","data-lazy-src","data-src","src"]){
-          addCatalanoGallery(im.attr(attr),alt,title);
-        }
-        const ss=im.attr("srcset")||im.attr("data-srcset")||"";
-        const parts=ss.split(",").map(x=>x.trim()).filter(Boolean);
-        if(parts.length) addCatalanoGallery(parts[parts.length-1].split(/\s+/)[0],alt,title);
-      }
     });
 
-    $("img").each((_,el)=>{
+    // 2) Every image in the official product gallery, in DOM order.
+    $("#product-gallery img").each((_,el)=>{
       const im=$(el), alt=im.attr("alt")||"", title=im.attr("title")||"";
       for(const attr of ["data-large_image","data-original","data-lazy-src","data-src","src"]){
-        addCatalanoGallery(im.attr(attr),alt,title);
+        addCatalanoGallery(im.attr(attr),alt,title,{source:"catalano-official-product-gallery",score:14000});
       }
       for(const attr of ["srcset","data-srcset"]){
         const ss=im.attr(attr)||"";
         const parts=ss.split(",").map(x=>x.trim()).filter(Boolean);
-        if(parts.length) addCatalanoGallery(parts[parts.length-1].split(/\s+/)[0],alt,title);
+        if(parts.length)addCatalanoGallery(parts[parts.length-1].split(/\s+/)[0],alt,title,{source:"catalano-official-product-gallery",score:14000});
       }
     });
+    $("#product-gallery picture source").each((_,el)=>{
+      const ss=$(el).attr("srcset")||"";
+      const parts=ss.split(",").map(x=>x.trim()).filter(Boolean);
+      if(parts.length)addCatalanoGallery(parts[parts.length-1].split(/\s+/)[0],"","",{source:"catalano-official-product-gallery",score:14000});
+    });
 
-    // Some Catalano templates keep gallery URLs in inline JSON/CSS instead of <img>.
-    const catRaw=html.match(/https?:\\?\/\\?\/[^"'<>\\\s]+?\.(?:jpe?g|png|webp)(?:\\?[^"'<>\\\s]*)?/gi)||[];
-    for(const raw of catRaw){
-      addCatalanoGallery(raw.replace(/\\\//g,"/").replace(/&amp;/g,""));
+    // 3) Product preview fallback. It may be the default finish, so do not mark exact
+    // unless the exact finish row above explicitly supplied it.
+    if(!catalanoExactPreview){
+      const im=$("#product-preview img").first();
+      if(im.length){
+        addCatalanoGallery(im.attr("src")||im.attr("data-src"),im.attr("alt")||"",im.attr("title")||"",{
+          source:"catalano-official-product-preview",score:13000
+        });
+      }
+    }
+
+    // Older Catalano templates: stay inside the product table/hero rather than scanning
+    // the whole page, so fittings and related products never enter the client dossier.
+    if(!catalanoGallery.length){
+      $("#product-table img, article > section:first-of-type img").each((_,el)=>{
+        const im=$(el), alt=im.attr("alt")||"", title=im.attr("title")||"";
+        for(const attr of ["data-large_image","data-original","data-lazy-src","data-src","src"]){
+          addCatalanoGallery(im.attr(attr),alt,title,{source:"catalano-official-product-fallback",score:10000});
+        }
+      });
     }
 
     catalanoGallery.forEach(x=>candidates.push(x));
@@ -2437,21 +2460,15 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
   }
 
   if(isCatalano){
-    const exactFinishGallery=catalanoGallery.filter(x=>x.finishMatch==="exact");
-    const suffix=String(requested||reference||"").replace(/\D/g,"").slice(-2);
-    const isWhiteFinish=["01","21"].includes(suffix);
-
-    if(exactFinishGallery.length){
-      productImages=exactFinishGallery.slice(0,6);
-    }else if(isWhiteFinish){
-      // White product pages often use their default gallery without explicit finish metadata.
-      productImages=catalanoGallery.slice(0,2);
-    }else{
-      // For coloured finishes, do not pollute the dossier with unrelated lifestyle photos.
-      // If Catalano does not expose an exact-finish image server-side, keep only the best
-      // product visual instead of showing the whole page gallery.
-      const exactSorted=sorted.filter(x=>x.finishMatch==="exact");
-      productImages=(exactSorted.length?exactSorted:[best].filter(Boolean)).slice(0,2);
+    // V11.17: Catalano's official product page is authoritative. Keep every distinct
+    // image from that product page for the client dossier. The exact code/finish preview,
+    // when Catalano exposes one, was inserted first and remains the principal image.
+    productImages=catalanoGallery.slice();
+    if(catalanoExactPreview){
+      best=catalanoExactPreview;
+      exact=catalanoExactPreview;
+    }else if(productImages.length){
+      best=productImages[0];
     }
   }
 
@@ -2519,6 +2536,8 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     manufacturerUrl,reference,finishCode:requested,finish,base,
     best,
     images:productImages,
+    galleryComplete:isCatalano?true:undefined,
+    gallerySource:isCatalano?"catalano-official-product-page":undefined,
     exactFound:!!exact,
     drawing,
     cadDrawing,
@@ -2537,6 +2556,10 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
               :best
                 ?`Visuel web du bon produit utilisé en dernier recours ; finition à vérifier.`
               :`Aucune image Hotbath exploitable trouvée : les liens image de la fiche officielle peuvent être obsolètes (404).`)
+      :isCatalano
+        ?(best
+          ?`Galerie récupérée en priorité sur la fiche produit officielle Catalano : ${productImages.length} image(s) distincte(s) disponible(s) pour ce produit. L'image de la référence/finition exacte est placée en premier lorsqu'elle est fournie par Catalano.`
+          :"Aucune image exploitable n'a été trouvée sur la fiche produit officielle Catalano.")
       :(exact
         ?`Photo officielle fabricant correspondant à la finition ${requested}, associée à la variation fabricant.`
         :(best
@@ -3306,7 +3329,7 @@ app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")))
 async function startServer(){
   try{
     await initPersistentStore();
-    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.15 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
+    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.17 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
   }catch(e){
     console.error("[Hydropolis] Démarrage impossible :",e);
     process.exit(1);

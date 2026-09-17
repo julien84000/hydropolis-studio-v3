@@ -2601,3 +2601,52 @@ main{background:transparent}
 @media print{
   #view-dashboard,#view-favorites,#view-compare,#view-exports{display:none!important}
 }
+
+/* =========================================================
+   V11.16 — Catalano: galerie fabricant complète dans le dossier client
+   ========================================================= */
+#document .catalano-gallery-page .board-head{margin-bottom:3mm}
+#document .catalano-gallery-meta{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:8mm;
+  margin:0 12mm 4mm;font-size:7pt;color:#403d38
+}
+#document .catalano-gallery-meta b{display:block;font-family:Georgia,"Times New Roman",serif;font-size:12pt;font-weight:500}
+#document .catalano-gallery-meta span{display:block;margin-top:1mm;color:#746f67}
+#document .catalano-gallery-ref{font-size:6pt;color:#7b756c;white-space:nowrap}
+#document .catalano-client-gallery{
+  position:absolute;left:12mm;right:12mm;top:48mm;bottom:25mm;
+  display:grid;gap:4mm;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));
+}
+#document .catalano-client-gallery figure{margin:0;min-width:0;min-height:0;position:relative;overflow:hidden;background:#f6f3ed;display:flex;align-items:center;justify-content:center}
+#document .catalano-client-gallery img{display:block;width:100%;height:100%;object-fit:contain;object-position:center}
+#document .catalano-client-gallery figcaption{position:absolute;left:2mm;bottom:2mm;background:rgba(255,255,255,.88);padding:1mm 1.5mm;font-size:4.5pt;color:#716b62;letter-spacing:.04em;text-transform:uppercase}
+#document .catalano-client-gallery.count-2{grid-template-columns:repeat(2,1fr);grid-template-rows:1fr}
+#document .catalano-client-gallery.count-3{grid-template-columns:repeat(3,1fr);grid-template-rows:1fr}
+#document .catalano-client-gallery.count-4{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr)}
+#document .catalano-client-gallery.count-5{grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr)}
+#document .catalano-gallery-note{position:absolute;left:12mm;right:12mm;bottom:15mm;font-size:4.8pt;color:#8b8379;letter-spacing:.02em}
+@media print{
+  #document .catalano-client-gallery,#document .catalano-client-gallery figure,#document .catalano-client-gallery img{transform:none!important;filter:none!important}
+}
+
+
+/* =========================================================
+   V11.17 — Recor : sélecteur visuel des pieds
+   ========================================================= */
+.recor-configurator{width:min(980px,calc(100vw - 32px))}
+.recor-choice-visual{grid-template-columns:auto 86px minmax(0,1fr) auto;min-height:104px}
+.recor-choice-thumb{width:82px;height:82px;border:1px solid #e6ddd0;border-radius:12px;background:#f7f3ed;overflow:hidden;display:grid;place-items:center;flex:0 0 auto}
+.recor-choice-thumb img{display:block;width:100%;height:100%;object-fit:contain;background:#fff}
+.recor-choice-thumb-empty{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.recor-accessory-option{display:grid;grid-template-columns:70px minmax(0,1fr) auto;align-items:center}
+.recor-accessory-option>.recor-choice-thumb{width:64px;height:64px}
+.recor-accessory-option>div:nth-child(2){display:flex;flex-direction:column;gap:2px}
+@media(max-width:900px){
+  .recor-accessory-option{grid-template-columns:64px minmax(0,1fr);align-items:start}
+  .recor-accessory-option .accessory-option-right{grid-column:2}
+}
+@media(max-width:700px){
+  .recor-choice-visual{grid-template-columns:auto 76px minmax(0,1fr)}
+  .recor-choice-visual>strong{grid-column:3}
+  .recor-choice-thumb{width:72px;height:72px}
+}

@@ -725,7 +725,10 @@ async function fetchManufacturerImage(p,force=false){
   const imageSources=(data.images||[]).map(x=>toProxy(x.url)).filter(Boolean);
 
   const embedded=data.best?.dataUrl||"";
-  const embeddedImages=(data.images||[]).map(x=>x.dataUrl).filter(Boolean);
+  // Keep every image returned by the manufacturer connector. Some images may be
+  // embedded server-side while others remain proxied URLs; never drop the latter
+  // just because at least one dataUrl exists.
+  const resolvedImages=(data.images||[]).map(x=>x?.dataUrl||toProxy(x?.url)).filter(Boolean);
   const result={
     remoteUrl:data.best?.url||"",
     remoteImages:(data.images||[]).map(x=>x.url).filter(Boolean),
@@ -733,7 +736,7 @@ async function fetchManufacturerImage(p,force=false){
     lookupReference:data.lookupReference||normalizeSupplierReferenceForLookup(p.reference,p.manufacturer),
     src:embedded||src,
     cacheSrc:src,
-    images:embeddedImages.length?embeddedImages:(imageSources.length?imageSources:(embedded?[embedded]:src?[src]:[])),
+    images:resolvedImages.length?resolvedImages:(embedded?[embedded]:src?[src]:[]),
     cacheImages:imageSources.length?imageSources:(src?[src]:[]),
     finishMatch:data.best?.finishMatch||"",
     source:src
@@ -768,6 +771,8 @@ Référence technique utilisée : ${data.lookupReference} (suffixe catalogue ign
     technicalSheetPage:Number(data.technicalSheet?.page||1),
     installationGuideUrl:data.installationGuide?.url||"",
     installationGuideLabel:data.installationGuide?.label||"Notice d'installation",
+    galleryComplete:data.galleryComplete===true,
+    gallerySource:data.gallerySource||"",
     checkedAt:new Date().toISOString()
   };
 
@@ -1085,7 +1090,7 @@ async function enrichSelectedPhoto(id,force=false){
       p.image=img.src;
       p.images=img.images||[img.src].filter(Boolean);
       p.pdfImage=img.src;
-      p.pdfImages=p.images.slice(0,/catalano/i.test(p.manufacturer||"")?8:2);
+      p.pdfImages=/catalano/i.test(p.manufacturer||"")?p.images.slice():p.images.slice(0,2);
       p.remoteImageUrl=img.remoteUrl||"";
       p.remoteImages=img.remoteImages||[];
       p.imageSource=img.source;
@@ -1112,6 +1117,10 @@ async function enrichSelectedPhoto(id,force=false){
     p.technicalSheetPage=Number(img.technicalSheetPage||p.technicalSheetPage||1);
     p.installationGuideUrl=img.installationGuideUrl||p.installationGuideUrl||"";
     p.installationGuideLabel=img.installationGuideLabel||p.installationGuideLabel||"Notice d'installation";
+    if(/catalano/i.test(p.manufacturer||"")){
+      p.catalanoGalleryComplete=img.galleryComplete===true;
+      p.catalanoGallerySource=img.gallerySource||"catalano-official-product-page";
+    }
   }catch(e){
     p.imageStatus=p.image?"Photo existante conservée":"Photo fabricant non trouvée";
     p.imageNote=e.message;
@@ -1595,7 +1604,8 @@ function renderCatalog(){
    const room=roomById($("#targetRoom")?.value)||state.rooms[0];
    results.innerHTML=rows.slice(0,120).map(p=>{
      const cached=cachedManufacturerImage(p),finishLabel=exactFinishLabel(p)||"",price=Number(p.totalPrice||0),key=productKey(p),avail=availabilityInfo(p),compared=compareRefs.has(key),favorite=favoriteRefs.has(key);
-     return `<article class="result v11-product-card" data-key="${esc(key)}"><div class="catalog-thumb" data-ref="${esc(p.reference)}"><button type="button" class="favorite-toggle ${favorite?"active":""}" data-key="${esc(key)}" aria-label="Favori">${favorite?"♥":"♡"}</button>${cached?.src?`<img src="${esc(cached.src)}" alt="${esc(p.reference)}" class="catalog-cached-image">`:`<div class="photo-missing"><b>Photo fabricant</b><br>${esc(finishLabel)}<br>à rechercher</div>`}</div><div><div class="r-top"><span class="ref">${esc(p.reference)}</span><span class="badge">${esc(p.manufacturer)}</span><span class="badge">${esc(p.collection)}</span><span class="badge">${esc(p.category)}</span></div><div class="designation">${esc(p.designation)}</div><div class="meta">${esc(p.finish||"")}</div><div class="availability ${avail.cls}">${esc(avail.label)}</div><div class="manufacturer-tools v11-resource-tools"><button class="tiny lookup-photo" data-ref="${esc(p.reference)}">${cached?"Actualiser la photo":"Photo fabricant"}</button>${hotbathNeedsFinishFallback(p,cached)?`<button class="tiny hotbath-web-photo" data-ref="${esc(p.reference)}">Finition web</button>`:""}${p.manufacturerUrl?`<a class="source-link" target="_blank" rel="noopener" href="${esc(cached?.resolvedManufacturerUrl||p.manufacturerUrl)}">Fiche ↗</a>`:""}${cached?.technicalSheetUrl?`<a class="source-link" target="_blank" rel="noopener" href="${esc(cached.technicalSheetUrl)}">Technique ↗</a>`:""}</div><div class="photo-status">${cached?`<b>${esc(imageBadge(cached,p))}</b>`:`Source tarif : ${esc(p.source||"catalogue fabricant")}`}</div><div class="card-action-row"><button class="suggest-toggle" data-key="${esc(key)}">Alternatives</button><button class="compare-toggle ${compared?"active":""}" data-key="${esc(key)}">${compared?"✓ Comparé":"Comparer"}</button></div></div><div class="price-box"><small class="v11-price-label">Prix public</small><div class="price">${euro(price)} HT</div>${p.internalReference?`<div class="internal">Ext. ${euro(p.price)} + ${esc(p.internalReference)} ${euro(p.internalPrice)}</div>`:`<div class="internal">${esc(p.sourceYear?`Tarif ${p.sourceYear}`:"Référence complète")}</div>`}${isRecorBathRequiringFeet(p)?`<div class="internal recor-config-hint"><b>Pieds obligatoires</b> · choix à l’ajout</div>`:""}<button class="btn primary add" data-ref="${esc(p.reference)}" style="margin-top:9px">${isRecorBathRequiringFeet(p)?"Configurer + ajouter":"Ajouter à "+esc(room?.title||"la pièce")}</button></div></article>`;
+     const catalogVisual=cached?.src||p.image||((Array.isArray(p.images)&&p.images[0])||"");
+     return `<article class="result v11-product-card" data-key="${esc(key)}"><div class="catalog-thumb" data-ref="${esc(p.reference)}"><button type="button" class="favorite-toggle ${favorite?"active":""}" data-key="${esc(key)}" aria-label="Favori">${favorite?"♥":"♡"}</button>${catalogVisual?`<img src="${esc(catalogVisual)}" alt="${esc(p.reference)}" class="catalog-cached-image">`:`<div class="photo-missing"><b>Photo fabricant</b><br>${esc(finishLabel)}<br>à rechercher</div>`}</div><div><div class="r-top"><span class="ref">${esc(p.reference)}</span><span class="badge">${esc(p.manufacturer)}</span><span class="badge">${esc(p.collection)}</span><span class="badge">${esc(p.category)}</span></div><div class="designation">${esc(p.designation)}</div><div class="meta">${esc(p.finish||"")}</div><div class="availability ${avail.cls}">${esc(avail.label)}</div><div class="manufacturer-tools v11-resource-tools"><button class="tiny lookup-photo" data-ref="${esc(p.reference)}">${cached||p.image?"Actualiser la photo":"Photo fabricant"}</button>${hotbathNeedsFinishFallback(p,cached)?`<button class="tiny hotbath-web-photo" data-ref="${esc(p.reference)}">Finition web</button>`:""}${p.manufacturerUrl?`<a class="source-link" target="_blank" rel="noopener" href="${esc(cached?.resolvedManufacturerUrl||p.manufacturerUrl)}">Fiche ↗</a>`:""}${cached?.technicalSheetUrl?`<a class="source-link" target="_blank" rel="noopener" href="${esc(cached.technicalSheetUrl)}">Technique ↗</a>`:""}</div><div class="photo-status">${cached?`<b>${esc(imageBadge(cached,p))}</b>`:p.image?`<b>${esc(p.imageSource||"Visuel catalogue")}</b>`:`Source tarif : ${esc(p.source||"catalogue fabricant")}`}</div><div class="card-action-row"><button class="suggest-toggle" data-key="${esc(key)}">Alternatives</button><button class="compare-toggle ${compared?"active":""}" data-key="${esc(key)}">${compared?"✓ Comparé":"Comparer"}</button></div></div><div class="price-box"><small class="v11-price-label">Prix public</small><div class="price">${euro(price)} HT</div>${p.internalReference?`<div class="internal">Ext. ${euro(p.price)} + ${esc(p.internalReference)} ${euro(p.internalPrice)}</div>`:`<div class="internal">${esc(p.sourceYear?`Tarif ${p.sourceYear}`:"Référence complète")}</div>`}${isRecorBathRequiringFeet(p)?`<div class="internal recor-config-hint"><b>Pieds obligatoires</b> · choix à l’ajout</div>`:""}<button class="btn primary add" data-ref="${esc(p.reference)}" style="margin-top:9px">${isRecorBathRequiringFeet(p)?"Configurer + ajouter":"Ajouter à "+esc(room?.title||"la pièce")}</button></div></article>`;
    }).join("")||`<div class="empty">Aucun résultat.</div>`;
    $$(".add",results).forEach(b=>b.onclick=()=>{try{addCatalogProduct(b.dataset.ref,$("#targetRoom")?.value||state.rooms[0]?.id||"")}catch(e){alert(`Impossible d’ajouter cet article : ${e.message||"erreur inconnue"}`)}});
    $$(".lookup-photo",results).forEach(b=>b.onclick=()=>lookupCatalogPhoto(b.dataset.ref,b));
@@ -1746,11 +1756,13 @@ function recorFeetSelected(p){
 }
 function recorBathOptions(p,roomId){
   if(!isRecorBathRequiringFeet(p))return "";
+  const model=recorModelName(p);
   const feet=recorCompatibleFeet(p), wastes=recorCompatibleWastes(p);
   const linked=state.selected.filter(x=>x.roomId===roomId && x.accessoryFor===p.id);
   const selectedRefs=new Set(linked.map(x=>x.reference));
-  const option=(item,required=false)=>`<div class="accessory-option">
-    <div><b>${item.designation}</b><span>${item.finish||""} · ${item.reference}</span></div>
+  const option=(item,required=false)=>`<div class="accessory-option recor-accessory-option">
+    ${required?recorChoiceVisual(item):""}
+    <div><b>${item.designation}</b><span>${item.finish||""} · ${item.reference}${item.imageSimulation?" · visuel de forme":""}</span></div>
     <div class="accessory-option-right"><strong>${euro(item.totalPrice)} HT</strong>${selectedRefs.has(item.reference)?`<span class="accessory-added">Sélectionné</span>`:`<button class="tiny add-accessory" data-ref="${item.reference}" data-room="${roomId}" data-parent="${p.id}">+ Choisir</button>`}</div>
   </div>`;
   const hasFeet=recorFeetSelected(p);
@@ -1776,6 +1788,11 @@ function recorOptionDisplay(item){
   const extra=item.finish?` · ${item.finish}`:"";
   return `${item.designation}${extra}`;
 }
+function recorChoiceVisual(item){
+  const src=item?.image||((Array.isArray(item?.images)&&item.images[0])||"");
+  if(!src)return `<span class="recor-choice-thumb recor-choice-thumb-empty">Pieds</span>`;
+  return `<span class="recor-choice-thumb"><img src="${esc(src)}" alt="${esc(item?.designation||"Pieds Recor")}" loading="lazy"></span>`;
+}
 function closeRecorConfigurator(){
   const el=document.getElementById("recorConfigurator");
   if(el)el.remove();
@@ -1787,6 +1804,8 @@ function createSelectedProductRecord(p,roomId,parentId=""){
   if(!p)return null;
   const targetRoomId=normalizedRoomId(roomId);
   const cached=cachedManufacturerImage(p);
+  const catalogImages=Array.isArray(p.images)?p.images.filter(Boolean):[p.image].filter(Boolean);
+  const catalogMain=p.image||catalogImages[0]||"";
   const id=crypto.randomUUID?crypto.randomUUID():Math.random().toString(36);
   return {
     ...p,id,roomId:targetRoomId,
@@ -1795,15 +1814,15 @@ function createSelectedProductRecord(p,roomId,parentId=""){
     priceOverride:null,
     originalDesignation:p.designation||"",
     customTechnicalSheet:false,
-    image:cached?.src||"",
-    images:cached?.images||[cached?.src].filter(Boolean),
-    pdfImage:cached?.src||"",
-    pdfImages:cached?.images||[cached?.src].filter(Boolean),
+    image:cached?.src||catalogMain,
+    images:cached?.images||catalogImages,
+    pdfImage:cached?.src||catalogMain,
+    pdfImages:cached?.images||catalogImages,
     remoteImageUrl:cached?.remoteUrl||"",
     remoteImages:cached?.remoteImages||[],
-    imageSource:cached?.source||"Photo fabricant à rechercher",
+    imageSource:cached?.source||p.imageSource||(catalogMain?"Visuel catalogue":"Photo fabricant à rechercher"),
     imageFinishMatch:cached?.finishMatch||"",
-    imageStatus:cached?imageBadge(cached,p):"Recherche fabricant…",
+    imageStatus:cached?imageBadge(cached,p):(catalogMain?(p.imageSource||"Visuel catalogue"):"Recherche fabricant…"),
     resolvedManufacturerUrl:cached?.resolvedManufacturerUrl||p.manufacturerUrl||"",
     drawingUrl:cached?.drawingUrl||"",
     drawingType:cached?.drawingType||"",
@@ -1812,6 +1831,8 @@ function createSelectedProductRecord(p,roomId,parentId=""){
     technicalSheetLabel:cached?.technicalSheetLabel||"Fiche technique",
     installationGuideUrl:cached?.installationGuideUrl||"",
     installationGuideLabel:cached?.installationGuideLabel||"Notice d'installation",
+    catalanoGalleryComplete:/catalano/i.test(p.manufacturer||"")?cached?.galleryComplete===true:false,
+    catalanoGallerySource:/catalano/i.test(p.manufacturer||"")?(cached?.gallerySource||""):"",
     includeDrawing:false,includeTechnicalSheet:false,includeInstallationGuide:false,
     customImage:false,accessoryFor:parentId||""
   };
@@ -1826,8 +1847,11 @@ function commitSelectedRecords(records,{showProject=false}={}){
   renderMarginDashboard();
   if(showProject)showView("project");
   for(const item of valid){
-    if(!item.image){
-      enrichSelectedPhoto(item.id,false).catch(err=>console.warn("[enrich after add]",item.reference,err));
+    const isCatalano=/catalano/i.test(item.manufacturer||"");
+    if(!item.image || (isCatalano && item.catalanoGalleryComplete!==true)){
+      // Catalano V11.17: on first add, go back to the official manufacturer page
+      // when the cached record predates the complete-gallery connector.
+      enrichSelectedPhoto(item.id,isCatalano).catch(err=>console.warn("[enrich after add]",item.reference,err));
     }
   }
   return valid.map(x=>x.id);
@@ -1853,9 +1877,10 @@ function openRecorBathConfigurator(p,roomId){
     <div class="recor-config-section">
       <div class="recor-config-title"><b>1. Pieds</b><span>Obligatoire — un seul choix</span></div>
       <div class="recor-choice-list">
-        ${feet.length?feet.map((x,i)=>`<label class="recor-choice required-choice">
+        ${feet.length?feet.map((x,i)=>`<label class="recor-choice required-choice recor-choice-visual">
           <input type="radio" name="recorFeet" value="${x.reference}">
-          <span class="recor-choice-main"><b>${recorOptionDisplay(x)}</b><small>${x.reference}</small></span>
+          ${recorChoiceVisual(x)}
+          <span class="recor-choice-main"><b>${recorOptionDisplay(x)}</b><small>${x.reference}${x.imageSimulation?" · forme illustrée, finition selon choix":""}</small></span>
           <strong>${euro(x.totalPrice)} HT</strong>
         </label>`).join(''):`<div class="recor-no-choice">Aucun pied compatible n’a été identifié pour ce modèle.</div>`}
       </div>
@@ -2730,7 +2755,9 @@ function bindProject(){
 async function refreshCatalanoGalleries(){
   const targets=(state.selected||[]).filter(p=>{
     if(!/catalano/i.test(p.manufacturer||"")||p.customImage)return false;
-    return productVisuals(p).length<2;
+    // V11.17: refresh legacy projects once so the dossier gets the complete
+    // official Catalano product gallery, not only the former main image(s).
+    return p.catalanoGalleryComplete!==true;
   });
   if(!targets.length)return false;
 
@@ -2742,13 +2769,15 @@ async function refreshCatalanoGalleries(){
       p.image=img.src||p.image;
       p.images=(img.images&&img.images.length)?img.images:(p.images||[]);
       p.pdfImage=p.image;
-      p.pdfImages=(p.images||[]).slice(0,8);
+      p.pdfImages=(p.images||[]).slice();
       p.remoteImageUrl=img.remoteUrl||p.remoteImageUrl||"";
       p.remoteImages=img.remoteImages||p.remoteImages||[];
       p.imageSource=img.source||p.imageSource;
       p.imageFinishMatch=img.finishMatch||p.imageFinishMatch;
       p.imageStatus=imageBadge(img,p);
       p.imageNote=img.note||p.imageNote;
+      p.catalanoGalleryComplete=img.galleryComplete===true;
+      p.catalanoGallerySource=img.gallerySource||"catalano-official-product-page";
       return true;
     }catch(e){
       console.warn("[Catalano gallery refresh]",p.reference,e.message);
@@ -2840,7 +2869,7 @@ function showView(v){
     const catalanoToRefresh=(state.selected||[]).some(p=>
       /catalano/i.test(p.manufacturer||"") &&
       !p.customImage &&
-      productVisuals(p).length<2
+      p.catalanoGalleryComplete!==true
     );
 
     if(catalanoToRefresh){
@@ -3053,6 +3082,34 @@ function boardItemHtml(p,idx){
 }
 
 
+
+function catalanoClientGalleryPages(r,p,startNo){
+  if(!/catalano/i.test(p?.manufacturer||""))return {html:"",nextNo:startNo};
+  const imgs=productVisuals(p);
+  if(imgs.length<=1)return {html:"",nextNo:startNo};
+  const perPage=6;
+  let html="", no=startNo;
+  for(let offset=0;offset<imgs.length;offset+=perPage){
+    const chunk=imgs.slice(offset,offset+perPage);
+    const pageIndex=Math.floor(offset/perPage)+1;
+    const pageCount=Math.ceil(imgs.length/perPage);
+    html+=`<section class="page editorial-page catalano-gallery-page" data-parallax-page>
+      <div class="page-ambient page-ambient-a" data-parallax-layer="0.04"></div>
+      <div class="board-head"><div><div class="section-kicker">${esc(r.title)} · CATALANO</div><h2>Galerie fabricant</h2></div><div class="editorial-brand">Hydropolis</div></div>
+      <div class="catalano-gallery-meta">
+        <div><b>${esc(p.designation||"Produit Catalano")}</b>${p.finish?`<span>${esc(p.finish)}</span>`:""}</div>
+        ${state.showSupplierReferences!==false&&p.reference?`<div class="catalano-gallery-ref">Réf. ${esc(p.reference)}</div>`:""}
+      </div>
+      <div class="catalano-client-gallery count-${chunk.length}">
+        ${chunk.map((src,i)=>`<figure><img src="${esc(src)}" alt="${esc(p.designation||"Catalano")} · vue ${offset+i+1}" loading="eager"><figcaption>Vue ${offset+i+1}</figcaption></figure>`).join("")}
+      </div>
+      <div class="catalano-gallery-note">Images issues en priorité de la fiche produit officielle Catalano. Les vues d’ambiance peuvent présenter une autre finition que la référence sélectionnée.</div>
+      <div class="page-no">${no++}</div><div class="editorial-footer"><span>Maison Hydropolis</span><span>Catalano · Galerie ${pageIndex}/${pageCount}</span></div>
+    </section>`;
+  }
+  return {html,nextNo:no};
+}
+
 function coverMoodboardImages(){
   const seen=new Set(), images=[];
   for(const p of (state.selected||[]).filter(isRealSelectedProduct)){
@@ -3135,6 +3192,14 @@ function buildDocument(){
          <div class="page-no">${no++}</div><div class="editorial-footer"><span>Maison Hydropolis</span><span>${esc(r.title)} · ${esc(group.label)}</span></div>
        </section>`;
      }
+   });
+
+   // V11.17 — Catalano: every distinct official image available for the selected
+   // reference is included in the client dossier, split over as many pages as needed.
+   products.filter(p=>/catalano/i.test(p.manufacturer||"") && productVisuals(p).length>1).forEach(p=>{
+     const gallery=catalanoClientGalleryPages(r,p,no);
+     html+=gallery.html;
+     no=gallery.nextNo;
    });
 
    // Optional official technical documents. Dedupe identical PDF/page pairs:
@@ -3390,7 +3455,7 @@ function harmonizeSavedCatalogProducts(){
       technicalSheetUrl:p.technicalSheetUrl,technicalSheetLabel:p.technicalSheetLabel,technicalSheetPage:p.technicalSheetPage,
       installationGuideUrl:p.installationGuideUrl,installationGuideLabel:p.installationGuideLabel,
       includeDrawing:p.includeDrawing,includeTechnicalSheet:p.includeTechnicalSheet,includeInstallationGuide:p.includeInstallationGuide,
-      customImage:p.customImage,imageSimulation:p.imageSimulation,imageSource:p.imageSource,imageFinishMatch:p.imageFinishMatch,imageNote:p.imageNote,remoteImageUrl:p.remoteImageUrl,remoteImages:p.remoteImages,webImageSourcePage:p.webImageSourcePage,clientDiscountOverride:p.clientDiscountOverride,leadTime:p.leadTime,priceOverride:p.priceOverride,originalDesignation:p.originalDesignation,catalogPrice:p.catalogPrice,catalogTotalPrice:p.catalogTotalPrice,customTechnicalSheet:p.customTechnicalSheet,technicalSheetAsset:p.technicalSheetAsset
+      customImage:p.customImage,imageSimulation:p.imageSimulation,imageSource:p.imageSource,imageFinishMatch:p.imageFinishMatch,imageNote:p.imageNote,remoteImageUrl:p.remoteImageUrl,remoteImages:p.remoteImages,webImageSourcePage:p.webImageSourcePage,clientDiscountOverride:p.clientDiscountOverride,leadTime:p.leadTime,priceOverride:p.priceOverride,originalDesignation:p.originalDesignation,catalogPrice:p.catalogPrice,catalogTotalPrice:p.catalogTotalPrice,customTechnicalSheet:p.customTechnicalSheet,technicalSheetAsset:p.technicalSheetAsset,catalanoGalleryComplete:p.catalanoGalleryComplete,catalanoGallerySource:p.catalanoGallerySource
     };
 
     Object.assign(p,c,runtime);
