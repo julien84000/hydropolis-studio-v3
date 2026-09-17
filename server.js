@@ -789,7 +789,7 @@ app.get("/api/catalog/search",requireAuth,async(req,res)=>{
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V11.20",
+  service:"Hydropolis Studio V11.21",
   database:USE_POSTGRES?"postgresql":"local-fallback",
   time:new Date().toISOString()
 }));
@@ -2549,7 +2549,9 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
   // et on la renvoie directement au navigateur sous forme data URL.
   async function embedOfficialImage(item){
     if(!item) return item;
-    if(!/(?:coalbrookuk\.co\.uk|zucchettidesign\.it|assets\.zucchettidesign\.it|catalano\.it|recor\.pt|hotbath\.it|lefroybrooks\.com|images\.squarespace-cdn\.com|static1\.squarespace\.com)/i.test(item.url||manufacturerUrl)) return item;
+    try{
+      if(!isAllowedHydropolisRemoteHost(new URL(item.url||manufacturerUrl).hostname))return item;
+    }catch{return item;}
     try{
       const ir=await axios.get(item.url,{
         responseType:"arraybuffer",timeout:18000,maxRedirects:5,
@@ -3277,7 +3279,12 @@ function isPrivateIp(ip){
 }
 const REMOTE_HOST_SUFFIXES=[
   "zucchettidesign.it","zucchettikos.it","lefroybrooks.com","hotbath.it",
-  "coalbrookuk.co.uk","catalano.it","recor.pt","amphoradesign.it","sanitairkamer.nl",
+  "coalbrookuk.co.uk",
+  // Coalbrook serves product photography and technical files from dedicated
+  // image/file CDN hosts, not from coalbrookuk.co.uk itself. Keep the allowlist
+  // deliberately narrow to Coalbrook-owned hostnames rather than all svdcdn.com.
+  "coalbrook-bathrooms.transforms.svdcdn.com","coalbrook-bathrooms.files.svdcdn.com",
+  "catalano.it","recor.pt","amphoradesign.it","sanitairkamer.nl",
   // Lefroy Brooks is hosted on Squarespace. Product imagery is served from
   // these dedicated CDN hosts while product pages/downloads stay on lefroybrooks.com.
   "images.squarespace-cdn.com","static1.squarespace.com","file.squarespace-cdn.com"
@@ -3430,7 +3437,7 @@ app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")))
 async function startServer(){
   try{
     await initPersistentStore();
-    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.20 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
+    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.21 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
   }catch(e){
     console.error("[Hydropolis] Démarrage impossible :",e);
     process.exit(1);

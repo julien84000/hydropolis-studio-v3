@@ -1,8 +1,8 @@
-# Hydropolis Studio V11.20
+# Hydropolis Studio V11.21
 
-Hydropolis Studio V11.20 est construit sur **V10.16**, la dernière base stable auditée, avec réintégration contrôlée des apports utiles de la branche V11.12. Il ne s'agit pas d'une réécriture : les projets par pièce, devis/remises/marges, dossier client A4, comptes utilisateurs, PostgreSQL/Supabase et connecteurs fabricants existants sont conservés.
+Hydropolis Studio V11.21 est construit sur **V10.16**, la dernière base stable auditée, avec réintégration contrôlée des apports utiles de la branche V11.12. Il ne s'agit pas d'une réécriture : les projets par pièce, devis/remises/marges, dossier client A4, comptes utilisateurs, PostgreSQL/Supabase et connecteurs fabricants existants sont conservés.
 
-## Ce que V11.20 ajoute
+## Ce que V11.21 ajoute
 
 - nouvel accueil visuel Hydropolis Studio inspiré des principes d’ergonomie Apple/Canva ;
 - navigation simplifiée avec Accueil, Catalogue, Projets, Favoris, Comparateur et Exports ;
@@ -49,6 +49,11 @@ Le configurateur des baignoires sur pieds propose des choix illustrés pour les 
 
 ## Recor V11.19 — images HD
 Le connecteur Recor privilégie désormais exclusivement la fiche produit exacte et la galerie WooCommerce pleine définition. Les anciennes images fabricant mises en cache sont invalidées et les baignoires Recor déjà enregistrées sont ré-enrichies automatiquement lors de la première ouverture en ligne.
+
+
+## Coalbrook V11.21 — CDN officiel
+
+Les photos Coalbrook sont trouvées sur la fiche produit officielle mais sont servies par les CDN dédiés `coalbrook-bathrooms.transforms.svdcdn.com` et `coalbrook-bathrooms.files.svdcdn.com`. V11.21 autorise strictement ces deux hôtes dans le proxy sécurisé et dans l’embarquement serveur des images. Le matching par référence/finition (CP, GM, BB, BN) reste inchangé.
 
 
 ## Recor V11.20 — port fournisseur

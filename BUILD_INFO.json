@@ -1,6 +1,6 @@
 {
   "name": "Hydropolis Studio",
-  "version": "11.20.0",
+  "version": "11.21.0",
   "base": {
     "archive": "Hydropolis_Studio_V10.16_Update.zip",
     "sha256": "415242ad95036f7db3e76844ec2fea8a5c8d916c1a8c1617350847c32507d5cd"
@@ -53,7 +53,7 @@
     "behavior": "visual chooser for mandatory feet; local images are style references and are included with selected foot in client dossier",
     "offline": "assets included in service-worker shell cache"
   },
-  "releaseNotes": "RELEASE_NOTES_V11.20.md",
+  "releaseNotes": "RELEASE_NOTES_V11.21.md",
   "recorImagesV1119": {
     "priority": "exact Recor product page + WooCommerce full-resolution gallery anchors/data-large_image",
     "fallback": "no Recor home-page image fallback",
@@ -61,5 +61,7 @@
     "migration": "existing selected Recor baths auto-refresh once when online unless custom image",
     "clientDossier": "bath dominant; selected feet as small visual; waste text-only",
     "pixelGuard": "when dimensions are measurable: max side >= 800 px and min side >= 500 px; otherwise reject thumbnail result"
-  }
+  },
+  "build": "V11.21",
+  "notes": "Coalbrook CDN proxy allowlist fix for official product images."
 }

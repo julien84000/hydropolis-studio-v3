@@ -1208,7 +1208,7 @@ function loadState(override=null){
   state.commercial.vatRate=Math.max(0,Math.min(100,state.commercial.vatRate===null||state.commercial.vatRate===undefined||state.commercial.vatRate===""?20:Number(state.commercial.vatRate)));
   state.commercial.shippingFee=Math.max(0,Number(state.commercial.shippingFee)||0);
   state.commercial.supplierShippingFee=Math.max(0,Number(state.commercial.supplierShippingFee)||0);
-  // V11.20 migration: if an older project manually copied exactly the Recor carriage
+  // V11.21 migration: if an older project manually copied exactly the Recor carriage
   // into Port fournisseur, absorb it into the new automatic Recor shipping layer once.
   if(!state.commercial.recorFreightMovedV1120){
     const legacyAuto=(state.selected||[]).filter(p=>p?.manufacturer==="Recor").reduce((sum,p)=>sum+Math.max(0,Number(p?.mandatoryFreight)||0),0);
@@ -2050,7 +2050,7 @@ function hasPriceOverride(p){
 function articleMerchandisePrice(p){
   if(hasPriceOverride(p))return Math.max(0,Number(p.priceOverride)||0);
   // Recor stores its mandatory carriage in totalPrice for source fidelity.
-  // V11.20 treats that carriage exclusively as supplier shipping, never as product value.
+  // V11.21 treats that carriage exclusively as supplier shipping, never as product value.
   const freight=Math.max(0,Number(p?.mandatoryFreight)||0);
   return Math.max(0,Number(p?.totalPrice||0)-freight);
 }
