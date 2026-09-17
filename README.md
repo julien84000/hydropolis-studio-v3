@@ -1,8 +1,8 @@
-# Hydropolis Studio V11.19
+# Hydropolis Studio V11.20
 
-Hydropolis Studio V11.19 est construit sur **V10.16**, la dernière base stable auditée, avec réintégration contrôlée des apports utiles de la branche V11.12. Il ne s'agit pas d'une réécriture : les projets par pièce, devis/remises/marges, dossier client A4, comptes utilisateurs, PostgreSQL/Supabase et connecteurs fabricants existants sont conservés.
+Hydropolis Studio V11.20 est construit sur **V10.16**, la dernière base stable auditée, avec réintégration contrôlée des apports utiles de la branche V11.12. Il ne s'agit pas d'une réécriture : les projets par pièce, devis/remises/marges, dossier client A4, comptes utilisateurs, PostgreSQL/Supabase et connecteurs fabricants existants sont conservés.
 
-## Ce que V11.19 ajoute
+## Ce que V11.20 ajoute
 
 - nouvel accueil visuel Hydropolis Studio inspiré des principes d’ergonomie Apple/Canva ;
 - navigation simplifiée avec Accueil, Catalogue, Projets, Favoris, Comparateur et Exports ;
@@ -49,3 +49,10 @@ Le configurateur des baignoires sur pieds propose des choix illustrés pour les 
 
 ## Recor V11.19 — images HD
 Le connecteur Recor privilégie désormais exclusivement la fiche produit exacte et la galerie WooCommerce pleine définition. Les anciennes images fabricant mises en cache sont invalidées et les baignoires Recor déjà enregistrées sont ré-enrichies automatiquement lors de la première ouverture en ligne.
+
+
+## Recor V11.20 — port fournisseur
+- Les 380 € HT de port obligatoire Recor ne font plus partie du prix produit.
+- Le port Recor est automatiquement agrégé dans « Port fournisseur HT ».
+- Les prix et désignations du dossier client n’affichent plus le port au niveau de la baignoire.
+- Le devis conserve une ligne séparée « Port fournisseur HT ».

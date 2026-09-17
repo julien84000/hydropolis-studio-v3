@@ -1208,6 +1208,13 @@ function loadState(override=null){
   state.commercial.vatRate=Math.max(0,Math.min(100,state.commercial.vatRate===null||state.commercial.vatRate===undefined||state.commercial.vatRate===""?20:Number(state.commercial.vatRate)));
   state.commercial.shippingFee=Math.max(0,Number(state.commercial.shippingFee)||0);
   state.commercial.supplierShippingFee=Math.max(0,Number(state.commercial.supplierShippingFee)||0);
+  // V11.20 migration: if an older project manually copied exactly the Recor carriage
+  // into Port fournisseur, absorb it into the new automatic Recor shipping layer once.
+  if(!state.commercial.recorFreightMovedV1120){
+    const legacyAuto=(state.selected||[]).filter(p=>p?.manufacturer==="Recor").reduce((sum,p)=>sum+Math.max(0,Number(p?.mandatoryFreight)||0),0);
+    if(legacyAuto>0 && Math.abs(state.commercial.supplierShippingFee-legacyAuto)<0.01)state.commercial.supplierShippingFee=0;
+    state.commercial.recorFreightMovedV1120=true;
+  }
 
   state.selected.forEach(p=>{
     if(p.clientDiscountOverride!==undefined && p.clientDiscountOverride!==null && p.clientDiscountOverride!==""){
@@ -1431,7 +1438,7 @@ function renderDashboardEcosystem(){
     if(!p){spot.innerHTML='<div class="empty">Le catalogue est en cours de chargement.</div>'}
     else{
       const img=dashboardProductImage(p),key=productKey(p),fav=favoriteRefs.has(key);
-      spot.innerHTML=`<div class="dashboard-spotlight-media">${img?`<img src="${esc(img)}" alt="${esc(p.reference)}">`:""}<button class="dashboard-heart ${fav?"active":""}" data-fav-key="${esc(key)}">${fav?"♥":"♡"}</button></div><div class="dashboard-spotlight-copy"><div class="eyebrow">${esc(p.manufacturer)}</div><h3>${esc(p.collection||p.reference)}</h3><p>${esc(p.designation||"")}</p><small>${esc(p.finish||"")}</small><div class="dashboard-spotlight-actions"><strong>${euro(Number(p.totalPrice||p.price||0))} HT</strong><button class="btn primary" id="dashboardSpotlightAdd">Ajouter au projet</button></div></div>`;
+      spot.innerHTML=`<div class="dashboard-spotlight-media">${img?`<img src="${esc(img)}" alt="${esc(p.reference)}">`:""}<button class="dashboard-heart ${fav?"active":""}" data-fav-key="${esc(key)}">${fav?"♥":"♡"}</button></div><div class="dashboard-spotlight-copy"><div class="eyebrow">${esc(p.manufacturer)}</div><h3>${esc(p.collection||p.reference)}</h3><p>${esc(p.designation||"")}</p><small>${esc(p.finish||"")}</small><div class="dashboard-spotlight-actions"><strong>${euro(catalogDisplayPrice(p))} HT</strong><button class="btn primary" id="dashboardSpotlightAdd">Ajouter au projet</button></div></div>`;
       const favBtn=spot.querySelector("[data-fav-key]");if(favBtn)favBtn.onclick=()=>toggleFavorite(key);
       const add=spot.querySelector("#dashboardSpotlightAdd");if(add)add.onclick=()=>addCatalogProduct(p.reference,$("#targetRoom")?.value||state.rooms[0]?.id||"");
     }
@@ -1444,7 +1451,7 @@ function favoriteProductRows(){return [...favoriteRefs].map(productFromCompareKe
 function renderFavoritesView(){
   const host=$("#favoritesGrid");if(!host)return;
   const rows=favoriteProductRows();
-  host.innerHTML=rows.map(p=>{const img=dashboardProductImage(p),key=productKey(p),avail=availabilityInfo(p);return `<article class="favorite-card"><div class="favorite-media">${img?`<img src="${esc(img)}" alt="">`:""}<button class="dashboard-heart active favorite-remove" data-key="${esc(key)}">♥</button></div><div class="favorite-copy"><div class="eyebrow">${esc(p.manufacturer)}</div><h3>${esc(p.reference)}</h3><p>${esc(p.designation||"")}</p><small>${esc(p.finish||"")}</small><div class="availability ${avail.cls}">${esc(avail.label)}</div><div class="favorite-actions"><strong>${euro(Number(p.totalPrice||p.price||0))} HT</strong><button class="btn ghost favorite-compare" data-key="${esc(key)}">Comparer</button><button class="btn primary favorite-add" data-ref="${esc(p.reference)}">Ajouter</button></div></div></article>`}).join("")||'<div class="empty favorites-empty">Aucun favori pour le moment. Ajoutez des produits depuis le catalogue.</div>';
+  host.innerHTML=rows.map(p=>{const img=dashboardProductImage(p),key=productKey(p),avail=availabilityInfo(p);return `<article class="favorite-card"><div class="favorite-media">${img?`<img src="${esc(img)}" alt="">`:""}<button class="dashboard-heart active favorite-remove" data-key="${esc(key)}">♥</button></div><div class="favorite-copy"><div class="eyebrow">${esc(p.manufacturer)}</div><h3>${esc(p.reference)}</h3><p>${esc(p.designation||"")}</p><small>${esc(p.finish||"")}</small><div class="availability ${avail.cls}">${esc(avail.label)}</div><div class="favorite-actions"><strong>${euro(catalogDisplayPrice(p))} HT</strong><button class="btn ghost favorite-compare" data-key="${esc(key)}">Comparer</button><button class="btn primary favorite-add" data-ref="${esc(p.reference)}">Ajouter</button></div></div></article>`}).join("")||'<div class="empty favorites-empty">Aucun favori pour le moment. Ajoutez des produits depuis le catalogue.</div>';
   $$(".favorite-remove",host).forEach(b=>b.onclick=()=>toggleFavorite(b.dataset.key));
   $$(".favorite-compare",host).forEach(b=>b.onclick=()=>toggleCompare(b.dataset.key));
   $$(".favorite-add",host).forEach(b=>b.onclick=()=>addCatalogProduct(b.dataset.ref,$("#targetRoom")?.value||state.rooms[0]?.id||""));
@@ -1456,7 +1463,7 @@ function renderCompareView(){
   const columns=items.length;
   const row=(label,fn)=>`<div class="compare-view-label">${esc(label)}</div>${items.map(p=>`<div class="compare-view-cell">${fn(p)}</div>`).join("")}`;
   host.style.setProperty("--compare-columns",columns);
-  host.innerHTML=`<div class="compare-view-table" style="--compare-columns:${columns}">${row("Produit",p=>{const img=dashboardProductImage(p);return `<div class="compare-view-product">${img?`<img src="${esc(img)}" alt="">`:""}<b>${esc(p.manufacturer)}</b><strong>${esc(p.reference)}</strong><small>${esc(p.designation||"")}</small></div>`})}${row("Prix public HT",p=>`<strong class="compare-price">${euro(Number(p.totalPrice||p.price||0))}</strong>`)}${row("Collection",p=>esc(p.collection||"—"))}${row("Finition",p=>esc(p.finish||"—"))}${row("Catégorie",p=>esc(p.category||"—"))}${row("Disponibilité",p=>esc(availabilityInfo(p).label))}${row("Action",p=>`<button class="btn primary compare-view-add" data-ref="${esc(p.reference)}">Ajouter au projet</button>`)}</div>`;
+  host.innerHTML=`<div class="compare-view-table" style="--compare-columns:${columns}">${row("Produit",p=>{const img=dashboardProductImage(p);return `<div class="compare-view-product">${img?`<img src="${esc(img)}" alt="">`:""}<b>${esc(p.manufacturer)}</b><strong>${esc(p.reference)}</strong><small>${esc(p.designation||"")}</small></div>`})}${row("Prix public HT",p=>`<strong class="compare-price">${euro(catalogDisplayPrice(p))}</strong>`)}${row("Collection",p=>esc(p.collection||"—"))}${row("Finition",p=>esc(p.finish||"—"))}${row("Catégorie",p=>esc(p.category||"—"))}${row("Disponibilité",p=>esc(availabilityInfo(p).label))}${row("Action",p=>`<button class="btn primary compare-view-add" data-ref="${esc(p.reference)}">Ajouter au projet</button>`)}</div>`;
   $$(".compare-view-add",host).forEach(b=>b.onclick=()=>addCatalogProduct(b.dataset.ref,$("#targetRoom")?.value||state.rooms[0]?.id||""));
 }
 function openDashboardSearch(){
@@ -1486,11 +1493,11 @@ function openCompareModal(){
   const items=[...compareRefs].map(productFromCompareKey).filter(Boolean);
   if(items.length<2)return;
   const modal=$("#compareModal");if(!modal)return;
-  const prices=items.map(p=>Number(p.totalPrice||p.price||0)).filter(Number.isFinite);
+  const prices=items.map(p=>catalogDisplayPrice(p)).filter(Number.isFinite);
   const min=prices.length?Math.min(...prices):null;
-  const row=(label,fn,opts={})=>`<div class="compare-cell compare-label">${esc(label)}</div>${items.map(p=>{const v=fn(p);const best=opts.bestPrice&&Number(p.totalPrice||p.price||0)===min?" compare-best":"";return `<div class="compare-cell${best}">${v}</div>`}).join("")}`;
+  const row=(label,fn,opts={})=>`<div class="compare-cell compare-label">${esc(label)}</div>${items.map(p=>{const v=fn(p);const best=opts.bestPrice&&catalogDisplayPrice(p)===min?" compare-best":"";return `<div class="compare-cell${best}">${v}</div>`}).join("")}`;
   modal.style.setProperty("--compare-count",items.length);
-  modal.innerHTML=`<div class="compare-sheet"><div class="compare-head"><div><div class="eyebrow">Comparatif produits</div><h2>${items.length} références côte à côte</h2></div><button class="btn ghost" id="closeCompareBtn">Fermer</button></div><div class="compare-grid" style="--compare-count:${items.length}">${row("Produit",p=>{const c=cachedManufacturerImage(p),img=c?.src||p.image||"";return `<div class="compare-product">${img?`<img src="${esc(img)}" alt="">`:""}<strong>${esc(p.manufacturer)} · ${esc(p.reference)}</strong><small>${esc(p.designation)}</small></div>`})}${row("Prix public HT",p=>`<span class="compare-price">${euro(Number(p.totalPrice||p.price||0))}</span>`,{bestPrice:true})}${row("Collection",p=>esc(p.collection||"—"))}${row("Finition",p=>esc(p.finish||"—"))}${row("Catégorie",p=>esc(p.category||"—"))}${row("Disponibilité",p=>esc(availabilityInfo(p).label))}${row("Source tarif",p=>esc([p.source,p.sourceYear].filter(Boolean).join(" · ")||"—"))}${row("Action",p=>`<button class="btn primary compare-add" data-ref="${esc(p.reference)}">Ajouter au projet</button>`)}</div></div>`;
+  modal.innerHTML=`<div class="compare-sheet"><div class="compare-head"><div><div class="eyebrow">Comparatif produits</div><h2>${items.length} références côte à côte</h2></div><button class="btn ghost" id="closeCompareBtn">Fermer</button></div><div class="compare-grid" style="--compare-count:${items.length}">${row("Produit",p=>{const c=cachedManufacturerImage(p),img=c?.src||p.image||"";return `<div class="compare-product">${img?`<img src="${esc(img)}" alt="">`:""}<strong>${esc(p.manufacturer)} · ${esc(p.reference)}</strong><small>${esc(p.designation)}</small></div>`})}${row("Prix public HT",p=>`<span class="compare-price">${euro(catalogDisplayPrice(p))}</span>`,{bestPrice:true})}${row("Collection",p=>esc(p.collection||"—"))}${row("Finition",p=>esc(p.finish||"—"))}${row("Catégorie",p=>esc(p.category||"—"))}${row("Disponibilité",p=>esc(availabilityInfo(p).label))}${row("Source tarif",p=>esc([p.source,p.sourceYear].filter(Boolean).join(" · ")||"—"))}${row("Action",p=>`<button class="btn primary compare-add" data-ref="${esc(p.reference)}">Ajouter au projet</button>`)}</div></div>`;
   modal.classList.remove("hidden");modal.setAttribute("aria-hidden","false");
   $("#closeCompareBtn").onclick=()=>{modal.classList.add("hidden");modal.setAttribute("aria-hidden","true")};
   modal.onclick=e=>{if(e.target===modal)$("#closeCompareBtn").click()};
@@ -1500,14 +1507,14 @@ function similarityWords(value){return new Set(String(value||"").toLowerCase().n
 function smartAlternativesFor(p,limit=5){
   if(!p)return [];
   const words=similarityWords(p.designation);
-  const basePrice=Number(p.totalPrice||p.price||0);
+  const basePrice=catalogDisplayPrice(p);
   return CATALOG.filter(x=>x!==p&&x.reference!==p.reference&&x.category===p.category).map(x=>{
     let score=5;
     if(x.collection===p.collection)score+=4;
     if(x.manufacturer===p.manufacturer)score+=2;else score+=1.4;
     if(x.finish&&p.finish&&x.finish===p.finish)score+=2.2;
     const xWords=similarityWords(x.designation);let common=0;words.forEach(w=>{if(xWords.has(w))common++});score+=Math.min(4,common*1.2);
-    const price=Number(x.totalPrice||x.price||0);if(basePrice>0&&price>0){const ratio=Math.abs(price-basePrice)/basePrice;score+=Math.max(0,3-ratio*6)}
+    const price=catalogDisplayPrice(x);if(basePrice>0&&price>0){const ratio=Math.abs(price-basePrice)/basePrice;score+=Math.max(0,3-ratio*6)}
     return {x,score};
   }).sort((a,b)=>b.score-a.score).slice(0,limit).map(o=>o.x);
 }
@@ -1515,7 +1522,7 @@ function showSuggestionsForKey(key){
   const p=productFromCompareKey(key);const panel=$("#smartSuggestionPanel");if(!p||!panel)return;
   const alts=smartAlternativesFor(p,5);
   panel.classList.remove("hidden");
-  panel.innerHTML=`<div class="smart-suggestion-head"><div><div class="eyebrow">Suggestions intelligentes</div><b>Alternatives à ${esc(p.manufacturer)} ${esc(p.reference)}</b></div><button class="tiny" id="closeSuggestions">Fermer</button></div><div class="smart-suggestion-grid">${alts.map(x=>{const c=cachedManufacturerImage(x),img=c?.src||x.image||"";return `<div class="smart-alt">${img?`<img src="${esc(img)}" alt="">`:`<div></div>`}<div><strong>${esc(x.manufacturer)} · ${esc(x.reference)}</strong><small>${esc(x.designation)} · ${euro(Number(x.totalPrice||x.price||0))} HT</small><div class="smart-alt-actions"><button class="btn ghost alt-compare" data-key="${esc(productKey(x))}">Comparer</button><button class="btn primary alt-add" data-ref="${esc(x.reference)}">Ajouter</button></div></div></div>`}).join("")||"<div class=\"empty\">Aucune alternative assez proche dans les catalogues chargés.</div>"}</div>`;
+  panel.innerHTML=`<div class="smart-suggestion-head"><div><div class="eyebrow">Suggestions intelligentes</div><b>Alternatives à ${esc(p.manufacturer)} ${esc(p.reference)}</b></div><button class="tiny" id="closeSuggestions">Fermer</button></div><div class="smart-suggestion-grid">${alts.map(x=>{const c=cachedManufacturerImage(x),img=c?.src||x.image||"";return `<div class="smart-alt">${img?`<img src="${esc(img)}" alt="">`:`<div></div>`}<div><strong>${esc(x.manufacturer)} · ${esc(x.reference)}</strong><small>${esc(x.designation)} · ${euro(catalogDisplayPrice(x))} HT</small><div class="smart-alt-actions"><button class="btn ghost alt-compare" data-key="${esc(productKey(x))}">Comparer</button><button class="btn primary alt-add" data-ref="${esc(x.reference)}">Ajouter</button></div></div></div>`}).join("")||"<div class=\"empty\">Aucune alternative assez proche dans les catalogues chargés.</div>"}</div>`;
   $("#closeSuggestions").onclick=()=>panel.classList.add("hidden");
   $$(".alt-compare",panel).forEach(b=>b.onclick=()=>toggleCompare(b.dataset.key));
   $$(".alt-add",panel).forEach(b=>b.onclick=()=>addCatalogProduct(b.dataset.ref,$("#targetRoom")?.value||state.rooms[0]?.id));
@@ -1562,7 +1569,7 @@ function exportExcel(){
   const cell=(v,num=false)=>`<Cell><Data ss:Type="${num&&v!==""?"Number":"String"}">${xmlEsc(v)}</Data></Cell>`;
   const body=[headers,...rows].map((r,i)=>`<Row>${r.map((v,j)=>cell(v,i>0&&numeric.has(j))).join("")}</Row>`).join("");
   const f=projectFinancials();
-  const summary=[["Synthèse","Valeur"],["Tarif public HT",f.list],["Vente HT",f.net],["Coût achat HT",f.purchase],["Marge brute HT",f.margin],["Taux de marque %",f.marginOnSales],["TVA %",f.vatRate],["Total TTC",f.ttc]];
+  const summary=[["Synthèse","Valeur"],["Tarif public produits HT",f.list],["Port fournisseur HT",f.supplierShipping],["dont port Recor automatique HT",f.recorSupplierShipping],["Vente HT",f.net],["Coût achat HT",f.purchase],["Marge brute produits HT",f.margin],["Taux de marque %",f.marginOnSales],["TVA %",f.vatRate],["Total TTC",f.ttc]];
   const summaryXml=summary.map((r,i)=>`<Row>${r.map((v,j)=>cell(v,i>0&&j===1)).join("")}</Row>`).join("");
   const xml=`<?xml version="1.0"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"><Worksheet ss:Name="Sélection"><Table>${body}</Table></Worksheet><Worksheet ss:Name="Synthèse"><Table>${summaryXml}</Table></Worksheet></Workbook>`;
   downloadBlob(new Blob([xml],{type:"application/vnd.ms-excel;charset=utf-8"}),`Hydropolis_${(state.project.name||"Projet").replace(/[^a-z0-9_-]+/gi,"_")}.xls`);toast("Export Excel enrichi généré");
@@ -1631,7 +1638,7 @@ function renderCatalog(){
    if(count)count.textContent=`${rows.length} résultat${rows.length>1?"s":""}${serverSearchRows.length?" · multi-sources":""}`;
    const room=roomById($("#targetRoom")?.value)||state.rooms[0];
    results.innerHTML=rows.slice(0,120).map(p=>{
-     const cached=cachedManufacturerImage(p),finishLabel=exactFinishLabel(p)||"",price=Number(p.totalPrice||0),key=productKey(p),avail=availabilityInfo(p),compared=compareRefs.has(key),favorite=favoriteRefs.has(key);
+     const cached=cachedManufacturerImage(p),finishLabel=exactFinishLabel(p)||"",price=catalogDisplayPrice(p),key=productKey(p),avail=availabilityInfo(p),compared=compareRefs.has(key),favorite=favoriteRefs.has(key);
      const catalogVisual=cached?.src||p.image||((Array.isArray(p.images)&&p.images[0])||"");
      return `<article class="result v11-product-card" data-key="${esc(key)}"><div class="catalog-thumb" data-ref="${esc(p.reference)}"><button type="button" class="favorite-toggle ${favorite?"active":""}" data-key="${esc(key)}" aria-label="Favori">${favorite?"♥":"♡"}</button>${catalogVisual?`<img src="${esc(catalogVisual)}" alt="${esc(p.reference)}" class="catalog-cached-image">`:`<div class="photo-missing"><b>Photo fabricant</b><br>${esc(finishLabel)}<br>à rechercher</div>`}</div><div><div class="r-top"><span class="ref">${esc(p.reference)}</span><span class="badge">${esc(p.manufacturer)}</span><span class="badge">${esc(p.collection)}</span><span class="badge">${esc(p.category)}</span></div><div class="designation">${esc(p.designation)}</div><div class="meta">${esc(p.finish||"")}</div><div class="availability ${avail.cls}">${esc(avail.label)}</div><div class="manufacturer-tools v11-resource-tools"><button class="tiny lookup-photo" data-ref="${esc(p.reference)}">${cached||p.image?"Actualiser la photo":"Photo fabricant"}</button>${hotbathNeedsFinishFallback(p,cached)?`<button class="tiny hotbath-web-photo" data-ref="${esc(p.reference)}">Finition web</button>`:""}${p.manufacturerUrl?`<a class="source-link" target="_blank" rel="noopener" href="${esc(cached?.resolvedManufacturerUrl||p.manufacturerUrl)}">Fiche ↗</a>`:""}${cached?.technicalSheetUrl?`<a class="source-link" target="_blank" rel="noopener" href="${esc(cached.technicalSheetUrl)}">Technique ↗</a>`:""}</div><div class="photo-status">${cached?`<b>${esc(imageBadge(cached,p))}</b>`:p.image?`<b>${esc(p.imageSource||"Visuel catalogue")}</b>`:`Source tarif : ${esc(p.source||"catalogue fabricant")}`}</div><div class="card-action-row"><button class="suggest-toggle" data-key="${esc(key)}">Alternatives</button><button class="compare-toggle ${compared?"active":""}" data-key="${esc(key)}">${compared?"✓ Comparé":"Comparer"}</button></div></div><div class="price-box"><small class="v11-price-label">Prix public</small><div class="price">${euro(price)} HT</div>${p.internalReference?`<div class="internal">Ext. ${euro(p.price)} + ${esc(p.internalReference)} ${euro(p.internalPrice)}</div>`:`<div class="internal">${esc(p.sourceYear?`Tarif ${p.sourceYear}`:"Référence complète")}</div>`}${isRecorBathRequiringFeet(p)?`<div class="internal recor-config-hint"><b>Pieds obligatoires</b> · choix à l’ajout</div>`:""}<button class="btn primary add" data-ref="${esc(p.reference)}" style="margin-top:9px">${isRecorBathRequiringFeet(p)?"Configurer + ajouter":"Ajouter à "+esc(room?.title||"la pièce")}</button></div></article>`;
    }).join("")||`<div class="empty">Aucun résultat.</div>`;
@@ -1903,7 +1910,7 @@ function openRecorBathConfigurator(p,roomId){
       <div><div class="eyebrow">Recor · configuration obligatoire</div><h2 id="recorConfigTitle">${p.designation}</h2><p>Choisissez les pieds avant d’ajouter la baignoire au projet. Le vidage reste optionnel.</p></div>
       <button type="button" class="icon recor-config-close" aria-label="Fermer">×</button>
     </div>
-    <div class="recor-config-summary"><b>${euro(p.totalPrice)} HT</b><span>${p.mandatoryFreight?`dont ${euro(p.mandatoryFreight)} de transport Recor obligatoire`:'Transport selon tarif'}</span></div>
+    <div class="recor-config-summary"><b>${euro(articleMerchandisePrice(p))} HT</b><span>Prix produit · port Recor géré dans « Port fournisseur »</span></div>
     <div class="recor-config-section">
       <div class="recor-config-title"><b>1. Pieds</b><span>Obligatoire — un seul choix</span></div>
       <div class="recor-choice-list">
@@ -2042,22 +2049,33 @@ function hasPriceOverride(p){
 }
 function articleMerchandisePrice(p){
   if(hasPriceOverride(p))return Math.max(0,Number(p.priceOverride)||0);
+  // Recor stores its mandatory carriage in totalPrice for source fidelity.
+  // V11.20 treats that carriage exclusively as supplier shipping, never as product value.
   const freight=Math.max(0,Number(p?.mandatoryFreight)||0);
   return Math.max(0,Number(p?.totalPrice||0)-freight);
 }
+function catalogDisplayPrice(p){
+  return articleMerchandisePrice(p);
+}
 function articleListTotal(p){
-  return articleMerchandisePrice(p)+Math.max(0,Number(p?.mandatoryFreight)||0);
+  return articleMerchandisePrice(p);
 }
 function catalogPurchaseBase(p){
   const freight=Math.max(0,Number(p?.mandatoryFreight)||0);
   const original=Number(p?.catalogTotalPrice ?? p?.totalPrice ?? 0);
   return Math.max(0,original-freight);
 }
-
+function recorAutomaticSupplierShipping(){
+  return (state.selected||[])
+    .filter(p=>isRealSelectedProduct(p) && p?.manufacturer==="Recor")
+    .reduce((sum,p)=>sum+Math.max(0,Number(p?.mandatoryFreight)||0),0);
+}
+function manualSupplierShipping(){
+  return Math.max(0,Number(state.commercial?.supplierShippingFee)||0);
+}
 function effectiveSaleValue(p){
-  const freight=Math.max(0,Number(p?.mandatoryFreight)||0);
   const merchandise=articleMerchandisePrice(p);
-  return merchandise*(1-effectiveDiscountRate(p)/100)+freight;
+  return merchandise*(1-effectiveDiscountRate(p)/100);
 }
 
 function supplierDiscountRate(manufacturer){
@@ -2136,11 +2154,10 @@ function purchaseDiscountFor(p){
   return supplierDiscountRate(p?.manufacturer);
 }
 function purchaseCostFor(p){
-  const freight=Math.max(0,Number(p?.mandatoryFreight)||0);
   const raw=p?.purchasePrice;
   const explicit=(raw===null||raw===undefined||raw==="")?NaN:Number(raw);
-  if(Number.isFinite(explicit) && explicit>=0)return explicit+freight;
-  return catalogPurchaseBase(p)*(1-purchaseDiscountFor(p)/100)+freight;
+  if(Number.isFinite(explicit) && explicit>=0)return explicit;
+  return catalogPurchaseBase(p)*(1-purchaseDiscountFor(p)/100);
 }
 function projectPurchaseCost(){
   return (state.selected||[]).filter(isRealSelectedProduct).reduce((sum,p)=>sum+purchaseCostFor(p),0);
@@ -2156,7 +2173,9 @@ function projectFinancials(){
   const discountAmount=list-netBeforeShipping;
 
   const shipping=Math.max(0,Number(state.commercial?.shippingFee)||0);
-  const supplierShipping=Math.max(0,Number(state.commercial?.supplierShippingFee)||0);
+  const recorSupplierShipping=recorAutomaticSupplierShipping();
+  const supplierShippingManual=manualSupplierShipping();
+  const supplierShipping=supplierShippingManual+recorSupplierShipping;
   const net=netBeforeShipping+shipping+supplierShipping;
 
   const purchaseProducts=projectPurchaseCost();
@@ -2172,28 +2191,19 @@ function projectFinancials(){
 
   return {
     list,discountRate:clientDiscountRate(),discountAmount,
-    productsNet,manualNet,shipping,supplierShipping,net,
+    productsNet,manualNet,shipping,supplierShipping,supplierShippingManual,recorSupplierShipping,net,
     purchase,purchaseProducts,margin,marginOnSales,marginOnCost,
     vatRate,vat,ttc:net+vat,catalogNet:productsNet
   };
 }
 function commercialPriceHtml(value,p=null){
   const d=p?effectiveDiscountRate(p):clientDiscountRate();
-  const freight=p?Math.max(0,Number(p.mandatoryFreight)||0):0;
   const merchandise=p?articleMerchandisePrice(p):Number(value||0);
-  const listTotal=merchandise+freight;
   const netMerchandise=merchandise*(1-d/100);
-  const netTotal=netMerchandise+freight;
-
-  if(!d){
-    return freight
-      ? `<strong>${euro(listTotal)} HT</strong><span class="price-discount">dont ${euro(freight)} port obligatoire</span>`
-      : `${euro(listTotal)} HT`;
-  }
-
+  if(!d)return `${euro(merchandise)} HT`;
   const own=p?itemDiscountRate(p):null;
   const label=own===null?`−${d.toLocaleString("fr-FR",{maximumFractionDigits:1})}%`:`article −${d.toLocaleString("fr-FR",{maximumFractionDigits:1})}%`;
-  return `<span class="price-list">${euro(listTotal)} HT</span><span class="price-discount">${label}${freight?` · port ${euro(freight)} non remisé`:""}</span><strong>${euro(netTotal)} HT</strong>`;
+  return `<span class="price-list">${euro(merchandise)} HT</span><span class="price-discount">${label}</span><strong>${euro(netMerchandise)} HT</strong>`;
 }
 function commercialManufacturers(){
   return [...new Set(state.selected.map(p=>p.manufacturer).filter(Boolean))].sort((x,y)=>x.localeCompare(y,"fr"));
@@ -2204,7 +2214,14 @@ function renderMarginDashboard(){
   if(cd) cd.value=clientDiscountRate();
   if(vat) vat.value=clampPercent(state.commercial?.vatRate??20);
   if(ship) ship.value=Math.max(0,Number(state.commercial?.shippingFee)||0);
-  if(supplierShip) supplierShip.value=Math.max(0,Number(state.commercial?.supplierShippingFee)||0);
+  if(supplierShip){
+    const autoRecor=recorAutomaticSupplierShipping();
+    supplierShip.value=manualSupplierShipping()+autoRecor;
+    supplierShip.min=String(autoRecor);
+    supplierShip.title=autoRecor?`${euro(autoRecor)} HT de port Recor automatique inclus`:"Port fournisseur HT";
+    const hint=$("#supplierShippingHint");
+    if(hint)hint.textContent=autoRecor?`dont ${euro(autoRecor)} HT Recor automatique`:`Saisie libre`;
+  }
 
   const makers=commercialManufacturers();
   const supplierHost=$("#supplierDiscounts");
@@ -2222,7 +2239,7 @@ function renderMarginDashboard(){
     <div class="margin-kpi"><span>Tarif public projet</span><strong>${euro(f.list)} HT</strong></div>
     <div class="margin-kpi"><span>Vente produits après remises</span><strong>${euro(f.productsNet)} HT</strong><small>Remise globale + éventuelles remises article</small></div>
     <div class="margin-kpi"><span>Frais de port facturés</span><strong>${euro(f.shipping)} HT</strong><small>Ajoutés au devis</small></div>
-    <div class="margin-kpi"><span>Port fournisseur</span><strong>${euro(f.supplierShipping)} HT</strong><small>Refacturé à l’identique · marge neutre</small></div>
+    <div class="margin-kpi"><span>Port fournisseur</span><strong>${euro(f.supplierShipping)} HT</strong><small>${f.recorSupplierShipping?`dont ${euro(f.recorSupplierShipping)} HT Recor automatique · `:""}Refacturé à l’identique · marge neutre</small></div>
     <div class="margin-kpi"><span>Coût d'achat produits</span><strong>${euro(f.purchaseProducts)} HT</strong></div>
     <div class="margin-kpi highlight"><span>Marge brute produits</span><strong>${euro(f.margin)} HT</strong><small>Taux de marque ${f.marginOnSales.toLocaleString("fr-FR",{maximumFractionDigits:1})}% · taux de marge ${f.marginOnCost.toLocaleString("fr-FR",{maximumFractionDigits:1})}%</small></div>`;
 
@@ -2257,8 +2274,22 @@ function bindCommercial(){
   if(cd) cd.oninput=()=>{state.commercial.clientDiscount=clampPercent(cd.value);saveState();renderMarginDashboard();};
   if(vat) vat.oninput=()=>{state.commercial.vatRate=clampPercent(vat.value);saveState();renderMarginDashboard();};
   if(ship) ship.oninput=()=>{state.commercial.shippingFee=Math.max(0,Number(ship.value)||0);saveState();renderMarginDashboard();};
-  if(supplierShip) supplierShip.oninput=()=>{state.commercial.supplierShippingFee=Math.max(0,Number(supplierShip.value)||0);saveState();renderMarginDashboard();};
+  if(supplierShip) supplierShip.oninput=()=>{
+    const autoRecor=recorAutomaticSupplierShipping();
+    const requested=Math.max(0,Number(supplierShip.value)||0);
+    state.commercial.supplierShippingFee=Math.max(0,requested-autoRecor);
+    saveState();renderMarginDashboard();
+  };
   renderMarginDashboard();
+}
+function clientFacingDesignation(p){
+  let value=String(p?.designation||p?.label||"").trim();
+  if(p?.manufacturer==="Recor"){
+    value=value
+      .replace(/\s*[·•|—-]?\s*(?:dont\s+)?(?:port|transport)(?:\s+Recor)?(?:\s+obligatoire)?\s*:?\s*380(?:[.,]00)?\s*€?\s*(?:HT)?/gi,"")
+      .replace(/\s{2,}/g," ").replace(/[·•|—-]\s*$/g,"").trim();
+  }
+  return value;
 }
 function quoteRows(){
   const rows=[];
@@ -2267,19 +2298,18 @@ function quoteRows(){
     const grouped=new Map();
     roomProducts.forEach(p=>{
       const discount=effectiveDiscountRate(p);
-      const freight=Math.max(0,Number(p.mandatoryFreight)||0);
       const leadTime=String(p.leadTime||"").trim();
-      const key=[p.reference,p.finish,p.manufacturer,discount,freight,leadTime].join("|");
-      if(!grouped.has(key)) grouped.set(key,{...p,qty:0,_effectiveDiscount:discount,_freight:freight,_leadTime:leadTime});
+      const key=[p.reference,p.finish,p.manufacturer,discount,leadTime].join("|");
+      if(!grouped.has(key)) grouped.set(key,{...p,qty:0,_effectiveDiscount:discount,_leadTime:leadTime});
       grouped.get(key).qty++;
     });
     for(const p of grouped.values()){
       rows.push({
-        room:r.title,reference:p.reference,designation:p.designation,finish:p.finish,
+        room:r.title,reference:p.reference,designation:clientFacingDesignation(p),finish:p.finish,
         manufacturer:p.manufacturer,qty:p.qty,
         unit:articleListTotal(p),
         netUnit:effectiveSaleValue(p),
-        freight:p._freight||0,
+        freight:0,
         leadTime:p._leadTime||"",
         manual:false,discount:p._effectiveDiscount
       });
@@ -2349,7 +2379,7 @@ function quotePages(startNo){
           <tr>
             <td>${esc(row.room)}</td>
             ${state.showSupplierReferences!==false?`<td>${esc(row.reference||"—")}</td>`:""}
-            <td><b>${esc(row.designation)}</b><small>${esc(row.manufacturer)}${row.finish?` · ${esc(row.finish)}`:""}${row.freight?` · port obligatoire ${euro(row.freight)}`:""}</small></td>
+            <td><b>${esc(row.designation)}</b><small>${esc(row.manufacturer)}${row.finish?` · ${esc(row.finish)}`:""}</small></td>
             <td>${esc(row.leadTime||"—")}</td>
             <td>${row.qty}</td>
             <td>${euro(row.unit)}</td>
@@ -2379,7 +2409,7 @@ function quotePages(startNo){
 
 function renderSelection(){
  $("#selectionCount").textContent=state.rooms.length+" pièce"+(state.rooms.length>1?"s":"")+" · "+state.selected.length+" produit"+(state.selected.length>1?"s":"");
- $("#selectionMini").innerHTML=state.rooms.map(r=>{let ps=state.selected.filter(p=>p.roomId===r.id);return `<div class="mini"><b>${r.title}</b><div class="mini-room">${ps.length} produit${ps.length>1?"s":""}</div>${ps.slice(0,3).map(p=>`<div>${p.reference} · ${euro(p.totalPrice)}</div>`).join("")}</div>`}).join("");
+ $("#selectionMini").innerHTML=state.rooms.map(r=>{let ps=state.selected.filter(p=>p.roomId===r.id);return `<div class="mini"><b>${r.title}</b><div class="mini-room">${ps.length} produit${ps.length>1?"s":""}</div>${ps.slice(0,3).map(p=>`<div>${p.reference} · ${euro(articleMerchandisePrice(p))}</div>`).join("")}</div>`}).join("");
 }
 function newRoom(){let title=prompt("Nom de la pièce","SDB SUITE");if(!title)return;let id="r"+Date.now();state.rooms.push({id,title,subtitle:"",manual:[]});saveState();renderRoomSelect();renderSelection();renderRooms();renderMarginDashboard();$("#targetRoom").value=id;renderCatalog();}
 
@@ -2459,7 +2489,7 @@ function safeExactFinishLabel(p){
   try{return exactFinishLabel(p)||p?.finish||""}catch(e){console.warn("[finish label]",p?.reference,e);return p?.finish||""}
 }
 function safeEffectiveSaleValue(p){
-  try{return effectiveSaleValue(p)}catch(e){console.warn("[sale value]",p?.reference,e);return Number(p?.totalPrice||0)}
+  try{return effectiveSaleValue(p)}catch(e){console.warn("[sale value]",p?.reference,e);return articleMerchandisePrice(p)}
 }
 function safeBasinAccessorySuggestions(p,roomId){
   try{return basinAccessorySuggestions(p,roomId)||""}catch(e){console.warn("[basin accessories]",p?.reference,e);return ""}
@@ -2488,7 +2518,7 @@ function renderRoomsCore(){
               </span>
               <span class="designation-translation-status">${designationLooksNonFrench(p.designation)?"Texte étranger détecté · traduction automatique appliquée uniquement si le lexique technique est suffisamment fiable.":""}</span>
             </label>
-            <label>Prix de vente HT${p.mandatoryFreight?" hors port obligatoire":""}
+            <label>Prix de vente HT
               <input class="edit-price" data-id="${p.id}" type="number" min="0" step="0.01" value="${articleMerchandisePrice(p)}">
             </label>
             <label class="editor-file-label">Photo
@@ -2532,7 +2562,7 @@ function renderRoomsCore(){
           <div class="tech">${hasItemDiscountOverride(p)?`Remise spécifique : ${itemDiscountRate(p).toLocaleString("fr-FR",{maximumFractionDigits:1})}%`:`Utilise la remise globale : ${clientDiscountRate().toLocaleString("fr-FR",{maximumFractionDigits:1})}%`}</div>
           <b>${euro(safeEffectiveSaleValue(p))} HT net</b>
         </div>
-        <div class="price-total">${euro(articleListTotal(p))} HT${p.mandatoryFreight?`<div class="tech">dont ${euro(p.mandatoryFreight)} de transport Recor obligatoire</div>`:""}<div class="tech">${p.imageStatus||p.imageSource||"Photo fabricant à rechercher"}</div>${p.imageNote?`<div class="tech">${p.imageNote}</div>`:""}</div>
+        <div class="price-total">${euro(articleListTotal(p))} HT<div class="tech">${p.imageStatus||p.imageSource||"Photo fabricant à rechercher"}</div>${p.imageNote?`<div class="tech">${p.imageNote}</div>`:""}</div>
         <button class="icon del-prod" data-id="${p.id}">×</button>
         ${safeBasinAccessorySuggestions(p,r.id)}${safeRecorBathOptions(p,r.id)}
       </div>`).join(""):`<div class="room-empty">Aucun produit catalogue dans cette pièce.</div>`}</div>
@@ -3120,7 +3150,7 @@ function boardVisualWithRecorOptions(p){
 }
 function boardItemHtml(p,idx){
  const isManual=!!p.manual || p.manufacturer==="Sélection libre";
- const designation=String(p.designation||p.label||"Élément libre").trim();
+ const designation=isManual?String(p.designation||p.label||"Élément libre").trim():clientFacingDesignation(p);
  const visual=isManual
    ?(p.image?`<figure class="board-single-image"><img src="${p.image}" alt="${designation}" loading="eager"></figure>`:`<div class="board-image-fallback manual-board-fallback">Élément libre</div>`)
    :boardVisualWithRecorOptions(p);
