@@ -1,6 +1,6 @@
 {
-  "version": "7.6",
-  "total": 21113,
+  "version": "7.8",
+  "total": 68429,
   "chunks": [
     {
       "file": "catalog_coalbrook.json",
@@ -21,6 +21,21 @@
       "file": "catalog_lefroy_brooks.json",
       "label": "Lefroy Brooks",
       "count": 3397
+    },
+    {
+      "file": "catalog_nicolazzi.json",
+      "label": "Nicolazzi",
+      "count": 15023
+    },
+    {
+      "file": "catalog_gessi.json",
+      "label": "Gessi",
+      "count": 16211
+    },
+    {
+      "file": "catalog_ritmonio.json",
+      "label": "Ritmonio",
+      "count": 16082
     },
     {
       "file": "catalog_recor.json",
@@ -63,6 +78,6 @@
       "count": 53
     }
   ],
-  "engineVersion": "11.13.0",
+  "engineVersion": "11.25.0",
   "manufacturersManifest": "manufacturers_manifest.json"
 }

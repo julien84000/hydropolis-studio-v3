@@ -1,18 +1,23 @@
 const fs=require('fs');
 const path=require('path');
 const assert=require('assert');
+const zlib=require('zlib');
 const root=path.resolve(__dirname,'..');
 const read=f=>fs.readFileSync(path.join(root,f),'utf8');
 const json=f=>JSON.parse(read(f));
 
 assert.equal(json('package.json').version,'11.25.0');
+const supplierPack=json('public/catalog_suppliers_v1125.pack.json');
+const packedJson=maker=>JSON.parse(zlib.gunzipSync(Buffer.from(supplierPack[maker],'base64')).toString('utf8'));
+
 for(const f of ['public/sw.js','public/manifest.webmanifest','public/manufacturers_manifest.json'])assert(fs.existsSync(path.join(root,f)),`${f} missing`);
 
 const manifest=json('public/catalog_manifest.json');
 const files=['amphora_catalog.json',...manifest.chunks.map(c=>c.file)];
 let total=0;const makers=new Set();const unique=new Set();
 for(const file of files){
-  const rows=json('public/'+file);total+=rows.length;
+  const packedMaker=file==='catalog_ritmonio.json'?'Ritmonio':file==='catalog_nicolazzi.json'?'Nicolazzi':file==='catalog_gessi.json'?'Gessi':'';
+  const rows=packedMaker?packedJson(packedMaker):json('public/'+file);total+=rows.length;
   for(const p of rows){makers.add(p.manufacturer);unique.add(`${p.manufacturer}|${p.reference}`)}
 }
 assert.equal(total,68600,'catalog row count changed unexpectedly');
@@ -83,7 +88,7 @@ assert(server.includes('bufferStartsWithPdf'),'PDF signature validation missing'
 assert(server.includes('Technical drawing URL from the live DOM') || server.includes('Technical drawing URL from the live DOM'.replace('URL','URL')),'Recor live drawing refresh guard missing');
 
 // Ritmonio V11.23 regression guards
-const ritmonioRows=json('public/catalog_ritmonio.json');
+const ritmonioRows=packedJson('Ritmonio');
 assert.equal(ritmonioRows.length,16082,'Ritmonio unique catalog count changed unexpectedly');
 assert(ritmonioRows.every(x=>x.purchaseDiscount===55),'Ritmonio 55% supplier discount missing');
 assert(ritmonioRows.every(x=>/majoration Hydropolis \+5%/.test(x.source||'')),'Ritmonio +5% source marker missing');
@@ -93,22 +98,25 @@ assert(server.includes('ritmonio.it'),'Ritmonio secure remote host missing');
 const lefroyRows=json('public/catalog_lefroy_brooks.json');
 assert(lefroyRows.every(x=>x.purchaseDiscount===55),'Lefroy Brooks 55% supplier discount missing');
 
-// V11.24 exact Ritmonio finish assets
-for(const code of ['CRL','IX','CRB','BLX','DOR','GOX','CHX','BRX','C03','C04','F31','F32','F33','F34','F36','F37','F45','F46']) assert(fs.existsSync(path.join(root,'public/assets/ritmonio-finishes',code+'.png')),`missing Ritmonio swatch ${code}`);
-assert(app.includes('/assets/ritmonio-finishes/CRL.png'),'Ritmonio local swatch map missing');
+// V11.24/V11.25 finish swatches are embedded for GitHub-safe deployment
+for(const code of ['CRL','IX','CRB','BLX','DOR','GOX','CHX','BRX','C03','C04','F31','F32','F33','F34','F36','F37','F45','F46']) assert(app.includes(`Ritmonio:${code}`),`missing embedded Ritmonio swatch ${code}`);
+assert(app.includes('SUPPLIER_FINISH_SWATCH_DATA'),'embedded supplier swatch map missing');
 assert(read('public/sw.js').includes('hydropolis-v11-25-shell'),'V11.25 SW cache missing');
 
 // V11.25 Nicolazzi + Gessi
-const nicolazziRows=json('public/catalog_nicolazzi.json');
+const nicolazziRows=packedJson('Nicolazzi');
 assert.equal(nicolazziRows.length,15023,'Nicolazzi catalog row count changed unexpectedly');
 assert(nicolazziRows.every(x=>x.purchaseDiscount===50),'Nicolazzi 50% supplier discount missing');
 assert(nicolazziRows.every(x=>/majoration Hydropolis \+25%/.test(x.source||'')),'Nicolazzi +25% source marker missing');
-const gessiRows=json('public/catalog_gessi.json');
+const gessiRows=packedJson('Gessi');
 assert.equal(gessiRows.length,16211,'Gessi catalog row count changed unexpectedly');
 assert(gessiRows.every(x=>x.purchaseDiscount===50),'Gessi 50% supplier discount missing');
 assert(gessiRows.every(x=>/majoration Hydropolis \+6%/.test(x.source||'')),'Gessi +6% source marker missing');
-for(const code of ['CR','NL','OS','GO','NEM']) assert(fs.existsSync(path.join(root,'public/assets/nicolazzi-finishes',code+'.png')),`missing Nicolazzi swatch ${code}`);
-for(const code of ['031','149','239','299','706','707','708','726','727']) assert(fs.existsSync(path.join(root,'public/assets/gessi-finishes',code+'.png')),`missing Gessi swatch ${code}`);
+for(const code of ['CR','NL','OS','GO','NEM']) assert(app.includes(`Nicolazzi:${code}`),`missing embedded Nicolazzi swatch ${code}`);
+for(const code of ['031','149','239','299','706','707','708','726','727']) assert(app.includes(`Gessi:${code}`),`missing embedded Gessi swatch ${code}`);
 assert(app.includes('NICOLAZZI_FINISH_NAMES') && app.includes('GESSI_FINISH_NAMES'),'new supplier finish maps missing');
 assert(server.includes('resolveNicolazziProductUrl') && server.includes('resolveGessiProductUrl'),'new supplier official-site resolvers missing');
 assert(server.includes('gwebassets.gessi.com') && server.includes('nicolazzi.it'),'new supplier secure remote hosts missing');
+
+assert(server.includes('packedSupplierCatalogText'),'packed supplier catalog server loader missing');
+assert(fs.existsSync(path.join(root,'public/catalog_suppliers_v1125.pack.json')),'supplier catalog pack missing');

@@ -10,3 +10,6 @@
 - Gessi : photo de finition officielle prioritaire lorsqu'elle est exposée par le fabricant ; fallback photo officielle produit + pastille exacte de finition.
 - Ajout des domaines officiels Gessi/Nicolazzi au proxy sécurisé.
 - Nouveau cache offline V11.25 pour les pastilles de finitions locales.
+
+- Déploiement GitHub : les trois très gros catalogues Ritmonio/Nicolazzi/Gessi sont regroupés dans un pack texte gzip+base64, servi sous leurs URLs JSON habituelles par Node.
+- Les 87 pastilles de finition sont miniaturisées et embarquées dans `app.js`, afin d’éviter les limites de téléversement GitHub sans perdre les textures de finition.

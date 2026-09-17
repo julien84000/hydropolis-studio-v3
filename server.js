@@ -3,6 +3,7 @@ const path = require("path");
 const axios = require("axios");
 const cheerio = require("cheerio");
 const fs = require("fs");
+const zlib = require("zlib");
 const crypto = require("crypto");
 const dns = require("dns").promises;
 const net = require("net");
@@ -746,6 +747,48 @@ app.post("/api/translate-product",requireAuth,async(req,res)=>{
 });
 
 
+const PACKED_SUPPLIER_CATALOG_FILE=path.join(__dirname,"public","catalog_suppliers_v1125.pack.json");
+let packedSupplierCatalogSource=null;
+const packedSupplierCatalogTextCache=new Map();
+function packedSupplierCatalogText(maker){
+  const name=String(maker||"");
+  if(packedSupplierCatalogTextCache.has(name))return packedSupplierCatalogTextCache.get(name);
+  if(!packedSupplierCatalogSource){packedSupplierCatalogSource=JSON.parse(fs.readFileSync(PACKED_SUPPLIER_CATALOG_FILE,"utf8"));}
+  const encoded=packedSupplierCatalogSource[name];
+  if(!encoded)throw new Error(`Catalogue pack absent: ${name}`);
+  const text=zlib.gunzipSync(Buffer.from(encoded,"base64")).toString("utf8");
+  packedSupplierCatalogTextCache.set(name,text);
+  return text;
+}
+function packedSupplierFromFilename(file=""){
+  const f=String(file||"").toLowerCase();
+  if(f==="catalog_ritmonio.json")return "Ritmonio";
+  if(f==="catalog_nicolazzi.json")return "Nicolazzi";
+  if(f==="catalog_gessi.json")return "Gessi";
+  return "";
+}
+function catalogFileText(file){
+  const maker=packedSupplierFromFilename(file);
+  if(maker)return packedSupplierCatalogText(maker);
+  return fs.readFileSync(path.join(__dirname,"public",file),"utf8");
+}
+function normalizeCatalogCommercialTerms(product){
+  if(!product||typeof product!=="object")return product;
+  if(product.manufacturer==="Lefroy Brooks")return {...product,purchaseDiscount:55};
+  return product;
+}
+for(const [route,maker] of [["/catalog_ritmonio.json","Ritmonio"],["/catalog_nicolazzi.json","Nicolazzi"],["/catalog_gessi.json","Gessi"]]){
+  app.get(route,(req,res)=>{
+    try{
+      res.set("Cache-Control","public, max-age=86400, stale-while-revalidate=604800");
+      res.type("application/json").send(packedSupplierCatalogText(maker));
+    }catch(e){
+      console.error("[catalog-pack]",maker,e.message);
+      res.status(500).json({error:"Catalogue fournisseur indisponible",manufacturer:maker});
+    }
+  });
+}
+
 let catalogSearchIndexPromise=null;
 async function loadCatalogSearchIndex(){
   if(catalogSearchIndexPromise)return catalogSearchIndexPromise;
@@ -755,8 +798,9 @@ async function loadCatalogSearchIndex(){
     const items=[];const seen=new Set();
     for(const file of files){
       try{
-        const rows=JSON.parse(fs.readFileSync(path.join(__dirname,"public",file),"utf8"));
-        for(const p of Array.isArray(rows)?rows:[]){
+        const rows=JSON.parse(catalogFileText(file));
+        for(const sourceProduct of Array.isArray(rows)?rows:[]){
+          const p=normalizeCatalogCommercialTerms(sourceProduct);
           const key=`${p.manufacturer||""}|${p.reference||""}`;if(seen.has(key))continue;seen.add(key);items.push(p);
         }
       }catch(e){console.warn("[catalog-index]",file,e.message)}

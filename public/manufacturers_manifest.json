@@ -1,12 +1,101 @@
 {
-  "version": "11.13.0",
+  "version": "11.25.0",
   "manufacturers": [
-    {"name":"Amphora","catalog":"amphora_catalog.json","capabilities":["catalog","manufacturer-image","technical-docs"]},
-    {"name":"Catalano","catalog":"catalog_catalano.json","capabilities":["catalog","manufacturer-image","technical-docs"]},
-    {"name":"Coalbrook","catalog":"catalog_coalbrook.json","capabilities":["catalog","manufacturer-image","technical-docs"]},
-    {"name":"Hotbath","catalog":"catalog_hotbath.json","capabilities":["catalog","manufacturer-image","sanitairkamer-fallback","drawing-image"]},
-    {"name":"Lefroy Brooks","catalog":"catalog_lefroy_brooks.json","capabilities":["catalog","manufacturer-image","technical-docs"]},
-    {"name":"Recor","catalog":"catalog_recor.json","capabilities":["catalog","manufacturer-image","required-feet-configurator"]},
-    {"name":"Zucchetti","catalog":"catalog_zucchetti_1.json","catalogChunks":7,"capabilities":["catalog","manufacturer-image","technical-pdf-page-3"]}
+    {
+      "name": "Amphora",
+      "catalog": "amphora_catalog.json",
+      "capabilities": [
+        "catalog",
+        "manufacturer-image",
+        "technical-docs"
+      ]
+    },
+    {
+      "name": "Catalano",
+      "catalog": "catalog_catalano.json",
+      "capabilities": [
+        "catalog",
+        "manufacturer-image",
+        "technical-docs"
+      ]
+    },
+    {
+      "name": "Coalbrook",
+      "catalog": "catalog_coalbrook.json",
+      "capabilities": [
+        "catalog",
+        "manufacturer-image",
+        "technical-docs"
+      ]
+    },
+    {
+      "name": "Hotbath",
+      "catalog": "catalog_hotbath.json",
+      "capabilities": [
+        "catalog",
+        "manufacturer-image",
+        "sanitairkamer-fallback",
+        "drawing-image"
+      ]
+    },
+    {
+      "name": "Lefroy Brooks",
+      "catalog": "catalog_lefroy_brooks.json",
+      "capabilities": [
+        "catalog",
+        "manufacturer-image",
+        "technical-docs"
+      ]
+    },
+    {
+      "name": "Nicolazzi",
+      "catalog": "catalog_nicolazzi.json",
+      "capabilities": [
+        "catalog",
+        "manufacturer-image",
+        "technical-docs",
+        "exploded-view",
+        "finish-swatch-overlay"
+      ]
+    },
+    {
+      "name": "Gessi",
+      "catalog": "catalog_gessi.json",
+      "capabilities": [
+        "catalog",
+        "manufacturer-image",
+        "technical-docs",
+        "finish-specific-images",
+        "finish-swatch-overlay"
+      ]
+    },
+    {
+      "name": "Recor",
+      "catalog": "catalog_recor.json",
+      "capabilities": [
+        "catalog",
+        "manufacturer-image",
+        "required-feet-configurator"
+      ]
+    },
+    {
+      "name": "Ritmonio",
+      "catalog": "catalog_ritmonio.json",
+      "capabilities": [
+        "catalog",
+        "manufacturer-image",
+        "finish-swatch-overlay"
+      ]
+    },
+    {
+      "name": "Zucchetti",
+      "catalog": "catalog_zucchetti_1.json",
+      "catalogChunks": 7,
+      "capabilities": [
+        "catalog",
+        "manufacturer-image",
+        "technical-pdf-page-3"
+      ]
+    }
   ]
 }
