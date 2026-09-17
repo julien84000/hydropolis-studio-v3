@@ -1,0 +1,24 @@
+{
+  "name": "hydropolis-studio-v3",
+  "version": "11.25.0",
+  "private": true,
+  "description": "Hydropolis Studio V11.25 - Nicolazzi + Gessi catalogs and finish-aware visuals",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "check": "node --check server.js && node --check public/app.js && node --check public/sw.js",
+    "test": "node tests/v11-smoke.js",
+    "build": "npm run check && npm test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "cheerio": "^1.0.0",
+    "express": "^4.21.2",
+    "pdfjs-dist": "^5.4.149",
+    "@napi-rs/canvas": "^0.1.80",
+    "pg": "^8.13.1"
+  }
+}
