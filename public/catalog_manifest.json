@@ -23,17 +23,17 @@
       "count": 3397
     },
     {
-      "file": "catalog_nicolazzi.json",
+      "file": "catalog_nicolazzi.json.gz",
       "label": "Nicolazzi",
       "count": 15023
     },
     {
-      "file": "catalog_gessi.json",
+      "file": "catalog_gessi.json.gz",
       "label": "Gessi",
       "count": 16211
     },
     {
-      "file": "catalog_ritmonio.json",
+      "file": "catalog_ritmonio.json.gz",
       "label": "Ritmonio",
       "count": 16082
     },
@@ -78,6 +78,7 @@
       "count": 53
     }
   ],
-  "engineVersion": "11.25.0",
-  "manufacturersManifest": "manufacturers_manifest.json"
+  "engineVersion": "11.26.0",
+  "manufacturersManifest": "manufacturers_manifest.json",
+  "storage": "gzip for large supplier catalogs"
 }

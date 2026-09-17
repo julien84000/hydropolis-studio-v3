@@ -72,3 +72,11 @@ Le rendu des drawings PDF Recor ouvre désormais la fiche produit officielle ava
 - Remise fournisseur Ritmonio : 55 %.
 - Remise fournisseur Lefroy Brooks mise à 55 %.
 - Quand la photo de finition n’existe pas, le visuel affiche la photo produit fournisseur avec une pastille de finition Ritmonio.
+
+
+### Catalogues gzip V11.25
+Les catalogues Ritmonio, Nicolazzi et Gessi sont distribués en `.json.gz`. Le client utilise `DecompressionStream` et le serveur Node utilise `zlib.gunzipSync`. Les pastilles de finition sont embarquées dans `app.js`.
+
+
+## V11.26
+- Correctif des photos Gessi : Area Pro + image officielle exacte par finition, avec exclusion des logos/visuels corporate.

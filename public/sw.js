@@ -1,5 +1,5 @@
-const CACHE="hydropolis-v11-25-shell";
-const CATALOG_CACHE="hydropolis-v11-25-catalogs";
+const CACHE="hydropolis-v11-26-shell";
+const CATALOG_CACHE="hydropolis-v11-26-catalogs";
 const SHELL=["/","/index.html","/styles.css","/app.js","/catalog_manifest.json","/manufacturers_manifest.json","/amphora_catalog.json","/manifest.webmanifest",
   "/assets/recor-feet/aster.jpg","/assets/recor-feet/ball-claw.jpg","/assets/recor-feet/wood.jpg","/assets/recor-feet/imperial.jpg",
   "/assets/recor-feet/lion.jpg","/assets/recor-feet/pedestal.jpg","/assets/recor-feet/princess.jpg","/assets/recor-feet/carlton.jpg",
@@ -23,7 +23,7 @@ self.addEventListener("fetch",event=>{
   // localStorage under the authenticated browser profile, not in a shared HTTP cache.
   if(url.pathname.startsWith("/api/"))return;
 
-  const isCatalog=/\/(?:catalog_.*\.json|amphora_catalog\.json|catalog_manifest\.json|manufacturers_manifest\.json)$/.test(url.pathname);
+  const isCatalog=/\/(?:catalog_.*\.json(?:\.gz)?|amphora_catalog\.json|catalog_manifest\.json|manufacturers_manifest\.json)$/.test(url.pathname);
   if(isCatalog){
     event.respondWith(caches.open(CATALOG_CACHE).then(async cache=>{
       const hit=await cache.match(req);

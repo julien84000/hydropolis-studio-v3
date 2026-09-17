@@ -1,5 +1,5 @@
 {
-  "version": "11.25.0",
+  "version": "11.26.0",
   "manufacturers": [
     {
       "name": "Amphora",
@@ -49,7 +49,7 @@
     },
     {
       "name": "Nicolazzi",
-      "catalog": "catalog_nicolazzi.json",
+      "catalog": "catalog_nicolazzi.json.gz",
       "capabilities": [
         "catalog",
         "manufacturer-image",
@@ -60,7 +60,7 @@
     },
     {
       "name": "Gessi",
-      "catalog": "catalog_gessi.json",
+      "catalog": "catalog_gessi.json.gz",
       "capabilities": [
         "catalog",
         "manufacturer-image",
@@ -80,7 +80,7 @@
     },
     {
       "name": "Ritmonio",
-      "catalog": "catalog_ritmonio.json",
+      "catalog": "catalog_ritmonio.json.gz",
       "capabilities": [
         "catalog",
         "manufacturer-image",

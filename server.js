@@ -747,48 +747,6 @@ app.post("/api/translate-product",requireAuth,async(req,res)=>{
 });
 
 
-const PACKED_SUPPLIER_CATALOG_FILE=path.join(__dirname,"public","catalog_suppliers_v1125.pack.json");
-let packedSupplierCatalogSource=null;
-const packedSupplierCatalogTextCache=new Map();
-function packedSupplierCatalogText(maker){
-  const name=String(maker||"");
-  if(packedSupplierCatalogTextCache.has(name))return packedSupplierCatalogTextCache.get(name);
-  if(!packedSupplierCatalogSource){packedSupplierCatalogSource=JSON.parse(fs.readFileSync(PACKED_SUPPLIER_CATALOG_FILE,"utf8"));}
-  const encoded=packedSupplierCatalogSource[name];
-  if(!encoded)throw new Error(`Catalogue pack absent: ${name}`);
-  const text=zlib.gunzipSync(Buffer.from(encoded,"base64")).toString("utf8");
-  packedSupplierCatalogTextCache.set(name,text);
-  return text;
-}
-function packedSupplierFromFilename(file=""){
-  const f=String(file||"").toLowerCase();
-  if(f==="catalog_ritmonio.json")return "Ritmonio";
-  if(f==="catalog_nicolazzi.json")return "Nicolazzi";
-  if(f==="catalog_gessi.json")return "Gessi";
-  return "";
-}
-function catalogFileText(file){
-  const maker=packedSupplierFromFilename(file);
-  if(maker)return packedSupplierCatalogText(maker);
-  return fs.readFileSync(path.join(__dirname,"public",file),"utf8");
-}
-function normalizeCatalogCommercialTerms(product){
-  if(!product||typeof product!=="object")return product;
-  if(product.manufacturer==="Lefroy Brooks")return {...product,purchaseDiscount:55};
-  return product;
-}
-for(const [route,maker] of [["/catalog_ritmonio.json","Ritmonio"],["/catalog_nicolazzi.json","Nicolazzi"],["/catalog_gessi.json","Gessi"]]){
-  app.get(route,(req,res)=>{
-    try{
-      res.set("Cache-Control","public, max-age=86400, stale-while-revalidate=604800");
-      res.type("application/json").send(packedSupplierCatalogText(maker));
-    }catch(e){
-      console.error("[catalog-pack]",maker,e.message);
-      res.status(500).json({error:"Catalogue fournisseur indisponible",manufacturer:maker});
-    }
-  });
-}
-
 let catalogSearchIndexPromise=null;
 async function loadCatalogSearchIndex(){
   if(catalogSearchIndexPromise)return catalogSearchIndexPromise;
@@ -798,9 +756,11 @@ async function loadCatalogSearchIndex(){
     const items=[];const seen=new Set();
     for(const file of files){
       try{
-        const rows=JSON.parse(catalogFileText(file));
-        for(const sourceProduct of Array.isArray(rows)?rows:[]){
-          const p=normalizeCatalogCommercialTerms(sourceProduct);
+        const fullPath=path.join(__dirname,"public",file);
+        const raw=fs.readFileSync(fullPath);
+        const text=/\.gz$/i.test(file)?zlib.gunzipSync(raw).toString("utf8"):raw.toString("utf8");
+        const rows=JSON.parse(text);
+        for(const p of Array.isArray(rows)?rows:[]){
           const key=`${p.manufacturer||""}|${p.reference||""}`;if(seen.has(key))continue;seen.add(key);items.push(p);
         }
       }catch(e){console.warn("[catalog-index]",file,e.message)}
@@ -833,7 +793,7 @@ app.get("/api/catalog/search",requireAuth,async(req,res)=>{
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V11.23",
+  service:"Hydropolis Studio V11.26",
   database:USE_POSTGRES?"postgresql":"local-fallback",
   time:new Date().toISOString()
 }));
@@ -1314,25 +1274,32 @@ async function resolveNicolazziProductUrl(reference,designation="",collection=""
   }
   return fallback||"https://www.nicolazzi.it/en/";
 }
+function gessiReferenceParts(reference="",finishCode=""){
+  const raw=String(reference||"").toUpperCase().trim();
+  const parts=raw.split("#");
+  const article=String(parts[0]||"").trim();
+  const finish=String(finishCode||parts[1]||"").toUpperCase().trim();
+  return {article,finish};
+}
+function gessiAreaProProductUrl(reference,finishCode=""){
+  const p=gessiReferenceParts(reference,finishCode);
+  if(!p.article)return "https://areapro.gessi.com/fr";
+  const u=new URL(`https://areapro.gessi.com/fr/product/${encodeURIComponent(p.article)}`);
+  if(p.finish)u.searchParams.set("finId",p.finish);
+  return u.href;
+}
+function gessiOfficialImageUrl(reference,finishCode=""){
+  const p=gessiReferenceParts(reference,finishCode);
+  if(!p.article||!p.finish)return "";
+  // This is the same finish-aware image endpoint used by Gessi's current
+  // public collection pages and Area Pro product cards.
+  return `https://gessistorage.blob.core.windows.net/zi4/thumb320/${encodeURIComponent(`${p.article}#${p.finish}`)}.webp`;
+}
 async function resolveGessiProductUrl(reference,designation="",collection=""){
-  // Gessi exposes current finish/product data through the official public site and
-  // Area Pro. Keep the public manufacturer page as authoritative fallback; generic
-  // scraper then harvests exact images/documents whenever a direct product page is exposed.
-  const ref=String(reference||"").split("#")[0].trim();
-  const q=encodeURIComponent(ref);
-  const candidates=[`https://www.gessi.com/fr/search?q=${q}`,`https://www.gessi.com/en/search?q=${q}`,`https://www.gessi.com/fr`];
-  for(const url of candidates){
-    try{
-      const html=await fetchBrandPage(url,"fr-FR,fr;q=0.9,en;q=0.8,it;q=0.7");
-      const links=officialSiteLinks(html,url,/(^|\.)gessi\.com$/i);
-      const key=normalizeToken(ref);
-      const exact=links.find(x=>normalizeToken(x.text).includes(key));
-      if(exact)return exact.href;
-      const ranked=links.map(x=>({...x,score:similarityScore(designation||collection||ref,x.text)})).sort((a,b)=>b.score-a.score);
-      if(ranked[0]?.score>=0.82)return ranked[0].href;
-    }catch(e){console.warn("[gessi-resolve]",e.message)}
-  }
-  return "https://www.gessi.com/fr";
+  // Gessi's public collection pages link each article directly to Area Pro.
+  // Do not search the corporate site: it contains branding/editorial images that
+  // can be mistaken for product photography (including the Gessi logo).
+  return gessiAreaProProductUrl(reference);
 }
 
 async function resolveManufacturerProductUrl(manufacturerUrl,reference,originalDescription,designation,collection){
@@ -1503,17 +1470,26 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     };
   }
 
-  const page=await axios.get(manufacturerUrl,{
-    timeout:22000,
-    maxRedirects:5,
-    validateStatus:s=>s>=200&&s<400,
-    headers:{
-      "User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/150 Safari/537.36",
-      "Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-      "Accept-Language":"en-US,en;q=0.9,it;q=0.8,fr;q=0.7",
-      "Cache-Control":"no-cache"
-    }
-  });
+  const isGessi=/gessi\.com/i.test(manufacturerUrl);
+  let page={data:""};
+  try{
+    page=await axios.get(manufacturerUrl,{
+      timeout:22000,
+      maxRedirects:5,
+      validateStatus:s=>s>=200&&s<400,
+      headers:{
+        "User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/150 Safari/537.36",
+        "Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+        "Accept-Language":"en-US,en;q=0.9,it;q=0.8,fr;q=0.7",
+        "Cache-Control":"no-cache"
+      }
+    });
+  }catch(e){
+    if(!isGessi)throw e;
+    // Area Pro can reject automated HTML requests. Gessi images remain available
+    // through its official finish-aware Azure storage endpoint below.
+    console.warn("[gessi-area-pro-page]",e.message);
+  }
 
   const html=String(page.data||"");
   const $=cheerio.load(html);
@@ -1542,11 +1518,28 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     }
   }
 
-  if(/nicolazzi\.it/i.test(manufacturerUrl) || /gessi\.com/i.test(manufacturerUrl)){
-    // Prefer manufacturer-hosted open-graph/product-gallery assets. Finish-specific
-    // matches are scored by the standard finishExactInText machinery below.
+  if(isGessi){
+    const gp=gessiReferenceParts(reference,requested);
+    const officialImage=gessiOfficialImageUrl(reference,requested);
+    if(officialImage){
+      candidates.push({
+        url:officialImage,
+        page:gessiAreaProProductUrl(reference,requested),
+        source:"gessi-area-pro-finish-image",
+        score:30000,
+        finishMatch:"exact",
+        detectedFinishCode:gp.finish||requested||null,
+        variationId:null,
+        attributes:{official:true,article:gp.article,finish:gp.finish,provider:"gessi-area-pro"}
+      });
+    }
+  }
+
+  if(/nicolazzi\.it/i.test(manufacturerUrl)){
+    // Nicolazzi may expose its primary product photography in metadata. Gessi is
+    // deliberately excluded here: its corporate OG image is branding, not a SKU photo.
     const og=absoluteUrl(manufacturerUrl,$('meta[property="og:image"]').attr('content')||'');
-    if(og&&isImageUrl(og))candidates.push({url:og,source:/nicolazzi/i.test(manufacturerUrl)?"nicolazzi-official-og":"gessi-official-og",score:900,finishMatch:"generic",detectedFinishCode:null,variationId:null,attributes:{official:true}});
+    if(og&&isImageUrl(og))candidates.push({url:og,source:"nicolazzi-official-og",score:900,finishMatch:"generic",detectedFinishCode:null,variationId:null,attributes:{official:true}});
   }
   const finishOptionMap=buildFinishOptionMap($);
 
@@ -1640,7 +1633,7 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
       const href=absoluteUrl(manufacturerUrl,$img.attr(attr));
       if(!href || !isImageUrl(href)) continue;
       const text=(href+" "+alt+" "+title).toLowerCase();
-      if(/logo|icon|sprite|avatar|flag|placeholder|loading|acciaio\.jpg|nero\.jpg|rame\.jpg|swatch/.test(text)) continue;
+      if(/logo|og-image|icon|sprite|avatar|flag|placeholder|loading|strapi-uploads\/static|acciaio\.jpg|nero\.jpg|rame\.jpg|swatch/.test(text)) continue;
       let score=10;
       if(text.includes(base.toLowerCase())) score+=35;
       const imageExact=finishExactInText(text,requested,finish,reference);
@@ -2691,6 +2684,11 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
   let fallback=sorted.find(x=>x.finishMatch!=="exact")||null;
   let best=exact||fallback;
 
+  if(isGessi){
+    const gessiExact=sorted.find(x=>x.source==="gessi-area-pro-finish-image" && x.finishMatch==="exact")||null;
+    if(gessiExact){exact=gessiExact;fallback=null;best=gessiExact;}
+  }
+
   const isRitmonio=/ritmonio\.it/i.test(manufacturerUrl);
   if(isRitmonio){
     const ritmonioOfficial=sorted.find(x=>x.source==="ritmonio-official-product-image")||null;
@@ -3480,7 +3478,7 @@ const REMOTE_HOST_SUFFIXES=[
   // image/file CDN hosts, not from coalbrookuk.co.uk itself. Keep the allowlist
   // deliberately narrow to Coalbrook-owned hostnames rather than all svdcdn.com.
   "coalbrook-bathrooms.transforms.svdcdn.com","coalbrook-bathrooms.files.svdcdn.com",
-  "catalano.it","recor.pt","amphoradesign.it","sanitairkamer.nl","ritmonio.it","nicolazzi.it","gessi.com","gwebassets.gessi.com",
+  "catalano.it","recor.pt","amphoradesign.it","sanitairkamer.nl","ritmonio.it","nicolazzi.it","gessi.com","areapro.gessi.com","gwebassets.gessi.com","gessistorage.blob.core.windows.net",
   // Lefroy Brooks is hosted on Squarespace. Product imagery is served from
   // these dedicated CDN hosts while product pages/downloads stay on lefroybrooks.com.
   "images.squarespace-cdn.com","static1.squarespace.com","file.squarespace-cdn.com"

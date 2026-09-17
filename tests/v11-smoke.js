@@ -4,20 +4,16 @@ const assert=require('assert');
 const zlib=require('zlib');
 const root=path.resolve(__dirname,'..');
 const read=f=>fs.readFileSync(path.join(root,f),'utf8');
-const json=f=>JSON.parse(read(f));
+const json=f=>{const p=path.join(root,f);const b=fs.readFileSync(p);return JSON.parse((/\.gz$/i.test(f)?zlib.gunzipSync(b):b).toString('utf8'))};
 
-assert.equal(json('package.json').version,'11.25.0');
-const supplierPack=json('public/catalog_suppliers_v1125.pack.json');
-const packedJson=maker=>JSON.parse(zlib.gunzipSync(Buffer.from(supplierPack[maker],'base64')).toString('utf8'));
-
+assert.equal(json('package.json').version,'11.26.0');
 for(const f of ['public/sw.js','public/manifest.webmanifest','public/manufacturers_manifest.json'])assert(fs.existsSync(path.join(root,f)),`${f} missing`);
 
 const manifest=json('public/catalog_manifest.json');
 const files=['amphora_catalog.json',...manifest.chunks.map(c=>c.file)];
 let total=0;const makers=new Set();const unique=new Set();
 for(const file of files){
-  const packedMaker=file==='catalog_ritmonio.json'?'Ritmonio':file==='catalog_nicolazzi.json'?'Nicolazzi':file==='catalog_gessi.json'?'Gessi':'';
-  const rows=packedMaker?packedJson(packedMaker):json('public/'+file);total+=rows.length;
+  const rows=json('public/'+file);total+=rows.length;
   for(const p of rows){makers.add(p.manufacturer);unique.add(`${p.manufacturer}|${p.reference}`)}
 }
 assert.equal(total,68600,'catalog row count changed unexpectedly');
@@ -88,7 +84,7 @@ assert(server.includes('bufferStartsWithPdf'),'PDF signature validation missing'
 assert(server.includes('Technical drawing URL from the live DOM') || server.includes('Technical drawing URL from the live DOM'.replace('URL','URL')),'Recor live drawing refresh guard missing');
 
 // Ritmonio V11.23 regression guards
-const ritmonioRows=packedJson('Ritmonio');
+const ritmonioRows=json('public/catalog_ritmonio.json.gz');
 assert.equal(ritmonioRows.length,16082,'Ritmonio unique catalog count changed unexpectedly');
 assert(ritmonioRows.every(x=>x.purchaseDiscount===55),'Ritmonio 55% supplier discount missing');
 assert(ritmonioRows.every(x=>/majoration Hydropolis \+5%/.test(x.source||'')),'Ritmonio +5% source marker missing');
@@ -101,14 +97,14 @@ assert(lefroyRows.every(x=>x.purchaseDiscount===55),'Lefroy Brooks 55% supplier 
 // V11.24/V11.25 finish swatches are embedded for GitHub-safe deployment
 for(const code of ['CRL','IX','CRB','BLX','DOR','GOX','CHX','BRX','C03','C04','F31','F32','F33','F34','F36','F37','F45','F46']) assert(app.includes(`Ritmonio:${code}`),`missing embedded Ritmonio swatch ${code}`);
 assert(app.includes('SUPPLIER_FINISH_SWATCH_DATA'),'embedded supplier swatch map missing');
-assert(read('public/sw.js').includes('hydropolis-v11-25-shell'),'V11.25 SW cache missing');
+assert(read('public/sw.js').includes('hydropolis-v11-26-shell'),'V11.26 SW cache missing');
 
 // V11.25 Nicolazzi + Gessi
-const nicolazziRows=packedJson('Nicolazzi');
+const nicolazziRows=json('public/catalog_nicolazzi.json.gz');
 assert.equal(nicolazziRows.length,15023,'Nicolazzi catalog row count changed unexpectedly');
 assert(nicolazziRows.every(x=>x.purchaseDiscount===50),'Nicolazzi 50% supplier discount missing');
 assert(nicolazziRows.every(x=>/majoration Hydropolis \+25%/.test(x.source||'')),'Nicolazzi +25% source marker missing');
-const gessiRows=packedJson('Gessi');
+const gessiRows=json('public/catalog_gessi.json.gz');
 assert.equal(gessiRows.length,16211,'Gessi catalog row count changed unexpectedly');
 assert(gessiRows.every(x=>x.purchaseDiscount===50),'Gessi 50% supplier discount missing');
 assert(gessiRows.every(x=>/majoration Hydropolis \+6%/.test(x.source||'')),'Gessi +6% source marker missing');
@@ -118,5 +114,14 @@ assert(app.includes('NICOLAZZI_FINISH_NAMES') && app.includes('GESSI_FINISH_NAME
 assert(server.includes('resolveNicolazziProductUrl') && server.includes('resolveGessiProductUrl'),'new supplier official-site resolvers missing');
 assert(server.includes('gwebassets.gessi.com') && server.includes('nicolazzi.it'),'new supplier secure remote hosts missing');
 
-assert(server.includes('packedSupplierCatalogText'),'packed supplier catalog server loader missing');
-assert(fs.existsSync(path.join(root,'public/catalog_suppliers_v1125.pack.json')),'supplier catalog pack missing');
+assert(server.includes('zlib.gunzipSync'),'server gzip catalog loader missing');
+assert(app.includes('new DecompressionStream("gzip")'),'browser gzip catalog loader missing');
+
+// V11.26 Gessi regression guards
+assert(server.includes('gessi-area-pro-finish-image'),'missing Gessi exact-finish image resolver');
+assert(server.includes('gessistorage.blob.core.windows.net'),'missing Gessi image storage allowlist/resolver');
+assert(server.includes('areapro.gessi.com'),'missing Gessi Area Pro resolver');
+assert(!server.includes('source:/nicolazzi/i.test(manufacturerUrl)?"nicolazzi-official-og":"gessi-official-og"'),'Gessi must not fall back to corporate OG branding');
+
+assert(app.includes('gessiDirectOfficialImage'),'missing client-side immediate Gessi image resolver');
+assert(app.includes('hydropolis-gessi-image-fix-v126'),'stale Gessi cache migration missing');
