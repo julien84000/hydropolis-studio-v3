@@ -2650,3 +2650,67 @@ main{background:transparent}
   .recor-choice-visual>strong{grid-column:3}
   .recor-choice-thumb{width:72px;height:72px}
 }
+
+/* =========================================================
+   V11.18 — Recor client dossier: bath + compact accessories
+   ========================================================= */
+.recor-bath-composite{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 112px;
+  gap:10px;
+  align-items:stretch;
+  width:100%;
+  height:100%;
+}
+.recor-bath-main{min-width:0;min-height:0}
+.recor-bath-main>.board-single-image,
+.recor-bath-main>.board-gallery,
+.recor-bath-main>.board-image-fallback{height:100%}
+.recor-client-accessories{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  align-self:stretch;
+}
+.recor-client-addon{
+  flex:1 1 0;
+  min-height:0;
+  border:1px solid #e6ddd0;
+  border-radius:10px;
+  background:#faf7f2;
+  padding:7px;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+  gap:5px;
+  overflow:hidden;
+}
+.recor-client-addon img{
+  width:100%;
+  height:58px;
+  object-fit:contain;
+  background:#fff;
+  border-radius:7px;
+}
+.recor-client-addon div:not(.recor-addon-icon){display:grid;gap:2px}
+.recor-client-addon b{
+  font-size:8.5px;
+  line-height:1.1;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:#9b753d;
+}
+.recor-client-addon span{font-size:8.5px;line-height:1.15;color:#2f2c28}
+.recor-client-addon small{font-size:7.5px;line-height:1.1;color:#777067}
+.recor-client-waste{justify-content:center}
+.recor-addon-icon{
+  width:24px;height:24px;border-radius:50%;
+  display:grid;place-items:center;
+  background:#eee5d7;color:#9b753d;
+  font-size:14px;font-weight:700;
+}
+@media(max-width:900px){
+  .recor-bath-composite{grid-template-columns:minmax(0,1fr) 92px;gap:7px}
+  .recor-client-addon{padding:5px}
+  .recor-client-addon img{height:48px}
+}

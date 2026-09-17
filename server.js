@@ -789,7 +789,7 @@ app.get("/api/catalog/search",requireAuth,async(req,res)=>{
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V11.17",
+  service:"Hydropolis Studio V11.18",
   database:USE_POSTGRES?"postgresql":"local-fallback",
   time:new Date().toISOString()
 }));
@@ -1512,7 +1512,7 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
   // Collect those official assets explicitly and rank the current model highest.
   const recorGallery=[];
   if(/recor\.pt/i.test(manufacturerUrl)){
-    const seenRecor=new Set();
+    const recorByCanonical=new Map();
     const model=recorModelFromData(reference,designation||originalDescription||"");
     const modelToken=normalizeToken(model||"");
     const pageSlug=(()=>{try{return new URL(manufacturerUrl).pathname.toLowerCase()}catch{return ""}})();
@@ -1532,6 +1532,19 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
         .toLowerCase();
     }
 
+    function recorAssetQuality(href){
+      const clean=String(href||"").split("?")[0];
+      const matches=[...clean.matchAll(/(\d{2,5})[xX](\d{2,5})/g)];
+      let area=0;
+      if(matches.length){
+        const m=matches[matches.length-1];
+        area=Number(m[1]||0)*Number(m[2]||0);
+      }
+      // WordPress thumbnails such as -100x100 are never preferable to the full asset.
+      if(/-\d{2,5}x\d{2,5}\.(?:jpe?g|png|webp)$/i.test(clean))return area;
+      return Math.max(area,1_000_000);
+    }
+
     function addRecor(raw,context="",bonus=0){
       const href=absoluteUrl(manufacturerUrl,raw);
       if(!href || !isImageUrl(href))return;
@@ -1540,8 +1553,7 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
       if(/wp-content\/uploads\/.*(?:logo|marca|brand)/i.test(low))return;
 
       const key=recorCanonical(href);
-      if(!key || seenRecor.has(key))return;
-      seenRecor.add(key);
+      if(!key)return;
 
       let score=300+bonus;
       const norm=normalizeToken(low);
@@ -1550,15 +1562,31 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
       if(/product|produto|banheira|bathtub|bathub/.test(low))score+=120;
       if(/gallery|woocommerce-product-gallery|elementor-gallery/.test(context.toLowerCase()))score+=180;
 
+      const quality=recorAssetQuality(href);
+      const existing=recorByCanonical.get(key);
+      if(existing){
+        // Same official image can appear first as a 100/150/300 px thumbnail and
+        // later as the 900 px source. Keep the highest-resolution occurrence.
+        if(quality>existing._quality || (quality===existing._quality && score>existing.score)){
+          existing.url=href;
+          existing.score=score;
+          existing._quality=quality;
+          existing.attributes={model};
+        }
+        return;
+      }
+
       const item={
         url:href,
         source:"recor-product-gallery",
         score,
+        _quality:quality,
         finishMatch:"generic",
         detectedFinishCode:null,
         variationId:null,
         attributes:{model}
       };
+      recorByCanonical.set(key,item);
       recorGallery.push(item);
       candidates.push(item);
     }
@@ -1576,7 +1604,8 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
         im.attr("class")||"", im.parent().attr("class")||""
       ].join(" ");
       for(const attr of ["data-large_image","data-original","data-lazy-src","data-src","src"]){
-        addRecor(im.attr(attr),context,100);
+        const bonus=attr==="data-large_image"?720:(attr==="data-original"?520:(attr==="src"?120:240));
+        addRecor(im.attr(attr),context,bonus);
       }
       for(const attr of ["srcset","data-srcset"]){
         const ss=im.attr(attr)||"";
@@ -1650,7 +1679,7 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
       .some(t=>t.length>2 && n.includes(t));
   }
 
-  // Catalano V11.17: official site first, exact product page only.
+  // Catalano V11.18: official site first, exact product page only.
   // The current Catalano template exposes:
   //   - #product-gallery: the official lifestyle/product gallery for this product page
   //   - .product-finishes a[data-interaction]: an exact previewSrc per catalogue code/finish
@@ -2460,7 +2489,7 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
   }
 
   if(isCatalano){
-    // V11.17: Catalano's official product page is authoritative. Keep every distinct
+    // V11.18: Catalano's official product page is authoritative. Keep every distinct
     // image from that product page for the client dossier. The exact code/finish preview,
     // when Catalano exposes one, was inserted first and remains the principal image.
     productImages=catalanoGallery.slice();
@@ -3329,7 +3358,7 @@ app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")))
 async function startServer(){
   try{
     await initPersistentStore();
-    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.17 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
+    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.18 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
   }catch(e){
     console.error("[Hydropolis] Démarrage impossible :",e);
     process.exit(1);

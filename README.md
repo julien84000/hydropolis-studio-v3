@@ -1,8 +1,8 @@
-# Hydropolis Studio V11.17
+# Hydropolis Studio V11.18
 
-Hydropolis Studio V11.17 est construit sur **V10.16**, la dernière base stable auditée, avec réintégration contrôlée des apports utiles de la branche V11.12. Il ne s'agit pas d'une réécriture : les projets par pièce, devis/remises/marges, dossier client A4, comptes utilisateurs, PostgreSQL/Supabase et connecteurs fabricants existants sont conservés.
+Hydropolis Studio V11.18 est construit sur **V10.16**, la dernière base stable auditée, avec réintégration contrôlée des apports utiles de la branche V11.12. Il ne s'agit pas d'une réécriture : les projets par pièce, devis/remises/marges, dossier client A4, comptes utilisateurs, PostgreSQL/Supabase et connecteurs fabricants existants sont conservés.
 
-## Ce que V11.17 ajoute
+## Ce que V11.18 ajoute
 
 - nouvel accueil visuel Hydropolis Studio inspiré des principes d’ergonomie Apple/Canva ;
 - navigation simplifiée avec Accueil, Catalogue, Projets, Favoris, Comparateur et Exports ;
@@ -44,5 +44,5 @@ npm start
 Le serveur continue d'utiliser `DATABASE_URL` pour PostgreSQL/Supabase. Sans `DATABASE_URL`, il bascule sur le stockage local de développement. Ne pas déployer le mode fallback local comme stockage de production.
 
 
-## Recor V11.17
+## Recor V11.18
 Le configurateur des baignoires sur pieds propose des choix illustrés pour les pieds Recor. Les visuels sont des références de forme et ne certifient pas la finition photographiée. Le pied sélectionné est repris dans le dossier client.

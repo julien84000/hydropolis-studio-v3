@@ -1,6 +1,6 @@
 {
   "name": "Hydropolis Studio",
-  "version": "11.17.0",
+  "version": "11.18.0",
   "base": {
     "archive": "Hydropolis_Studio_V10.16_Update.zip",
     "sha256": "415242ad95036f7db3e76844ec2fea8a5c8d916c1a8c1617350847c32507d5cd"
@@ -51,5 +51,6 @@
     ],
     "behavior": "visual chooser for mandatory feet; local images are style references and are included with selected foot in client dossier",
     "offline": "assets included in service-worker shell cache"
-  }
+  },
+  "releaseNotes": "RELEASE_NOTES_V11.18.md"
 }

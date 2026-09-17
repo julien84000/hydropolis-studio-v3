@@ -5,7 +5,7 @@ const root=path.resolve(__dirname,'..');
 const read=f=>fs.readFileSync(path.join(root,f),'utf8');
 const json=f=>JSON.parse(read(f));
 
-assert.equal(json('package.json').version,'11.17.0');
+assert.equal(json('package.json').version,'11.18.0');
 for(const f of ['public/sw.js','public/manifest.webmanifest','public/manufacturers_manifest.json'])assert(fs.existsSync(path.join(root,f)),`${f} missing`);
 
 const manifest=json('public/catalog_manifest.json');
@@ -32,9 +32,9 @@ assert(app.includes('sanitairkamer'),'Hotbath Sanitairkamer fallback missing');
 console.log(`V11 smoke OK · ${total.toLocaleString('fr-FR')} lignes · ${unique.size.toLocaleString('fr-FR')} références uniques · ${makers.size} fabricants`);
 
 const html=read('public/index.html');
-for(const anchor of ['view-dashboard','view-favorites','view-compare','view-exports','dashboardSearchInput','favoritesGrid','compareViewGrid'])assert(html.includes(anchor),`missing V11.17 UI anchor ${anchor}`);
+for(const anchor of ['view-dashboard','view-favorites','view-compare','view-exports','dashboardSearchInput','favoritesGrid','compareViewGrid'])assert(html.includes(anchor),`missing V11.18 UI anchor ${anchor}`);
 const css=read('public/styles.css');
-for(const cls of ['dashboard-hero','dashboard-category-grid','ecosystem-card','favorite-toggle','compare-view-table','exports-grid-v11'])assert(css.includes(cls),`missing V11.17 style ${cls}`);
+for(const cls of ['dashboard-hero','dashboard-category-grid','ecosystem-card','favorite-toggle','compare-view-table','exports-grid-v11'])assert(css.includes(cls),`missing V11.18 style ${cls}`);
 
 assert(app.includes('catalanoClientGalleryPages'),'Catalano full client gallery pages missing');
 assert(app.includes('catalanoGalleryComplete'),'Catalano gallery completeness tracking missing');
