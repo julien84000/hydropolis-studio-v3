@@ -1,5 +1,5 @@
-const CACHE="hydropolis-v11-39-shell";
-const CATALOG_CACHE="hydropolis-v11-39-catalogs";
+const CACHE="hydropolis-v11-40-shell";
+const CATALOG_CACHE="hydropolis-v11-40-catalogs";
 const SHELL=["/","/index.html","/styles.css","/app.js","/catalog_manifest.json","/manufacturers_manifest.json","/amphora_catalog.json","/manifest.webmanifest",
   "/assets/recor-feet/aster.jpg","/assets/recor-feet/ball-claw.jpg","/assets/recor-feet/wood.jpg","/assets/recor-feet/imperial.jpg",
   "/assets/recor-feet/lion.jpg","/assets/recor-feet/pedestal.jpg","/assets/recor-feet/princess.jpg","/assets/recor-feet/carlton.jpg",

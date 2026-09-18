@@ -1082,6 +1082,40 @@ function setupAutomaticCatalogImages(rows){
   document.querySelectorAll("#results .result[data-key]").forEach(el=>autoPhotoObserver.observe(el));
 }
 
+// V11.40: every catalogue item added to a project starts an official image
+// lookup in the background. The queue keeps bulk/configured additions fluid and
+// prevents the same selected row from being requested twice at the same time.
+const selectedImageQueue=[];
+const selectedImageQueued=new Set();
+let selectedImageActive=0;
+const SELECTED_IMAGE_CONCURRENCY=3;
+function selectedImageNeedsForcedRefresh(p){
+  const maker=String(p?.manufacturer||"");
+  return /^Catalano$/i.test(maker)
+    || (/^Recor$/i.test(maker)&&p?.category==="Bain")
+    || /^Gessi$/i.test(maker)
+    || /^Ritmonio$/i.test(maker);
+}
+function enqueueSelectedImageSearch(p,force=selectedImageNeedsForcedRefresh(p)){
+  if(!p?.id||selectedImageQueued.has(p.id))return;
+  selectedImageQueued.add(p.id);
+  selectedImageQueue.push({id:p.id,force:force===true,manufacturer:p.manufacturer,reference:p.reference});
+  pumpSelectedImageSearches();
+}
+function pumpSelectedImageSearches(){
+  while(selectedImageActive<SELECTED_IMAGE_CONCURRENCY&&selectedImageQueue.length){
+    const job=selectedImageQueue.shift();
+    selectedImageActive++;
+    enrichSelectedPhoto(job.id,job.force)
+      .catch(err=>console.warn("[automatic selected image]",job.manufacturer,job.reference,err?.message||err))
+      .finally(()=>{
+        selectedImageActive--;
+        selectedImageQueued.delete(job.id);
+        pumpSelectedImageSearches();
+      });
+  }
+}
+
 function imageBadge(img,p){
   if(!img)return `Photo fabricant à rechercher`;
   if(/^Nicolazzi$/i.test(String(p?.manufacturer||"")) && /Designer Tapware Co/i.test(String(img.source||"")))return img.finishMatch==="exact"
@@ -2161,16 +2195,12 @@ function commitSelectedRecords(records,{showProject=false}={}){
   renderMarginDashboard();
   if(showProject)showView("project");
   for(const item of valid){
-    const isCatalano=/catalano/i.test(item.manufacturer||"");
-    const isRecorBath=item.manufacturer==="Recor" && item.category==="Bain";
-    const isGessi=/^Gessi$/i.test(item.manufacturer||"");
     const isRitmonio=/^Ritmonio$/i.test(item.manufacturer||"");
-    if(!item.image || (isCatalano && item.catalanoGalleryComplete!==true) || isRecorBath || isGessi || isRitmonio){
-      // Catalano: complete official gallery. Recor baths: replace legacy/low-res
-      // imagery. Gessi: attach Area Pro metadata/documents. Ritmonio: always resolve
-      // the reference-specific "Scheda tecnica" PDF even when its image is already cached.
-      enrichSelectedPhoto(item.id,isCatalano||isRecorBath||isGessi||isRitmonio).catch(err=>console.warn("[enrich after add]",item.reference,err));
-    }
+    // Universal automation: all manufacturers, categories, accessories and
+    // configured items are searched as soon as they enter the project. Existing
+    // verified cache entries are reused; suppliers needing full galleries or
+    // reference-specific documents deliberately refresh their official page.
+    enqueueSelectedImageSearch(item);
     if(isRitmonio && !item.technicalSheetUrl){
       fetchRitmonioDocuments(item).then(docs=>{
         if(docs?.technicalSheet?.url){saveState();renderRooms();}
@@ -2318,26 +2348,7 @@ async function addProduct(ref,roomId,parentId=""){
   const record=createSelectedProductRecord(p,roomId,parentId);
   if(!record)return null;
   commitSelectedRecords([record]);
-  // V11.27: newly selected premium products enrich themselves in the background;
-  // users no longer need to press “Photo fabricant” before the client dossier.
-  if((!record.image || (/^Nicolazzi$/i.test(String(p.manufacturer||""))&&/Catalogue PDF Nicolazzi/i.test(String(record.imageSource||"")))) && /^(Nicolazzi|Ritmonio|Zucchetti|Gessi)$/i.test(String(p.manufacturer||""))){
-    fetchManufacturerImage(p,false,{imageOnly:false}).then(img=>{
-      if(!img?.src)return;
-      const live=state.selected.find(x=>x.id===record.id);if(!live)return;
-      live.image=img.src;live.images=img.images||[img.src];live.pdfImage=img.src;live.pdfImages=(img.images||[img.src]).slice(0,2);
-      live.remoteImageUrl=img.remoteUrl||"";live.remoteImages=img.remoteImages||[];live.imageSource=img.source||"Site officiel fabricant";
-      live.imageFinishMatch=img.finishMatch||"";live.imageStatus=imageBadge(img,p);live.imageNote=img.note||"";
-      live.resolvedManufacturerUrl=img.resolvedManufacturerUrl||live.manufacturerUrl||"";
-      live.drawingUrl=img.drawingUrl||live.drawingUrl||"";live.drawingType=img.drawingType||live.drawingType||"";live.drawingLabel=img.drawingLabel||live.drawingLabel||"";
-      live.technicalSheetUrl=img.technicalSheetUrl||live.technicalSheetUrl||"";live.technicalSheetLabel=img.technicalSheetLabel||live.technicalSheetLabel||"Fiche technique";
-      live.technicalSheetType=img.technicalSheetType||live.technicalSheetType||"";live.technicalSheetPage=Number(img.technicalSheetPage||live.technicalSheetPage||1);
-      live.installationGuideUrl=img.installationGuideUrl||live.installationGuideUrl||"";live.installationGuideLabel=img.installationGuideLabel||live.installationGuideLabel||"Notice d'installation";
-      live.nicolazziSelectedHandle=img.selectedHandle||live.nicolazziSelectedHandle||null;
-      live.nicolazziHandleOptions=img.handleOptions||live.nicolazziHandleOptions||[];live.nicolazziFinishOptions=img.finishOptions||live.nicolazziFinishOptions||[];
-      live.commercialSource=img.commercialSource||live.commercialSource||"";live.commercialSourceUrl=img.commercialSourceUrl||live.commercialSourceUrl||"";
-      saveState();renderRooms();renderSelection();
-    }).catch(e=>console.warn("[selected auto image]",p.manufacturer,p.reference,e.message));
-  }
+  // commitSelectedRecords owns the universal background lookup.
   return record.id;
 }
 function removeProduct(id){

@@ -1,6 +1,10 @@
-# Hydropolis Studio V11.39
+# Hydropolis Studio V11.40
 
-Hydropolis Studio V11.39 est construit sur **V11.38**. Il conserve les projets par pièce, devis/remises/marges, dossier client A4, comptes utilisateurs, PostgreSQL/Supabase et connecteurs fabricants existants.
+Hydropolis Studio V11.40 est construit sur **V11.39**. Il conserve les projets par pièce, devis/remises/marges, dossier client A4, comptes utilisateurs, PostgreSQL/Supabase et connecteurs fabricants existants.
+
+## V11.40 — images automatiques dans les projets
+
+Chaque article catalogue ajouté à un projet déclenche désormais automatiquement la recherche de son image fabricant, quelle que soit sa marque ou sa catégorie. Cela couvre aussi les accessoires et les éléments ajoutés ensemble par un configurateur. La recherche fonctionne en arrière-plan avec trois requêtes simultanées au maximum, réutilise les images vérifiées en cache et conserve le visuel catalogue si un fournisseur ne répond pas. Le bouton de recherche manuelle reste disponible pour relancer ponctuellement une recherche.
 
 ## V11.39 — catalogue Nicolazzi complet
 

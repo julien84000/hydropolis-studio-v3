@@ -1,6 +1,6 @@
 {
   "name": "Hydropolis Studio",
-  "version": "11.39.0",
+  "version": "11.40.0",
   "base": {
     "archive": "Hydropolis_Studio_V10.16_Update.zip",
     "sha256": "415242ad95036f7db3e76844ec2fea8a5c8d916c1a8c1617350847c32507d5cd"
@@ -49,7 +49,7 @@
     "behavior": "visual chooser for mandatory feet; local images are style references and are included with selected foot in client dossier",
     "offline": "assets included in service-worker shell cache"
   },
-  "releaseNotes": "RELEASE_NOTES_V11.39.md",
+  "releaseNotes": "RELEASE_NOTES_V11.40.md",
   "recorImagesV1119": {
     "priority": "exact Recor product page + WooCommerce full-resolution gallery anchors/data-large_image",
     "fallback": "no Recor home-page image fallback",
@@ -58,8 +58,8 @@
     "clientDossier": "bath dominant; selected feet as small visual; waste text-only",
     "pixelGuard": "when dimensions are measurable: max side >= 800 px and min side >= 500 px; otherwise reject thumbnail result"
   },
-  "build": "V11.39",
-  "notes": "Nicolazzi catalogue completeness audit: multi-handle product tables and shared kitchen/classic tables restored from the official 2024 price list.",
+  "build": "V11.40",
+  "notes": "Every catalogue item committed to a project now starts its manufacturer-image lookup automatically in a bounded background queue.",
   "recorTechnicalPdfV1122": {
     "productPageSession": "open exact Recor product page first and reuse set-cookie session",
     "liveDrawingUrl": "refresh Technical drawing PDF href from official product page",
@@ -132,10 +132,16 @@
     "pageCacheHours": 6,
     "pageRequestDeduplication": true,
     "selectedProductAutoEnrichment": [
+      "Amphora",
+      "Catalano",
+      "Coalbrook",
+      "Gessi",
+      "Hotbath",
+      "Lefroy Brooks",
       "Nicolazzi",
+      "Recor",
       "Ritmonio",
-      "Zucchetti",
-      "Gessi"
+      "Zucchetti"
     ],
     "nicolazziCache": "base + finish code, so available Designer Tapware finish photography can differ by finish"
   },
@@ -166,6 +172,13 @@
     ],
     "persistentMapping": "PostgreSQL hydropolis_nicolazzi_visuals with local JSON fallback; validated model/finish mappings survive restarts",
     "festivalRule": "no invented handle: explicit separate handle selection required"
+  },
+  "automaticProjectImagesV1140": {
+    "scope": "every catalogue item committed to a project, including accessories and configured Recor items",
+    "trigger": "immediately after project commit",
+    "queueConcurrency": 3,
+    "cache": "reuse verified manufacturer cache unless the supplier requires full gallery or document refresh",
+    "failure": "non-blocking; preserve the existing catalogue image and keep manual retry available"
   },
   "nicolazziCatalogV1139": {
     "source": "NICOLAZZI_LISTINO 2024 official PDF",
