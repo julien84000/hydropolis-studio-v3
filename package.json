@@ -1,13 +1,13 @@
 {
   "name": "hydropolis-studio-v3",
-  "version": "11.34.0",
+  "version": "11.35.0",
   "private": true,
-  "description": "Hydropolis Studio V11.34 - Ritmonio official technical sheets from Scheda tecnica",
+  "description": "Hydropolis Studio V11.35 - Ritmonio exact product resolver + Scheda tecnica inclusion",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "check": "node --check server.js && node --check public/app.js && node --check public/sw.js",
-    "test": "node tests/v11-smoke.js && node tests/hotbath-performance.js && node tests/nicolazzi-pdf-assets.js && node tests/nicolazzi-designer-visuals.js && node tests/recor-project-compact.js && node tests/ritmonio-technical-sheet.js",
+    "test": "node tests/v11-smoke.js && node tests/hotbath-performance.js && node tests/nicolazzi-pdf-assets.js && node tests/nicolazzi-designer-visuals.js && node tests/recor-project-compact.js && node tests/ritmonio-technical-sheet.js && node tests/ritmonio-exact-resolver.js",
     "build": "npm run check && npm test"
   },
   "engines": {

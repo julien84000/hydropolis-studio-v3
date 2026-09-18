@@ -793,7 +793,7 @@ app.get("/api/catalog/search",requireAuth,async(req,res)=>{
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V11.34",
+  service:"Hydropolis Studio V11.35",
   database:USE_POSTGRES?"postgresql":"local-fallback",
   time:new Date().toISOString()
 }));
@@ -969,6 +969,14 @@ function coalbrookProductLinks(html,baseUrl){
 function ritmonioReferenceBase(reference=""){
   return String(reference||"").toUpperCase().trim().replace(/(CRL|CRB|BLX|DOR|GOX|CHX|BRX|C03|C04|F31|F32|F33|F34|F36|F37|F45|F46|F47|INOX|IBX|ICX|F44|OTL|SPZ|LUC|ICM|SIX|DIX|F40|F38|EIX|PIX|CEM|LIX|TIX|CIX|NIX|FIX|BIX|IX)$/,'');
 }
+function ritmonioArticleCodeFromUrl(href=""){
+  try{
+    const u=new URL(href);
+    let code=String(u.searchParams.get("code")||"").toUpperCase().trim();
+    code=code.replace(/^\d+_/,"").replace(/\s+/g,"+");
+    return code;
+  }catch{return ""}
+}
 function ritmonioProductLinks(html,baseUrl){
   const $=cheerio.load(html), seen=new Set(), out=[];
   $("a").each((_,el)=>{
@@ -978,8 +986,12 @@ function ritmonioProductLinks(html,baseUrl){
     if(!/(^|\.)ritmonio\.it$/i.test(u.hostname))return;
     if(!/\/(?:prodotto|product)\//i.test(u.pathname))return;
     seen.add(href);
-    const card=$(el).closest("article,li,.product,.card,.product-item,div");
-    out.push({href,text:([$(el).attr("aria-label"),$(el).attr("title"),$(el).text(),card.text()].filter(Boolean).join(" ")).replace(/\s+/g," ").trim()});
+    const card=$(el).closest("article,li,.product,.card,.product-item");
+    out.push({
+      href,
+      articleCode:ritmonioArticleCodeFromUrl(href),
+      text:([$(el).attr("aria-label"),$(el).attr("title"),$(el).text(),card.text()].filter(Boolean).join(" ")).replace(/\s+/g," ").trim()
+    });
   });
   return out;
 }
@@ -1023,8 +1035,11 @@ async function resolveRitmonioProductUrl(reference,designation="",collection="")
       try{
         const html=await fetchBrandPage(pageUrl,"it-IT,it;q=0.9,en;q=0.7");
         const links=ritmonioProductLinks(html,pageUrl);
-        const exact=links.find(x=>normalizeToken(x.text).includes(normalizeToken(base)) || normalizeToken(x.href).includes(normalizeToken(base)));
-        if(exact)return exact.href;
+        const wanted=String(base||"").toUpperCase();
+        const exactByCode=links.find(x=>String(x.articleCode||"").toUpperCase()===wanted);
+        if(exactByCode)return exactByCode.href;
+        const exactByText=links.find(x=>normalizeToken(x.text)===normalizeToken(base) || normalizeToken(x.text).startsWith(normalizeToken(base)+" "));
+        if(exactByText)return exactByText.href;
       }catch{}
     }
   }
@@ -1034,8 +1049,11 @@ async function resolveRitmonioProductUrl(reference,designation="",collection="")
   try{
     const html=await fetchBrandPage(searchUrl,"it-IT,it;q=0.9,en;q=0.7");
     const links=ritmonioProductLinks(html,searchUrl);
-    const exact=links.find(x=>normalizeToken(x.text).includes(normalizeToken(base)) || normalizeToken(x.href).includes(normalizeToken(base)));
-    if(exact)return exact.href;
+    const wanted=String(base||"").toUpperCase();
+    const exactByCode=links.find(x=>String(x.articleCode||"").toUpperCase()===wanted);
+    if(exactByCode)return exactByCode.href;
+    const exactByText=links.find(x=>normalizeToken(x.text)===normalizeToken(base) || normalizeToken(x.text).startsWith(normalizeToken(base)+" "));
+    if(exactByText)return exactByText.href;
   }catch(e){ console.warn("[ritmonio-resolve]",e.message); }
 
   // A bare product endpoint still allows generic attachment discovery to use the
@@ -4098,7 +4116,7 @@ app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")))
 async function startServer(){
   try{
     await initPersistentStore();
-    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.34 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
+    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.35 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
   }catch(e){
     console.error("[Hydropolis] Démarrage impossible :",e);
     process.exit(1);

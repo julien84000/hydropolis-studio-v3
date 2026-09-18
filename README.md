@@ -1,6 +1,6 @@
-# Hydropolis Studio V11.34
+# Hydropolis Studio V11.35
 
-Hydropolis Studio V11.34 est construit sur **V10.16**, la dernière base stable auditée, avec réintégration contrôlée des apports utiles de la branche V11.12. Il ne s'agit pas d'une réécriture : les projets par pièce, devis/remises/marges, dossier client A4, comptes utilisateurs, PostgreSQL/Supabase et connecteurs fabricants existants sont conservés.
+Hydropolis Studio V11.35 est construit sur **V10.16**, la dernière base stable auditée, avec réintégration contrôlée des apports utiles de la branche V11.12. Il ne s'agit pas d'une réécriture : les projets par pièce, devis/remises/marges, dossier client A4, comptes utilisateurs, PostgreSQL/Supabase et connecteurs fabricants existants sont conservés.
 
 ## Ce que V11.23 ajoute
 
@@ -115,3 +115,9 @@ Nicolazzi passe en mode hybride : le PDF officiel 2024 reste la référence pour
 - La fiche technique Ritmonio est attachée automatiquement à l'article dans « Projet par pièce ».
 - L'onglet « Istruzioni di montaggio » est également récupéré comme notice d'installation lorsqu'il existe.
 - Les anciens articles Ritmonio déjà présents dans un projet et dépourvus de fiche sont enrichis automatiquement une fois en ligne.
+
+
+## V11.35 — Ritmonio
+- Résolution exacte des fiches produit par le code officiel de l'URL.
+- « Scheda tecnica » reconnue et incluse dans le dossier client.
+- Bouton de récupération explicite si un ancien produit n'a pas encore sa fiche.
