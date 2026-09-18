@@ -80,3 +80,8 @@ Les catalogues Ritmonio, Nicolazzi et Gessi sont distribués en `.json.gz`. Le c
 
 ## V11.26
 - Correctif des photos Gessi : Area Pro + image officielle exacte par finition, avec exclusion des logos/visuels corporate.
+
+
+## V11.27
+
+Photos fabricant automatiques dans le catalogue, préchargement par viewport, cache partagé Nicolazzi/Ritmonio, cache serveur 6 h et déduplication des pages fabricant pour accélérer notamment Zucchetti. Les articles ajoutés au projet s’enrichissent également en arrière-plan sans clic manuel.

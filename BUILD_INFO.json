@@ -1,6 +1,6 @@
 {
   "name": "Hydropolis Studio",
-  "version": "11.26.0",
+  "version": "11.27.0",
   "base": {
     "archive": "Hydropolis_Studio_V10.16_Update.zip",
     "sha256": "415242ad95036f7db3e76844ec2fea8a5c8d916c1a8c1617350847c32507d5cd"
@@ -49,7 +49,7 @@
     "behavior": "visual chooser for mandatory feet; local images are style references and are included with selected foot in client dossier",
     "offline": "assets included in service-worker shell cache"
   },
-  "releaseNotes": "RELEASE_NOTES_V11.26.md",
+  "releaseNotes": "RELEASE_NOTES_V11.27.md",
   "recorImagesV1119": {
     "priority": "exact Recor product page + WooCommerce full-resolution gallery anchors/data-large_image",
     "fallback": "no Recor home-page image fallback",
@@ -58,8 +58,8 @@
     "clientDossier": "bath dominant; selected feet as small visual; waste text-only",
     "pixelGuard": "when dimensions are measurable: max side >= 800 px and min side >= 500 px; otherwise reject thumbnail result"
   },
-  "build": "V11.26",
-  "notes": "Gessi image resolver now uses official Area Pro product URLs and exact finish-aware Gessi Azure image URLs; corporate OG/logo assets excluded.",
+  "build": "V11.27",
+  "notes": "Automatic manufacturer imagery: Nicolazzi/Ritmonio shared base cache, exact Nicolazzi WooCommerce gallery extraction, viewport hydration, 6-hour server page cache and in-flight request deduplication to accelerate Zucchetti.",
   "recorTechnicalPdfV1122": {
     "productPageSession": "open exact Recor product page first and reuse set-cookie session",
     "liveDrawingUrl": "refresh Technical drawing PDF href from official product page",
@@ -116,5 +116,23 @@
     "productUrl": "https://areapro.gessi.com/fr/product/{article}?finId={finish}",
     "imageUrl": "https://gessistorage.blob.core.windows.net/zi4/thumb320/{article}%23{finish}.webp",
     "fallback": "no corporate OG/logo image; retain finish swatch presentation if exact remote image is unavailable"
+  },
+  "imagePipeline": {
+    "automaticCatalogHydration": true,
+    "viewportPrefetch": 12,
+    "concurrency": 4,
+    "intersectionRootMargin": "900px",
+    "sharedGenericImageCache": [
+      "Nicolazzi",
+      "Ritmonio"
+    ],
+    "pageCacheHours": 6,
+    "pageRequestDeduplication": true,
+    "selectedProductAutoEnrichment": [
+      "Nicolazzi",
+      "Ritmonio",
+      "Zucchetti",
+      "Gessi"
+    ]
   }
 }

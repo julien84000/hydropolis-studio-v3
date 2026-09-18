@@ -793,7 +793,7 @@ app.get("/api/catalog/search",requireAuth,async(req,res)=>{
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V11.26",
+  service:"Hydropolis Studio V11.27",
   database:USE_POSTGRES?"postgresql":"local-fallback",
   time:new Date().toISOString()
 }));
@@ -1071,9 +1071,26 @@ async function resolveCatalanoProductUrl(manufacturerUrl,reference,originalDescr
 
 let hotbathSitemapMemo={at:0,locs:[]};
 let lefroySitemapMemo={at:0,html:""};
-async function fetchBrandPage(url,lang="en-GB,en;q=0.9"){
-  const r=await axios.get(url,{timeout:22000,maxRedirects:5,validateStatus:x=>x>=200&&x<400,headers:{"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/150 Safari/537.36","Accept-Language":lang}});
-  return String(r.data||"");
+const brandPageCache=new Map();
+const brandPageInflight=new Map();
+const BRAND_PAGE_TTL=6*60*60*1000;
+function boundedMapSet(map,key,value,limit=240){
+  if(map.size>=limit && !map.has(key))map.delete(map.keys().next().value);
+  map.set(key,value);
+}
+async function fetchBrandPage(url,lang="en-GB,en;q=0.9",force=false){
+  const cacheKey=String(url||"");
+  const hit=brandPageCache.get(cacheKey);
+  if(!force && hit && Date.now()-hit.at<BRAND_PAGE_TTL)return hit.html;
+  if(!force && brandPageInflight.has(cacheKey))return brandPageInflight.get(cacheKey);
+  const job=(async()=>{
+    const r=await axios.get(url,{timeout:18000,maxRedirects:5,validateStatus:x=>x>=200&&x<400,headers:{"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/150 Safari/537.36","Accept-Language":lang}});
+    const html=String(r.data||"");
+    boundedMapSet(brandPageCache,cacheKey,{at:Date.now(),html});
+    return html;
+  })();
+  brandPageInflight.set(cacheKey,job);
+  try{return await job;}finally{brandPageInflight.delete(cacheKey);}
 }
 function normalizeHotbathReference(reference){
   // Keep the commercial reference untouched elsewhere, but remove trailing
@@ -1251,28 +1268,48 @@ function officialSiteLinks(html,baseUrl,hostPattern){
   });
   return out;
 }
-async function resolveNicolazziProductUrl(reference,designation="",collection=""){
+const nicolazziResolvedUrlMemo=new Map();
+function nicolazziProductLinks(html,baseUrl){
+  const $=cheerio.load(html),seen=new Set(),out=[];
+  $("li.product,.product.type-product,article.product").each((_,card)=>{
+    const a=$(card).find("a[href*='/prodotto/']").first();
+    const href=absoluteUrl(baseUrl,a.attr("href"));if(!href||seen.has(href))return;
+    seen.add(href);out.push({href,text:$(card).text().replace(/\s+/g," ").trim()});
+  });
+  if(out.length)return out;
+  return officialSiteLinks(html,baseUrl,/(^|\.)nicolazzi\.it$/i)
+    .filter(x=>/\/prodotto\//i.test(new URL(x.href).pathname)||/\/en\/prodotto\//i.test(new URL(x.href).pathname));
+}
+async function resolveNicolazziProductUrl(reference,designation="",collection="",catalogBase=""){
   const raw=String(reference||"").toUpperCase().trim();
-  const base=nicolazziRefBase(raw);
+  const base=String(catalogBase||nicolazziRefBase(raw)||raw).toUpperCase().trim();
+  const memoKey=`${String(collection||"").toLowerCase()}|${base}`;
+  if(nicolazziResolvedUrlMemo.has(memoKey))return nicolazziResolvedUrlMemo.get(memoKey);
   const series=String(collection||"").trim().toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+  const core=(base.split("..")[0]||base).replace(/[^A-Z0-9-]/g,"");
   const targets=[];
   if(series)targets.push(`https://www.nicolazzi.it/en/categoria-prodotto/modern/${series}/`,`https://www.nicolazzi.it/en/categoria-prodotto/classic/${series}/`,`https://www.nicolazzi.it/en/categoria-prodotto/${series}/`);
-  targets.push(`https://www.nicolazzi.it/en/?s=${encodeURIComponent(base.replace(/\.\./g,''))}&post_type=product`);
+  if(core)targets.push(`https://www.nicolazzi.it/en/?s=${encodeURIComponent(core)}&post_type=product`);
   let fallback="";
+  const exactKey=normalizeToken(base.replace(/\.\./g,""));
+  const coreKey=normalizeToken(core);
   for(const url of targets){
     try{
       const html=await fetchBrandPage(url,"en-GB,en;q=0.9,it;q=0.7");
-      const links=officialSiteLinks(html,url,/(^|\.)nicolazzi\.it$/i)
-        .filter(x=>/\/prodotto\//i.test(new URL(x.href).pathname)||/\/en\/prodotto\//i.test(new URL(x.href).pathname));
-      const key=normalizeToken(base.replace(/\.\./g,''));
+      const links=nicolazziProductLinks(html,url);
       for(const l of links){
         if(!fallback)fallback=l.href;
         const nt=normalizeToken(l.text);
-        if((key&&nt.includes(key)) || similarityScore(designation||collection||raw,l.text)>=0.78) return l.href;
+        if((exactKey&&nt.includes(exactKey)) || (coreKey&&nt.includes(coreKey)) || similarityScore(designation||collection||raw,l.text)>=0.82){
+          boundedMapSet(nicolazziResolvedUrlMemo,memoKey,l.href,1200);
+          return l.href;
+        }
       }
     }catch(e){console.warn("[nicolazzi-resolve]",e.message)}
   }
-  return fallback||"https://www.nicolazzi.it/en/";
+  const resolved=fallback||null;
+  boundedMapSet(nicolazziResolvedUrlMemo,memoKey,resolved,1200);
+  return resolved;
 }
 function gessiReferenceParts(reference="",finishCode=""){
   const raw=String(reference||"").toUpperCase().trim();
@@ -1302,7 +1339,7 @@ async function resolveGessiProductUrl(reference,designation="",collection=""){
   return gessiAreaProProductUrl(reference);
 }
 
-async function resolveManufacturerProductUrl(manufacturerUrl,reference,originalDescription,designation,collection){
+async function resolveManufacturerProductUrl(manufacturerUrl,reference,originalDescription,designation,collection,catalogBase=""){
   if(/zucchettidesign\.it/i.test(manufacturerUrl)){
     try{
       const fullRef=String(reference||"").trim().toUpperCase();
@@ -1331,7 +1368,7 @@ async function resolveManufacturerProductUrl(manufacturerUrl,reference,originalD
   if(/catalano\.it/i.test(manufacturerUrl)) return resolveCatalanoProductUrl(manufacturerUrl,reference,originalDescription,designation,collection);
   if(/hotbath\.it/i.test(manufacturerUrl)) return resolveHotbathProductUrl(reference);
   if(/ritmonio\.it/i.test(manufacturerUrl)) return resolveRitmonioProductUrl(reference,originalDescription||designation,collection);
-  if(/nicolazzi\.it/i.test(manufacturerUrl)) return resolveNicolazziProductUrl(reference,originalDescription||designation,collection);
+  if(/nicolazzi\.it/i.test(manufacturerUrl)) return resolveNicolazziProductUrl(reference,originalDescription||designation,collection,catalogBase);
   if(/gessi\.com/i.test(manufacturerUrl)) return resolveGessiProductUrl(reference,originalDescription||designation,collection);
   if(/lefroybrooks\.com/i.test(manufacturerUrl)) return resolveLefroyProductUrl(reference,originalDescription||designation);
   if(/recor\.pt/i.test(manufacturerUrl)) return resolveRecorProductUrl(reference,originalDescription||designation);
@@ -1459,10 +1496,10 @@ async function validateRemoteImage(url,referer=""){
   }
 }
 
-async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,designation,originalDescription,collection,manufacturer}){
+async function scrapeManufacturer({manufacturerUrl,reference,catalogBase="",finishCode,finish,designation,originalDescription,collection,manufacturer,imageOnly=false}){
   const base=productBase(reference);
   const requested=String(finishCode||"").toUpperCase();
-  manufacturerUrl=await resolveManufacturerProductUrl(manufacturerUrl,reference,originalDescription,designation,collection);
+  manufacturerUrl=await resolveManufacturerProductUrl(manufacturerUrl,reference,originalDescription,designation,collection,catalogBase);
   if(!manufacturerUrl){
     return {
       image:null, exact:false, drawing:null, technicalSheet:null, installationGuide:null,
@@ -1473,17 +1510,7 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
   const isGessi=/gessi\.com/i.test(manufacturerUrl);
   let page={data:""};
   try{
-    page=await axios.get(manufacturerUrl,{
-      timeout:22000,
-      maxRedirects:5,
-      validateStatus:s=>s>=200&&s<400,
-      headers:{
-        "User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/150 Safari/537.36",
-        "Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-        "Accept-Language":"en-US,en;q=0.9,it;q=0.8,fr;q=0.7",
-        "Cache-Control":"no-cache"
-      }
-    });
+    page.data=await fetchBrandPage(manufacturerUrl,"en-US,en;q=0.9,it;q=0.8,fr;q=0.7");
   }catch(e){
     if(!isGessi)throw e;
     // Area Pro can reject automated HTML requests. Gessi images remain available
@@ -1536,10 +1563,15 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
   }
 
   if(/nicolazzi\.it/i.test(manufacturerUrl)){
-    // Nicolazzi may expose its primary product photography in metadata. Gessi is
-    // deliberately excluded here: its corporate OG image is branding, not a SKU photo.
+    // Nicolazzi product pages expose the real full-size SKU image in the WooCommerce
+    // gallery. It is finish-neutral; Hydropolis adds the exact official finish swatch.
+    $(".woocommerce-product-gallery__image a[href],.woocommerce-product-gallery__image img[data-large_image],.woocommerce-product-gallery__image img[data-src]").each((_,el)=>{
+      const raw=$(el).attr("href")||$(el).attr("data-large_image")||$(el).attr("data-src")||"";
+      const url=absoluteUrl(manufacturerUrl,raw);
+      if(url&&isImageUrl(url)&&!/logo/i.test(url))candidates.push({url,source:"nicolazzi-official-product-gallery",score:18000,finishMatch:"generic",detectedFinishCode:null,variationId:null,attributes:{official:true,catalogBase:catalogBase||null}});
+    });
     const og=absoluteUrl(manufacturerUrl,$('meta[property="og:image"]').attr('content')||'');
-    if(og&&isImageUrl(og))candidates.push({url:og,source:"nicolazzi-official-og",score:900,finishMatch:"generic",detectedFinishCode:null,variationId:null,attributes:{official:true}});
+    if(og&&isImageUrl(og)&&!/logo/i.test(og))candidates.push({url:og,source:"nicolazzi-official-og",score:800,finishMatch:"generic",detectedFinishCode:null,variationId:null,attributes:{official:true}});
   }
   const finishOptionMap=buildFinishOptionMap($);
 
@@ -2694,6 +2726,11 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     const ritmonioOfficial=sorted.find(x=>x.source==="ritmonio-official-product-image")||null;
     if(ritmonioOfficial){exact=null;fallback=ritmonioOfficial;best=ritmonioOfficial;}
   }
+  const isNicolazzi=/nicolazzi\.it/i.test(manufacturerUrl);
+  if(isNicolazzi){
+    const nicolazziOfficial=sorted.find(x=>x.source==="nicolazzi-official-product-gallery")||null;
+    if(nicolazziOfficial){exact=null;fallback=nicolazziOfficial;best=nicolazziOfficial;}
+  }
 
   if(isHotbath){
     const officialExact=sorted.find(x=>x.source==="hotbath-main-product-image" && x.finishMatch==="exact")||null;
@@ -2767,6 +2804,17 @@ async function scrapeManufacturer({manufacturerUrl,reference,finishCode,finish,d
     return item;
   }
   if(best) best=await embedOfficialImage(best);
+
+  if((isRitmonio||isNicolazzi) && best && !best.dataUrl){
+    const check=await validateRemoteImage(best.url,manufacturerUrl);
+    if(!check.ok){
+      console.warn("[manufacturer-best-image-dead]",JSON.stringify({manufacturer:isRitmonio?"Ritmonio":"Nicolazzi",reference,url:best.url,status:check.status||0}));
+      const alternative=sorted.find(x=>x.url!==best.url && x.source!=="ritmonio-official-product-image" && !/logo/i.test(x.url||""))||null;
+      best=alternative?await embedOfficialImage(alternative):null;
+    }else if(check.data){
+      best={...best,dataUrl:`data:${check.contentType};base64,${check.data.toString("base64")}`};
+    }
+  }
 
   if(isHotbath && best && /hotbath\.it/i.test(best.url||"") && !best.dataUrl){
     // A Hotbath official asset without embedded bytes is not trustworthy:
@@ -3377,13 +3425,13 @@ app.get("/api/finish-simulation",async(req,res)=>{
 });
 
 app.post("/api/manufacturer-image",async(req,res)=>{
-  const {manufacturerUrl,reference,lookupReference,finishCode,finish,designation,originalDescription,collection,manufacturer}=req.body||{};
+  const {manufacturerUrl,reference,lookupReference,base:catalogBase,finishCode,finish,designation,originalDescription,collection,manufacturer,imageOnly}=req.body||{};
   if(!manufacturerUrl||!reference) return res.status(400).json({error:"manufacturerUrl et reference requis"});
   try{
     const technicalReference=/hotbath/i.test(manufacturer||"")
       ?normalizeHotbathReference(lookupReference||reference)
       :reference;
-    const result=await scrapeManufacturer({manufacturerUrl,reference:technicalReference,finishCode,finish,designation,originalDescription,collection,manufacturer});
+    const result=await scrapeManufacturer({manufacturerUrl,reference:technicalReference,catalogBase,finishCode,finish,designation,originalDescription,collection,manufacturer,imageOnly:imageOnly===true});
     // Preserve the commercial catalogue reference for the browser/UI.
     result.displayReference=reference;
     result.lookupReference=technicalReference;

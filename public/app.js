@@ -721,7 +721,24 @@ try{
     localStorage.setItem("hydropolis-gessi-image-fix-v126","1");
   }
 }catch(e){}
+// V11.27: former Nicolazzi/Ritmonio/Zucchetti negative/partial lookups must not
+// suppress the new automatic hydrator. Successful entries for other makers remain.
+try{
+  if(localStorage.getItem("hydropolis-auto-images-v127")!=="1"){
+    for(const key of Object.keys(manufacturerImageCache)){
+      if(/^(Nicolazzi|Ritmonio|Zucchetti)\|/i.test(key) && !manufacturerImageCache[key]?.src)delete manufacturerImageCache[key];
+    }
+    localStorage.setItem("hydropolis-manufacturer-v119",JSON.stringify(manufacturerImageCache));
+    localStorage.setItem("hydropolis-auto-images-v127","1");
+  }
+}catch(e){}
 function manufacturerCacheKey(p){return `${p.manufacturer}|${p.reference}`;}
+function manufacturerSharedCacheKey(p){
+  const maker=String(p?.manufacturer||"");
+  if(!/^(Nicolazzi|Ritmonio)$/i.test(maker))return "";
+  const base=String(p?.base||"").trim();
+  return base?`${maker}|@base:${base}`:"";
+}
 function saveManufacturerCache(){
   try{
     localStorage.setItem("hydropolis-manufacturer-v119",JSON.stringify(manufacturerImageCache));
@@ -733,7 +750,7 @@ function saveManufacturerCache(){
     }catch{}
   }
 }
-function cachedManufacturerImage(p){return manufacturerImageCache[manufacturerCacheKey(p)]||null;}
+function cachedManufacturerImage(p){return manufacturerImageCache[manufacturerCacheKey(p)]||manufacturerImageCache[manufacturerSharedCacheKey(p)]||null;}
 function gessiDirectOfficialImage(p){
   if(!p || !/^Gessi$/i.test(String(p.manufacturer||"")))return "";
   const raw=String(p.reference||"").toUpperCase().trim();
@@ -745,9 +762,11 @@ function gessiDirectOfficialImage(p){
   return `/api/image-proxy?url=${encodeURIComponent(remote)}`;
 }
 
-async function fetchManufacturerImage(p,force=false){
+async function fetchManufacturerImage(p,force=false,options={}){
   const key=manufacturerCacheKey(p);
-  if(!force && manufacturerImageCache[key])return manufacturerImageCache[key];
+  const sharedKey=manufacturerSharedCacheKey(p);
+  const cached=manufacturerImageCache[key]||manufacturerImageCache[sharedKey];
+  if(!force && cached?.src)return cached;
 
   const r=await fetch("/api/manufacturer-image",{
     method:"POST",
@@ -755,6 +774,8 @@ async function fetchManufacturerImage(p,force=false){
     body:JSON.stringify({
       manufacturerUrl:p.manufacturerUrl,
       reference:p.reference,
+      base:p.base||"",
+      imageOnly:options.imageOnly===true,
       lookupReference:normalizeSupplierReferenceForLookup(p.reference,p.manufacturer),
       finishCode:p.finishCode||finishCodeFromReference(p.reference,p.manufacturer),
       finish:p.finish,
@@ -824,15 +845,82 @@ Référence technique utilisée : ${data.lookupReference} (suffixe catalogue ign
     checkedAt:new Date().toISOString()
   };
 
-  manufacturerImageCache[key]={
+  const stored={
     ...result,
     src:result.cacheSrc||"",
     images:result.cacheImages||[],
     cacheSrc:undefined,
     cacheImages:undefined
   };
+  // Nicolazzi and Ritmonio use one official product photo for all finish variants;
+  // keep a single base-level cache entry and overlay the requested finish swatch.
+  manufacturerImageCache[sharedKey||key]=stored;
   saveManufacturerCache();
   return result;
+}
+
+const autoPhotoQueue=[];
+const autoPhotoQueued=new Set();
+const autoPhotoFailures=new Map();
+let autoPhotoActive=0;
+let autoPhotoObserver=null;
+const AUTO_PHOTO_CONCURRENCY=4;
+function autoPhotoGroupKey(p){return manufacturerSharedCacheKey(p)||manufacturerCacheKey(p);}
+function automaticImageEligible(p){
+  if(!p||!/^(Nicolazzi|Ritmonio|Zucchetti|Gessi)$/i.test(String(p.manufacturer||"")))return false;
+  if(cachedManufacturerImage(p)?.src||p.image)return false;
+  if(/^Gessi$/i.test(p.manufacturer||"")&&gessiDirectOfficialImage(p))return false;
+  const failedAt=autoPhotoFailures.get(autoPhotoGroupKey(p))||0;
+  return Date.now()-failedAt>5*60*1000;
+}
+function catalogCardForProduct(p){
+  const key=productKey(p);
+  return [...document.querySelectorAll("#results .result[data-key]")].find(el=>el.dataset.key===key)||null;
+}
+function updateCatalogCardVisual(p,img){
+  if(!img?.src)return;
+  const sameBase=manufacturerSharedCacheKey(p);
+  const targets=sameBase?CATALOG.filter(x=>manufacturerSharedCacheKey(x)===sameBase):[p];
+  for(const item of targets){
+    const card=catalogCardForProduct(item);if(!card)continue;
+    const thumb=card.querySelector(".catalog-thumb");if(!thumb)continue;
+    thumb.querySelector(".photo-missing")?.remove();
+    thumb.querySelectorAll(".finish-swatch-badge").forEach(el=>el.remove());
+    const old=thumb.querySelector(".product-visual-frame");if(old)old.remove();
+    thumb.insertAdjacentHTML("beforeend",productImageFrameHtml(img.src,item,item.reference,"catalog-cached-image"));
+    const status=card.querySelector(".photo-status");if(status)status.innerHTML=`<b>${esc(imageBadge(img,item))}</b>`;
+  }
+}
+function enqueueAutomaticImage(p){
+  if(!automaticImageEligible(p))return;
+  const group=autoPhotoGroupKey(p);
+  if(autoPhotoQueued.has(group))return;
+  autoPhotoQueued.add(group);autoPhotoQueue.push(p);pumpAutomaticImages();
+}
+function pumpAutomaticImages(){
+  while(autoPhotoActive<AUTO_PHOTO_CONCURRENCY&&autoPhotoQueue.length){
+    const p=autoPhotoQueue.shift(),group=autoPhotoGroupKey(p);autoPhotoActive++;
+    fetchManufacturerImage(p,false,{imageOnly:true}).then(img=>{
+      if(img?.src)updateCatalogCardVisual(p,img);
+      else autoPhotoFailures.set(group,Date.now());
+    }).catch(e=>{autoPhotoFailures.set(group,Date.now());console.warn("[auto manufacturer image]",p.manufacturer,p.reference,e.message);})
+      .finally(()=>{autoPhotoActive--;autoPhotoQueued.delete(group);pumpAutomaticImages();});
+  }
+}
+function setupAutomaticCatalogImages(rows){
+  if(autoPhotoObserver){autoPhotoObserver.disconnect();autoPhotoObserver=null;}
+  const list=(rows||[]).slice(0,120);
+  // Prime the first viewport immediately; remaining cards hydrate just before scroll.
+  list.slice(0,12).forEach(enqueueAutomaticImage);
+  if(!("IntersectionObserver" in window)){list.slice(12,30).forEach(enqueueAutomaticImage);return;}
+  autoPhotoObserver=new IntersectionObserver(entries=>{
+    for(const entry of entries){
+      if(!entry.isIntersecting)continue;
+      const key=entry.target.dataset.key,p=CATALOG.find(x=>productKey(x)===key);
+      if(p)enqueueAutomaticImage(p);autoPhotoObserver.unobserve(entry.target);
+    }
+  },{rootMargin:"900px 0px",threshold:0.01});
+  document.querySelectorAll("#results .result[data-key]").forEach(el=>autoPhotoObserver.observe(el));
 }
 
 function imageBadge(img,p){
@@ -1678,7 +1766,13 @@ function renderCatalog(){
    $$(".compare-toggle",results).forEach(b=>b.onclick=()=>toggleCompare(b.dataset.key));
    $$(".favorite-toggle",results).forEach(b=>b.onclick=()=>toggleFavorite(b.dataset.key));
    $$(".suggest-toggle",results).forEach(b=>b.onclick=()=>showSuggestionsForKey(b.dataset.key));
-   $$(".catalog-cached-image",results).forEach(img=>img.onerror=()=>{const wrap=img.closest(".catalog-thumb"),p=CATALOG.find(x=>x.reference===wrap?.dataset.ref);if(wrap)wrap.innerHTML=`<div class="photo-missing"><b>Photo indisponible</b><br>${esc(p?.finish||"")}</div>`});
+   $$(".catalog-cached-image",results).forEach(img=>img.onerror=()=>{
+     const card=img.closest(".result[data-key]"),p=CATALOG.find(x=>productKey(x)===card?.dataset.key);
+     const wrap=img.closest(".catalog-thumb");
+     if(wrap){img.closest(".product-visual-frame")?.remove();if(!wrap.querySelector(".photo-missing"))wrap.insertAdjacentHTML("beforeend",`<div class="photo-missing"><b>Photo indisponible</b><br>${esc(p?.finish||"")}</div>${finishSwatchBadgeHtml(p)}`)}
+     if(p)enqueueAutomaticImage(p);
+   });
+   setupAutomaticCatalogImages(rows);
    renderCompareDock();
  }catch(e){console.error("[renderCatalog]",e);if(count)count.textContent="Erreur d’affichage du catalogue";results.innerHTML=`<div class="empty"><b>Le catalogue n’a pas pu s’afficher.</b><br>${esc(e.message||"")}</div>`}
 }
@@ -2057,6 +2151,22 @@ async function addProduct(ref,roomId,parentId=""){
   const record=createSelectedProductRecord(p,roomId,parentId);
   if(!record)return null;
   commitSelectedRecords([record]);
+  // V11.27: newly selected premium products enrich themselves in the background;
+  // users no longer need to press “Photo fabricant” before the client dossier.
+  if(!record.image && /^(Nicolazzi|Ritmonio|Zucchetti|Gessi)$/i.test(String(p.manufacturer||""))){
+    fetchManufacturerImage(p,false,{imageOnly:false}).then(img=>{
+      if(!img?.src)return;
+      const live=state.selected.find(x=>x.id===record.id);if(!live)return;
+      live.image=img.src;live.images=img.images||[img.src];live.pdfImage=img.src;live.pdfImages=(img.images||[img.src]).slice(0,2);
+      live.remoteImageUrl=img.remoteUrl||"";live.remoteImages=img.remoteImages||[];live.imageSource=img.source||"Site officiel fabricant";
+      live.imageFinishMatch=img.finishMatch||"";live.imageStatus=imageBadge(img,p);live.imageNote=img.note||"";
+      live.resolvedManufacturerUrl=img.resolvedManufacturerUrl||live.manufacturerUrl||"";
+      live.drawingUrl=img.drawingUrl||live.drawingUrl||"";live.drawingType=img.drawingType||live.drawingType||"";live.drawingLabel=img.drawingLabel||live.drawingLabel||"";
+      live.technicalSheetUrl=img.technicalSheetUrl||live.technicalSheetUrl||"";live.technicalSheetLabel=img.technicalSheetLabel||live.technicalSheetLabel||"Fiche technique";
+      live.installationGuideUrl=img.installationGuideUrl||live.installationGuideUrl||"";live.installationGuideLabel=img.installationGuideLabel||live.installationGuideLabel||"Notice d'installation";
+      saveState();renderRooms();renderSelection();
+    }).catch(e=>console.warn("[selected auto image]",p.manufacturer,p.reference,e.message));
+  }
   return record.id;
 }
 function removeProduct(id){
