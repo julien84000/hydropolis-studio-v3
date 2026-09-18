@@ -1,6 +1,6 @@
 {
   "name": "Hydropolis Studio",
-  "version": "11.30.0",
+  "version": "11.31.0",
   "base": {
     "archive": "Hydropolis_Studio_V10.16_Update.zip",
     "sha256": "415242ad95036f7db3e76844ec2fea8a5c8d916c1a8c1617350847c32507d5cd"
@@ -26,7 +26,7 @@
   "validation": {
     "syntax": "passed",
     "smoke": "passed",
-    "runtime": "npm build and mocked Hotbath behavior tests passed; production latency not measured"
+    "runtime": "npm run build passed in artifact container (syntax + smoke + Hotbath behavior + Nicolazzi PDF asset tests)"
   },
   "designEvolution": "Apple/Canva-inspired ecosystem + Catalano official-first galleries + visual Recor feet configurator",
   "catalano": {
@@ -49,7 +49,7 @@
     "behavior": "visual chooser for mandatory feet; local images are style references and are included with selected foot in client dossier",
     "offline": "assets included in service-worker shell cache"
   },
-  "releaseNotes": "RELEASE_NOTES_V11.30.md",
+  "releaseNotes": "RELEASE_NOTES_V11.31.md",
   "recorImagesV1119": {
     "priority": "exact Recor product page + WooCommerce full-resolution gallery anchors/data-large_image",
     "fallback": "no Recor home-page image fallback",
@@ -58,8 +58,8 @@
     "clientDossier": "bath dominant; selected feet as small visual; waste text-only",
     "pixelGuard": "when dimensions are measurable: max side >= 800 px and min side >= 500 px; otherwise reject thumbnail result"
   },
-  "build": "V11.30",
-  "notes": "Zucchetti image resolver hardened: client-supplied sku no longer certifies a page; canonical/body product identity and reference-bearing assets are mandatory; stale Zucchetti browser images are purged once.",
+  "build": "V11.31",
+  "notes": "Nicolazzi is catalogue-first: all 481 product models are mapped to local visuals/technical drawings extracted from the official 2024 PDF. 15,023 finish variants reuse their exact model visual and Hydropolis finish swatch; no ambiguous Nicolazzi website image is required.",
   "recorTechnicalPdfV1122": {
     "productPageSession": "open exact Recor product page first and reuse set-cookie session",
     "liveDrawingUrl": "refresh Technical drawing PDF href from official product page",
@@ -99,7 +99,11 @@
     "catalogRows": 15023,
     "pricing": "Listino 2024 × 1.25",
     "purchaseDiscount": "50%",
-    "visualRule": "official product image + exact Nicolazzi finish swatch when finish-specific photography is unavailable"
+    "visualRule": "official 2024 PDF local model visual + exact Hydropolis finish swatch; no ambiguous website fallback",
+    "modelAssets": 481,
+    "sourcePages": 434,
+    "handleModel": "collection/handle suffix preserved in catalog base; Festival external handle codes remain separate order options",
+    "technicalDrawing": "local PDF-derived visual attached as drawing"
   },
   "gessi": {
     "catalogRows": 16211,
@@ -134,5 +138,13 @@
       "Zucchetti",
       "Gessi"
     ]
+  },
+  "nicolazziPdfV1131": {
+    "assetFile": "public/nicolazzi_pdf_assets.json.gz",
+    "models": 481,
+    "catalogRows": 15023,
+    "behavior": "instant local card visual; same model visual shared across finish variants; technical drawing local and cacheable",
+    "source": "NICOLAZZI_LISTINO 2024 official PDF",
+    "websiteFallback": "disabled for ambiguous product imagery"
   }
 }

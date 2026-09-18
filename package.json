@@ -1,13 +1,13 @@
 {
   "name": "hydropolis-studio-v3",
-  "version": "11.30.0",
+  "version": "11.31.0",
   "private": true,
-  "description": "Hydropolis Studio V11.30 - Hotbath image search performance fixes",
+  "description": "Hydropolis Studio V11.31 - Nicolazzi local PDF catalogue visuals and technical drawings",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "check": "node --check server.js && node --check public/app.js && node --check public/sw.js",
-    "test": "node tests/v11-smoke.js && node tests/hotbath-performance.js",
+    "test": "node tests/v11-smoke.js && node tests/hotbath-performance.js && node tests/nicolazzi-pdf-assets.js",
     "build": "npm run check && npm test"
   },
   "engines": {

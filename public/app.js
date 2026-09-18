@@ -752,6 +752,16 @@ try{
     localStorage.setItem("hydropolis-zucchetti-resolver-v129","1");
   }
 }catch(e){}
+// V11.31: Nicolazzi now uses the official 2024 PDF locally. Purge all former
+// website-derived Nicolazzi photos once so every card switches immediately to the
+// deterministic catalogue visual/drawing pack.
+try{
+  if(localStorage.getItem("hydropolis-nicolazzi-pdf-v131")!=="1"){
+    for(const key of Object.keys(manufacturerImageCache))if(/^Nicolazzi\|/i.test(key))delete manufacturerImageCache[key];
+    localStorage.setItem("hydropolis-manufacturer-v119",JSON.stringify(manufacturerImageCache));
+    localStorage.setItem("hydropolis-nicolazzi-pdf-v131","1");
+  }
+}catch(e){}
 function manufacturerCacheKey(p){return `${p.manufacturer}|${p.reference}`;}
 function manufacturerSharedCacheKey(p){
   const maker=String(p?.manufacturer||"");
@@ -770,7 +780,29 @@ function saveManufacturerCache(){
     }catch{}
   }
 }
-function cachedManufacturerImage(p){return manufacturerImageCache[manufacturerCacheKey(p)]||manufacturerImageCache[manufacturerSharedCacheKey(p)]||null;}
+function nicolazziLocalCatalogImage(p){
+  if(!p || !/^Nicolazzi$/i.test(String(p.manufacturer||"")))return null;
+  const base=String(p.base||"").trim();
+  if(!base)return null;
+  const src=`/api/nicolazzi-pdf-asset?base=${encodeURIComponent(base)}`;
+  const page=Number(p.catalogPage||0);
+  return {
+    src,
+    images:[src],
+    source:"Catalogue PDF Nicolazzi 2024",
+    finishMatch:"generic",
+    note:`Visuel issu du catalogue PDF officiel Nicolazzi 2024${page?` · p.${page}`:""}. La finition est représentée par la pastille Hydropolis.`,
+    drawingUrl:src,
+    drawingType:"image",
+    drawingLabel:`Drawing technique · catalogue Nicolazzi 2024${page?` · p.${page}`:""}`,
+    resolvedManufacturerUrl:"",
+    catalogBase:base,
+    checkedAt:new Date().toISOString()
+  };
+}
+function cachedManufacturerImage(p){
+  return manufacturerImageCache[manufacturerCacheKey(p)]||manufacturerImageCache[manufacturerSharedCacheKey(p)]||nicolazziLocalCatalogImage(p)||null;
+}
 function gessiDirectOfficialImage(p){
   if(!p || !/^Gessi$/i.test(String(p.manufacturer||"")))return "";
   const raw=String(p.reference||"").toUpperCase().trim();
@@ -809,7 +841,12 @@ async function fetchManufacturerImage(p,force=false,options={}){
   const data=await r.json();
   if(!r.ok)throw new Error(data.detail||data.error||"Recherche fabricant impossible");
 
-  const toProxy=url=>url?`/api/image-proxy?url=${encodeURIComponent(url)}`:"";
+  const toProxy=url=>{
+    const value=String(url||"");
+    if(!value)return "";
+    if(/^(?:data:|blob:|\/)/i.test(value))return value;
+    return `/api/image-proxy?url=${encodeURIComponent(value)}`;
+  };
   const src=data.best?.url?toProxy(data.best.url):"";
   const imageSources=(data.images||[]).map(x=>toProxy(x.url)).filter(Boolean);
 
@@ -828,19 +865,18 @@ async function fetchManufacturerImage(p,force=false,options={}){
     images:resolvedImages.length?resolvedImages:(embedded?[embedded]:src?[src]:[]),
     cacheImages:imageSources.length?imageSources:(src?[src]:[]),
     finishMatch:data.best?.finishMatch||"",
-    source:src
-      ?(/sanitairkamer/i.test((data.best?.source||"")+" "+(data.best?.page||"")+" "+(data.best?.url||""))
-        ?(data.best?.finishMatch==="exact"
-          ?`Sanitairkamer · finition ${p.finish}`
-          :`Sanitairkamer · produit trouvé, finition à vérifier`)
-        :(data.best?.finishMatch==="exact"
-          ?`Site officiel fabricant · finition ${p.finish}`
-          :data.best?.finishMatch==="web"
-            ?`Recherche web · référence exacte ${normalizeSupplierReferenceForLookup(p.reference,p.manufacturer)}`
-            :(/hotbath/i.test(p.manufacturer||"")
-              ?`Site officiel fabricant · dernier recours`
-              :"Site officiel fabricant · visuel produit générique")))
-      :"",
+    source:(()=>{
+      if(!src)return "";
+      const bestSource=String(data.best?.source||"");
+      if(/nicolazzi-pdf-catalog/i.test(bestSource))return "Catalogue PDF Nicolazzi 2024";
+      if(/sanitairkamer/i.test(bestSource+" "+(data.best?.page||"")+" "+(data.best?.url||"")))return data.best?.finishMatch==="exact"
+        ?`Sanitairkamer · finition ${p.finish}`
+        :`Sanitairkamer · produit trouvé, finition à vérifier`;
+      if(data.best?.finishMatch==="exact")return `Site officiel fabricant · finition ${p.finish}`;
+      if(data.best?.finishMatch==="web")return `Recherche web · référence exacte ${normalizeSupplierReferenceForLookup(p.reference,p.manufacturer)}`;
+      if(/hotbath/i.test(p.manufacturer||""))return `Site officiel fabricant · dernier recours`;
+      return "Site officiel fabricant · visuel produit générique";
+    })(),
     note:(data.note||"") + ((/hotbath/i.test(p.manufacturer||"") && data.lookupReference && data.lookupReference!==p.reference)
       ?`
 Référence technique utilisée : ${data.lookupReference} (suffixe catalogue ignoré).`
@@ -945,6 +981,7 @@ function setupAutomaticCatalogImages(rows){
 
 function imageBadge(img,p){
   if(!img)return `Photo fabricant à rechercher`;
+  if(/^Nicolazzi$/i.test(String(p?.manufacturer||"")) && /Catalogue PDF Nicolazzi/i.test(String(img.source||"")))return `✓ Catalogue PDF Nicolazzi · ${p.finish||p.finishCode||"finition"} via pastille`;
   if(img.finishMatch==="simulated")return `≈ Simulation de finition · ${p.finish}`;
   if(/sanitairkamer/i.test((img.source||"")+" "+(img.page||"")+" "+(img.url||"")))return img.finishMatch==="exact"
     ?`✓ Sanitairkamer · finition ${p.finish}`
@@ -3533,7 +3570,7 @@ function buildDocument(){
      const hotbathJpg=isHotbathDrawingJpg(p);
      const drawingSrc=p.drawingType==="pdf"
        ?pdfPageImageProxyUrl(p,p.drawingUrl,page,1.8)
-       :(hotbathJpg?hotbathDrawingProxyUrl(p):`/api/image-proxy?url=${encodeURIComponent(p.drawingUrl)}`);
+       :(hotbathJpg?hotbathDrawingProxyUrl(p):(/^(?:data:|blob:|\/)/i.test(String(p.drawingUrl||""))?p.drawingUrl:`/api/image-proxy?url=${encodeURIComponent(p.drawingUrl)}`));
      const drawingFallback=hotbathJpg?p.drawingUrl:"";
 
      const drawingTitle=/zucchetti/i.test(p.manufacturer||"")

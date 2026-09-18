@@ -1,6 +1,6 @@
-# Hydropolis Studio V11.29
+# Hydropolis Studio V11.31
 
-Hydropolis Studio V11.29 est construit sur **V10.16**, la dernière base stable auditée, avec réintégration contrôlée des apports utiles de la branche V11.12. Il ne s'agit pas d'une réécriture : les projets par pièce, devis/remises/marges, dossier client A4, comptes utilisateurs, PostgreSQL/Supabase et connecteurs fabricants existants sont conservés.
+Hydropolis Studio V11.31 est construit sur **V10.16**, la dernière base stable auditée, avec réintégration contrôlée des apports utiles de la branche V11.12. Il ne s'agit pas d'une réécriture : les projets par pièce, devis/remises/marges, dossier client A4, comptes utilisateurs, PostgreSQL/Supabase et connecteurs fabricants existants sont conservés.
 
 ## Ce que V11.23 ajoute
 
@@ -26,7 +26,7 @@ Hydropolis Studio V11.29 est construit sur **V10.16**, la dernière base stable 
 
 ## Catalogues inclus
 
-Les données réellement livrées restent celles des **7 fabricants vérifiés** : Amphora, Catalano, Coalbrook, Hotbath, Lefroy Brooks, Recor et Zucchetti, soit 21 284 lignes de catalogue avant dédoublonnage. La V11 prépare l'élargissement de la base mais n'ajoute volontairement aucun fabricant fictif sans tarif/catalogue source validé.
+La V11.31 livre **10 fabricants** : Amphora, Catalano, Coalbrook, Gessi, Hotbath, Lefroy Brooks, Nicolazzi, Recor, Ritmonio et Zucchetti, soit **68 600 lignes catalogue** et **68 596 couples fabricant/référence uniques**. Nicolazzi, Ritmonio et Gessi proviennent des sources tarifaires/catalogues validées ajoutées au projet ; aucun fabricant fictif n'est généré.
 
 ## Vérifications
 
@@ -37,7 +37,7 @@ npm test
 npm start
 ```
 
-`npm run check` vérifie la syntaxe du serveur et de l'application. `npm test` contrôle les fichiers V11 essentiels, les 7 fabricants, le volume catalogue et les fonctions structurantes (offline, recherche serveur, comparaison, exports et garde-fous serveur).
+`npm run check` vérifie la syntaxe du serveur et de l'application. `npm test` contrôle les fichiers V11 essentiels, les **10 fabricants**, le volume catalogue, les fonctions structurantes (offline, recherche serveur, comparaison, exports et garde-fous serveur), le comportement Hotbath V11.30 et l'index local Nicolazzi V11.31.
 
 ## Déploiement
 
@@ -87,15 +87,12 @@ Les catalogues Ritmonio, Nicolazzi et Gessi sont distribués en `.json.gz`. Le c
 Photos fabricant automatiques dans le catalogue, préchargement par viewport, cache partagé Nicolazzi/Ritmonio, cache serveur 6 h et déduplication des pages fabricant pour accélérer notamment Zucchetti. Les articles ajoutés au projet s’enrichissent également en arrière-plan sans clic manuel.
 
 
-## V11.28
-- Correction du connecteur Nicolazzi : `Agorà` et les collections accentuées sont maintenant résolues correctement.
-- Index officiel de collection mis en cache : une seule exploration Nicolazzi alimente ensuite toutes les références visibles de la collection.
-- Pagination Nicolazzi prise en charge et sélection stricte par référence/titre produit.
-- Suppression des anciens visuels Nicolazzi mis en cache par V11.27 afin de forcer une récupération propre.
+## V11.28 à V11.30
 
-## V11.29
-- Correction du connecteur Zucchetti : le paramètre `?sku=` envoyé par l’application n’est plus considéré comme une preuve d’identité de la fiche.
-- Une image Zucchetti n’est acceptée que si la fiche officielle et le fichier image correspondent à la référence demandée.
-- Pour les cartes catalogue, l’image officielle nommée par référence est validée directement afin d’accélérer fortement l’affichage.
-- Exclusion des bannières de collection, visuels marketing et suggestions produits du choix final.
-- Purge unique des anciens visuels Zucchetti erronés enregistrés dans le navigateur.
+Les versions intermédiaires ont renforcé Nicolazzi, Zucchetti et Hotbath : cache fabricant, contrôle strict des images Zucchetti par référence et accélération de la recherche Hotbath/Sanitairkamer.
+
+## V11.31 — Nicolazzi 100 % catalogue local
+
+Nicolazzi utilise désormais le tarif/catalogue PDF officiel 2024 comme source visuelle et technique principale. Un pack local compressé contient **481 modèles** couvrant les **15 023 variantes** du catalogue Nicolazzi. Les finitions d'un même modèle réutilisent le même visuel PDF avec leur pastille de finition, tandis que les suffixes de collection/manette (`..A1`, `..91`, etc.) restent distincts. Les familles à manettes séparées, notamment Festival, conservent leurs codes de manettes comme options de commande. Le site Nicolazzi n'est plus requis pour l'affichage normal des cartes.
+
+Le tarif reste majoré de **25 %** et la remise Hydropolis reste de **50 %**.

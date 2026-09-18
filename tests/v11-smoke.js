@@ -6,7 +6,7 @@ const root=path.resolve(__dirname,'..');
 const read=f=>fs.readFileSync(path.join(root,f),'utf8');
 const json=f=>{const p=path.join(root,f);const b=fs.readFileSync(p);return JSON.parse((/\.gz$/i.test(f)?zlib.gunzipSync(b):b).toString('utf8'))};
 
-assert.equal(json('package.json').version,'11.30.0');
+assert.equal(json('package.json').version,'11.31.0');
 for(const f of ['public/sw.js','public/manifest.webmanifest','public/manufacturers_manifest.json'])assert(fs.existsSync(path.join(root,f)),`${f} missing`);
 
 const manifest=json('public/catalog_manifest.json');
@@ -97,7 +97,7 @@ assert(lefroyRows.every(x=>x.purchaseDiscount===55),'Lefroy Brooks 55% supplier 
 // V11.24/V11.25 finish swatches are embedded for GitHub-safe deployment
 for(const code of ['CRL','IX','CRB','BLX','DOR','GOX','CHX','BRX','C03','C04','F31','F32','F33','F34','F36','F37','F45','F46']) assert(app.includes(`Ritmonio:${code}`),`missing embedded Ritmonio swatch ${code}`);
 assert(app.includes('SUPPLIER_FINISH_SWATCH_DATA'),'embedded supplier swatch map missing');
-assert(read('public/sw.js').includes('hydropolis-v11-30-shell'),'V11.30 SW cache missing');
+assert(read('public/sw.js').includes('hydropolis-v11-31-shell'),'V11.31 SW cache missing');
 
 // V11.25 Nicolazzi + Gessi
 const nicolazziRows=json('public/catalog_nicolazzi.json.gz');
@@ -137,15 +137,8 @@ assert(server.includes('BRAND_PAGE_TTL=6*60*60*1000'),'manufacturer page cache T
 assert(server.includes('nicolazzi-official-product-gallery'),'Nicolazzi WooCommerce product image extraction missing');
 assert(server.includes('nicolazziProductLinks'),'Nicolazzi exact product card resolver missing');
 
-// V11.28 Nicolazzi deterministic resolver guards
-assert(server.includes('function nicolazziSlug') && server.includes('normalize("NFD")'),'Nicolazzi accent-safe collection slug missing');
-assert(server.includes('buildNicolazziCollectionIndex'),'Nicolazzi collection index missing');
-assert(server.includes('nicolazziCollectionIndexInflight'),'Nicolazzi collection request deduplication missing');
-assert(server.includes('nicolazziTitleScore'),'Nicolazzi accessory title matching missing');
-assert(server.includes('nicolazzi-resolve-ok'),'Nicolazzi resolver diagnostics missing');
-assert(app.includes('hydropolis-nicolazzi-resolver-v128'),'Nicolazzi stale cache migration missing');
 
-// V11.30 Zucchetti wrong-image regression guards
+// V11.30 Hotbath/Zucchetti regression guards retained in V11.31
 assert(app.includes('hydropolis-zucchetti-resolver-v129'),'Zucchetti stale image cache migration missing');
 assert(server.includes('zCanonicalMatchesBase'),'Zucchetti canonical product identity check missing');
 assert(server.includes('if(!pageMatchesSku || !baseMatch)return'),'Zucchetti generic image rejection missing');
@@ -154,3 +147,15 @@ assert(!server.includes('!!zSkuFromUrl && zSkuFromUrl===zFullRef) ||'),'client-s
 assert(server.includes('source:"zucchetti-reference-asset"'),'Zucchetti direct reference asset fast path missing');
 assert(server.includes('https://assets.zucchettidesign.it/uploads/${encodeURIComponent(base.toUpperCase())}'),'Zucchetti reference-bearing CDN path missing');
 assert(server.includes('Promise.any([verify("jpeg"),verify("jpg")])'),'Zucchetti fast extension race missing');
+assert(server.includes('hotbathResultCache') && server.includes('hotbathResultInflight'),'Hotbath V11.30 server cache/deduplication missing');
+
+// V11.31 Nicolazzi catalogue-PDF local architecture
+assert(fs.existsSync(path.join(root,'public/nicolazzi_pdf_assets.json.gz')),'Nicolazzi PDF asset pack missing');
+assert(app.includes('hydropolis-nicolazzi-pdf-v131'),'Nicolazzi V11.31 cache migration missing');
+assert(app.includes('nicolazziLocalCatalogImage'),'Nicolazzi instant local catalogue visual helper missing');
+assert(app.includes('/api/nicolazzi-pdf-asset?base='),'Nicolazzi local asset URL missing client-side');
+assert(app.includes('Catalogue PDF Nicolazzi 2024'),'Nicolazzi PDF source badge missing');
+assert(server.includes('NICOLAZZI_PDF_ASSET_FILE'),'Nicolazzi PDF asset loader missing');
+assert(server.includes('app.get("/api/nicolazzi-pdf-asset"'),'Nicolazzi local asset endpoint missing');
+assert(server.includes('source:"nicolazzi-pdf-catalog"'),'Nicolazzi PDF-first server result missing');
+assert(server.includes('aucune image web ambiguë') || server.includes("aucune image web ambiguë"),'Nicolazzi ambiguous web fallback guard missing');
