@@ -2746,8 +2746,15 @@ main{background:transparent}
 .nicolazzi-handle-chip{display:inline-flex;align-items:center;gap:3px;height:28px;max-width:72px;padding:2px 5px;border:1px solid #e4ddd2;border-radius:8px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.03)}
 .nicolazzi-handle-chip img{width:22px;height:22px;object-fit:contain;border-radius:5px;background:#faf8f4}
 .nicolazzi-handle-chip small{font-size:8px;line-height:1;color:#4e4943;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nicolazzi-handle-chip.selected{border-color:#caa56b;background:#fffaf2;max-width:116px}
+.nicolazzi-handle-required{font-size:9px;font-weight:700;color:#916826;background:#fff8eb;border:1px solid #ead6b5;border-radius:7px;padding:5px 7px}
 .nicolazzi-finish-chip{display:inline-flex;align-items:center;justify-content:center;min-width:25px;height:20px;padding:0 5px;border:1px solid #e2ddd5;border-radius:999px;background:#fff;font-size:8px;font-weight:700;color:#6a645d}
 .nicolazzi-finish-chip.active{border-color:#b98536;background:#f5e9d5;color:#7b531f}
+.nicolazzi-handle-preview{position:absolute;left:8px;top:8px;z-index:4;width:62px;padding:4px;border:1px solid rgba(180,139,77,.32);border-radius:9px;background:rgba(255,252,247,.95);box-shadow:0 4px 12px rgba(45,35,22,.10);pointer-events:none}
+.nicolazzi-handle-preview img{display:block!important;width:52px!important;height:42px!important;object-fit:contain!important;border-radius:5px;background:#fff}
+.nicolazzi-handle-preview small{display:block;margin-top:2px;font-size:7px;line-height:1.1;font-weight:800;text-align:center;color:#765528;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.room-prod-img label{position:relative}
+.room-prod-img .nicolazzi-handle-preview{left:5px;top:5px;transform:scale(.82);transform-origin:top left}
 @media(max-width:900px){.nicolazzi-option-label{min-width:46px}.nicolazzi-handle-chip{max-width:64px}}
 
 

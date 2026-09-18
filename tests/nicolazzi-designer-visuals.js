@@ -8,7 +8,7 @@ assert(source.includes('/products/${slug}-z${model}'),'collection-aware model UR
 assert(source.includes('/search?q=${encodeURIComponent(model)}&type=product'),'Shopify model search fallback missing');
 assert(source.includes('product.vendor||""'));
 assert(source.includes('exactFinishImage'),'finish-specific commercial image selection missing');
-assert(source.includes('handleOptions'),'handle option extraction missing');
+assert(source.includes('handleOptions'),'commercial option parsing missing');
 assert(source.includes('finishOptions'),'finish option extraction missing');
 assert(source.includes('commercialSource:"Designer Tapware Co"'),'commercial source metadata missing');
 assert(source.includes('source:"designer-tapware-nicolazzi"'),'commercial image marker missing');
@@ -16,5 +16,5 @@ assert(source.includes('source:"nicolazzi-pdf-catalog"'),'PDF fallback must rema
 assert(source.includes('technicalSheet:commercial.datasheet'),'Designer datasheet bridge missing');
 assert(app.includes('@finish:${finish}'),'Nicolazzi client cache must be finish-aware');
 assert(app.includes('nicolazzi-options-slot'),'Nicolazzi visual options slot missing');
-assert(app.includes('Photo Nicolazzi · finition via pastille'),'generic finish swatch message missing');
-console.log('Nicolazzi V11.32 visual bridge OK · commercial photo + finish/handle options + official PDF fallback');
+assert(app.includes('Modèle Nicolazzi · finition via pastille · poignée en vignette'),'generic finish/handle presentation message missing');
+console.log('Nicolazzi visual bridge OK · commercial model/finish photo + authoritative PDF handle/fallback');

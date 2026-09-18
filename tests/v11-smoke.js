@@ -6,7 +6,7 @@ const root=path.resolve(__dirname,'..');
 const read=f=>fs.readFileSync(path.join(root,f),'utf8');
 const json=f=>{const p=path.join(root,f);const b=fs.readFileSync(p);return JSON.parse((/\.gz$/i.test(f)?zlib.gunzipSync(b):b).toString('utf8'))};
 
-assert.equal(json('package.json').version,'11.37.0');
+assert.equal(json('package.json').version,'11.38.0');
 for(const f of ['public/sw.js','public/manifest.webmanifest','public/manufacturers_manifest.json'])assert(fs.existsSync(path.join(root,f)),`${f} missing`);
 
 const manifest=json('public/catalog_manifest.json');
@@ -97,7 +97,7 @@ assert(lefroyRows.every(x=>x.purchaseDiscount===55),'Lefroy Brooks 55% supplier 
 // V11.24/V11.25 finish swatches are embedded for GitHub-safe deployment
 for(const code of ['CRL','IX','CRB','BLX','DOR','GOX','CHX','BRX','C03','C04','F31','F32','F33','F34','F36','F37','F45','F46']) assert(app.includes(`Ritmonio:${code}`),`missing embedded Ritmonio swatch ${code}`);
 assert(app.includes('SUPPLIER_FINISH_SWATCH_DATA'),'embedded supplier swatch map missing');
-assert(read('public/sw.js').includes('hydropolis-v11-37-shell'),'V11.37 SW cache missing');
+assert(read('public/sw.js').includes('hydropolis-v11-38-shell'),'V11.38 SW cache missing');
 
 // V11.25 Nicolazzi + Gessi
 const nicolazziRows=json('public/catalog_nicolazzi.json.gz');

@@ -1,6 +1,6 @@
 {
   "name": "Hydropolis Studio",
-  "version": "11.37.0",
+  "version": "11.38.0",
   "base": {
     "archive": "Hydropolis_Studio_V10.16_Update.zip",
     "sha256": "415242ad95036f7db3e76844ec2fea8a5c8d916c1a8c1617350847c32507d5cd"
@@ -49,7 +49,7 @@
     "behavior": "visual chooser for mandatory feet; local images are style references and are included with selected foot in client dossier",
     "offline": "assets included in service-worker shell cache"
   },
-  "releaseNotes": "RELEASE_NOTES_V11.37.md",
+  "releaseNotes": "RELEASE_NOTES_V11.38.md",
   "recorImagesV1119": {
     "priority": "exact Recor product page + WooCommerce full-resolution gallery anchors/data-large_image",
     "fallback": "no Recor home-page image fallback",
@@ -58,8 +58,8 @@
     "clientDossier": "bath dominant; selected feet as small visual; waste text-only",
     "pixelGuard": "when dimensions are measurable: max side >= 800 px and min side >= 500 px; otherwise reject thumbnail result"
   },
-  "build": "V11.37",
-  "notes": "Ritmonio download tabs use HTML line breaks (Scheda<br>tecnica). The parser now preserves the word separator, so official technical sheets are detected and includable.",
+  "build": "V11.38",
+  "notes": "Nicolazzi uses a composite presentation: model/finish photo plus the exact catalogue handle as a separate thumbnail. Validated Designer Tapware mappings persist in PostgreSQL or the local fallback cache.",
   "recorTechnicalPdfV1122": {
     "productPageSession": "open exact Recor product page first and reuse set-cookie session",
     "liveDrawingUrl": "refresh Technical drawing PDF href from official product page",
@@ -155,5 +155,12 @@
     "technicalAuthority": "official Nicolazzi 2024 PDF remains authoritative for references/prices/drawings",
     "fallback": "V11.31 local PDF asset when no commercial photo can be matched safely",
     "cacheHours": 12
+  },
+  "nicolazziCompositeV1138": {
+    "mainVisual": "model photo in requested finish when available; never presented as proof of handle",
+    "handleVisual": "exact handle variant from the authoritative Nicolazzi PDF, displayed separately",
+    "fallbackOrder": ["Designer Tapware Co", "official Nicolazzi site", "local official PDF asset"],
+    "persistentMapping": "PostgreSQL hydropolis_nicolazzi_visuals with local JSON fallback; validated model/finish mappings survive restarts",
+    "festivalRule": "no invented handle: explicit separate handle selection required"
   }
 }

@@ -20,6 +20,7 @@ app.use(express.static(path.join(__dirname,"public")));
    ========================================================= */
 const HYDRO_DATA_DIR = process.env.HYDRO_DATA_DIR || path.join(__dirname,"data");
 const HYDRO_DB_FILE = path.join(HYDRO_DATA_DIR,"hydropolis-db.json");
+const NICOLAZZI_VISUAL_CACHE_FILE = path.join(HYDRO_DATA_DIR,"nicolazzi-visual-cache.json");
 const DATABASE_URL = String(process.env.DATABASE_URL||"").trim();
 const USE_POSTGRES = /^postgres(?:ql)?:\/\//i.test(DATABASE_URL);
 const TOKEN_SECRET = process.env.HYDRO_TOKEN_SECRET || crypto
@@ -103,9 +104,57 @@ async function initPersistentStore(){
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
       PRIMARY KEY(project_id,file)
     );
+    CREATE TABLE IF NOT EXISTS hydropolis_nicolazzi_visuals(
+      mapping_key TEXT PRIMARY KEY,
+      catalog_base TEXT NOT NULL DEFAULT '',
+      finish_code TEXT NOT NULL DEFAULT '',
+      source TEXT NOT NULL DEFAULT '',
+      data JSONB NOT NULL DEFAULT '{}'::jsonb,
+      validated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
   `);
   console.log("[Hydropolis] PostgreSQL/Supabase prêt.");
   return true;
+}
+
+function readNicolazziVisualFileCache(){
+  ensureDataDir();
+  try{
+    if(!fs.existsSync(NICOLAZZI_VISUAL_CACHE_FILE))return {};
+    const parsed=JSON.parse(fs.readFileSync(NICOLAZZI_VISUAL_CACHE_FILE,"utf8"));
+    return parsed&&typeof parsed==="object"?parsed:{};
+  }catch(e){console.warn("[nicolazzi-visual-cache-read]",e.message);return {}}
+}
+function writeNicolazziVisualFileCache(cache){
+  ensureDataDir();
+  const tmp=NICOLAZZI_VISUAL_CACHE_FILE+".tmp";
+  fs.writeFileSync(tmp,JSON.stringify(cache,null,2),"utf8");
+  fs.renameSync(tmp,NICOLAZZI_VISUAL_CACHE_FILE);
+}
+async function storeGetNicolazziVisual(mappingKey){
+  try{
+    if(USE_POSTGRES){
+      const q=await pgPool.query("SELECT data FROM hydropolis_nicolazzi_visuals WHERE mapping_key=$1 LIMIT 1",[mappingKey]);
+      return q.rows[0]?.data||null;
+    }
+    return readNicolazziVisualFileCache()[mappingKey]?.data||null;
+  }catch(e){console.warn("[nicolazzi-visual-cache-get]",e.message);return null}
+}
+async function storePutNicolazziVisual(mappingKey,catalogBase,finishCode,source,data){
+  try{
+    if(USE_POSTGRES){
+      await pgPool.query(`INSERT INTO hydropolis_nicolazzi_visuals(mapping_key,catalog_base,finish_code,source,data,validated_at,updated_at)
+        VALUES($1,$2,$3,$4,$5::jsonb,NOW(),NOW())
+        ON CONFLICT(mapping_key) DO UPDATE SET catalog_base=EXCLUDED.catalog_base,finish_code=EXCLUDED.finish_code,
+          source=EXCLUDED.source,data=EXCLUDED.data,updated_at=NOW()`,
+        [mappingKey,catalogBase||"",finishCode||"",source||"",JSON.stringify(data||{})]);
+      return true;
+    }
+    const cache=readNicolazziVisualFileCache();
+    cache[mappingKey]={catalogBase:catalogBase||"",finishCode:finishCode||"",source:source||"",validatedAt:new Date().toISOString(),data};
+    writeNicolazziVisualFileCache(cache);return true;
+  }catch(e){console.warn("[nicolazzi-visual-cache-put]",e.message);return false}
 }
 function normalizeUsername(v){
   return String(v||"").trim().toLowerCase().replace(/\s+/g,".");
@@ -793,7 +842,7 @@ app.get("/api/catalog/search",requireAuth,async(req,res)=>{
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V11.37",
+  service:"Hydropolis Studio V11.38",
   database:USE_POSTGRES?"postgresql":"local-fallback",
   time:new Date().toISOString()
 }));
@@ -1357,6 +1406,39 @@ function nicolazziPdfAsset(reference="",catalogBase=""){
 function nicolazziPdfAssetUrl(key){
   return `/api/nicolazzi-pdf-asset?base=${encodeURIComponent(String(key||""))}`;
 }
+function nicolazziSelectedHandle(asset){
+  if(!asset)return null;
+  if(asset.externalHandleSelection){
+    return {
+      required:true,code:"",label:"Poignée Festival à choisir séparément",
+      image:"",source:"Catalogue PDF Nicolazzi 2024",catalogBase:asset.key,page:Number(asset.page||0)
+    };
+  }
+  if(!asset.handleCode)return null;
+  return {
+    required:false,code:String(asset.handleCode),
+    label:`Poignée ${asset.handleCode} · ${asset.collection||"Nicolazzi"}`,
+    image:nicolazziPdfAssetUrl(asset.key),source:"Catalogue PDF Nicolazzi 2024",
+    catalogBase:asset.key,page:Number(asset.page||0)
+  };
+}
+
+async function resolveOfficialNicolazziVisual({reference="",catalogBase="",collection="",designation=""}){
+  const productUrl=await resolveNicolazziProductUrl(reference,designation,collection,catalogBase);
+  if(!productUrl)return null;
+  try{
+    const html=await fetchBrandPage(productUrl,"en-GB,en;q=0.9,it;q=0.7");
+    const $=cheerio.load(html);
+    const models=nicolazziDesignerModelCandidates(reference,catalogBase);
+    const identity=[$("h1").first().text(),$(".product_meta").text(),$("body").text()].join(" ");
+    if(models.length&&!nicolazziDesignerModelMatches({title:identity,description:"",handle:productUrl},models))return null;
+    const images=[];const add=raw=>{const url=absoluteUrl(productUrl,raw);if(url&&isImageUrl(url)&&!/logo|icon|placeholder/i.test(url)&&!images.includes(url))images.push(url)};
+    $(".woocommerce-product-gallery__image a[href],.woocommerce-product-gallery__image img[data-large_image],.woocommerce-product-gallery__image img[data-src]").each((_,el)=>add($(el).attr("href")||$(el).attr("data-large_image")||$(el).attr("data-src")));
+    add($('meta[property="og:image"]').attr("content")||"");
+    if(!images.length)return null;
+    return {productUrl,images,bestImage:images[0],matchedModel:models[0]||"",source:"Site officiel Nicolazzi"};
+  }catch(e){console.warn("[nicolazzi-official-visual]",e.message);return null}
+}
 
 
 // V11.32 — Designer Tapware visual bridge for Nicolazzi.
@@ -1368,6 +1450,7 @@ const NICOLAZZI_DESIGNER_BASE="https://designertapwareco.com.au";
 const NICOLAZZI_DESIGNER_TTL=12*60*60*1000;
 const nicolazziDesignerProductMemo=new Map();
 const nicolazziDesignerResolveMemo=new Map();
+const nicolazziDesignerResolveInflight=new Map();
 function nicolazziDesignerSlug(value=""){
   return String(value||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"")
     .toLowerCase().trim().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
@@ -1471,12 +1554,23 @@ async function resolveDesignerTapwareNicolazzi({reference="",catalogBase="",coll
   const models=nicolazziDesignerModelCandidates(reference,catalogBase);if(!models.length)return null;
   const memoKey=`${models.join(',')}|${nicolazziDesignerSlug(collection)}|${String(finishCode||"").toUpperCase()}`;
   const memo=nicolazziDesignerResolveMemo.get(memoKey);if(memo&&Date.now()-memo.at<NICOLAZZI_DESIGNER_TTL)return memo.data;
+  // V11.38: a model/finish association that has already been validated is
+  // persistent. It survives server restarts and prevents repeated web searches.
+  const persisted=await storeGetNicolazziVisual(memoKey);
+  if(persisted?.bestImage){
+    const data={...persisted,persistentCacheHit:true};
+    boundedMapSet(nicolazziDesignerResolveMemo,memoKey,{at:Date.now(),data},1000);
+    return data;
+  }
+  if(nicolazziDesignerResolveInflight.has(memoKey))return nicolazziDesignerResolveInflight.get(memoKey);
+  const lookup=(async()=>{
   const candidates=nicolazziDesignerCandidateUrls(reference,catalogBase,collection);
   for(const url of candidates){
     try{
       const product=await fetchDesignerTapwareProduct(url,finishCode);
       if(product&&nicolazziDesignerModelMatches({title:product.title,description:product.identityText,handle:product.handle},models)){
         const out={...product,matchedModel:models.find(m=>new RegExp(`(?:^|[^0-9])z?${m}(?:[^0-9]|$)`,`i`).test(`${product.title} ${product.identityText} ${product.handle}`))||models[0]};
+        await storePutNicolazziVisual(memoKey,catalogBase,finishCode,"Designer Tapware Co",out);
         boundedMapSet(nicolazziDesignerResolveMemo,memoKey,{at:Date.now(),data:out},1000);return out;
       }
     }catch(e){if(Number(e.response?.status||0)!==404)console.warn("[nicolazzi-designer-candidate]",url,e.message)}
@@ -1491,11 +1585,14 @@ async function resolveDesignerTapwareNicolazzi({reference="",catalogBase="",coll
       const cslug=nicolazziDesignerSlug(collection);
       links.sort((a,b)=>Number(b.includes(cslug))-Number(a.includes(cslug)));
       for(const url of links.slice(0,8)){
-        try{const product=await fetchDesignerTapwareProduct(url,finishCode);if(product&&nicolazziDesignerModelMatches({title:product.title,description:product.identityText,handle:product.handle},[model])){boundedMapSet(nicolazziDesignerResolveMemo,memoKey,{at:Date.now(),data:product},1000);return product}}catch{}
+        try{const product=await fetchDesignerTapwareProduct(url,finishCode);if(product&&nicolazziDesignerModelMatches({title:product.title,description:product.identityText,handle:product.handle},[model])){const out={...product,matchedModel:model};await storePutNicolazziVisual(memoKey,catalogBase,finishCode,"Designer Tapware Co",out);boundedMapSet(nicolazziDesignerResolveMemo,memoKey,{at:Date.now(),data:out},1000);return out}}catch{}
       }
     }catch(e){console.warn("[nicolazzi-designer-search]",model,e.message)}
   }
   boundedMapSet(nicolazziDesignerResolveMemo,memoKey,{at:Date.now(),data:null},1000);return null;
+  })();
+  nicolazziDesignerResolveInflight.set(memoKey,lookup);
+  try{return await lookup}finally{nicolazziDesignerResolveInflight.delete(memoKey)}
 }
 
 function nicolazziRefBase(reference=""){
@@ -1762,15 +1859,19 @@ async function scrapeManufacturerUncached({manufacturerUrl,reference,catalogBase
   const base=productBase(reference);
   const requested=String(finishCode||"").toUpperCase();
 
-  // V11.32 — Nicolazzi hybrid mode. The official 2024 PDF remains the
-  // authoritative source for references and technical drawings. Designer Tapware Co
-  // is queried only for a model-verified commercial product photo and visual options.
+  // V11.38 — Nicolazzi composite visual mode. The official PDF remains the
+  // authority for the exact reference and handle. Designer Tapware Co may provide
+  // the base model in the requested finish, but never certifies the selected handle;
+  // that handle is shown separately from the exact catalogue variant.
   if(/^Nicolazzi$/i.test(String(manufacturer||"")) || /nicolazzi\.it/i.test(String(manufacturerUrl||""))){
     const asset=nicolazziPdfAsset(reference,catalogBase);
     const local=asset?nicolazziPdfAssetUrl(asset.key):"";
+    const selectedHandle=nicolazziSelectedHandle(asset);
     const commercial=await resolveDesignerTapwareNicolazzi({reference,catalogBase:asset?.key||catalogBase,collection,designation,finishCode:requested});
     if(commercial?.bestImage){
-      const imageItems=(commercial.images||[]).slice(0,12).map((url,i)=>({
+      // Keep only the validated model/finish hero. Other Shopify gallery images may
+      // represent alternative handles and must not leak into the client dossier.
+      const imageItems=[commercial.bestImage].map((url,i)=>({
         url,source:"designer-tapware-nicolazzi",score:70000-i*10,
         finishMatch:(i===0&&commercial.exactFinishImage)?"exact":"generic",
         detectedFinishCode:(i===0&&commercial.exactFinishImage)?requested:null,
@@ -1778,9 +1879,9 @@ async function scrapeManufacturerUncached({manufacturerUrl,reference,catalogBase
       }));
       const best=imageItems.find(x=>x.url===commercial.bestImage)||imageItems[0];
       if(best){best.finishMatch=commercial.exactFinishImage?"exact":"generic";best.detectedFinishCode=commercial.exactFinishImage?requested:null;}
-      const handleNote=asset?.externalHandleSelection
-        ?" Collection Festival : les codes de manettes du catalogue restent à préciser séparément à la commande."
-        :(asset?.handleCode?` Variante catalogue/manette ${asset.handleCode} conservée.`:"");
+      const handleNote=selectedHandle?.required
+        ?" Collection Festival : la poignée reste à choisir séparément avant commande."
+        :(selectedHandle?` La poignée exacte ${selectedHandle.code} est présentée dans une vignette catalogue séparée.`:"");
       return {
         manufacturerUrl:commercial.productUrl,
         commercialSourceUrl:commercial.productUrl,
@@ -1791,15 +1892,37 @@ async function scrapeManufacturerUncached({manufacturerUrl,reference,catalogBase
         cadDrawing:null,
         technicalSheet:commercial.datasheet?{url:commercial.datasheet,type:"pdf",label:"Fiche technique Nicolazzi · Designer Tapware Co",page:1}:null,
         installationGuide:null,candidates:imageItems,
-        handleOptions:commercial.handleOptions||[],finishOptions:commercial.finishOptions||[],
+        selectedHandle,handleOptions:selectedHandle&&!selectedHandle.required?[selectedHandle]:[],finishOptions:commercial.finishOptions||[],
         galleryComplete:true,gallerySource:"Designer Tapware Co",
-        note:`Photo commerciale Nicolazzi issue de Designer Tapware Co et validée par le modèle ${commercial.matchedModel||"catalogue"}. ${commercial.exactFinishImage?`La finition ${requested} est illustrée par une photo correspondante.`:`La finition ${finish||requested||"sélectionnée"} reste représentée par la pastille Hydropolis.`}${local?` Drawing technique conservé depuis le catalogue officiel Nicolazzi 2024 (p.${asset.page}).`:""}${handleNote}`
+        note:`Photo du modèle Nicolazzi issue de Designer Tapware Co et validée par le modèle ${commercial.matchedModel||"catalogue"}. ${commercial.exactFinishImage?`La finition ${requested} est illustrée par une photo correspondante.`:`La finition ${finish||requested||"sélectionnée"} reste représentée par la pastille Hydropolis.`} La photo principale ne certifie pas la poignée.${local?` Drawing technique conservé depuis le catalogue officiel Nicolazzi 2024 (p.${asset.page}).`:""}${handleNote}`
+      };
+    }
+    const official=await resolveOfficialNicolazziVisual({reference,catalogBase:asset?.key||catalogBase,collection,designation});
+    if(official?.bestImage){
+      const imageItems=[official.bestImage].map((url,i)=>({
+        url,source:"nicolazzi-official-product-gallery",score:60000-i*10,
+        finishMatch:"generic",detectedFinishCode:null,variationId:null,
+        attributes:{official:true,modelVerified:true,productUrl:official.productUrl}
+      }));
+      const item=imageItems[0];
+      const handleNote=selectedHandle?.required
+        ?" Collection Festival : la poignée reste à choisir séparément avant commande."
+        :(selectedHandle?` La poignée exacte ${selectedHandle.code} est présentée dans une vignette catalogue séparée.`:"");
+      return {
+        manufacturerUrl:official.productUrl,commercialSourceUrl:"",commercialSource:"Site officiel Nicolazzi",
+        reference,finishCode:requested,finish,base:asset?.key||catalogBase||base,
+        best:item,images:imageItems,exactFound:false,
+        drawing:local?{url:local,type:"image",label:`Drawing technique · catalogue Nicolazzi 2024 · p.${asset.page}`,page:1}:null,
+        cadDrawing:null,technicalSheet:null,installationGuide:null,candidates:imageItems,
+        selectedHandle,handleOptions:selectedHandle&&!selectedHandle.required?[selectedHandle]:[],finishOptions:[],
+        galleryComplete:true,gallerySource:"Site officiel Nicolazzi",
+        note:`Photo officielle du modèle Nicolazzi. La finition ${finish||requested||"sélectionnée"} est représentée par la pastille Hydropolis et la photo principale ne certifie pas la poignée.${handleNote}`
       };
     }
     if(asset){
-      const handleNote=asset.externalHandleSelection
-        ?" Collection Festival : les codes de manettes sont à préciser séparément à la commande (ex. FEFF05 / FEFF06)."
-        :(asset.handleCode?` Variante de collection/manette ${asset.handleCode} conservée depuis la codification du catalogue.`:"");
+      const handleNote=selectedHandle?.required
+        ?" Collection Festival : les codes de poignées sont à préciser séparément à la commande (ex. FEFF05 / FEFF06)."
+        :(selectedHandle?` Poignée exacte ${selectedHandle.code} conservée depuis la codification du catalogue.`:"");
       const item={
         url:local,source:"nicolazzi-pdf-catalog",score:50000,finishMatch:"generic",detectedFinishCode:null,variationId:null,
         attributes:{officialCatalogue:true,catalogBase:asset.key,page:asset.page,handleCode:asset.handleCode||"",externalHandleSelection:!!asset.externalHandleSelection}
@@ -1808,14 +1931,14 @@ async function scrapeManufacturerUncached({manufacturerUrl,reference,catalogBase
         manufacturerUrl:manufacturerUrl||"https://www.nicolazzi.it/en/",reference,finishCode:requested,finish,base:asset.key,
         best:item,images:[item],exactFound:false,
         drawing:{url:local,type:"image",label:`Drawing technique · catalogue Nicolazzi 2024 · p.${asset.page}`,page:1},
-        cadDrawing:null,technicalSheet:null,installationGuide:null,candidates:[item],handleOptions:[],finishOptions:[],
+        cadDrawing:null,technicalSheet:null,installationGuide:null,candidates:[item],selectedHandle,handleOptions:selectedHandle&&!selectedHandle.required?[selectedHandle]:[],finishOptions:[],
         galleryComplete:true,gallerySource:"Catalogue PDF Nicolazzi 2024",
         note:`Aucune photo commerciale Designer Tapware Co n'a été trouvée avec une correspondance de modèle sûre. Visuel/drawing de secours issu du catalogue PDF officiel Nicolazzi 2024 (page ${asset.page}). La finition ${finish||requested||"sélectionnée"} est représentée par la pastille Hydropolis.${handleNote}`
       };
     }
     return {
       manufacturerUrl:manufacturerUrl||"https://www.nicolazzi.it/en/",reference,finishCode:requested,finish,base:catalogBase||base,
-      best:null,images:[],exactFound:false,drawing:null,cadDrawing:null,technicalSheet:null,installationGuide:null,candidates:[],handleOptions:[],finishOptions:[],
+      best:null,images:[],exactFound:false,drawing:null,cadDrawing:null,technicalSheet:null,installationGuide:null,candidates:[],selectedHandle:null,handleOptions:[],finishOptions:[],
       note:"Référence Nicolazzi absente de l'index PDF et aucune photo Designer Tapware Co n'a pu être validée sans ambiguïté."
     };
   }
@@ -4167,7 +4290,7 @@ app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")))
 async function startServer(){
   try{
     await initPersistentStore();
-    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.37 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
+    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.38 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
   }catch(e){
     console.error("[Hydropolis] Démarrage impossible :",e);
     process.exit(1);

@@ -1,6 +1,10 @@
-# Hydropolis Studio V11.37
+# Hydropolis Studio V11.38
 
-Hydropolis Studio V11.37 est construit sur **V10.16**, la dernière base stable auditée, avec réintégration contrôlée des apports utiles de la branche V11.12. Il ne s'agit pas d'une réécriture : les projets par pièce, devis/remises/marges, dossier client A4, comptes utilisateurs, PostgreSQL/Supabase et connecteurs fabricants existants sont conservés.
+Hydropolis Studio V11.38 est construit sur **V11.37**. Il conserve les projets par pièce, devis/remises/marges, dossier client A4, comptes utilisateurs, PostgreSQL/Supabase et connecteurs fabricants existants.
+
+## V11.38 — Nicolazzi
+
+La photo principale montre le modèle dans la finition demandée lorsqu'une photo fiable est disponible. La poignée exacte n'est jamais déduite de cette photo : elle est décodée depuis le catalogue PDF officiel et affichée dans une vignette séparée. Les correspondances visuelles validées sont mémorisées pour ne pas relancer la recherche à chaque affichage.
 
 ## Ce que V11.23 ajoute
 

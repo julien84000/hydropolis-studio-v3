@@ -790,6 +790,15 @@ try{
     localStorage.setItem("hydropolis-nicolazzi-designer-v132","1");
   }
 }catch(e){}
+// V11.38: Nicolazzi photos now represent the model/finish only; the exact handle
+// is a separate catalogue thumbnail. Purge older composite assumptions once.
+try{
+  if(localStorage.getItem("hydropolis-nicolazzi-composite-v138")!=="1"){
+    for(const key of Object.keys(manufacturerImageCache))if(/^Nicolazzi\|/i.test(key))delete manufacturerImageCache[key];
+    localStorage.setItem("hydropolis-manufacturer-v119",JSON.stringify(manufacturerImageCache));
+    localStorage.setItem("hydropolis-nicolazzi-composite-v138","1");
+  }
+}catch(e){}
 function manufacturerCacheKey(p){return `${p.manufacturer}|${p.reference}`;}
 function manufacturerSharedCacheKey(p){
   const maker=String(p?.manufacturer||"");
@@ -903,6 +912,7 @@ async function fetchManufacturerImage(p,force=false,options={}){
       if(/designer-tapware-nicolazzi/i.test(bestSource))return data.best?.finishMatch==="exact"
         ?`Designer Tapware Co · photo Nicolazzi · finition ${p.finish||p.finishCode||""}`
         :"Designer Tapware Co · photo Nicolazzi";
+      if(/nicolazzi-official-product-gallery/i.test(bestSource))return "Site officiel Nicolazzi · photo du modèle";
       if(/nicolazzi-pdf-catalog/i.test(bestSource))return "Catalogue PDF Nicolazzi 2024";
       if(/sanitairkamer/i.test(bestSource+" "+(data.best?.page||"")+" "+(data.best?.url||"")))return data.best?.finishMatch==="exact"
         ?`Sanitairkamer · finition ${p.finish}`
@@ -935,6 +945,7 @@ Référence technique utilisée : ${data.lookupReference} (suffixe catalogue ign
     gallerySource:data.gallerySource||"",
     commercialSource:data.commercialSource||"",
     commercialSourceUrl:data.commercialSourceUrl||"",
+    selectedHandle:data.selectedHandle?{...data.selectedHandle,image:toProxy(data.selectedHandle.image||"")}:null,
     handleOptions:(data.handleOptions||[]).map(o=>({...o,image:toProxy(o?.image||"")})),
     finishOptions:(data.finishOptions||[]).map(o=>({...o,image:toProxy(o?.image||"")})),
     checkedAt:new Date().toISOString()
@@ -1005,12 +1016,21 @@ function catalogCardForProduct(p){
 }
 function nicolazziVisualOptionsHtml(p,img){
   if(!/^Nicolazzi$/i.test(String(p?.manufacturer||"")))return "";
-  const handles=(img?.handleOptions||[]).slice(0,4), finishes=(img?.finishOptions||[]).slice(0,8);
+  const selected=img?.selectedHandle||p?.nicolazziSelectedHandle||null;
+  const handles=selected?[selected]:(img?.handleOptions||[]).slice(0,1), finishes=(img?.finishOptions||[]).slice(0,8);
   if(!handles.length&&!finishes.length)return "";
-  const hs=handles.length?`<div class="nicolazzi-option-row"><span class="nicolazzi-option-label">Manette${handles.length>1?"s":""}</span><div class="nicolazzi-handle-list">${handles.map(h=>`<span class="nicolazzi-handle-chip" title="${esc(h.label||h.code||"Manette")}">${h.image?`<img src="${esc(h.image)}" alt="${esc(h.label||"Manette Nicolazzi")}" loading="lazy">`:""}<small>${esc(h.code||h.label||"")}</small></span>`).join("")}</div></div>`:"";
+  const hs=handles.length?`<div class="nicolazzi-option-row"><span class="nicolazzi-option-label">Poignée</span><div class="nicolazzi-handle-list">${handles.map(h=>h.required
+    ?`<span class="nicolazzi-handle-required">À choisir séparément · Festival</span>`
+    :`<span class="nicolazzi-handle-chip selected" title="${esc(h.label||h.code||"Poignée")}">${h.image?`<img src="${esc(h.image)}" alt="${esc(h.label||"Poignée Nicolazzi")}" loading="lazy">`:""}<small>${esc(h.code||h.label||"")}</small></span>`).join("")}</div></div>`:"";
   const current=String(p?.finishCode||finishCodeFromReference(p?.reference||"",p?.manufacturer)||"").toUpperCase();
   const fs=finishes.length?`<div class="nicolazzi-option-row"><span class="nicolazzi-option-label">Finitions vues</span><div class="nicolazzi-finish-list">${finishes.map(f=>`<span class="nicolazzi-finish-chip ${String(f.code||"").toUpperCase()===current?"active":""}" title="${esc(f.label||f.code||"")}">${esc(f.code||f.label||"")}</span>`).join("")}</div></div>`:"";
   return `<div class="nicolazzi-visual-options">${hs}${fs}</div>`;
+}
+function nicolazziHandlePreviewHtml(p,img){
+  if(!/^Nicolazzi$/i.test(String(p?.manufacturer||"")))return "";
+  const handle=img?.selectedHandle||p?.nicolazziSelectedHandle||null;
+  if(!handle||handle.required||!handle.image)return "";
+  return `<span class="nicolazzi-handle-preview" title="${esc(handle.label||`Poignée ${handle.code||""}`)}"><img src="${esc(handle.image)}" alt="${esc(handle.label||"Poignée Nicolazzi")}" loading="lazy"><small>Poignée ${esc(handle.code||"")}</small></span>`;
 }
 function updateCatalogCardVisual(p,img){
   if(!img?.src)return;
@@ -1021,8 +1041,10 @@ function updateCatalogCardVisual(p,img){
     const thumb=card.querySelector(".catalog-thumb");if(!thumb)continue;
     thumb.querySelector(".photo-missing")?.remove();
     thumb.querySelectorAll(".finish-swatch-badge").forEach(el=>el.remove());
+    thumb.querySelectorAll(".nicolazzi-handle-preview").forEach(el=>el.remove());
     const old=thumb.querySelector(".product-visual-frame");if(old)old.remove();
     thumb.insertAdjacentHTML("beforeend",productImageFrameHtml(img.src,item,item.reference,"catalog-cached-image"));
+    thumb.insertAdjacentHTML("beforeend",nicolazziHandlePreviewHtml(item,img));
     const status=card.querySelector(".photo-status");if(status)status.innerHTML=`<b>${esc(imageBadge(img,item))}</b>`;
     const optionSlot=card.querySelector(".nicolazzi-options-slot");if(optionSlot)optionSlot.innerHTML=nicolazziVisualOptionsHtml(item,img);
     const fiche=card.querySelector("a.source-link[href]");if(fiche&&img.resolvedManufacturerUrl)fiche.href=img.resolvedManufacturerUrl;
@@ -1063,8 +1085,9 @@ function setupAutomaticCatalogImages(rows){
 function imageBadge(img,p){
   if(!img)return `Photo fabricant à rechercher`;
   if(/^Nicolazzi$/i.test(String(p?.manufacturer||"")) && /Designer Tapware Co/i.test(String(img.source||"")))return img.finishMatch==="exact"
-    ?`✓ Photo Nicolazzi · ${p.finish||p.finishCode||"finition"}`
-    :`✓ Photo Nicolazzi · finition via pastille`;
+    ?`✓ Modèle Nicolazzi · ${p.finish||p.finishCode||"finition"} · poignée en vignette`
+    :`✓ Modèle Nicolazzi · finition via pastille · poignée en vignette`;
+  if(/^Nicolazzi$/i.test(String(p?.manufacturer||"")) && /Site officiel Nicolazzi/i.test(String(img.source||"")))return `✓ Modèle officiel Nicolazzi · finition via pastille · poignée en vignette`;
   if(/^Nicolazzi$/i.test(String(p?.manufacturer||"")) && /Catalogue PDF Nicolazzi/i.test(String(img.source||"")))return `Catalogue PDF Nicolazzi · secours · ${p.finish||p.finishCode||"finition"} via pastille`;
   if(img.finishMatch==="simulated")return `≈ Simulation de finition · ${p.finish}`;
   if(/sanitairkamer/i.test((img.source||"")+" "+(img.page||"")+" "+(img.url||"")))return img.finishMatch==="exact"
@@ -1338,6 +1361,7 @@ async function enrichSelectedPhoto(id,force=false){
     p.installationGuideUrl=img.installationGuideUrl||p.installationGuideUrl||"";
     p.installationGuideLabel=img.installationGuideLabel||p.installationGuideLabel||"Notice d'installation";
     if(/nicolazzi/i.test(p.manufacturer||"")){
+      p.nicolazziSelectedHandle=img.selectedHandle||p.nicolazziSelectedHandle||null;
       p.nicolazziHandleOptions=img.handleOptions||p.nicolazziHandleOptions||[];
       p.nicolazziFinishOptions=img.finishOptions||p.nicolazziFinishOptions||[];
       p.commercialSource=img.commercialSource||p.commercialSource||"";
@@ -1848,7 +1872,7 @@ function renderCatalog(){
    results.innerHTML=rows.slice(0,120).map(p=>{
      const cached=cachedManufacturerImage(p),finishLabel=exactFinishLabel(p)||"",price=catalogDisplayPrice(p),key=productKey(p),avail=availabilityInfo(p),compared=compareRefs.has(key),favorite=favoriteRefs.has(key);
      const catalogVisual=cached?.src||p.image||gessiDirectOfficialImage(p)||((Array.isArray(p.images)&&p.images[0])||"");
-     return `<article class="result v11-product-card" data-key="${esc(key)}">${catalogThumbHtml(p,catalogVisual,finishLabel,favorite)}<div><div class="r-top"><span class="ref">${esc(p.reference)}</span><span class="badge">${esc(p.manufacturer)}</span><span class="badge">${esc(p.collection)}</span><span class="badge">${esc(p.category)}</span></div><div class="designation">${esc(p.designation)}</div><div class="meta">${esc(p.finish||"")}</div><div class="availability ${avail.cls}">${esc(avail.label)}</div><div class="manufacturer-tools v11-resource-tools"><button class="tiny lookup-photo" data-ref="${esc(p.reference)}">${cached||p.image?"Actualiser la photo":"Photo fabricant"}</button>${hotbathNeedsFinishFallback(p,cached)?`<button class="tiny hotbath-web-photo" data-ref="${esc(p.reference)}">Finition web</button>`:""}${p.manufacturerUrl?`<a class="source-link" target="_blank" rel="noopener" href="${esc(cached?.resolvedManufacturerUrl||p.manufacturerUrl)}">Fiche ↗</a>`:""}${cached?.technicalSheetUrl?`<a class="source-link" target="_blank" rel="noopener" href="${esc(cached.technicalSheetUrl)}">Technique ↗</a>`:""}</div><div class="photo-status">${cached?`<b>${esc(imageBadge(cached,p))}</b>`:p.image?`<b>${esc(p.imageSource||"Visuel catalogue")}</b>`:`Source tarif : ${esc(p.source||"catalogue fabricant")}`}</div>${/^Nicolazzi$/i.test(String(p.manufacturer||""))?`<div class="nicolazzi-options-slot">${nicolazziVisualOptionsHtml(p,cached)}</div>`:""}<div class="card-action-row"><button class="suggest-toggle" data-key="${esc(key)}">Alternatives</button><button class="compare-toggle ${compared?"active":""}" data-key="${esc(key)}">${compared?"✓ Comparé":"Comparer"}</button></div></div><div class="price-box"><small class="v11-price-label">Prix public</small><div class="price">${euro(price)} HT</div>${p.internalReference?`<div class="internal">Ext. ${euro(p.price)} + ${esc(p.internalReference)} ${euro(p.internalPrice)}</div>`:`<div class="internal">${esc(p.sourceYear?`Tarif ${p.sourceYear}`:"Référence complète")}</div>`}${isRecorBathRequiringFeet(p)?`<div class="internal recor-config-hint"><b>Pieds obligatoires</b> · choix à l’ajout</div>`:""}<button class="btn primary add" data-ref="${esc(p.reference)}" style="margin-top:9px">${isRecorBathRequiringFeet(p)?"Configurer + ajouter":"Ajouter à "+esc(room?.title||"la pièce")}</button></div></article>`;
+     return `<article class="result v11-product-card" data-key="${esc(key)}">${catalogThumbHtml(p,catalogVisual,finishLabel,favorite,cached)}<div><div class="r-top"><span class="ref">${esc(p.reference)}</span><span class="badge">${esc(p.manufacturer)}</span><span class="badge">${esc(p.collection)}</span><span class="badge">${esc(p.category)}</span></div><div class="designation">${esc(p.designation)}</div><div class="meta">${esc(p.finish||"")}</div><div class="availability ${avail.cls}">${esc(avail.label)}</div><div class="manufacturer-tools v11-resource-tools"><button class="tiny lookup-photo" data-ref="${esc(p.reference)}">${cached||p.image?"Actualiser la photo":"Photo fabricant"}</button>${hotbathNeedsFinishFallback(p,cached)?`<button class="tiny hotbath-web-photo" data-ref="${esc(p.reference)}">Finition web</button>`:""}${p.manufacturerUrl?`<a class="source-link" target="_blank" rel="noopener" href="${esc(cached?.resolvedManufacturerUrl||p.manufacturerUrl)}">Fiche ↗</a>`:""}${cached?.technicalSheetUrl?`<a class="source-link" target="_blank" rel="noopener" href="${esc(cached.technicalSheetUrl)}">Technique ↗</a>`:""}</div><div class="photo-status">${cached?`<b>${esc(imageBadge(cached,p))}</b>`:p.image?`<b>${esc(p.imageSource||"Visuel catalogue")}</b>`:`Source tarif : ${esc(p.source||"catalogue fabricant")}`}</div>${/^Nicolazzi$/i.test(String(p.manufacturer||""))?`<div class="nicolazzi-options-slot">${nicolazziVisualOptionsHtml(p,cached)}</div>`:""}<div class="card-action-row"><button class="suggest-toggle" data-key="${esc(key)}">Alternatives</button><button class="compare-toggle ${compared?"active":""}" data-key="${esc(key)}">${compared?"✓ Comparé":"Comparer"}</button></div></div><div class="price-box"><small class="v11-price-label">Prix public</small><div class="price">${euro(price)} HT</div>${p.internalReference?`<div class="internal">Ext. ${euro(p.price)} + ${esc(p.internalReference)} ${euro(p.internalPrice)}</div>`:`<div class="internal">${esc(p.sourceYear?`Tarif ${p.sourceYear}`:"Référence complète")}</div>`}${isRecorBathRequiringFeet(p)?`<div class="internal recor-config-hint"><b>Pieds obligatoires</b> · choix à l’ajout</div>`:""}<button class="btn primary add" data-ref="${esc(p.reference)}" style="margin-top:9px">${isRecorBathRequiringFeet(p)?"Configurer + ajouter":"Ajouter à "+esc(room?.title||"la pièce")}</button></div></article>`;
    }).join("")||`<div class="empty">Aucun résultat.</div>`;
    $$(".add",results).forEach(b=>b.onclick=()=>{try{addCatalogProduct(b.dataset.ref,$("#targetRoom")?.value||state.rooms[0]?.id||"")}catch(e){alert(`Impossible d’ajouter cet article : ${e.message||"erreur inconnue"}`)}});
    $$(".lookup-photo",results).forEach(b=>b.onclick=()=>lookupCatalogPhoto(b.dataset.ref,b));
@@ -2118,6 +2142,9 @@ function createSelectedProductRecord(p,roomId,parentId=""){
     technicalSheetPage:Number(cached?.technicalSheetPage||1),
     installationGuideUrl:cached?.installationGuideUrl||"",
     installationGuideLabel:cached?.installationGuideLabel||"Notice d'installation",
+    nicolazziSelectedHandle:/nicolazzi/i.test(p.manufacturer||"")?(cached?.selectedHandle||null):null,
+    nicolazziHandleOptions:/nicolazzi/i.test(p.manufacturer||"")?(cached?.handleOptions||[]):[],
+    nicolazziFinishOptions:/nicolazzi/i.test(p.manufacturer||"")?(cached?.finishOptions||[]):[],
     catalanoGalleryComplete:/catalano/i.test(p.manufacturer||"")?cached?.galleryComplete===true:false,
     catalanoGallerySource:/catalano/i.test(p.manufacturer||"")?(cached?.gallerySource||""):"",
     includeDrawing:false,includeTechnicalSheet:false,includeInstallationGuide:false,
@@ -2293,7 +2320,7 @@ async function addProduct(ref,roomId,parentId=""){
   commitSelectedRecords([record]);
   // V11.27: newly selected premium products enrich themselves in the background;
   // users no longer need to press “Photo fabricant” before the client dossier.
-  if(!record.image && /^(Nicolazzi|Ritmonio|Zucchetti|Gessi)$/i.test(String(p.manufacturer||""))){
+  if((!record.image || (/^Nicolazzi$/i.test(String(p.manufacturer||""))&&/Catalogue PDF Nicolazzi/i.test(String(record.imageSource||"")))) && /^(Nicolazzi|Ritmonio|Zucchetti|Gessi)$/i.test(String(p.manufacturer||""))){
     fetchManufacturerImage(p,false,{imageOnly:false}).then(img=>{
       if(!img?.src)return;
       const live=state.selected.find(x=>x.id===record.id);if(!live)return;
@@ -2305,6 +2332,7 @@ async function addProduct(ref,roomId,parentId=""){
       live.technicalSheetUrl=img.technicalSheetUrl||live.technicalSheetUrl||"";live.technicalSheetLabel=img.technicalSheetLabel||live.technicalSheetLabel||"Fiche technique";
       live.technicalSheetType=img.technicalSheetType||live.technicalSheetType||"";live.technicalSheetPage=Number(img.technicalSheetPage||live.technicalSheetPage||1);
       live.installationGuideUrl=img.installationGuideUrl||live.installationGuideUrl||"";live.installationGuideLabel=img.installationGuideLabel||live.installationGuideLabel||"Notice d'installation";
+      live.nicolazziSelectedHandle=img.selectedHandle||live.nicolazziSelectedHandle||null;
       live.nicolazziHandleOptions=img.handleOptions||live.nicolazziHandleOptions||[];live.nicolazziFinishOptions=img.finishOptions||live.nicolazziFinishOptions||[];
       live.commercialSource=img.commercialSource||live.commercialSource||"";live.commercialSourceUrl=img.commercialSourceUrl||live.commercialSourceUrl||"";
       saveState();renderRooms();renderSelection();
@@ -2864,11 +2892,11 @@ function productImageFrameHtml(src,p,alt="",imgClass=""){
     ${finishSwatchBadgeHtml(p)}
   </div>`;
 }
-function catalogThumbHtml(p,catalogVisual,finishLabel,favorite){
-  return `<div class="catalog-thumb" data-ref="${esc(p.reference)}"><button type="button" class="favorite-toggle ${favorite?"active":""}" data-key="${esc(productKey(p))}" aria-label="Favori">${favorite?"♥":"♡"}</button>${catalogVisual?productImageFrameHtml(catalogVisual,p,p.reference,"catalog-cached-image"):`<div class="photo-missing"><b>Photo fabricant</b><br>${esc(finishLabel)}<br>à rechercher</div>${finishSwatchBadgeHtml(p)}`}</div>`;
+function catalogThumbHtml(p,catalogVisual,finishLabel,favorite,img=null){
+  return `<div class="catalog-thumb" data-ref="${esc(p.reference)}"><button type="button" class="favorite-toggle ${favorite?"active":""}" data-key="${esc(productKey(p))}" aria-label="Favori">${favorite?"♥":"♡"}</button>${catalogVisual?productImageFrameHtml(catalogVisual,p,p.reference,"catalog-cached-image"):`<div class="photo-missing"><b>Photo fabricant</b><br>${esc(finishLabel)}<br>à rechercher</div>${finishSwatchBadgeHtml(p)}`}${nicolazziHandlePreviewHtml(p,img)}</div>`;
 }
 function roomProductImageHtml(p){
-  return `<label data-id="${p.id}">${p.image?productImageFrameHtml(p.image,p,p.designation,"room-live-image"):"＋ Photo"}<input class="prod-file" type="file" accept="image/*" hidden></label>`;
+  return `<label data-id="${p.id}">${p.image?productImageFrameHtml(p.image,p,p.designation,"room-live-image"):"＋ Photo"}${nicolazziHandlePreviewHtml(p,{selectedHandle:p.nicolazziSelectedHandle})}<input class="prod-file" type="file" accept="image/*" hidden></label>`;
 }
 
 function renderRoomsCore(){
@@ -3959,7 +3987,7 @@ function harmonizeSavedCatalogProducts(){
       installationGuideUrl:p.installationGuideUrl,installationGuideLabel:p.installationGuideLabel,
       includeDrawing:p.includeDrawing,includeTechnicalSheet:p.includeTechnicalSheet,includeInstallationGuide:p.includeInstallationGuide,
       customImage:p.customImage,imageSimulation:p.imageSimulation,imageSource:p.imageSource,imageFinishMatch:p.imageFinishMatch,imageNote:p.imageNote,remoteImageUrl:p.remoteImageUrl,remoteImages:p.remoteImages,webImageSourcePage:p.webImageSourcePage,clientDiscountOverride:p.clientDiscountOverride,leadTime:p.leadTime,priceOverride:p.priceOverride,originalDesignation:p.originalDesignation,catalogPrice:p.catalogPrice,catalogTotalPrice:p.catalogTotalPrice,customTechnicalSheet:p.customTechnicalSheet,technicalSheetAsset:p.technicalSheetAsset,catalanoGalleryComplete:p.catalanoGalleryComplete,catalanoGallerySource:p.catalanoGallerySource,recorImageQualityVersion:p.recorImageQualityVersion,
-      nicolazziVisualVersion:p.nicolazziVisualVersion,nicolazziHandleOptions:p.nicolazziHandleOptions,nicolazziFinishOptions:p.nicolazziFinishOptions,commercialSource:p.commercialSource,commercialSourceUrl:p.commercialSourceUrl
+      nicolazziVisualVersion:p.nicolazziVisualVersion,nicolazziSelectedHandle:p.nicolazziSelectedHandle,nicolazziHandleOptions:p.nicolazziHandleOptions,nicolazziFinishOptions:p.nicolazziFinishOptions,commercialSource:p.commercialSource,commercialSourceUrl:p.commercialSourceUrl
     };
 
     Object.assign(p,c,runtime);
