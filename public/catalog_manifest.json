@@ -1,6 +1,6 @@
 {
-  "version": "11.37.0",
-  "total": 68429,
+  "version": "11.39.0",
+  "total": 89709,
   "chunks": [
     {
       "file": "catalog_coalbrook.json",
@@ -25,7 +25,7 @@
     {
       "file": "catalog_nicolazzi.json.gz",
       "label": "Nicolazzi",
-      "count": 15023
+      "count": 36303
     },
     {
       "file": "catalog_gessi.json.gz",
@@ -78,7 +78,7 @@
       "count": 53
     }
   ],
-  "engineVersion": "11.37.0",
+  "engineVersion": "11.39.0",
   "manufacturersManifest": "manufacturers_manifest.json",
   "storage": "gzip for large supplier catalogs"
 }

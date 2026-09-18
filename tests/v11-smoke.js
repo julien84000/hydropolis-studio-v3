@@ -6,7 +6,7 @@ const root=path.resolve(__dirname,'..');
 const read=f=>fs.readFileSync(path.join(root,f),'utf8');
 const json=f=>{const p=path.join(root,f);const b=fs.readFileSync(p);return JSON.parse((/\.gz$/i.test(f)?zlib.gunzipSync(b):b).toString('utf8'))};
 
-assert.equal(json('package.json').version,'11.38.0');
+assert.equal(json('package.json').version,'11.39.0');
 for(const f of ['public/sw.js','public/manifest.webmanifest','public/manufacturers_manifest.json'])assert(fs.existsSync(path.join(root,f)),`${f} missing`);
 
 const manifest=json('public/catalog_manifest.json');
@@ -16,9 +16,9 @@ for(const file of files){
   const rows=json('public/'+file);total+=rows.length;
   for(const p of rows){makers.add(p.manufacturer);unique.add(`${p.manufacturer}|${p.reference}`)}
 }
-assert.equal(total,68600,'catalog row count changed unexpectedly');
+assert.equal(total,89880,'catalog row count changed unexpectedly');
 for(const maker of ['Amphora','Catalano','Coalbrook','Gessi','Hotbath','Lefroy Brooks','Nicolazzi','Recor','Ritmonio','Zucchetti'])assert(makers.has(maker),`missing maker ${maker}`);
-assert(unique.size>=68596,'unexpected catalog deduplication regression');
+assert(unique.size>=89876,'unexpected catalog deduplication regression');
 
 const app=read('public/app.js');
 for(const symbol of ['renderCompareDock','renderCompareView','renderDashboardEcosystem','renderFavoritesView','toggleFavorite','smartAlternativesFor','requestServerSearch','exportExcel','exportMoodboard','registerOfflineSupport','offlineProjectListKey','hotbathDrawingProxyUrl'])assert(app.includes(symbol),`missing V11 app feature ${symbol}`);
@@ -97,11 +97,11 @@ assert(lefroyRows.every(x=>x.purchaseDiscount===55),'Lefroy Brooks 55% supplier 
 // V11.24/V11.25 finish swatches are embedded for GitHub-safe deployment
 for(const code of ['CRL','IX','CRB','BLX','DOR','GOX','CHX','BRX','C03','C04','F31','F32','F33','F34','F36','F37','F45','F46']) assert(app.includes(`Ritmonio:${code}`),`missing embedded Ritmonio swatch ${code}`);
 assert(app.includes('SUPPLIER_FINISH_SWATCH_DATA'),'embedded supplier swatch map missing');
-assert(read('public/sw.js').includes('hydropolis-v11-38-shell'),'V11.38 SW cache missing');
+assert(read('public/sw.js').includes('hydropolis-v11-39-shell'),'V11.39 SW cache missing');
 
 // V11.25 Nicolazzi + Gessi
 const nicolazziRows=json('public/catalog_nicolazzi.json.gz');
-assert.equal(nicolazziRows.length,15023,'Nicolazzi catalog row count changed unexpectedly');
+assert.equal(nicolazziRows.length,36303,'Nicolazzi catalog row count changed unexpectedly');
 assert(nicolazziRows.every(x=>x.purchaseDiscount===50),'Nicolazzi 50% supplier discount missing');
 assert(nicolazziRows.every(x=>/majoration Hydropolis \+25%/.test(x.source||'')),'Nicolazzi +25% source marker missing');
 const gessiRows=json('public/catalog_gessi.json.gz');

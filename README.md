@@ -1,6 +1,10 @@
-# Hydropolis Studio V11.38
+# Hydropolis Studio V11.39
 
-Hydropolis Studio V11.38 est construit sur **V11.37**. Il conserve les projets par pièce, devis/remises/marges, dossier client A4, comptes utilisateurs, PostgreSQL/Supabase et connecteurs fabricants existants.
+Hydropolis Studio V11.39 est construit sur **V11.38**. Il conserve les projets par pièce, devis/remises/marges, dossier client A4, comptes utilisateurs, PostgreSQL/Supabase et connecteurs fabricants existants.
+
+## V11.39 — catalogue Nicolazzi complet
+
+L'import Nicolazzi relit désormais les tableaux à plusieurs colonnes de poignées. Les collections Agorà, Arena, Impero, Monte Croce/Mac Kinley 05, les séries classiques, Cristallo, Onice, Cinquanta et Cuisine récupèrent leurs produits principaux avec leurs références de poignée distinctes. La version contient 36 303 lignes Nicolazzi et 1 089 bases visuelles issues du PDF officiel.
 
 ## V11.38 — Nicolazzi
 
@@ -30,7 +34,7 @@ La photo principale montre le modèle dans la finition demandée lorsqu'une phot
 
 ## Catalogues inclus
 
-Les données livrées couvrent **10 fabricants vérifiés** : Amphora, Catalano, Coalbrook, Gessi, Hotbath, Lefroy Brooks, Nicolazzi, Recor, Ritmonio et Zucchetti, soit **68 600 lignes** de catalogue et **68 596 références fabricant uniques**. Aucun fabricant n’est ajouté sans tarif/catalogue source validé.
+Les données livrées couvrent **10 fabricants vérifiés** : Amphora, Catalano, Coalbrook, Gessi, Hotbath, Lefroy Brooks, Nicolazzi, Recor, Ritmonio et Zucchetti, soit **89 880 lignes** de catalogue et **89 876 références fabricant uniques**. Aucun fabricant n’est ajouté sans tarif/catalogue source validé.
 
 ## Vérifications
 

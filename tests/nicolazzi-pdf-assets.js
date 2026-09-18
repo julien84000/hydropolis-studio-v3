@@ -5,13 +5,13 @@ const crypto=require('node:crypto');
 const readGz=p=>JSON.parse(zlib.gunzipSync(fs.readFileSync(p)).toString('utf8'));
 const pack=readGz('public/nicolazzi_pdf_assets.json.gz');
 const rows=readGz('public/catalog_nicolazzi.json.gz');
-assert.equal(pack.version,'11.31.0');
+assert.equal(pack.version,'11.39.0');
 assert.equal(pack.sourcePages,434);
-assert.equal(pack.modelCount,481);
-assert.equal(Object.keys(pack.models).length,481);
-assert.equal(rows.length,15023);
+assert.equal(pack.modelCount,1089);
+assert.equal(Object.keys(pack.models).length,1089);
+assert.equal(rows.length,36303);
 const bases=[...new Set(rows.map(x=>String(x.base||'').trim()).filter(Boolean))];
-assert.equal(bases.length,481,'Nicolazzi model/base count changed unexpectedly');
+assert.equal(bases.length,1089,'Nicolazzi model/base count changed unexpectedly');
 for(const base of bases){
   const item=pack.models[base];
   assert(item,`missing local PDF asset ${base}`);

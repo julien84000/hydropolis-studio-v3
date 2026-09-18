@@ -1,6 +1,6 @@
 {
   "name": "Hydropolis Studio",
-  "version": "11.38.0",
+  "version": "11.39.0",
   "base": {
     "archive": "Hydropolis_Studio_V10.16_Update.zip",
     "sha256": "415242ad95036f7db3e76844ec2fea8a5c8d916c1a8c1617350847c32507d5cd"
@@ -9,8 +9,8 @@
     "archive": "Hydropolis_Studio_V11.12_Update.zip",
     "sha256": "1cdfcf0f1e30b11c40df1786232243c35993a9e9af18827a697cacd49253141d"
   },
-  "catalogRows": 68600,
-  "uniqueManufacturerReferences": 68596,
+  "catalogRows": 89880,
+  "uniqueManufacturerReferences": 89876,
   "manufacturers": [
     "Amphora",
     "Catalano",
@@ -49,7 +49,7 @@
     "behavior": "visual chooser for mandatory feet; local images are style references and are included with selected foot in client dossier",
     "offline": "assets included in service-worker shell cache"
   },
-  "releaseNotes": "RELEASE_NOTES_V11.38.md",
+  "releaseNotes": "RELEASE_NOTES_V11.39.md",
   "recorImagesV1119": {
     "priority": "exact Recor product page + WooCommerce full-resolution gallery anchors/data-large_image",
     "fallback": "no Recor home-page image fallback",
@@ -58,8 +58,8 @@
     "clientDossier": "bath dominant; selected feet as small visual; waste text-only",
     "pixelGuard": "when dimensions are measurable: max side >= 800 px and min side >= 500 px; otherwise reject thumbnail result"
   },
-  "build": "V11.38",
-  "notes": "Nicolazzi uses a composite presentation: model/finish photo plus the exact catalogue handle as a separate thumbnail. Validated Designer Tapware mappings persist in PostgreSQL or the local fallback cache.",
+  "build": "V11.39",
+  "notes": "Nicolazzi catalogue completeness audit: multi-handle product tables and shared kitchen/classic tables restored from the official 2024 price list.",
   "recorTechnicalPdfV1122": {
     "productPageSession": "open exact Recor product page first and reuse set-cookie session",
     "liveDrawingUrl": "refresh Technical drawing PDF href from official product page",
@@ -96,11 +96,11 @@
     "offline": "18 finish assets in service worker shell"
   },
   "nicolazzi": {
-    "catalogRows": 15023,
+    "catalogRows": 36303,
     "pricing": "Listino 2024 × 1.25",
     "purchaseDiscount": "50%",
     "visualRule": "model-verified Designer Tapware Co commercial photography when available; official 2024 PDF local asset remains technical drawing and deterministic fallback",
-    "modelAssets": 481,
+    "modelAssets": 1089,
     "sourcePages": 434,
     "handleModel": "collection/handle suffix preserved in catalog base; Festival external handle codes remain separate order options",
     "technicalDrawing": "official 2024 PDF-derived local drawing retained independently from commercial photography"
@@ -141,8 +141,8 @@
   },
   "nicolazziPdfV1131": {
     "assetFile": "public/nicolazzi_pdf_assets.json.gz",
-    "models": 481,
-    "catalogRows": 15023,
+    "models": 1089,
+    "catalogRows": 36303,
     "behavior": "instant local card visual; same model visual shared across finish variants; technical drawing local and cacheable",
     "source": "NICOLAZZI_LISTINO 2024 official PDF",
     "websiteFallback": "disabled for ambiguous product imagery"
@@ -159,8 +159,20 @@
   "nicolazziCompositeV1138": {
     "mainVisual": "model photo in requested finish when available; never presented as proof of handle",
     "handleVisual": "exact handle variant from the authoritative Nicolazzi PDF, displayed separately",
-    "fallbackOrder": ["Designer Tapware Co", "official Nicolazzi site", "local official PDF asset"],
+    "fallbackOrder": [
+      "Designer Tapware Co",
+      "official Nicolazzi site",
+      "local official PDF asset"
+    ],
     "persistentMapping": "PostgreSQL hydropolis_nicolazzi_visuals with local JSON fallback; validated model/finish mappings survive restarts",
     "festivalRule": "no invented handle: explicit separate handle selection required"
+  },
+  "nicolazziCatalogV1139": {
+    "source": "NICOLAZZI_LISTINO 2024 official PDF",
+    "scope": "audited pages 22-347",
+    "restoredBases": 608,
+    "catalogRows": 36303,
+    "modelAssets": 1089,
+    "validation": "multi-column price groups mapped to explicit handle codes; public price remains list price × 1.25"
   }
 }
