@@ -793,7 +793,7 @@ app.get("/api/catalog/search",requireAuth,async(req,res)=>{
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V11.36",
+  service:"Hydropolis Studio V11.37",
   database:USE_POSTGRES?"postgresql":"local-fallback",
   time:new Date().toISOString()
 }));
@@ -1002,11 +1002,18 @@ function ritmonioOfficialDownloads($,baseUrl=""){
     if(!href)return;
     let u;try{u=new URL(href)}catch{return}
     if(!/(^|\.)ritmonio\.it$/i.test(u.hostname))return;
-    const labelRaw=($(el).text()||"").replace(/\s+/g," ").trim();
-    const label=normalizeToken(labelRaw+" "+($(el).attr("title")||"")+" "+($(el).attr("aria-label")||""));
-    if(!out.technicalSheet && /\bscheda tecnica\b/.test(label)){
+    // Ritmonio writes the tab labels as e.g. <h5>Scheda<br>tecnica</h5>.
+    // Cheerio .text() concatenates text around <br> ("Schedatecnica"), so relying
+    // on text() alone makes the PDF look absent even though the link is present.
+    const htmlLabel=String($(el).html()||"")
+      .replace(/<br\s*\/?>/gi," ")
+      .replace(/<[^>]+>/g," ");
+    const labelRaw=[($(el).text()||""),htmlLabel,$(el).attr("title")||"",$(el).attr("aria-label")||""]
+      .join(" ").replace(/\s+/g," ").trim();
+    const label=normalizeToken(labelRaw);
+    if(!out.technicalSheet && (/\bscheda tecnica\b/.test(label) || /\bschedatecnica\b/.test(label))){
       out.technicalSheet={url:href,label:"Scheda tecnica Ritmonio",type:"pdf",source:"ritmonio-scheda-tecnica"};
-    }else if(!out.installationGuide && /\bistruzioni di montaggio\b/.test(label)){
+    }else if(!out.installationGuide && (/\bistruzioni di montaggio\b/.test(label) || /\bistruzionidi montaggio\b/.test(label))){
       out.installationGuide={url:href,label:"Istruzioni di montaggio Ritmonio",type:"pdf",source:"ritmonio-istruzioni-montaggio"};
     }else if(!out.spares && /\bricambi\b/.test(label)){
       out.spares={url:href,label:"Ricambi Ritmonio",type:"pdf",source:"ritmonio-ricambi"};
@@ -4160,7 +4167,7 @@ app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")))
 async function startServer(){
   try{
     await initPersistentStore();
-    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.36 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
+    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.37 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
   }catch(e){
     console.error("[Hydropolis] Démarrage impossible :",e);
     process.exit(1);

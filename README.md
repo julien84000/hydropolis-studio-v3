@@ -1,6 +1,6 @@
-# Hydropolis Studio V11.36
+# Hydropolis Studio V11.37
 
-Hydropolis Studio V11.36 est construit sur **V10.16**, la dernière base stable auditée, avec réintégration contrôlée des apports utiles de la branche V11.12. Il ne s'agit pas d'une réécriture : les projets par pièce, devis/remises/marges, dossier client A4, comptes utilisateurs, PostgreSQL/Supabase et connecteurs fabricants existants sont conservés.
+Hydropolis Studio V11.37 est construit sur **V10.16**, la dernière base stable auditée, avec réintégration contrôlée des apports utiles de la branche V11.12. Il ne s'agit pas d'une réécriture : les projets par pièce, devis/remises/marges, dossier client A4, comptes utilisateurs, PostgreSQL/Supabase et connecteurs fabricants existants sont conservés.
 
 ## Ce que V11.23 ajoute
 
@@ -127,3 +127,8 @@ Nicolazzi passe en mode hybride : le PDF officiel 2024 reste la référence pour
 - Endpoint dédié aux documents Ritmonio, indépendant du moteur photo.
 - Résolution par recherche officielle exacte sur la référence de base.
 - Scheda tecnica et Istruzioni di montaggio récupérées depuis la fiche officielle.
+
+
+## V11.37 — Ritmonio
+- Correction du parseur des onglets `Scheda<br>tecnica` et `Istruzioni<br>di montaggio`.
+- Les PDF officiels ne sont plus déclarés absents à cause de la balise `<br>`.
