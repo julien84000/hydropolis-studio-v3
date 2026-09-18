@@ -793,7 +793,7 @@ app.get("/api/catalog/search",requireAuth,async(req,res)=>{
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V11.33",
+  service:"Hydropolis Studio V11.34",
   database:USE_POSTGRES?"postgresql":"local-fallback",
   time:new Date().toISOString()
 }));
@@ -980,6 +980,25 @@ function ritmonioProductLinks(html,baseUrl){
     seen.add(href);
     const card=$(el).closest("article,li,.product,.card,.product-item,div");
     out.push({href,text:([$(el).attr("aria-label"),$(el).attr("title"),$(el).text(),card.text()].filter(Boolean).join(" ")).replace(/\s+/g," ").trim()});
+  });
+  return out;
+}
+function ritmonioOfficialDownloads($,baseUrl=""){
+  const out={technicalSheet:null,installationGuide:null,spares:null};
+  $(".bottonieraScheda a[href*='/download/'],a[href*='/download/?code=']").each((_,el)=>{
+    const href=absoluteUrl(baseUrl,$(el).attr("href"));
+    if(!href)return;
+    let u;try{u=new URL(href)}catch{return}
+    if(!/(^|\.)ritmonio\.it$/i.test(u.hostname))return;
+    const labelRaw=($(el).text()||"").replace(/\s+/g," ").trim();
+    const label=normalizeToken(labelRaw+" "+($(el).attr("title")||"")+" "+($(el).attr("aria-label")||""));
+    if(!out.technicalSheet && /\bscheda tecnica\b/.test(label)){
+      out.technicalSheet={url:href,label:"Scheda tecnica Ritmonio",type:"pdf",source:"ritmonio-scheda-tecnica"};
+    }else if(!out.installationGuide && /\bistruzioni di montaggio\b/.test(label)){
+      out.installationGuide={url:href,label:"Istruzioni di montaggio Ritmonio",type:"pdf",source:"ritmonio-istruzioni-montaggio"};
+    }else if(!out.spares && /\bricambi\b/.test(label)){
+      out.spares={url:href,label:"Ricambi Ritmonio",type:"pdf",source:"ritmonio-ricambi"};
+    }
   });
   return out;
 }
@@ -2752,8 +2771,8 @@ async function scrapeManufacturerUncached({manufacturerUrl,reference,catalogBase
     const hint=normalizeToken(rawText+" "+hintRaw+" "+href);
     const type=inferredDownloadType(href,hintRaw);
 
-    const looksTechnical=/\b(spec sheet|specification sheet|technical specification sheet|technical specifications?|technical sheet|technical data sheet|technical info|fiche technique)\b/.test(hint);
-    const looksInstall=/\b(installation guide|installation servicing guide|installation and servicing guide|installation service guide|installation manual|installation manual warnings|servicing guide|instructions|notice d installation)\b/.test(hint);
+    const looksTechnical=/\b(spec sheet|specification sheet|technical specification sheet|technical specifications?|technical sheet|technical data sheet|technical info|fiche technique|scheda tecnica)\b/.test(hint);
+    const looksInstall=/\b(installation guide|installation servicing guide|installation and servicing guide|installation service guide|installation manual|installation manual warnings|servicing guide|instructions|notice d installation|istruzioni di montaggio)\b/.test(hint);
     const looksDrawing=/\b(2d drawing|dwg file|drawing|disegno|dessin|technical drawing|plan technique)\b/.test(hint);
     const looksCad=/\b(cad|dwg|dxf|igs|stp|3ds|bim)\b/.test(hint) || /\.(dwg|dxf|igs|stp|3ds|bim)(?:\?|$)/i.test(href);
 
@@ -2793,6 +2812,17 @@ async function scrapeManufacturerUncached({manufacturerUrl,reference,catalogBase
       };
     }
   });
+
+  // V11.34 — Ritmonio product pages expose their actual PDFs in the top
+  // "Scheda tecnica" / "Istruzioni di montaggio" tabs. The URLs are
+  // /download/?code=... endpoints without a .pdf extension, so generic extension
+  // detection cannot classify them reliably. Treat the official labelled tabs as
+  // authoritative, reference-specific PDF downloads.
+  if(/ritmonio\.it/i.test(manufacturerUrl)){
+    const ritDocs=ritmonioOfficialDownloads($,manufacturerUrl);
+    if(ritDocs.technicalSheet)technicalSheet=ritDocs.technicalSheet;
+    if(ritDocs.installationGuide)installationGuide=ritDocs.installationGuide;
+  }
 
 
   // Lefroy Brooks (Squarespace): product downloads are commonly served from /s/
@@ -4068,7 +4098,7 @@ app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")))
 async function startServer(){
   try{
     await initPersistentStore();
-    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.33 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
+    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.34 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
   }catch(e){
     console.error("[Hydropolis] Démarrage impossible :",e);
     process.exit(1);

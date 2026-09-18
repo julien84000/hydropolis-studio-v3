@@ -762,6 +762,23 @@ try{
     localStorage.setItem("hydropolis-nicolazzi-pdf-v131","1");
   }
 }catch(e){}
+// V11.34: older Ritmonio cache entries could contain the product photo but no
+// "Scheda tecnica" because the official /download/?code=... link has no .pdf suffix.
+// Purge only incomplete Ritmonio entries once so the reference-specific technical
+// sheet is recovered automatically.
+try{
+  if(localStorage.getItem("hydropolis-ritmonio-docs-v134")!=="1"){
+    let changed=false;
+    for(const key of Object.keys(manufacturerImageCache)){
+      if(/^Ritmonio\|/i.test(key) && !manufacturerImageCache[key]?.technicalSheetUrl){
+        delete manufacturerImageCache[key];changed=true;
+      }
+    }
+    if(changed)localStorage.setItem("hydropolis-manufacturer-v119",JSON.stringify(manufacturerImageCache));
+    localStorage.setItem("hydropolis-ritmonio-docs-v134","1");
+  }
+}catch(e){}
+
 // V11.32: prefer model-verified commercial Nicolazzi photography from Designer Tapware Co
 // while retaining the local PDF asset as an instant placeholder/drawing. Clear old
 // V11.31 Nicolazzi cache entries so the commercial bridge hydrates immediately.
@@ -2093,11 +2110,12 @@ function commitSelectedRecords(records,{showProject=false}={}){
     const isCatalano=/catalano/i.test(item.manufacturer||"");
     const isRecorBath=item.manufacturer==="Recor" && item.category==="Bain";
     const isGessi=/^Gessi$/i.test(item.manufacturer||"");
-    if(!item.image || (isCatalano && item.catalanoGalleryComplete!==true) || isRecorBath || isGessi){
+    const isRitmonio=/^Ritmonio$/i.test(item.manufacturer||"");
+    if(!item.image || (isCatalano && item.catalanoGalleryComplete!==true) || isRecorBath || isGessi || isRitmonio){
       // Catalano: complete official gallery. Recor baths: replace legacy/low-res
-      // imagery. Gessi: attach Area Pro metadata/documents while keeping the exact
-      // finish-aware official image visible immediately.
-      enrichSelectedPhoto(item.id,isCatalano||isRecorBath||isGessi).catch(err=>console.warn("[enrich after add]",item.reference,err));
+      // imagery. Gessi: attach Area Pro metadata/documents. Ritmonio: always resolve
+      // the reference-specific "Scheda tecnica" PDF even when its image is already cached.
+      enrichSelectedPhoto(item.id,isCatalano||isRecorBath||isGessi||isRitmonio).catch(err=>console.warn("[enrich after add]",item.reference,err));
     }
   }
   return valid.map(x=>x.id);
@@ -3912,6 +3930,18 @@ async function refreshLegacyRecorBathImages(){
 }
 
 
+async function refreshLegacyRitmonioTechnicalSheets(){
+  if(!navigator.onLine)return;
+  const missing=(state.selected||[]).filter(p=>
+    p && /^Ritmonio$/i.test(String(p.manufacturer||"")) &&
+    !p.customTechnicalSheet && !p.technicalSheetUrl
+  );
+  if(!missing.length)return;
+  for(const p of missing.slice(0,30)){
+    try{await enrichSelectedPhoto(p.id,true)}catch(e){console.warn("[Ritmonio V11.34 technical sheet refresh]",p.reference,e)}
+  }
+}
+
 async function refreshLegacyNicolazziV1131Images(){
   if(!navigator.onLine)return;
   const legacy=(state.selected||[]).filter(p=>{
@@ -3953,6 +3983,7 @@ async function startHydropolisWorkspace(){
   await loadSupplierCatalogs();
   harmonizeSavedCatalogProducts();
   await refreshLegacyRecorBathImages();
+  await refreshLegacyRitmonioTechnicalSheets();
   await refreshLegacyNicolazziV1131Images();
   renderSelection();renderRooms();renderCatalog();
 }
