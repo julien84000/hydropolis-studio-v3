@@ -732,6 +732,26 @@ try{
     localStorage.setItem("hydropolis-auto-images-v127","1");
   }
 }catch(e){}
+// V11.28: the Nicolazzi resolver now uses accent-safe collection routes and a
+// collection-level official product index. Clear every old Nicolazzi image once so
+// an incorrect fallback cached by V11.27 cannot survive the deployment.
+try{
+  if(localStorage.getItem("hydropolis-nicolazzi-resolver-v128")!=="1"){
+    for(const key of Object.keys(manufacturerImageCache))if(/^Nicolazzi\|/i.test(key))delete manufacturerImageCache[key];
+    localStorage.setItem("hydropolis-manufacturer-v119",JSON.stringify(manufacturerImageCache));
+    localStorage.setItem("hydropolis-nicolazzi-resolver-v128","1");
+  }
+}catch(e){}
+// V11.29: V11.28 could accept a collection/marketing hero as a Zucchetti
+// product photo. Purge every previously cached Zucchetti visual once so the
+// strict reference-verified resolver is used immediately after deployment.
+try{
+  if(localStorage.getItem("hydropolis-zucchetti-resolver-v129")!=="1"){
+    for(const key of Object.keys(manufacturerImageCache))if(/^Zucchetti\|/i.test(key))delete manufacturerImageCache[key];
+    localStorage.setItem("hydropolis-manufacturer-v119",JSON.stringify(manufacturerImageCache));
+    localStorage.setItem("hydropolis-zucchetti-resolver-v129","1");
+  }
+}catch(e){}
 function manufacturerCacheKey(p){return `${p.manufacturer}|${p.reference}`;}
 function manufacturerSharedCacheKey(p){
   const maker=String(p?.manufacturer||"");
@@ -1123,42 +1143,11 @@ async function lookupCatalogPhoto(reference,button){
   if(info)info.textContent="Recherche Sanitairkamer par référence produit…";
 
   try{
-    let img=await fetchManufacturerImage(p,true);
+    let img=await fetchManufacturerImage(p,true,{imageOnly:true});
 
     // Hotbath order:
     // 1. official exact; 2. web exact; 3. official generic; 4. web generic.
-    if(/hotbath/i.test(p.manufacturer||"") && (!img.src || img.finishMatch!=="exact")){
-      const officialFallback=img?.src?{...img}:null;
-      try{
-        const web=await searchHotbathWebImage(p);
-        const candidate=web.bestExact || web.best || null;
-        if(candidate?.image){
-          const proxied=`/api/image-proxy?url=${encodeURIComponent(candidate.image)}`;
-          img={
-            ...(img||{}),
-            src:proxied,
-            images:[proxied],
-            remoteUrl:candidate.image,
-            remoteImages:[candidate.image],
-            finishMatch:web.bestExact?"web":"generic",
-            source:/sanitairkamer\.nl/i.test((candidate.page||"")+" "+(candidate.image||""))
-              ?`Sanitairkamer · ${web.bestExact?"référence exacte":"visuel produit"}`
-              :(web.bestExact
-                ?`Recherche web · référence exacte ${normalizeSupplierReferenceForLookup(p.reference,p.manufacturer)}`
-                :"Recherche web · visuel produit générique"),
-            note:web.note||""
-          };
-          const key=manufacturerCacheKey(p);
-          manufacturerImageCache[key]=img;
-          saveManufacturerCache();
-        }else if(officialFallback){
-          img=officialFallback;
-        }
-      }catch(e){
-        if(officialFallback)img=officialFallback;
-      }
-    }
-
+    // The server already handles Hotbath fallbacks; do not repeat the search.
     if(img?.src){
       thumb.innerHTML=`<img src="${img.src}" alt="${p.reference}" class="catalog-live-image">`;
       const rendered=$(".catalog-live-image",thumb);
@@ -1193,35 +1182,7 @@ async function enrichSelectedPhoto(id,force=false){
   try{
     let img=await fetchManufacturerImage(p,force);
 
-    if(/hotbath/i.test(p.manufacturer||"") && (!img.src || img.finishMatch!=="exact")){
-      const officialFallback=img?.src?{...img}:null;
-      try{
-        const web=await searchHotbathWebImage(p);
-        const candidate=web.bestExact || web.best || null;
-        if(candidate?.image){
-          const proxied=`/api/image-proxy?url=${encodeURIComponent(candidate.image)}`;
-          img={
-            ...img,
-            src:proxied,
-            images:[proxied],
-            remoteUrl:candidate.image,
-            remoteImages:[candidate.image],
-            finishMatch:web.bestExact?"web":"generic",
-            source:/sanitairkamer\.nl/i.test((candidate.page||"")+" "+(candidate.image||""))
-              ?`Sanitairkamer · ${web.bestExact?"référence exacte":"visuel produit"}`
-              :(web.bestExact
-                ?`Recherche web · référence exacte ${normalizeSupplierReferenceForLookup(p.reference,p.manufacturer)}`
-                :"Recherche web · visuel produit générique"),
-            note:web.note||img.note||""
-          };
-        }else if(officialFallback){
-          img=officialFallback;
-        }
-      }catch(e){
-        if(officialFallback)img=officialFallback;
-      }
-    }
-
+    // The server already handles Hotbath fallbacks; do not repeat the search.
     if(img.src){
       p.image=img.src;
       p.images=img.images||[img.src].filter(Boolean);

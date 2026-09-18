@@ -1,0 +1,27 @@
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const vm=require('node:vm');
+const source=fs.readFileSync('server.js','utf8');
+const context={Map,Date,JSON,Buffer,normalizeHotbathReference:s=>s, boundedMapSet:(m,k,v)=>m.set(k,v),calls:0};
+context.scrapeManufacturerUncached=async()=>{context.calls++;await new Promise(r=>setTimeout(r,10));return {best:{url:'fixture.jpg'}};};
+vm.createContext(context);
+vm.runInContext(source.slice(source.indexOf('const hotbathResultCache='),source.indexOf('async function scrapeManufacturerUncached(')),context);
+(async()=>{
+  const options={manufacturerUrl:'https://www.hotbath.it/fr/produits/1/B008',reference:'B008.BBP',finishCode:'BBP',imageOnly:true};
+  const results=await Promise.all([context.scrapeManufacturer(options),context.scrapeManufacturer(options)]);
+  assert.equal(context.calls,1,'concurrent identical requests must share work');
+  results[0].displayReference='modified';
+  assert.equal(results[1].displayReference,undefined,'response metadata must not leak');
+  await context.scrapeManufacturer(options);
+  assert.equal(context.calls,1,'repeat request must use cache');
+  await context.scrapeManufacturer({...options,finishCode:'CR'});
+  await context.scrapeManufacturer({...options,imageOnly:false});
+  assert.equal(context.calls,3,'finish and technical-document modes must stay separate');
+  let bingCalls=0;
+  const ctx={sanitairkamerHotbathImageCandidates:async()=>[{image:'exact.jpg',exactReferenceMatch:true}],bingHotbathImageCandidates:async()=>{bingCalls++;return []},console};
+  vm.createContext(ctx);
+  vm.runInContext(source.slice(source.indexOf('async function findHotbathWebImageCandidates('),source.indexOf('async function bingHotbathImageCandidates(')),ctx);
+  assert.equal((await ctx.findHotbathWebImageCandidates('B008.BBP','BBP',''))[0].image,'exact.jpg');
+  assert.equal(bingCalls,0,'Bing must not run after exact match');
+  console.log('Hotbath performance: deduplication, cache, finish/document isolation and exact-match short circuit OK');
+})().catch(e=>{console.error(e);process.exitCode=1;});

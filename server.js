@@ -793,7 +793,7 @@ app.get("/api/catalog/search",requireAuth,async(req,res)=>{
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V11.27",
+  service:"Hydropolis Studio V11.30",
   database:USE_POSTGRES?"postgresql":"local-fallback",
   time:new Date().toISOString()
 }));
@@ -1255,6 +1255,15 @@ function nicolazziRefBase(reference=""){
   return String(reference||"").toUpperCase().trim()
     .replace(/(CR|NL|OG|OS|OL|GO|COP|RG|SG|CB|NS|BN|NKN|TB|RA|FV|DB|DBM|BZ|AG|GB|GF|SE|RED|BLU|YE|HE|NEM|BIM|VP|PNK|ND|TY|RP|GRF|BICOLORE)(?=[A-Z0-9]*$)/,'..');
 }
+function nicolazziSlug(value=""){
+  return String(value||"")
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .toLowerCase().trim()
+    .replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
+}
+function nicolazziCompact(value=""){
+  return String(value||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase().replace(/[^A-Z0-9]+/g,"");
+}
 function officialSiteLinks(html,baseUrl,hostPattern){
   const $=cheerio.load(html), seen=new Set(), out=[];
   $("a[href]").each((_,a)=>{
@@ -1269,47 +1278,158 @@ function officialSiteLinks(html,baseUrl,hostPattern){
   return out;
 }
 const nicolazziResolvedUrlMemo=new Map();
+const nicolazziCollectionIndexMemo=new Map();
+const nicolazziCollectionIndexInflight=new Map();
+const NICOLAZZI_INDEX_TTL=6*60*60*1000;
 function nicolazziProductLinks(html,baseUrl){
   const $=cheerio.load(html),seen=new Set(),out=[];
-  $("li.product,.product.type-product,article.product").each((_,card)=>{
-    const a=$(card).find("a[href*='/prodotto/']").first();
-    const href=absoluteUrl(baseUrl,a.attr("href"));if(!href||seen.has(href))return;
-    seen.add(href);out.push({href,text:$(card).text().replace(/\s+/g," ").trim()});
+  $("a[href*='/prodotto/']").each((_,a)=>{
+    const href=absoluteUrl(baseUrl,$(a).attr("href"));if(!href||seen.has(href))return;
+    let u;try{u=new URL(href)}catch{return}
+    if(!/(^|\.)nicolazzi\.it$/i.test(u.hostname))return;
+    seen.add(href);
+    const card=$(a).closest("li.product,.product.type-product,article.product,.product-small,.product,.card");
+    const title=(card.find(".woocommerce-loop-product__title,.product-name,h2,h3").first().text()||$(a).attr("title")||$(a).text()||"").replace(/\s+/g," ").trim();
+    const text=([title,card.text(),$(a).attr("aria-label")].filter(Boolean).join(" ")).replace(/\s+/g," ").trim();
+    out.push({href,title,text});
   });
-  if(out.length)return out;
-  return officialSiteLinks(html,baseUrl,/(^|\.)nicolazzi\.it$/i)
-    .filter(x=>/\/prodotto\//i.test(new URL(x.href).pathname)||/\/en\/prodotto\//i.test(new URL(x.href).pathname));
+  return out;
+}
+function nicolazziPaginationLinks(html,baseUrl){
+  const $=cheerio.load(html),base=new URL(baseUrl),seen=new Set(),out=[];
+  $("a[href]").each((_,a)=>{
+    const href=absoluteUrl(baseUrl,$(a).attr("href"));if(!href||seen.has(href))return;
+    let u;try{u=new URL(href)}catch{return}
+    if(!/(^|\.)nicolazzi\.it$/i.test(u.hostname))return;
+    if(!/\/page\/\d+\/?$/i.test(u.pathname))return;
+    const root=base.pathname.replace(/\/page\/\d+\/?$/i,"/").replace(/\/+$/,"/");
+    if(!u.pathname.startsWith(root))return;
+    seen.add(href);out.push(href);
+  });
+  return out.slice(0,5);
+}
+function nicolazziCollectionUrls(collection=""){
+  const slug=nicolazziSlug(collection);
+  if(!slug)return [];
+  const modern=new Set(["star","flag","khady","monte-croce","mac-kinley-05","new-olympus","pantheon","torre","festival","olympus"]);
+  const stones=new Set(["le-pietre","onice","cristallo-di-rocca"]);
+  const ordered=[];
+  const add=u=>{if(u&&!ordered.includes(u))ordered.push(u)};
+  // Nicolazzi uses several taxonomic URL layouts. Use the known route first,
+  // then safe fallbacks. Accent normalization is essential (Agorà -> agora).
+  if(modern.has(slug))add(`https://www.nicolazzi.it/en/categoria-prodotto/modern/${slug}/`);
+  else if(stones.has(slug))add(`https://www.nicolazzi.it/en/categoria-prodotto/stones/${slug}/`);
+  else add(`https://www.nicolazzi.it/en/categoria-prodotto/${slug}/`);
+  add(`https://www.nicolazzi.it/en/categoria-prodotto/${slug}/`);
+  add(`https://www.nicolazzi.it/en/categoria-prodotto/modern/${slug}/`);
+  add(`https://www.nicolazzi.it/en/categoria-prodotto/classic/${slug}/`);
+  add(`https://www.nicolazzi.it/en/categoria-prodotto/stones/${slug}/`);
+  return ordered;
+}
+function nicolazziTitleScore(designation="",title=""){
+  const d=normalizeToken(designation),t=normalizeToken(title);
+  if(!d||!t)return 0;
+  if(d===t)return 1.4;
+  if(d.includes(t)||t.includes(d))return 1.2;
+  const D=new Set(productWords(d)),T=new Set(productWords(t));
+  if(!T.size)return 0;
+  let hit=0;for(const x of T)if(D.has(x))hit++;
+  const titleCoverage=hit/T.size;
+  const overlap=hit/Math.max(1,Math.min(D.size,T.size));
+  if(T.size>=2&&titleCoverage===1)return 1.1;
+  return Math.max(titleCoverage,overlap,similarityScore(d,t));
+}
+async function buildNicolazziCollectionIndex(collection=""){
+  const key=nicolazziSlug(collection);
+  if(!key)return [];
+  const hit=nicolazziCollectionIndexMemo.get(key);
+  if(hit&&Date.now()-hit.at<NICOLAZZI_INDEX_TTL)return hit.items;
+  if(nicolazziCollectionIndexInflight.has(key))return nicolazziCollectionIndexInflight.get(key);
+  const job=(async()=>{
+    let items=[];
+    for(const categoryUrl of nicolazziCollectionUrls(collection)){
+      try{
+        const html=await fetchBrandPage(categoryUrl,"en-GB,en;q=0.9,it;q=0.7");
+        let pages=[categoryUrl,...nicolazziPaginationLinks(html,categoryUrl)];
+        // Some Nicolazzi collections expose pagination only after the first page.
+        // A few extra page URLs are cheap after the first successful category hit
+        // and make accessory/product matching deterministic for long collections.
+        for(let i=2;i<=4;i++){
+          const candidate=new URL(`page/${i}/`,categoryUrl).href;
+          if(!pages.includes(candidate))pages.push(candidate);
+        }
+        const pageHtml=[html];
+        for(const p of pages.slice(1)){
+          try{pageHtml.push(await fetchBrandPage(p,"en-GB,en;q=0.9,it;q=0.7"));}catch(e){if(Number(e.response?.status||0)!==404)console.warn("[nicolazzi-page]",p,e.message)}
+        }
+        const byHref=new Map();
+        for(let i=0;i<pageHtml.length;i++){
+          const base=pages[i]||categoryUrl;
+          for(const item of nicolazziProductLinks(pageHtml[i],base))if(!byHref.has(item.href))byHref.set(item.href,item);
+        }
+        items=[...byHref.values()];
+        if(items.length)break;
+      }catch(e){
+        if(Number(e.response?.status||0)!==404)console.warn("[nicolazzi-category]",categoryUrl,e.message);
+      }
+    }
+    boundedMapSet(nicolazziCollectionIndexMemo,key,{at:Date.now(),items},120);
+    return items;
+  })();
+  nicolazziCollectionIndexInflight.set(key,job);
+  try{return await job;}finally{nicolazziCollectionIndexInflight.delete(key);}
+}
+function scoreNicolazziLink(item,base,core,designation){
+  const compactText=nicolazziCompact(item.text);
+  const compactBase=nicolazziCompact(base);
+  const compactCore=nicolazziCompact(core);
+  let score=0;
+  if(compactBase&&compactText.includes(compactBase))score+=10000;
+  if(compactCore&&compactCore.length>=4&&compactText.includes(compactCore))score+=7000;
+  const titleScore=nicolazziTitleScore(designation,item.title||item.text);
+  score+=titleScore*1000;
+  return {score,titleScore,referenceMatch:score>=7000};
 }
 async function resolveNicolazziProductUrl(reference,designation="",collection="",catalogBase=""){
   const raw=String(reference||"").toUpperCase().trim();
   const base=String(catalogBase||nicolazziRefBase(raw)||raw).toUpperCase().trim();
-  const memoKey=`${String(collection||"").toLowerCase()}|${base}`;
+  const memoKey=`${nicolazziSlug(collection)}|${base}`;
   if(nicolazziResolvedUrlMemo.has(memoKey))return nicolazziResolvedUrlMemo.get(memoKey);
-  const series=String(collection||"").trim().toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
-  const core=(base.split("..")[0]||base).replace(/[^A-Z0-9-]/g,"");
-  const targets=[];
-  if(series)targets.push(`https://www.nicolazzi.it/en/categoria-prodotto/modern/${series}/`,`https://www.nicolazzi.it/en/categoria-prodotto/classic/${series}/`,`https://www.nicolazzi.it/en/categoria-prodotto/${series}/`);
-  if(core)targets.push(`https://www.nicolazzi.it/en/?s=${encodeURIComponent(core)}&post_type=product`);
-  let fallback="";
-  const exactKey=normalizeToken(base.replace(/\.\./g,""));
-  const coreKey=normalizeToken(core);
-  for(const url of targets){
-    try{
-      const html=await fetchBrandPage(url,"en-GB,en;q=0.9,it;q=0.7");
-      const links=nicolazziProductLinks(html,url);
-      for(const l of links){
-        if(!fallback)fallback=l.href;
-        const nt=normalizeToken(l.text);
-        if((exactKey&&nt.includes(exactKey)) || (coreKey&&nt.includes(coreKey)) || similarityScore(designation||collection||raw,l.text)>=0.82){
-          boundedMapSet(nicolazziResolvedUrlMemo,memoKey,l.href,1200);
-          return l.href;
-        }
-      }
-    }catch(e){console.warn("[nicolazzi-resolve]",e.message)}
+  const core=(base.split("..")[0]||base).replace(/[^A-Z0-9/-]/g,"");
+
+  // First choice: build one cached official index for the selected collection.
+  // This makes subsequent automatic image hydration nearly instantaneous.
+  const index=await buildNicolazziCollectionIndex(collection);
+  const ranked=index.map(item=>({...item,...scoreNicolazziLink(item,base,core,designation)})).sort((a,b)=>b.score-a.score);
+  const top=ranked[0];
+  if(top&&(top.referenceMatch||top.titleScore>=0.98)){
+    boundedMapSet(nicolazziResolvedUrlMemo,memoKey,top.href,1800);
+    console.log("[nicolazzi-resolve-ok]",JSON.stringify({reference:raw,base,collection,url:top.href,score:Math.round(top.score),titleScore:Number(top.titleScore.toFixed(2)),indexed:index.length}));
+    return top.href;
   }
-  const resolved=fallback||null;
-  boundedMapSet(nicolazziResolvedUrlMemo,memoKey,resolved,1200);
-  return resolved;
+
+  // Second choice: WordPress product search by the stable article core. Never
+  // accept the first result blindly; it must match either reference or title.
+  if(core){
+    const searchUrl=`https://www.nicolazzi.it/en/?s=${encodeURIComponent(core)}&post_type=product`;
+    try{
+      const html=await fetchBrandPage(searchUrl,"en-GB,en;q=0.9,it;q=0.7");
+      const rankedSearch=nicolazziProductLinks(html,searchUrl)
+        .map(item=>({...item,...scoreNicolazziLink(item,base,core,designation)}))
+        .sort((a,b)=>b.score-a.score);
+      const best=rankedSearch[0];
+      if(best&&(best.referenceMatch||best.titleScore>=0.98)){
+        boundedMapSet(nicolazziResolvedUrlMemo,memoKey,best.href,1800);
+        console.log("[nicolazzi-resolve-search]",JSON.stringify({reference:raw,base,collection,url:best.href,score:Math.round(best.score)}));
+        return best.href;
+      }
+    }catch(e){if(Number(e.response?.status||0)!==404)console.warn("[nicolazzi-search]",e.message)}
+  }
+
+  // Wrong product photography is worse than a temporary blank card.
+  boundedMapSet(nicolazziResolvedUrlMemo,memoKey,null,1800);
+  console.warn("[nicolazzi-resolve-miss]",JSON.stringify({reference:raw,base,collection,indexed:index.length,topTitle:top?.title||"",topScore:Math.round(top?.score||0)}));
+  return null;
 }
 function gessiReferenceParts(reference="",finishCode=""){
   const raw=String(reference||"").toUpperCase().trim();
@@ -1496,7 +1616,25 @@ async function validateRemoteImage(url,referer=""){
   }
 }
 
-async function scrapeManufacturer({manufacturerUrl,reference,catalogBase="",finishCode,finish,designation,originalDescription,collection,manufacturer,imageOnly=false}){
+const hotbathResultCache=new Map();
+const hotbathResultInflight=new Map();
+async function scrapeManufacturer(options){
+  if(!/hotbath\.it/i.test(options.manufacturerUrl||""))return scrapeManufacturerUncached(options);
+  const key=JSON.stringify([options.manufacturerUrl,normalizeHotbathReference(options.reference),options.finishCode||"",options.finish||"",options.imageOnly===true]);
+  const hit=hotbathResultCache.get(key);
+  if(hit && Date.now()-hit.at<10*60*1000)return {...hit.result};
+  if(hotbathResultInflight.has(key))return {...await hotbathResultInflight.get(key)};
+  const job=scrapeManufacturerUncached(options).then(result=>{
+    // Keep memory bounded; oversized galleries are still returned but not cached.
+    if(result.best && Buffer.byteLength(JSON.stringify(result))<4*1024*1024){
+      boundedMapSet(hotbathResultCache,key,{at:Date.now(),result},8);
+    }
+    return result;
+  });
+  hotbathResultInflight.set(key,job);
+  try{return {...await job};}finally{hotbathResultInflight.delete(key);}
+}
+async function scrapeManufacturerUncached({manufacturerUrl,reference,catalogBase="",finishCode,finish,designation,originalDescription,collection,manufacturer,imageOnly=false}){
   const base=productBase(reference);
   const requested=String(finishCode||"").toUpperCase();
   manufacturerUrl=await resolveManufacturerProductUrl(manufacturerUrl,reference,originalDescription,designation,collection,catalogBase);
@@ -1505,6 +1643,44 @@ async function scrapeManufacturer({manufacturerUrl,reference,catalogBase="",fini
       image:null, exact:false, drawing:null, technicalSheet:null, installationGuide:null,
       note:`Aucune photo ${manufacturer||"fabricant"} certifiée : la fiche produit exacte n’a pas pu être identifiée sans ambiguïté.`
     };
+  }
+
+  // V11.29 — the Zucchetti CDN publishes the primary product photograph under
+  // the base reference (metadata examples: Z92204.jpeg, ZAD410.jpeg, ZAD420.jpeg).
+  // Automatic catalogue hydration only needs the photo, so validate this exact,
+  // reference-bearing asset first and avoid a slow full-page scrape. If it does
+  // not exist, continue through the strict page resolver below.
+  if(imageOnly && /zucchettidesign\.it/i.test(manufacturerUrl) && /^Z[A-Z0-9]+$/i.test(base)){
+    const directBase=`https://assets.zucchettidesign.it/uploads/${encodeURIComponent(base.toUpperCase())}`;
+    const verify=async ext=>{
+      const url=`${directBase}.${ext}`;
+      const check=await validateRemoteImage(url,"https://www.zucchettidesign.it/");
+      if(!check.ok)throw new Error(`${ext}:${check.status||check.error||"invalid"}`);
+      return {url,check};
+    };
+    let verified=null;
+    try{verified=await Promise.any([verify("jpeg"),verify("jpg")]);}catch{}
+    if(!verified){try{verified=await verify("png");}catch{}}
+    if(verified){
+      const {url:direct,check}=verified;
+      const item={
+        url:direct,
+        source:"zucchetti-reference-asset",
+        score:30000,
+        finishMatch:"generic",
+        detectedFinishCode:null,
+        variationId:null,
+        attributes:{official:true,baseMatch:true,reference:base.toUpperCase()},
+        dataUrl:`data:${check.contentType};base64,${check.data.toString("base64")}`
+      };
+      return {
+        manufacturerUrl,reference,finishCode:requested,finish,base,
+        best:item,images:[item],exactFound:false,
+        drawing:null,cadDrawing:null,technicalSheet:null,installationGuide:null,
+        candidates:[item],
+        note:`Photo officielle Zucchetti vérifiée par la référence ${base.toUpperCase()}.`
+      };
+    }
   }
 
   const isGessi=/gessi\.com/i.test(manufacturerUrl);
@@ -2089,15 +2265,29 @@ async function scrapeManufacturer({manufacturerUrl,reference,catalogBase="",fini
       const m=body.match(/Unique\s+code\s*([A-Z0-9.]+)/i);
       return String(m?.[1]||"").toUpperCase();
     })();
+    // The `sku` query parameter is supplied by Hydropolis itself and is therefore
+    // not proof that Zucchetti returned the requested product. V11.28 trusted it,
+    // so a generic/redirected collection page could certify the same hero image
+    // for many unrelated references. Require evidence returned by Zucchetti:
+    // body unique code/reference or canonical/OG product URL.
+    const zCanonicalUrls=[
+      $("link[rel='canonical']").attr("href")||"",
+      $("meta[property='og:url']").attr("content")||""
+    ].filter(Boolean);
+    const zCanonicalMatchesBase=zCanonicalUrls.some(raw=>{
+      try{
+        const path=new URL(raw,manufacturerUrl).pathname.replace(/\/+$/g,"");
+        return path.split("/").pop()?.toUpperCase()===zBase;
+      }catch{return false}
+    });
     const pageMatchesSku=(
-      (!!zSkuFromUrl && zSkuFromUrl===zFullRef) ||
-      (!!zSkuInPage && zSkuInPage===zFullRef) ||
+      (!!zSkuInPage && (zSkuInPage===zFullRef || zSkuInPage.split(".")[0]===zBase)) ||
       (!!zFullRef && zPageText.includes(normalizeToken(zFullRef))) ||
-      (!!zBase && zPageText.includes(normalizeToken(zBase)))
+      (!!zBase && zPageText.includes(normalizeToken(zBase))) ||
+      zCanonicalMatchesBase
     );
     const pageMatchesFinish=(
       !zRequested ||
-      (!!zSkuFromUrl && zSkuFromUrl===zFullRef) ||
       (!!zSkuInPage && zSkuInPage===zFullRef) ||
       (!!zRequested && zPageText.includes(normalizeToken(zRequested))) ||
       (!!zFinishText && zPageText.includes(zFinishText))
@@ -2146,6 +2336,10 @@ async function scrapeManufacturer({manufacturerUrl,reference,catalogBase="",fini
 
       const baseMatch=zHasBase(href,context);
       const finishAssetMatch=zHasExactFinish(href,context);
+      // A correct product page and a product-specific asset are both mandatory.
+      // Generic collection/marketing heroes are deliberately rejected rather
+      // than displayed on the wrong article.
+      if(!pageMatchesSku || !baseMatch)return;
       let score=600+bonus;
       if(/assets\.zucchettidesign\.it/i.test(href))score+=500;
       if(baseMatch)score+=6500;
@@ -2216,6 +2410,7 @@ async function scrapeManufacturer({manufacturerUrl,reference,catalogBase="",fini
       sku:zSkuFromUrl||zSkuInPage||"",
       finishCode:zRequested,
       pageMatchesSku,
+      canonicalMatchesBase:zCanonicalMatchesBase,
       pageMatchesFinish,
       candidates:candidates
         .filter(x=>String(x.source||"").startsWith("zucchetti-"))
@@ -2646,6 +2841,7 @@ async function scrapeManufacturer({manufacturerUrl,reference,catalogBase="",fini
         candidates.push({
           ...item,
           validated:true,
+          dataUrl:`data:${check.contentType};base64,${check.data.toString("base64")}`,
           validatedContentType:check.contentType
         });
         // One live official hero is enough.
@@ -2661,7 +2857,7 @@ async function scrapeManufacturer({manufacturerUrl,reference,catalogBase="",fini
 
     const hp=hotbathReferenceParts(reference,requested);
     const hasOfficialExact=candidates.some(x=>x.finishMatch==="exact");
-    if(!hasOfficialExact && hp.base){
+    if(!hasOfficialExact && hp.base && !(imageOnly && candidates.length)){
       try{
         const webCandidates=await findHotbathWebImageCandidates(reference,requested,finish);
         const compact=v=>normalizeToken(v).replace(/\s+/g,"");
@@ -2681,6 +2877,7 @@ async function scrapeManufacturer({manufacturerUrl,reference,catalogBase="",fini
 
           candidates.push({
             url:item.image,
+            dataUrl:item.dataUrl||null,
             page:item.page||"",
             title:item.title||"",
             source:resolvedSource,
@@ -2709,12 +2906,25 @@ async function scrapeManufacturer({manufacturerUrl,reference,catalogBase="",fini
 
   const isAmphora=/amphoradesign\.it/i.test(manufacturerUrl);
   const isCoalbrook=/coalbrookuk\.co\.uk/i.test(manufacturerUrl);
+  const isZucchetti=/zucchettidesign\.it/i.test(manufacturerUrl);
   let exact=sorted.find(x=>x.finishMatch==="exact" &&
     (!isAmphora || x.source.startsWith("woocommerce-variation")) &&
     (!isCoalbrook || x.source==="coalbrook-product-image" || x.source==="coalbrook-exact-sku-image")
   )||null;
   let fallback=sorted.find(x=>x.finishMatch!=="exact")||null;
   let best=exact||fallback;
+
+  if(isZucchetti){
+    // Only the dedicated resolver may provide a Zucchetti image. The generic
+    // HTML/script collector can see collection banners and suggested products.
+    const verified=sorted.find(x=>
+      String(x.source||"").startsWith("zucchetti-") &&
+      x.attributes?.baseMatch===true
+    )||null;
+    exact=verified?.finishMatch==="exact"?verified:null;
+    fallback=verified?.finishMatch!=="exact"?verified:null;
+    best=verified;
+  }
 
   if(isGessi){
     const gessiExact=sorted.find(x=>x.source==="gessi-area-pro-finish-image" && x.finishMatch==="exact")||null;
@@ -2780,6 +2990,7 @@ async function scrapeManufacturer({manufacturerUrl,reference,catalogBase="",fini
   // et on la renvoie directement au navigateur sous forme data URL.
   async function embedOfficialImage(item){
     if(!item) return item;
+    if(item.dataUrl)return item;
     try{
       if(!isAllowedHydropolisRemoteHost(new URL(item.url||manufacturerUrl).hostname))return item;
     }catch{return item;}
@@ -3156,7 +3367,7 @@ async function sanitairkamerHotbathImageCandidates(reference,finishCode,finish){
   console.log('[hotbath-sanitair-fast]',JSON.stringify({reference:hp.display,base:hp.base,finishCode:hp.finishCode,pagesToCheck:urls.length,first:urls[0]||null}));
   const exact=[];
   const generic=[];
-  const maxPages=Math.min(urls.length,6);
+  const maxPages=Math.min(urls.length,3);
 
   // Process the best-ranked pages one by one. In normal Hotbath cases the exact
   // finish URL (e.g. B008GN / B008BC / B008BBP) is first, so only one page is fetched.
@@ -3189,7 +3400,7 @@ async function sanitairkamerHotbathImageCandidates(reference,finishCode,finish){
       for(const cand of pageCandidates.slice(0,2)){
         const check=await validateRemoteImage(cand.image,pageUrl);
         if(!check.ok)continue;
-        exact.push({...cand,contentType:check.contentType,source:'sanitairkamer',exactReferenceMatch:true,exactFinish:true});
+        exact.push({...cand,dataUrl:`data:${check.contentType};base64,${check.data.toString('base64')}`,contentType:check.contentType,source:'sanitairkamer',exactReferenceMatch:true,exactFinish:true});
         break;
       }
       if(exact.length)break;
@@ -3206,7 +3417,7 @@ async function sanitairkamerHotbathImageCandidates(reference,finishCode,finish){
     pagesChecked:Math.min(maxPages, exact.length?1:maxPages),
     exactCount:exact.length,
     fallbackCount:exact.length?0:generic.length,
-    best:result[0]||null
+    best:result[0]?{image:result[0].image,exactReferenceMatch:result[0].exactReferenceMatch}:null
   }));
   return result;
 }
@@ -3218,6 +3429,7 @@ async function findHotbathWebImageCandidates(reference,finishCode,finish){
     for(const item of sanit){
       combined.push({...item,prioritySource:'sanitairkamer'});
     }
+    if(combined.some(item=>item.exactReferenceMatch))return combined;
   }catch(e){
     console.warn('[sanitairkamer-hotbath]',e.message);
   }
@@ -3276,7 +3488,7 @@ async function bingHotbathImageCandidates(reference,finishCode,finish){
 
   candidates.sort((a,b)=>b.score-a.score);
   const checked=[];
-  for(const item of candidates.slice(0,12)){
+  for(const item of candidates.slice(0,3)){
     if(item.score<1800)continue;
     try{
       const r=await axios.get(item.image,{
@@ -3286,8 +3498,8 @@ async function bingHotbathImageCandidates(reference,finishCode,finish){
       });
       const ct=String(r.headers["content-type"]||"");
       if(!ct.startsWith("image/") || !r.data || r.data.length<5000 || r.data.length>9000000)continue;
-      checked.push({...item,contentType:ct});
-      if(checked.length>=4)break;
+      checked.push({...item,dataUrl:`data:${ct};base64,${Buffer.from(r.data).toString('base64')}`,contentType:ct});
+      if(item.exactReferenceMatch || checked.length>=2)break;
     }catch{}
   }
   return checked;
@@ -3765,7 +3977,7 @@ app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")))
 async function startServer(){
   try{
     await initPersistentStore();
-    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.23 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
+    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.30 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
   }catch(e){
     console.error("[Hydropolis] Démarrage impossible :",e);
     process.exit(1);

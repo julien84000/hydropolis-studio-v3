@@ -1,6 +1,6 @@
-# Hydropolis Studio V11.23
+# Hydropolis Studio V11.29
 
-Hydropolis Studio V11.23 est construit sur **V10.16**, la dernière base stable auditée, avec réintégration contrôlée des apports utiles de la branche V11.12. Il ne s'agit pas d'une réécriture : les projets par pièce, devis/remises/marges, dossier client A4, comptes utilisateurs, PostgreSQL/Supabase et connecteurs fabricants existants sont conservés.
+Hydropolis Studio V11.29 est construit sur **V10.16**, la dernière base stable auditée, avec réintégration contrôlée des apports utiles de la branche V11.12. Il ne s'agit pas d'une réécriture : les projets par pièce, devis/remises/marges, dossier client A4, comptes utilisateurs, PostgreSQL/Supabase et connecteurs fabricants existants sont conservés.
 
 ## Ce que V11.23 ajoute
 
@@ -85,3 +85,17 @@ Les catalogues Ritmonio, Nicolazzi et Gessi sont distribués en `.json.gz`. Le c
 ## V11.27
 
 Photos fabricant automatiques dans le catalogue, préchargement par viewport, cache partagé Nicolazzi/Ritmonio, cache serveur 6 h et déduplication des pages fabricant pour accélérer notamment Zucchetti. Les articles ajoutés au projet s’enrichissent également en arrière-plan sans clic manuel.
+
+
+## V11.28
+- Correction du connecteur Nicolazzi : `Agorà` et les collections accentuées sont maintenant résolues correctement.
+- Index officiel de collection mis en cache : une seule exploration Nicolazzi alimente ensuite toutes les références visibles de la collection.
+- Pagination Nicolazzi prise en charge et sélection stricte par référence/titre produit.
+- Suppression des anciens visuels Nicolazzi mis en cache par V11.27 afin de forcer une récupération propre.
+
+## V11.29
+- Correction du connecteur Zucchetti : le paramètre `?sku=` envoyé par l’application n’est plus considéré comme une preuve d’identité de la fiche.
+- Une image Zucchetti n’est acceptée que si la fiche officielle et le fichier image correspondent à la référence demandée.
+- Pour les cartes catalogue, l’image officielle nommée par référence est validée directement afin d’accélérer fortement l’affichage.
+- Exclusion des bannières de collection, visuels marketing et suggestions produits du choix final.
+- Purge unique des anciens visuels Zucchetti erronés enregistrés dans le navigateur.
