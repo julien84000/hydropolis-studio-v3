@@ -793,7 +793,7 @@ app.get("/api/catalog/search",requireAuth,async(req,res)=>{
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V11.35",
+  service:"Hydropolis Studio V11.36",
   database:USE_POSTGRES?"postgresql":"local-fallback",
   time:new Date().toISOString()
 }));
@@ -1018,12 +1018,28 @@ async function resolveRitmonioProductUrl(reference,designation="",collection="")
   const ref=String(reference||"").toUpperCase().trim();
   if(!ref)return "https://www.ritmonio.it/it/ricerca/";
   const base=ritmonioReferenceBase(ref)||ref;
+
+  // V11.36 — Ritmonio's own search page is the authoritative resolver for every
+  // category, including accessories such as 78G001 / 78Q007. Query the exact base
+  // article first; the returned product URL contains the internal family id needed
+  // to open the real product page and its "Scheda tecnica" downloads.
+  const directSearch=`https://www.ritmonio.it/it/ricerca/?code=${encodeURIComponent(base)}`;
+  try{
+    const html=await fetchBrandPage(directSearch,"it-IT,it;q=0.9,en;q=0.7");
+    const links=ritmonioProductLinks(html,directSearch);
+    const wanted=String(base||"").toUpperCase();
+    const exact=links.find(x=>String(x.articleCode||"").toUpperCase()===wanted);
+    if(exact)return exact.href;
+  }catch(e){
+    console.warn("[ritmonio-direct-search]",base,e.message);
+  }
+
+  // Collection-page fallback for ranges whose search page is temporarily
+  // unavailable. Keep exact URL-code matching: never accept neighbouring products.
   const collectionSlug=String(collection||"")
     .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
     .toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
 
-  // Current Ritmonio site exposes article links on each official series page.
-  // Prefer that deterministic path over general web/search-engine matching.
   if(collectionSlug){
     const seriesPages=[
       `https://www.ritmonio.it/it/bath-shower/bath/${collectionSlug}/`,
@@ -1035,31 +1051,47 @@ async function resolveRitmonioProductUrl(reference,designation="",collection="")
       try{
         const html=await fetchBrandPage(pageUrl,"it-IT,it;q=0.9,en;q=0.7");
         const links=ritmonioProductLinks(html,pageUrl);
-        const wanted=String(base||"").toUpperCase();
-        const exactByCode=links.find(x=>String(x.articleCode||"").toUpperCase()===wanted);
-        if(exactByCode)return exactByCode.href;
-        const exactByText=links.find(x=>normalizeToken(x.text)===normalizeToken(base) || normalizeToken(x.text).startsWith(normalizeToken(base)+" "));
-        if(exactByText)return exactByText.href;
+        const exact=links.find(x=>String(x.articleCode||"").toUpperCase()===String(base).toUpperCase());
+        if(exact)return exact.href;
       }catch{}
     }
   }
 
-  // Official search page fallback. Never substitute a third-party source.
-  const searchUrl="https://www.ritmonio.it/it/ricerca/";
-  try{
-    const html=await fetchBrandPage(searchUrl,"it-IT,it;q=0.9,en;q=0.7");
-    const links=ritmonioProductLinks(html,searchUrl);
-    const wanted=String(base||"").toUpperCase();
-    const exactByCode=links.find(x=>String(x.articleCode||"").toUpperCase()===wanted);
-    if(exactByCode)return exactByCode.href;
-    const exactByText=links.find(x=>normalizeToken(x.text)===normalizeToken(base) || normalizeToken(x.text).startsWith(normalizeToken(base)+" "));
-    if(exactByText)return exactByText.href;
-  }catch(e){ console.warn("[ritmonio-resolve]",e.message); }
-
-  // A bare product endpoint still allows generic attachment discovery to use the
-  // predictable official product-image path while the UI keeps the official search link.
-  return "https://www.ritmonio.it/it/bath-shower/prodotto/";
+  // Last official fallback: search page retained for the user, but do not fabricate
+  // a product URL because the document codes are opaque and reference-specific.
+  return directSearch;
 }
+
+async function resolveRitmonioDocuments(reference,collection=""){
+  const base=ritmonioReferenceBase(reference)||String(reference||"").toUpperCase().trim();
+  if(!base)throw new Error("Référence Ritmonio manquante");
+  const productUrl=await resolveRitmonioProductUrl(reference,"",collection);
+  if(!/\/(?:prodotto|product)\//i.test(productUrl)){
+    throw new Error(`Fiche Ritmonio exacte introuvable pour ${base}`);
+  }
+  const html=await fetchBrandPage(productUrl,"it-IT,it;q=0.9,en;q=0.7");
+  const $=cheerio.load(html);
+  const shown=normalizeToken(
+    $("h1,h2,.schedaTitolo,.schedaCodice,.testoBold").map((_,el)=>$(el).text()).get().join(" ")
+    +" "+html.slice(0,12000)
+  );
+  if(!shown.includes(normalizeToken(base))){
+    throw new Error(`La fiche Ritmonio résolue ne correspond pas à ${base}`);
+  }
+  const docs=ritmonioOfficialDownloads($,productUrl);
+  if(!docs.technicalSheet){
+    throw new Error(`Scheda tecnica absente de la fiche Ritmonio ${base}`);
+  }
+  return {
+    reference:String(reference||""),
+    base,
+    productUrl,
+    technicalSheet:docs.technicalSheet,
+    installationGuide:docs.installationGuide,
+    spares:docs.spares
+  };
+}
+
 async function fetchCatalanoPage(url){
   const r=await axios.get(url,{timeout:22000,maxRedirects:5,validateStatus:x=>x>=200&&x<400,headers:{"User-Agent":"Mozilla/5.0","Accept-Language":"en-GB,en;q=0.9"}});
   return String(r.data||"");
@@ -3760,6 +3792,18 @@ app.get("/api/finish-simulation",async(req,res)=>{
   }
 });
 
+app.post("/api/ritmonio-docs",async(req,res)=>{
+  const {reference,collection}=req.body||{};
+  if(!reference)return res.status(400).json({error:"Référence Ritmonio requise"});
+  try{
+    const result=await resolveRitmonioDocuments(reference,collection||"");
+    res.json(result);
+  }catch(e){
+    console.warn("[ritmonio-docs]",reference,e.message);
+    res.status(502).json({error:"Scheda tecnica Ritmonio introuvable",detail:e.message});
+  }
+});
+
 app.post("/api/manufacturer-image",async(req,res)=>{
   const {manufacturerUrl,reference,lookupReference,base:catalogBase,finishCode,finish,designation,originalDescription,collection,manufacturer,imageOnly}=req.body||{};
   if(!manufacturerUrl||!reference) return res.status(400).json({error:"manufacturerUrl et reference requis"});
@@ -4116,7 +4160,7 @@ app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")))
 async function startServer(){
   try{
     await initPersistentStore();
-    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.35 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
+    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.36 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
   }catch(e){
     console.error("[Hydropolis] Démarrage impossible :",e);
     process.exit(1);

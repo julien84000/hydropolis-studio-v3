@@ -954,6 +954,30 @@ Référence technique utilisée : ${data.lookupReference} (suffixe catalogue ign
   return result;
 }
 
+async function fetchRitmonioDocuments(p){
+  if(!p || !/^Ritmonio$/i.test(String(p.manufacturer||"")))return null;
+  const r=await fetch("/api/ritmonio-docs",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({reference:p.reference,collection:p.collection||""})
+  });
+  const data=await r.json();
+  if(!r.ok)throw new Error(data.detail||data.error||"Scheda tecnica Ritmonio introuvable");
+  p.resolvedManufacturerUrl=data.productUrl||p.resolvedManufacturerUrl||p.manufacturerUrl||"";
+  if(data.technicalSheet?.url){
+    p.technicalSheetUrl=data.technicalSheet.url;
+    p.technicalSheetLabel=data.technicalSheet.label||"Scheda tecnica Ritmonio";
+    p.technicalSheetType="pdf";
+    p.technicalSheetPage=1;
+  }
+  if(data.installationGuide?.url){
+    p.installationGuideUrl=data.installationGuide.url;
+    p.installationGuideLabel=data.installationGuide.label||"Istruzioni di montaggio Ritmonio";
+  }
+  saveState();
+  return data;
+}
+
 const autoPhotoQueue=[];
 const autoPhotoQueued=new Set();
 const autoPhotoFailures=new Map();
@@ -2120,6 +2144,11 @@ function commitSelectedRecords(records,{showProject=false}={}){
       // the reference-specific "Scheda tecnica" PDF even when its image is already cached.
       enrichSelectedPhoto(item.id,isCatalano||isRecorBath||isGessi||isRitmonio).catch(err=>console.warn("[enrich after add]",item.reference,err));
     }
+    if(isRitmonio && !item.technicalSheetUrl){
+      fetchRitmonioDocuments(item).then(docs=>{
+        if(docs?.technicalSheet?.url){saveState();renderRooms();}
+      }).catch(err=>console.warn("[Ritmonio docs after add]",item.reference,err.message));
+    }
   }
   return valid.map(x=>x.id);
 }
@@ -2931,9 +2960,17 @@ function renderRoomsCore(){
    if(!bath)return;
    openRecorBathConfigurator(bath,b.dataset.room||bath.roomId);
  });$$(".fallback-btn").forEach(b=>b.onclick=()=>useCatalogueFallback(b.dataset.id));$$(".enrich-btn").forEach(b=>b.onclick=()=>enrichSelectedPhoto(b.dataset.id,true));$$(".ritmonio-tech-refresh").forEach(b=>b.onclick=async()=>{
+   const p=state.selected.find(x=>x.id===b.dataset.id);if(!p)return;
    b.disabled=true;b.textContent="Récupération…";
-   try{await enrichSelectedPhoto(b.dataset.id,true)}
-   catch(e){console.warn("[Ritmonio Scheda tecnica]",e)}
+   try{
+     const docs=await fetchRitmonioDocuments(p);
+     if(!docs?.technicalSheet?.url)throw new Error("Scheda tecnica non trouvée");
+     saveState();renderRooms();renderSelection();
+   }catch(e){
+     console.warn("[Ritmonio Scheda tecnica]",e);
+     b.disabled=false;b.textContent="Réessayer la Scheda tecnica";
+     alert(`Ritmonio ${p.reference} : ${e.message||"fiche technique indisponible"}`);
+   }
  });
  $$(".hotbath-web-selected").forEach(b=>b.onclick=()=>useHotbathWebImageForProduct(b.dataset.id,b));
  $$(".hotbath-sim-selected").forEach(b=>b.onclick=()=>simulateHotbathFinishForProduct(b.dataset.id,b));
@@ -3945,9 +3982,14 @@ async function refreshLegacyRitmonioTechnicalSheets(){
     !p.customTechnicalSheet && !p.technicalSheetUrl
   );
   if(!missing.length)return;
+  let changed=false;
   for(const p of missing.slice(0,30)){
-    try{await enrichSelectedPhoto(p.id,true)}catch(e){console.warn("[Ritmonio V11.34 technical sheet refresh]",p.reference,e)}
+    try{
+      const docs=await fetchRitmonioDocuments(p);
+      if(docs?.technicalSheet?.url)changed=true;
+    }catch(e){console.warn("[Ritmonio V11.36 technical sheet refresh]",p.reference,e)}
   }
+  if(changed){saveState();renderRooms();}
 }
 
 async function refreshLegacyNicolazziV1131Images(){

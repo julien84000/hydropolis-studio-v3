@@ -14,6 +14,6 @@ vm.runInContext(server.slice(start,end),ctx);
 assert.equal(ctx.ritmonioArticleCodeFromUrl('https://www.ritmonio.it/it/bath-shower/prodotto/?code=057985_PR50AA201&family=57984'),'PR50AA201');
 assert.equal(ctx.ritmonioArticleCodeFromUrl('https://www.ritmonio.it/it/bath-shower/prodotto/?code=057985_PR50AF201&family=57984'),'PR50AF201');
 assert.notEqual(ctx.ritmonioArticleCodeFromUrl('https://www.ritmonio.it/it/bath-shower/prodotto/?code=057985_PR50AA201&family=57984'),'PR50AF201');
-assert(server.includes('exactByCode=links.find'),'Ritmonio resolver must prefer exact product code over broad card text');
+assert(server.includes('const exact=links.find(x=>String(x.articleCode||"").toUpperCase()===wanted)'),'Ritmonio resolver must prefer exact product code over broad card text');
 
-console.log('Ritmonio V11.35 resolver OK · PR50AF201 cannot resolve to PR50AA201');
+console.log('Ritmonio V11.36 resolver OK · PR50AF201 cannot resolve to PR50AA201');
