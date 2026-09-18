@@ -1,0 +1,20 @@
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const source=fs.readFileSync('server.js','utf8');
+const app=fs.readFileSync('public/app.js','utf8');
+
+assert(source.includes('const NICOLAZZI_DESIGNER_BASE="https://designertapwareco.com.au"'));
+assert(source.includes('/products/${slug}-z${model}'),'collection-aware model URL candidate missing');
+assert(source.includes('/search?q=${encodeURIComponent(model)}&type=product'),'Shopify model search fallback missing');
+assert(source.includes('product.vendor||""'));
+assert(source.includes('exactFinishImage'),'finish-specific commercial image selection missing');
+assert(source.includes('handleOptions'),'handle option extraction missing');
+assert(source.includes('finishOptions'),'finish option extraction missing');
+assert(source.includes('commercialSource:"Designer Tapware Co"'),'commercial source metadata missing');
+assert(source.includes('source:"designer-tapware-nicolazzi"'),'commercial image marker missing');
+assert(source.includes('source:"nicolazzi-pdf-catalog"'),'PDF fallback must remain');
+assert(source.includes('technicalSheet:commercial.datasheet'),'Designer datasheet bridge missing');
+assert(app.includes('@finish:${finish}'),'Nicolazzi client cache must be finish-aware');
+assert(app.includes('nicolazzi-options-slot'),'Nicolazzi visual options slot missing');
+assert(app.includes('Photo Nicolazzi · finition via pastille'),'generic finish swatch message missing');
+console.log('Nicolazzi V11.32 visual bridge OK · commercial photo + finish/handle options + official PDF fallback');

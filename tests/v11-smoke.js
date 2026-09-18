@@ -6,7 +6,7 @@ const root=path.resolve(__dirname,'..');
 const read=f=>fs.readFileSync(path.join(root,f),'utf8');
 const json=f=>{const p=path.join(root,f);const b=fs.readFileSync(p);return JSON.parse((/\.gz$/i.test(f)?zlib.gunzipSync(b):b).toString('utf8'))};
 
-assert.equal(json('package.json').version,'11.31.0');
+assert.equal(json('package.json').version,'11.32.0');
 for(const f of ['public/sw.js','public/manifest.webmanifest','public/manufacturers_manifest.json'])assert(fs.existsSync(path.join(root,f)),`${f} missing`);
 
 const manifest=json('public/catalog_manifest.json');
@@ -97,7 +97,7 @@ assert(lefroyRows.every(x=>x.purchaseDiscount===55),'Lefroy Brooks 55% supplier 
 // V11.24/V11.25 finish swatches are embedded for GitHub-safe deployment
 for(const code of ['CRL','IX','CRB','BLX','DOR','GOX','CHX','BRX','C03','C04','F31','F32','F33','F34','F36','F37','F45','F46']) assert(app.includes(`Ritmonio:${code}`),`missing embedded Ritmonio swatch ${code}`);
 assert(app.includes('SUPPLIER_FINISH_SWATCH_DATA'),'embedded supplier swatch map missing');
-assert(read('public/sw.js').includes('hydropolis-v11-31-shell'),'V11.31 SW cache missing');
+assert(read('public/sw.js').includes('hydropolis-v11-32-shell'),'V11.32 SW cache missing');
 
 // V11.25 Nicolazzi + Gessi
 const nicolazziRows=json('public/catalog_nicolazzi.json.gz');
@@ -158,4 +158,15 @@ assert(app.includes('Catalogue PDF Nicolazzi 2024'),'Nicolazzi PDF source badge 
 assert(server.includes('NICOLAZZI_PDF_ASSET_FILE'),'Nicolazzi PDF asset loader missing');
 assert(server.includes('app.get("/api/nicolazzi-pdf-asset"'),'Nicolazzi local asset endpoint missing');
 assert(server.includes('source:"nicolazzi-pdf-catalog"'),'Nicolazzi PDF-first server result missing');
-assert(server.includes('aucune image web ambiguë') || server.includes("aucune image web ambiguë"),'Nicolazzi ambiguous web fallback guard missing');
+assert(server.includes("Aucune photo commerciale Designer Tapware Co n'a été trouvée avec une correspondance de modèle sûre") || server.includes('aucune image web ambiguë'),'Nicolazzi safe visual fallback guard missing');
+
+
+// V11.32 Nicolazzi commercial visual bridge
+assert(app.includes('hydropolis-nicolazzi-designer-v132'),'Nicolazzi V11.32 cache migration missing');
+assert(app.includes('nicolazziVisualOptionsHtml'),'Nicolazzi handle/finish visual strip missing');
+assert(server.includes('NICOLAZZI_DESIGNER_BASE'),'Designer Tapware Nicolazzi bridge missing');
+assert(server.includes('designertapwareco.com.au') && server.includes('cdn.shopify.com'),'Designer Tapware/Shopify remote allowlist missing');
+assert(server.includes('resolveDesignerTapwareNicolazzi'),'Nicolazzi Designer Tapware resolver missing');
+assert(server.includes('parseDesignerTapwareProductPayload'),'Nicolazzi Shopify product parser missing');
+assert(server.includes('designer-tapware-nicolazzi'),'Nicolazzi commercial photo source marker missing');
+assert(server.includes('Drawing technique · catalogue Nicolazzi 2024'),'Official PDF drawing retention missing');

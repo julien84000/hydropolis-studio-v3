@@ -793,7 +793,7 @@ app.get("/api/catalog/search",requireAuth,async(req,res)=>{
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V11.31",
+  service:"Hydropolis Studio V11.32",
   database:USE_POSTGRES?"postgresql":"local-fallback",
   time:new Date().toISOString()
 }));
@@ -1282,6 +1282,146 @@ function nicolazziPdfAssetUrl(key){
   return `/api/nicolazzi-pdf-asset?base=${encodeURIComponent(String(key||""))}`;
 }
 
+
+// V11.32 — Designer Tapware visual bridge for Nicolazzi.
+// The official Nicolazzi PDF remains authoritative for references, prices and
+// technical drawings. Designer Tapware Co is used only for commercial product
+// photography, finish galleries and handle-option previews when a model can be
+// matched unambiguously.
+const NICOLAZZI_DESIGNER_BASE="https://designertapwareco.com.au";
+const NICOLAZZI_DESIGNER_TTL=12*60*60*1000;
+const nicolazziDesignerProductMemo=new Map();
+const nicolazziDesignerResolveMemo=new Map();
+function nicolazziDesignerSlug(value=""){
+  return String(value||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .toLowerCase().trim().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
+}
+function nicolazziDesignerModelCandidates(reference="",catalogBase=""){
+  const values=[catalogBase,reference,nicolazziRefBase(reference)].filter(Boolean).map(v=>String(v).toUpperCase());
+  const out=[];const add=v=>{v=String(v||"").replace(/^Z/i,"");if(/^\d{3,6}$/.test(v)&&!out.includes(v))out.push(v)};
+  for(const raw of values){
+    const stem=raw.split("..")[0].replace(/(?:CR|NL|OG|OS|OL|GO|COP|RG|SG|CB|NS|BN|NKN|TB|RA|FV|DB|DBM|BZ|AG|GB|GF|SE|RED|BLU|YE|HE|NEM|BIM|VP|PNK|ND|TY|RP|GRF)$/i,"");
+    for(const m of stem.match(/\d{3,6}/g)||[])add(m);
+  }
+  return out;
+}
+function nicolazziDesignerCollectionSlugs(collection=""){
+  const slug=nicolazziDesignerSlug(collection);const out=[];const add=v=>{if(v&&!out.includes(v))out.push(v)};
+  const map={
+    "agora":"agora","arena":"arena","monte-croce":"monte-croce","mac-kinley":"mac-kinley","mac-kinley-05":"mac-kinley",
+    "classico":"classico","classic":"classico","dames-anglaises":"classic-provincial","el-capitan":"classic-provincial"
+  };
+  add(map[slug]||slug);
+  // Designer Tapware groups several traditional Nicolazzi handle families under
+  // the "Classic Provincial" and "Classico" labels.
+  add("classico");add("classic-provincial");
+  return out;
+}
+function nicolazziDesignerCandidateUrls(reference="",catalogBase="",collection=""){
+  const models=nicolazziDesignerModelCandidates(reference,catalogBase);const slugs=nicolazziDesignerCollectionSlugs(collection);const out=[];
+  const add=u=>{if(u&&!out.includes(u))out.push(u)};
+  for(const model of models){
+    for(const slug of slugs){add(`${NICOLAZZI_DESIGNER_BASE}/products/${slug}-z${model}`);add(`${NICOLAZZI_DESIGNER_BASE}/products/${slug}-${model}`)}
+    add(`${NICOLAZZI_DESIGNER_BASE}/products/classico-${model}`);
+    add(`${NICOLAZZI_DESIGNER_BASE}/products/classic-provincial-z${model}`);
+  }
+  return out;
+}
+function normalizeDesignerImageUrl(value=""){
+  let u=String(value||"").trim();if(!u)return "";if(u.startsWith("//"))u="https:"+u;
+  return u.replace(/\{width\}/g,"1600").replace(/_(?:1200x|2100x)(?=\.)/i,"_1600x");
+}
+function designerFinishCode(value=""){
+  const m=String(value||"").toUpperCase().match(/\(([A-Z0-9]{2,5})\)/);return m?m[1]:"";
+}
+function nicolazziDesignerModelMatches(product,models=[]){
+  if(!product||!models.length)return false;
+  const $d=cheerio.load(String(product.description||""));
+  const text=normalizeToken(`${product.title||""} ${$d.text()} ${product.handle||""}`);
+  return models.some(m=>new RegExp(`(?:^|[^0-9])z?${m}(?:[^0-9]|$)`,`i`).test(text));
+}
+function parseDesignerTapwareProductPayload(product,productUrl,requestedFinish=""){
+  if(!product||!/^Nicolazzi$/i.test(String(product.vendor||"")))return null;
+  const images=(Array.isArray(product.images)?product.images:[]).map(normalizeDesignerImageUrl).filter(Boolean);
+  if(!images.length&&product.featured_image)images.push(normalizeDesignerImageUrl(product.featured_image));
+  const requested=String(requestedFinish||"").toUpperCase().trim();
+  const exactImage=images.find(u=>new RegExp(`[_-]${requested}(?:[_-]|\\.|\\?|$)`,`i`).test(decodeURIComponent(u)))||null;
+  const bestImage=exactImage||images[0]||"";
+  const options=Array.isArray(product.options)?product.options:[];
+  const variants=Array.isArray(product.variants)?product.variants:[];
+  const optionDefs=options.map((o,i)=>typeof o==="string"?{name:o,position:i+1,values:[]}:{name:o?.name||`Option ${i+1}`,position:Number(o?.position||i+1),values:Array.isArray(o?.values)?o.values:[]});
+  const finishDef=optionDefs.find(o=>/colour|color|finish/i.test(o.name));
+  const handleDef=optionDefs.find(o=>/handle|manette/i.test(o.name));
+  const variantOption=(v,pos)=>v?.[`option${pos}`]??(Array.isArray(v?.options)?v.options[pos-1]:"");
+  const variantImage=v=>normalizeDesignerImageUrl(v?.featured_image?.src||v?.featured_image||v?.featured_media?.preview_image?.src||"");
+  const uniqueByLabel=(items)=>{const seen=new Set();return items.filter(x=>{const k=String(x.label||"").trim().toLowerCase();if(!k||seen.has(k))return false;seen.add(k);return true})};
+  let finishOptions=[];
+  if(finishDef){
+    const values=finishDef.values.length?finishDef.values:variants.map(v=>variantOption(v,finishDef.position));
+    finishOptions=uniqueByLabel(values.filter(Boolean).map(label=>{
+      const code=designerFinishCode(label);const v=variants.find(x=>String(variantOption(x,finishDef.position))===String(label));
+      const byCode=code?images.find(u=>new RegExp(`[_-]${code}(?:[_-]|\\.|\\?|$)`,`i`).test(decodeURIComponent(u))):"";
+      return {label:String(label),code,image:variantImage(v)||byCode||""};
+    }));
+  }
+  let handleOptions=[];
+  if(handleDef){
+    const values=handleDef.values.length?handleDef.values:variants.map(v=>variantOption(v,handleDef.position));
+    handleOptions=uniqueByLabel(values.filter(Boolean).map(label=>{
+      const v=variants.find(x=>String(variantOption(x,handleDef.position))===String(label));
+      return {label:String(label).replace(/^\\\*/,'').trim(),code:String(label).match(/\\\*?([A-Z0-9]+)\b/i)?.[1]||"",image:variantImage(v)||bestImage};
+    }));
+  }
+  const $d=cheerio.load(String(product.description||""));
+  let datasheet="";
+  $d("a[href]").each((_,a)=>{if(datasheet)return;const href=absoluteUrl(productUrl,$d(a).attr("href"));const label=$d(a).text().trim();if(href&&(/download datasheet/i.test(label)||/\.pdf(?:\?|$)/i.test(href)))datasheet=href});
+  return {
+    productUrl,title:String(product.title||""),identityText:$d.text().replace(/\s+/g," ").trim(),
+    images,bestImage,exactFinishImage:!!exactImage,finishOptions,handleOptions,datasheet,
+    handle:String(product.handle||""),vendor:String(product.vendor||"")
+  };
+}
+async function fetchDesignerTapwareProduct(productUrl,requestedFinish=""){
+  const key=`${productUrl}|${String(requestedFinish||"").toUpperCase()}`;const hit=nicolazziDesignerProductMemo.get(key);
+  if(hit&&Date.now()-hit.at<NICOLAZZI_DESIGNER_TTL)return hit.data;
+  const jsUrl=productUrl.replace(/\/?$/,'')+".js";
+  const r=await safeRemoteGet(jsUrl,{timeout:12000,responseType:"text",headers:{"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/150 Safari/537.36","Accept":"application/json,text/plain,*/*"}});
+  let product=r.data;if(typeof product==="string")product=JSON.parse(product);
+  const parsed=parseDesignerTapwareProductPayload(product,productUrl,requestedFinish);
+  boundedMapSet(nicolazziDesignerProductMemo,key,{at:Date.now(),data:parsed},500);
+  return parsed;
+}
+async function resolveDesignerTapwareNicolazzi({reference="",catalogBase="",collection="",designation="",finishCode=""}){
+  const models=nicolazziDesignerModelCandidates(reference,catalogBase);if(!models.length)return null;
+  const memoKey=`${models.join(',')}|${nicolazziDesignerSlug(collection)}|${String(finishCode||"").toUpperCase()}`;
+  const memo=nicolazziDesignerResolveMemo.get(memoKey);if(memo&&Date.now()-memo.at<NICOLAZZI_DESIGNER_TTL)return memo.data;
+  const candidates=nicolazziDesignerCandidateUrls(reference,catalogBase,collection);
+  for(const url of candidates){
+    try{
+      const product=await fetchDesignerTapwareProduct(url,finishCode);
+      if(product&&nicolazziDesignerModelMatches({title:product.title,description:product.identityText,handle:product.handle},models)){
+        const out={...product,matchedModel:models.find(m=>new RegExp(`(?:^|[^0-9])z?${m}(?:[^0-9]|$)`,`i`).test(`${product.title} ${product.identityText} ${product.handle}`))||models[0]};
+        boundedMapSet(nicolazziDesignerResolveMemo,memoKey,{at:Date.now(),data:out},1000);return out;
+      }
+    }catch(e){if(Number(e.response?.status||0)!==404)console.warn("[nicolazzi-designer-candidate]",url,e.message)}
+  }
+  // Last resort: use Shopify search to discover a model URL, then validate the
+  // model number before accepting the product. This is only used once per model.
+  for(const model of models.slice(0,2)){
+    try{
+      const searchUrl=`${NICOLAZZI_DESIGNER_BASE}/search?q=${encodeURIComponent(model)}&type=product`;
+      const html=await fetchBrandPage(searchUrl,"en-AU,en;q=0.9");const $=cheerio.load(html);const links=[];
+      $("a[href*='/products/']").each((_,a)=>{const href=absoluteUrl(searchUrl,$(a).attr("href"));if(href&&/designertapwareco\.com\.au\/products\//i.test(href)&&!links.includes(href))links.push(href.split('?')[0])});
+      const cslug=nicolazziDesignerSlug(collection);
+      links.sort((a,b)=>Number(b.includes(cslug))-Number(a.includes(cslug)));
+      for(const url of links.slice(0,8)){
+        try{const product=await fetchDesignerTapwareProduct(url,finishCode);if(product&&nicolazziDesignerModelMatches({title:product.title,description:product.identityText,handle:product.handle},[model])){boundedMapSet(nicolazziDesignerResolveMemo,memoKey,{at:Date.now(),data:product},1000);return product}}catch{}
+      }
+    }catch(e){console.warn("[nicolazzi-designer-search]",model,e.message)}
+  }
+  boundedMapSet(nicolazziDesignerResolveMemo,memoKey,{at:Date.now(),data:null},1000);return null;
+}
+
 function nicolazziRefBase(reference=""){
   return String(reference||"").toUpperCase().trim()
     .replace(/(CR|NL|OG|OS|OL|GO|COP|RG|SG|CB|NS|BN|NKN|TB|RA|FV|DB|DBM|BZ|AG|GB|GF|SE|RED|BLU|YE|HE|NEM|BIM|VP|PNK|ND|TY|RP|GRF|BICOLORE)(?=[A-Z0-9]*$)/,'..');
@@ -1546,39 +1686,61 @@ async function scrapeManufacturerUncached({manufacturerUrl,reference,catalogBase
   const base=productBase(reference);
   const requested=String(finishCode||"").toUpperCase();
 
-  // V11.31 — Nicolazzi is catalogue-first. The official 2024 PDF is the
-  // authoritative visual/technical source because the public website is incomplete
-  // and its product-to-handle codification is not exhaustive. Each catalogue model
-  // has one local vector-derived visual shared by its finish variants.
+  // V11.32 — Nicolazzi hybrid mode. The official 2024 PDF remains the
+  // authoritative source for references and technical drawings. Designer Tapware Co
+  // is queried only for a model-verified commercial product photo and visual options.
   if(/^Nicolazzi$/i.test(String(manufacturer||"")) || /nicolazzi\.it/i.test(String(manufacturerUrl||""))){
     const asset=nicolazziPdfAsset(reference,catalogBase);
+    const local=asset?nicolazziPdfAssetUrl(asset.key):"";
+    const commercial=await resolveDesignerTapwareNicolazzi({reference,catalogBase:asset?.key||catalogBase,collection,designation,finishCode:requested});
+    if(commercial?.bestImage){
+      const imageItems=(commercial.images||[]).slice(0,12).map((url,i)=>({
+        url,source:"designer-tapware-nicolazzi",score:70000-i*10,
+        finishMatch:(i===0&&commercial.exactFinishImage)?"exact":"generic",
+        detectedFinishCode:(i===0&&commercial.exactFinishImage)?requested:null,
+        attributes:{commercialVisual:true,modelVerified:true,productUrl:commercial.productUrl}
+      }));
+      const best=imageItems.find(x=>x.url===commercial.bestImage)||imageItems[0];
+      if(best){best.finishMatch=commercial.exactFinishImage?"exact":"generic";best.detectedFinishCode=commercial.exactFinishImage?requested:null;}
+      const handleNote=asset?.externalHandleSelection
+        ?" Collection Festival : les codes de manettes du catalogue restent à préciser séparément à la commande."
+        :(asset?.handleCode?` Variante catalogue/manette ${asset.handleCode} conservée.`:"");
+      return {
+        manufacturerUrl:commercial.productUrl,
+        commercialSourceUrl:commercial.productUrl,
+        commercialSource:"Designer Tapware Co",
+        reference,finishCode:requested,finish,base:asset?.key||catalogBase||base,
+        best,images:imageItems,exactFound:commercial.exactFinishImage,
+        drawing:local?{url:local,type:"image",label:`Drawing technique · catalogue Nicolazzi 2024 · p.${asset.page}`,page:1}:null,
+        cadDrawing:null,
+        technicalSheet:commercial.datasheet?{url:commercial.datasheet,type:"pdf",label:"Fiche technique Nicolazzi · Designer Tapware Co",page:1}:null,
+        installationGuide:null,candidates:imageItems,
+        handleOptions:commercial.handleOptions||[],finishOptions:commercial.finishOptions||[],
+        galleryComplete:true,gallerySource:"Designer Tapware Co",
+        note:`Photo commerciale Nicolazzi issue de Designer Tapware Co et validée par le modèle ${commercial.matchedModel||"catalogue"}. ${commercial.exactFinishImage?`La finition ${requested} est illustrée par une photo correspondante.`:`La finition ${finish||requested||"sélectionnée"} reste représentée par la pastille Hydropolis.`}${local?` Drawing technique conservé depuis le catalogue officiel Nicolazzi 2024 (p.${asset.page}).`:""}${handleNote}`
+      };
+    }
     if(asset){
-      const local=nicolazziPdfAssetUrl(asset.key);
       const handleNote=asset.externalHandleSelection
         ?" Collection Festival : les codes de manettes sont à préciser séparément à la commande (ex. FEFF05 / FEFF06)."
         :(asset.handleCode?` Variante de collection/manette ${asset.handleCode} conservée depuis la codification du catalogue.`:"");
       const item={
-        url:local,
-        source:"nicolazzi-pdf-catalog",
-        score:50000,
-        finishMatch:"generic",
-        detectedFinishCode:null,
-        variationId:null,
+        url:local,source:"nicolazzi-pdf-catalog",score:50000,finishMatch:"generic",detectedFinishCode:null,variationId:null,
         attributes:{officialCatalogue:true,catalogBase:asset.key,page:asset.page,handleCode:asset.handleCode||"",externalHandleSelection:!!asset.externalHandleSelection}
       };
       return {
-        manufacturerUrl:manufacturerUrl||"https://www.nicolazzi.it/en/",
-        reference,finishCode:requested,finish,base:asset.key,
+        manufacturerUrl:manufacturerUrl||"https://www.nicolazzi.it/en/",reference,finishCode:requested,finish,base:asset.key,
         best:item,images:[item],exactFound:false,
         drawing:{url:local,type:"image",label:`Drawing technique · catalogue Nicolazzi 2024 · p.${asset.page}`,page:1},
-        cadDrawing:null,technicalSheet:null,installationGuide:null,candidates:[item],
-        note:`Visuel et drawing issus du catalogue PDF officiel Nicolazzi 2024 (page ${asset.page}). La finition ${finish||requested||"sélectionnée"} est représentée par la pastille Hydropolis.${handleNote}`
+        cadDrawing:null,technicalSheet:null,installationGuide:null,candidates:[item],handleOptions:[],finishOptions:[],
+        galleryComplete:true,gallerySource:"Catalogue PDF Nicolazzi 2024",
+        note:`Aucune photo commerciale Designer Tapware Co n'a été trouvée avec une correspondance de modèle sûre. Visuel/drawing de secours issu du catalogue PDF officiel Nicolazzi 2024 (page ${asset.page}). La finition ${finish||requested||"sélectionnée"} est représentée par la pastille Hydropolis.${handleNote}`
       };
     }
     return {
       manufacturerUrl:manufacturerUrl||"https://www.nicolazzi.it/en/",reference,finishCode:requested,finish,base:catalogBase||base,
-      best:null,images:[],exactFound:false,drawing:null,cadDrawing:null,technicalSheet:null,installationGuide:null,candidates:[],
-      note:"Référence Nicolazzi absente de l'index local du catalogue PDF 2024 ; aucune image web ambiguë n'est utilisée en remplacement."
+      best:null,images:[],exactFound:false,drawing:null,cadDrawing:null,technicalSheet:null,installationGuide:null,candidates:[],handleOptions:[],finishOptions:[],
+      note:"Référence Nicolazzi absente de l'index PDF et aucune photo Designer Tapware Co n'a pu être validée sans ambiguïté."
     };
   }
 
@@ -3652,7 +3814,7 @@ const REMOTE_HOST_SUFFIXES=[
   // image/file CDN hosts, not from coalbrookuk.co.uk itself. Keep the allowlist
   // deliberately narrow to Coalbrook-owned hostnames rather than all svdcdn.com.
   "coalbrook-bathrooms.transforms.svdcdn.com","coalbrook-bathrooms.files.svdcdn.com",
-  "catalano.it","recor.pt","amphoradesign.it","sanitairkamer.nl","ritmonio.it","nicolazzi.it","gessi.com","areapro.gessi.com","gwebassets.gessi.com","gessistorage.blob.core.windows.net",
+  "catalano.it","recor.pt","amphoradesign.it","sanitairkamer.nl","ritmonio.it","nicolazzi.it","designertapwareco.com.au","cdn.shopify.com","gessi.com","areapro.gessi.com","gwebassets.gessi.com","gessistorage.blob.core.windows.net",
   // Lefroy Brooks is hosted on Squarespace. Product imagery is served from
   // these dedicated CDN hosts while product pages/downloads stay on lefroybrooks.com.
   "images.squarespace-cdn.com","static1.squarespace.com","file.squarespace-cdn.com"
@@ -3906,7 +4068,7 @@ app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")))
 async function startServer(){
   try{
     await initPersistentStore();
-    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.31 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
+    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.32 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
   }catch(e){
     console.error("[Hydropolis] Démarrage impossible :",e);
     process.exit(1);

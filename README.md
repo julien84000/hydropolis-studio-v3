@@ -1,6 +1,6 @@
-# Hydropolis Studio V11.31
+# Hydropolis Studio V11.32
 
-Hydropolis Studio V11.31 est construit sur **V10.16**, la dernière base stable auditée, avec réintégration contrôlée des apports utiles de la branche V11.12. Il ne s'agit pas d'une réécriture : les projets par pièce, devis/remises/marges, dossier client A4, comptes utilisateurs, PostgreSQL/Supabase et connecteurs fabricants existants sont conservés.
+Hydropolis Studio V11.32 est construit sur **V10.16**, la dernière base stable auditée, avec réintégration contrôlée des apports utiles de la branche V11.12. Il ne s'agit pas d'une réécriture : les projets par pièce, devis/remises/marges, dossier client A4, comptes utilisateurs, PostgreSQL/Supabase et connecteurs fabricants existants sont conservés.
 
 ## Ce que V11.23 ajoute
 
@@ -26,7 +26,7 @@ Hydropolis Studio V11.31 est construit sur **V10.16**, la dernière base stable 
 
 ## Catalogues inclus
 
-La V11.31 livre **10 fabricants** : Amphora, Catalano, Coalbrook, Gessi, Hotbath, Lefroy Brooks, Nicolazzi, Recor, Ritmonio et Zucchetti, soit **68 600 lignes catalogue** et **68 596 couples fabricant/référence uniques**. Nicolazzi, Ritmonio et Gessi proviennent des sources tarifaires/catalogues validées ajoutées au projet ; aucun fabricant fictif n'est généré.
+Les données livrées couvrent **10 fabricants vérifiés** : Amphora, Catalano, Coalbrook, Gessi, Hotbath, Lefroy Brooks, Nicolazzi, Recor, Ritmonio et Zucchetti, soit **68 600 lignes** de catalogue et **68 596 références fabricant uniques**. Aucun fabricant n’est ajouté sans tarif/catalogue source validé.
 
 ## Vérifications
 
@@ -37,7 +37,7 @@ npm test
 npm start
 ```
 
-`npm run check` vérifie la syntaxe du serveur et de l'application. `npm test` contrôle les fichiers V11 essentiels, les **10 fabricants**, le volume catalogue, les fonctions structurantes (offline, recherche serveur, comparaison, exports et garde-fous serveur), le comportement Hotbath V11.30 et l'index local Nicolazzi V11.31.
+`npm run check` vérifie la syntaxe du serveur et de l'application. `npm test` contrôle les fichiers V11 essentiels, les 7 fabricants, le volume catalogue et les fonctions structurantes (offline, recherche serveur, comparaison, exports et garde-fous serveur).
 
 ## Déploiement
 
@@ -96,3 +96,8 @@ Les versions intermédiaires ont renforcé Nicolazzi, Zucchetti et Hotbath : cac
 Nicolazzi utilise désormais le tarif/catalogue PDF officiel 2024 comme source visuelle et technique principale. Un pack local compressé contient **481 modèles** couvrant les **15 023 variantes** du catalogue Nicolazzi. Les finitions d'un même modèle réutilisent le même visuel PDF avec leur pastille de finition, tandis que les suffixes de collection/manette (`..A1`, `..91`, etc.) restent distincts. Les familles à manettes séparées, notamment Festival, conservent leurs codes de manettes comme options de commande. Le site Nicolazzi n'est plus requis pour l'affichage normal des cartes.
 
 Le tarif reste majoré de **25 %** et la remise Hydropolis reste de **50 %**.
+
+
+## V11.32
+
+Nicolazzi passe en mode hybride : le PDF officiel 2024 reste la référence pour les codes, prix et drawings techniques, tandis que **Designer Tapware Co** est utilisé comme source visuelle secondaire vérifiée par modèle pour les photos commerciales, galeries de finitions et aperçus de manettes. En l'absence de correspondance sûre, le visuel PDF local de V11.31 reste le secours déterministe.
