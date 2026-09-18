@@ -1,6 +1,6 @@
 {
   "name": "Hydropolis Studio",
-  "version": "11.32.0",
+  "version": "11.33.0",
   "base": {
     "archive": "Hydropolis_Studio_V10.16_Update.zip",
     "sha256": "415242ad95036f7db3e76844ec2fea8a5c8d916c1a8c1617350847c32507d5cd"
@@ -49,7 +49,7 @@
     "behavior": "visual chooser for mandatory feet; local images are style references and are included with selected foot in client dossier",
     "offline": "assets included in service-worker shell cache"
   },
-  "releaseNotes": "RELEASE_NOTES_V11.32.md",
+  "releaseNotes": "RELEASE_NOTES_V11.33.md",
   "recorImagesV1119": {
     "priority": "exact Recor product page + WooCommerce full-resolution gallery anchors/data-large_image",
     "fallback": "no Recor home-page image fallback",
@@ -58,8 +58,8 @@
     "clientDossier": "bath dominant; selected feet as small visual; waste text-only",
     "pixelGuard": "when dimensions are measurable: max side >= 800 px and min side >= 500 px; otherwise reject thumbnail result"
   },
-  "build": "V11.32",
-  "notes": "Nicolazzi hybrid visual mode: official 2024 PDF remains authoritative for references and technical drawings; model-verified Designer Tapware Co commercial photography, finish galleries and handle previews are preferred when available, with PDF fallback.",
+  "build": "V11.33",
+  "notes": "Recor project-by-room UX: after feet/waste validation, only the selected configuration is shown; linked accessory rows are hidden and configuration can be edited in place.",
   "recorTechnicalPdfV1122": {
     "productPageSession": "open exact Recor product page first and reuse set-cookie session",
     "liveDrawingUrl": "refresh Technical drawing PDF href from official product page",

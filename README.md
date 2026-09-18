@@ -1,6 +1,6 @@
-# Hydropolis Studio V11.32
+# Hydropolis Studio V11.33
 
-Hydropolis Studio V11.32 est construit sur **V10.16**, la dernière base stable auditée, avec réintégration contrôlée des apports utiles de la branche V11.12. Il ne s'agit pas d'une réécriture : les projets par pièce, devis/remises/marges, dossier client A4, comptes utilisateurs, PostgreSQL/Supabase et connecteurs fabricants existants sont conservés.
+Hydropolis Studio V11.33 est construit sur **V10.16**, la dernière base stable auditée, avec réintégration contrôlée des apports utiles de la branche V11.12. Il ne s'agit pas d'une réécriture : les projets par pièce, devis/remises/marges, dossier client A4, comptes utilisateurs, PostgreSQL/Supabase et connecteurs fabricants existants sont conservés.
 
 ## Ce que V11.23 ajoute
 
@@ -101,3 +101,10 @@ Le tarif reste majoré de **25 %** et la remise Hydropolis reste de **50 %**.
 ## V11.32
 
 Nicolazzi passe en mode hybride : le PDF officiel 2024 reste la référence pour les codes, prix et drawings techniques, tandis que **Designer Tapware Co** est utilisé comme source visuelle secondaire vérifiée par modèle pour les photos commerciales, galeries de finitions et aperçus de manettes. En l'absence de correspondance sûre, le visuel PDF local de V11.31 reste le secours déterministe.
+
+
+## V11.33 — Recor : Projet par pièce simplifié
+- Après validation des pieds et du vidage, la liste complète des options Recor disparaît de « Projet par pièce ».
+- Seuls les pieds sélectionnés et le vidage sélectionné (ou « aucun vidage ») sont affichés sous la baignoire.
+- Les pieds et vidages liés ne sont plus affichés comme articles autonomes dans la pièce ; ils restent conservés dans le projet pour les prix, marges, devis et dossier client.
+- Un bouton « Modifier la configuration » rouvre le configurateur avec les choix actuels présélectionnés, sans dupliquer la baignoire.

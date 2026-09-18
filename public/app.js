@@ -1958,23 +1958,56 @@ function recorCompatibleWastes(p){
     return true;
   }).sort((a,b)=>String(a.designation).localeCompare(String(b.designation),"fr") || String(a.finish).localeCompare(String(b.finish),"fr"));
 }
+function isRecorBathLinkedAccessory(item,parentId=""){
+  if(!item || item.manufacturer!=="Recor" || !item.accessoryFor)return false;
+  if(parentId && item.accessoryFor!==parentId)return false;
+  if(item.collection==="Pieds Recor")return true;
+  if(item.collection==="Accessoires Recor"){
+    const t=normalizeText(`${item.designation||""} ${item.originalDescription||""}`);
+    return /vidage|waste/.test(t);
+  }
+  return false;
+}
 function recorFeetSelected(p){
   return state.selected.some(x=>x.roomId===p.roomId && x.accessoryFor===p.id && x.manufacturer==="Recor" && x.collection==="Pieds Recor");
 }
 function recorBathOptions(p,roomId){
   if(!isRecorBathRequiringFeet(p))return "";
   const model=recorModelName(p);
+  const linked=state.selected.filter(x=>x.roomId===roomId && x.accessoryFor===p.id && x.manufacturer==="Recor");
+  const selectedFeet=linked.filter(x=>x.collection==="Pieds Recor");
+  const selectedWastes=linked.filter(x=>{
+    if(x.collection!=="Accessoires Recor")return false;
+    return /vidage|waste/.test(normalizeText(`${x.designation||""} ${x.originalDescription||""}`));
+  });
+
+  // V11.33 — once the Recor configuration has been validated, the room view
+  // becomes a compact read-only summary. The full list of compatible feet/wastes
+  // is only shown while the bath is still incomplete.
+  if(selectedFeet.length){
+    const foot=selectedFeet[0];
+    const wasteSummary=selectedWastes.length
+      ? selectedWastes.map(x=>`<div class="recor-project-selected-row recor-project-waste"><span class="recor-project-selected-icon">↧</span><div><b>Vidage</b><span>${esc(recorOptionDisplay(x))}</span><small>${esc(x.reference)}</small></div><strong>${euro(articleMerchandisePrice(x))} HT</strong></div>`).join("")
+      : `<div class="recor-project-selected-row recor-project-waste"><span class="recor-project-selected-icon">—</span><div><b>Vidage</b><span>Aucun vidage sélectionné</span></div></div>`;
+    return `<div class="basin-accessories recor-bath-options recor-config-validated">
+      <div class="basin-accessories-head"><b>Configuration Recor ✓</b><span>Pieds et vidage validés pour ${esc(model||"cette baignoire")}.</span></div>
+      <div class="recor-project-selected-grid">
+        <div class="recor-project-selected-row recor-project-foot">${recorChoiceVisual(foot)}<div><b>Pieds</b><span>${esc(recorOptionDisplay(foot))}</span><small>${esc(foot.reference)}</small></div><strong>${euro(articleMerchandisePrice(foot))} HT</strong></div>
+        ${wasteSummary}
+      </div>
+      <div class="recor-project-selected-actions"><button type="button" class="tiny edit-recor-config" data-id="${esc(p.id)}" data-room="${esc(roomId)}">Modifier la configuration</button></div>
+    </div>`;
+  }
+
   const feet=recorCompatibleFeet(p), wastes=recorCompatibleWastes(p);
-  const linked=state.selected.filter(x=>x.roomId===roomId && x.accessoryFor===p.id);
   const selectedRefs=new Set(linked.map(x=>x.reference));
   const option=(item,required=false)=>`<div class="accessory-option recor-accessory-option">
     ${required?recorChoiceVisual(item):""}
     <div><b>${item.designation}</b><span>${item.finish||""} · ${item.reference}${item.imageSimulation?" · visuel de forme":""}</span></div>
     <div class="accessory-option-right"><strong>${euro(item.totalPrice)} HT</strong>${selectedRefs.has(item.reference)?`<span class="accessory-added">Sélectionné</span>`:`<button class="tiny add-accessory" data-ref="${item.reference}" data-room="${roomId}" data-parent="${p.id}">+ Choisir</button>`}</div>
   </div>`;
-  const hasFeet=recorFeetSelected(p);
-  return `<div class="basin-accessories recor-bath-options ${hasFeet?"":"required-missing"}">
-    <div class="basin-accessories-head"><b>Pieds Recor ${hasFeet?"✓":"— choix obligatoire"}</b><span>Choisir un jeu de pieds compatible avec ${model||"cette baignoire"}.</span></div>
+  return `<div class="basin-accessories recor-bath-options required-missing">
+    <div class="basin-accessories-head"><b>Pieds Recor — choix obligatoire</b><span>Choisir un jeu de pieds compatible avec ${model||"cette baignoire"}.</span></div>
     ${feet.length?feet.map(x=>option(x,true)).join(""):`<div class="accessory-option unavailable"><div><b>Pieds compatibles non identifiés</b><span>Vérifier le modèle Recor.</span></div></div>`}
     <div class="basin-accessories-head recor-option-head"><b>Vidage Recor</b><span>Suggestion optionnelle — ajoutée au dossier uniquement si sélectionnée.</span></div>
     ${wastes.length?wastes.map(x=>option(x,false)).join(""):`<div class="accessory-option unavailable"><div><b>Aucun vidage compatible identifié</b></div></div>`}
@@ -2072,26 +2105,32 @@ function commitSelectedRecords(records,{showProject=false}={}){
 
 function openRecorBathConfigurator(p,roomId){
   const targetRoomId=normalizedRoomId(roomId);
+  const selectedBath=p?.id?state.selected.find(x=>x.id===p.id && isRecorBathRequiringFeet(x)):null;
+  const editing=!!selectedBath;
+  const parentId=selectedBath?.id||"";
+  const existingLinked=editing?state.selected.filter(x=>isRecorBathLinkedAccessory(x,parentId)):[];
+  const existingFootRef=existingLinked.find(x=>x.collection==="Pieds Recor")?.reference||"";
+  const existingWasteRefs=new Set(existingLinked.filter(x=>x.collection==="Accessoires Recor").map(x=>x.reference));
   const model=recorModelName(p);
   const feet=recorCompatibleFeet(p);
   const wastes=recorCompatibleWastes(p);
   closeRecorConfigurator();
-  console.log("[Recor configurator data]",{reference:p.reference,roomId:targetRoomId,model,feet:feet.length,wastes:wastes.length});
+  console.log("[Recor configurator data]",{reference:p.reference,roomId:targetRoomId,model,editing,feet:feet.length,wastes:wastes.length});
 
   const overlay=document.createElement("div");
   overlay.id="recorConfigurator";
   overlay.className="recor-configurator-overlay";
   overlay.innerHTML=`<div class="recor-configurator" role="dialog" aria-modal="true" aria-labelledby="recorConfigTitle">
     <div class="recor-config-head">
-      <div><div class="eyebrow">Recor · configuration obligatoire</div><h2 id="recorConfigTitle">${p.designation}</h2><p>Choisissez les pieds avant d’ajouter la baignoire au projet. Le vidage reste optionnel.</p></div>
+      <div><div class="eyebrow">Recor · ${editing?"modifier la configuration":"configuration obligatoire"}</div><h2 id="recorConfigTitle">${p.designation}</h2><p>${editing?"Modifiez uniquement les options souhaitées. La baignoire reste dans le projet.":"Choisissez les pieds avant d’ajouter la baignoire au projet. Le vidage reste optionnel."}</p></div>
       <button type="button" class="icon recor-config-close" aria-label="Fermer">×</button>
     </div>
     <div class="recor-config-summary"><b>${euro(articleMerchandisePrice(p))} HT</b><span>Prix produit · port Recor géré dans « Port fournisseur »</span></div>
     <div class="recor-config-section">
       <div class="recor-config-title"><b>1. Pieds</b><span>Obligatoire — un seul choix</span></div>
       <div class="recor-choice-list">
-        ${feet.length?feet.map((x,i)=>`<label class="recor-choice required-choice recor-choice-visual">
-          <input type="radio" name="recorFeet" value="${x.reference}">
+        ${feet.length?feet.map(x=>`<label class="recor-choice required-choice recor-choice-visual">
+          <input type="radio" name="recorFeet" value="${x.reference}" ${existingFootRef===x.reference?"checked":""}>
           ${recorChoiceVisual(x)}
           <span class="recor-choice-main"><b>${recorOptionDisplay(x)}</b><small>${x.reference}${x.imageSimulation?" · forme illustrée, finition selon choix":""}</small></span>
           <strong>${euro(x.totalPrice)} HT</strong>
@@ -2102,7 +2141,7 @@ function openRecorBathConfigurator(p,roomId){
       <div class="recor-config-title"><b>2. Vidage</b><span>Optionnel — vous pouvez ne rien sélectionner</span></div>
       <div class="recor-choice-list optional-list">
         ${wastes.length?wastes.map(x=>`<label class="recor-choice">
-          <input type="checkbox" name="recorWaste" value="${x.reference}">
+          <input type="checkbox" name="recorWaste" value="${x.reference}" ${existingWasteRefs.has(x.reference)?"checked":""}>
           <span class="recor-choice-main"><b>${recorOptionDisplay(x)}</b><small>${x.reference}</small></span>
           <strong>${euro(x.totalPrice)} HT</strong>
         </label>`).join(''):`<div class="recor-no-choice">Aucun vidage compatible identifié.</div>`}
@@ -2111,7 +2150,7 @@ function openRecorBathConfigurator(p,roomId){
     <div class="recor-config-error" aria-live="polite"></div>
     <div class="recor-config-actions">
       <button type="button" class="btn ghost recor-config-cancel">Annuler</button>
-      <button type="button" class="btn primary recor-config-confirm" ${feet.length?'':'disabled'}>Ajouter baignoire + sélection</button>
+      <button type="button" class="btn primary recor-config-confirm" ${feet.length?'':'disabled'}>${editing?"Valider la configuration":"Ajouter baignoire + sélection"}</button>
     </div>
   </div>`;
   document.body.appendChild(overlay);
@@ -2120,6 +2159,7 @@ function openRecorBathConfigurator(p,roomId){
     reference:p.reference,
     roomId:targetRoomId,
     model,
+    editing,
     feet:feet.map(x=>x.reference),
     wastes:wastes.map(x=>x.reference)
   });
@@ -2147,37 +2187,39 @@ function openRecorBathConfigurator(p,roomId){
 
     err.textContent='';
     confirmBtn.disabled=true;
-    confirmBtn.textContent='Ajout en cours…';
+    confirmBtn.textContent=editing?'Mise à jour…':'Ajout en cours…';
     try{
-      // Atomic add: create the full Recor configuration before rendering/saving.
-      // This avoids the intermediate "bath without feet" state that could be
-      // overwritten or rejected by the project rendering/sync flow.
-      const bathRecord=createSelectedProductRecord(p,targetRoomId,"");
-      if(!bathRecord)throw new Error('La baignoire n’a pas pu être préparée.');
-      const footRecord=createSelectedProductRecord(foot,targetRoomId,bathRecord.id);
-      if(!footRecord)throw new Error('Les pieds n’ont pas pu être préparés.');
-      const wasteRecords=wastesSelected.map(x=>createSelectedProductRecord(x,targetRoomId,bathRecord.id)).filter(Boolean);
-
-      const ids=commitSelectedRecords([bathRecord,footRecord,...wasteRecords],{showProject:false});
-      if(!ids.length)throw new Error('La configuration n’a pas pu être ajoutée.');
-      console.log('[Recor configurator add]',{
-        bath:p.reference,
-        bathId:bathRecord.id,
-        foot:foot.reference,
-        wastes:wastesSelected.map(x=>x.reference),
-        roomId:targetRoomId
-      });
+      if(editing){
+        const footRecord=createSelectedProductRecord(foot,targetRoomId,parentId);
+        if(!footRecord)throw new Error('Les pieds n’ont pas pu être préparés.');
+        const wasteRecords=wastesSelected.map(x=>createSelectedProductRecord(x,targetRoomId,parentId)).filter(Boolean);
+        state.selected=state.selected.filter(x=>!isRecorBathLinkedAccessory(x,parentId));
+        const ids=commitSelectedRecords([footRecord,...wasteRecords],{showProject:false});
+        if(!ids.length)throw new Error('La configuration n’a pas pu être mise à jour.');
+        console.log('[Recor configurator update]',{bath:p.reference,bathId:parentId,foot:foot.reference,wastes:wastesSelected.map(x=>x.reference),roomId:targetRoomId});
+      }else{
+        // Atomic add: create the full Recor configuration before rendering/saving.
+        const bathRecord=createSelectedProductRecord(p,targetRoomId,"");
+        if(!bathRecord)throw new Error('La baignoire n’a pas pu être préparée.');
+        const footRecord=createSelectedProductRecord(foot,targetRoomId,bathRecord.id);
+        if(!footRecord)throw new Error('Les pieds n’ont pas pu être préparés.');
+        const wasteRecords=wastesSelected.map(x=>createSelectedProductRecord(x,targetRoomId,bathRecord.id)).filter(Boolean);
+        const ids=commitSelectedRecords([bathRecord,footRecord,...wasteRecords],{showProject:false});
+        if(!ids.length)throw new Error('La configuration n’a pas pu être ajoutée.');
+        console.log('[Recor configurator add]',{bath:p.reference,bathId:bathRecord.id,foot:foot.reference,wastes:wastesSelected.map(x=>x.reference),roomId:targetRoomId});
+      }
       closeRecorConfigurator();
       showView('project');
     }catch(e){
       console.error('[Recor configurator]',e);
-      err.textContent=e.message||'Impossible d’ajouter la configuration.';
+      err.textContent=e.message||'Impossible d’enregistrer la configuration.';
       confirmBtn.disabled=false;
-      confirmBtn.textContent='Ajouter baignoire + sélection';
+      confirmBtn.textContent=editing?'Valider la configuration':'Ajouter baignoire + sélection';
     }
   };
-  overlay.querySelector('input[name="recorFeet"]')?.focus();
+  overlay.querySelector('input[name="recorFeet"]:checked')?.focus() || overlay.querySelector('input[name="recorFeet"]')?.focus();
 }
+
 
 function addCatalogProduct(ref,roomId){
   const p=CATALOG.find(x=>x.reference===ref);
@@ -2780,7 +2822,7 @@ function roomProductImageHtml(p){
 
 function renderRoomsCore(){
  $("#roomsEditor").innerHTML=state.rooms.map((r,ri)=>{
-   let ps=state.selected.filter(p=>p.roomId===r.id);
+   let ps=state.selected.filter(p=>p.roomId===r.id && !isRecorBathLinkedAccessory(p));
    return `<article class="room-card">
    <div class="room-head"><input class="room-title" data-id="${r.id}" value="${esc(r.title)}"><input class="room-sub" data-id="${r.id}" value="${esc(r.subtitle||"")}" placeholder="Sous-titre / ambiance">
    <button class="btn ghost go-cat" data-id="${r.id}">+ Produit catalogue</button><button class="icon del-room" data-id="${r.id}">×</button></div>
@@ -2862,6 +2904,10 @@ function renderRoomsCore(){
      state.selected=state.selected.filter(x=>!(x.accessoryFor===b.dataset.parent && x.manufacturer==="Recor" && x.collection==="Pieds Recor"));
    }
    await addProduct(b.dataset.ref,b.dataset.room,b.dataset.parent||"");
+ }); $$(".edit-recor-config").forEach(b=>b.onclick=()=>{
+   const bath=state.selected.find(x=>x.id===b.dataset.id);
+   if(!bath)return;
+   openRecorBathConfigurator(bath,b.dataset.room||bath.roomId);
  });$$(".fallback-btn").forEach(b=>b.onclick=()=>useCatalogueFallback(b.dataset.id));$$(".enrich-btn").forEach(b=>b.onclick=()=>enrichSelectedPhoto(b.dataset.id,true));
  $$(".hotbath-web-selected").forEach(b=>b.onclick=()=>useHotbathWebImageForProduct(b.dataset.id,b));
  $$(".hotbath-sim-selected").forEach(b=>b.onclick=()=>simulateHotbathFinishForProduct(b.dataset.id,b));

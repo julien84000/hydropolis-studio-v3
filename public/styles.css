@@ -2749,3 +2749,59 @@ main{background:transparent}
 .nicolazzi-finish-chip{display:inline-flex;align-items:center;justify-content:center;min-width:25px;height:20px;padding:0 5px;border:1px solid #e2ddd5;border-radius:999px;background:#fff;font-size:8px;font-weight:700;color:#6a645d}
 .nicolazzi-finish-chip.active{border-color:#b98536;background:#f5e9d5;color:#7b531f}
 @media(max-width:900px){.nicolazzi-option-label{min-width:46px}.nicolazzi-handle-chip{max-width:64px}}
+
+
+/* =========================================================
+   V11.33 — Recor : configuration validée compacte dans Projet par pièce
+   ========================================================= */
+.recor-config-validated{
+  border-color:#d8c7aa;
+  background:#fbf8f2;
+}
+.recor-project-selected-grid{
+  display:grid;
+  gap:8px;
+  padding-top:8px;
+}
+.recor-project-selected-row{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:10px;
+  padding:9px 10px;
+  border:1px solid #e8dfd2;
+  border-radius:10px;
+  background:#fff;
+}
+.recor-project-selected-row>.recor-choice-thumb{
+  width:54px;
+  height:54px;
+}
+.recor-project-selected-row>div{
+  display:grid;
+  gap:2px;
+  min-width:0;
+}
+.recor-project-selected-row b{font-size:12px}
+.recor-project-selected-row span{font-size:10px;color:#5f5a53}
+.recor-project-selected-row small{font-size:9px;color:#8a8379}
+.recor-project-selected-row strong{font-size:11px;white-space:nowrap}
+.recor-project-selected-icon{
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:#f2ede5;
+  color:#8a6d42!important;
+  font-size:16px!important;
+}
+.recor-project-selected-actions{
+  display:flex;
+  justify-content:flex-end;
+  padding-top:9px;
+}
+@media(max-width:700px){
+  .recor-project-selected-row{grid-template-columns:auto minmax(0,1fr)}
+  .recor-project-selected-row>strong{grid-column:2}
+}
