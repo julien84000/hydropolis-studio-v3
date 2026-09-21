@@ -1,6 +1,10 @@
-# Hydropolis Studio V11.40
+# Hydropolis Studio V11.41
 
-Hydropolis Studio V11.40 est construit sur **V11.39**. Il conserve les projets par pièce, devis/remises/marges, dossier client A4, comptes utilisateurs, PostgreSQL/Supabase et connecteurs fabricants existants.
+Hydropolis Studio V11.41 est construit sur **V11.40**. Il conserve les projets par pièce, devis/remises/marges, dossier client A4, comptes utilisateurs, PostgreSQL/Supabase et connecteurs fabricants existants.
+
+## V11.41 — ajout des résultats serveur au projet
+
+Les cartes provenant de la recherche fédérée serveur peuvent désormais être ajoutées au projet immédiatement, même si leur gros fichier catalogue local `.json.gz` n’a pas encore fini de se charger dans le navigateur. Le bouton « Ajouter à … » transporte la clé fabricant + référence et le résolveur cherche à la fois dans le catalogue local et dans les résultats serveur. Le même correctif couvre les ajouts depuis Favoris et Comparateur, ainsi que « Actualiser la photo » sur ces cartes.
 
 ## V11.40 — images automatiques dans les projets
 

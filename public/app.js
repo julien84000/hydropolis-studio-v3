@@ -1193,8 +1193,8 @@ async function searchHotbathWebImage(p){
   if(!r.ok)throw new Error(data.detail||data.error||"Recherche web impossible");
   return data;
 }
-async function useHotbathWebImageForCatalog(reference,button){
-  const p=CATALOG.find(x=>x.reference===reference);if(!p)return;
+async function useHotbathWebImageForCatalog(reference,button,key=""){
+  const p=productFromCatalogSources(reference,key);if(!p)return;
   const old=button.textContent;button.disabled=true;button.textContent="Recherche web…";
   try{
     const data=await searchHotbathWebImage(p);
@@ -1310,8 +1310,8 @@ async function simulateHotbathFinishForProduct(id,button){
   saveState();renderRooms();renderSelection();
 }
 
-async function lookupCatalogPhoto(reference,button){
-  const p=CATALOG.find(x=>x.reference===reference);
+async function lookupCatalogPhoto(reference,button,key=""){
+  const p=productFromCatalogSources(reference,key);
   if(!p)return;
   const card=button.closest(".result");
   const thumb=$(".catalog-thumb",card);
@@ -1659,6 +1659,15 @@ function availabilityInfo(p){
 function productFromCompareKey(key){
   return CATALOG.find(p=>productKey(p)===key) || serverSearchRows.find(p=>productKey(p)===key) || null;
 }
+function productFromCatalogSources(ref,key=""){
+  const wantedKey=String(key||"");
+  if(wantedKey){
+    const keyed=CATALOG.find(p=>productKey(p)===wantedKey) || serverSearchRows.find(p=>productKey(p)===wantedKey);
+    if(keyed)return keyed;
+  }
+  const wantedRef=String(ref||"");
+  return CATALOG.find(p=>p.reference===wantedRef) || serverSearchRows.find(p=>p.reference===wantedRef) || null;
+}
 function dashboardProductImage(p){
   if(!p)return "";
   const c=cachedManufacturerImage(p);
@@ -1706,7 +1715,7 @@ function renderDashboardEcosystem(){
       const img=dashboardProductImage(p),key=productKey(p),fav=favoriteRefs.has(key);
       spot.innerHTML=`<div class="dashboard-spotlight-media">${img?`<img src="${esc(img)}" alt="${esc(p.reference)}">`:""}<button class="dashboard-heart ${fav?"active":""}" data-fav-key="${esc(key)}">${fav?"♥":"♡"}</button></div><div class="dashboard-spotlight-copy"><div class="eyebrow">${esc(p.manufacturer)}</div><h3>${esc(p.collection||p.reference)}</h3><p>${esc(p.designation||"")}</p><small>${esc(p.finish||"")}</small><div class="dashboard-spotlight-actions"><strong>${euro(catalogDisplayPrice(p))} HT</strong><button class="btn primary" id="dashboardSpotlightAdd">Ajouter au projet</button></div></div>`;
       const favBtn=spot.querySelector("[data-fav-key]");if(favBtn)favBtn.onclick=()=>toggleFavorite(key);
-      const add=spot.querySelector("#dashboardSpotlightAdd");if(add)add.onclick=()=>addCatalogProduct(p.reference,$("#targetRoom")?.value||state.rooms[0]?.id||"");
+      const add=spot.querySelector("#dashboardSpotlightAdd");if(add)add.onclick=()=>addCatalogProduct(p.reference,$("#targetRoom")?.value||state.rooms[0]?.id||"",key);
     }
   }
   if($("#dashboardProjectName"))$("#dashboardProjectName").textContent=String(state.project?.name||"Projet sans nom").trim()||"Projet sans nom";
@@ -1717,10 +1726,10 @@ function favoriteProductRows(){return [...favoriteRefs].map(productFromCompareKe
 function renderFavoritesView(){
   const host=$("#favoritesGrid");if(!host)return;
   const rows=favoriteProductRows();
-  host.innerHTML=rows.map(p=>{const img=dashboardProductImage(p),key=productKey(p),avail=availabilityInfo(p);return `<article class="favorite-card"><div class="favorite-media">${img?`<img src="${esc(img)}" alt="">`:""}<button class="dashboard-heart active favorite-remove" data-key="${esc(key)}">♥</button></div><div class="favorite-copy"><div class="eyebrow">${esc(p.manufacturer)}</div><h3>${esc(p.reference)}</h3><p>${esc(p.designation||"")}</p><small>${esc(p.finish||"")}</small><div class="availability ${avail.cls}">${esc(avail.label)}</div><div class="favorite-actions"><strong>${euro(catalogDisplayPrice(p))} HT</strong><button class="btn ghost favorite-compare" data-key="${esc(key)}">Comparer</button><button class="btn primary favorite-add" data-ref="${esc(p.reference)}">Ajouter</button></div></div></article>`}).join("")||'<div class="empty favorites-empty">Aucun favori pour le moment. Ajoutez des produits depuis le catalogue.</div>';
+  host.innerHTML=rows.map(p=>{const img=dashboardProductImage(p),key=productKey(p),avail=availabilityInfo(p);return `<article class="favorite-card"><div class="favorite-media">${img?`<img src="${esc(img)}" alt="">`:""}<button class="dashboard-heart active favorite-remove" data-key="${esc(key)}">♥</button></div><div class="favorite-copy"><div class="eyebrow">${esc(p.manufacturer)}</div><h3>${esc(p.reference)}</h3><p>${esc(p.designation||"")}</p><small>${esc(p.finish||"")}</small><div class="availability ${avail.cls}">${esc(avail.label)}</div><div class="favorite-actions"><strong>${euro(catalogDisplayPrice(p))} HT</strong><button class="btn ghost favorite-compare" data-key="${esc(key)}">Comparer</button><button class="btn primary favorite-add" data-ref="${esc(p.reference)}" data-key="${esc(key)}">Ajouter</button></div></div></article>`}).join("")||'<div class="empty favorites-empty">Aucun favori pour le moment. Ajoutez des produits depuis le catalogue.</div>';
   $$(".favorite-remove",host).forEach(b=>b.onclick=()=>toggleFavorite(b.dataset.key));
   $$(".favorite-compare",host).forEach(b=>b.onclick=()=>toggleCompare(b.dataset.key));
-  $$(".favorite-add",host).forEach(b=>b.onclick=()=>addCatalogProduct(b.dataset.ref,$("#targetRoom")?.value||state.rooms[0]?.id||""));
+  $$(".favorite-add",host).forEach(b=>b.onclick=()=>addCatalogProduct(b.dataset.ref,$("#targetRoom")?.value||state.rooms[0]?.id||"",b.dataset.key||""));
 }
 function renderCompareView(){
   const host=$("#compareViewGrid");if(!host)return;
@@ -1729,8 +1738,8 @@ function renderCompareView(){
   const columns=items.length;
   const row=(label,fn)=>`<div class="compare-view-label">${esc(label)}</div>${items.map(p=>`<div class="compare-view-cell">${fn(p)}</div>`).join("")}`;
   host.style.setProperty("--compare-columns",columns);
-  host.innerHTML=`<div class="compare-view-table" style="--compare-columns:${columns}">${row("Produit",p=>{const img=dashboardProductImage(p);return `<div class="compare-view-product">${img?`<img src="${esc(img)}" alt="">`:""}<b>${esc(p.manufacturer)}</b><strong>${esc(p.reference)}</strong><small>${esc(p.designation||"")}</small></div>`})}${row("Prix public HT",p=>`<strong class="compare-price">${euro(catalogDisplayPrice(p))}</strong>`)}${row("Collection",p=>esc(p.collection||"—"))}${row("Finition",p=>esc(p.finish||"—"))}${row("Catégorie",p=>esc(p.category||"—"))}${row("Disponibilité",p=>esc(availabilityInfo(p).label))}${row("Action",p=>`<button class="btn primary compare-view-add" data-ref="${esc(p.reference)}">Ajouter au projet</button>`)}</div>`;
-  $$(".compare-view-add",host).forEach(b=>b.onclick=()=>addCatalogProduct(b.dataset.ref,$("#targetRoom")?.value||state.rooms[0]?.id||""));
+  host.innerHTML=`<div class="compare-view-table" style="--compare-columns:${columns}">${row("Produit",p=>{const img=dashboardProductImage(p);return `<div class="compare-view-product">${img?`<img src="${esc(img)}" alt="">`:""}<b>${esc(p.manufacturer)}</b><strong>${esc(p.reference)}</strong><small>${esc(p.designation||"")}</small></div>`})}${row("Prix public HT",p=>`<strong class="compare-price">${euro(catalogDisplayPrice(p))}</strong>`)}${row("Collection",p=>esc(p.collection||"—"))}${row("Finition",p=>esc(p.finish||"—"))}${row("Catégorie",p=>esc(p.category||"—"))}${row("Disponibilité",p=>esc(availabilityInfo(p).label))}${row("Action",p=>`<button class="btn primary compare-view-add" data-ref="${esc(p.reference)}" data-key="${esc(productKey(p))}">Ajouter au projet</button>`)}</div>`;
+  $$(".compare-view-add",host).forEach(b=>b.onclick=()=>addCatalogProduct(b.dataset.ref,$("#targetRoom")?.value||state.rooms[0]?.id||"",b.dataset.key||""));
 }
 function openDashboardSearch(){
   const input=$("#dashboardSearchInput"),value=String(input?.value||"").trim();
@@ -1763,11 +1772,11 @@ function openCompareModal(){
   const min=prices.length?Math.min(...prices):null;
   const row=(label,fn,opts={})=>`<div class="compare-cell compare-label">${esc(label)}</div>${items.map(p=>{const v=fn(p);const best=opts.bestPrice&&catalogDisplayPrice(p)===min?" compare-best":"";return `<div class="compare-cell${best}">${v}</div>`}).join("")}`;
   modal.style.setProperty("--compare-count",items.length);
-  modal.innerHTML=`<div class="compare-sheet"><div class="compare-head"><div><div class="eyebrow">Comparatif produits</div><h2>${items.length} références côte à côte</h2></div><button class="btn ghost" id="closeCompareBtn">Fermer</button></div><div class="compare-grid" style="--compare-count:${items.length}">${row("Produit",p=>{const c=cachedManufacturerImage(p),img=c?.src||p.image||"";return `<div class="compare-product">${img?`<img src="${esc(img)}" alt="">`:""}<strong>${esc(p.manufacturer)} · ${esc(p.reference)}</strong><small>${esc(p.designation)}</small></div>`})}${row("Prix public HT",p=>`<span class="compare-price">${euro(catalogDisplayPrice(p))}</span>`,{bestPrice:true})}${row("Collection",p=>esc(p.collection||"—"))}${row("Finition",p=>esc(p.finish||"—"))}${row("Catégorie",p=>esc(p.category||"—"))}${row("Disponibilité",p=>esc(availabilityInfo(p).label))}${row("Source tarif",p=>esc([p.source,p.sourceYear].filter(Boolean).join(" · ")||"—"))}${row("Action",p=>`<button class="btn primary compare-add" data-ref="${esc(p.reference)}">Ajouter au projet</button>`)}</div></div>`;
+  modal.innerHTML=`<div class="compare-sheet"><div class="compare-head"><div><div class="eyebrow">Comparatif produits</div><h2>${items.length} références côte à côte</h2></div><button class="btn ghost" id="closeCompareBtn">Fermer</button></div><div class="compare-grid" style="--compare-count:${items.length}">${row("Produit",p=>{const c=cachedManufacturerImage(p),img=c?.src||p.image||"";return `<div class="compare-product">${img?`<img src="${esc(img)}" alt="">`:""}<strong>${esc(p.manufacturer)} · ${esc(p.reference)}</strong><small>${esc(p.designation)}</small></div>`})}${row("Prix public HT",p=>`<span class="compare-price">${euro(catalogDisplayPrice(p))}</span>`,{bestPrice:true})}${row("Collection",p=>esc(p.collection||"—"))}${row("Finition",p=>esc(p.finish||"—"))}${row("Catégorie",p=>esc(p.category||"—"))}${row("Disponibilité",p=>esc(availabilityInfo(p).label))}${row("Source tarif",p=>esc([p.source,p.sourceYear].filter(Boolean).join(" · ")||"—"))}${row("Action",p=>`<button class="btn primary compare-add" data-ref="${esc(p.reference)}" data-key="${esc(productKey(p))}">Ajouter au projet</button>`)}</div></div>`;
   modal.classList.remove("hidden");modal.setAttribute("aria-hidden","false");
   $("#closeCompareBtn").onclick=()=>{modal.classList.add("hidden");modal.setAttribute("aria-hidden","true")};
   modal.onclick=e=>{if(e.target===modal)$("#closeCompareBtn").click()};
-  $$(".compare-add",modal).forEach(b=>b.onclick=()=>addCatalogProduct(b.dataset.ref,$("#targetRoom")?.value||state.rooms[0]?.id));
+  $$(".compare-add",modal).forEach(b=>b.onclick=()=>addCatalogProduct(b.dataset.ref,$("#targetRoom")?.value||state.rooms[0]?.id,b.dataset.key||""));
 }
 function similarityWords(value){return new Set(String(value||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").split(/[^a-z0-9]+/).filter(w=>w.length>3));}
 function smartAlternativesFor(p,limit=5){
@@ -1788,10 +1797,10 @@ function showSuggestionsForKey(key){
   const p=productFromCompareKey(key);const panel=$("#smartSuggestionPanel");if(!p||!panel)return;
   const alts=smartAlternativesFor(p,5);
   panel.classList.remove("hidden");
-  panel.innerHTML=`<div class="smart-suggestion-head"><div><div class="eyebrow">Suggestions intelligentes</div><b>Alternatives à ${esc(p.manufacturer)} ${esc(p.reference)}</b></div><button class="tiny" id="closeSuggestions">Fermer</button></div><div class="smart-suggestion-grid">${alts.map(x=>{const c=cachedManufacturerImage(x),img=c?.src||x.image||"";return `<div class="smart-alt">${img?`<img src="${esc(img)}" alt="">`:`<div></div>`}<div><strong>${esc(x.manufacturer)} · ${esc(x.reference)}</strong><small>${esc(x.designation)} · ${euro(catalogDisplayPrice(x))} HT</small><div class="smart-alt-actions"><button class="btn ghost alt-compare" data-key="${esc(productKey(x))}">Comparer</button><button class="btn primary alt-add" data-ref="${esc(x.reference)}">Ajouter</button></div></div></div>`}).join("")||"<div class=\"empty\">Aucune alternative assez proche dans les catalogues chargés.</div>"}</div>`;
+  panel.innerHTML=`<div class="smart-suggestion-head"><div><div class="eyebrow">Suggestions intelligentes</div><b>Alternatives à ${esc(p.manufacturer)} ${esc(p.reference)}</b></div><button class="tiny" id="closeSuggestions">Fermer</button></div><div class="smart-suggestion-grid">${alts.map(x=>{const c=cachedManufacturerImage(x),img=c?.src||x.image||"";return `<div class="smart-alt">${img?`<img src="${esc(img)}" alt="">`:`<div></div>`}<div><strong>${esc(x.manufacturer)} · ${esc(x.reference)}</strong><small>${esc(x.designation)} · ${euro(catalogDisplayPrice(x))} HT</small><div class="smart-alt-actions"><button class="btn ghost alt-compare" data-key="${esc(productKey(x))}">Comparer</button><button class="btn primary alt-add" data-ref="${esc(x.reference)}" data-key="${esc(productKey(x))}">Ajouter</button></div></div></div>`}).join("")||"<div class=\"empty\">Aucune alternative assez proche dans les catalogues chargés.</div>"}</div>`;
   $("#closeSuggestions").onclick=()=>panel.classList.add("hidden");
   $$(".alt-compare",panel).forEach(b=>b.onclick=()=>toggleCompare(b.dataset.key));
-  $$(".alt-add",panel).forEach(b=>b.onclick=()=>addCatalogProduct(b.dataset.ref,$("#targetRoom")?.value||state.rooms[0]?.id));
+  $$(".alt-add",panel).forEach(b=>b.onclick=()=>addCatalogProduct(b.dataset.ref,$("#targetRoom")?.value||state.rooms[0]?.id,b.dataset.key||""));
 }
 function currentSearchSignature(){
   return JSON.stringify({q:$("#searchInput")?.value||"",manufacturer:$("#manufacturerFilter")?.value||"",collection:$("#collectionFilter")?.value||"",category:$("#categoryFilter")?.value||"",finish:$("#finishFilter")?.value||""});
@@ -1906,16 +1915,16 @@ function renderCatalog(){
    results.innerHTML=rows.slice(0,120).map(p=>{
      const cached=cachedManufacturerImage(p),finishLabel=exactFinishLabel(p)||"",price=catalogDisplayPrice(p),key=productKey(p),avail=availabilityInfo(p),compared=compareRefs.has(key),favorite=favoriteRefs.has(key);
      const catalogVisual=cached?.src||p.image||gessiDirectOfficialImage(p)||((Array.isArray(p.images)&&p.images[0])||"");
-     return `<article class="result v11-product-card" data-key="${esc(key)}">${catalogThumbHtml(p,catalogVisual,finishLabel,favorite,cached)}<div><div class="r-top"><span class="ref">${esc(p.reference)}</span><span class="badge">${esc(p.manufacturer)}</span><span class="badge">${esc(p.collection)}</span><span class="badge">${esc(p.category)}</span></div><div class="designation">${esc(p.designation)}</div><div class="meta">${esc(p.finish||"")}</div><div class="availability ${avail.cls}">${esc(avail.label)}</div><div class="manufacturer-tools v11-resource-tools"><button class="tiny lookup-photo" data-ref="${esc(p.reference)}">${cached||p.image?"Actualiser la photo":"Photo fabricant"}</button>${hotbathNeedsFinishFallback(p,cached)?`<button class="tiny hotbath-web-photo" data-ref="${esc(p.reference)}">Finition web</button>`:""}${p.manufacturerUrl?`<a class="source-link" target="_blank" rel="noopener" href="${esc(cached?.resolvedManufacturerUrl||p.manufacturerUrl)}">Fiche ↗</a>`:""}${cached?.technicalSheetUrl?`<a class="source-link" target="_blank" rel="noopener" href="${esc(cached.technicalSheetUrl)}">Technique ↗</a>`:""}</div><div class="photo-status">${cached?`<b>${esc(imageBadge(cached,p))}</b>`:p.image?`<b>${esc(p.imageSource||"Visuel catalogue")}</b>`:`Source tarif : ${esc(p.source||"catalogue fabricant")}`}</div>${/^Nicolazzi$/i.test(String(p.manufacturer||""))?`<div class="nicolazzi-options-slot">${nicolazziVisualOptionsHtml(p,cached)}</div>`:""}<div class="card-action-row"><button class="suggest-toggle" data-key="${esc(key)}">Alternatives</button><button class="compare-toggle ${compared?"active":""}" data-key="${esc(key)}">${compared?"✓ Comparé":"Comparer"}</button></div></div><div class="price-box"><small class="v11-price-label">Prix public</small><div class="price">${euro(price)} HT</div>${p.internalReference?`<div class="internal">Ext. ${euro(p.price)} + ${esc(p.internalReference)} ${euro(p.internalPrice)}</div>`:`<div class="internal">${esc(p.sourceYear?`Tarif ${p.sourceYear}`:"Référence complète")}</div>`}${isRecorBathRequiringFeet(p)?`<div class="internal recor-config-hint"><b>Pieds obligatoires</b> · choix à l’ajout</div>`:""}<button class="btn primary add" data-ref="${esc(p.reference)}" style="margin-top:9px">${isRecorBathRequiringFeet(p)?"Configurer + ajouter":"Ajouter à "+esc(room?.title||"la pièce")}</button></div></article>`;
+     return `<article class="result v11-product-card" data-key="${esc(key)}">${catalogThumbHtml(p,catalogVisual,finishLabel,favorite,cached)}<div><div class="r-top"><span class="ref">${esc(p.reference)}</span><span class="badge">${esc(p.manufacturer)}</span><span class="badge">${esc(p.collection)}</span><span class="badge">${esc(p.category)}</span></div><div class="designation">${esc(p.designation)}</div><div class="meta">${esc(p.finish||"")}</div><div class="availability ${avail.cls}">${esc(avail.label)}</div><div class="manufacturer-tools v11-resource-tools"><button class="tiny lookup-photo" data-ref="${esc(p.reference)}" data-key="${esc(key)}">${cached||p.image?"Actualiser la photo":"Photo fabricant"}</button>${hotbathNeedsFinishFallback(p,cached)?`<button class="tiny hotbath-web-photo" data-ref="${esc(p.reference)}" data-key="${esc(key)}">Finition web</button>`:""}${p.manufacturerUrl?`<a class="source-link" target="_blank" rel="noopener" href="${esc(cached?.resolvedManufacturerUrl||p.manufacturerUrl)}">Fiche ↗</a>`:""}${cached?.technicalSheetUrl?`<a class="source-link" target="_blank" rel="noopener" href="${esc(cached.technicalSheetUrl)}">Technique ↗</a>`:""}</div><div class="photo-status">${cached?`<b>${esc(imageBadge(cached,p))}</b>`:p.image?`<b>${esc(p.imageSource||"Visuel catalogue")}</b>`:`Source tarif : ${esc(p.source||"catalogue fabricant")}`}</div>${/^Nicolazzi$/i.test(String(p.manufacturer||""))?`<div class="nicolazzi-options-slot">${nicolazziVisualOptionsHtml(p,cached)}</div>`:""}<div class="card-action-row"><button class="suggest-toggle" data-key="${esc(key)}">Alternatives</button><button class="compare-toggle ${compared?"active":""}" data-key="${esc(key)}">${compared?"✓ Comparé":"Comparer"}</button></div></div><div class="price-box"><small class="v11-price-label">Prix public</small><div class="price">${euro(price)} HT</div>${p.internalReference?`<div class="internal">Ext. ${euro(p.price)} + ${esc(p.internalReference)} ${euro(p.internalPrice)}</div>`:`<div class="internal">${esc(p.sourceYear?`Tarif ${p.sourceYear}`:"Référence complète")}</div>`}${isRecorBathRequiringFeet(p)?`<div class="internal recor-config-hint"><b>Pieds obligatoires</b> · choix à l’ajout</div>`:""}<button class="btn primary add" data-ref="${esc(p.reference)}" data-key="${esc(key)}" style="margin-top:9px">${isRecorBathRequiringFeet(p)?"Configurer + ajouter":"Ajouter à "+esc(room?.title||"la pièce")}</button></div></article>`;
    }).join("")||`<div class="empty">Aucun résultat.</div>`;
-   $$(".add",results).forEach(b=>b.onclick=()=>{try{addCatalogProduct(b.dataset.ref,$("#targetRoom")?.value||state.rooms[0]?.id||"")}catch(e){alert(`Impossible d’ajouter cet article : ${e.message||"erreur inconnue"}`)}});
-   $$(".lookup-photo",results).forEach(b=>b.onclick=()=>lookupCatalogPhoto(b.dataset.ref,b));
-   $$(".hotbath-web-photo",results).forEach(b=>b.onclick=()=>useHotbathWebImageForCatalog(b.dataset.ref,b));
+   $$(".add",results).forEach(b=>b.onclick=()=>{try{addCatalogProduct(b.dataset.ref,$("#targetRoom")?.value||state.rooms[0]?.id||"",b.dataset.key||"")}catch(e){alert(`Impossible d’ajouter cet article : ${e.message||"erreur inconnue"}`)}});
+   $$(".lookup-photo",results).forEach(b=>b.onclick=()=>lookupCatalogPhoto(b.dataset.ref,b,b.dataset.key||""));
+   $$(".hotbath-web-photo",results).forEach(b=>b.onclick=()=>useHotbathWebImageForCatalog(b.dataset.ref,b,b.dataset.key||""));
    $$(".compare-toggle",results).forEach(b=>b.onclick=()=>toggleCompare(b.dataset.key));
    $$(".favorite-toggle",results).forEach(b=>b.onclick=()=>toggleFavorite(b.dataset.key));
    $$(".suggest-toggle",results).forEach(b=>b.onclick=()=>showSuggestionsForKey(b.dataset.key));
    $$(".catalog-cached-image",results).forEach(img=>img.onerror=()=>{
-     const card=img.closest(".result[data-key]"),p=CATALOG.find(x=>productKey(x)===card?.dataset.key);
+     const card=img.closest(".result[data-key]"),p=productFromCompareKey(card?.dataset.key||"");
      const wrap=img.closest(".catalog-thumb");
      if(wrap){img.closest(".product-visual-frame")?.remove();if(!wrap.querySelector(".photo-missing"))wrap.insertAdjacentHTML("beforeend",`<div class="photo-missing"><b>Photo indisponible</b><br>${esc(p?.finish||"")}</div>${finishSwatchBadgeHtml(p)}`)}
      if(p)enqueueAutomaticImage(p);
@@ -2328,10 +2337,11 @@ function openRecorBathConfigurator(p,roomId){
 }
 
 
-function addCatalogProduct(ref,roomId){
-  const p=CATALOG.find(x=>x.reference===ref);
+function addCatalogProduct(ref,roomId,key=""){
+  const p=productFromCatalogSources(ref,key);
   if(!p){
-    console.warn("[catalog add] référence introuvable",ref);
+    console.warn("[catalog add] référence introuvable",{ref,key});
+    toast("Article introuvable dans le catalogue chargé");
     return;
   }
   const targetRoomId=normalizedRoomId(roomId);
@@ -2340,11 +2350,11 @@ function addCatalogProduct(ref,roomId){
     openRecorBathConfigurator(p,targetRoomId);
     return;
   }
-  addProduct(ref,targetRoomId);
+  addProduct(ref,targetRoomId,"",key);
 }
 
-async function addProduct(ref,roomId,parentId=""){
-  const p=CATALOG.find(x=>x.reference===ref);if(!p)return null;
+async function addProduct(ref,roomId,parentId="",key=""){
+  const p=productFromCatalogSources(ref,key);if(!p)return null;
   const record=createSelectedProductRecord(p,roomId,parentId);
   if(!record)return null;
   commitSelectedRecords([record]);

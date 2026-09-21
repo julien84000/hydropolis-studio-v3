@@ -1,6 +1,6 @@
 {
   "name": "Hydropolis Studio",
-  "version": "11.40.0",
+  "version": "11.41.0",
   "base": {
     "archive": "Hydropolis_Studio_V10.16_Update.zip",
     "sha256": "415242ad95036f7db3e76844ec2fea8a5c8d916c1a8c1617350847c32507d5cd"
@@ -49,7 +49,7 @@
     "behavior": "visual chooser for mandatory feet; local images are style references and are included with selected foot in client dossier",
     "offline": "assets included in service-worker shell cache"
   },
-  "releaseNotes": "RELEASE_NOTES_V11.40.md",
+  "releaseNotes": "RELEASE_NOTES_V11.41.md",
   "recorImagesV1119": {
     "priority": "exact Recor product page + WooCommerce full-resolution gallery anchors/data-large_image",
     "fallback": "no Recor home-page image fallback",
@@ -58,8 +58,8 @@
     "clientDossier": "bath dominant; selected feet as small visual; waste text-only",
     "pixelGuard": "when dimensions are measurable: max side >= 800 px and min side >= 500 px; otherwise reject thumbnail result"
   },
-  "build": "V11.40",
-  "notes": "Every catalogue item committed to a project now starts its manufacturer-image lookup automatically in a bounded background queue.",
+  "build": "V11.41",
+  "notes": "Server-search result cards can be added to projects before the corresponding local gzip catalogue has finished loading.",
   "recorTechnicalPdfV1122": {
     "productPageSession": "open exact Recor product page first and reuse set-cookie session",
     "liveDrawingUrl": "refresh Technical drawing PDF href from official product page",
@@ -187,5 +187,17 @@
     "catalogRows": 36303,
     "modelAssets": 1089,
     "validation": "multi-column price groups mapped to explicit handle codes; public price remains list price × 1.25"
+  },
+  "catalogServerAddV1141": {
+    "problem": "federated server results were rendered before large local catalog chunks finished loading, but addProduct resolved only against CATALOG",
+    "fix": "unified local + serverSearchRows resolver keyed by manufacturer|reference",
+    "coveredActions": [
+      "catalog add",
+      "favorites add",
+      "compare add",
+      "catalog photo refresh",
+      "Hotbath web photo"
+    ],
+    "behavior": "clicking a second-row/server result adds the exact displayed product immediately"
   }
 }
