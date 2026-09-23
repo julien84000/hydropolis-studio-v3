@@ -1,0 +1,17 @@
+{
+  "name": "Hydropolis Studio V11.42 GitHub Patch",
+  "base_version": "11.40.0",
+  "target_version": "11.42.0",
+  "base_commit": "5be697dc941916c49eb5d89c3f2c368fb161ab50",
+  "repository": "julien84000/hydropolis-studio-v3",
+  "features": [
+    "native product quantity 1..999",
+    "manual item quantity",
+    "quantity-aware financials/quote/Excel",
+    "Recor linked accessory quantity synchronization",
+    "client dossier quantity display",
+    "server-only product session cache",
+    "finish-simulation SSRF hardening",
+    "public stale backend cleanup"
+  ]
+}
