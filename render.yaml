@@ -3,6 +3,6 @@ services:
     name: hydropolis-studio-v3
     runtime: node
     plan: free
-    buildCommand: npm install
+    buildCommand: node apply-v11.42-from-v11.41.js && npm install && npm run check && node tests/v11.42-quantity.js
     startCommand: npm start
     healthCheckPath: /api/health
