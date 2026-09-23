@@ -1,11 +1,12 @@
 {
-  "name": "Hydropolis Studio V11.42 AUTO DEPLOY",
-  "base": "11.41.0",
-  "target": "11.42.0",
-  "purpose": "Auto-apply quantity feature during Render build",
-  "upload_to_repository_root": [
-    "apply-v11.42-from-v11.41.js",
-    "render.yaml"
-  ],
-  "verified_against_github_main": "9d98ed1be9c8600778e328ae0e7df908e216d7ca"
+  "name": "Hydropolis Studio V11.42 Quantity Hotfix",
+  "target_version": "11.42.0",
+  "mode": "self-applying before npm start",
+  "does_not_depend_on_render_build_command": true,
+  "required_root_files": [
+    "package.json",
+    "render.yaml",
+    "apply-v11.42-hotfix.js",
+    "apply-v11.42-from-v11.41.js"
+  ]
 }
