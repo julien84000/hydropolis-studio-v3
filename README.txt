@@ -1,49 +1,40 @@
-HYDROPOLIS STUDIO V11.44 — MISE EN PAGE CLIENT MODIFIABLE
+HYDROPOLIS STUDIO V11.44 — FINAL FIX
 
-Base
-----
-V11.42 V4 quantité + V11.43 devis modifiable.
+Cause de l'échec visible dans Render
+-------------------------------------
+Le fichier apply-v11.44-layout.js actuellement dans GitHub est encore l'ancienne version.
+Il cherche un bloc contenant :
+  const qty=itemQuantity(p);
+qui n'existe plus dans la sortie réelle de la V11.43.
 
-Nouveautés V11.44
------------------
-Dans « Présentation client » :
-- bouton « Modifier la mise en page »
-- déplacement des blocs produits à la souris
-- redimensionnement largeur + hauteur
-- déplacement/redimensionnement du titre de page
-- déplacement/redimensionnement du texte d’introduction
-- grille visuelle légère et aimantation
-- verrouillage individuel d’un bloc
-- réinitialisation de la page visible
-- réinitialisation de toute la présentation
-- positions/dimensions sauvegardées avec le projet
-- le PDF reprend exactement la disposition personnalisée
-- poignées et contours d’édition invisibles dans le PDF
+Render s'arrête donc sur :
+  V11.44 — identifiant bloc produit: attendu 1 bloc, trouvé 0
 
-Photos automatiques
--------------------
-Quand un bloc produit change de taille :
-- la zone photo se redimensionne automatiquement
-- l’image conserve ses proportions (object-fit: contain)
-- aucune déformation de produit
-- la zone texte s’adapte au bloc
-- les tailles de texte s’ajustent dans une plage contrôlée
+Le fichier inclus ici est le FIX2 corrigé.
+
+Important
+---------
+N'utilise PAS apply-v11.44-interaction-fix.js dans le Build Command.
+Le FIX2 intègre déjà les corrections de déplacement/redimensionnement :
+- géométrie forcée avec !important ;
+- neutralisation du placement CSS grid ;
+- déplacement des blocs ;
+- redimensionnement des blocs ;
+- redimensionnement automatique de la zone image ;
+- object-fit: contain pour garder les proportions ;
+- adaptation de la zone texte.
 
 Installation
 ------------
-1. Ajouter à la racine GitHub :
+1. Remplacer à la racine GitHub :
    apply-v11.44-layout.js
 
-2. Conserver :
-   apply-v11.42-native.js
-   apply-v11.43-quote.js
-
-3. Render > Build Command :
+2. Build Command Render EXACT :
    node apply-v11.42-native.js && node apply-v11.43-quote.js && node apply-v11.44-layout.js && npm install
 
-4. Render > Start Command :
+3. Start Command :
    node server.js
 
-5. Manual Deploy > Clear build cache & deploy
+4. Manual Deploy > Clear build cache & deploy
 
-6. Puis Cmd + Shift + R.
+5. Puis Cmd + Shift + R.

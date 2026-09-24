@@ -1,22 +1,14 @@
 {
-  "name": "Hydropolis Studio V11.44 Presentation Layout",
-  "target_version": "11.44.0",
-  "requires": [
-    "apply-v11.42-native.js V4",
-    "apply-v11.43-quote.js"
-  ],
+  "name": "Hydropolis Studio V11.44 FINAL FIX",
+  "replacement_file": "apply-v11.44-layout.js",
+  "remove_from_build_command": "apply-v11.44-interaction-fix.js",
   "build_command": "node apply-v11.42-native.js && node apply-v11.43-quote.js && node apply-v11.44-layout.js && npm install",
   "start_command": "node server.js",
-  "features": [
-    "drag product blocks",
-    "resize product blocks",
-    "move and resize page heading and intro",
-    "snap grid",
-    "lock block",
-    "reset current page",
-    "reset all presentation layout",
-    "persist layout in local and cloud project state",
-    "PDF keeps custom geometry",
-    "automatic photo resizing to block dimensions"
+  "fixes": [
+    "V11.43 boardItemHtml anchor corrected",
+    "legacy !important geometry override fixed",
+    "drag enabled",
+    "resize enabled",
+    "image automatically fits resized block"
   ]
 }
