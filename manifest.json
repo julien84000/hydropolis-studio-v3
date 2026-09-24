@@ -1,7 +1,12 @@
 {
-  "name": "Hydropolis Studio V11.42 Quantity V2",
+  "name": "Hydropolis Studio V11.42 Quantity V3",
   "file": "apply-v11.42-native.js",
+  "exact_bug_fixed": "$(\".room-product\").forEach -> $$(\".room-product\").forEach",
+  "renderer_hardening": [
+    "designation string",
+    "technicalSheetUrl string",
+    "leadTime string"
+  ],
   "build_command": "node apply-v11.42-native.js && npm install",
-  "start_command": "node server.js",
-  "fix": "quantity enhancer moved outside renderer try/catch; works with normal and fallback cards"
+  "start_command": "node server.js"
 }

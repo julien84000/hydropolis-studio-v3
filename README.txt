@@ -1,23 +1,27 @@
-HYDROPOLIS STUDIO V11.42 — QUANTITY V2
+HYDROPOLIS STUDIO V11.42 — QUANTITY V3
 
-CE FICHIER REMPLACE le précédent apply-v11.42-native.js.
+BUG TROUVÉ ET CORRIGÉ
+---------------------
+La V2 contenait :
+  $(".room-product").forEach(...)
 
-Pourquoi l'affichage simplifié apparaissait
--------------------------------------------
-Le précédent patch exécutait l'ajout de quantité DANS le même try/catch que
-renderRoomsCore(). Si l'ajout quantité rencontrait une erreur, l'application
-pensait que le renderer principal avait échoué et basculait en affichage simplifié.
+Or dans Hydropolis :
+  $  = querySelector     -> 1 seul élément
+  $$ = querySelectorAll  -> liste d'éléments
 
-V2 corrige cela :
-- renderRoomsCore() reste inchangé ;
-- l'ajout de quantité s'exécute après ;
-- une erreur de quantité ne peut plus déclencher le fallback ;
-- le contrôle Qté fonctionne aussi sur les cartes du fallback.
+Donc .forEach() plantait et aucune quantité ne pouvait apparaître.
 
-Installation
+V3 utilise bien :
+  $$(".room-product").forEach(...)
+
+V3 ajoute aussi trois protections sur les anciennes données projet
+(désignation, URL de fiche technique, délai) qui pouvaient faire basculer
+le renderer en affichage simplifié.
+
+INSTALLATION
 ------------
-1. GitHub, racine :
-   remplacer uniquement apply-v11.42-native.js
+1. Remplacer à la racine GitHub :
+   apply-v11.42-native.js
 
 2. Render Build Command :
    node apply-v11.42-native.js && npm install
@@ -27,7 +31,8 @@ Installation
 
 4. Manual Deploy > Clear build cache & deploy
 
-5. Actualisation forcée navigateur : Cmd + Shift + R
+5. Cmd + Shift + R
 
-Résultat attendu :
-Qté [-] [1] [+] dans chaque article.
+Si un produit provoque encore l'affichage simplifié, la bannière affichera
+désormais le vrai message d'erreur sous le texte. Il ne sera plus nécessaire
+de deviner la cause.
