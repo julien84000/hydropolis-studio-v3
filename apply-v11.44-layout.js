@@ -88,10 +88,8 @@ app=replaceOnce(app,
 
 app=replaceOnce(app,
 ` const priceValue=Math.max(0,Number(p.totalPrice??p.price)||0);
- const qty=itemQuantity(p);
  return \`<article class="board-item board-item-\${idx+1}">`,
 ` const priceValue=Math.max(0,Number(p.totalPrice??p.price)||0);
- const qty=itemQuantity(p);
  const layoutId=esc(String(p.id||((p.roomId||"room")+"-"+idx)));
  return \`<article class="board-item board-item-\${idx+1}" data-layout-block="item:\${layoutId}">`,
 "identifiant bloc produit");
