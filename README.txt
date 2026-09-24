@@ -1,36 +1,49 @@
-HYDROPOLIS STUDIO V11.44 — FIX2 DÉPLACEMENT / REDIMENSIONNEMENT
+HYDROPOLIS STUDIO V11.44 — MISE EN PAGE CLIENT MODIFIABLE
 
-Cause exacte
-------------
-Les styles historiques de Présentation client utilisent !important :
-- position: relative !important
-- width/height: auto !important
-- placement grid !important
-
-La première V11.44 appliquait des styles normaux, donc Chrome les ignorait.
-Les poignées étaient visibles mais le bloc ne bougeait pas réellement.
-
-FIX2
+Base
 ----
-- position/left/top/width/height forcés avec priorité !important
-- grid-column/grid-row neutralisés lors d'une personnalisation
-- déplacement opérationnel
-- redimensionnement opérationnel
-- zone image recalculée avec la taille du bloc
-- zone texte recalculée
-- images conservées en proportions via object-fit: contain
-- contrôles d'édition placés au-dessus des visuels
+V11.42 V4 quantité + V11.43 devis modifiable.
+
+Nouveautés V11.44
+-----------------
+Dans « Présentation client » :
+- bouton « Modifier la mise en page »
+- déplacement des blocs produits à la souris
+- redimensionnement largeur + hauteur
+- déplacement/redimensionnement du titre de page
+- déplacement/redimensionnement du texte d’introduction
+- grille visuelle légère et aimantation
+- verrouillage individuel d’un bloc
+- réinitialisation de la page visible
+- réinitialisation de toute la présentation
+- positions/dimensions sauvegardées avec le projet
+- le PDF reprend exactement la disposition personnalisée
+- poignées et contours d’édition invisibles dans le PDF
+
+Photos automatiques
+-------------------
+Quand un bloc produit change de taille :
+- la zone photo se redimensionne automatiquement
+- l’image conserve ses proportions (object-fit: contain)
+- aucune déformation de produit
+- la zone texte s’adapte au bloc
+- les tailles de texte s’ajustent dans une plage contrôlée
 
 Installation
 ------------
-Remplacer uniquement à la racine GitHub :
-apply-v11.44-layout.js
+1. Ajouter à la racine GitHub :
+   apply-v11.44-layout.js
 
-Build Command Render :
-node apply-v11.42-native.js && node apply-v11.43-quote.js && node apply-v11.44-layout.js && npm install
+2. Conserver :
+   apply-v11.42-native.js
+   apply-v11.43-quote.js
 
-Start Command :
-node server.js
+3. Render > Build Command :
+   node apply-v11.42-native.js && node apply-v11.43-quote.js && node apply-v11.44-layout.js && npm install
 
-Puis Manual Deploy > Clear build cache & deploy
-et Cmd + Shift + R.
+4. Render > Start Command :
+   node server.js
+
+5. Manual Deploy > Clear build cache & deploy
+
+6. Puis Cmd + Shift + R.

@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 "use strict";
-// V11.44_LAYOUT_FIX2 — geometry priority fix
 
 const fs=require("fs");
 const path=require("path");
@@ -89,8 +88,10 @@ app=replaceOnce(app,
 
 app=replaceOnce(app,
 ` const priceValue=Math.max(0,Number(p.totalPrice??p.price)||0);
+ const qty=itemQuantity(p);
  return \`<article class="board-item board-item-\${idx+1}">`,
 ` const priceValue=Math.max(0,Number(p.totalPrice??p.price)||0);
+ const qty=itemQuantity(p);
  const layoutId=esc(String(p.id||((p.roomId||"room")+"-"+idx)));
  return \`<article class="board-item board-item-\${idx+1}" data-layout-block="item:\${layoutId}">`,
 "identifiant bloc produit");
@@ -134,24 +135,16 @@ function presentationLayoutGeometry(el,parent){
   const er=el.getBoundingClientRect(),pr=parent.getBoundingClientRect();
   return {x:er.left-pr.left,y:er.top-pr.top,w:er.width,h:er.height,pw:pr.width,ph:pr.height};
 }
-function presentationLayoutApplyBox(el,x,y,w,h,unit="px"){
-  el.dataset.layoutCustom="1";
-  el.style.setProperty("position","absolute","important");
-  el.style.setProperty("inset","auto","important");
-  el.style.setProperty("left",x+unit,"important");
-  el.style.setProperty("top",y+unit,"important");
-  el.style.setProperty("width",w+unit,"important");
-  el.style.setProperty("height",h+unit,"important");
-  el.style.setProperty("right","auto","important");
-  el.style.setProperty("bottom","auto","important");
-  el.style.setProperty("grid-column","auto","important");
-  el.style.setProperty("grid-row","auto","important");
-  el.style.setProperty("display","block","important");
-  el.style.setProperty("transform","none","important");
-}
 function presentationLayoutMakeAbsolute(el,parent){
   const g=presentationLayoutGeometry(el,parent);
-  presentationLayoutApplyBox(el,g.x,g.y,g.w,g.h,"px");
+  el.style.position="absolute";
+  el.style.left=g.x+"px";
+  el.style.top=g.y+"px";
+  el.style.width=g.w+"px";
+  el.style.height=g.h+"px";
+  el.style.right="auto";
+  el.style.bottom="auto";
+  el.style.transform="none";
   return g;
 }
 function presentationLayoutSaveGeometry(el){
@@ -173,7 +166,15 @@ function presentationLayoutSaveGeometry(el){
 function applyPresentationLayoutGeometry(el,rec){
   const parent=presentationLayoutParent(el);
   if(!parent||!rec||![rec.x,rec.y,rec.w,rec.h].every(Number.isFinite))return;
-  presentationLayoutApplyBox(el,rec.x,rec.y,rec.w,rec.h,"%");
+  el.style.position="absolute";
+  el.style.left=rec.x+"%";
+  el.style.top=rec.y+"%";
+  el.style.width=rec.w+"%";
+  el.style.height=rec.h+"%";
+  el.style.right="auto";
+  el.style.bottom="auto";
+  el.style.transform="none";
+  el.dataset.layoutCustom="1";
   syncPresentationBlockMedia(el);
 }
 function syncPresentationBlockMedia(el){
@@ -192,32 +193,16 @@ function syncPresentationBlockMedia(el){
   copy.style.minHeight="0";
   const measured=Math.max(38,copy.scrollHeight+6);
   const copyH=Math.min(rect.height*.46,measured);
-  el.style.setProperty("--layout-copy-height",copyH+"px");
-
-  copy.style.setProperty("position","absolute","important");
-  copy.style.setProperty("left","0","important");
-  copy.style.setProperty("right","0","important");
-  copy.style.setProperty("bottom","0","important");
-  copy.style.setProperty("top","auto","important");
-  copy.style.setProperty("height",copyH+"px","important");
-  copy.style.setProperty("min-height","0","important");
-  copy.style.setProperty("overflow","hidden","important");
-
-  visual.style.setProperty("position","absolute","important");
-  visual.style.setProperty("left","0","important");
-  visual.style.setProperty("right","0","important");
-  visual.style.setProperty("top","0","important");
-  visual.style.setProperty("bottom",copyH+"px","important");
-  visual.style.setProperty("height","auto","important");
-  visual.style.setProperty("min-height","0","important");
-  visual.style.setProperty("overflow","hidden","important");
+  copy.style.height=copyH+"px";
+  copy.style.overflow="hidden";
+  visual.style.bottom=copyH+"px";
 
   visual.querySelectorAll("img").forEach(img=>{
-    img.style.setProperty("width","100%","important");
-    img.style.setProperty("height","100%","important");
-    img.style.setProperty("max-width","100%","important");
-    img.style.setProperty("max-height","100%","important");
-    img.style.setProperty("object-fit","contain","important");
+    img.style.width="100%";
+    img.style.height="100%";
+    img.style.maxWidth="100%";
+    img.style.maxHeight="100%";
+    img.style.objectFit="contain";
   });
 }
 function presentationLayoutAttachObserver(el){
@@ -265,8 +250,8 @@ function presentationLayoutBindPointer(el,control,mode){
         const y=presentationLayoutSnap(
           presentationLayoutClamp(start.y+dy,minY,start.ph-start.h)
         );
-        el.style.setProperty("left",x+"px","important");
-        el.style.setProperty("top",y+"px","important");
+        el.style.left=x+"px";
+        el.style.top=y+"px";
       }else{
         const w=presentationLayoutSnap(
           presentationLayoutClamp(start.w+dx,minW,start.pw-start.x)
@@ -274,8 +259,8 @@ function presentationLayoutBindPointer(el,control,mode){
         const h=presentationLayoutSnap(
           presentationLayoutClamp(start.h+dy,minH,start.ph-start.y)
         );
-        el.style.setProperty("width",w+"px","important");
-        el.style.setProperty("height",h+"px","important");
+        el.style.width=w+"px";
+        el.style.height=h+"px";
         el.dataset.layoutCustom="1";
         syncPresentationBlockMedia(el);
       }
@@ -452,7 +437,7 @@ css+=`
 .presentation-layout-editing #document .layout-editable-block{outline:1.5px dashed rgba(185,138,77,.75)!important;outline-offset:2px}
 .presentation-layout-editing #document .layout-editable-block.layout-locked{outline-color:rgba(90,90,90,.45)!important}
 .presentation-layout-editing #document .board-item:hover{transform:none!important;filter:none!important}
-#document .layout-controls{position:absolute;right:2px;top:2px;z-index:999;display:flex;gap:3px;pointer-events:auto}
+#document .layout-controls{position:absolute;right:2px;top:2px;z-index:70;display:flex;gap:3px;pointer-events:auto}
 #document .layout-controls button{width:24px;height:24px;border:1px solid rgba(185,138,77,.5);border-radius:6px;background:rgba(255,255,255,.94);padding:0;display:grid;place-items:center;font-size:12px;cursor:pointer;box-shadow:0 2px 7px rgba(0,0,0,.08)}
 #document .layout-drag-handle{cursor:grab!important;touch-action:none}
 #document .layout-resize-handle{cursor:nwse-resize!important;touch-action:none}
