@@ -1,6 +1,7 @@
 {
-  "file_to_upload": "apply-v11.42-native.js",
-  "build_command": "node apply-v11.42-native.js && yarn install",
+  "name": "Hydropolis Studio V11.42 Quantity V2",
+  "file": "apply-v11.42-native.js",
+  "build_command": "node apply-v11.42-native.js && npm install",
   "start_command": "node server.js",
-  "note": "Do not use the older apply-v11.42-hotfix.js"
+  "fix": "quantity enhancer moved outside renderer try/catch; works with normal and fallback cards"
 }

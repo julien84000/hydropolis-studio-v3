@@ -1,20 +1,33 @@
-HYDROPOLIS V11.42 — BUILD FIX
+HYDROPOLIS STUDIO V11.42 — QUANTITY V2
 
-Important :
-Le dépôt GitHub contient encore l'ancien apply-v11.42-hotfix.js.
-N'écrase plus ce fichier.
+CE FICHIER REMPLACE le précédent apply-v11.42-native.js.
 
-1. Ajouter à la RACINE du dépôt ce nouveau fichier :
-   apply-v11.42-native.js
+Pourquoi l'affichage simplifié apparaissait
+-------------------------------------------
+Le précédent patch exécutait l'ajout de quantité DANS le même try/catch que
+renderRoomsCore(). Si l'ajout quantité rencontrait une erreur, l'application
+pensait que le renderer principal avait échoué et basculait en affichage simplifié.
 
-2. Vérifier qu'un nouveau commit GitHub a bien été créé.
+V2 corrige cela :
+- renderRoomsCore() reste inchangé ;
+- l'ajout de quantité s'exécute après ;
+- une erreur de quantité ne peut plus déclencher le fallback ;
+- le contrôle Qté fonctionne aussi sur les cartes du fallback.
 
-3. Dans Render > Settings > Build Command, mettre exactement :
-   node apply-v11.42-native.js && yarn install
+Installation
+------------
+1. GitHub, racine :
+   remplacer uniquement apply-v11.42-native.js
 
-4. Start Command :
+2. Render Build Command :
+   node apply-v11.42-native.js && npm install
+
+3. Render Start Command :
    node server.js
 
-5. Manual Deploy > Clear build cache & deploy
+4. Manual Deploy > Clear build cache & deploy
 
-Le nom unique évite toute confusion avec les anciens patchs V11.42.
+5. Actualisation forcée navigateur : Cmd + Shift + R
+
+Résultat attendu :
+Qté [-] [1] [+] dans chaque article.

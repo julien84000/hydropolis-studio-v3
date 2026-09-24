@@ -3,7 +3,6 @@
 
 const fs = require("fs");
 const path = require("path");
-
 const root = process.cwd();
 const file = rel => path.join(root, rel);
 const read = rel => fs.readFileSync(file(rel), "utf8");
@@ -12,26 +11,21 @@ const write = (rel, data) => fs.writeFileSync(file(rel), data, "utf8");
 function replaceOnce(src, oldText, newText, label){
   if(src.includes(newText)) return src;
   const n = src.split(oldText).length - 1;
-  if(n !== 1){
-    throw new Error(`V11.42 quantity patch — ${label}: attendu 1 bloc, trouvé ${n}`);
-  }
+  if(n !== 1) throw new Error(`V11.42 V2 — ${label}: attendu 1 bloc, trouvé ${n}`);
   return src.replace(oldText, newText);
 }
 
-if(!fs.existsSync(file("public/app.js")) ||
-   !fs.existsSync(file("public/styles.css")) ||
-   !fs.existsSync(file("public/index.html")) ||
-   !fs.existsSync(file("server.js"))){
-  throw new Error("V11.42 quantity patch : lancer depuis la racine du dépôt Hydropolis.");
+for(const required of ["public/app.js","public/styles.css","public/index.html","public/sw.js","server.js"]){
+  if(!fs.existsSync(file(required))) throw new Error("Fichier manquant : "+required);
 }
 
 let app = read("public/app.js");
-
-if(app.includes("/* V11.42_NATIVE_QUANTITY */")){
-  console.log("Hydropolis V11.42 quantity patch déjà appliqué.");
+if(app.includes("/* V11.42_NATIVE_QUANTITY_V2 */")){
+  console.log("Hydropolis V11.42 V2 déjà appliquée.");
   process.exit(0);
 }
 
+// 1) Quantité isolée du renderer principal.
 app = replaceOnce(app,
 `function articleListTotal(p){
   return articleMerchandisePrice(p);
@@ -40,7 +34,7 @@ app = replaceOnce(app,
   return articleMerchandisePrice(p);
 }
 
-/* V11.42_NATIVE_QUANTITY */
+/* V11.42_NATIVE_QUANTITY_V2 */
 function normalizedQuantity(v){
   const n=Math.floor(Number(v));
   return Number.isFinite(n)&&n>=1?Math.min(999,n):1;
@@ -58,41 +52,52 @@ function setProductQuantity(id,value){
 }
 function enhanceProductQuantities(){
   $$(".room-product").forEach(card=>{
-    const id=$(".del-prod",card)?.dataset?.id;
-    const p=(state.selected||[]).find(x=>x.id===id);
-    const host=$(".price-total",card);
-    if(!p||!host||$(".article-quantity-compact",host))return;
+    try{
+      if($(".article-quantity-compact",card))return;
 
-    host.insertAdjacentHTML("afterbegin",\`
-      <div class="article-quantity-compact">
-        <span>Qté</span>
-        <button class="quantity-step qty-dec" data-id="\${p.id}" type="button" aria-label="Diminuer la quantité">−</button>
-        <input class="article-quantity-input" data-id="\${p.id}" type="number" min="1" max="999" step="1" value="\${itemQuantity(p)}" inputmode="numeric">
-        <button class="quantity-step qty-inc" data-id="\${p.id}" type="button" aria-label="Augmenter la quantité">+</button>
-      </div>
-      <div class="article-quantity-total">\${itemQuantity(p)>1?\`PU \${euro(articleListTotal(p))} · \`:""}Total \${euro(articleListTotal(p)*itemQuantity(p))} HT</div>
-    \`);
-  });
+      const deleteButton=$(".del-prod",card)||$(".fallback-del-prod",card);
+      const id=deleteButton?.dataset?.id;
+      const p=(state.selected||[]).find(x=>x.id===id);
+      const host=$(".price-total",card);
+      if(!p||!host)return;
 
-  $$(".qty-dec").forEach(b=>b.onclick=()=>{
-    const p=(state.selected||[]).find(x=>x.id===b.dataset.id);if(!p)return;
-    setProductQuantity(p.id,itemQuantity(p)-1);
-    saveState();renderRooms();renderSelection();renderMarginDashboard();
-  });
+      const box=document.createElement("div");
+      box.className="article-quantity-compact";
+      box.innerHTML=\`<span>Qté</span>
+        <button class="quantity-step" type="button" aria-label="Diminuer la quantité">−</button>
+        <input class="article-quantity-input" type="number" min="1" max="999" step="1" value="\${itemQuantity(p)}" inputmode="numeric">
+        <button class="quantity-step" type="button" aria-label="Augmenter la quantité">+</button>\`;
 
-  $$(".qty-inc").forEach(b=>b.onclick=()=>{
-    const p=(state.selected||[]).find(x=>x.id===b.dataset.id);if(!p)return;
-    setProductQuantity(p.id,itemQuantity(p)+1);
-    saveState();renderRooms();renderSelection();renderMarginDashboard();
-  });
+      const dec=box.children[1], input=box.children[2], inc=box.children[3];
 
-  $$(".article-quantity-input").forEach(inp=>inp.onchange=()=>{
-    if(!setProductQuantity(inp.dataset.id,inp.value))return;
-    saveState();renderRooms();renderSelection();renderMarginDashboard();
+      dec.onclick=()=>{
+        setProductQuantity(p.id,itemQuantity(p)-1);
+        saveState();renderRooms();renderSelection();renderMarginDashboard();
+      };
+      inc.onclick=()=>{
+        setProductQuantity(p.id,itemQuantity(p)+1);
+        saveState();renderRooms();renderSelection();renderMarginDashboard();
+      };
+      input.onchange=()=>{
+        setProductQuantity(p.id,input.value);
+        saveState();renderRooms();renderSelection();renderMarginDashboard();
+      };
+
+      host.prepend(box);
+
+      const total=document.createElement("div");
+      total.className="article-quantity-total";
+      total.textContent=(itemQuantity(p)>1?\`PU \${euro(articleListTotal(p))} · \`:"")+
+        \`Total \${euro(articleListTotal(p)*itemQuantity(p))} HT\`;
+      box.insertAdjacentElement("afterend",total);
+    }catch(err){
+      console.warn("[quantity UI]",err);
+    }
   });
 }`,
 "helpers quantité");
 
+// 2) Calculs.
 app = replaceOnce(app,
 `    .reduce((sum,p)=>sum+Math.max(0,Number(p?.mandatoryFreight)||0),0);`,
 `    .reduce((sum,p)=>sum+Math.max(0,Number(p?.mandatoryFreight)||0)*itemQuantity(p),0);`,
@@ -114,25 +119,13 @@ app = replaceOnce(app,
 "vente nette");
 
 app = replaceOnce(app,
-`      const list=ps.reduce((s,p)=>s+articleListTotal(p),0);
-      const sale=ps.reduce((s,p)=>s+effectiveSaleValue(p),0);
-      const cost=ps.reduce((s,p)=>s+purchaseCostFor(p),0);`,
-`      const qty=ps.reduce((s,p)=>s+itemQuantity(p),0);
-      const list=ps.reduce((s,p)=>s+articleListTotal(p)*itemQuantity(p),0);
-      const sale=ps.reduce((s,p)=>s+effectiveSaleValue(p)*itemQuantity(p),0);
-      const cost=ps.reduce((s,p)=>s+purchaseCostFor(p)*itemQuantity(p),0);`,
-"marge fabricant");
-
-app = replaceOnce(app,
-`return \`<tr><td>\${m}</td><td>\${ps.length}</td><td>\${euro(list)}</td>`,
-`return \`<tr><td>\${m}</td><td>\${qty}</td><td>\${euro(list)}</td>`,
-"quantité tableau marge");
-
-app = replaceOnce(app,
 `      grouped.get(key).qty++;`,
 `      grouped.get(key).qty+=itemQuantity(p);`,
-"quantité devis Excel");
+"devis Excel");
 
+// 3) IMPORTANT : la quantité est ajoutée APRÈS le rendu.
+// Même si l'UI quantité rencontre une anomalie, elle ne peut plus déclencher
+// "Affichage simplifié activé".
 app = replaceOnce(app,
 `function renderRooms(){
   try{
@@ -144,91 +137,47 @@ app = replaceOnce(app,
 `function renderRooms(){
   try{
     renderRoomsCore();
-    enhanceProductQuantities();
   }catch(e){
-    console.error("[V11.42 quantity enhancement]",e);
     renderRoomsFallback(e);
   }
+  try{enhanceProductQuantities()}catch(e){console.warn("[V11.42 quantity enhancement]",e)}
 }`,
-"hook rendu");
-
-app = replaceOnce(app,
-` const priceValue=Math.max(0,Number(p.totalPrice??p.price)||0);
- return \`<article class="board-item board-item-\${idx+1}">`,
-` const priceValue=Math.max(0,Number(p.totalPrice??p.price)||0);
- const qty=itemQuantity(p);
- return \`<article class="board-item board-item-\${idx+1}">`,
-"quantité présentation");
-
-app = replaceOnce(app,
-`     \${state.showSupplierReferences!==false && p.reference?\`<div class="board-ref">Réf. \${esc(p.reference)}</div>\`:""}
-     \${state.showClientPrices!==false?\`<div class="price commercial-price">\${isManual?\`\${euro(priceValue)} HT\`:commercialPriceHtml(p.totalPrice??p.price,p)}</div>\`:""}`,
-`     \${state.showSupplierReferences!==false && p.reference?\`<div class="board-ref">Réf. \${esc(p.reference)}</div>\`:""}
-     <div class="board-quantity">Qté \${qty}</div>
-     \${state.showClientPrices!==false?\`<div class="price commercial-price">\${isManual?\`\${euro(priceValue)} HT\`:commercialPriceHtml(p.totalPrice??p.price,p)}</div>\`:""}`,
-"affichage quantité présentation");
+"rendu sécurisé");
 
 write("public/app.js", app);
 
+// CSS minimal uniquement.
 let css = read("public/styles.css");
-if(!css.includes("/* V11.42_NATIVE_QUANTITY */")){
+if(!css.includes("/* V11.42_NATIVE_QUANTITY_V2 */")){
   css += `
 
-/* V11.42_NATIVE_QUANTITY */
+/* V11.42_NATIVE_QUANTITY_V2 */
 .article-quantity-compact{
-  display:grid;
-  grid-template-columns:auto 24px 44px 24px;
-  gap:4px;
-  align-items:center;
-  justify-content:end;
-  margin:0 0 5px auto;
-  font-size:9px;
-  color:var(--muted);
-  font-weight:700
+  display:grid;grid-template-columns:auto 24px 44px 24px;gap:4px;
+  align-items:center;justify-content:end;margin:0 0 5px auto;
+  font-size:9px;color:var(--muted);font-weight:700
 }
 .article-quantity-compact .quantity-step{
-  width:24px;height:24px;padding:0;
-  border:1px solid var(--line);
-  background:#fff;border-radius:6px;
-  cursor:pointer;font-size:15px;line-height:1;color:var(--ink)
+  width:24px;height:24px;padding:0;border:1px solid var(--line);
+  background:#fff;border-radius:6px;cursor:pointer;font-size:15px;line-height:1
 }
 .article-quantity-compact input{
-  width:44px;height:24px;
-  box-sizing:border-box;
-  padding:2px 3px;
-  text-align:center;
-  border:1px solid var(--line);
-  border-radius:6px;
-  font-size:10px;
-  font-weight:800;
-  background:#fff
+  width:44px;height:24px;box-sizing:border-box;padding:2px 3px;
+  text-align:center;border:1px solid var(--line);border-radius:6px;
+  font-size:10px;font-weight:800;background:#fff
 }
-.article-quantity-total{
-  margin-bottom:4px;
-  font-size:9px;
-  font-weight:700;
-  color:#5e5549
-}
-.board-quantity{
-  display:inline-flex;
-  margin-top:1mm;
-  padding:.6mm 1.4mm;
-  border-radius:999px;
-  background:#f2eee7;
-  color:#77654f;
-  font-size:5.5pt;
-  font-weight:700
-}
+.article-quantity-total{margin-bottom:4px;font-size:9px;font-weight:700;color:#5e5549}
 `;
 }
 write("public/styles.css", css);
 
+// Version + cache busting.
 let index = read("public/index.html");
 index = index
   .replace(/Hydropolis Studio V11\.41 · Render/g, "Hydropolis Studio V11.42 · Render")
   .replace(/<em>V11\.41<\/em>/g, "<em>V11.42</em>")
-  .replace('href="styles.css"', 'href="styles.css?v=11.42-native"')
-  .replace('src="app.js"', 'src="app.js?v=11.42-native"');
+  .replace('href="styles.css"', 'href="styles.css?v=11.42-v2"')
+  .replace('src="app.js"', 'src="app.js?v=11.42-v2"');
 write("public/index.html", index);
 
 let server = read("server.js");
@@ -239,27 +188,24 @@ write("server.js", server);
 
 let sw = read("public/sw.js");
 sw = sw
-  .replace(/hydropolis-v11-41-shell/g, "hydropolis-v11-42-native-shell")
-  .replace(/hydropolis-v11-41-catalogs/g, "hydropolis-v11-42-native-catalogs");
+  .replace(/hydropolis-v11-41-shell/g, "hydropolis-v11-42-v2-shell")
+  .replace(/hydropolis-v11-41-catalogs/g, "hydropolis-v11-42-v2-catalogs");
 write("public/sw.js", sw);
 
+// Vérifications bloquantes.
 new Function(app);
 new Function(server);
 new Function(sw);
 
 for(const marker of [
-  "function enhanceProductQuantities()",
-  "renderRoomsCore();\n    enhanceProductQuantities();",
-  "articleListTotal(p)*itemQuantity(p)",
-  "purchaseCostFor(p)*itemQuantity(p)",
-  "effectiveSaleValue(p)*itemQuantity(p)",
+  "V11.42_NATIVE_QUANTITY_V2",
+  "fallback-del-prod",
   "grouped.get(key).qty+=itemQuantity(p)",
+  "try{enhanceProductQuantities()}",
   'class="article-quantity-input"'
 ]){
-  if(!app.includes(marker)){
-    throw new Error("V11.42 quantity patch : contrôle absent — " + marker);
-  }
+  if(!app.includes(marker)) throw new Error("Contrôle V11.42 V2 absent : "+marker);
 }
 
-console.log("Hydropolis Studio V11.42 quantity patch natif OK.");
-console.log("Renderer V11.41 conservé ; quantités injectées après rendu.");
+console.log("Hydropolis Studio V11.42 V2 OK.");
+console.log("Renderer d'origine conservé ; quantité disponible en affichage normal ou simplifié.");
