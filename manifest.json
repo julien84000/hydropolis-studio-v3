@@ -1,12 +1,7 @@
 {
-  "name": "Hydropolis Studio V11.42 Quantity V3",
+  "name": "Hydropolis Studio V11.42 Quantity V4",
   "file": "apply-v11.42-native.js",
-  "exact_bug_fixed": "$(\".room-product\").forEach -> $$(\".room-product\").forEach",
-  "renderer_hardening": [
-    "designation string",
-    "technicalSheetUrl string",
-    "leadTime string"
-  ],
-  "build_command": "node apply-v11.42-native.js && npm install",
-  "start_command": "node server.js"
+  "render_build_command": "node apply-v11.42-native.js && npm install",
+  "render_start_command": "node server.js",
+  "validated_against_current_github_source": true
 }

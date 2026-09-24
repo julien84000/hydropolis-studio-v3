@@ -11,8 +11,8 @@ const write = (rel, data) => fs.writeFileSync(file(rel), data, "utf8");
 function replaceOnce(src, oldText, newText, label){
   if(src.includes(newText)) return src;
   const n = src.split(oldText).length - 1;
-  if(n !== 1) throw new Error(`V11.42 V3 — ${label}: attendu 1 bloc, trouvé ${n}`);
-  return src.replace(oldText, newText);
+  if(n !== 1) throw new Error(`V11.42 V4 — ${label}: attendu 1 bloc, trouvé ${n}`);
+  return src.replace(oldText, ()=>newText);
 }
 
 for(const required of ["public/app.js","public/styles.css","public/index.html","public/sw.js","server.js"]){
@@ -21,8 +21,8 @@ for(const required of ["public/app.js","public/styles.css","public/index.html","
 
 let app = read("public/app.js");
 
-if(app.includes("/* V11.42_NATIVE_QUANTITY_V3 */")){
-  console.log("Hydropolis V11.42 V3 déjà appliquée.");
+if(app.includes("/* V11.42_NATIVE_QUANTITY_V4 */")){
+  console.log("Hydropolis V11.42 V4 déjà appliquée.");
   process.exit(0);
 }
 
@@ -40,7 +40,7 @@ app = replaceOnce(app,
   return articleMerchandisePrice(p);
 }
 
-/* V11.42_NATIVE_QUANTITY_V3 */
+/* V11.42_NATIVE_QUANTITY_V4 */
 function normalizedQuantity(v){
   const n=Math.floor(Number(v));
   return Number.isFinite(n)&&n>=1?Math.min(999,n):1;
@@ -129,21 +129,8 @@ app = replaceOnce(app,
 `      grouped.get(key).qty+=itemQuantity(p);`,
 "devis Excel");
 
-// Rendre le renderer détaillé plus tolérant aux anciennes données de projet.
-app = replaceOnce(app,
-`value="${(p.designation||"").replace(/"/g,"&quot;")}"`,
-`value="${String(p.designation||"").replace(/"/g,"&quot;")}"`,
-"désignation robuste");
-
-app = replaceOnce(app,
-`value="${((p.technicalSheetUrl||"").startsWith("blob:")?"":(p.technicalSheetUrl||"")).replace(/"/g,"&quot;")}"`,
-`value="${(String(p.technicalSheetUrl||"").startsWith("blob:")?"":String(p.technicalSheetUrl||"")).replace(/"/g,"&quot;")}"`,
-"URL fiche technique robuste");
-
-app = replaceOnce(app,
-`value="${(p.leadTime||"").replace(/"/g,"&quot;")}"`,
-`value="${String(p.leadTime||"").replace(/"/g,"&quot;")}"`,
-"délai robuste");
+// V11.42 V4 : aucun rewrite du renderer produit.
+// Le renderer V11.41 reste strictement intact.
 
 // La quantité est ajoutée après le renderer. Elle ne peut pas provoquer le fallback.
 app = replaceOnce(app,
@@ -175,10 +162,10 @@ write("public/app.js", app);
 
 // CSS minimal.
 let css = read("public/styles.css");
-if(!css.includes("/* V11.42_NATIVE_QUANTITY_V3 */")){
+if(!css.includes("/* V11.42_NATIVE_QUANTITY_V4 */")){
   css += `
 
-/* V11.42_NATIVE_QUANTITY_V3 */
+/* V11.42_NATIVE_QUANTITY_V4 */
 .article-quantity-compact{
   display:grid;grid-template-columns:auto 24px 44px 24px;gap:4px;
   align-items:center;justify-content:end;margin:0 0 5px auto;
@@ -204,8 +191,8 @@ let index = read("public/index.html");
 index = index
   .replace(/Hydropolis Studio V11\.41 · Render/g, "Hydropolis Studio V11.42 · Render")
   .replace(/<em>V11\.41<\/em>/g, "<em>V11.42</em>")
-  .replace('href="styles.css"', 'href="styles.css?v=11.42-v3"')
-  .replace('src="app.js"', 'src="app.js?v=11.42-v3"');
+  .replace('href="styles.css"', 'href="styles.css?v=11.42-v4"')
+  .replace('src="app.js"', 'src="app.js?v=11.42-v4"');
 write("public/index.html", index);
 
 let server = read("server.js");
@@ -216,9 +203,19 @@ write("server.js", server);
 
 let sw = read("public/sw.js");
 sw = sw
-  .replace(/hydropolis-v11-41-shell/g, "hydropolis-v11-42-v3-shell")
-  .replace(/hydropolis-v11-41-catalogs/g, "hydropolis-v11-42-v3-catalogs");
+  .replace(/hydropolis-v11-41-shell/g, "hydropolis-v11-42-v4-shell")
+  .replace(/hydropolis-v11-41-catalogs/g, "hydropolis-v11-42-v4-catalogs");
 write("public/sw.js", sw);
+
+const pkgPath=file("package.json");
+if(fs.existsSync(pkgPath)){
+  const pkg=JSON.parse(fs.readFileSync(pkgPath,"utf8"));
+  pkg.version="11.42.0";
+  pkg.description="Hydropolis Studio V11.42 - gestion native des quantités par article";
+  pkg.scripts=pkg.scripts||{};
+  pkg.scripts.start="node server.js";
+  fs.writeFileSync(pkgPath,JSON.stringify(pkg,null,2)+"\n","utf8");
+}
 
 // Vérifications.
 new Function(app);
@@ -226,19 +223,16 @@ new Function(server);
 new Function(sw);
 
 for(const marker of [
-  "V11.42_NATIVE_QUANTITY_V3",
+  "V11.42_NATIVE_QUANTITY_V4",
   '$$(".room-product").forEach',
   'class="article-quantity-input"',
   "grouped.get(key).qty+=itemQuantity(p)",
   "try{enhanceProductQuantities()}",
   "project-render-error"
 ]){
-  if(!app.includes(marker)) throw new Error("Contrôle V11.42 V3 absent : "+marker);
+  if(!app.includes(marker)) throw new Error("Contrôle V11.42 V4 absent : "+marker);
 }
 
-if(app.includes('$(".room-product").forEach')){
-  throw new Error("Ancien bug querySelector encore présent.");
-}
 
-console.log("Hydropolis Studio V11.42 V3 OK.");
-console.log("Bug quantité corrigé : querySelectorAll ($$) utilisé.");
+console.log("Hydropolis Studio V11.42 V4 OK.");
+console.log("Quantité V4 : remplacement littéral $$ préservé et démarrage serveur direct.");
