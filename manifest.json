@@ -1,0 +1,6 @@
+{
+  "file_to_upload": "apply-v11.42-native.js",
+  "build_command": "node apply-v11.42-native.js && yarn install",
+  "start_command": "node server.js",
+  "note": "Do not use the older apply-v11.42-hotfix.js"
+}
