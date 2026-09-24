@@ -1,8 +1,16 @@
 {
-  "name": "Hydropolis Studio V11.44 Presentation Layout FIX",
+  "name": "Hydropolis Studio V11.44 Presentation Layout FIX2",
   "target_version": "11.44.0",
-  "fixed_error": "identifiant bloc produit: attendu 1 bloc, trouvé 0",
   "replacement_file": "apply-v11.44-layout.js",
+  "root_cause": "legacy !important CSS rules overrode editor geometry",
+  "replacements_verified": [
+    "geometry base",
+    "saved geometry",
+    "drag",
+    "resize",
+    "photo/text adaptive resize",
+    "controls z-index"
+  ],
   "build_command": "node apply-v11.42-native.js && node apply-v11.43-quote.js && node apply-v11.44-layout.js && npm install",
   "start_command": "node server.js",
   "node_syntax_check": "passed"

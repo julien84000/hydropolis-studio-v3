@@ -1,35 +1,36 @@
-HYDROPOLIS STUDIO V11.44 — CORRECTIF DÉPLOIEMENT
+HYDROPOLIS STUDIO V11.44 — FIX2 DÉPLACEMENT / REDIMENSIONNEMENT
 
-Cause exacte corrigée
-----------------------
-La V11.44 cherchait dans boardItemHtml une ligne :
-  const qty=itemQuantity(p);
+Cause exacte
+------------
+Les styles historiques de Présentation client utilisent !important :
+- position: relative !important
+- width/height: auto !important
+- placement grid !important
 
-Cette ligne n'existe plus dans la sortie réelle de la V11.43.
-Le patch s'arrêtait donc avec :
-  V11.44 — identifiant bloc produit: attendu 1 bloc, trouvé 0
+La première V11.44 appliquait des styles normaux, donc Chrome les ignorait.
+Les poignées étaient visibles mais le bloc ne bougeait pas réellement.
 
-Le correctif aligne V11.44 sur la vraie V11.43 déployée.
+FIX2
+----
+- position/left/top/width/height forcés avec priorité !important
+- grid-column/grid-row neutralisés lors d'une personnalisation
+- déplacement opérationnel
+- redimensionnement opérationnel
+- zone image recalculée avec la taille du bloc
+- zone texte recalculée
+- images conservées en proportions via object-fit: contain
+- contrôles d'édition placés au-dessus des visuels
 
 Installation
 ------------
-1. Remplacer uniquement à la racine GitHub :
-   apply-v11.44-layout.js
+Remplacer uniquement à la racine GitHub :
+apply-v11.44-layout.js
 
-2. Build Command Render :
-   node apply-v11.42-native.js && node apply-v11.43-quote.js && node apply-v11.44-layout.js && npm install
+Build Command Render :
+node apply-v11.42-native.js && node apply-v11.43-quote.js && node apply-v11.44-layout.js && npm install
 
-3. Start Command :
-   node server.js
+Start Command :
+node server.js
 
-4. Manual Deploy > Clear build cache & deploy
-
-Fonctions V11.44
-----------------
-- déplacement des blocs de la présentation client
-- redimensionnement largeur/hauteur
-- verrouillage
-- réinitialisation page / globale
-- mise en page sauvegardée avec le projet
-- photos redimensionnées automatiquement selon le bloc, sans déformation
-- export PDF conservant la disposition personnalisée
+Puis Manual Deploy > Clear build cache & deploy
+et Cmd + Shift + R.
