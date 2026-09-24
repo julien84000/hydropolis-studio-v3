@@ -1,7 +1,14 @@
 {
-  "name": "Hydropolis Studio V11.42 Quantity V4",
-  "file": "apply-v11.42-native.js",
-  "render_build_command": "node apply-v11.42-native.js && npm install",
-  "render_start_command": "node server.js",
-  "validated_against_current_github_source": true
+  "name": "Hydropolis Studio V11.43 Editable Quote",
+  "target_version": "11.43.0",
+  "requires_first": "apply-v11.42-native.js V4",
+  "build_command": "node apply-v11.42-native.js && node apply-v11.43-quote.js && npm install",
+  "start_command": "node server.js",
+  "features": [
+    "one quote row per selected article",
+    "editable reference/designation/lead time/quantity/unit price/discount",
+    "line reset and global reset",
+    "PDF and Excel synchronization",
+    "margin synchronization"
+  ]
 }

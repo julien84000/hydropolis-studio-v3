@@ -1,25 +1,41 @@
-HYDROPOLIS STUDIO V11.42 — QUANTITY V4
+HYDROPOLIS STUDIO V11.43 — DEVIS MODIFIABLE
 
-CAUSES EXACTES CORRIGÉES
-1. src.replace(oldText,newText) transformait '$$' en '$'.
-   V4 utilise src.replace(oldText,()=>newText), donc
-   $$(".room-product").forEach(...) reste intact.
+Cette version conserve la V11.42 V4 qui fonctionne et ajoute un éditeur
+de devis dans la section « Marge & devis ».
 
-2. Le V3 évaluait ${p...} dans le patcher lui-même et provoquait
-   ReferenceError: p is not defined. Ces transformations ont été supprimées.
+Fonctions
+---------
+- UNE LIGNE PAR ARTICLE, sans regroupement automatique
+- Référence modifiable
+- Désignation modifiable
+- Délai modifiable
+- Quantité modifiable
+- Prix unitaire HT modifiable
+- Remise ligne modifiable
+- Total ligne recalculé
+- Bouton de réinitialisation par ligne
+- Bouton de réinitialisation globale
+- Modifications reprises dans le devis client / PDF
+- Modifications reprises dans Excel
+- Marge et totaux commerciaux synchronisés
+- Éléments libres également présents ligne par ligne
 
-3. V4 force package.json > scripts.start à :
+Installation
+------------
+1. Ajouter à la racine GitHub :
+   apply-v11.43-quote.js
+
+2. Conserver apply-v11.42-native.js (V4) tel quel.
+
+3. Render > Build Command :
+   node apply-v11.42-native.js && node apply-v11.43-quote.js && npm install
+
+4. Render > Start Command :
    node server.js
-   afin de ne plus relancer l'ancien apply-v11.42-hotfix.js.
 
-INSTALLATION
-1. Remplacer uniquement apply-v11.42-native.js à la racine GitHub.
-2. Render Build Command :
-   node apply-v11.42-native.js && npm install
-3. Render Start Command :
-   node server.js
-4. Manual Deploy > Clear build cache & deploy
-5. Cmd + Shift + R
+5. Manual Deploy > Clear build cache & deploy
 
-Résultat attendu :
-Qté [-] [1] [+] sur chaque article.
+6. Puis Cmd + Shift + R.
+
+Le patch a été simulé sur le dépôt GitHub actuel après application de la
+V11.42 V4 : syntaxe JS validée et quoteRows vérifié sans regroupement.
