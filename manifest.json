@@ -1,14 +1,22 @@
 {
-  "name": "Hydropolis Studio V11.43 Editable Quote",
-  "target_version": "11.43.0",
-  "requires_first": "apply-v11.42-native.js V4",
-  "build_command": "node apply-v11.42-native.js && node apply-v11.43-quote.js && npm install",
+  "name": "Hydropolis Studio V11.44 Presentation Layout",
+  "target_version": "11.44.0",
+  "requires": [
+    "apply-v11.42-native.js V4",
+    "apply-v11.43-quote.js"
+  ],
+  "build_command": "node apply-v11.42-native.js && node apply-v11.43-quote.js && node apply-v11.44-layout.js && npm install",
   "start_command": "node server.js",
   "features": [
-    "one quote row per selected article",
-    "editable reference/designation/lead time/quantity/unit price/discount",
-    "line reset and global reset",
-    "PDF and Excel synchronization",
-    "margin synchronization"
+    "drag product blocks",
+    "resize product blocks",
+    "move and resize page heading and intro",
+    "snap grid",
+    "lock block",
+    "reset current page",
+    "reset all presentation layout",
+    "persist layout in local and cloud project state",
+    "PDF keeps custom geometry",
+    "automatic photo resizing to block dimensions"
   ]
 }
