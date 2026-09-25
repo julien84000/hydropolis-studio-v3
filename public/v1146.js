@@ -176,7 +176,7 @@
       if(finishWrap){finishWrap.classList.toggle("hidden",!finishes.length);$r("#rgFinish").innerHTML=optionHtml(finishes)}
       if(matWrap){matWrap.classList.toggle("hidden",!materials.length);$r("#rgMaterial").innerHTML=optionHtml(materials)}
       if(sizeWrap){sizeWrap.classList.toggle("hidden",!sizes.length);$r("#rgSize").innerHTML=optionHtml(sizes)}
-      const colors=global.standardColors||[];$r("#rgColor").innerHTML=optionHtml(colors)+='<option value="RAL/NCS">RAL/NCS</option>';
+      const colors=global.standardColors||[];$r("#rgColor").innerHTML=optionHtml(colors)+'<option value="RAL/NCS">RAL/NCS</option>';
       renderSupplements();update();
     }
     function renderSupplements(){
