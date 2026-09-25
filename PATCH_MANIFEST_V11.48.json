@@ -1,0 +1,23 @@
+{
+  "version": "11.48.0",
+  "name": "Hydropolis Studio V11.48 - Resigres Configurator Matrix",
+  "buildCommand": "node apply-v11.48-consolidated.js",
+  "startCommand": "npm start",
+  "validated": {
+    "nodeSyntax": true,
+    "dependencyTests": true,
+    "staticTests": true,
+    "mockBuild": true
+  },
+  "resigres": {
+    "modelsWithConfiguratorFlow": 38,
+    "certifiedBathMatrices": [
+      "Nalu",
+      "Delia",
+      "Nesta",
+      "Vento"
+    ],
+    "principle": "dimension -> material/finish -> color -> options -> price",
+    "safeFallback": "No global finish/color list is injected when model-specific choices are not certified."
+  }
+}

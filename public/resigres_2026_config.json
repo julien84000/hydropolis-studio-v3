@@ -1,7 +1,7 @@
 {
-  "version": "2026-FR-v2",
+  "version": "2026-FR-v3",
   "source": "Tarif_FR_2026.pdf",
-  "pricingPolicy": "Tarifs Resigres 2026 importés automatiquement lorsque la grille est certifiée. Les cellules encore ambiguës restent en saisie manuelle plutôt que d'être extrapolées.",
+  "pricingPolicy": "Configurateur dépendant : chaque choix filtre les choix suivants. Aucune finition ou couleur globale n’est injectée lorsqu’elle n’est pas certifiée pour le modèle.",
   "global": {
     "tolerancePercent": 0.7,
     "intermediateSizeRule": "Pour les tailles intermédiaires, utiliser le prix de la taille supérieure de la colonne SUR MESURE.",
@@ -31,7 +31,152 @@
       "Caliza",
       "Quartz Green",
       "Onix"
-    ]
+    ],
+    "choiceGroups": {
+      "standardColors": [
+        "Gris 7015",
+        "Ártico",
+        "Lino",
+        "Antracita",
+        "Moka",
+        "Piedra",
+        "Arena",
+        "Negro",
+        "Basalto"
+      ],
+      "solidSurfaceColors": [
+        "S-Blanco"
+      ],
+      "gpcColors": [
+        "Calacatta G",
+        "Taj Mahal",
+        "Marquina",
+        "Caliza",
+        "Quartz Green",
+        "Onix"
+      ],
+      "marbleColors": [
+        "Calacatta",
+        "Marquina",
+        "Pietra"
+      ],
+      "woodFinishes": [
+        "Roble",
+        "Roble rústico",
+        "Roble salvaje",
+        "Nogal US",
+        "Eucalipto",
+        "Fumé"
+      ],
+      "acrylicWhite": [
+        "Blanc brillant",
+        "Blanc mat"
+      ]
+    },
+    "finishColorMap": {
+      "Solid Surface": [
+        "S-Blanco"
+      ],
+      "Lisa": [
+        "Gris 7015",
+        "Ártico",
+        "Lino",
+        "Antracita",
+        "Moka",
+        "Piedra",
+        "Arena",
+        "Negro",
+        "Basalto",
+        "RAL/NCS"
+      ],
+      "Lisa sur mesure": [
+        "Gris 7015",
+        "Ártico",
+        "Lino",
+        "Antracita",
+        "Moka",
+        "Piedra",
+        "Arena",
+        "Negro",
+        "Basalto",
+        "RAL/NCS"
+      ],
+      "Pizarra": [
+        "Gris 7015",
+        "Ártico",
+        "Lino",
+        "Antracita",
+        "Moka",
+        "Piedra",
+        "Arena",
+        "Negro",
+        "Basalto",
+        "RAL/NCS"
+      ],
+      "Pizarra standard": [
+        "Gris 7015",
+        "Ártico",
+        "Lino",
+        "Antracita",
+        "Moka",
+        "Piedra",
+        "Arena",
+        "Negro",
+        "Basalto"
+      ],
+      "Pizarra sur mesure": [
+        "Gris 7015",
+        "Ártico",
+        "Lino",
+        "Antracita",
+        "Moka",
+        "Piedra",
+        "Arena",
+        "Negro",
+        "Basalto",
+        "RAL/NCS"
+      ],
+      "Laqué": [
+        "Gris 7015",
+        "Ártico",
+        "Lino",
+        "Antracita",
+        "Moka",
+        "Piedra",
+        "Arena",
+        "Negro",
+        "Basalto",
+        "RAL/NCS"
+      ],
+      "Laquée": [
+        "Gris 7015",
+        "Ártico",
+        "Lino",
+        "Antracita",
+        "Moka",
+        "Piedra",
+        "Arena",
+        "Negro",
+        "Basalto",
+        "RAL/NCS"
+      ],
+      "GPC": [
+        "Calacatta G",
+        "Taj Mahal",
+        "Marquina",
+        "Caliza",
+        "Quartz Green",
+        "Onix"
+      ],
+      "Bois": [
+        "Roble",
+        "Roble rústico",
+        "Roble salvaje",
+        "Nogal US",
+        "Eucalipto",
+        "Fumé"
+      ]
+    }
   },
   "groups": {
     "shower-tray": {
@@ -156,13 +301,29 @@
       "name": "Extraplano Latéral",
       "category": "Receveur",
       "kind": "shower-tray",
-      "sourcePage": "2"
+      "sourcePage": "2",
+      "configuratorFlow": [
+        "variant",
+        "dimensions",
+        "finish",
+        "color",
+        "options"
+      ],
+      "dependencyMode": "safe-manual"
     },
     {
       "name": "Extraplano Central / 1/4 rond",
       "category": "Receveur",
       "kind": "shower-tray",
-      "sourcePage": "4"
+      "sourcePage": "4",
+      "configuratorFlow": [
+        "variant",
+        "dimensions",
+        "finish",
+        "color",
+        "options"
+      ],
+      "dependencyMode": "safe-manual"
     },
     {
       "name": "Extraplano Contract",
@@ -234,7 +395,15 @@
           "input": "edgeCm",
           "sourcePage": "5"
         }
-      ]
+      ],
+      "configuratorFlow": [
+        "variant",
+        "dimensions",
+        "finish",
+        "color",
+        "options"
+      ],
+      "dependencyMode": "certified"
     },
     {
       "name": "Vento / Vento Contract",
@@ -452,7 +621,15 @@
           "input": "grooveCm",
           "sourcePage": "variable"
         }
-      ]
+      ],
+      "configuratorFlow": [
+        "variant",
+        "dimensions",
+        "finish",
+        "color",
+        "options"
+      ],
+      "dependencyMode": "certified"
     },
     {
       "name": "Cosmo / Cosmo Contract",
@@ -620,7 +797,15 @@
           "input": "grooveCm",
           "sourcePage": "variable"
         }
-      ]
+      ],
+      "configuratorFlow": [
+        "variant",
+        "dimensions",
+        "finish",
+        "color",
+        "options"
+      ],
+      "dependencyMode": "certified"
     },
     {
       "name": "Urban",
@@ -828,7 +1013,15 @@
           "input": "edgeCm",
           "sourcePage": "10"
         }
-      ]
+      ],
+      "configuratorFlow": [
+        "variant",
+        "dimensions",
+        "finish",
+        "color",
+        "options"
+      ],
+      "dependencyMode": "certified"
     },
     {
       "name": "Nix / Nix Contract",
@@ -1017,115 +1210,261 @@
           "input": "edgeCm",
           "sourcePage": "12"
         }
-      ]
+      ],
+      "configuratorFlow": [
+        "variant",
+        "dimensions",
+        "finish",
+        "color",
+        "options"
+      ],
+      "dependencyMode": "certified"
     },
     {
       "name": "Atenea",
       "category": "Plan de vasque",
       "kind": "basin-top",
-      "sourcePage": "14"
+      "sourcePage": "14",
+      "configuratorFlow": [
+        "dimensions",
+        "basin",
+        "finish",
+        "color",
+        "options"
+      ],
+      "dependencyMode": "safe-manual"
     },
     {
       "name": "Vento CF",
       "category": "Plan de vasque",
       "kind": "basin-top",
-      "sourcePage": "16"
+      "sourcePage": "16",
+      "configuratorFlow": [
+        "dimensions",
+        "basin",
+        "finish",
+        "color",
+        "options"
+      ],
+      "dependencyMode": "safe-manual"
     },
     {
       "name": "Cosmo CF",
       "category": "Plan de vasque",
       "kind": "basin-top",
-      "sourcePage": "18"
+      "sourcePage": "18",
+      "configuratorFlow": [
+        "dimensions",
+        "basin",
+        "finish",
+        "color",
+        "options"
+      ],
+      "dependencyMode": "safe-manual"
     },
     {
       "name": "Urban CF",
       "category": "Plan de vasque",
       "kind": "basin-top",
-      "sourcePage": "20"
+      "sourcePage": "20",
+      "configuratorFlow": [
+        "dimensions",
+        "basin",
+        "finish",
+        "color",
+        "options"
+      ],
+      "dependencyMode": "safe-manual"
     },
     {
       "name": "Gea CF",
       "category": "Plan de vasque",
       "kind": "basin-top",
-      "sourcePage": "22"
+      "sourcePage": "22",
+      "configuratorFlow": [
+        "dimensions",
+        "basin",
+        "finish",
+        "color",
+        "options"
+      ],
+      "dependencyMode": "safe-manual"
     },
     {
       "name": "Contract CF",
       "category": "Plan de vasque",
       "kind": "basin-top",
-      "sourcePage": "24"
+      "sourcePage": "24",
+      "configuratorFlow": [
+        "dimensions",
+        "basin",
+        "finish",
+        "color",
+        "options"
+      ],
+      "dependencyMode": "safe-manual"
     },
     {
       "name": "Selene",
       "category": "Plan de vasque pour meuble",
       "kind": "furniture-basin-top",
-      "sourcePage": "26"
+      "sourcePage": "26",
+      "configuratorFlow": [
+        "dimensions",
+        "basin",
+        "finish",
+        "color",
+        "options"
+      ],
+      "dependencyMode": "safe-manual"
     },
     {
       "name": "Vento SF",
       "category": "Plan de vasque pour meuble",
       "kind": "furniture-basin-top",
-      "sourcePage": "28"
+      "sourcePage": "28",
+      "configuratorFlow": [
+        "dimensions",
+        "basin",
+        "finish",
+        "color",
+        "options"
+      ],
+      "dependencyMode": "safe-manual"
     },
     {
       "name": "Cosmo SF",
       "category": "Plan de vasque pour meuble",
       "kind": "furniture-basin-top",
-      "sourcePage": "30"
+      "sourcePage": "30",
+      "configuratorFlow": [
+        "dimensions",
+        "basin",
+        "finish",
+        "color",
+        "options"
+      ],
+      "dependencyMode": "safe-manual"
     },
     {
       "name": "Urban SF",
       "category": "Plan de vasque pour meuble",
       "kind": "furniture-basin-top",
-      "sourcePage": "32"
+      "sourcePage": "32",
+      "configuratorFlow": [
+        "dimensions",
+        "basin",
+        "finish",
+        "color",
+        "options"
+      ],
+      "dependencyMode": "safe-manual"
     },
     {
       "name": "Gea SF",
       "category": "Plan de vasque pour meuble",
       "kind": "furniture-basin-top",
-      "sourcePage": "34"
+      "sourcePage": "34",
+      "configuratorFlow": [
+        "dimensions",
+        "basin",
+        "finish",
+        "color",
+        "options"
+      ],
+      "dependencyMode": "safe-manual"
     },
     {
       "name": "Contract SF",
       "category": "Plan de vasque pour meuble",
       "kind": "furniture-basin-top",
-      "sourcePage": "36"
+      "sourcePage": "36",
+      "configuratorFlow": [
+        "dimensions",
+        "basin",
+        "finish",
+        "color",
+        "options"
+      ],
+      "dependencyMode": "safe-manual"
     },
     {
       "name": "Axis",
       "category": "Vasque",
       "kind": "basin",
-      "sourcePage": "38"
+      "sourcePage": "38",
+      "configuratorFlow": [
+        "size",
+        "finish",
+        "color",
+        "options"
+      ],
+      "dependencyMode": "safe-manual"
     },
     {
       "name": "Ares",
       "category": "Vasque",
       "kind": "basin",
-      "sourcePage": "40-41"
+      "sourcePage": "40-41",
+      "configuratorFlow": [
+        "size",
+        "finish",
+        "color",
+        "options"
+      ],
+      "dependencyMode": "safe-manual"
     },
     {
       "name": "Crono",
       "category": "Vasque",
       "kind": "basin",
-      "sourcePage": "42-45"
+      "sourcePage": "42-45",
+      "configuratorFlow": [
+        "size",
+        "finish",
+        "color",
+        "options"
+      ],
+      "dependencyMode": "safe-manual"
     },
     {
       "name": "Kos / Neo",
       "category": "Vasque",
       "kind": "basin",
-      "sourcePage": "44-45"
+      "sourcePage": "44-45",
+      "configuratorFlow": [
+        "size",
+        "finish",
+        "color",
+        "options"
+      ],
+      "dependencyMode": "safe-manual"
     },
     {
       "name": "Gesto / Frame",
       "category": "Vasque",
       "kind": "basin",
-      "sourcePage": "46-47"
+      "sourcePage": "46-47",
+      "configuratorFlow": [
+        "size",
+        "finish",
+        "color",
+        "options"
+      ],
+      "dependencyMode": "safe-manual"
     },
     {
       "name": "Urban",
       "category": "Vasque",
       "kind": "basin",
-      "sourcePage": "48"
+      "sourcePage": "48",
+      "configuratorFlow": [
+        "size",
+        "finish",
+        "color",
+        "options"
+      ],
+      "dependencyMode": "safe-manual"
     },
     {
       "name": "Nalu",
@@ -1155,7 +1494,52 @@
             "Acrylique mat"
           ]
         }
-      ]
+      ],
+      "configuratorFlow": [
+        "size",
+        "material",
+        "color",
+        "options"
+      ],
+      "dependencyMode": "certified",
+      "dependencyMatrix": {
+        "type": "dependent-combinations",
+        "steps": [
+          "size",
+          "material",
+          "color"
+        ],
+        "sourcePage": "50",
+        "sizes": [
+          {
+            "id": "80x170",
+            "label": "80 × 170 cm",
+            "widthCm": 80,
+            "lengthCm": 170,
+            "materials": [
+              {
+                "id": "acrylique",
+                "label": "Acrylique",
+                "finish": "Acrylique",
+                "colors": [
+                  {
+                    "id": "Blanc brillant",
+                    "label": "Blanc brillant",
+                    "surface": "Brillant",
+                    "price": 2295
+                  },
+                  {
+                    "id": "Blanc mat",
+                    "label": "Blanc mat",
+                    "surface": "Mat",
+                    "price": 2450
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "name": "Delia",
@@ -1187,43 +1571,611 @@
             "Laquée RAL/NCS"
           ]
         }
-      ]
+      ],
+      "configuratorFlow": [
+        "size",
+        "material",
+        "color",
+        "options"
+      ],
+      "dependencyMode": "certified",
+      "dependencyMatrix": {
+        "type": "dependent-combinations",
+        "steps": [
+          "size",
+          "material",
+          "color"
+        ],
+        "sourcePage": "51",
+        "sizes": [
+          {
+            "id": "110x110",
+            "label": "110 × 110 cm",
+            "widthCm": 110,
+            "lengthCm": 110,
+            "materials": [
+              {
+                "id": "solid-surface",
+                "label": "Solid Surface",
+                "finish": "Solid Surface",
+                "colors": [
+                  {
+                    "id": "S-Blanco",
+                    "label": "S-Blanco",
+                    "price": 1950
+                  }
+                ]
+              },
+              {
+                "id": "laque",
+                "label": "Laqué",
+                "finish": "Laqué",
+                "colors": [
+                  {
+                    "id": "Gris 7015",
+                    "label": "Gris 7015",
+                    "price": 2490,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "Ártico",
+                    "label": "Ártico",
+                    "price": 2490,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "Lino",
+                    "label": "Lino",
+                    "price": 2490,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "Antracita",
+                    "label": "Antracita",
+                    "price": 2490,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "Moka",
+                    "label": "Moka",
+                    "price": 2490,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "Piedra",
+                    "label": "Piedra",
+                    "price": 2490,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "Arena",
+                    "label": "Arena",
+                    "price": 2490,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "Negro",
+                    "label": "Negro",
+                    "price": 2490,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "Basalto",
+                    "label": "Basalto",
+                    "price": 2490,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "RAL/NCS",
+                    "label": "RAL/NCS sur mesure",
+                    "price": 2590,
+                    "priceClass": "ral",
+                    "customCode": true
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "name": "Nesta",
       "category": "Baignoire",
       "kind": "bath",
-      "sourcePage": "52"
+      "sourcePage": "52",
+      "configuratorFlow": [
+        "size",
+        "material",
+        "color",
+        "options"
+      ],
+      "dependencyMode": "certified",
+      "dependencyMatrix": {
+        "type": "dependent-combinations",
+        "steps": [
+          "size",
+          "material",
+          "color"
+        ],
+        "sourcePage": "52",
+        "sizes": [
+          {
+            "id": "75x150",
+            "label": "75 × 150 cm",
+            "widthCm": 75,
+            "lengthCm": 150,
+            "materials": [
+              {
+                "id": "solid-surface",
+                "label": "Solid Surface",
+                "finish": "Solid Surface",
+                "colors": [
+                  {
+                    "id": "S-Blanco",
+                    "label": "S-Blanco",
+                    "price": 3260
+                  }
+                ]
+              },
+              {
+                "id": "laque",
+                "label": "Laqué",
+                "finish": "Laqué",
+                "colors": [
+                  {
+                    "id": "Gris 7015",
+                    "label": "Gris 7015",
+                    "price": 3749,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "Ártico",
+                    "label": "Ártico",
+                    "price": 3749,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "Lino",
+                    "label": "Lino",
+                    "price": 3749,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "Antracita",
+                    "label": "Antracita",
+                    "price": 3749,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "Moka",
+                    "label": "Moka",
+                    "price": 3749,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "Piedra",
+                    "label": "Piedra",
+                    "price": 3749,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "Arena",
+                    "label": "Arena",
+                    "price": 3749,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "Negro",
+                    "label": "Negro",
+                    "price": 3749,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "Basalto",
+                    "label": "Basalto",
+                    "price": 3749,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "RAL/NCS",
+                    "label": "RAL/NCS sur mesure",
+                    "price": 3830,
+                    "priceClass": "ral",
+                    "customCode": true
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "80x160",
+            "label": "80 × 160 cm",
+            "widthCm": 80,
+            "lengthCm": 160,
+            "materials": [
+              {
+                "id": "solid-surface",
+                "label": "Solid Surface",
+                "finish": "Solid Surface",
+                "colors": [
+                  {
+                    "id": "S-Blanco",
+                    "label": "S-Blanco",
+                    "price": 3556
+                  }
+                ]
+              },
+              {
+                "id": "laque",
+                "label": "Laqué",
+                "finish": "Laqué",
+                "colors": [
+                  {
+                    "id": "Gris 7015",
+                    "label": "Gris 7015",
+                    "price": 3993,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "Ártico",
+                    "label": "Ártico",
+                    "price": 3993,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "Lino",
+                    "label": "Lino",
+                    "price": 3993,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "Antracita",
+                    "label": "Antracita",
+                    "price": 3993,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "Moka",
+                    "label": "Moka",
+                    "price": 3993,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "Piedra",
+                    "label": "Piedra",
+                    "price": 3993,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "Arena",
+                    "label": "Arena",
+                    "price": 3993,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "Negro",
+                    "label": "Negro",
+                    "price": 3993,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "Basalto",
+                    "label": "Basalto",
+                    "price": 3993,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "RAL/NCS",
+                    "label": "RAL/NCS sur mesure",
+                    "price": 4026,
+                    "priceClass": "ral",
+                    "customCode": true
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "80x170",
+            "label": "80 × 170 cm",
+            "widthCm": 80,
+            "lengthCm": 170,
+            "materials": [
+              {
+                "id": "solid-surface",
+                "label": "Solid Surface",
+                "finish": "Solid Surface",
+                "colors": [
+                  {
+                    "id": "S-Blanco",
+                    "label": "S-Blanco",
+                    "price": 3728
+                  }
+                ]
+              },
+              {
+                "id": "laque",
+                "label": "Laqué",
+                "finish": "Laqué",
+                "colors": [
+                  {
+                    "id": "Gris 7015",
+                    "label": "Gris 7015",
+                    "price": 4288,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "Ártico",
+                    "label": "Ártico",
+                    "price": 4288,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "Lino",
+                    "label": "Lino",
+                    "price": 4288,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "Antracita",
+                    "label": "Antracita",
+                    "price": 4288,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "Moka",
+                    "label": "Moka",
+                    "price": 4288,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "Piedra",
+                    "label": "Piedra",
+                    "price": 4288,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "Arena",
+                    "label": "Arena",
+                    "price": 4288,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "Negro",
+                    "label": "Negro",
+                    "price": 4288,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "Basalto",
+                    "label": "Basalto",
+                    "price": 4288,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "RAL/NCS",
+                    "label": "RAL/NCS sur mesure",
+                    "price": 4310,
+                    "priceClass": "ral",
+                    "customCode": true
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "80x180",
+            "label": "80 × 180 cm",
+            "widthCm": 80,
+            "lengthCm": 180,
+            "materials": [
+              {
+                "id": "acrylique",
+                "label": "Acrylique",
+                "finish": "Acrylique",
+                "colors": [
+                  {
+                    "id": "Blanc brillant",
+                    "label": "Blanc brillant",
+                    "surface": "Brillant",
+                    "price": 2295
+                  },
+                  {
+                    "id": "Blanc mat",
+                    "label": "Blanc mat",
+                    "surface": "Mat",
+                    "price": 2450
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "name": "Vento",
       "category": "Baignoire",
       "kind": "bath",
-      "sourcePage": "53"
+      "sourcePage": "53",
+      "configuratorFlow": [
+        "size",
+        "material",
+        "color",
+        "options"
+      ],
+      "dependencyMode": "certified",
+      "dependencyMatrix": {
+        "type": "dependent-combinations",
+        "steps": [
+          "size",
+          "material",
+          "color"
+        ],
+        "sourcePage": "53",
+        "sizes": [
+          {
+            "id": "80x170",
+            "label": "80 × 170 cm",
+            "widthCm": 80,
+            "lengthCm": 170,
+            "materials": [
+              {
+                "id": "acrylique",
+                "label": "Acrylique",
+                "finish": "Acrylique",
+                "colors": [
+                  {
+                    "id": "Blanc brillant",
+                    "label": "Blanc brillant",
+                    "surface": "Brillant",
+                    "price": 2295
+                  },
+                  {
+                    "id": "Blanc mat",
+                    "label": "Blanc mat",
+                    "surface": "Mat",
+                    "price": 2450
+                  }
+                ]
+              },
+              {
+                "id": "solid-surface",
+                "label": "Solid Surface",
+                "finish": "Solid Surface",
+                "colors": [
+                  {
+                    "id": "S-Blanco",
+                    "label": "S-Blanco",
+                    "price": 3794
+                  }
+                ]
+              },
+              {
+                "id": "laque",
+                "label": "Laqué",
+                "finish": "Laqué",
+                "colors": [
+                  {
+                    "id": "Gris 7015",
+                    "label": "Gris 7015",
+                    "price": 4280,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "Ártico",
+                    "label": "Ártico",
+                    "price": 4280,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "Lino",
+                    "label": "Lino",
+                    "price": 4280,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "Antracita",
+                    "label": "Antracita",
+                    "price": 4280,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "Moka",
+                    "label": "Moka",
+                    "price": 4280,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "Piedra",
+                    "label": "Piedra",
+                    "price": 4280,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "Arena",
+                    "label": "Arena",
+                    "price": 4280,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "Negro",
+                    "label": "Negro",
+                    "price": 4280,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "Basalto",
+                    "label": "Basalto",
+                    "price": 4280,
+                    "priceClass": "standard"
+                  },
+                  {
+                    "id": "RAL/NCS",
+                    "label": "RAL/NCS sur mesure",
+                    "price": 4320,
+                    "priceClass": "ral",
+                    "customCode": true
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "name": "Tiroirs sur mesure",
       "category": "Meuble",
       "kind": "furniture",
-      "sourcePage": "54"
+      "sourcePage": "54",
+      "configuratorFlow": [
+        "dimensions",
+        "finish",
+        "color",
+        "options"
+      ],
+      "dependencyMode": "safe-manual"
     },
     {
       "name": "Portes, vides et colonnes",
       "category": "Meuble",
       "kind": "furniture",
-      "sourcePage": "56-58"
+      "sourcePage": "56-58",
+      "configuratorFlow": [
+        "dimensions",
+        "finish",
+        "color",
+        "options"
+      ],
+      "dependencyMode": "safe-manual"
     },
     {
       "name": "Frame",
       "category": "Meuble",
       "kind": "furniture",
-      "sourcePage": "60"
+      "sourcePage": "60",
+      "configuratorFlow": [
+        "dimensions",
+        "finish",
+        "color",
+        "options"
+      ],
+      "dependencyMode": "safe-manual"
     },
     {
       "name": "Gesto",
       "category": "Meuble",
       "kind": "furniture",
-      "sourcePage": "62"
+      "sourcePage": "62",
+      "configuratorFlow": [
+        "dimensions",
+        "finish",
+        "color",
+        "options"
+      ],
+      "dependencyMode": "safe-manual"
     },
     {
       "name": "RD / SQ",
@@ -1321,7 +2273,12 @@
             "80×120"
           ]
         }
-      ]
+      ],
+      "configuratorFlow": [
+        "size",
+        "options"
+      ],
+      "dependencyMode": "certified"
     },
     {
       "name": "FS / FL",
@@ -1379,25 +2336,49 @@
             "80×120"
           ]
         }
-      ]
+      ],
+      "configuratorFlow": [
+        "size",
+        "options"
+      ],
+      "dependencyMode": "certified"
     },
     {
       "name": "Frame / Gesto",
       "category": "Miroir",
       "kind": "mirror",
-      "sourcePage": "68"
+      "sourcePage": "68",
+      "configuratorFlow": [
+        "size",
+        "options"
+      ],
+      "dependencyMode": "safe-manual"
     },
     {
       "name": "Porte-serviettes",
       "category": "Complément",
       "kind": "accessory",
-      "sourcePage": "70"
+      "sourcePage": "70",
+      "configuratorFlow": [
+        "size",
+        "finish",
+        "color",
+        "options"
+      ],
+      "dependencyMode": "safe-manual"
     },
     {
       "name": "Panneaux / étagères",
       "category": "Complément",
       "kind": "accessory",
-      "sourcePage": "71"
+      "sourcePage": "71",
+      "configuratorFlow": [
+        "size",
+        "finish",
+        "color",
+        "options"
+      ],
+      "dependencyMode": "safe-manual"
     }
   ],
   "spareParts": {
