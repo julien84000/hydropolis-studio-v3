@@ -1,0 +1,16 @@
+"use strict";
+const assert=require("assert");
+const V=require("../public/v1145-pricing.js");
+const p={manufacturer:"Fioranese",pricingUnit:"sqm",sqmPerBox:1.46,price:66.60,quantity:1};
+assert.strictEqual(V.boxCount(p,1),1);
+assert.strictEqual(V.orderedSqm(p,1),1.46);
+assert.strictEqual(V.boxCount(p,1.47),2);
+assert.strictEqual(V.orderedSqm(p,1.47),2.92);
+assert.strictEqual(V.boxCount(p,10),7);
+assert.strictEqual(V.orderedSqm(p,10),10.22);
+assert.deepStrictEqual(V.fioraneseLine(p,1.47),{requestedSqm:1.47,boxes:2,orderedSqm:2.92,unitPrice:66.6,total:194.47,wasteSqm:1.45});
+const res=V.resigresManualQuote(700,{knownSupplements:[{id:"ral",type:"fixed",amount:95,appliesTo:["Vento"]},{id:"groove",type:"perCm",amount:.55,input:"grooveCm",appliesTo:["Vento"]}]},{model:"Vento",ralNcs:"RAL 7032",grooveCm:100,options:[]});
+assert.strictEqual(res.supplements.total,150);
+assert.strictEqual(res.total,850);
+assert.strictEqual(res.pricingStatus,"manual-verified-from-pdf");
+console.log("V11.45 pricing: OK");

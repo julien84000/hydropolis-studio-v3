@@ -1,0 +1,87 @@
+{
+  "artifact": "Hydropolis Studio V11.45 consolidation overlay",
+  "version": "11.45.0",
+  "generatedDate": "2026-09-25",
+  "catalogs": {
+    "Fioranese 2025": {
+      "entries": 1135,
+      "verified": 1132,
+      "pdfFallbacks": 3
+    },
+    "Resigres 2026": {
+      "configuratorEntries": 38
+    }
+  },
+  "files": [
+    {
+      "path": "CATALOG_COVERAGE_V11.45.md",
+      "bytes": 1114,
+      "sha256": "248dddcdfe601eb1a29785045d8be797fea73fbef49cae81b711a33cabf30fc2"
+    },
+    {
+      "path": "README_APPLY_V11.45.md",
+      "bytes": 4065,
+      "sha256": "f535cd53fd4dc15bd69f81fe3626ade3fee56417cd6306995ddb25c307796684"
+    },
+    {
+      "path": "RELEASE_NOTES_V11.45.md",
+      "bytes": 2217,
+      "sha256": "f9f0e50ff97c3d24b256234559873df03e3481bf6c955571e8866507df481319"
+    },
+    {
+      "path": "apply-v11.45-consolidated.js",
+      "bytes": 7508,
+      "sha256": "74eec79b44cab57c5a85ffbb319f472d0b2cb6009a766a22c817401e31e0593b"
+    },
+    {
+      "path": "install-v11.45.sh",
+      "bytes": 182,
+      "sha256": "feb4298c28445221242f6d44ffe3ed617326256d3f0589eff222893d739c4202"
+    },
+    {
+      "path": "public/catalog_fioranese_2025.json",
+      "bytes": 834669,
+      "sha256": "f7e8b7a55ba56c9c182bad3644db6e3398367c6e9c943666db323d059eac86cb"
+    },
+    {
+      "path": "public/catalog_resigres_2026.json",
+      "bytes": 21597,
+      "sha256": "0c0c710e7355df90e822c440cc13130b720689d1c578b34771524c935f28c337"
+    },
+    {
+      "path": "public/resigres_2026_config.json",
+      "bytes": 9282,
+      "sha256": "69dd4e3eaee9bbfad73f6abf717fdd1c67a362b0c37516972a221c2a1194cded"
+    },
+    {
+      "path": "public/v1145-pricing.js",
+      "bytes": 2938,
+      "sha256": "fd8d72dadaa1c00bcc51c9e59b76e609093d86a4e651e9eb513c8c7094d50bd1"
+    },
+    {
+      "path": "public/v1145.css",
+      "bytes": 3579,
+      "sha256": "10d8c5ab01ad9427768c3c5aaa032b6a8e8749ea2b0041912872a0b0dc8497d6"
+    },
+    {
+      "path": "public/v1145.js",
+      "bytes": 16282,
+      "sha256": "b623c05c8f7723d6259ae4dfa1785354863745e5dd0a86efe3e3cc4da658ea98"
+    },
+    {
+      "path": "tests/v11.45-catalog-data.js",
+      "bytes": 1355,
+      "sha256": "8345765840e171bdd1295ef11521fb7d86fef9a7ea1262153d3e506b6489ef0c"
+    },
+    {
+      "path": "tests/v11.45-consolidation-static.js",
+      "bytes": 1171,
+      "sha256": "a092e88ebb0842db17be4d84b111a8adaf20379eda7eeb818c7cb29a5bdc744f"
+    },
+    {
+      "path": "tests/v11.45-pricing.js",
+      "bytes": 1007,
+      "sha256": "8c0aa2f7c924983509a746ea570b737387571bf9650f661fda86ce2cda131c40"
+    }
+  ]
+}

@@ -1,0 +1,436 @@
+{
+  "version": "2026-FR-v1",
+  "source": "Tarif_FR_2026.pdf",
+  "pricingPolicy": "Only verified, unambiguous rules are automatic. Matrix prices remain manual when PDF text does not map columns safely.",
+  "global": {
+    "tolerancePercent": 0.7,
+    "intermediateSizeRule": "Pour les tailles intermédiaires, utiliser le prix de la taille supérieure de la colonne SUR MESURE.",
+    "standardColors": [
+      "Gris 7015",
+      "Ártico",
+      "Lino",
+      "Antracita",
+      "Moka",
+      "Piedra",
+      "Arena",
+      "Negro",
+      "Basalto"
+    ],
+    "finishes": [
+      "Pizarra",
+      "Lisa",
+      "Solid Surface",
+      "S-Blanco"
+    ],
+    "marbles": [
+      "Calacatta",
+      "Marquina",
+      "Pietra",
+      "Calacatta G",
+      "Taj Mahal",
+      "Caliza",
+      "Quartz Green",
+      "Onix"
+    ]
+  },
+  "groups": {
+    "shower-tray": {
+      "fields": [
+        "model",
+        "finish",
+        "color",
+        "widthCm",
+        "lengthCm",
+        "drainPosition",
+        "drainType",
+        "grille",
+        "edgeCm",
+        "grooveCm",
+        "ralNcs"
+      ],
+      "knownSupplements": [
+        {
+          "id": "ral",
+          "label": "Coloris RAL/NCS",
+          "type": "fixed",
+          "amount": 95,
+          "appliesTo": [
+            "Vento / Vento Contract"
+          ],
+          "sourcePage": "6"
+        },
+        {
+          "id": "groove",
+          "label": "Rainure pour paroi de douche",
+          "type": "perCm",
+          "amount": 0.55,
+          "input": "grooveCm",
+          "appliesTo": [
+            "Vento / Vento Contract"
+          ],
+          "sourcePage": "6"
+        }
+      ],
+      "notes": [
+        "Rebords toujours en texture LISA quand la page le précise.",
+        "Les dimensions intermédiaires suivent la taille supérieure SUR MESURE."
+      ]
+    },
+    "basin-top": {
+      "fields": [
+        "model",
+        "finish",
+        "color",
+        "widthCm",
+        "lengthCm",
+        "basinCount",
+        "basinModel",
+        "tapHoles",
+        "backsplash",
+        "dropEdge",
+        "towelRail",
+        "cuts",
+        "ralNcs"
+      ],
+      "knownSupplements": [],
+      "notes": [
+        "Les découpes, plinthes, retombées et vasques font varier le prix.",
+        "Les grilles extraites du PDF sont conservées comme source mais ne sont pas auto-mappées quand les colonnes sont ambiguës."
+      ]
+    },
+    "furniture-basin-top": {
+      "inherits": "basin-top",
+      "fields": [
+        "model",
+        "finish",
+        "color",
+        "widthCm",
+        "lengthCm",
+        "basinCount",
+        "basinModel",
+        "tapHoles",
+        "backsplash",
+        "dropEdge",
+        "cuts",
+        "ralNcs"
+      ],
+      "knownSupplements": []
+    },
+    "basin": {
+      "fields": [
+        "model",
+        "finish",
+        "color",
+        "size",
+        "overflow",
+        "waste",
+        "ralNcs"
+      ],
+      "knownSupplements": []
+    },
+    "bath": {
+      "fields": [
+        "model",
+        "material",
+        "finish",
+        "color",
+        "size",
+        "ralNcs"
+      ],
+      "knownSupplements": []
+    },
+    "furniture": {
+      "fields": [
+        "model",
+        "finish",
+        "color",
+        "widthCm",
+        "heightCm",
+        "depthCm",
+        "opening",
+        "separators",
+        "ralNcs"
+      ],
+      "knownSupplements": []
+    },
+    "mirror": {
+      "fields": [
+        "model",
+        "widthCm",
+        "heightCm",
+        "options"
+      ],
+      "knownSupplements": []
+    },
+    "accessory": {
+      "fields": [
+        "model",
+        "finish",
+        "color",
+        "widthCm",
+        "lengthCm"
+      ],
+      "knownSupplements": []
+    }
+  },
+  "models": [
+    {
+      "name": "Extraplano Latéral",
+      "category": "Receveur",
+      "kind": "shower-tray",
+      "sourcePage": "2"
+    },
+    {
+      "name": "Extraplano Central / 1/4 rond",
+      "category": "Receveur",
+      "kind": "shower-tray",
+      "sourcePage": "4"
+    },
+    {
+      "name": "Extraplano Contract",
+      "category": "Receveur",
+      "kind": "shower-tray",
+      "sourcePage": "5"
+    },
+    {
+      "name": "Vento / Vento Contract",
+      "category": "Receveur",
+      "kind": "shower-tray",
+      "sourcePage": "6"
+    },
+    {
+      "name": "Cosmo / Cosmo Contract",
+      "category": "Receveur",
+      "kind": "shower-tray",
+      "sourcePage": "8"
+    },
+    {
+      "name": "Urban",
+      "category": "Receveur",
+      "kind": "shower-tray",
+      "sourcePage": "10"
+    },
+    {
+      "name": "Nix / Nix Contract",
+      "category": "Receveur",
+      "kind": "shower-tray",
+      "sourcePage": "12"
+    },
+    {
+      "name": "Atenea",
+      "category": "Plan de vasque",
+      "kind": "basin-top",
+      "sourcePage": "14"
+    },
+    {
+      "name": "Vento CF",
+      "category": "Plan de vasque",
+      "kind": "basin-top",
+      "sourcePage": "16"
+    },
+    {
+      "name": "Cosmo CF",
+      "category": "Plan de vasque",
+      "kind": "basin-top",
+      "sourcePage": "18"
+    },
+    {
+      "name": "Urban CF",
+      "category": "Plan de vasque",
+      "kind": "basin-top",
+      "sourcePage": "20"
+    },
+    {
+      "name": "Gea CF",
+      "category": "Plan de vasque",
+      "kind": "basin-top",
+      "sourcePage": "22"
+    },
+    {
+      "name": "Contract CF",
+      "category": "Plan de vasque",
+      "kind": "basin-top",
+      "sourcePage": "24"
+    },
+    {
+      "name": "Selene",
+      "category": "Plan de vasque pour meuble",
+      "kind": "furniture-basin-top",
+      "sourcePage": "26"
+    },
+    {
+      "name": "Vento SF",
+      "category": "Plan de vasque pour meuble",
+      "kind": "furniture-basin-top",
+      "sourcePage": "28"
+    },
+    {
+      "name": "Cosmo SF",
+      "category": "Plan de vasque pour meuble",
+      "kind": "furniture-basin-top",
+      "sourcePage": "30"
+    },
+    {
+      "name": "Urban SF",
+      "category": "Plan de vasque pour meuble",
+      "kind": "furniture-basin-top",
+      "sourcePage": "32"
+    },
+    {
+      "name": "Gea SF",
+      "category": "Plan de vasque pour meuble",
+      "kind": "furniture-basin-top",
+      "sourcePage": "34"
+    },
+    {
+      "name": "Contract SF",
+      "category": "Plan de vasque pour meuble",
+      "kind": "furniture-basin-top",
+      "sourcePage": "36"
+    },
+    {
+      "name": "Axis",
+      "category": "Vasque",
+      "kind": "basin",
+      "sourcePage": "38"
+    },
+    {
+      "name": "Ares",
+      "category": "Vasque",
+      "kind": "basin",
+      "sourcePage": "40-41"
+    },
+    {
+      "name": "Crono",
+      "category": "Vasque",
+      "kind": "basin",
+      "sourcePage": "42-45"
+    },
+    {
+      "name": "Kos / Neo",
+      "category": "Vasque",
+      "kind": "basin",
+      "sourcePage": "44-45"
+    },
+    {
+      "name": "Gesto / Frame",
+      "category": "Vasque",
+      "kind": "basin",
+      "sourcePage": "46-47"
+    },
+    {
+      "name": "Urban",
+      "category": "Vasque",
+      "kind": "basin",
+      "sourcePage": "48"
+    },
+    {
+      "name": "Nalu",
+      "category": "Baignoire",
+      "kind": "bath",
+      "sourcePage": "50"
+    },
+    {
+      "name": "Delia",
+      "category": "Baignoire",
+      "kind": "bath",
+      "sourcePage": "51"
+    },
+    {
+      "name": "Nesta",
+      "category": "Baignoire",
+      "kind": "bath",
+      "sourcePage": "52"
+    },
+    {
+      "name": "Vento",
+      "category": "Baignoire",
+      "kind": "bath",
+      "sourcePage": "53"
+    },
+    {
+      "name": "Tiroirs sur mesure",
+      "category": "Meuble",
+      "kind": "furniture",
+      "sourcePage": "54"
+    },
+    {
+      "name": "Portes, vides et colonnes",
+      "category": "Meuble",
+      "kind": "furniture",
+      "sourcePage": "56-58"
+    },
+    {
+      "name": "Frame",
+      "category": "Meuble",
+      "kind": "furniture",
+      "sourcePage": "60"
+    },
+    {
+      "name": "Gesto",
+      "category": "Meuble",
+      "kind": "furniture",
+      "sourcePage": "62"
+    },
+    {
+      "name": "RD / SQ",
+      "category": "Miroir",
+      "kind": "mirror",
+      "sourcePage": "64"
+    },
+    {
+      "name": "FS / FL",
+      "category": "Miroir",
+      "kind": "mirror",
+      "sourcePage": "66"
+    },
+    {
+      "name": "Frame / Gesto",
+      "category": "Miroir",
+      "kind": "mirror",
+      "sourcePage": "68"
+    },
+    {
+      "name": "Porte-serviettes",
+      "category": "Complément",
+      "kind": "accessory",
+      "sourcePage": "70"
+    },
+    {
+      "name": "Panneaux / étagères",
+      "category": "Complément",
+      "kind": "accessory",
+      "sourcePage": "71"
+    }
+  ],
+  "spareParts": {
+    "sourcePage": "72",
+    "verifiedExamples": [
+      {
+        "label": "Grille Inox receveur Urban / Vento / Nix",
+        "price": 55
+      },
+      {
+        "label": "Grille colorée receveur Urban / Vento / Nix",
+        "price": 65
+      },
+      {
+        "label": "Bonde standard",
+        "price": 75
+      },
+      {
+        "label": "Bonde Viega",
+        "price": 90
+      },
+      {
+        "label": "Bonde verticale",
+        "price": 95
+      },
+      {
+        "label": "Couvercle Solid Surface",
+        "price": 95
+      }
+    ],
+    "note": "Page 72 lists replacement-part prices; use only when the selected option corresponds exactly."
+  }
+}

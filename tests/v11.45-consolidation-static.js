@@ -1,0 +1,14 @@
+"use strict";
+const fs=require("fs"),path=require("path"),assert=require("assert");
+const root=path.join(__dirname,"..");
+const read=p=>fs.readFileSync(path.join(root,p),"utf8");
+const app=read("public/app.js"),idx=read("public/index.html"),server=read("server.js"),sw=read("public/sw.js"),pkg=JSON.parse(read("package.json"));
+for(const marker of ["V11.42_NATIVE_QUANTITY_V4","V11.43_EDITABLE_QUOTE","V11.44_PRESENTATION_LAYOUT","V11.45_BOOTSTRAP_DEFERRED"])assert(app.includes(marker),`missing ${marker}`);
+assert(!/(^|\n)bootstrap\(\);(?=\n|$)/.test(app),"legacy direct bootstrap remains");
+assert(idx.includes("v1145-pricing.js")&&idx.includes("v1145.js")&&idx.includes("v1145.css"));
+assert(server.includes('"fioranese.it"')&&server.includes('"resigres.com"'));
+assert.strictEqual(pkg.scripts.start,"node server.js");
+assert(sw.includes("hydropolis-v11-45-shell")&&sw.includes("hydropolis-v11-45-catalogs"));
+const manifest=JSON.parse(read("public/catalog_manifest.json"));
+assert(manifest.chunks.some(x=>x.file==="catalog_fioranese_2025.json"));assert(manifest.chunks.some(x=>x.file==="catalog_resigres_2026.json"));
+console.log("V11.45 consolidation static: OK");
