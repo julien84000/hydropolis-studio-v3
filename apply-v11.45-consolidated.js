@@ -15,11 +15,14 @@ function run(script){
   if(r.status!==0)fail(`${script} a échoué (${r.status})`);
 }
 function appHas(marker){return exists("public/app.js")&&read("public/app.js").includes(marker)}
+function hasV1143(){return appHas("V11.43_EDITABLE_QUOTE")||appHas("function renderQuoteEditor()")}
 function ensureLegacy(){
   if(!appHas("V11.42_NATIVE_QUANTITY_V4"))run("apply-v11.42-native.js");
-  if(!appHas("V11.43_EDITABLE_QUOTE"))run("apply-v11.43-quote.js");
+  if(!hasV1143())run("apply-v11.43-quote.js");
   if(!appHas("V11.44_PRESENTATION_LAYOUT"))run("apply-v11.44-layout.js");
-  for(const m of ["V11.42_NATIVE_QUANTITY_V4","V11.43_EDITABLE_QUOTE","V11.44_PRESENTATION_LAYOUT"]){if(!appHas(m))fail(`marqueur absent après consolidation : ${m}`)}
+  if(!appHas("V11.42_NATIVE_QUANTITY_V4"))fail("V11.42 quantité absente après consolidation");
+  if(!hasV1143())fail("V11.43 devis éditable absent après consolidation");
+  if(!appHas("V11.44_PRESENTATION_LAYOUT"))fail("V11.44 mise en page absente après consolidation");
 }
 function requireNewFiles(){
   for(const p of ["public/v1145-pricing.js","public/v1145.js","public/v1145.css","public/catalog_fioranese_2025.json","public/catalog_resigres_2026.json","public/resigres_2026_config.json"]){if(!exists(p))fail(`fichier V11.45 manquant : ${p}`)}
