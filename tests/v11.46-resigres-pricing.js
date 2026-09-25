@@ -1,0 +1,12 @@
+"use strict";
+const assert=require("assert"),fs=require("fs"),path=require("path");
+const V=require("../public/v1146-pricing.js");
+const cfg=JSON.parse(fs.readFileSync(path.join(__dirname,"../public/resigres_2026_config.json"),"utf8"));
+let q=V.resigresQuote(cfg,{model:"Cosmo / Cosmo Contract",kind:"shower-tray",variant:"cosmo-contract",finish:"Solid Surface",color:"RAL/NCS",widthCm:90,lengthCm:180,ralNcs:"7031",options:[]});
+assert.equal(q.pricingStatus,"automatic-verified");assert.equal(q.basePrice,1607.04);assert.equal(q.supplements.total,95);assert.equal(q.total,1702.04);
+q=V.resigresQuote(cfg,{model:"Cosmo / Cosmo Contract",kind:"shower-tray",variant:"cosmo",finish:"Solid Surface",color:"Ártico",widthCm:90,lengthCm:180,options:[]});assert.equal(q.basePrice,1506);assert.equal(q.total,1506);
+q=V.resigresQuote(cfg,{model:"Urban",kind:"shower-tray",variant:"urban",finish:"Lisa",color:"Ártico",widthCm:85,lengthCm:175,options:[]});assert.equal(q.basePrice,918);
+q=V.resigresQuote(cfg,{model:"Vento / Vento Contract",kind:"shower-tray",variant:"vento",finish:"Pizarra sur mesure",color:"Ártico",widthCm:90,lengthCm:120,options:[]});assert.equal(q.status,"pending");
+q=V.resigresQuote(cfg,{model:"Nalu",kind:"bath",variant:"nalu",material:"Acrylique mat",color:"Ártico",options:[]});assert.equal(q.total,2450);
+q=V.resigresQuote(cfg,{model:"RD / SQ",kind:"mirror",variant:"rd-noled",size:"Ø80",color:"Ártico",options:[]});assert.equal(q.total,130);
+console.log("V11.46 Resigres pricing: OK");

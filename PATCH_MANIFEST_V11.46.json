@@ -1,0 +1,19 @@
+{
+  "version": "11.46.0",
+  "base": "11.45.0",
+  "buildCommand": "node apply-v11.46-consolidated.js",
+  "startCommand": "npm start",
+  "files": [
+    "apply-v11.46-consolidated.js",
+    "install-v11.46.sh",
+    "public/v1146-pricing.js",
+    "public/v1146.js",
+    "public/v1146.css",
+    "public/resigres_2026_config.json",
+    "public/catalog_resigres_2026.json",
+    "tests/v11.46-resigres-pricing.js",
+    "tests/v11.46-static.js",
+    "RELEASE_NOTES_V11.46.md",
+    "README_APPLY_V11.46.md"
+  ]
+}

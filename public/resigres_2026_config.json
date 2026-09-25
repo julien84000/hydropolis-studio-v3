@@ -1,7 +1,7 @@
 {
-  "version": "2026-FR-v1",
+  "version": "2026-FR-v2",
   "source": "Tarif_FR_2026.pdf",
-  "pricingPolicy": "Only verified, unambiguous rules are automatic. Matrix prices remain manual when PDF text does not map columns safely.",
+  "pricingPolicy": "Tarifs Resigres 2026 importés automatiquement lorsque la grille est certifiée. Les cellules encore ambiguës restent en saisie manuelle plutôt que d'être extrapolées.",
   "global": {
     "tolerancePercent": 0.7,
     "intermediateSizeRule": "Pour les tailles intermédiaires, utiliser le prix de la taille supérieure de la colonne SUR MESURE.",
@@ -48,29 +48,7 @@
         "grooveCm",
         "ralNcs"
       ],
-      "knownSupplements": [
-        {
-          "id": "ral",
-          "label": "Coloris RAL/NCS",
-          "type": "fixed",
-          "amount": 95,
-          "appliesTo": [
-            "Vento / Vento Contract"
-          ],
-          "sourcePage": "6"
-        },
-        {
-          "id": "groove",
-          "label": "Rainure pour paroi de douche",
-          "type": "perCm",
-          "amount": 0.55,
-          "input": "grooveCm",
-          "appliesTo": [
-            "Vento / Vento Contract"
-          ],
-          "sourcePage": "6"
-        }
-      ],
+      "knownSupplements": [],
       "notes": [
         "Rebords toujours en texture LISA quand la page le précise.",
         "Les dimensions intermédiaires suivent la taille supérieure SUR MESURE."
@@ -190,31 +168,856 @@
       "name": "Extraplano Contract",
       "category": "Receveur",
       "kind": "shower-tray",
-      "sourcePage": "5"
+      "sourcePage": "5",
+      "pricingRules": [
+        {
+          "id": "contract",
+          "label": "Contract",
+          "type": "sqm",
+          "rates": {
+            "Lisa": 800,
+            "Solid Surface": 970
+          },
+          "sourcePage": "5",
+          "minSqm": 0.5,
+          "widthRange": [
+            50,
+            150
+          ],
+          "lengthRange": [
+            50,
+            300
+          ]
+        }
+      ],
+      "finishOptions": [
+        "Lisa",
+        "Solid Surface"
+      ],
+      "variants": [
+        {
+          "id": "contract",
+          "label": "Extraplano Contract",
+          "pricingRule": "contract"
+        }
+      ],
+      "supplements": [
+        {
+          "id": "ral",
+          "label": "Coloris RAL/NCS",
+          "type": "fixed",
+          "amount": 95,
+          "autoWhen": "ral",
+          "sourcePage": "variable"
+        },
+        {
+          "id": "groove",
+          "label": "Rainure pour paroi de douche",
+          "type": "perCm",
+          "amount": 0.55,
+          "input": "grooveCm",
+          "sourcePage": "variable"
+        },
+        {
+          "id": "edge1",
+          "label": "Rebord sur mesure h 1 cm",
+          "type": "perCm",
+          "amount": 0.65,
+          "input": "edgeCm",
+          "sourcePage": "5"
+        },
+        {
+          "id": "edge2",
+          "label": "Rebord sur mesure h 2 cm",
+          "type": "perCm",
+          "amount": 0.75,
+          "input": "edgeCm",
+          "sourcePage": "5"
+        }
+      ]
     },
     {
       "name": "Vento / Vento Contract",
       "category": "Receveur",
       "kind": "shower-tray",
-      "sourcePage": "6"
+      "sourcePage": "6",
+      "pricingRules": [
+        {
+          "id": "pizarra-standard",
+          "label": "Pizarra standard",
+          "type": "matrix",
+          "sourcePage": "6",
+          "widths": [
+            70,
+            80,
+            90,
+            100
+          ],
+          "lengths": [
+            120,
+            140,
+            160,
+            180,
+            200
+          ],
+          "intermediateRule": "ceil",
+          "matrix": [
+            [
+              519,
+              597,
+              664,
+              764,
+              855
+            ],
+            [
+              519,
+              597,
+              664,
+              764,
+              855
+            ],
+            [
+              578,
+              663,
+              758,
+              858,
+              null
+            ],
+            [
+              625,
+              718,
+              824,
+              932,
+              1046
+            ]
+          ]
+        },
+        {
+          "id": "pizarra-sur-mesure",
+          "label": "Pizarra sur mesure",
+          "type": "matrix",
+          "sourcePage": "6",
+          "widths": [
+            70,
+            80,
+            90,
+            100
+          ],
+          "lengths": [
+            120,
+            140,
+            160,
+            180,
+            200
+          ],
+          "intermediateRule": "ceil",
+          "matrix": [
+            [
+              626,
+              709,
+              782,
+              890,
+              989
+            ],
+            [
+              626,
+              709,
+              782,
+              890,
+              989
+            ],
+            [
+              null,
+              780,
+              883,
+              991,
+              1103
+            ],
+            [
+              740,
+              840,
+              954,
+              1071,
+              1204
+            ]
+          ]
+        },
+        {
+          "id": "lisa-sur-mesure",
+          "label": "Lisa sur mesure",
+          "type": "matrix",
+          "sourcePage": "6",
+          "widths": [
+            70,
+            80,
+            90,
+            100
+          ],
+          "lengths": [
+            120,
+            140,
+            160,
+            180,
+            200
+          ],
+          "intermediateRule": "ceil",
+          "matrix": [
+            [
+              579,
+              657,
+              734,
+              834,
+              915
+            ],
+            [
+              579,
+              657,
+              724,
+              824,
+              915
+            ],
+            [
+              638,
+              723,
+              818,
+              918,
+              1021
+            ],
+            [
+              685,
+              778,
+              884,
+              992,
+              1106
+            ]
+          ]
+        },
+        {
+          "id": "vento-contract",
+          "label": "Vento Contract",
+          "type": "sqm",
+          "rates": {
+            "Lisa": 845
+          },
+          "sourcePage": "6",
+          "minSqm": 0.5,
+          "widthRange": [
+            70,
+            140
+          ],
+          "lengthRange": [
+            90,
+            300
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "id": "vento",
+          "label": "Vento",
+          "pricingRuleByFinish": {
+            "Pizarra standard": "pizarra-standard",
+            "Pizarra sur mesure": "pizarra-sur-mesure",
+            "Lisa": "lisa-sur-mesure"
+          },
+          "finishOptions": [
+            "Pizarra standard",
+            "Pizarra sur mesure",
+            "Lisa"
+          ]
+        },
+        {
+          "id": "vento-contract",
+          "label": "Vento Contract",
+          "pricingRule": "vento-contract",
+          "finishOptions": [
+            "Lisa"
+          ]
+        }
+      ],
+      "supplements": [
+        {
+          "id": "ral",
+          "label": "Coloris RAL/NCS",
+          "type": "fixed",
+          "amount": 95,
+          "autoWhen": "ral",
+          "sourcePage": "variable"
+        },
+        {
+          "id": "groove",
+          "label": "Rainure pour paroi de douche",
+          "type": "perCm",
+          "amount": 0.55,
+          "input": "grooveCm",
+          "sourcePage": "variable"
+        }
+      ]
     },
     {
       "name": "Cosmo / Cosmo Contract",
       "category": "Receveur",
       "kind": "shower-tray",
-      "sourcePage": "8"
+      "sourcePage": "8",
+      "pricingRules": [
+        {
+          "id": "lisa-sur-mesure",
+          "label": "Lisa sur mesure",
+          "type": "matrix",
+          "sourcePage": "8",
+          "widths": [
+            70,
+            80,
+            90,
+            100
+          ],
+          "lengths": [
+            120,
+            140,
+            160,
+            180,
+            200
+          ],
+          "intermediateRule": "ceil",
+          "matrix": [
+            [
+              615,
+              null,
+              764,
+              872,
+              null
+            ],
+            [
+              675,
+              764,
+              843,
+              null,
+              1046
+            ],
+            [
+              746,
+              845,
+              937,
+              1076,
+              1170
+            ],
+            [
+              807,
+              914,
+              1015,
+              1166,
+              1270
+            ]
+          ]
+        },
+        {
+          "id": "solid-surface-sur-mesure",
+          "label": "Solid Surface sur mesure",
+          "type": "matrix",
+          "sourcePage": "8",
+          "widths": [
+            70,
+            80,
+            90,
+            100
+          ],
+          "lengths": [
+            120,
+            140,
+            160,
+            180,
+            200
+          ],
+          "intermediateRule": "ceil",
+          "matrix": [
+            [
+              861,
+              975,
+              1070,
+              1221,
+              1324
+            ],
+            [
+              945,
+              1070,
+              1180,
+              1348,
+              1464
+            ],
+            [
+              1045,
+              1183,
+              1311,
+              1506,
+              1638
+            ],
+            [
+              1130,
+              1279,
+              1421,
+              1633,
+              1778
+            ]
+          ]
+        },
+        {
+          "id": "cosmo-contract",
+          "label": "Cosmo Contract",
+          "type": "sqm",
+          "rates": {
+            "Lisa": 845,
+            "Solid Surface": 992
+          },
+          "sourcePage": "8",
+          "minSqm": 0.5,
+          "widthRange": [
+            70,
+            140
+          ],
+          "lengthRange": [
+            70,
+            300
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "id": "cosmo",
+          "label": "Cosmo",
+          "pricingRuleByFinish": {
+            "Lisa": "lisa-sur-mesure",
+            "Solid Surface": "solid-surface-sur-mesure"
+          },
+          "finishOptions": [
+            "Lisa",
+            "Solid Surface"
+          ]
+        },
+        {
+          "id": "cosmo-contract",
+          "label": "Cosmo Contract",
+          "pricingRule": "cosmo-contract",
+          "finishOptions": [
+            "Lisa",
+            "Solid Surface"
+          ]
+        }
+      ],
+      "supplements": [
+        {
+          "id": "ral",
+          "label": "Coloris RAL/NCS",
+          "type": "fixed",
+          "amount": 95,
+          "autoWhen": "ral",
+          "sourcePage": "variable"
+        },
+        {
+          "id": "groove",
+          "label": "Rainure pour paroi de douche",
+          "type": "perCm",
+          "amount": 0.55,
+          "input": "grooveCm",
+          "sourcePage": "variable"
+        }
+      ]
     },
     {
       "name": "Urban",
       "category": "Receveur",
       "kind": "shower-tray",
-      "sourcePage": "10"
+      "sourcePage": "10",
+      "pricingRules": [
+        {
+          "id": "pizarra-sur-mesure",
+          "label": "Pizarra sur mesure",
+          "type": "matrix",
+          "sourcePage": "10",
+          "widths": [
+            70,
+            80,
+            90,
+            100
+          ],
+          "lengths": [
+            120,
+            140,
+            160,
+            180,
+            200
+          ],
+          "intermediateRule": "ceil",
+          "matrix": [
+            [
+              626,
+              709,
+              782,
+              890,
+              989
+            ],
+            [
+              626,
+              709,
+              782,
+              890,
+              989
+            ],
+            [
+              null,
+              780,
+              883,
+              991,
+              1103
+            ],
+            [
+              740,
+              840,
+              954,
+              1071,
+              1204
+            ]
+          ]
+        },
+        {
+          "id": "lisa-sur-mesure",
+          "label": "Lisa sur mesure",
+          "type": "matrix",
+          "sourcePage": "10",
+          "widths": [
+            70,
+            80,
+            90,
+            100
+          ],
+          "lengths": [
+            120,
+            140,
+            160,
+            180,
+            200
+          ],
+          "intermediateRule": "ceil",
+          "matrix": [
+            [
+              579,
+              657,
+              734,
+              834,
+              915
+            ],
+            [
+              579,
+              657,
+              724,
+              824,
+              915
+            ],
+            [
+              638,
+              723,
+              818,
+              918,
+              1021
+            ],
+            [
+              685,
+              778,
+              884,
+              992,
+              1106
+            ]
+          ]
+        },
+        {
+          "id": "solid-surface-sur-mesure",
+          "label": "Solid Surface sur mesure",
+          "type": "matrix",
+          "sourcePage": "10",
+          "widths": [
+            70,
+            80,
+            90,
+            100
+          ],
+          "lengths": [
+            120,
+            140,
+            160,
+            180,
+            200
+          ],
+          "intermediateRule": "ceil",
+          "matrix": [
+            [
+              861,
+              975,
+              1070,
+              1221,
+              1324
+            ],
+            [
+              945,
+              1070,
+              1180,
+              1348,
+              1464
+            ],
+            [
+              1045,
+              1183,
+              1311,
+              1506,
+              1638
+            ],
+            [
+              1130,
+              1279,
+              1421,
+              1633,
+              1778
+            ]
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "id": "urban",
+          "label": "Urban",
+          "pricingRuleByFinish": {
+            "Pizarra": "pizarra-sur-mesure",
+            "Lisa": "lisa-sur-mesure",
+            "Solid Surface": "solid-surface-sur-mesure"
+          },
+          "finishOptions": [
+            "Pizarra",
+            "Lisa",
+            "Solid Surface"
+          ]
+        }
+      ],
+      "supplements": [
+        {
+          "id": "ral",
+          "label": "Coloris RAL/NCS",
+          "type": "fixed",
+          "amount": 95,
+          "autoWhen": "ral",
+          "sourcePage": "variable"
+        },
+        {
+          "id": "groove",
+          "label": "Rainure pour paroi de douche",
+          "type": "perCm",
+          "amount": 0.55,
+          "input": "grooveCm",
+          "sourcePage": "variable"
+        },
+        {
+          "id": "edge1",
+          "label": "Rebord sur mesure h 1 cm",
+          "type": "perCm",
+          "amount": 0.65,
+          "input": "edgeCm",
+          "sourcePage": "10"
+        },
+        {
+          "id": "edge2",
+          "label": "Rebord sur mesure h 2 cm",
+          "type": "perCm",
+          "amount": 0.75,
+          "input": "edgeCm",
+          "sourcePage": "10"
+        }
+      ]
     },
     {
       "name": "Nix / Nix Contract",
       "category": "Receveur",
       "kind": "shower-tray",
-      "sourcePage": "12"
+      "sourcePage": "12",
+      "pricingRules": [
+        {
+          "id": "pizarra-sur-mesure",
+          "label": "Pizarra sur mesure",
+          "type": "matrix",
+          "sourcePage": "12",
+          "widths": [
+            70,
+            80,
+            90,
+            100
+          ],
+          "lengths": [
+            120,
+            140,
+            160,
+            180,
+            200
+          ],
+          "intermediateRule": "ceil",
+          "matrix": [
+            [
+              626,
+              709,
+              782,
+              890,
+              989
+            ],
+            [
+              626,
+              709,
+              782,
+              890,
+              989
+            ],
+            [
+              null,
+              780,
+              883,
+              991,
+              1103
+            ],
+            [
+              740,
+              840,
+              954,
+              1071,
+              1204
+            ]
+          ]
+        },
+        {
+          "id": "lisa-sur-mesure",
+          "label": "Lisa sur mesure",
+          "type": "matrix",
+          "sourcePage": "12",
+          "widths": [
+            70,
+            80,
+            90,
+            100
+          ],
+          "lengths": [
+            120,
+            140,
+            160,
+            180,
+            200
+          ],
+          "intermediateRule": "ceil",
+          "matrix": [
+            [
+              579,
+              657,
+              734,
+              834,
+              915
+            ],
+            [
+              579,
+              657,
+              724,
+              824,
+              915
+            ],
+            [
+              638,
+              723,
+              818,
+              918,
+              1021
+            ],
+            [
+              685,
+              778,
+              884,
+              992,
+              1106
+            ]
+          ]
+        },
+        {
+          "id": "nix-contract",
+          "label": "Nix Contract",
+          "type": "sqm",
+          "rates": {
+            "Lisa": 845
+          },
+          "sourcePage": "12",
+          "minSqm": 0.5,
+          "widthRange": [
+            101,
+            140
+          ],
+          "lengthRange": [
+            201,
+            300
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "id": "nix",
+          "label": "Nix",
+          "pricingRuleByFinish": {
+            "Pizarra": "pizarra-sur-mesure",
+            "Lisa": "lisa-sur-mesure"
+          },
+          "finishOptions": [
+            "Pizarra",
+            "Lisa"
+          ]
+        },
+        {
+          "id": "nix-contract",
+          "label": "Nix Contract",
+          "pricingRule": "nix-contract",
+          "finishOptions": [
+            "Lisa"
+          ]
+        }
+      ],
+      "supplements": [
+        {
+          "id": "ral",
+          "label": "Coloris RAL/NCS",
+          "type": "fixed",
+          "amount": 95,
+          "autoWhen": "ral",
+          "sourcePage": "variable"
+        },
+        {
+          "id": "groove",
+          "label": "Rainure pour paroi de douche",
+          "type": "perCm",
+          "amount": 0.55,
+          "input": "grooveCm",
+          "sourcePage": "variable"
+        },
+        {
+          "id": "plus-rect",
+          "label": "Grille Plus Rectangular",
+          "type": "fixed",
+          "amount": 45,
+          "sourcePage": "12"
+        },
+        {
+          "id": "edge1",
+          "label": "Rebord sur mesure h 1 cm",
+          "type": "perCm",
+          "amount": 0.65,
+          "input": "edgeCm",
+          "sourcePage": "12"
+        },
+        {
+          "id": "edge2",
+          "label": "Rebord sur mesure h 2 cm",
+          "type": "perCm",
+          "amount": 0.75,
+          "input": "edgeCm",
+          "sourcePage": "12"
+        }
+      ]
     },
     {
       "name": "Atenea",
@@ -328,13 +1131,63 @@
       "name": "Nalu",
       "category": "Baignoire",
       "kind": "bath",
-      "sourcePage": "50"
+      "sourcePage": "50",
+      "pricingRules": [
+        {
+          "id": "nalu-fixed",
+          "label": "Nalu 170 × 80",
+          "type": "option",
+          "sourcePage": "50",
+          "optionField": "material",
+          "prices": {
+            "Acrylique brillant": 2295,
+            "Acrylique mat": 2450
+          }
+        }
+      ],
+      "variants": [
+        {
+          "id": "nalu",
+          "label": "Nalu 170 × 80",
+          "pricingRule": "nalu-fixed",
+          "materialOptions": [
+            "Acrylique brillant",
+            "Acrylique mat"
+          ]
+        }
+      ]
     },
     {
       "name": "Delia",
       "category": "Baignoire",
       "kind": "bath",
-      "sourcePage": "51"
+      "sourcePage": "51",
+      "pricingRules": [
+        {
+          "id": "delia-fixed",
+          "label": "Delia 110 × 110",
+          "type": "option",
+          "sourcePage": "51",
+          "optionField": "material",
+          "prices": {
+            "Solid Surface": 1950,
+            "Laquée standard": 2490,
+            "Laquée RAL/NCS": 2590
+          }
+        }
+      ],
+      "variants": [
+        {
+          "id": "delia",
+          "label": "Delia 110 × 110",
+          "pricingRule": "delia-fixed",
+          "materialOptions": [
+            "Solid Surface",
+            "Laquée standard",
+            "Laquée RAL/NCS"
+          ]
+        }
+      ]
     },
     {
       "name": "Nesta",
@@ -376,13 +1229,157 @@
       "name": "RD / SQ",
       "category": "Miroir",
       "kind": "mirror",
-      "sourcePage": "64"
+      "sourcePage": "64",
+      "pricingRules": [
+        {
+          "id": "rd-standard-noled",
+          "label": "RD standard sans éclairage",
+          "type": "sizeMap",
+          "sourcePage": "64",
+          "sizeField": "size",
+          "prices": {
+            "Ø60": 112,
+            "Ø80": 130
+          }
+        },
+        {
+          "id": "rd-standard-led",
+          "label": "RD standard éclairage",
+          "type": "sizeMap",
+          "sourcePage": "64",
+          "sizeField": "size",
+          "prices": {
+            "Ø60": 203,
+            "Ø80": 224
+          }
+        },
+        {
+          "id": "sq-standard-noled",
+          "label": "SQ standard sans éclairage",
+          "type": "sizeMap",
+          "sourcePage": "64",
+          "sizeField": "size",
+          "prices": {
+            "80×60": 105,
+            "80×80": 116,
+            "80×100": 134,
+            "80×120": 167
+          }
+        },
+        {
+          "id": "sq-standard-led",
+          "label": "SQ standard éclairage",
+          "type": "sizeMap",
+          "sourcePage": "64",
+          "sizeField": "size",
+          "prices": {
+            "80×60": 199,
+            "80×80": 221,
+            "80×100": 253,
+            "80×120": 308
+          }
+        }
+      ],
+      "variants": [
+        {
+          "id": "rd-noled",
+          "label": "RD standard · sans éclairage",
+          "pricingRule": "rd-standard-noled",
+          "sizeOptions": [
+            "Ø60",
+            "Ø80"
+          ]
+        },
+        {
+          "id": "rd-led",
+          "label": "RD standard · éclairage",
+          "pricingRule": "rd-standard-led",
+          "sizeOptions": [
+            "Ø60",
+            "Ø80"
+          ]
+        },
+        {
+          "id": "sq-noled",
+          "label": "SQ standard · sans éclairage",
+          "pricingRule": "sq-standard-noled",
+          "sizeOptions": [
+            "80×60",
+            "80×80",
+            "80×100",
+            "80×120"
+          ]
+        },
+        {
+          "id": "sq-led",
+          "label": "SQ standard · éclairage",
+          "pricingRule": "sq-standard-led",
+          "sizeOptions": [
+            "80×60",
+            "80×80",
+            "80×100",
+            "80×120"
+          ]
+        }
+      ]
     },
     {
       "name": "FS / FL",
       "category": "Miroir",
       "kind": "mirror",
-      "sourcePage": "66"
+      "sourcePage": "66",
+      "pricingRules": [
+        {
+          "id": "fs-standard",
+          "label": "FS standard",
+          "type": "sizeMap",
+          "sourcePage": "66",
+          "sizeField": "size",
+          "prices": {
+            "80×60": 152,
+            "80×80": 177,
+            "80×100": 214,
+            "80×120": 246
+          }
+        },
+        {
+          "id": "fl-standard",
+          "label": "FL standard",
+          "type": "sizeMap",
+          "sourcePage": "66",
+          "sizeField": "size",
+          "prices": {
+            "80×60": 224,
+            "80×80": 235,
+            "80×100": 253,
+            "80×120": 286
+          }
+        }
+      ],
+      "variants": [
+        {
+          "id": "fs",
+          "label": "FS standard",
+          "pricingRule": "fs-standard",
+          "sizeOptions": [
+            "80×60",
+            "80×80",
+            "80×100",
+            "80×120"
+          ]
+        },
+        {
+          "id": "fl",
+          "label": "FL standard",
+          "pricingRule": "fl-standard",
+          "sizeOptions": [
+            "80×60",
+            "80×80",
+            "80×100",
+            "80×120"
+          ]
+        }
+      ]
     },
     {
       "name": "Frame / Gesto",
@@ -432,5 +1429,21 @@
       }
     ],
     "note": "Page 72 lists replacement-part prices; use only when the selected option corresponds exactly."
+  },
+  "verifiedAutomaticPricing": {
+    "showerTrayFamilies": [
+      "Extraplano Contract",
+      "Vento / Vento Contract",
+      "Cosmo / Cosmo Contract",
+      "Urban",
+      "Nix / Nix Contract"
+    ],
+    "otherFamilies": [
+      "Nalu",
+      "Delia",
+      "RD / SQ",
+      "FS / FL"
+    ],
+    "note": "Les cellules dont le glyphe prix est endommagé dans le PDF restent nulles et déclenchent la saisie manuelle."
   }
 }
