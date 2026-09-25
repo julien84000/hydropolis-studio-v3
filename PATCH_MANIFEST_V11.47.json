@@ -1,0 +1,14 @@
+{
+  "version": "11.47.0",
+  "name": "Hydropolis Studio V11.47 - Resigres Official Assets",
+  "buildCommand": "node apply-v11.47-consolidated.js",
+  "startCommand": "npm start",
+  "features": [
+    "Official Resigres product image resolver",
+    "Official technical PDF resolver",
+    "Official installation guide resolver",
+    "Official 3D asset resolver",
+    "Replaces stale/generic Resigres image cache",
+    "Keeps V11.46.1 Resigres pricing engine"
+  ]
+}
