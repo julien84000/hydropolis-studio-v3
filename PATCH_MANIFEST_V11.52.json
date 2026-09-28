@@ -1,0 +1,17 @@
+{
+  "version": "11.52.0",
+  "name": "Hydropolis Studio V11.52",
+  "buildCommand": "node apply-v11.52-consolidated.js",
+  "startCommand": "npm start",
+  "catalogs": {
+    "Vismaravetro": 15,
+    "TDA": 20
+  },
+  "features": [
+    "Resigres technical sheet hydration",
+    "Resigres technical sheet manual refresh",
+    "Vismaravetro official web visuals",
+    "TDA official web visuals",
+    "No invented shower-screen prices"
+  ]
+}
