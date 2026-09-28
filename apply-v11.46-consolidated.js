@@ -26,7 +26,7 @@ let pkg=JSON.parse(read("package.json"));pkg.version="11.46.1";pkg.description="
 pkg.scripts.check="node --check server.js && node --check public/app.js && node --check public/sw.js && node --check public/v1146-pricing.js && node --check public/v1146.js";
 const prev=String(pkg.scripts.test||"").split(" && ").filter(Boolean).filter(x=>!x.includes("v11.46-"));pkg.scripts.test=[...prev,"node tests/v11.46-resigres-pricing.js","node tests/v11.46-static.js"].join(" && ");pkg.scripts.build="npm run check && npm test";write("package.json",JSON.stringify(pkg,null,2)+"\n");
 const config=JSON.parse(read("public/resigres_2026_config.json"));
-if(!["2026-FR-v2","2026-FR-v3"].includes(config.version))fail(`configuration Resigres incompatible : ${config.version||"absente"}`);
+if(!["2026-FR-v2","2026-FR-v3","2026-FR-v4","2026-FR-v5"].includes(config.version))fail(`configuration Resigres incompatible : ${config.version||"absente"}`);
 if(!idx.includes("v1146-pricing.js")||!idx.includes("v1146.js"))fail("assets V11.46 non chargés");
 if(read("public/v1146.js").includes("optionHtml(colors)+="))fail("régression configurateur Resigres: concaténation invalide");
 for(const target of ["public/v1146-pricing.js","public/v1146.js"]){const r=cp.spawnSync(process.execPath,["--check",file(target)],{cwd:ROOT,stdio:"inherit"});if(r.status!==0)fail(`syntaxe invalide : ${target}`)}

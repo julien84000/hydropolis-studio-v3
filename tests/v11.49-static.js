@@ -1,0 +1,12 @@
+"use strict";
+const fs=require("fs"),assert=require("assert"),path=require("path");
+const ROOT=path.join(__dirname,"..");
+const cfg=JSON.parse(fs.readFileSync(path.join(ROOT,"public/resigres_2026_config.json"),"utf8"));
+assert(["2026-FR-v4","2026-FR-v5"].includes(cfg.version));
+const cosmo=cfg.models.find(x=>x.name==="Cosmo / Cosmo Contract"&&x.kind==="shower-tray");assert(cosmo?.v49ShowerConfigurator?.enabled);assert.equal(cosmo.v49ShowerConfigurator.dimensionMode,"actual-with-ceiling-price-tier");
+const selene=cfg.models.find(x=>x.name==="Selene"&&x.kind==="furniture-basin-top");assert.equal(selene.v49Selene.shapes.length,6);assert.equal(selene.v49Selene.maxWidthCm,51);assert.equal(selene.v49Selene.maxLengthCm,201);assert(selene.v49Selene.includedOptions.length>=4);assert(selene.v49Selene.paidOptions.length>=8);
+for(const x of selene.v49Selene.shapes)assert(fs.existsSync(path.join(ROOT,"public",x.image.replace(/^\//,""))),`image Selene absente: ${x.image}`);
+const js=fs.readFileSync(path.join(ROOT,"public/v1149.js"),"utf8"),server=fs.readFileSync(path.join(ROOT,"v1149-resigres-server-snippet.js"),"utf8"),v47=fs.readFileSync(path.join(ROOT,"public/v1147.js"),"utf8");
+for(const needle of ["Dimensions réelles","palier supérieur","Options comprises et suppléments payants","v1149-shape"])assert(js.includes(needle),`UI V11.49 absente: ${needle}`);
+assert(server.includes('RESIGRES_RESOLVER_VERSION="11.49"'));assert(server.includes("rgExtractCategoryImages"));assert(server.includes('match:"category-image"'));assert(v47.includes('RESIGRES_RESOLVER_VERSION="11.49"'));
+console.log("V11.49 static: OK");

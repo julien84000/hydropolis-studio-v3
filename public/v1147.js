@@ -1,7 +1,9 @@
-/* HYDROPOLIS_STUDIO_V11_47 */
+/* HYDROPOLIS_STUDIO_V11_49_RESIGRES_ASSETS */
+/* HYDROPOLIS_STUDIO_V11_47 compatibility marker */
 (() => {
   "use strict";
 
+  const RESIGRES_RESOLVER_VERSION="11.49";
   const isResigres=p=>/^Resigres$/i.test(String(p?.manufacturer||""));
   const baseFetchManufacturerImage=fetchManufacturerImage;
   const baseAutomaticImageEligible=automaticImageEligible;
@@ -25,14 +27,16 @@
   }
   function resigresModel(p){return String(p?.resigresModel||p?.designation||p?.collection||"").trim()}
   function proxyImage(url){return url?`/api/image-proxy?url=${encodeURIComponent(url)}`:""}
-  function isOfficialResigresCache(c){return !!(c?.src && /Site officiel Resigres/i.test(String(c?.source||"")))}
+  function isOfficialResigresCache(c){return !!(c?.src && /Site officiel Resigres/i.test(String(c?.source||"")) && c?.resigresResolverVersion===RESIGRES_RESOLVER_VERSION)}
 
   async function fetchResigresAssets(p,force=false){
     const key=manufacturerCacheKey(p);
     const cached=manufacturerImageCache[key];
     if(!force && isOfficialResigresCache(cached))return cached;
 
-    const qs=new URLSearchParams({model:resigresModel(p),kind:resigresKind(p)});
+    const directProductUrl=/\/producto\.php\?/i.test(String(p?.resolvedManufacturerUrl||p?.manufacturerUrl||""))?(p.resolvedManufacturerUrl||p.manufacturerUrl):"";
+    const qs=new URLSearchParams({model:resigresModel(p),kind:resigresKind(p),productUrl:p.resolvedManufacturerUrl||p.manufacturerUrl||""});
+    if(directProductUrl)qs.set("productUrl",directProductUrl);
     const r=await fetch(`/api/resigres-assets?${qs.toString()}`,{cache:force?"no-store":"default"});
     let data={};try{data=await r.json()}catch{}
     if(!r.ok)throw new Error(data.detail||data.error||`Resigres HTTP ${r.status}`);
@@ -58,9 +62,16 @@
       model3dUrl:data.model3dUrl||"",
       model3dLabel:data.model3dLabel||"Fichier 3D Resigres",
       resigresAssetTitle:data.title||resigresModel(p),
-      resigresAssetMatch:data.match||"official"
+      resigresAssetMatch:data.match||"official",
+      resolverVersion:data.resolverVersion||"",
+      resigresResolverVersion:data.resolverVersion||RESIGRES_RESOLVER_VERSION
     };
     manufacturerImageCache[key]=item;
+    // V11.49: erase stale Resigres cache variants that were produced by the old resolver.
+    for(const cacheKey of Object.keys(manufacturerImageCache||{})){
+      const row=manufacturerImageCache[cacheKey];
+      if(cacheKey!==key && /Site officiel Resigres/i.test(String(row?.source||"")) && row?.resigresResolverVersion!==RESIGRES_RESOLVER_VERSION)delete manufacturerImageCache[cacheKey];
+    }
     saveManufacturerCache();
     return item;
   }
@@ -172,6 +183,16 @@
     baseRenderRooms();
     hydrateSelectedResigres().catch(e=>console.warn("[Resigres V11.47 hydrate]",e));
   };
+
+  // V11.49: force first official refresh and invalidate all stale V11.47/V11.48 Resigres caches.
+  try{
+    let dirty=false;
+    for(const cacheKey of Object.keys(manufacturerImageCache||{})){
+      const row=manufacturerImageCache[cacheKey];
+      if(/Site officiel Resigres/i.test(String(row?.source||"")) && row?.resigresResolverVersion!==RESIGRES_RESOLVER_VERSION){delete manufacturerImageCache[cacheKey];dirty=true}
+    }
+    if(dirty)saveManufacturerCache();
+  }catch(e){console.warn("[Resigres V11.49 cache reset]",e)}
 
   // Force a first official refresh in the current catalogue view, including stale generic caches.
   queueMicrotask(()=>{

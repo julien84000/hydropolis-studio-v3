@@ -1,7 +1,7 @@
 {
-  "version": "2026-FR-v3",
+  "version": "2026-FR-v5",
   "source": "Tarif_FR_2026.pdf",
-  "pricingPolicy": "Configurateur dépendant : chaque choix filtre les choix suivants. Aucune finition ou couleur globale n’est injectée lorsqu’elle n’est pas certifiée pour le modèle.",
+  "pricingPolicy": "Configurateur V11.50 dépendant pour tous receveurs, plans vasque, plans vasque meuble et meubles. Dimensions, matières, coloris et options sont filtrés par modèle; aucune combinaison non certifiée n’est injectée.",
   "global": {
     "tolerancePercent": 0.7,
     "intermediateSizeRule": "Pour les tailles intermédiaires, utiliser le prix de la taille supérieure de la colonne SUR MESURE.",
@@ -309,7 +309,75 @@
         "color",
         "options"
       ],
-      "dependencyMode": "safe-manual"
+      "dependencyMode": "certified-structure-v50",
+      "v49ShowerConfigurator": {
+        "enabled": true,
+        "sourcePage": "2",
+        "dimensionMode": "actual-with-ceiling-price-tier",
+        "rule": "Une dimension intermédiaire est tarifée au palier immédiatement supérieur de la grille SUR MESURE.",
+        "widthMin": 70,
+        "widthMax": 110,
+        "lengthMin": 90,
+        "lengthMax": 220
+      },
+      "variants": [
+        {
+          "id": "lateral",
+          "label": "Extraplano Latéral",
+          "finishOptions": [
+            "Pizarra standard",
+            "Pizarra sur mesure",
+            "Lisa",
+            "Solid Surface",
+            "Marbré"
+          ]
+        }
+      ],
+      "supplements": [
+        {
+          "id": "ral",
+          "label": "Coloris RAL/NCS",
+          "type": "fixed",
+          "amount": 95,
+          "autoWhen": "ral",
+          "sourcePage": "2"
+        },
+        {
+          "id": "groove",
+          "label": "Rainure pour paroi de douche",
+          "type": "perCm",
+          "amount": 0.55,
+          "input": "grooveCm",
+          "sourcePage": "2"
+        },
+        {
+          "id": "edge1",
+          "label": "Rebord sur mesure h 1 cm",
+          "type": "perCm",
+          "amount": 0.65,
+          "input": "edgeCm",
+          "sourcePage": "2"
+        },
+        {
+          "id": "edge2",
+          "label": "Rebord sur mesure h 2 cm",
+          "type": "perCm",
+          "amount": 0.75,
+          "input": "edgeCm",
+          "sourcePage": "2"
+        }
+      ],
+      "v50DimensionRange": {
+        "width": [
+          70,
+          110
+        ],
+        "length": [
+          90,
+          220
+        ],
+        "rule": "ceil-upper-tier"
+      }
     },
     {
       "name": "Extraplano Central / 1/4 rond",
@@ -323,7 +391,97 @@
         "color",
         "options"
       ],
-      "dependencyMode": "safe-manual"
+      "dependencyMode": "certified-structure-v50",
+      "v49ShowerConfigurator": {
+        "enabled": true,
+        "sourcePage": "4",
+        "dimensionMode": "actual-with-ceiling-price-tier",
+        "rule": "Une dimension intermédiaire est tarifée au palier immédiatement supérieur de la grille SUR MESURE.",
+        "widthMin": 70,
+        "widthMax": 100,
+        "lengthMin": 70,
+        "lengthMax": 200
+      },
+      "variants": [
+        {
+          "id": "central",
+          "label": "Extraplano Central",
+          "finishOptions": [
+            "Pizarra standard",
+            "Pizarra sur mesure",
+            "Lisa",
+            "Solid Surface",
+            "Marbré"
+          ]
+        },
+        {
+          "id": "quarter",
+          "label": "Extraplano 1/4 rond",
+          "finishOptions": [
+            "Pizarra standard",
+            "Pizarra sur mesure",
+            "Lisa",
+            "Solid Surface"
+          ]
+        }
+      ],
+      "supplements": [
+        {
+          "id": "ral",
+          "label": "Coloris RAL/NCS",
+          "type": "fixed",
+          "amount": 95,
+          "autoWhen": "ral",
+          "sourcePage": "4"
+        },
+        {
+          "id": "groove",
+          "label": "Rainure pour paroi de douche",
+          "type": "perCm",
+          "amount": 0.55,
+          "input": "grooveCm",
+          "sourcePage": "4"
+        },
+        {
+          "id": "edge1",
+          "label": "Rebord sur mesure h 1 cm",
+          "type": "perCm",
+          "amount": 0.65,
+          "input": "edgeCm",
+          "sourcePage": "4"
+        },
+        {
+          "id": "edge2",
+          "label": "Rebord sur mesure h 2 cm",
+          "type": "perCm",
+          "amount": 0.75,
+          "input": "edgeCm",
+          "sourcePage": "4"
+        }
+      ],
+      "v50DimensionRange": {
+        "central": {
+          "width": [
+            70,
+            100
+          ],
+          "length": [
+            70,
+            200
+          ]
+        },
+        "quarter": {
+          "width": [
+            80,
+            100
+          ],
+          "length": [
+            80,
+            100
+          ]
+        },
+        "rule": "ceil-upper-tier"
+      }
     },
     {
       "name": "Extraplano Contract",
@@ -403,7 +561,17 @@
         "color",
         "options"
       ],
-      "dependencyMode": "certified"
+      "dependencyMode": "certified-structure-v50",
+      "v49ShowerConfigurator": {
+        "enabled": true,
+        "sourcePage": "5",
+        "dimensionMode": "actual-with-ceiling-price-tier",
+        "rule": "Une dimension intermédiaire est tarifée au palier immédiatement supérieur de la grille SUR MESURE.",
+        "widthMin": 50,
+        "widthMax": 150,
+        "lengthMin": 50,
+        "lengthMax": 300
+      }
     },
     {
       "name": "Vento / Vento Contract",
@@ -629,7 +797,17 @@
         "color",
         "options"
       ],
-      "dependencyMode": "certified"
+      "dependencyMode": "certified-structure-v50",
+      "v49ShowerConfigurator": {
+        "enabled": true,
+        "sourcePage": "6",
+        "dimensionMode": "actual-with-ceiling-price-tier",
+        "rule": "Une dimension intermédiaire est tarifée au palier immédiatement supérieur de la grille SUR MESURE.",
+        "widthMin": 70,
+        "widthMax": 100,
+        "lengthMin": 120,
+        "lengthMax": 200
+      }
     },
     {
       "name": "Cosmo / Cosmo Contract",
@@ -805,7 +983,17 @@
         "color",
         "options"
       ],
-      "dependencyMode": "certified"
+      "dependencyMode": "certified-structure-v50",
+      "v49ShowerConfigurator": {
+        "enabled": true,
+        "sourcePage": "8",
+        "dimensionMode": "actual-with-ceiling-price-tier",
+        "rule": "Une dimension intermédiaire est tarifée au palier immédiatement supérieur de la grille SUR MESURE.",
+        "widthMin": 70,
+        "widthMax": 100,
+        "lengthMin": 120,
+        "lengthMax": 200
+      }
     },
     {
       "name": "Urban",
@@ -1021,7 +1209,17 @@
         "color",
         "options"
       ],
-      "dependencyMode": "certified"
+      "dependencyMode": "certified-structure-v50",
+      "v49ShowerConfigurator": {
+        "enabled": true,
+        "sourcePage": "10",
+        "dimensionMode": "actual-with-ceiling-price-tier",
+        "rule": "Une dimension intermédiaire est tarifée au palier immédiatement supérieur de la grille SUR MESURE.",
+        "widthMin": 70,
+        "widthMax": 100,
+        "lengthMin": 120,
+        "lengthMax": 200
+      }
     },
     {
       "name": "Nix / Nix Contract",
@@ -1218,7 +1416,17 @@
         "color",
         "options"
       ],
-      "dependencyMode": "certified"
+      "dependencyMode": "certified-structure-v50",
+      "v49ShowerConfigurator": {
+        "enabled": true,
+        "sourcePage": "12",
+        "dimensionMode": "actual-with-ceiling-price-tier",
+        "rule": "Une dimension intermédiaire est tarifée au palier immédiatement supérieur de la grille SUR MESURE.",
+        "widthMin": 70,
+        "widthMax": 100,
+        "lengthMin": 120,
+        "lengthMax": 200
+      }
     },
     {
       "name": "Atenea",
@@ -1226,13 +1434,304 @@
       "kind": "basin-top",
       "sourcePage": "14",
       "configuratorFlow": [
-        "dimensions",
-        "basin",
-        "finish",
+        "basinShape",
+        "material",
         "color",
+        "basinGroup",
+        "dimensions",
         "options"
       ],
-      "dependencyMode": "safe-manual"
+      "dependencyMode": "certified-structure-v50",
+      "v50BasinTop": {
+        "sourcePage": "14",
+        "mode": "matrix",
+        "maxWidthCm": 51,
+        "maxLengthCm": 201,
+        "shapes": [
+          {
+            "id": "standard",
+            "label": "Standard",
+            "dimensions": "28 × 50 cm",
+            "image": "/resigres/shapes/standard.png",
+            "groups": [
+              "one",
+              "two"
+            ]
+          },
+          {
+            "id": "circular",
+            "label": "Circulaire",
+            "dimensions": "Ø 30 cm",
+            "image": "/resigres/shapes/circular.png",
+            "groups": [
+              "one",
+              "two"
+            ]
+          },
+          {
+            "id": "oval",
+            "label": "Ovale",
+            "dimensions": "30 × 45 cm",
+            "image": "/resigres/shapes/oval.png",
+            "groups": [
+              "one",
+              "two"
+            ]
+          },
+          {
+            "id": "mini",
+            "label": "Mini",
+            "dimensions": "22 × 40 cm",
+            "image": "/resigres/shapes/mini.png",
+            "groups": [
+              "one",
+              "two"
+            ]
+          },
+          {
+            "id": "xl85",
+            "label": "XL85",
+            "dimensions": "30 × 85 cm",
+            "image": "/resigres/shapes/xl85.png",
+            "groups": [
+              "one-xl"
+            ]
+          },
+          {
+            "id": "xl120",
+            "label": "XL120",
+            "dimensions": "30 × 120 cm",
+            "image": "/resigres/shapes/xl120.png",
+            "groups": [
+              "one-xl"
+            ]
+          }
+        ],
+        "materials": [
+          {
+            "id": "solid-surface",
+            "label": "Solid Surface",
+            "priceClass": "solid",
+            "colors": [
+              "S-Blanco"
+            ]
+          },
+          {
+            "id": "lisa",
+            "label": "Lisa",
+            "priceClass": "resin",
+            "colors": [
+              "Gris 7015",
+              "Ártico",
+              "Lino",
+              "Antracita",
+              "Moka",
+              "Piedra",
+              "Arena",
+              "Negro",
+              "Basalto",
+              "RAL/NCS"
+            ]
+          },
+          {
+            "id": "pizarra",
+            "label": "Pizarra",
+            "priceClass": "resin",
+            "colors": [
+              "Gris 7015",
+              "Ártico",
+              "Lino",
+              "Antracita",
+              "Moka",
+              "Piedra",
+              "Arena",
+              "Negro",
+              "Basalto",
+              "RAL/NCS"
+            ]
+          },
+          {
+            "id": "gpc",
+            "label": "GPC",
+            "priceClass": "gpc",
+            "colors": [
+              "Calacatta G",
+              "Taj Mahal",
+              "Marquina",
+              "Caliza",
+              "Quartz Green",
+              "Onix"
+            ]
+          }
+        ],
+        "shapeMaterialRestrictions": {
+          "circular": [
+            "solid-surface",
+            "lisa",
+            "pizarra"
+          ],
+          "oval": [
+            "solid-surface",
+            "lisa",
+            "pizarra"
+          ],
+          "xl120": [
+            "solid-surface",
+            "lisa",
+            "pizarra",
+            "gpc"
+          ],
+          "xl85": [
+            "solid-surface",
+            "lisa",
+            "pizarra",
+            "gpc"
+          ],
+          "standard": [
+            "solid-surface",
+            "lisa",
+            "pizarra",
+            "gpc"
+          ],
+          "mini": [
+            "solid-surface",
+            "lisa",
+            "pizarra",
+            "gpc"
+          ]
+        },
+        "groups": [
+          {
+            "id": "one",
+            "label": "1 vasque centrée ou déplacée",
+            "lengthTiers": [
+              61,
+              81,
+              101,
+              121,
+              141,
+              161,
+              181,
+              201
+            ],
+            "prices": {}
+          },
+          {
+            "id": "one-xl",
+            "label": "1 grande vasque XL85 / XL120",
+            "lengthTiers": [
+              121,
+              141,
+              161,
+              181,
+              201
+            ],
+            "prices": {}
+          },
+          {
+            "id": "two",
+            "label": "2 vasques centrées ou déplacées",
+            "lengthTiers": [
+              121,
+              141,
+              161,
+              181,
+              201
+            ],
+            "prices": {}
+          }
+        ],
+        "includedOptions": [
+          {
+            "id": "cut-straight",
+            "label": "Découpe droite sur mesure"
+          },
+          {
+            "id": "hole-35",
+            "label": "Trou standard Ø 3,5 cm"
+          },
+          {
+            "id": "hole-42",
+            "label": "Trou standard Ø 4,2 cm"
+          },
+          {
+            "id": "hole-90",
+            "label": "Trou standard Ø 9 cm"
+          }
+        ],
+        "paidOptions": [
+          {
+            "id": "colored-waste",
+            "label": "Bonde clic colorée",
+            "type": "perUnit",
+            "amount": 66,
+            "unit": "ud"
+          },
+          {
+            "id": "overflow",
+            "label": "Trop plein",
+            "type": "perUnit",
+            "amount": 33,
+            "unit": "ud"
+          },
+          {
+            "id": "towel-rail",
+            "label": "Porte-serviette sur plan",
+            "type": "perUnit",
+            "amount": 120,
+            "unit": "ud"
+          },
+          {
+            "id": "backsplash-standard",
+            "label": "Plinthe standard 4 cm",
+            "type": "perCm",
+            "amount": 0.55,
+            "unit": "cm"
+          },
+          {
+            "id": "backsplash-custom",
+            "label": "Plinthe sur mesure 5–30 cm",
+            "type": "perCm",
+            "amount": 1.1,
+            "unit": "cm"
+          },
+          {
+            "id": "backsplash-integrated-straight",
+            "label": "Plinthe intégrée droite 4–30 cm",
+            "type": "perCm",
+            "amount": 1.7,
+            "unit": "cm"
+          },
+          {
+            "id": "backsplash-integrated-concave",
+            "label": "Plinthe intégrée concave 4–30 cm",
+            "type": "perCm",
+            "amount": 2.0,
+            "unit": "cm"
+          },
+          {
+            "id": "curved-cut",
+            "label": "Découpe courbe sur mesure",
+            "type": "perUnit",
+            "amount": 70,
+            "unit": "ud"
+          },
+          {
+            "id": "special-hole",
+            "label": "Trou spécial sur plan / plinthe / retombée",
+            "type": "perUnit",
+            "amount": 25,
+            "unit": "ud"
+          }
+        ],
+        "ralSupplement": 95,
+        "pricingMode": "manual-safe",
+        "notes": [
+          "Les dimensions intermédiaires utilisent le palier supérieur de la grille.",
+          "Les choix incompatibles sont masqués automatiquement.",
+          "GPC uniquement sur les formes autorisées par le tarif."
+        ]
+      }
     },
     {
       "name": "Vento CF",
@@ -1240,13 +1739,238 @@
       "kind": "basin-top",
       "sourcePage": "16",
       "configuratorFlow": [
-        "dimensions",
-        "basin",
-        "finish",
+        "basinShape",
+        "material",
         "color",
+        "basinGroup",
+        "dimensions",
         "options"
       ],
-      "dependencyMode": "safe-manual"
+      "dependencyMode": "certified-v50",
+      "v50BasinTop": {
+        "sourcePage": "16",
+        "mode": "matrix",
+        "maxWidthCm": 51,
+        "maxLengthCm": 201,
+        "shapes": [
+          {
+            "id": "vento40",
+            "label": "Vento 40",
+            "dimensions": "28 × 40 cm",
+            "groups": [
+              "one",
+              "two"
+            ]
+          },
+          {
+            "id": "vento60",
+            "label": "Vento 60",
+            "dimensions": "30 × 60 cm",
+            "groups": [
+              "one",
+              "two"
+            ]
+          }
+        ],
+        "materials": [
+          {
+            "id": "solid-surface",
+            "label": "Solid Surface",
+            "priceClass": "solid",
+            "colors": [
+              "S-Blanco"
+            ]
+          },
+          {
+            "id": "lisa",
+            "label": "Lisa",
+            "priceClass": "resin",
+            "colors": [
+              "Gris 7015",
+              "Ártico",
+              "Lino",
+              "Antracita",
+              "Moka",
+              "Piedra",
+              "Arena",
+              "Negro",
+              "Basalto",
+              "RAL/NCS"
+            ]
+          },
+          {
+            "id": "pizarra",
+            "label": "Pizarra",
+            "priceClass": "resin",
+            "colors": [
+              "Gris 7015",
+              "Ártico",
+              "Lino",
+              "Antracita",
+              "Moka",
+              "Piedra",
+              "Arena",
+              "Negro",
+              "Basalto",
+              "RAL/NCS"
+            ]
+          }
+        ],
+        "groups": [
+          {
+            "id": "one",
+            "label": "1 vasque centrée ou déplacée",
+            "lengthTiers": [
+              61,
+              81,
+              101,
+              121,
+              141,
+              161,
+              181,
+              201
+            ],
+            "prices": {
+              "resin": [
+                688,
+                721,
+                787,
+                908,
+                1003,
+                1113,
+                1447,
+                1518
+              ],
+              "solid": [
+                808,
+                824,
+                880,
+                1102,
+                1174,
+                1313,
+                1529,
+                1606
+              ]
+            }
+          },
+          {
+            "id": "two",
+            "label": "2 vasques centrées ou déplacées",
+            "lengthTiers": [
+              121,
+              141,
+              161,
+              181,
+              201
+            ],
+            "prices": {
+              "resin": [
+                1047,
+                1095,
+                1179,
+                1447,
+                1544
+              ],
+              "solid": [
+                1205,
+                1297,
+                1435,
+                1732,
+                1808
+              ]
+            }
+          }
+        ],
+        "includedOptions": [
+          {
+            "id": "cut-straight",
+            "label": "Découpe droite sur mesure"
+          },
+          {
+            "id": "hole-35",
+            "label": "Trou standard Ø 3,5 cm"
+          },
+          {
+            "id": "hole-42",
+            "label": "Trou standard Ø 4,2 cm"
+          },
+          {
+            "id": "hole-90",
+            "label": "Trou standard Ø 9 cm"
+          }
+        ],
+        "paidOptions": [
+          {
+            "id": "colored-waste",
+            "label": "Bonde clic colorée",
+            "type": "perUnit",
+            "amount": 49,
+            "unit": "ud"
+          },
+          {
+            "id": "overflow",
+            "label": "Trop plein",
+            "type": "perUnit",
+            "amount": 0,
+            "unit": "ud"
+          },
+          {
+            "id": "towel-rail",
+            "label": "Porte-serviette sur plan",
+            "type": "perUnit",
+            "amount": 120,
+            "unit": "ud"
+          },
+          {
+            "id": "backsplash-standard",
+            "label": "Plinthe standard 4 cm",
+            "type": "perCm",
+            "amount": 0.55,
+            "unit": "cm"
+          },
+          {
+            "id": "backsplash-custom",
+            "label": "Plinthe sur mesure 5–30 cm",
+            "type": "perCm",
+            "amount": 1.1,
+            "unit": "cm"
+          },
+          {
+            "id": "backsplash-integrated-straight",
+            "label": "Plinthe intégrée droite 4–30 cm",
+            "type": "perCm",
+            "amount": 1.7,
+            "unit": "cm"
+          },
+          {
+            "id": "backsplash-integrated-concave",
+            "label": "Plinthe intégrée concave 4–30 cm",
+            "type": "perCm",
+            "amount": 2.0,
+            "unit": "cm"
+          },
+          {
+            "id": "curved-cut",
+            "label": "Découpe courbe sur mesure",
+            "type": "perUnit",
+            "amount": 70,
+            "unit": "ud"
+          },
+          {
+            "id": "special-hole",
+            "label": "Trou spécial sur plan / plinthe / retombée",
+            "type": "perUnit",
+            "amount": 25,
+            "unit": "ud"
+          }
+        ],
+        "ralSupplement": 95,
+        "pricingMode": "automatic",
+        "notes": [
+          "Les dimensions intermédiaires utilisent le palier supérieur de la grille.",
+          "Les choix incompatibles sont masqués automatiquement."
+        ]
+      }
     },
     {
       "name": "Cosmo CF",
@@ -1254,13 +1978,236 @@
       "kind": "basin-top",
       "sourcePage": "18",
       "configuratorFlow": [
-        "dimensions",
-        "basin",
-        "finish",
+        "basinShape",
+        "material",
         "color",
+        "basinGroup",
+        "dimensions",
         "options"
       ],
-      "dependencyMode": "safe-manual"
+      "dependencyMode": "certified-structure-v50",
+      "v50BasinTop": {
+        "sourcePage": "18",
+        "mode": "matrix",
+        "maxWidthCm": 51,
+        "maxLengthCm": 201,
+        "shapes": [
+          {
+            "id": "cosmo-standard",
+            "label": "Cosmo Standard",
+            "dimensions": "26 × 50 cm",
+            "groups": [
+              "one",
+              "two"
+            ]
+          },
+          {
+            "id": "cosmo-xl85",
+            "label": "Cosmo XL85",
+            "dimensions": "30 × 85 cm",
+            "groups": [
+              "one-xl85"
+            ]
+          },
+          {
+            "id": "cosmo-xl120",
+            "label": "Cosmo XL120",
+            "dimensions": "30 × 120 cm",
+            "groups": [
+              "one-xl120"
+            ]
+          }
+        ],
+        "materials": [
+          {
+            "id": "lisa",
+            "label": "Lisa",
+            "priceClass": "resin",
+            "colors": [
+              "Gris 7015",
+              "Ártico",
+              "Lino",
+              "Antracita",
+              "Moka",
+              "Piedra",
+              "Arena",
+              "Negro",
+              "Basalto",
+              "RAL/NCS"
+            ]
+          },
+          {
+            "id": "pizarra",
+            "label": "Pizarra",
+            "priceClass": "resin",
+            "colors": [
+              "Gris 7015",
+              "Ártico",
+              "Lino",
+              "Antracita",
+              "Moka",
+              "Piedra",
+              "Arena",
+              "Negro",
+              "Basalto",
+              "RAL/NCS"
+            ]
+          },
+          {
+            "id": "gpc",
+            "label": "GPC",
+            "priceClass": "gpc",
+            "colors": [
+              "Calacatta G",
+              "Taj Mahal",
+              "Marquina",
+              "Caliza",
+              "Quartz Green",
+              "Onix"
+            ]
+          }
+        ],
+        "groups": [
+          {
+            "id": "one",
+            "label": "1 vasque Cosmo Standard",
+            "lengthTiers": [
+              81,
+              101,
+              121,
+              141,
+              161,
+              181,
+              201
+            ],
+            "prices": {}
+          },
+          {
+            "id": "two",
+            "label": "2 vasques Cosmo Standard",
+            "lengthTiers": [
+              121,
+              141,
+              161,
+              181,
+              201
+            ],
+            "prices": {}
+          },
+          {
+            "id": "one-xl85",
+            "label": "1 vasque Cosmo XL85",
+            "lengthTiers": [
+              121,
+              141,
+              161,
+              181,
+              201
+            ],
+            "prices": {}
+          },
+          {
+            "id": "one-xl120",
+            "label": "1 vasque Cosmo XL120",
+            "lengthTiers": [
+              141,
+              161,
+              181,
+              201
+            ],
+            "prices": {}
+          }
+        ],
+        "includedOptions": [
+          {
+            "id": "cut-straight",
+            "label": "Découpe droite sur mesure"
+          },
+          {
+            "id": "hole-35",
+            "label": "Trou standard Ø 3,5 cm"
+          },
+          {
+            "id": "hole-42",
+            "label": "Trou standard Ø 4,2 cm"
+          },
+          {
+            "id": "hole-90",
+            "label": "Trou standard Ø 9 cm"
+          }
+        ],
+        "paidOptions": [
+          {
+            "id": "colored-waste",
+            "label": "Bonde clic colorée",
+            "type": "perUnit",
+            "amount": 49,
+            "unit": "ud"
+          },
+          {
+            "id": "overflow",
+            "label": "Trop plein",
+            "type": "perUnit",
+            "amount": 0,
+            "unit": "ud"
+          },
+          {
+            "id": "towel-rail",
+            "label": "Porte-serviette sur plan",
+            "type": "perUnit",
+            "amount": 120,
+            "unit": "ud"
+          },
+          {
+            "id": "backsplash-standard",
+            "label": "Plinthe standard 4 cm",
+            "type": "perCm",
+            "amount": 0.55,
+            "unit": "cm"
+          },
+          {
+            "id": "backsplash-custom",
+            "label": "Plinthe sur mesure 5–30 cm",
+            "type": "perCm",
+            "amount": 1.1,
+            "unit": "cm"
+          },
+          {
+            "id": "backsplash-integrated-straight",
+            "label": "Plinthe intégrée droite 4–30 cm",
+            "type": "perCm",
+            "amount": 1.7,
+            "unit": "cm"
+          },
+          {
+            "id": "backsplash-integrated-concave",
+            "label": "Plinthe intégrée concave 4–30 cm",
+            "type": "perCm",
+            "amount": 2.0,
+            "unit": "cm"
+          },
+          {
+            "id": "curved-cut",
+            "label": "Découpe courbe sur mesure",
+            "type": "perUnit",
+            "amount": 70,
+            "unit": "ud"
+          },
+          {
+            "id": "special-hole",
+            "label": "Trou spécial sur plan / plinthe / retombée",
+            "type": "perUnit",
+            "amount": 25,
+            "unit": "ud"
+          }
+        ],
+        "ralSupplement": 95,
+        "pricingMode": "manual-safe",
+        "notes": [
+          "Les dimensions intermédiaires utilisent le palier supérieur de la grille.",
+          "Les choix incompatibles sont masqués automatiquement."
+        ]
+      }
     },
     {
       "name": "Urban CF",
@@ -1268,13 +2215,226 @@
       "kind": "basin-top",
       "sourcePage": "20",
       "configuratorFlow": [
-        "dimensions",
-        "basin",
-        "finish",
+        "basinShape",
+        "material",
         "color",
+        "basinGroup",
+        "dimensions",
         "options"
       ],
-      "dependencyMode": "safe-manual"
+      "dependencyMode": "certified-v50",
+      "v50BasinTop": {
+        "sourcePage": "20",
+        "mode": "matrix",
+        "maxWidthCm": 51,
+        "maxLengthCm": 201,
+        "shapes": [
+          {
+            "id": "urban",
+            "label": "Urban",
+            "dimensions": "Ø 35 cm",
+            "groups": [
+              "one",
+              "two"
+            ]
+          }
+        ],
+        "materials": [
+          {
+            "id": "solid-surface",
+            "label": "Solid Surface",
+            "priceClass": "solid",
+            "colors": [
+              "S-Blanco"
+            ]
+          },
+          {
+            "id": "lisa",
+            "label": "Lisa",
+            "priceClass": "resin",
+            "colors": [
+              "Gris 7015",
+              "Ártico",
+              "Lino",
+              "Antracita",
+              "Moka",
+              "Piedra",
+              "Arena",
+              "Negro",
+              "Basalto",
+              "RAL/NCS"
+            ]
+          },
+          {
+            "id": "pizarra",
+            "label": "Pizarra",
+            "priceClass": "resin",
+            "colors": [
+              "Gris 7015",
+              "Ártico",
+              "Lino",
+              "Antracita",
+              "Moka",
+              "Piedra",
+              "Arena",
+              "Negro",
+              "Basalto",
+              "RAL/NCS"
+            ]
+          }
+        ],
+        "groups": [
+          {
+            "id": "one",
+            "label": "1 vasque centrée ou déplacée",
+            "lengthTiers": [
+              81,
+              101,
+              121,
+              141,
+              161,
+              181,
+              201
+            ],
+            "prices": {
+              "resin": [
+                701,
+                767,
+                908,
+                1003,
+                1113,
+                1447,
+                1518
+              ],
+              "solid": [
+                824,
+                880,
+                1102,
+                1174,
+                1313,
+                1529,
+                1606
+              ]
+            }
+          },
+          {
+            "id": "two",
+            "label": "2 vasques centrées ou déplacées",
+            "lengthTiers": [
+              121,
+              141,
+              161,
+              181,
+              201
+            ],
+            "prices": {
+              "resin": [
+                1017,
+                1055,
+                1179,
+                1447,
+                1544
+              ],
+              "solid": [
+                1205,
+                1297,
+                1435,
+                1732,
+                1808
+              ]
+            }
+          }
+        ],
+        "includedOptions": [
+          {
+            "id": "cut-straight",
+            "label": "Découpe droite sur mesure"
+          },
+          {
+            "id": "hole-35",
+            "label": "Trou standard Ø 3,5 cm"
+          },
+          {
+            "id": "hole-42",
+            "label": "Trou standard Ø 4,2 cm"
+          },
+          {
+            "id": "hole-90",
+            "label": "Trou standard Ø 9 cm"
+          }
+        ],
+        "paidOptions": [
+          {
+            "id": "colored-waste",
+            "label": "Bonde clic colorée",
+            "type": "perUnit",
+            "amount": 49,
+            "unit": "ud"
+          },
+          {
+            "id": "overflow",
+            "label": "Trop plein",
+            "type": "perUnit",
+            "amount": 0,
+            "unit": "ud"
+          },
+          {
+            "id": "towel-rail",
+            "label": "Porte-serviette sur plan",
+            "type": "perUnit",
+            "amount": 120,
+            "unit": "ud"
+          },
+          {
+            "id": "backsplash-standard",
+            "label": "Plinthe standard 4 cm",
+            "type": "perCm",
+            "amount": 0.55,
+            "unit": "cm"
+          },
+          {
+            "id": "backsplash-custom",
+            "label": "Plinthe sur mesure 5–30 cm",
+            "type": "perCm",
+            "amount": 1.1,
+            "unit": "cm"
+          },
+          {
+            "id": "backsplash-integrated-straight",
+            "label": "Plinthe intégrée droite 4–30 cm",
+            "type": "perCm",
+            "amount": 1.7,
+            "unit": "cm"
+          },
+          {
+            "id": "backsplash-integrated-concave",
+            "label": "Plinthe intégrée concave 4–30 cm",
+            "type": "perCm",
+            "amount": 2.0,
+            "unit": "cm"
+          },
+          {
+            "id": "curved-cut",
+            "label": "Découpe courbe sur mesure",
+            "type": "perUnit",
+            "amount": 70,
+            "unit": "ud"
+          },
+          {
+            "id": "special-hole",
+            "label": "Trou spécial sur plan / plinthe / retombée",
+            "type": "perUnit",
+            "amount": 25,
+            "unit": "ud"
+          }
+        ],
+        "ralSupplement": 95,
+        "pricingMode": "automatic",
+        "notes": [
+          "Les dimensions intermédiaires utilisent le palier supérieur de la grille.",
+          "Les choix incompatibles sont masqués automatiquement."
+        ]
+      }
     },
     {
       "name": "Gea CF",
@@ -1282,13 +2442,208 @@
       "kind": "basin-top",
       "sourcePage": "22",
       "configuratorFlow": [
-        "dimensions",
-        "basin",
-        "finish",
+        "basinShape",
+        "material",
         "color",
+        "basinGroup",
+        "dimensions",
         "options"
       ],
-      "dependencyMode": "safe-manual"
+      "dependencyMode": "certified-structure-v50",
+      "v50BasinTop": {
+        "sourcePage": "22",
+        "mode": "slab",
+        "maxWidthCm": 51,
+        "maxLengthCm": 201,
+        "minHeightCm": 5,
+        "maxHeightCm": 14,
+        "shapes": [
+          {
+            "id": "gea",
+            "label": "Plan Gea",
+            "dimensions": "plan sur mesure",
+            "groups": [
+              "slab"
+            ]
+          }
+        ],
+        "materials": [
+          {
+            "id": "solid-surface",
+            "label": "Solid Surface",
+            "priceClass": "solid",
+            "colors": [
+              "S-Blanco"
+            ]
+          },
+          {
+            "id": "lisa",
+            "label": "Lisa",
+            "priceClass": "resin",
+            "colors": [
+              "Gris 7015",
+              "Ártico",
+              "Lino",
+              "Antracita",
+              "Moka",
+              "Piedra",
+              "Arena",
+              "Negro",
+              "Basalto",
+              "RAL/NCS"
+            ]
+          },
+          {
+            "id": "pizarra",
+            "label": "Pizarra",
+            "priceClass": "resin",
+            "colors": [
+              "Gris 7015",
+              "Ártico",
+              "Lino",
+              "Antracita",
+              "Moka",
+              "Piedra",
+              "Arena",
+              "Negro",
+              "Basalto",
+              "RAL/NCS"
+            ]
+          },
+          {
+            "id": "gpc",
+            "label": "GPC",
+            "priceClass": "gpc",
+            "colors": [
+              "Calacatta G",
+              "Taj Mahal",
+              "Marquina",
+              "Caliza",
+              "Quartz Green",
+              "Onix"
+            ]
+          },
+          {
+            "id": "wood",
+            "label": "Bois",
+            "priceClass": "wood",
+            "colors": [
+              "Roble",
+              "Roble rústico",
+              "Roble salvaje",
+              "Nogal US",
+              "Eucalipto",
+              "Fumé"
+            ]
+          }
+        ],
+        "groups": [
+          {
+            "id": "slab",
+            "label": "Plan Gea sur mesure",
+            "lengthTiers": [
+              61,
+              81,
+              101,
+              121,
+              141,
+              161,
+              181,
+              201
+            ],
+            "prices": {}
+          }
+        ],
+        "includedOptions": [
+          {
+            "id": "cut-straight",
+            "label": "Découpe droite sur mesure"
+          },
+          {
+            "id": "hole-35",
+            "label": "Trou standard Ø 3,5 cm"
+          },
+          {
+            "id": "hole-42",
+            "label": "Trou standard Ø 4,2 cm"
+          },
+          {
+            "id": "hole-90",
+            "label": "Trou standard Ø 9 cm"
+          }
+        ],
+        "paidOptions": [
+          {
+            "id": "colored-waste",
+            "label": "Bonde clic colorée",
+            "type": "perUnit",
+            "amount": 49,
+            "unit": "ud"
+          },
+          {
+            "id": "overflow",
+            "label": "Trop plein",
+            "type": "perUnit",
+            "amount": 0,
+            "unit": "ud"
+          },
+          {
+            "id": "towel-rail",
+            "label": "Porte-serviette sur plan",
+            "type": "perUnit",
+            "amount": 120,
+            "unit": "ud"
+          },
+          {
+            "id": "backsplash-standard",
+            "label": "Plinthe standard 4 cm",
+            "type": "perCm",
+            "amount": 0.55,
+            "unit": "cm"
+          },
+          {
+            "id": "backsplash-custom",
+            "label": "Plinthe sur mesure 5–30 cm",
+            "type": "perCm",
+            "amount": 1.1,
+            "unit": "cm"
+          },
+          {
+            "id": "backsplash-integrated-straight",
+            "label": "Plinthe intégrée droite 4–30 cm",
+            "type": "perCm",
+            "amount": 1.7,
+            "unit": "cm"
+          },
+          {
+            "id": "backsplash-integrated-concave",
+            "label": "Plinthe intégrée concave 4–30 cm",
+            "type": "perCm",
+            "amount": 2.0,
+            "unit": "cm"
+          },
+          {
+            "id": "curved-cut",
+            "label": "Découpe courbe sur mesure",
+            "type": "perUnit",
+            "amount": 70,
+            "unit": "ud"
+          },
+          {
+            "id": "special-hole",
+            "label": "Trou spécial sur plan / plinthe / retombée",
+            "type": "perUnit",
+            "amount": 25,
+            "unit": "ud"
+          }
+        ],
+        "ralSupplement": 95,
+        "pricingMode": "manual-safe",
+        "notes": [
+          "Les dimensions intermédiaires utilisent le palier supérieur de la grille.",
+          "Les choix incompatibles sont masqués automatiquement."
+        ]
+      }
     },
     {
       "name": "Contract CF",
@@ -1296,13 +2651,249 @@
       "kind": "basin-top",
       "sourcePage": "24",
       "configuratorFlow": [
-        "dimensions",
-        "basin",
-        "finish",
+        "basinShape",
+        "material",
         "color",
+        "basinGroup",
+        "dimensions",
         "options"
       ],
-      "dependencyMode": "safe-manual"
+      "dependencyMode": "certified-v50",
+      "v50BasinTop": {
+        "sourcePage": "24",
+        "mode": "contract",
+        "widthRange": [
+          30,
+          65
+        ],
+        "lengthRange": [
+          50,
+          400
+        ],
+        "heightRange": [
+          5,
+          20
+        ],
+        "shapes": [
+          {
+            "id": "standard",
+            "label": "Standard",
+            "dimensions": "28 × 50 cm",
+            "image": "/resigres/shapes/standard.png",
+            "integrationClass": "standard"
+          },
+          {
+            "id": "circular",
+            "label": "Circulaire",
+            "dimensions": "Ø 30 cm",
+            "image": "/resigres/shapes/circular.png",
+            "integrationClass": "standard"
+          },
+          {
+            "id": "oval",
+            "label": "Ovale",
+            "dimensions": "30 × 45 cm",
+            "image": "/resigres/shapes/oval.png",
+            "integrationClass": "standard"
+          },
+          {
+            "id": "mini",
+            "label": "Mini",
+            "dimensions": "22 × 40 cm",
+            "image": "/resigres/shapes/mini.png",
+            "integrationClass": "standard"
+          },
+          {
+            "id": "xl85",
+            "label": "XL85",
+            "dimensions": "30 × 85 cm",
+            "image": "/resigres/shapes/xl85.png",
+            "integrationClass": "xl"
+          },
+          {
+            "id": "xl120",
+            "label": "XL120",
+            "dimensions": "30 × 120 cm",
+            "image": "/resigres/shapes/xl120.png",
+            "integrationClass": "xl"
+          },
+          {
+            "id": "vento40",
+            "label": "Vento 40",
+            "dimensions": "28 × 40 cm",
+            "integrationClass": "vento"
+          },
+          {
+            "id": "vento60",
+            "label": "Vento 60",
+            "dimensions": "30 × 60 cm",
+            "integrationClass": "vento"
+          },
+          {
+            "id": "urban",
+            "label": "Urban",
+            "dimensions": "Ø 35 cm",
+            "integrationClass": "vento"
+          },
+          {
+            "id": "cosmo-standard",
+            "label": "Cosmo Standard",
+            "dimensions": "26 × 50 cm",
+            "integrationClass": "vento"
+          },
+          {
+            "id": "cosmo-xl85",
+            "label": "Cosmo XL85",
+            "dimensions": "30 × 85 cm",
+            "integrationClass": "cosmo-xl"
+          },
+          {
+            "id": "cosmo-xl120",
+            "label": "Cosmo XL120",
+            "dimensions": "30 × 120 cm",
+            "integrationClass": "cosmo-xl"
+          }
+        ],
+        "materials": [
+          {
+            "id": "solid-surface",
+            "label": "Solid Surface",
+            "priceClass": "solid",
+            "colors": [
+              "S-Blanco"
+            ]
+          },
+          {
+            "id": "lisa",
+            "label": "Lisa",
+            "priceClass": "resin",
+            "colors": [
+              "Gris 7015",
+              "Ártico",
+              "Lino",
+              "Antracita",
+              "Moka",
+              "Piedra",
+              "Arena",
+              "Negro",
+              "Basalto",
+              "RAL/NCS"
+            ]
+          },
+          {
+            "id": "gpc",
+            "label": "GPC",
+            "priceClass": "gpc",
+            "colors": [
+              "Calacatta G",
+              "Taj Mahal",
+              "Marquina",
+              "Caliza",
+              "Quartz Green",
+              "Onix"
+            ]
+          }
+        ],
+        "ratesPerLengthCm": {
+          "solid": 6.0,
+          "resin": 7.0
+        },
+        "integrationPrices": {
+          "standard": 89,
+          "xl": 190,
+          "vento": 215,
+          "cosmo-xl": 295
+        },
+        "includedOptions": [
+          {
+            "id": "cut-straight",
+            "label": "Découpe droite sur mesure"
+          },
+          {
+            "id": "hole-35",
+            "label": "Trou standard Ø 3,5 cm"
+          },
+          {
+            "id": "hole-42",
+            "label": "Trou standard Ø 4,2 cm"
+          },
+          {
+            "id": "hole-90",
+            "label": "Trou standard Ø 9 cm"
+          }
+        ],
+        "paidOptions": [
+          {
+            "id": "colored-waste",
+            "label": "Bonde clic colorée",
+            "type": "perUnit",
+            "amount": 66,
+            "unit": "ud"
+          },
+          {
+            "id": "overflow",
+            "label": "Trop plein",
+            "type": "perUnit",
+            "amount": 0,
+            "unit": "ud"
+          },
+          {
+            "id": "towel-rail",
+            "label": "Porte-serviette sur plan",
+            "type": "perUnit",
+            "amount": 70,
+            "unit": "ud"
+          },
+          {
+            "id": "backsplash-standard",
+            "label": "Plinthe standard 4 cm",
+            "type": "perCm",
+            "amount": 0.55,
+            "unit": "cm"
+          },
+          {
+            "id": "backsplash-custom",
+            "label": "Plinthe sur mesure 5–30 cm",
+            "type": "perCm",
+            "amount": 1.1,
+            "unit": "cm"
+          },
+          {
+            "id": "backsplash-integrated-straight",
+            "label": "Plinthe intégrée droite 4–30 cm",
+            "type": "perCm",
+            "amount": 1.7,
+            "unit": "cm"
+          },
+          {
+            "id": "backsplash-integrated-concave",
+            "label": "Plinthe intégrée concave 4–30 cm",
+            "type": "perCm",
+            "amount": 2.0,
+            "unit": "cm"
+          },
+          {
+            "id": "curved-cut",
+            "label": "Découpe courbe sur mesure",
+            "type": "perUnit",
+            "amount": 70,
+            "unit": "ud"
+          },
+          {
+            "id": "special-hole",
+            "label": "Trou spécial sur plan / plinthe / retombée",
+            "type": "perUnit",
+            "amount": 25,
+            "unit": "ud"
+          }
+        ],
+        "ralSupplement": 95,
+        "pricingMode": "automatic-contract",
+        "notes": [
+          "PVP = A dimensions + B intégration de vasque + C options.",
+          "GPC sur demande : saisie manuelle."
+        ]
+      }
     },
     {
       "name": "Selene",
@@ -1310,13 +2901,600 @@
       "kind": "furniture-basin-top",
       "sourcePage": "26",
       "configuratorFlow": [
-        "dimensions",
-        "basin",
-        "finish",
+        "basinShape",
+        "material",
         "color",
+        "basinGroup",
+        "dimensions",
         "options"
       ],
-      "dependencyMode": "safe-manual"
+      "dependencyMode": "certified-v50",
+      "v49Selene": {
+        "sourcePage": "26",
+        "maxWidthCm": 51,
+        "maxLengthCm": 201,
+        "shapes": [
+          {
+            "id": "standard",
+            "label": "Standard",
+            "dimensions": "28 × 50 cm",
+            "image": "/resigres/selene/standard.png",
+            "groups": [
+              "one",
+              "two"
+            ]
+          },
+          {
+            "id": "circular",
+            "label": "Circulaire",
+            "dimensions": "Ø 30 cm",
+            "image": "/resigres/selene/circular.png",
+            "groups": [
+              "one",
+              "two"
+            ]
+          },
+          {
+            "id": "oval",
+            "label": "Ovale",
+            "dimensions": "30 × 45 cm",
+            "image": "/resigres/selene/oval.png",
+            "groups": [
+              "one",
+              "two"
+            ]
+          },
+          {
+            "id": "mini",
+            "label": "Mini",
+            "dimensions": "22 × 40 cm",
+            "image": "/resigres/selene/mini.png",
+            "groups": [
+              "one",
+              "two"
+            ]
+          },
+          {
+            "id": "xl85",
+            "label": "XL85",
+            "dimensions": "30 × 85 cm",
+            "image": "/resigres/selene/xl85.png",
+            "groups": [
+              "one-xl"
+            ]
+          },
+          {
+            "id": "xl120",
+            "label": "XL120",
+            "dimensions": "30 × 120 cm",
+            "image": "/resigres/selene/xl120.png",
+            "groups": [
+              "one-xl"
+            ]
+          }
+        ],
+        "materials": [
+          {
+            "id": "solid-surface",
+            "label": "Solid Surface",
+            "priceClass": "solid",
+            "colors": [
+              "S-Blanco"
+            ]
+          },
+          {
+            "id": "lisa",
+            "label": "Lisa",
+            "priceClass": "resin",
+            "colors": [
+              "Gris 7015",
+              "Ártico",
+              "Lino",
+              "Antracita",
+              "Moka",
+              "Piedra",
+              "Arena",
+              "Negro",
+              "Basalto",
+              "RAL/NCS"
+            ]
+          },
+          {
+            "id": "pizarra",
+            "label": "Pizarra",
+            "priceClass": "resin",
+            "colors": [
+              "Gris 7015",
+              "Ártico",
+              "Lino",
+              "Antracita",
+              "Moka",
+              "Piedra",
+              "Arena",
+              "Negro",
+              "Basalto",
+              "RAL/NCS"
+            ]
+          }
+        ],
+        "groups": [
+          {
+            "id": "one",
+            "label": "1 vasque centrée ou déplacée",
+            "lengthTiers": [
+              61,
+              81,
+              101,
+              121,
+              141,
+              161,
+              181,
+              201
+            ],
+            "prices": {
+              "resin": [
+                399,
+                420,
+                468,
+                550,
+                637,
+                749,
+                892,
+                949
+              ],
+              "solid": [
+                485,
+                511,
+                570,
+                654,
+                762,
+                907,
+                1078,
+                1144
+              ]
+            }
+          },
+          {
+            "id": "one-xl",
+            "label": "1 grande vasque XL85 / XL120 centrée ou déplacée",
+            "lengthTiers": [
+              121,
+              141,
+              161,
+              181,
+              201
+            ],
+            "prices": {
+              "resin": [
+                607,
+                803,
+                868,
+                1024,
+                1080
+              ],
+              "solid": [
+                725,
+                964,
+                1042,
+                1199,
+                1284
+              ]
+            }
+          },
+          {
+            "id": "two",
+            "label": "2 vasques centrées ou déplacées",
+            "lengthTiers": [
+              121,
+              141,
+              161,
+              181,
+              201
+            ],
+            "prices": {
+              "resin": [
+                691,
+                768,
+                895,
+                1027,
+                1128
+              ],
+              "solid": [
+                824,
+                919,
+                1064,
+                1192,
+                1295
+              ]
+            }
+          }
+        ],
+        "includedOptions": [
+          {
+            "id": "cut-straight",
+            "label": "Découpe droite sur mesure"
+          },
+          {
+            "id": "hole-35",
+            "label": "Trou standard Ø 3,5 cm"
+          },
+          {
+            "id": "hole-42",
+            "label": "Trou standard Ø 4,2 cm"
+          },
+          {
+            "id": "hole-90",
+            "label": "Trou standard Ø 9 cm"
+          }
+        ],
+        "paidOptions": [
+          {
+            "id": "colored-waste",
+            "label": "Bonde clic colorée",
+            "type": "perUnit",
+            "amount": 66,
+            "unit": "ud"
+          },
+          {
+            "id": "overflow",
+            "label": "Trop plein",
+            "type": "perUnit",
+            "amount": 33,
+            "unit": "ud"
+          },
+          {
+            "id": "towel-rail",
+            "label": "Porte-serviette sur plan",
+            "type": "perUnit",
+            "amount": 70,
+            "unit": "ud"
+          },
+          {
+            "id": "backsplash-standard",
+            "label": "Plinthe standard 4 cm",
+            "type": "perCm",
+            "amount": 0.55,
+            "unit": "cm"
+          },
+          {
+            "id": "backsplash-custom",
+            "label": "Plinthe sur mesure 5–30 cm",
+            "type": "perCm",
+            "amount": 1.1,
+            "unit": "cm"
+          },
+          {
+            "id": "backsplash-integrated-straight",
+            "label": "Plinthe intégrée droite 4–30 cm",
+            "type": "perCm",
+            "amount": 1.7,
+            "unit": "cm"
+          },
+          {
+            "id": "backsplash-integrated-concave",
+            "label": "Plinthe intégrée concave 4–30 cm",
+            "type": "perCm",
+            "amount": 2.0,
+            "unit": "cm"
+          },
+          {
+            "id": "curved-cut",
+            "label": "Découpe courbe sur mesure",
+            "type": "perUnit",
+            "amount": 70,
+            "unit": "ud"
+          },
+          {
+            "id": "special-hole",
+            "label": "Trou spécial sur plan / plinthe / retombée",
+            "type": "perUnit",
+            "amount": 25,
+            "unit": "ud"
+          }
+        ],
+        "ralSupplement": 95,
+        "notes": [
+          "Largeur maximale 51 cm.",
+          "Longueur maximale 201 cm.",
+          "Les dimensions intermédiaires utilisent le palier de longueur immédiatement supérieur.",
+          "Les plinthes intégrées ne sont disponibles qu’en Lisa et Solid Surface.",
+          "L’intérieur de la vasque est toujours en finition Lisa et n’est pas texturé."
+        ]
+      },
+      "v50BasinTop": {
+        "sourcePage": "26",
+        "maxWidthCm": 51,
+        "maxLengthCm": 201,
+        "shapes": [
+          {
+            "id": "standard",
+            "label": "Standard",
+            "dimensions": "28 × 50 cm",
+            "image": "/resigres/selene/standard.png",
+            "groups": [
+              "one",
+              "two"
+            ]
+          },
+          {
+            "id": "circular",
+            "label": "Circulaire",
+            "dimensions": "Ø 30 cm",
+            "image": "/resigres/selene/circular.png",
+            "groups": [
+              "one",
+              "two"
+            ]
+          },
+          {
+            "id": "oval",
+            "label": "Ovale",
+            "dimensions": "30 × 45 cm",
+            "image": "/resigres/selene/oval.png",
+            "groups": [
+              "one",
+              "two"
+            ]
+          },
+          {
+            "id": "mini",
+            "label": "Mini",
+            "dimensions": "22 × 40 cm",
+            "image": "/resigres/selene/mini.png",
+            "groups": [
+              "one",
+              "two"
+            ]
+          },
+          {
+            "id": "xl85",
+            "label": "XL85",
+            "dimensions": "30 × 85 cm",
+            "image": "/resigres/selene/xl85.png",
+            "groups": [
+              "one-xl"
+            ]
+          },
+          {
+            "id": "xl120",
+            "label": "XL120",
+            "dimensions": "30 × 120 cm",
+            "image": "/resigres/selene/xl120.png",
+            "groups": [
+              "one-xl"
+            ]
+          }
+        ],
+        "materials": [
+          {
+            "id": "solid-surface",
+            "label": "Solid Surface",
+            "priceClass": "solid",
+            "colors": [
+              "S-Blanco"
+            ]
+          },
+          {
+            "id": "lisa",
+            "label": "Lisa",
+            "priceClass": "resin",
+            "colors": [
+              "Gris 7015",
+              "Ártico",
+              "Lino",
+              "Antracita",
+              "Moka",
+              "Piedra",
+              "Arena",
+              "Negro",
+              "Basalto",
+              "RAL/NCS"
+            ]
+          },
+          {
+            "id": "pizarra",
+            "label": "Pizarra",
+            "priceClass": "resin",
+            "colors": [
+              "Gris 7015",
+              "Ártico",
+              "Lino",
+              "Antracita",
+              "Moka",
+              "Piedra",
+              "Arena",
+              "Negro",
+              "Basalto",
+              "RAL/NCS"
+            ]
+          }
+        ],
+        "groups": [
+          {
+            "id": "one",
+            "label": "1 vasque centrée ou déplacée",
+            "lengthTiers": [
+              61,
+              81,
+              101,
+              121,
+              141,
+              161,
+              181,
+              201
+            ],
+            "prices": {
+              "resin": [
+                399,
+                420,
+                468,
+                550,
+                637,
+                749,
+                892,
+                949
+              ],
+              "solid": [
+                485,
+                511,
+                570,
+                654,
+                762,
+                907,
+                1078,
+                1144
+              ]
+            }
+          },
+          {
+            "id": "one-xl",
+            "label": "1 grande vasque XL85 / XL120 centrée ou déplacée",
+            "lengthTiers": [
+              121,
+              141,
+              161,
+              181,
+              201
+            ],
+            "prices": {
+              "resin": [
+                607,
+                803,
+                868,
+                1024,
+                1080
+              ],
+              "solid": [
+                725,
+                964,
+                1042,
+                1199,
+                1284
+              ]
+            }
+          },
+          {
+            "id": "two",
+            "label": "2 vasques centrées ou déplacées",
+            "lengthTiers": [
+              121,
+              141,
+              161,
+              181,
+              201
+            ],
+            "prices": {
+              "resin": [
+                691,
+                768,
+                895,
+                1027,
+                1128
+              ],
+              "solid": [
+                824,
+                919,
+                1064,
+                1192,
+                1295
+              ]
+            }
+          }
+        ],
+        "includedOptions": [
+          {
+            "id": "cut-straight",
+            "label": "Découpe droite sur mesure"
+          },
+          {
+            "id": "hole-35",
+            "label": "Trou standard Ø 3,5 cm"
+          },
+          {
+            "id": "hole-42",
+            "label": "Trou standard Ø 4,2 cm"
+          },
+          {
+            "id": "hole-90",
+            "label": "Trou standard Ø 9 cm"
+          }
+        ],
+        "paidOptions": [
+          {
+            "id": "colored-waste",
+            "label": "Bonde clic colorée",
+            "type": "perUnit",
+            "amount": 66,
+            "unit": "ud"
+          },
+          {
+            "id": "overflow",
+            "label": "Trop plein",
+            "type": "perUnit",
+            "amount": 33,
+            "unit": "ud"
+          },
+          {
+            "id": "towel-rail",
+            "label": "Porte-serviette sur plan",
+            "type": "perUnit",
+            "amount": 70,
+            "unit": "ud"
+          },
+          {
+            "id": "backsplash-standard",
+            "label": "Plinthe standard 4 cm",
+            "type": "perCm",
+            "amount": 0.55,
+            "unit": "cm"
+          },
+          {
+            "id": "backsplash-custom",
+            "label": "Plinthe sur mesure 5–30 cm",
+            "type": "perCm",
+            "amount": 1.1,
+            "unit": "cm"
+          },
+          {
+            "id": "backsplash-integrated-straight",
+            "label": "Plinthe intégrée droite 4–30 cm",
+            "type": "perCm",
+            "amount": 1.7,
+            "unit": "cm"
+          },
+          {
+            "id": "backsplash-integrated-concave",
+            "label": "Plinthe intégrée concave 4–30 cm",
+            "type": "perCm",
+            "amount": 2.0,
+            "unit": "cm"
+          },
+          {
+            "id": "curved-cut",
+            "label": "Découpe courbe sur mesure",
+            "type": "perUnit",
+            "amount": 70,
+            "unit": "ud"
+          },
+          {
+            "id": "special-hole",
+            "label": "Trou spécial sur plan / plinthe / retombée",
+            "type": "perUnit",
+            "amount": 25,
+            "unit": "ud"
+          }
+        ],
+        "ralSupplement": 95,
+        "notes": [
+          "Largeur maximale 51 cm.",
+          "Longueur maximale 201 cm.",
+          "Les dimensions intermédiaires utilisent le palier de longueur immédiatement supérieur.",
+          "Les plinthes intégrées ne sont disponibles qu’en Lisa et Solid Surface.",
+          "L’intérieur de la vasque est toujours en finition Lisa et n’est pas texturé."
+        ],
+        "mode": "matrix",
+        "pricingMode": "automatic"
+      }
     },
     {
       "name": "Vento SF",
@@ -1324,13 +3502,238 @@
       "kind": "furniture-basin-top",
       "sourcePage": "28",
       "configuratorFlow": [
-        "dimensions",
-        "basin",
-        "finish",
+        "basinShape",
+        "material",
         "color",
+        "basinGroup",
+        "dimensions",
         "options"
       ],
-      "dependencyMode": "safe-manual"
+      "dependencyMode": "certified-v50",
+      "v50BasinTop": {
+        "sourcePage": "28",
+        "mode": "matrix",
+        "maxWidthCm": 51,
+        "maxLengthCm": 201,
+        "shapes": [
+          {
+            "id": "vento40",
+            "label": "Vento 40",
+            "dimensions": "28 × 40 cm",
+            "groups": [
+              "one",
+              "two"
+            ]
+          },
+          {
+            "id": "vento60",
+            "label": "Vento 60",
+            "dimensions": "30 × 60 cm",
+            "groups": [
+              "one",
+              "two"
+            ]
+          }
+        ],
+        "materials": [
+          {
+            "id": "solid-surface",
+            "label": "Solid Surface",
+            "priceClass": "solid",
+            "colors": [
+              "S-Blanco"
+            ]
+          },
+          {
+            "id": "lisa",
+            "label": "Lisa",
+            "priceClass": "resin",
+            "colors": [
+              "Gris 7015",
+              "Ártico",
+              "Lino",
+              "Antracita",
+              "Moka",
+              "Piedra",
+              "Arena",
+              "Negro",
+              "Basalto",
+              "RAL/NCS"
+            ]
+          },
+          {
+            "id": "pizarra",
+            "label": "Pizarra",
+            "priceClass": "resin",
+            "colors": [
+              "Gris 7015",
+              "Ártico",
+              "Lino",
+              "Antracita",
+              "Moka",
+              "Piedra",
+              "Arena",
+              "Negro",
+              "Basalto",
+              "RAL/NCS"
+            ]
+          }
+        ],
+        "groups": [
+          {
+            "id": "one",
+            "label": "1 vasque centrée ou déplacée",
+            "lengthTiers": [
+              61,
+              81,
+              101,
+              121,
+              141,
+              161,
+              181,
+              201
+            ],
+            "prices": {
+              "resin": [
+                582,
+                634,
+                695,
+                775,
+                834,
+                982,
+                1189,
+                1235
+              ],
+              "solid": [
+                670,
+                712,
+                759,
+                845,
+                976,
+                1155,
+                1329,
+                1427
+              ]
+            }
+          },
+          {
+            "id": "two",
+            "label": "2 vasques centrées ou déplacées",
+            "lengthTiers": [
+              121,
+              141,
+              161,
+              181,
+              201
+            ],
+            "prices": {
+              "resin": [
+                967,
+                1073,
+                1108,
+                1375,
+                1442
+              ],
+              "solid": [
+                1112,
+                1234,
+                1312,
+                1581,
+                1658
+              ]
+            }
+          }
+        ],
+        "includedOptions": [
+          {
+            "id": "cut-straight",
+            "label": "Découpe droite sur mesure"
+          },
+          {
+            "id": "hole-35",
+            "label": "Trou standard Ø 3,5 cm"
+          },
+          {
+            "id": "hole-42",
+            "label": "Trou standard Ø 4,2 cm"
+          },
+          {
+            "id": "hole-90",
+            "label": "Trou standard Ø 9 cm"
+          }
+        ],
+        "paidOptions": [
+          {
+            "id": "colored-waste",
+            "label": "Bonde clic colorée",
+            "type": "perUnit",
+            "amount": 70,
+            "unit": "ud"
+          },
+          {
+            "id": "overflow",
+            "label": "Trop plein",
+            "type": "perUnit",
+            "amount": 0,
+            "unit": "ud"
+          },
+          {
+            "id": "towel-rail",
+            "label": "Porte-serviette sur plan",
+            "type": "perUnit",
+            "amount": 70,
+            "unit": "ud"
+          },
+          {
+            "id": "backsplash-standard",
+            "label": "Plinthe standard 4 cm",
+            "type": "perCm",
+            "amount": 0.55,
+            "unit": "cm"
+          },
+          {
+            "id": "backsplash-custom",
+            "label": "Plinthe sur mesure 5–30 cm",
+            "type": "perCm",
+            "amount": 1.1,
+            "unit": "cm"
+          },
+          {
+            "id": "backsplash-integrated-straight",
+            "label": "Plinthe intégrée droite 4–30 cm",
+            "type": "perCm",
+            "amount": 1.7,
+            "unit": "cm"
+          },
+          {
+            "id": "backsplash-integrated-concave",
+            "label": "Plinthe intégrée concave 4–30 cm",
+            "type": "perCm",
+            "amount": 2.0,
+            "unit": "cm"
+          },
+          {
+            "id": "curved-cut",
+            "label": "Découpe courbe sur mesure",
+            "type": "perUnit",
+            "amount": 70,
+            "unit": "ud"
+          },
+          {
+            "id": "special-hole",
+            "label": "Trou spécial sur plan / plinthe / retombée",
+            "type": "perUnit",
+            "amount": 25,
+            "unit": "ud"
+          }
+        ],
+        "ralSupplement": 95,
+        "pricingMode": "automatic",
+        "notes": [
+          "Les dimensions intermédiaires utilisent le palier supérieur de la grille.",
+          "Les choix incompatibles sont masqués automatiquement."
+        ]
+      }
     },
     {
       "name": "Cosmo SF",
@@ -1338,13 +3741,223 @@
       "kind": "furniture-basin-top",
       "sourcePage": "30",
       "configuratorFlow": [
-        "dimensions",
-        "basin",
-        "finish",
+        "basinShape",
+        "material",
         "color",
+        "basinGroup",
+        "dimensions",
         "options"
       ],
-      "dependencyMode": "safe-manual"
+      "dependencyMode": "certified-structure-v50",
+      "v50BasinTop": {
+        "sourcePage": "30",
+        "mode": "matrix",
+        "maxWidthCm": 51,
+        "maxLengthCm": 201,
+        "shapes": [
+          {
+            "id": "cosmo-standard",
+            "label": "Cosmo Standard",
+            "dimensions": "26 × 50 cm",
+            "groups": [
+              "one",
+              "two"
+            ]
+          },
+          {
+            "id": "cosmo-xl85",
+            "label": "Cosmo XL85",
+            "dimensions": "30 × 85 cm",
+            "groups": [
+              "one-xl85"
+            ]
+          },
+          {
+            "id": "cosmo-xl120",
+            "label": "Cosmo XL120",
+            "dimensions": "30 × 120 cm",
+            "groups": [
+              "one-xl120"
+            ]
+          }
+        ],
+        "materials": [
+          {
+            "id": "lisa",
+            "label": "Lisa",
+            "priceClass": "resin",
+            "colors": [
+              "Gris 7015",
+              "Ártico",
+              "Lino",
+              "Antracita",
+              "Moka",
+              "Piedra",
+              "Arena",
+              "Negro",
+              "Basalto",
+              "RAL/NCS"
+            ]
+          },
+          {
+            "id": "pizarra",
+            "label": "Pizarra",
+            "priceClass": "resin",
+            "colors": [
+              "Gris 7015",
+              "Ártico",
+              "Lino",
+              "Antracita",
+              "Moka",
+              "Piedra",
+              "Arena",
+              "Negro",
+              "Basalto",
+              "RAL/NCS"
+            ]
+          }
+        ],
+        "groups": [
+          {
+            "id": "one",
+            "label": "1 vasque Cosmo Standard",
+            "lengthTiers": [
+              81,
+              101,
+              121,
+              141,
+              161,
+              181,
+              201
+            ],
+            "prices": {}
+          },
+          {
+            "id": "two",
+            "label": "2 vasques Cosmo Standard",
+            "lengthTiers": [
+              121,
+              141,
+              161,
+              181,
+              201
+            ],
+            "prices": {}
+          },
+          {
+            "id": "one-xl85",
+            "label": "1 vasque Cosmo XL85",
+            "lengthTiers": [
+              121,
+              141,
+              161,
+              181,
+              201
+            ],
+            "prices": {}
+          },
+          {
+            "id": "one-xl120",
+            "label": "1 vasque Cosmo XL120",
+            "lengthTiers": [
+              141,
+              161,
+              181,
+              201
+            ],
+            "prices": {}
+          }
+        ],
+        "includedOptions": [
+          {
+            "id": "cut-straight",
+            "label": "Découpe droite sur mesure"
+          },
+          {
+            "id": "hole-35",
+            "label": "Trou standard Ø 3,5 cm"
+          },
+          {
+            "id": "hole-42",
+            "label": "Trou standard Ø 4,2 cm"
+          },
+          {
+            "id": "hole-90",
+            "label": "Trou standard Ø 9 cm"
+          }
+        ],
+        "paidOptions": [
+          {
+            "id": "colored-waste",
+            "label": "Bonde clic colorée",
+            "type": "perUnit",
+            "amount": 70,
+            "unit": "ud"
+          },
+          {
+            "id": "overflow",
+            "label": "Trop plein",
+            "type": "perUnit",
+            "amount": 0,
+            "unit": "ud"
+          },
+          {
+            "id": "towel-rail",
+            "label": "Porte-serviette sur plan",
+            "type": "perUnit",
+            "amount": 70,
+            "unit": "ud"
+          },
+          {
+            "id": "backsplash-standard",
+            "label": "Plinthe standard 4 cm",
+            "type": "perCm",
+            "amount": 0.55,
+            "unit": "cm"
+          },
+          {
+            "id": "backsplash-custom",
+            "label": "Plinthe sur mesure 5–30 cm",
+            "type": "perCm",
+            "amount": 1.1,
+            "unit": "cm"
+          },
+          {
+            "id": "backsplash-integrated-straight",
+            "label": "Plinthe intégrée droite 4–30 cm",
+            "type": "perCm",
+            "amount": 1.7,
+            "unit": "cm"
+          },
+          {
+            "id": "backsplash-integrated-concave",
+            "label": "Plinthe intégrée concave 4–30 cm",
+            "type": "perCm",
+            "amount": 2.0,
+            "unit": "cm"
+          },
+          {
+            "id": "curved-cut",
+            "label": "Découpe courbe sur mesure",
+            "type": "perUnit",
+            "amount": 70,
+            "unit": "ud"
+          },
+          {
+            "id": "special-hole",
+            "label": "Trou spécial sur plan / plinthe / retombée",
+            "type": "perUnit",
+            "amount": 25,
+            "unit": "ud"
+          }
+        ],
+        "ralSupplement": 95,
+        "pricingMode": "manual-safe",
+        "notes": [
+          "Les dimensions intermédiaires utilisent le palier supérieur de la grille.",
+          "Les choix incompatibles sont masqués automatiquement."
+        ]
+      }
     },
     {
       "name": "Urban SF",
@@ -1352,13 +3965,229 @@
       "kind": "furniture-basin-top",
       "sourcePage": "32",
       "configuratorFlow": [
-        "dimensions",
-        "basin",
-        "finish",
+        "basinShape",
+        "material",
         "color",
+        "basinGroup",
+        "dimensions",
         "options"
       ],
-      "dependencyMode": "safe-manual"
+      "dependencyMode": "certified-v50",
+      "v50BasinTop": {
+        "sourcePage": "32",
+        "mode": "matrix",
+        "maxWidthCm": 51,
+        "maxLengthCm": 201,
+        "shapes": [
+          {
+            "id": "urban",
+            "label": "Urban",
+            "dimensions": "Ø 35 cm",
+            "groups": [
+              "one",
+              "two"
+            ]
+          }
+        ],
+        "materials": [
+          {
+            "id": "solid-surface",
+            "label": "Solid Surface",
+            "priceClass": "solid",
+            "colors": [
+              "S-Blanco"
+            ]
+          },
+          {
+            "id": "lisa",
+            "label": "Lisa",
+            "priceClass": "resin",
+            "colors": [
+              "Gris 7015",
+              "Ártico",
+              "Lino",
+              "Antracita",
+              "Moka",
+              "Piedra",
+              "Arena",
+              "Negro",
+              "Basalto",
+              "RAL/NCS"
+            ]
+          },
+          {
+            "id": "pizarra",
+            "label": "Pizarra",
+            "priceClass": "resin",
+            "colors": [
+              "Gris 7015",
+              "Ártico",
+              "Lino",
+              "Antracita",
+              "Moka",
+              "Piedra",
+              "Arena",
+              "Negro",
+              "Basalto",
+              "RAL/NCS"
+            ]
+          }
+        ],
+        "groups": [
+          {
+            "id": "one",
+            "label": "1 vasque centrée ou déplacée",
+            "lengthTiers": [
+              61,
+              81,
+              101,
+              121,
+              141,
+              161,
+              181,
+              201
+            ],
+            "prices": {
+              "resin": [
+                572,
+                614,
+                675,
+                755,
+                814,
+                962,
+                1168,
+                1215
+              ],
+              "solid": [
+                670,
+                712,
+                759,
+                845,
+                976,
+                1155,
+                1329,
+                1427
+              ]
+            }
+          },
+          {
+            "id": "two",
+            "label": "2 vasques centrées ou déplacées",
+            "lengthTiers": [
+              121,
+              141,
+              161,
+              181,
+              201
+            ],
+            "prices": {
+              "resin": [
+                967,
+                1073,
+                1108,
+                1375,
+                1442
+              ],
+              "solid": [
+                1112,
+                1234,
+                1312,
+                1581,
+                1658
+              ]
+            }
+          }
+        ],
+        "includedOptions": [
+          {
+            "id": "cut-straight",
+            "label": "Découpe droite sur mesure"
+          },
+          {
+            "id": "hole-35",
+            "label": "Trou standard Ø 3,5 cm"
+          },
+          {
+            "id": "hole-42",
+            "label": "Trou standard Ø 4,2 cm"
+          },
+          {
+            "id": "hole-90",
+            "label": "Trou standard Ø 9 cm"
+          }
+        ],
+        "paidOptions": [
+          {
+            "id": "colored-waste",
+            "label": "Bonde clic colorée",
+            "type": "perUnit",
+            "amount": 70,
+            "unit": "ud"
+          },
+          {
+            "id": "overflow",
+            "label": "Trop plein",
+            "type": "perUnit",
+            "amount": 0,
+            "unit": "ud"
+          },
+          {
+            "id": "towel-rail",
+            "label": "Porte-serviette sur plan",
+            "type": "perUnit",
+            "amount": 70,
+            "unit": "ud"
+          },
+          {
+            "id": "backsplash-standard",
+            "label": "Plinthe standard 4 cm",
+            "type": "perCm",
+            "amount": 0.55,
+            "unit": "cm"
+          },
+          {
+            "id": "backsplash-custom",
+            "label": "Plinthe sur mesure 5–30 cm",
+            "type": "perCm",
+            "amount": 1.1,
+            "unit": "cm"
+          },
+          {
+            "id": "backsplash-integrated-straight",
+            "label": "Plinthe intégrée droite 4–30 cm",
+            "type": "perCm",
+            "amount": 1.7,
+            "unit": "cm"
+          },
+          {
+            "id": "backsplash-integrated-concave",
+            "label": "Plinthe intégrée concave 4–30 cm",
+            "type": "perCm",
+            "amount": 2.0,
+            "unit": "cm"
+          },
+          {
+            "id": "curved-cut",
+            "label": "Découpe courbe sur mesure",
+            "type": "perUnit",
+            "amount": 70,
+            "unit": "ud"
+          },
+          {
+            "id": "special-hole",
+            "label": "Trou spécial sur plan / plinthe / retombée",
+            "type": "perUnit",
+            "amount": 25,
+            "unit": "ud"
+          }
+        ],
+        "ralSupplement": 95,
+        "pricingMode": "automatic",
+        "notes": [
+          "Les dimensions intermédiaires utilisent le palier supérieur de la grille.",
+          "Les choix incompatibles sont masqués automatiquement."
+        ]
+      }
     },
     {
       "name": "Gea SF",
@@ -1366,13 +4195,193 @@
       "kind": "furniture-basin-top",
       "sourcePage": "34",
       "configuratorFlow": [
-        "dimensions",
-        "basin",
-        "finish",
+        "basinShape",
+        "material",
         "color",
+        "basinGroup",
+        "dimensions",
         "options"
       ],
-      "dependencyMode": "safe-manual"
+      "dependencyMode": "certified-structure-v50",
+      "v50BasinTop": {
+        "sourcePage": "34",
+        "mode": "slab",
+        "maxWidthCm": 51,
+        "maxLengthCm": 201,
+        "thicknessCm": 1.5,
+        "shapes": [
+          {
+            "id": "gea",
+            "label": "Plan Gea",
+            "dimensions": "plan sur mesure",
+            "groups": [
+              "slab"
+            ]
+          }
+        ],
+        "materials": [
+          {
+            "id": "solid-surface",
+            "label": "Solid Surface",
+            "priceClass": "solid",
+            "colors": [
+              "S-Blanco"
+            ]
+          },
+          {
+            "id": "lisa",
+            "label": "Lisa",
+            "priceClass": "resin",
+            "colors": [
+              "Gris 7015",
+              "Ártico",
+              "Lino",
+              "Antracita",
+              "Moka",
+              "Piedra",
+              "Arena",
+              "Negro",
+              "Basalto",
+              "RAL/NCS"
+            ]
+          },
+          {
+            "id": "pizarra",
+            "label": "Pizarra",
+            "priceClass": "resin",
+            "colors": [
+              "Gris 7015",
+              "Ártico",
+              "Lino",
+              "Antracita",
+              "Moka",
+              "Piedra",
+              "Arena",
+              "Negro",
+              "Basalto",
+              "RAL/NCS"
+            ]
+          },
+          {
+            "id": "wood",
+            "label": "Bois",
+            "priceClass": "wood",
+            "colors": [
+              "Roble",
+              "Roble rústico",
+              "Roble salvaje",
+              "Nogal US",
+              "Eucalipto",
+              "Fumé"
+            ]
+          }
+        ],
+        "groups": [
+          {
+            "id": "slab",
+            "label": "Plan Gea sur mesure",
+            "lengthTiers": [
+              81,
+              101,
+              121,
+              141,
+              161,
+              181,
+              201
+            ],
+            "prices": {}
+          }
+        ],
+        "includedOptions": [
+          {
+            "id": "cut-straight",
+            "label": "Découpe droite sur mesure"
+          },
+          {
+            "id": "hole-35",
+            "label": "Trou standard Ø 3,5 cm"
+          },
+          {
+            "id": "hole-42",
+            "label": "Trou standard Ø 4,2 cm"
+          },
+          {
+            "id": "hole-90",
+            "label": "Trou standard Ø 9 cm"
+          }
+        ],
+        "paidOptions": [
+          {
+            "id": "colored-waste",
+            "label": "Bonde clic colorée",
+            "type": "perUnit",
+            "amount": 70,
+            "unit": "ud"
+          },
+          {
+            "id": "overflow",
+            "label": "Trop plein",
+            "type": "perUnit",
+            "amount": 0,
+            "unit": "ud"
+          },
+          {
+            "id": "towel-rail",
+            "label": "Porte-serviette sur plan",
+            "type": "perUnit",
+            "amount": 70,
+            "unit": "ud"
+          },
+          {
+            "id": "backsplash-standard",
+            "label": "Plinthe standard 4 cm",
+            "type": "perCm",
+            "amount": 0.55,
+            "unit": "cm"
+          },
+          {
+            "id": "backsplash-custom",
+            "label": "Plinthe sur mesure 5–30 cm",
+            "type": "perCm",
+            "amount": 1.1,
+            "unit": "cm"
+          },
+          {
+            "id": "backsplash-integrated-straight",
+            "label": "Plinthe intégrée droite 4–30 cm",
+            "type": "perCm",
+            "amount": 1.7,
+            "unit": "cm"
+          },
+          {
+            "id": "backsplash-integrated-concave",
+            "label": "Plinthe intégrée concave 4–30 cm",
+            "type": "perCm",
+            "amount": 2.0,
+            "unit": "cm"
+          },
+          {
+            "id": "curved-cut",
+            "label": "Découpe courbe sur mesure",
+            "type": "perUnit",
+            "amount": 70,
+            "unit": "ud"
+          },
+          {
+            "id": "special-hole",
+            "label": "Trou spécial sur plan / plinthe / retombée",
+            "type": "perUnit",
+            "amount": 25,
+            "unit": "ud"
+          }
+        ],
+        "ralSupplement": 95,
+        "pricingMode": "manual-safe",
+        "notes": [
+          "Les dimensions intermédiaires utilisent le palier supérieur de la grille.",
+          "Les choix incompatibles sont masqués automatiquement."
+        ]
+      }
     },
     {
       "name": "Contract SF",
@@ -1380,13 +4389,235 @@
       "kind": "furniture-basin-top",
       "sourcePage": "36",
       "configuratorFlow": [
-        "dimensions",
-        "basin",
-        "finish",
+        "basinShape",
+        "material",
         "color",
+        "basinGroup",
+        "dimensions",
         "options"
       ],
-      "dependencyMode": "safe-manual"
+      "dependencyMode": "certified-v50",
+      "v50BasinTop": {
+        "sourcePage": "36",
+        "mode": "contract",
+        "widthRange": [
+          30,
+          65
+        ],
+        "lengthRange": [
+          50,
+          400
+        ],
+        "heightRange": [
+          1.5,
+          1.5
+        ],
+        "shapes": [
+          {
+            "id": "standard",
+            "label": "Standard",
+            "dimensions": "28 × 50 cm",
+            "image": "/resigres/shapes/standard.png",
+            "integrationClass": "standard"
+          },
+          {
+            "id": "circular",
+            "label": "Circulaire",
+            "dimensions": "Ø 30 cm",
+            "image": "/resigres/shapes/circular.png",
+            "integrationClass": "standard"
+          },
+          {
+            "id": "oval",
+            "label": "Ovale",
+            "dimensions": "30 × 45 cm",
+            "image": "/resigres/shapes/oval.png",
+            "integrationClass": "standard"
+          },
+          {
+            "id": "mini",
+            "label": "Mini",
+            "dimensions": "22 × 40 cm",
+            "image": "/resigres/shapes/mini.png",
+            "integrationClass": "standard"
+          },
+          {
+            "id": "xl85",
+            "label": "XL85",
+            "dimensions": "30 × 85 cm",
+            "image": "/resigres/shapes/xl85.png",
+            "integrationClass": "xl"
+          },
+          {
+            "id": "xl120",
+            "label": "XL120",
+            "dimensions": "30 × 120 cm",
+            "image": "/resigres/shapes/xl120.png",
+            "integrationClass": "xl"
+          },
+          {
+            "id": "vento40",
+            "label": "Vento 40",
+            "dimensions": "28 × 40 cm",
+            "integrationClass": "vento"
+          },
+          {
+            "id": "vento60",
+            "label": "Vento 60",
+            "dimensions": "30 × 60 cm",
+            "integrationClass": "vento"
+          },
+          {
+            "id": "urban",
+            "label": "Urban",
+            "dimensions": "Ø 35 cm",
+            "integrationClass": "vento"
+          },
+          {
+            "id": "cosmo-standard",
+            "label": "Cosmo Standard",
+            "dimensions": "26 × 50 cm",
+            "integrationClass": "vento"
+          },
+          {
+            "id": "cosmo-xl85",
+            "label": "Cosmo XL85",
+            "dimensions": "30 × 85 cm",
+            "integrationClass": "cosmo-xl"
+          },
+          {
+            "id": "cosmo-xl120",
+            "label": "Cosmo XL120",
+            "dimensions": "30 × 120 cm",
+            "integrationClass": "cosmo-xl"
+          }
+        ],
+        "materials": [
+          {
+            "id": "solid-surface",
+            "label": "Solid Surface",
+            "priceClass": "solid",
+            "colors": [
+              "S-Blanco"
+            ]
+          },
+          {
+            "id": "lisa",
+            "label": "Lisa",
+            "priceClass": "resin",
+            "colors": [
+              "Gris 7015",
+              "Ártico",
+              "Lino",
+              "Antracita",
+              "Moka",
+              "Piedra",
+              "Arena",
+              "Negro",
+              "Basalto",
+              "RAL/NCS"
+            ]
+          }
+        ],
+        "ratesPerLengthCm": {
+          "solid": 5.6,
+          "resin": 6.6
+        },
+        "integrationPrices": {
+          "standard": 89,
+          "xl": 190,
+          "vento": 215,
+          "cosmo-xl": 295
+        },
+        "includedOptions": [
+          {
+            "id": "cut-straight",
+            "label": "Découpe droite sur mesure"
+          },
+          {
+            "id": "hole-35",
+            "label": "Trou standard Ø 3,5 cm"
+          },
+          {
+            "id": "hole-42",
+            "label": "Trou standard Ø 4,2 cm"
+          },
+          {
+            "id": "hole-90",
+            "label": "Trou standard Ø 9 cm"
+          }
+        ],
+        "paidOptions": [
+          {
+            "id": "colored-waste",
+            "label": "Bonde clic colorée",
+            "type": "perUnit",
+            "amount": 66,
+            "unit": "ud"
+          },
+          {
+            "id": "overflow",
+            "label": "Trop plein",
+            "type": "perUnit",
+            "amount": 0,
+            "unit": "ud"
+          },
+          {
+            "id": "towel-rail",
+            "label": "Porte-serviette sur plan",
+            "type": "perUnit",
+            "amount": 0,
+            "unit": "ud"
+          },
+          {
+            "id": "backsplash-standard",
+            "label": "Plinthe standard 4 cm",
+            "type": "perCm",
+            "amount": 0.55,
+            "unit": "cm"
+          },
+          {
+            "id": "backsplash-custom",
+            "label": "Plinthe sur mesure 5–30 cm",
+            "type": "perCm",
+            "amount": 1.1,
+            "unit": "cm"
+          },
+          {
+            "id": "backsplash-integrated-straight",
+            "label": "Plinthe intégrée droite 4–30 cm",
+            "type": "perCm",
+            "amount": 1.7,
+            "unit": "cm"
+          },
+          {
+            "id": "backsplash-integrated-concave",
+            "label": "Plinthe intégrée concave 4–30 cm",
+            "type": "perCm",
+            "amount": 2.0,
+            "unit": "cm"
+          },
+          {
+            "id": "curved-cut",
+            "label": "Découpe courbe sur mesure",
+            "type": "perUnit",
+            "amount": 70,
+            "unit": "ud"
+          },
+          {
+            "id": "special-hole",
+            "label": "Trou spécial sur plan / plinthe / retombée",
+            "type": "perUnit",
+            "amount": 25,
+            "unit": "ud"
+          }
+        ],
+        "ralSupplement": 95,
+        "pricingMode": "automatic-contract",
+        "notes": [
+          "PVP = A dimensions + B intégration de vasque + C options."
+        ]
+      }
     },
     {
       "name": "Axis",
@@ -2131,12 +5362,126 @@
       "kind": "furniture",
       "sourcePage": "54",
       "configuratorFlow": [
+        "type",
         "dimensions",
-        "finish",
+        "material",
         "color",
         "options"
       ],
-      "dependencyMode": "safe-manual"
+      "dependencyMode": "certified-v50",
+      "v50Furniture": {
+        "sourcePage": "54",
+        "mode": "matrix",
+        "types": [
+          {
+            "id": "drawer",
+            "label": "Tiroir sur mesure"
+          }
+        ],
+        "dimensionRules": {
+          "maxDepthCm": 51,
+          "lengthTiers": [
+            81,
+            101,
+            121,
+            141,
+            161,
+            181,
+            201
+          ],
+          "thicknessCm": 1.6
+        },
+        "materials": [
+          {
+            "id": "lacquer",
+            "label": "Laqué MDF",
+            "priceClass": "lacquer",
+            "colors": [
+              "Terracota",
+              "Ártico",
+              "Antracita",
+              "Royal",
+              "Brie",
+              "Piedra",
+              "Negro",
+              "Arena",
+              "RAL/NCS"
+            ]
+          },
+          {
+            "id": "wood",
+            "label": "Bois",
+            "priceClass": "wood",
+            "colors": [
+              "Roble",
+              "Roble rústico",
+              "Roble salvaje",
+              "Nogal US",
+              "Eucalipto",
+              "Fumé"
+            ]
+          }
+        ],
+        "prices": {
+          "lacquer": [
+            392,
+            406,
+            515,
+            524,
+            537,
+            638,
+            656
+          ],
+          "wood": [
+            443,
+            498,
+            570,
+            597,
+            641,
+            720,
+            744
+          ]
+        },
+        "includedOptions": [
+          {
+            "id": "suspensions",
+            "label": "Suspensions"
+          },
+          {
+            "id": "cuts",
+            "label": "Découpes"
+          },
+          {
+            "id": "siphon-space",
+            "label": "Sous-siphon"
+          },
+          {
+            "id": "custom",
+            "label": "Sur mesure"
+          }
+        ],
+        "paidOptions": [
+          {
+            "id": "classifier",
+            "label": "Classificateur",
+            "type": "perUnit",
+            "amount": 99,
+            "unit": "tiroir"
+          },
+          {
+            "id": "ral",
+            "label": "Laqué RAL/NCS",
+            "type": "fixed",
+            "amount": 90,
+            "unit": "forfait"
+          }
+        ],
+        "pricingMode": "automatic",
+        "notes": [
+          "Largeur/profondeur maximale du tiroir : 51 cm.",
+          "Les doubles sont livrés en deux pièces sauf indication contraire."
+        ]
+      }
     },
     {
       "name": "Portes, vides et colonnes",
@@ -2144,12 +5489,161 @@
       "kind": "furniture",
       "sourcePage": "56-58",
       "configuratorFlow": [
+        "type",
         "dimensions",
-        "finish",
+        "material",
         "color",
         "options"
       ],
-      "dependencyMode": "safe-manual"
+      "dependencyMode": "certified-structure-v50",
+      "v50Furniture": {
+        "sourcePage": "56-58",
+        "mode": "multi-type",
+        "types": [
+          {
+            "id": "door-inglete",
+            "label": "Porte H30/H50/H60 Inglete",
+            "widthRange": [
+              20,
+              60
+            ],
+            "depthRange": [
+              0,
+              51
+            ]
+          },
+          {
+            "id": "door-push",
+            "label": "Porte H30/H50/H60 Push",
+            "widthRange": [
+              20,
+              60
+            ],
+            "depthRange": [
+              0,
+              51
+            ]
+          },
+          {
+            "id": "open",
+            "label": "Vide H30/H50/H60",
+            "widthRange": [
+              20,
+              60
+            ],
+            "depthRange": [
+              0,
+              51
+            ]
+          },
+          {
+            "id": "column-inglete",
+            "label": "Colonne Inglete",
+            "heightRange": [
+              1,
+              200
+            ],
+            "widthRange": [
+              1,
+              40
+            ],
+            "depthRange": [
+              1,
+              40
+            ]
+          },
+          {
+            "id": "column-push",
+            "label": "Colonne Push",
+            "heightRange": [
+              1,
+              200
+            ],
+            "widthRange": [
+              1,
+              40
+            ],
+            "depthRange": [
+              1,
+              40
+            ]
+          },
+          {
+            "id": "column-open",
+            "label": "Colonne ouverte",
+            "heightRange": [
+              1,
+              200
+            ],
+            "widthRange": [
+              1,
+              30
+            ],
+            "depthRange": [
+              1,
+              40
+            ]
+          }
+        ],
+        "materials": [
+          {
+            "id": "lacquer",
+            "label": "Laqué",
+            "priceClass": "lacquer",
+            "colors": [
+              "Terracota",
+              "Ártico",
+              "Antracita",
+              "Royal",
+              "Brie",
+              "Piedra",
+              "Negro",
+              "Arena",
+              "RAL/NCS"
+            ]
+          },
+          {
+            "id": "wood",
+            "label": "Bois",
+            "priceClass": "wood",
+            "colors": [
+              "Roble",
+              "Roble rústico",
+              "Roble salvaje",
+              "Nogal US",
+              "Eucalipto",
+              "Fumé"
+            ]
+          }
+        ],
+        "includedOptions": [
+          {
+            "id": "supports",
+            "label": "Supports"
+          }
+        ],
+        "paidOptions": [
+          {
+            "id": "separator",
+            "label": "Séparateur",
+            "type": "perUnit",
+            "amount": 30,
+            "unit": "ud"
+          },
+          {
+            "id": "ral",
+            "label": "Laqué RAL/NCS",
+            "type": "fixed",
+            "amount": 99,
+            "unit": "forfait"
+          }
+        ],
+        "pricingMode": "manual-safe",
+        "notes": [
+          "Ouverture à droite par défaut sauf indication contraire.",
+          "Les limites de dimensions dépendent du type sélectionné."
+        ]
+      }
     },
     {
       "name": "Frame",
@@ -2157,12 +5651,152 @@
       "kind": "furniture",
       "sourcePage": "60",
       "configuratorFlow": [
+        "type",
         "dimensions",
-        "finish",
+        "material",
         "color",
         "options"
       ],
-      "dependencyMode": "safe-manual"
+      "dependencyMode": "certified-structure-v50",
+      "v50Furniture": {
+        "sourcePage": "60",
+        "mode": "collection",
+        "types": [
+          {
+            "id": "h45-1d-1b",
+            "label": "H45 · 1 tiroir + plan 1 vasque",
+            "heightCm": 45
+          },
+          {
+            "id": "h45-2d-1b",
+            "label": "H45 · 2 tiroirs + plan 1 vasque",
+            "heightCm": 45
+          },
+          {
+            "id": "h45-2d-2b",
+            "label": "H45 · 2 tiroirs + plan double vasque",
+            "heightCm": 45
+          },
+          {
+            "id": "h45-3d-2b",
+            "label": "H45 · 3 tiroirs + plan double vasque",
+            "heightCm": 45
+          },
+          {
+            "id": "h90-doors-1b",
+            "label": "H90 · 1–2 portes + plan 1 vasque",
+            "heightCm": 90
+          },
+          {
+            "id": "h90-3doors-1b",
+            "label": "H90 · 3 portes + plan 1 vasque",
+            "heightCm": 90
+          },
+          {
+            "id": "h90-3doors-2b",
+            "label": "H90 · 3 portes + plan double vasque",
+            "heightCm": 90
+          }
+        ],
+        "dimensionRules": {
+          "depthCm": 48,
+          "lengthRange": [
+            60,
+            220
+          ]
+        },
+        "materials": [
+          {
+            "id": "lacquer",
+            "label": "Meuble laqué",
+            "priceClass": "lacquer",
+            "colors": [
+              "Terracota",
+              "Ártico",
+              "Antracita",
+              "Royal",
+              "Brie",
+              "Piedra",
+              "Negro",
+              "Arena",
+              "RAL/NCS"
+            ]
+          },
+          {
+            "id": "wood",
+            "label": "Meuble bois",
+            "priceClass": "wood",
+            "colors": [
+              "Roble",
+              "Roble rústico",
+              "Roble salvaje",
+              "Nogal US",
+              "Eucalipto",
+              "Fumé"
+            ]
+          }
+        ],
+        "topFinishes": [
+          {
+            "id": "lisa",
+            "label": "Plan vasque Lisa",
+            "colors": [
+              "Gris 7015",
+              "Ártico",
+              "Lino",
+              "Antracita",
+              "Moka",
+              "Piedra",
+              "Arena",
+              "Negro",
+              "Basalto",
+              "RAL/NCS"
+            ]
+          },
+          {
+            "id": "gpc",
+            "label": "Plan vasque GPC",
+            "colors": [
+              "Calacatta G",
+              "Taj Mahal",
+              "Marquina",
+              "Caliza",
+              "Quartz Green",
+              "Onix"
+            ]
+          }
+        ],
+        "includedOptions": [
+          {
+            "id": "supports",
+            "label": "Supports"
+          },
+          {
+            "id": "siphon-space",
+            "label": "Sous-siphon"
+          }
+        ],
+        "paidOptions": [
+          {
+            "id": "ral",
+            "label": "Plan vasque + meuble laqué RAL/NCS",
+            "type": "fixed",
+            "amount": 150,
+            "unit": "forfait"
+          },
+          {
+            "id": "inner-drawer",
+            "label": "Tiroir intérieur",
+            "type": "perUnit",
+            "amount": 290,
+            "unit": "ud"
+          }
+        ],
+        "pricingMode": "manual-safe",
+        "notes": [
+          "Les disponibilités de tiroirs intérieurs dépendent de la largeur et de la configuration."
+        ]
+      }
     },
     {
       "name": "Gesto",
@@ -2170,12 +5804,101 @@
       "kind": "furniture",
       "sourcePage": "62",
       "configuratorFlow": [
+        "type",
         "dimensions",
-        "finish",
+        "material",
         "color",
         "options"
       ],
-      "dependencyMode": "safe-manual"
+      "dependencyMode": "certified-structure-v50",
+      "v50Furniture": {
+        "sourcePage": "62",
+        "mode": "collection",
+        "types": [
+          {
+            "id": "gesto",
+            "label": "Meuble Gesto sur mesure"
+          }
+        ],
+        "dimensionRules": {
+          "maxDepthCm": 51,
+          "lengthTiers": [
+            81,
+            101,
+            121,
+            141,
+            161,
+            181,
+            201
+          ],
+          "thicknessCm": 1.6
+        },
+        "materials": [
+          {
+            "id": "lacquer",
+            "label": "Laqué MDF",
+            "priceClass": "lacquer",
+            "colors": [
+              "Terracota",
+              "Ártico",
+              "Antracita",
+              "Royal",
+              "Brie",
+              "Piedra",
+              "Negro",
+              "Arena",
+              "RAL/NCS"
+            ]
+          },
+          {
+            "id": "wood",
+            "label": "Bois",
+            "priceClass": "wood",
+            "colors": [
+              "Roble",
+              "Roble rústico",
+              "Roble salvaje",
+              "Nogal US",
+              "Eucalipto",
+              "Fumé"
+            ]
+          }
+        ],
+        "includedOptions": [
+          {
+            "id": "supports",
+            "label": "Supports"
+          },
+          {
+            "id": "cuts",
+            "label": "Découpes"
+          },
+          {
+            "id": "siphon-space",
+            "label": "Sous-siphon"
+          }
+        ],
+        "paidOptions": [
+          {
+            "id": "classifier",
+            "label": "Classificateur",
+            "type": "perUnit",
+            "amount": 99,
+            "unit": "tiroir"
+          },
+          {
+            "id": "ral",
+            "label": "Laqué RAL/NCS",
+            "type": "fixed",
+            "amount": 90,
+            "unit": "forfait"
+          }
+        ],
+        "pricingMode": "manual-safe",
+        "notes": [
+          "Top intégré et tops meubles disponibles selon configuration."
+        ]
+      }
     },
     {
       "name": "RD / SQ",

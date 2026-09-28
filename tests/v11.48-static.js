@@ -6,6 +6,6 @@ assert(js.includes("Chaque choix filtre le suivant"));
 assert(js.includes("Commencez par choisir la dimension"));
 assert(!js.includes('global.finishes||[]'),"V11.48 ne doit jamais réinjecter toutes les finitions globales");
 assert(pricing.includes("dependentQuote"));
-assert.strictEqual(cfg.version,"2026-FR-v3");
+assert(["2026-FR-v3","2026-FR-v4","2026-FR-v5"].includes(cfg.version));
 for(const name of ["Nalu","Delia","Nesta","Vento"]){const m=cfg.models.find(x=>x.name===name&&x.kind==="bath");assert(m?.dependencyMatrix,`matrice ${name} absente`)}
 console.log("V11.48 static: OK");

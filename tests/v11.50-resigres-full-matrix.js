@@ -1,0 +1,12 @@
+"use strict";
+const assert=require("assert"),fs=require("fs"),P=require("../public/v1150-pricing.js");
+const cfg=JSON.parse(fs.readFileSync("public/resigres_2026_config.json","utf8"));
+assert.equal(cfg.version,"2026-FR-v5");
+const showers=cfg.models.filter(x=>x.kind==="shower-tray");assert.equal(showers.length,7);assert(showers.every(x=>x.v49ShowerConfigurator?.enabled));
+const tops=cfg.models.filter(x=>["basin-top","furniture-basin-top"].includes(x.kind));assert.equal(tops.length,12);assert(tops.every(x=>x.v50BasinTop));
+const furn=cfg.models.filter(x=>x.kind==="furniture");assert.equal(furn.length,4);assert(furn.every(x=>x.v50Furniture));
+let q=P.basinQuote(cfg,{model:"Vento CF",kind:"basin-top",shape:"vento40",material:"lisa",color:"Ártico",basinGroup:"one",widthCm:50,lengthCm:70,paidOptions:{}});assert.equal(q.status,"automatic");assert.equal(q.pricedLength,81);assert.equal(q.basePrice,721);
+q=P.basinQuote(cfg,{model:"Contract CF",kind:"basin-top",shape:"standard",material:"solid-surface",color:"S-Blanco",basinGroup:"one",basinCount:1,widthCm:50,lengthCm:100,heightCm:10,paidOptions:{}});assert.equal(q.status,"automatic");assert.equal(q.basePrice,689);
+q=P.furnitureQuote(cfg,{model:"Tiroirs sur mesure",type:"drawer",material:"lacquer",color:"Arena",widthCm:50,lengthCm:100,paidOptions:{}});assert.equal(q.status,"automatic");assert.equal(q.pricedLength,101);assert.equal(q.basePrice,406);
+q=P.furnitureQuote(cfg,{model:"Frame",type:"h45-1d-1b",material:"lacquer",color:"Arena",widthCm:48,lengthCm:100,heightCm:45,depthCm:48,paidOptions:{}});assert.equal(q.status,"pending");assert(/page 60/.test(q.reason));
+console.log("V11.50 full matrix pricing: OK");

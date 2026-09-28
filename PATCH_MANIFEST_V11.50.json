@@ -1,0 +1,11 @@
+{
+  "version": "11.50.0",
+  "name": "Hydropolis Studio V11.50 - Resigres Full Matrix",
+  "buildCommand": "node apply-v11.50-consolidated.js",
+  "startCommand": "npm start",
+  "coverage": {
+    "showerTrayFamilies": 7,
+    "basinTopFamilies": 12,
+    "furnitureFamilies": 4
+  }
+}

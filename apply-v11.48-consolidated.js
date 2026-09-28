@@ -9,7 +9,7 @@ const pkg0=JSON.parse(read("package.json"));if(String(pkg0.version||"")!=="11.47
 for(const p of ["public/v1148-pricing.js","public/v1148.js","public/v1148.css","public/resigres_2026_config.json"]){if(!exists(p))fail(`fichier V11.48 manquant : ${p}`)}
 
 const cfg=JSON.parse(read("public/resigres_2026_config.json"));
-if(cfg.version!=="2026-FR-v3")fail("configuration Resigres V11.48 absente");
+if(!["2026-FR-v3","2026-FR-v4","2026-FR-v5"].includes(cfg.version))fail("configuration Resigres V11.48 absente");
 const nesta=(cfg.models||[]).find(x=>x.name==="Nesta"&&x.kind==="bath");
 if(!nesta?.dependencyMatrix?.sizes?.length)fail("matrice Nesta absente");
 
