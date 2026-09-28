@@ -1,7 +1,7 @@
 {
-  "version": "2026-FR-v5",
+  "version": "2026-FR-v6",
   "source": "Tarif_FR_2026.pdf",
-  "pricingPolicy": "Configurateur V11.50 dépendant pour tous receveurs, plans vasque, plans vasque meuble et meubles. Dimensions, matières, coloris et options sont filtrés par modèle; aucune combinaison non certifiée n’est injectée.",
+  "pricingPolicy": "V11.51: grilles standard/sur mesure = palier supérieur; receveurs Contract = surface réelle × tarif €/m² avec minimum de facturation; plans vasque Contract = tarif au cm + intégration vasque + options.",
   "global": {
     "tolerancePercent": 0.7,
     "intermediateSizeRule": "Pour les tailles intermédiaires, utiliser le prix de la taille supérieure de la colonne SUR MESURE.",
@@ -506,7 +506,11 @@
           "lengthRange": [
             50,
             300
-          ]
+          ],
+          "billingMode": "actual-sqm",
+          "noTierRounding": true,
+          "billingFormula": "max(minSqm, widthCm*lengthCm/10000) * rate",
+          "unit": "€/m²"
         }
       ],
       "finishOptions": [
@@ -517,7 +521,11 @@
         {
           "id": "contract",
           "label": "Extraplano Contract",
-          "pricingRule": "contract"
+          "pricingRule": "contract",
+          "finishOptions": [
+            "Lisa",
+            "Solid Surface"
+          ]
         }
       ],
       "supplements": [
@@ -565,12 +573,33 @@
       "v49ShowerConfigurator": {
         "enabled": true,
         "sourcePage": "5",
-        "dimensionMode": "actual-with-ceiling-price-tier",
-        "rule": "Une dimension intermédiaire est tarifée au palier immédiatement supérieur de la grille SUR MESURE.",
+        "dimensionMode": "actual-sqm-contract",
+        "rule": "Surface réelle × tarif €/m²; minimum de facturation; aucun palier supérieur.",
         "widthMin": 50,
         "widthMax": 150,
         "lengthMin": 50,
-        "lengthMax": 300
+        "lengthMax": 300,
+        "contractPricingByVariant": [
+          {
+            "variant": "contract",
+            "pricingRule": "contract",
+            "mode": "actual-sqm",
+            "rates": {
+              "Lisa": 800,
+              "Solid Surface": 970
+            },
+            "minSqm": 0.5,
+            "widthRange": [
+              50,
+              150
+            ],
+            "lengthRange": [
+              50,
+              300
+            ]
+          }
+        ],
+        "contractRule": "Surface réelle, sans palier supérieur. Minimum de facturation selon le tarif."
       }
     },
     {
@@ -745,7 +774,11 @@
           "lengthRange": [
             90,
             300
-          ]
+          ],
+          "billingMode": "actual-sqm",
+          "noTierRounding": true,
+          "billingFormula": "max(minSqm, widthCm*lengthCm/10000) * rate",
+          "unit": "€/m²"
         }
       ],
       "variants": [
@@ -806,7 +839,27 @@
         "widthMin": 70,
         "widthMax": 100,
         "lengthMin": 120,
-        "lengthMax": 200
+        "lengthMax": 200,
+        "contractPricingByVariant": [
+          {
+            "variant": "vento-contract",
+            "pricingRule": "vento-contract",
+            "mode": "actual-sqm",
+            "rates": {
+              "Lisa": 845
+            },
+            "minSqm": 0.5,
+            "widthRange": [
+              70,
+              140
+            ],
+            "lengthRange": [
+              90,
+              300
+            ]
+          }
+        ],
+        "contractRule": "Surface réelle, sans palier supérieur. Minimum de facturation selon le tarif."
       }
     },
     {
@@ -932,7 +985,11 @@
           "lengthRange": [
             70,
             300
-          ]
+          ],
+          "billingMode": "actual-sqm",
+          "noTierRounding": true,
+          "billingFormula": "max(minSqm, widthCm*lengthCm/10000) * rate",
+          "unit": "€/m²"
         }
       ],
       "variants": [
@@ -992,7 +1049,28 @@
         "widthMin": 70,
         "widthMax": 100,
         "lengthMin": 120,
-        "lengthMax": 200
+        "lengthMax": 200,
+        "contractPricingByVariant": [
+          {
+            "variant": "cosmo-contract",
+            "pricingRule": "cosmo-contract",
+            "mode": "actual-sqm",
+            "rates": {
+              "Lisa": 845,
+              "Solid Surface": 992
+            },
+            "minSqm": 0.5,
+            "widthRange": [
+              70,
+              140
+            ],
+            "lengthRange": [
+              70,
+              300
+            ]
+          }
+        ],
+        "contractRule": "Surface réelle, sans palier supérieur. Minimum de facturation selon le tarif."
       }
     },
     {
@@ -1343,7 +1421,11 @@
           "lengthRange": [
             201,
             300
-          ]
+          ],
+          "billingMode": "actual-sqm",
+          "noTierRounding": true,
+          "billingFormula": "max(minSqm, widthCm*lengthCm/10000) * rate",
+          "unit": "€/m²"
         }
       ],
       "variants": [
@@ -1425,7 +1507,27 @@
         "widthMin": 70,
         "widthMax": 100,
         "lengthMin": 120,
-        "lengthMax": 200
+        "lengthMax": 200,
+        "contractPricingByVariant": [
+          {
+            "variant": "nix-contract",
+            "pricingRule": "nix-contract",
+            "mode": "actual-sqm",
+            "rates": {
+              "Lisa": 845
+            },
+            "minSqm": 0.5,
+            "widthRange": [
+              101,
+              140
+            ],
+            "lengthRange": [
+              201,
+              300
+            ]
+          }
+        ],
+        "contractRule": "Surface réelle, sans palier supérieur. Minimum de facturation selon le tarif."
       }
     },
     {

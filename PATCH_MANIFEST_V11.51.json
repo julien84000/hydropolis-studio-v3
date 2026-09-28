@@ -1,0 +1,6 @@
+{
+  "version": "11.51.0",
+  "name": "Hydropolis Studio V11.51 - Resigres Contract Pricing",
+  "buildCommand": "node apply-v11.51-consolidated.js",
+  "startCommand": "npm start"
+}

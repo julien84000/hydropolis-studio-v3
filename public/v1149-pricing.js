@@ -40,7 +40,12 @@
       const [minW,maxW]=rule.widthRange||[0,Infinity],[minL,maxL]=rule.lengthRange||[0,Infinity];
       if(w<minW||w>maxW||l<minL||l>maxL)return {status:"pending",pricingStatus:"manual",reason:`Dimensions hors plage Contract (${minW}–${maxW} × ${minL}–${maxL} cm)`,total:0,rule};
       const rate=Number(rule.rates?.[finish]);if(!(rate>0))return {status:"pending",pricingStatus:"manual",reason:"Tarif au m² absent pour cette matière",total:0,rule};
-      const sqm=Math.max(Number(rule.minSqm)||0,(w*l)/10000);basePrice=round2(sqm*rate);breakdown=`${round2(sqm)} m² × ${rate} €/m² · ${finish}`;
+      const actualSqm=(w*l)/10000,minSqm=Number(rule.minSqm)||0,billedSqm=Math.max(minSqm,actualSqm);
+      basePrice=round2(billedSqm*rate);
+      breakdown=actualSqm<minSqm
+        ?`${round2(actualSqm)} m² réels → minimum facturé ${round2(billedSqm)} m² × ${rate} €/m² · ${finish}`
+        :`${round2(actualSqm)} m² réels × ${rate} €/m² · ${finish}`;
+      Object.assign(rule,{actualSqm:round2(actualSqm),billedSqm:round2(billedSqm),ratePerSqm:rate});
     }else return {status:"pending",pricingStatus:"manual",reason:"Règle tarifaire non prise en charge",total:0,rule};
     const supplements=optionSupplements(model,s);const total=round2(basePrice+supplements.total);
     return {status:"automatic",pricingStatus:"automatic-verified",basePrice:round2(basePrice),supplements,total,breakdown,rule,pricedWidth,pricedLength};
