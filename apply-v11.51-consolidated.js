@@ -5,7 +5,28 @@ const ROOT=__dirname,file=p=>path.join(ROOT,p),read=p=>fs.readFileSync(file(p),"
 function fail(m){throw new Error(`[V11.51] ${m}`)}
 function run(script){if(!exists(script))fail(`script manquant : ${script}`);const r=cp.spawnSync(process.execPath,[file(script)],{cwd:ROOT,stdio:"inherit"});if(r.status!==0)fail(`${script} a échoué (${r.status})`)}
 if(!exists("public/app.js")||!exists("package.json"))fail("base Hydropolis introuvable");
-if(String(JSON.parse(read("package.json")).version||"")!=="11.50.0")run("apply-v11.50-consolidated.js");
+if(String(JSON.parse(read("package.json")).version||"")!=="11.50.0"){
+  const cfgPath="public/resigres_2026_config.json";
+  const finalCfgText=exists(cfgPath)?read(cfgPath):null;
+  let compatApplied=false;
+  try{
+    if(finalCfgText){
+      const finalCfgObj=JSON.parse(finalCfgText);
+      if(finalCfgObj.version==="2026-FR-v6"){
+        finalCfgObj.version="2026-FR-v5";
+        write(cfgPath,JSON.stringify(finalCfgObj,null,2)+"\n");
+        compatApplied=true;
+        console.log("[V11.51] compatibilité héritage : configuration Resigres v6 présentée temporairement en v5");
+      }
+    }
+    run("apply-v11.50-consolidated.js");
+  }finally{
+    if(compatApplied&&finalCfgText){
+      write(cfgPath,finalCfgText);
+      console.log("[V11.51] configuration Resigres v6 restaurée après consolidation V11.50");
+    }
+  }
+}
 for(const p of ["public/v1149-pricing.js","public/v1149.js","public/v1151.css","public/resigres_2026_config.json"]){if(!exists(p))fail(`fichier V11.51 manquant : ${p}`)}
 const cfg=JSON.parse(read("public/resigres_2026_config.json"));if(cfg.version!=="2026-FR-v6")fail(`configuration Resigres V11.51 absente (${cfg.version||"sans version"})`);
 const contracts=(cfg.models||[]).filter(x=>x.kind==="shower-tray").flatMap(x=>(x.pricingRules||[]).filter(r=>r.type==="sqm"));if(contracts.length<4||contracts.some(r=>r.billingMode!=="actual-sqm"||r.noTierRounding!==true))fail("règles Contract €/m² incomplètes");
