@@ -1,0 +1,13 @@
+{
+  "version": "11.53.0",
+  "name": "Hydropolis Studio V11.53 - Vismaravetro/TDA Configurators + Sira Concrete",
+  "buildCommand": "node apply-v11.53-consolidated.js",
+  "startCommand": "npm start",
+  "features": [
+    "TDA official-site configurator",
+    "Vismaravetro official-site configurator",
+    "Sira Concrete official-site product configurator",
+    "Sira supplier discount 50 percent",
+    "official technical documents and images"
+  ]
+}
