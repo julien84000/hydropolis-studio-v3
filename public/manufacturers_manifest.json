@@ -1,5 +1,5 @@
 {
-  "version": "11.40.0",
+  "version": "11.54.0",
   "manufacturers": [
     {
       "name": "Amphora",
@@ -96,6 +96,100 @@
         "manufacturer-image",
         "technical-pdf-page-3"
       ]
+    },
+    {
+      "name": "Fioranese",
+      "catalog": "catalog_fioranese_2025.json",
+      "capabilities": [
+        "catalog",
+        "manufacturer-image",
+        "box-rounding-sqm",
+        "source-page"
+      ]
+    },
+    {
+      "name": "Resigres",
+      "catalog": "catalog_resigres_2026.json",
+      "config": "resigres_2026_config.json",
+      "capabilities": [
+        "catalog",
+        "manufacturer-image",
+        "integrated-configurator",
+        "source-page",
+        "manual-safe-pricing",
+        "automatic-pricing-2026",
+        "official-product-images",
+        "official-technical-pdf",
+        "official-3d-assets",
+        "dependent-configurator",
+        "size-material-color-matrix",
+        "safe-model-specific-options",
+        "official-assets-resolver-v49",
+        "shower-tray-ceiling-dimensions",
+        "selene-dependent-configurator",
+        "selene-option-pricing",
+        "full-shower-tray-dependent-configurator",
+        "all-basin-top-dependent-configurator",
+        "all-furniture-basin-top-configurator",
+        "all-furniture-dependent-configurator",
+        "upper-tier-dimension-pricing",
+        "paid-and-included-options",
+        "contract-actual-sqm-pricing",
+        "contract-minimum-billing",
+        "contract-no-tier-rounding",
+        "contract-basin-top-per-cm-pricing",
+        "technical-sheet-auto-hydration",
+        "technical-sheet-manual-refresh",
+        "include-technical-sheet-in-document"
+      ]
+    },
+    {
+      "name": "Vismaravetro",
+      "catalog": "catalog_vismaravetro_web.json",
+      "capabilities": [
+        "catalog",
+        "official-site-image",
+        "official-model-configurator",
+        "dimensions-validation",
+        "profile-selection",
+        "glass-selection",
+        "options-selection",
+        "technical-doc-if-exposed",
+        "manual-2026-price-fallback",
+        "purchase-discount-50"
+      ],
+      "purchaseDiscount": 50
+    },
+    {
+      "name": "TDA",
+      "catalog": "catalog_tda_web.json",
+      "capabilities": [
+        "catalog",
+        "official-site-image",
+        "official-model-configurator",
+        "installation-selection",
+        "dimensions-validation",
+        "profile-selection",
+        "glass-selection",
+        "options-selection",
+        "technical-doc-if-exposed",
+        "manual-2026-price-fallback",
+        "purchase-discount-50"
+      ],
+      "purchaseDiscount": 50
+    },
+    {
+      "name": "Sira Concrete",
+      "catalog": "catalog_sira_web.json",
+      "capabilities": [
+        "catalog",
+        "official-site-configurator",
+        "official-site-image",
+        "official-technical-sheet",
+        "12-pigments",
+        "purchase-discount-50"
+      ],
+      "purchaseDiscount": 50
     }
   ]
 }

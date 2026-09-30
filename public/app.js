@@ -1,3 +1,4 @@
+/* SOURCE public/app.js */
 
 const CATALOG=[{"manufacturer":"Amphora","collection":"REEL","reference":"RE001.BB","base":"RE001","designation":"Mitigeur progressif pour lavabo, montage sur plan","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":565.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":565.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE001.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re001/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE001.BC","base":"RE001","designation":"Mitigeur progressif pour lavabo, montage sur plan","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":565.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":565.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE001.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re001/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE001.BS","base":"RE001","designation":"Mitigeur progressif pour lavabo, montage sur plan","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":390.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":390.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE001.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re001/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE001H.BB","base":"RE001H","designation":"Mitigeur progressif haut pour lavabo, montage sur plan","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":595.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":595.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE001H.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re001h/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE001H.BC","base":"RE001H","designation":"Mitigeur progressif haut pour lavabo, montage sur plan","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":595.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":595.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE001H.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re001h/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE001H.BS","base":"RE001H","designation":"Mitigeur progressif haut pour lavabo, montage sur plan","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":410.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":410.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE001H.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re001h/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE002.EXT.BB","base":"RE002","designation":"Mitigeur progressif mural pour lavabo","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":585.0,"currency":"€","vat":"HT","internalReference":"INT.01","internalPrice":125.0,"totalPrice":710.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE002.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re002/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE002.EXT.BC","base":"RE002","designation":"Mitigeur progressif mural pour lavabo","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":585.0,"currency":"€","vat":"HT","internalReference":"INT.01","internalPrice":125.0,"totalPrice":710.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE002.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re002/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE002.EXT.BS","base":"RE002","designation":"Mitigeur progressif mural pour lavabo","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":410.0,"currency":"€","vat":"HT","internalReference":"INT.01","internalPrice":125.0,"totalPrice":535.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE002.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re002/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE002L.EXT.BB","base":"RE002L","designation":"Mitigeur progressif mural pour lavabo, bec long","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":605.0,"currency":"€","vat":"HT","internalReference":"INT.01","internalPrice":125.0,"totalPrice":730.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE002L.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re002l/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE002L.EXT.BC","base":"RE002L","designation":"Mitigeur progressif mural pour lavabo, bec long","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":605.0,"currency":"€","vat":"HT","internalReference":"INT.01","internalPrice":125.0,"totalPrice":730.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE002L.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re002l/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE002L.EXT.BS","base":"RE002L","designation":"Mitigeur progressif mural pour lavabo, bec long","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":420.0,"currency":"€","vat":"HT","internalReference":"INT.01","internalPrice":125.0,"totalPrice":545.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE002L.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re002l/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE003.EXT.BB","base":"RE003","designation":"Mitigeur mural pour lavabo","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":655.0,"currency":"€","vat":"HT","internalReference":"INT.01","internalPrice":125.0,"totalPrice":780.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE003.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re003/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE003.EXT.BC","base":"RE003","designation":"Mitigeur mural pour lavabo","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":655.0,"currency":"€","vat":"HT","internalReference":"INT.01","internalPrice":125.0,"totalPrice":780.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE003.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re003/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE003.EXT.BS","base":"RE003","designation":"Mitigeur mural pour lavabo","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":465.0,"currency":"€","vat":"HT","internalReference":"INT.01","internalPrice":125.0,"totalPrice":590.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE003.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re003/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE003L.EXT.BB","base":"RE003L","designation":"Mitigeur mural pour lavabo, bec long","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":680.0,"currency":"€","vat":"HT","internalReference":"INT.01","internalPrice":125.0,"totalPrice":805.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE003L.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re003l/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE003L.EXT.BC","base":"RE003L","designation":"Mitigeur mural pour lavabo, bec long","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":680.0,"currency":"€","vat":"HT","internalReference":"INT.01","internalPrice":125.0,"totalPrice":805.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE003L.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re003l/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE003L.EXT.BS","base":"RE003L","designation":"Mitigeur mural pour lavabo, bec long","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":475.0,"currency":"€","vat":"HT","internalReference":"INT.01","internalPrice":125.0,"totalPrice":600.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE003L.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re003l/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE004.BB","base":"RE004","designation":"Mitigeur pour lavabo, montage sur plan","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":725.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":725.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE004.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re004/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE004.BC","base":"RE004","designation":"Mitigeur pour lavabo, montage sur plan","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":725.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":725.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE004.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re004/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE004.BS","base":"RE004","designation":"Mitigeur pour lavabo, montage sur plan","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":510.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":510.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE004.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re004/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE004H.BB","base":"RE004H","designation":"Mitigeur haut pour lavabo, montage sur plan","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":760.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":760.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE004H.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re004h/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE004H.BC","base":"RE004H","designation":"Mitigeur haut pour lavabo, montage sur plan","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":760.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":760.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE004H.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re004h/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE004H.BS","base":"RE004H","designation":"Mitigeur haut pour lavabo, montage sur plan","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":530.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":530.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE004H.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re004h/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE005.BB","base":"RE005","designation":"Mélangeur 3 trous pour lavabo, montage sur gorge","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":995.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":995.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE005.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re005/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE005.BC","base":"RE005","designation":"Mélangeur 3 trous pour lavabo, montage sur gorge","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":995.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":995.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE005.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re005/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE005.BS","base":"RE005","designation":"Mélangeur 3 trous pour lavabo, montage sur gorge","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":690.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":690.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE005.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re005/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE006.EXT.BB","base":"RE006","designation":"Mitigeur mural","finishCode":"BB","finish":"Noir brossé PVD","category":"Douche","price":440.0,"currency":"€","vat":"HT","internalReference":"INT.01","internalPrice":125.0,"totalPrice":565.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE006.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re006/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE006.EXT.BC","base":"RE006","designation":"Mitigeur mural","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Douche","price":440.0,"currency":"€","vat":"HT","internalReference":"INT.01","internalPrice":125.0,"totalPrice":565.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE006.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re006/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE006.EXT.BS","base":"RE006","designation":"Mitigeur mural","finishCode":"BS","finish":"Acier brossé","category":"Douche","price":335.0,"currency":"€","vat":"HT","internalReference":"INT.01","internalPrice":125.0,"totalPrice":460.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE006.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re006/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE007.EXT.BB","base":"RE007","designation":"Inverseur mural 2 voies","finishCode":"BB","finish":"Noir brossé PVD","category":"Douche","price":440.0,"currency":"€","vat":"HT","internalReference":"INT.03","internalPrice":125.0,"totalPrice":565.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE007.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re007/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE007.EXT.BC","base":"RE007","designation":"Inverseur mural 2 voies","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Douche","price":440.0,"currency":"€","vat":"HT","internalReference":"INT.03","internalPrice":125.0,"totalPrice":565.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE007.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re007/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE007.EXT.BS","base":"RE007","designation":"Inverseur mural 2 voies","finishCode":"BS","finish":"Acier brossé","category":"Douche","price":335.0,"currency":"€","vat":"HT","internalReference":"INT.03","internalPrice":125.0,"totalPrice":460.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE007.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re007/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE008.BB","base":"RE008","designation":"Mitigeur progressif pour bidet","finishCode":"BB","finish":"Noir brossé PVD","category":"Bidet","price":630.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":630.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE008.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re008/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE008.BC","base":"RE008","designation":"Mitigeur progressif pour bidet","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Bidet","price":630.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":630.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE008.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re008/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE008.BS","base":"RE008","designation":"Mitigeur progressif pour bidet","finishCode":"BS","finish":"Acier brossé","category":"Bidet","price":440.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":440.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE008.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re008/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE009.EXT.BB","base":"RE009","designation":"Inverseur mural 2 voies","finishCode":"BB","finish":"Noir brossé PVD","category":"Douche","price":415.0,"currency":"€","vat":"HT","internalReference":"INT.03","internalPrice":125.0,"totalPrice":540.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE009.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re009/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE009.EXT.BC","base":"RE009","designation":"Inverseur mural 2 voies","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Douche","price":415.0,"currency":"€","vat":"HT","internalReference":"INT.03","internalPrice":125.0,"totalPrice":540.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE009.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re009/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE009.EXT.BS","base":"RE009","designation":"Inverseur mural 2 voies","finishCode":"BS","finish":"Acier brossé","category":"Douche","price":320.0,"currency":"€","vat":"HT","internalReference":"INT.03","internalPrice":125.0,"totalPrice":445.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE009.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re009/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE010.EXT.BB","base":"RE010","designation":"Robinet d'arrêt mural","finishCode":"BB","finish":"Noir brossé PVD","category":"Accessoires","price":370.0,"currency":"€","vat":"HT","internalReference":"INT.02","internalPrice":160.0,"totalPrice":530.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE010.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re010/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE010.EXT.BC","base":"RE010","designation":"Robinet d'arrêt mural","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Accessoires","price":370.0,"currency":"€","vat":"HT","internalReference":"INT.02","internalPrice":160.0,"totalPrice":530.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE010.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re010/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE010.EXT.BS","base":"RE010","designation":"Robinet d'arrêt mural","finishCode":"BS","finish":"Acier brossé","category":"Accessoires","price":275.0,"currency":"€","vat":"HT","internalReference":"INT.02","internalPrice":160.0,"totalPrice":435.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE010.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re010/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE011.EXT.BB","base":"RE011","designation":"Mitigeur progressif mural","finishCode":"BB","finish":"Noir brossé PVD","category":"Accessoires","price":415.0,"currency":"€","vat":"HT","internalReference":"INT.01","internalPrice":125.0,"totalPrice":540.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE011.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re011/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE011.EXT.BC","base":"RE011","designation":"Mitigeur progressif mural","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Accessoires","price":415.0,"currency":"€","vat":"HT","internalReference":"INT.01","internalPrice":125.0,"totalPrice":540.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE011.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re011/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE011.EXT.BS","base":"RE011","designation":"Mitigeur progressif mural","finishCode":"BS","finish":"Acier brossé","category":"Accessoires","price":320.0,"currency":"€","vat":"HT","internalReference":"INT.01","internalPrice":125.0,"totalPrice":445.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE011.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re011/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE012.EXT.BB","base":"RE012","designation":"Mélangeur 3 trous mural pour lavabo","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":950.0,"currency":"€","vat":"HT","internalReference":"INT.04","internalPrice":320.0,"totalPrice":1270.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE012.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re012/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE012.EXT.BC","base":"RE012","designation":"Mélangeur 3 trous mural pour lavabo","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":950.0,"currency":"€","vat":"HT","internalReference":"INT.04","internalPrice":320.0,"totalPrice":1270.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE012.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re012/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE012.EXT.BS","base":"RE012","designation":"Mélangeur 3 trous mural pour lavabo","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":680.0,"currency":"€","vat":"HT","internalReference":"INT.04","internalPrice":320.0,"totalPrice":1000.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE012.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re012/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE012L.EXT.BB","base":"RE012L","designation":"Mélangeur 3 trous mural pour lavabo, bec long","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":975.0,"currency":"€","vat":"HT","internalReference":"INT.04","internalPrice":320.0,"totalPrice":1295.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE012L.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re012l/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE012L.EXT.BC","base":"RE012L","designation":"Mélangeur 3 trous mural pour lavabo, bec long","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":975.0,"currency":"€","vat":"HT","internalReference":"INT.04","internalPrice":320.0,"totalPrice":1295.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE012L.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re012l/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE012L.EXT.BS","base":"RE012L","designation":"Mélangeur 3 trous mural pour lavabo, bec long","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":670.0,"currency":"€","vat":"HT","internalReference":"INT.04","internalPrice":320.0,"totalPrice":990.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE012L.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re012l/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE013.BB","base":"RE013","designation":"Bec déverseur mural pour lavabo","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":220.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":220.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE013.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re013/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE013.BC","base":"RE013","designation":"Bec déverseur mural pour lavabo","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":220.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":220.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE013.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re013/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE013.BS","base":"RE013","designation":"Bec déverseur mural pour lavabo","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":135.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":135.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE013.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re013/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE013L.BB","base":"RE013L","designation":"Bec déverseur mural pour lavabo et baignoire","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":245.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":245.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE013L.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re013l/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE013L.BC","base":"RE013L","designation":"Bec déverseur mural pour lavabo et baignoire","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":245.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":245.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE013L.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re013l/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE013L.BS","base":"RE013L","designation":"Bec déverseur mural pour lavabo et baignoire","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":145.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":145.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE013L.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re013l/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE014.BB","base":"RE014","designation":"Bec déverseur pour lavabo, montage sur plan","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":250.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":250.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE014.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re014/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE014.BC","base":"RE014","designation":"Bec déverseur pour lavabo, montage sur plan","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":250.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":250.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE014.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re014/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE014.BS","base":"RE014","designation":"Bec déverseur pour lavabo, montage sur plan","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":175.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":175.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE014.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re014/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE014H.BB","base":"RE014H","designation":"Bec déverseur haut pour lavabo, montage sur plan","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":285.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":285.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE014H.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re014h/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE014H.BC","base":"RE014H","designation":"Bec déverseur haut pour lavabo, montage sur plan","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":285.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":285.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE014H.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re014h/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE014H.BS","base":"RE014H","designation":"Bec déverseur haut pour lavabo, montage sur plan","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":195.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":195.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE014H.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re014h/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE015.BB","base":"RE015","designation":"Ensemble bain sur gorge avec 2 mitigeurs, bec et douchette","finishCode":"BB","finish":"Noir brossé PVD","category":"Baignoire","price":1850.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1850.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE015.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re015/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE015.BC","base":"RE015","designation":"Ensemble bain sur gorge avec 2 mitigeurs, bec et douchette","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Baignoire","price":1850.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1850.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE015.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re015/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE015.BS","base":"RE015","designation":"Ensemble bain sur gorge avec 2 mitigeurs, bec et douchette","finishCode":"BS","finish":"Acier brossé","category":"Baignoire","price":1495.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1495.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE015.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re015/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE016.BB","base":"RE016","designation":"Robinet poussoir avec douchette pour WC","finishCode":"BB","finish":"Noir brossé PVD","category":"WC","price":705.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":705.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE016.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re016/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE016.BC","base":"RE016","designation":"Robinet poussoir avec douchette pour WC","finishCode":"BC","finish":"Cuivre brossé PVD","category":"WC","price":705.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":705.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE016.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re016/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE016.BS","base":"RE016","designation":"Robinet poussoir avec douchette pour WC","finishCode":"BS","finish":"Acier brossé","category":"WC","price":535.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":535.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE016.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re016/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE017.BB","base":"RE017","designation":"Ensemble bain sur gorge avec 2 mitigeurs et douchette","finishCode":"BB","finish":"Noir brossé PVD","category":"Baignoire","price":1600.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1600.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE017.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re017/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE017.BC","base":"RE017","designation":"Ensemble bain sur gorge avec 2 mitigeurs et douchette","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Baignoire","price":1600.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1600.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE017.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re017/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE017.BS","base":"RE017","designation":"Ensemble bain sur gorge avec 2 mitigeurs et douchette","finishCode":"BS","finish":"Acier brossé","category":"Baignoire","price":1320.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1320.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE017.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re017/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE018.EXT.BB","base":"RE018","designation":"Colonne de bain au sol avec 2 mitigeurs, bec et douchette magnétique","finishCode":"BB","finish":"Noir brossé PVD","category":"Baignoire","price":4370.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":4370.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE018.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re018/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE018.EXT.BC","base":"RE018","designation":"Colonne de bain au sol avec 2 mitigeurs, bec et douchette magnétique","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Baignoire","price":4370.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":4370.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE018.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re018/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE018.EXT.BS","base":"RE018","designation":"Colonne de bain au sol avec 2 mitigeurs, bec et douchette magnétique","finishCode":"BS","finish":"Acier brossé","category":"Baignoire","price":3340.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":3340.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE018.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re018/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE019.EXT.BB","base":"RE019","designation":"Mitigeur mural de baignoire avec bec au sol","finishCode":"BB","finish":"Noir brossé PVD","category":"Baignoire","price":1785.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1785.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE019.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re019/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE019.EXT.BC","base":"RE019","designation":"Mitigeur mural de baignoire avec bec au sol","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Baignoire","price":1785.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1785.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE019.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re019/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE019.EXT.BS","base":"RE019","designation":"Mitigeur mural de baignoire avec bec au sol","finishCode":"BS","finish":"Acier brossé","category":"Baignoire","price":1225.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1225.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE019.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re019/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE020.BB","base":"RE020","designation":"Mitigeur pour lavabo","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":505.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":505.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE020.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re020/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE020.BC","base":"RE020","designation":"Mitigeur pour lavabo","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":505.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":505.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE020.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re020/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE020.BS","base":"RE020","designation":"Mitigeur pour lavabo","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":315.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":315.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE020.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re020/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE020H.BB","base":"RE020H","designation":"Mitigeur haut pour lavabo","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":605.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":605.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE020H.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re020h/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE020H.BC","base":"RE020H","designation":"Mitigeur haut pour lavabo","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":605.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":605.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE020H.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re020h/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE020H.BS","base":"RE020H","designation":"Mitigeur haut pour lavabo","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":395.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":395.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE020H.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re020h/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE020M.BB","base":"RE020M","designation":"Mitigeur moyen pour lavabo","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":580.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":580.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE020M.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re020m/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE020M.BC","base":"RE020M","designation":"Mitigeur moyen pour lavabo","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":580.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":580.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE020M.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re020m/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE020M.BS","base":"RE020M","designation":"Mitigeur moyen pour lavabo","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":380.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":380.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE020M.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re020m/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE021.BB","base":"RE021","designation":"Mitigeur pour bidet","finishCode":"BB","finish":"Noir brossé PVD","category":"Bidet","price":605.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":605.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE021.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re021/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE021.BC","base":"RE021","designation":"Mitigeur pour bidet","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Bidet","price":605.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":605.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE021.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re021/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE021.BS","base":"RE021","designation":"Mitigeur pour bidet","finishCode":"BS","finish":"Acier brossé","category":"Bidet","price":410.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":410.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE021.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re021/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE022.EXT.BB","base":"RE022","designation":"Mitigeur progressif pour lavabo sur colonne au sol","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":1610.0,"currency":"€","vat":"HT","internalReference":"INT.05","internalPrice":175.0,"totalPrice":1785.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE022.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re022/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE022.EXT.BC","base":"RE022","designation":"Mitigeur progressif pour lavabo sur colonne au sol","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":1610.0,"currency":"€","vat":"HT","internalReference":"INT.05","internalPrice":175.0,"totalPrice":1785.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE022.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re022/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE022.EXT.BS","base":"RE022","designation":"Mitigeur progressif pour lavabo sur colonne au sol","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":1045.0,"currency":"€","vat":"HT","internalReference":"INT.05","internalPrice":175.0,"totalPrice":1220.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE022.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re022/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE024.BB","base":"RE024","designation":"Bec colonne au sol pour baignoire","finishCode":"BB","finish":"Noir brossé PVD","category":"Baignoire","price":1345.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1345.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE024.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re024/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE024.BC","base":"RE024","designation":"Bec colonne au sol pour baignoire","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Baignoire","price":1345.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1345.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE024.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re024/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE024.BS","base":"RE024","designation":"Bec colonne au sol pour baignoire","finishCode":"BS","finish":"Acier brossé","category":"Baignoire","price":890.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":890.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE024.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re024/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE025.EXT.BB","base":"RE025","designation":"Mitigeur thermostatique mural avec inverseur 2 voies","finishCode":"BB","finish":"Noir brossé PVD","category":"Douche","price":965.0,"currency":"€","vat":"HT","internalReference":"INT.25","internalPrice":510.0,"totalPrice":1475.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE025.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re025/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE025.EXT.BC","base":"RE025","designation":"Mitigeur thermostatique mural avec inverseur 2 voies","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Douche","price":965.0,"currency":"€","vat":"HT","internalReference":"INT.25","internalPrice":510.0,"totalPrice":1475.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE025.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re025/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE025.EXT.BS","base":"RE025","designation":"Mitigeur thermostatique mural avec inverseur 2 voies","finishCode":"BS","finish":"Acier brossé","category":"Douche","price":805.0,"currency":"€","vat":"HT","internalReference":"INT.25","internalPrice":510.0,"totalPrice":1315.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE025.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re025/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE027.EXT.BB","base":"RE027","designation":"Mitigeur thermostatique mural avec inverseur 3 voies","finishCode":"BB","finish":"Noir brossé PVD","category":"Douche","price":965.0,"currency":"€","vat":"HT","internalReference":"INT.27","internalPrice":530.0,"totalPrice":1495.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE027.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re027/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE027.EXT.BC","base":"RE027","designation":"Mitigeur thermostatique mural avec inverseur 3 voies","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Douche","price":965.0,"currency":"€","vat":"HT","internalReference":"INT.27","internalPrice":530.0,"totalPrice":1495.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE027.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re027/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE027.EXT.BS","base":"RE027","designation":"Mitigeur thermostatique mural avec inverseur 3 voies","finishCode":"BS","finish":"Acier brossé","category":"Douche","price":805.0,"currency":"€","vat":"HT","internalReference":"INT.27","internalPrice":530.0,"totalPrice":1335.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE027.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re027/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE029.EXT.BB","base":"RE029","designation":"Mitigeur thermostatique mural bain avec 2 robinets d’arrêt, bec et douchette magnétique","finishCode":"BB","finish":"Noir brossé PVD","category":"Baignoire","price":2695.0,"currency":"€","vat":"HT","internalReference":"INT.29","internalPrice":855.0,"totalPrice":3550.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE029.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re029/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE029.EXT.BC","base":"RE029","designation":"Mitigeur thermostatique mural bain avec 2 robinets d’arrêt, bec et douchette magnétique","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Baignoire","price":2695.0,"currency":"€","vat":"HT","internalReference":"INT.29","internalPrice":855.0,"totalPrice":3550.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE029.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re029/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE029.EXT.BS","base":"RE029","designation":"Mitigeur thermostatique mural bain avec 2 robinets d’arrêt, bec et douchette magnétique","finishCode":"BS","finish":"Acier brossé","category":"Baignoire","price":2085.0,"currency":"€","vat":"HT","internalReference":"INT.29","internalPrice":855.0,"totalPrice":2940.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE029.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re029/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE030.EXT.BB","base":"RE030","designation":"Mitigeur thermostatique mural bain avec 2 robinets d’arrêt et douchette magnétique","finishCode":"BB","finish":"Noir brossé PVD","category":"Baignoire","price":2570.0,"currency":"€","vat":"HT","internalReference":"INT.30","internalPrice":785.0,"totalPrice":3355.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE030.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re030/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE030.EXT.BC","base":"RE030","designation":"Mitigeur thermostatique mural bain avec 2 robinets d’arrêt et douchette magnétique","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Baignoire","price":2570.0,"currency":"€","vat":"HT","internalReference":"INT.30","internalPrice":785.0,"totalPrice":3355.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE030.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re030/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE030.EXT.BS","base":"RE030","designation":"Mitigeur thermostatique mural bain avec 2 robinets d’arrêt et douchette magnétique","finishCode":"BS","finish":"Acier brossé","category":"Baignoire","price":2015.0,"currency":"€","vat":"HT","internalReference":"INT.30","internalPrice":785.0,"totalPrice":2800.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE030.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re030/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE034.BB","base":"RE034","designation":"Kit douche avec prise d’eau, douchette magnétique et flexible","finishCode":"BB","finish":"Noir brossé PVD","category":"Douche","price":930.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":930.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE034.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re034/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE034.BC","base":"RE034","designation":"Kit douche avec prise d’eau, douchette magnétique et flexible","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Douche","price":930.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":930.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE034.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re034/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE034.BS","base":"RE034","designation":"Kit douche avec prise d’eau, douchette magnétique et flexible","finishCode":"BS","finish":"Acier brossé","category":"Douche","price":735.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":735.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE034.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re034/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE035.BB","base":"RE035","designation":"Barre coulissante avec flexible, douchette et coude de sortie","finishCode":"BB","finish":"Noir brossé PVD","category":"Douche","price":1435.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1435.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE035.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re035/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE035.BC","base":"RE035","designation":"Barre coulissante avec flexible, douchette et coude de sortie","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Douche","price":1435.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1435.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE035.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re035/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE035.BS","base":"RE035","designation":"Barre coulissante avec flexible, douchette et coude de sortie","finishCode":"BS","finish":"Acier brossé","category":"Douche","price":1105.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1105.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE035.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re035/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE036.BB","base":"RE036","designation":"Bras de douche mural","finishCode":"BB","finish":"Noir brossé PVD","category":"Douche","price":200.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":200.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE036.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re036/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE036.BC","base":"RE036","designation":"Bras de douche mural","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Douche","price":200.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":200.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE036.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re036/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE036.BS","base":"RE036","designation":"Bras de douche mural","finishCode":"BS","finish":"Acier brossé","category":"Douche","price":145.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":145.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE036.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re036/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE037.BB","base":"RE037","designation":"Bras de douche plafond 20 cm","finishCode":"BB","finish":"Noir brossé PVD","category":"Douche","price":160.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":160.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE037.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re037/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE037.BC","base":"RE037","designation":"Bras de douche plafond 20 cm","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Douche","price":160.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":160.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE037.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re037/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE037.BS","base":"RE037","designation":"Bras de douche plafond 20 cm","finishCode":"BS","finish":"Acier brossé","category":"Douche","price":105.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":105.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE037.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re037/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE038.BB","base":"RE038","designation":"Pomme de douche Rainjet Ø 200 mm","finishCode":"BB","finish":"Noir brossé PVD","category":"Douche","price":490.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":490.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE038.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re038/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE038.BC","base":"RE038","designation":"Pomme de douche Rainjet Ø 200 mm","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Douche","price":490.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":490.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE038.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re038/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE038.BS","base":"RE038","designation":"Pomme de douche Rainjet Ø 200 mm","finishCode":"BS","finish":"Acier brossé","category":"Douche","price":175.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":175.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE038.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re038/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE039.BB","base":"RE039","designation":"Pomme de douche","finishCode":"BB","finish":"Noir brossé PVD","category":"Douche","price":560.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":560.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE039.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re039/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE039.BC","base":"RE039","designation":"Pomme de douche","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Douche","price":560.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":560.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE039.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re039/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE039.BS","base":"RE039","designation":"Pomme de douche","finishCode":"BS","finish":"Acier brossé","category":"Douche","price":280.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":280.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE039.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re039/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE040.BB","base":"RE040","designation":"Pomme de douche murale triple jet","finishCode":"BB","finish":"Noir brossé PVD","category":"Douche","price":875.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":875.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE040.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re040/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE040.BC","base":"RE040","designation":"Pomme de douche murale triple jet","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Douche","price":875.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":875.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE040.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re040/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE040.BS","base":"RE040","designation":"Pomme de douche murale triple jet","finishCode":"BS","finish":"Acier brossé","category":"Douche","price":645.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":645.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE040.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re040/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE041.BB","base":"RE041","designation":"Pomme de douche monojet plafond","finishCode":"BB","finish":"Noir brossé PVD","category":"Douche","price":650.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":650.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE041.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re041/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE041.BC","base":"RE041","designation":"Pomme de douche monojet plafond","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Douche","price":650.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":650.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE041.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re041/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE041.BS","base":"RE041","designation":"Pomme de douche monojet plafond","finishCode":"BS","finish":"Acier brossé","category":"Douche","price":455.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":455.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE041.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re041/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE043.BB","base":"RE043","designation":"Vidage à pression pour lavabo","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":105.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":105.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE043.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re043/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE043.BC","base":"RE043","designation":"Vidage à pression pour lavabo","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":105.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":105.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE043.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re043/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE043.BS","base":"RE043","designation":"Vidage à pression pour lavabo","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":55.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":55.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE043.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re043/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE044.BB","base":"RE044","designation":"Siphon pour lavabo","finishCode":"BB","finish":"Noir brossé PVD","category":"Lavabo","price":365.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":365.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE044.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re044/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE044.BC","base":"RE044","designation":"Siphon pour lavabo","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Lavabo","price":365.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":365.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE044.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re044/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE044.BS","base":"RE044","designation":"Siphon pour lavabo","finishCode":"BS","finish":"Acier brossé","category":"Lavabo","price":195.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":195.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE044.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re044/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE045.BB","base":"RE045","designation":"Robinet équerre avec filtre","finishCode":"BB","finish":"Noir brossé PVD","category":"Accessoires","price":220.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":220.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"","imageSource":"","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re045/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE045.BC","base":"RE045","designation":"Robinet équerre avec filtre","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Accessoires","price":220.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":220.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"","imageSource":"","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re045/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE045.BS","base":"RE045","designation":"Robinet équerre avec filtre","finishCode":"BS","finish":"Acier brossé","category":"Accessoires","price":145.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":145.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"","imageSource":"","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re045/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE046.BB","base":"RE046","designation":"Plaque WC compatible Geberit / TECE","finishCode":"BB","finish":"Noir brossé PVD","category":"WC","price":410.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":410.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE046.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re046/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE046.BC","base":"RE046","designation":"Plaque WC compatible Geberit / TECE","finishCode":"BC","finish":"Cuivre brossé PVD","category":"WC","price":410.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":410.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE046.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re046/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE046.BS","base":"RE046","designation":"Plaque WC compatible Geberit / TECE","finishCode":"BS","finish":"Acier brossé","category":"WC","price":285.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":285.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE046.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re046/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE047.BB","base":"RE047","designation":"Vidage baignoire avec trop-plein","finishCode":"BB","finish":"Noir brossé PVD","category":"Baignoire","price":235.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":235.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE047.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re047/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE047.BC","base":"RE047","designation":"Vidage baignoire avec trop-plein","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Baignoire","price":235.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":235.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE047.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re047/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE047.BS","base":"RE047","designation":"Vidage baignoire avec trop-plein","finishCode":"BS","finish":"Acier brossé","category":"Baignoire","price":195.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":195.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE047.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re047/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE048.BB","base":"RE048","designation":"Vidage baignoire avec bec déverseur et trop-plein","finishCode":"BB","finish":"Noir brossé PVD","category":"Baignoire","price":410.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":410.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE048.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re048/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE048.BC","base":"RE048","designation":"Vidage baignoire avec bec déverseur et trop-plein","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Baignoire","price":410.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":410.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE048.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re048/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE048.BS","base":"RE048","designation":"Vidage baignoire avec bec déverseur et trop-plein","finishCode":"BS","finish":"Acier brossé","category":"Baignoire","price":355.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":355.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE048.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re048/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE049.BB","base":"RE049","designation":"Pomme de douche encastrée plafond Ø 38 cm","finishCode":"BB","finish":"Noir brossé PVD","category":"Douche","price":1435.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1435.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE049.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re049/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE049.BC","base":"RE049","designation":"Pomme de douche encastrée plafond Ø 38 cm","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Douche","price":1435.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1435.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE049.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re049/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE049.BS","base":"RE049","designation":"Pomme de douche encastrée plafond Ø 38 cm","finishCode":"BS","finish":"Acier brossé","category":"Douche","price":1030.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1030.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE049.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re049/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE050.BB","base":"RE050","designation":"Pomme de douche encastrée plafond Ø 50 cm","finishCode":"BB","finish":"Noir brossé PVD","category":"Douche","price":1605.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1605.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE050.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re050/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE050.BC","base":"RE050","designation":"Pomme de douche encastrée plafond Ø 50 cm","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Douche","price":1605.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1605.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE050.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re050/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE050.BS","base":"RE050","designation":"Pomme de douche encastrée plafond Ø 50 cm","finishCode":"BS","finish":"Acier brossé","category":"Douche","price":1200.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1200.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE050.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re050/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE051.BB","base":"RE051","designation":"Pomme de douche encastrée double jet 38 x 38 cm","finishCode":"BB","finish":"Noir brossé PVD","category":"Douche","price":1520.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1520.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE051.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re051/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE051.BC","base":"RE051","designation":"Pomme de douche encastrée double jet 38 x 38 cm","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Douche","price":1520.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1520.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE051.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re051/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE051.BS","base":"RE051","designation":"Pomme de douche encastrée double jet 38 x 38 cm","finishCode":"BS","finish":"Acier brossé","category":"Douche","price":1120.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":1120.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE051.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re051/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE052.BB","base":"RE052","designation":"Douche cascade murale","finishCode":"BB","finish":"Noir brossé PVD","category":"Douche","price":895.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":895.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE052.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re052/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE052.BC","base":"RE052","designation":"Douche cascade murale","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Douche","price":895.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":895.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE052.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re052/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE052.BS","base":"RE052","designation":"Douche cascade murale","finishCode":"BS","finish":"Acier brossé","category":"Douche","price":605.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":605.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE052.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re052/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE053.BB","base":"RE053","designation":"Bras de douche mural","finishCode":"BB","finish":"Noir brossé PVD","category":"Douche","price":190.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":190.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE053.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re053/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE053.BC","base":"RE053","designation":"Bras de douche mural","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Douche","price":190.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":190.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE053.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re053/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE053.BS","base":"RE053","designation":"Bras de douche mural","finishCode":"BS","finish":"Acier brossé","category":"Douche","price":140.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":140.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE053.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re053/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE054.BB","base":"RE054","designation":"Bras de douche mural avec pomme intégrée","finishCode":"BB","finish":"Noir brossé PVD","category":"Douche","price":295.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":295.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE054.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re054/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE054.BC","base":"RE054","designation":"Bras de douche mural avec pomme intégrée","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Douche","price":295.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":295.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE054.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re054/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE054.BS","base":"RE054","designation":"Bras de douche mural avec pomme intégrée","finishCode":"BS","finish":"Acier brossé","category":"Douche","price":250.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":250.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE054.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re054/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE055.BB","base":"RE055","designation":"Bras de douche plafond avec pomme intégrée","finishCode":"BB","finish":"Noir brossé PVD","category":"Douche","price":245.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":245.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE055.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re055/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE055.BC","base":"RE055","designation":"Bras de douche plafond avec pomme intégrée","finishCode":"BC","finish":"Cuivre brossé PVD","category":"Douche","price":245.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":245.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE055.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re055/"},{"manufacturer":"Amphora","collection":"REEL","reference":"RE055.BS","base":"RE055","designation":"Bras de douche plafond avec pomme intégrée","finishCode":"BS","finish":"Acier brossé","category":"Douche","price":210.0,"currency":"€","vat":"HT","internalReference":null,"internalPrice":0,"totalPrice":210.0,"source":"Amphora REEL Price List 02.24","sourceYear":2024,"image":"images/RE055.jpg","imageSource":"Tarif fabricant Amphora REEL 2024","manufacturerUrl":"https://www.amphoradesign.it/en/prodotto/re055/"}];
 const state={project:{name:"",client:"",location:"",date:"",intro:"",cover:""},rooms:[{id:"r1",title:"SDB MASTER",subtitle:"Robinetterie & sanitaires",manual:[]}],selected:[],commercial:{clientDiscount:0,vatRate:20,shippingFee:0,supplierShippingFee:0,supplierDiscounts:{"Amphora":50,"Catalano":64,"Coalbrook":50,"Zucchetti":55,"Lefroy Brooks":55,"Hotbath":50,"Recor":61.5385,"Ritmonio":55,"Nicolazzi":50,"Gessi":50}}};
@@ -75,7 +76,8 @@ function blankProjectState(){
       supplierDiscounts:{"Amphora":50,"Catalano":64,"Coalbrook":50,"Zucchetti":55,"Lefroy Brooks":55,"Hotbath":50,"Recor":61.5385,"Ritmonio":55,"Nicolazzi":50,"Gessi":50}
     },
     showClientPrices:true,
-    showSupplierReferences:true
+    showSupplierReferences:true,
+    presentationLayout:{blocks:{}}
   };
 }
 function stateStorageKey(){
@@ -97,6 +99,7 @@ function compactStateForCloud(){
       return q;
     }),
     commercial:JSON.parse(JSON.stringify(state.commercial||{})),
+    presentationLayout:JSON.parse(JSON.stringify(state.presentationLayout||{blocks:{}})),
     showClientPrices:state.showClientPrices!==false,
     showSupplierReferences:state.showSupplierReferences!==false
   };
@@ -340,6 +343,12 @@ function technicalSheetHref(p){
     return `${location.origin}/api/project-assets/${encodeURIComponent(cloud.currentProjectId)}/${encodeURIComponent(p.technicalSheetAsset.file)}?access=${encodeURIComponent(cloud.token)}`;
   }
   return p?.technicalSheetUrl||"";
+}
+function installationGuideHref(p){
+  if(p?.installationGuideAsset?.file && cloud.currentProjectId && cloud.token){
+    return `${location.origin}/api/project-assets/${encodeURIComponent(cloud.currentProjectId)}/${encodeURIComponent(p.installationGuideAsset.file)}?access=${encodeURIComponent(cloud.token)}`;
+  }
+  return p?.installationGuideUrl||"";
 }
 function technicalSheetIsPdf(p){
   const url=technicalSheetHref(p);
@@ -634,7 +643,7 @@ async function hydrateCustomAssets(){
   let changed=false;
   for(const p of state.selected||[]){
     try{
-      if(p.customImage){
+      if(p.customImage && !(p.isFreeArticle && /^data:image\//.test(p.image||""))){
         const blob=await assetGet(`photo:${p.id}`);
         if(blob){
           const url=URL.createObjectURL(blob);
@@ -1424,6 +1433,7 @@ function loadState(override=null){
   state.commercial=JSON.parse(JSON.stringify(fresh.commercial));
   state.showClientPrices=true;
   state.showSupplierReferences=true;
+  state.presentationLayout={blocks:{}};
 
   try{
     let s=override;
@@ -1438,6 +1448,9 @@ function loadState(override=null){
       state.commercial={...fresh.commercial,...(s.commercial||{})};
       state.showClientPrices=typeof s.showClientPrices==="boolean"?s.showClientPrices:true;
       state.showSupplierReferences=typeof s.showSupplierReferences==="boolean"?s.showSupplierReferences:true;
+      state.presentationLayout=(s.presentationLayout&&typeof s.presentationLayout==="object")
+        ?JSON.parse(JSON.stringify(s.presentationLayout))
+        :{blocks:{}};
     }
   }catch(e){console.warn("[loadState]",e);}
 
@@ -1453,6 +1466,8 @@ function loadState(override=null){
 
   if(typeof state.showClientPrices!=="boolean")state.showClientPrices=true;
   if(typeof state.showSupplierReferences!=="boolean")state.showSupplierReferences=true;
+  if(!state.presentationLayout||typeof state.presentationLayout!=="object")state.presentationLayout={blocks:{}};
+  if(!state.presentationLayout.blocks||typeof state.presentationLayout.blocks!=="object")state.presentationLayout.blocks={};
 
   if(!state.commercial || typeof state.commercial!=="object")state.commercial=fresh.commercial;
   if(!state.commercial.supplierDiscounts || typeof state.commercial.supplierDiscounts!=="object")state.commercial.supplierDiscounts={};
@@ -1831,7 +1846,7 @@ function downloadBlob(blob,name){const a=document.createElement("a");a.href=URL.
 function exportExcel(){
   const xmlEsc=v=>String(v??"").replace(/[&<>]/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[ch]));
   const rows=quoteRows().map(row=>{
-    const product=row.manual?null:(state.selected||[]).find(p=>p.manufacturer===row.manufacturer&&p.reference===row.reference&&String(p.finish||"")===String(row.finish||""));
+    const product=row.manual?null:((Number.isInteger(row.sourceIndex)?(state.selected||[])[row.sourceIndex]:null) || (state.selected||[]).find(p=>p.manufacturer===row.manufacturer&&p.reference===row.reference&&String(p.finish||"")===String(row.finish||"")));
     const purchaseUnit=product?purchaseCostFor(product):"";
     const totalNet=Number(row.netUnit||0)*Number(row.qty||1);
     const totalPurchase=product?Number(purchaseUnit||0)*Number(row.qty||1):"";
@@ -1852,7 +1867,7 @@ function exportExcel(){
 
 async function loadCanvasImage(src){return new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=reject;im.src=src})}
 async function exportMoodboard(){
-  const items=(state.selected||[]).filter(isRealSelectedProduct).slice(0,12);if(!items.length){alert("Ajoutez des produits avant de générer le moodboard.");return}
+  const items=(state.selected||[]).filter(p=>isRealSelectedProduct(p)&&!p.hideFromDossier).slice(0,12);if(!items.length){alert("Ajoutez des produits avant de générer le moodboard.");return}
   const canvas=document.createElement("canvas");canvas.width=1800;canvas.height=1200;const ctx=canvas.getContext("2d");ctx.fillStyle="#f5f2ec";ctx.fillRect(0,0,canvas.width,canvas.height);ctx.fillStyle="#1d1d1b";ctx.font="46px Georgia";ctx.fillText(state.project.name||"Hydropolis Studio",70,78);ctx.font="20px Arial";ctx.fillStyle="#777";ctx.fillText([state.project.client,state.project.location].filter(Boolean).join(" · "),72,112);
   const cols=4, gap=18, top=150, left=70, cardW=(canvas.width-left*2-gap*(cols-1))/cols, cardH=305;
   for(let i=0;i<items.length;i++){
@@ -2396,6 +2411,68 @@ function catalogDisplayPrice(p){
 function articleListTotal(p){
   return articleMerchandisePrice(p);
 }
+
+/* V11.42_NATIVE_QUANTITY_V4 */
+function normalizedQuantity(v){
+  const n=Math.floor(Number(v));
+  return Number.isFinite(n)&&n>=1?Math.min(999,n):1;
+}
+function itemQuantity(p){return normalizedQuantity(p?.quantity);}
+function setProductQuantity(id,value){
+  const p=(state.selected||[]).find(x=>x.id===id);
+  if(!p)return false;
+  const q=normalizedQuantity(value);
+  p.quantity=q;
+  for(const child of (state.selected||[])){
+    if(child?.accessoryFor===p.id)child.quantity=q*Math.max(1,Number(child.quantityPerParent)||1);
+  }
+  return true;
+}
+function enhanceProductQuantities(){
+  $$(".room-product").forEach(card=>{
+    try{
+      if($(".article-quantity-compact",card))return;
+
+      const deleteButton=$(".del-prod",card)||$(".fallback-del-prod",card);
+      const id=deleteButton?.dataset?.id;
+      const p=(state.selected||[]).find(x=>x.id===id);
+      const host=$(".price-total",card);
+      if(!p||!host)return;
+
+      const box=document.createElement("div");
+      box.className="article-quantity-compact";
+      box.innerHTML=`<span>Qté</span>
+        <button class="quantity-step" type="button" aria-label="Diminuer la quantité">−</button>
+        <input class="article-quantity-input" type="number" min="1" max="999" step="1" value="${itemQuantity(p)}" inputmode="numeric">
+        <button class="quantity-step" type="button" aria-label="Augmenter la quantité">+</button>`;
+
+      const dec=box.children[1], input=box.children[2], inc=box.children[3];
+
+      dec.onclick=()=>{
+        setProductQuantity(p.id,itemQuantity(p)-1);
+        saveState();renderRooms();renderSelection();renderMarginDashboard();
+      };
+      inc.onclick=()=>{
+        setProductQuantity(p.id,itemQuantity(p)+1);
+        saveState();renderRooms();renderSelection();renderMarginDashboard();
+      };
+      input.onchange=()=>{
+        setProductQuantity(p.id,input.value);
+        saveState();renderRooms();renderSelection();renderMarginDashboard();
+      };
+
+      host.prepend(box);
+
+      const total=document.createElement("div");
+      total.className="article-quantity-total";
+      total.textContent=(itemQuantity(p)>1?`PU ${euro(articleListTotal(p))} · `:"")+
+        `Total ${euro(articleListTotal(p)*itemQuantity(p))} HT`;
+      box.insertAdjacentElement("afterend",total);
+    }catch(err){
+      console.warn("[quantity UI]",err);
+    }
+  });
+}
 function catalogPurchaseBase(p){
   const freight=Math.max(0,Number(p?.mandatoryFreight)||0);
   const original=Number(p?.catalogTotalPrice ?? p?.totalPrice ?? 0);
@@ -2404,7 +2481,7 @@ function catalogPurchaseBase(p){
 function recorAutomaticSupplierShipping(){
   return (state.selected||[])
     .filter(p=>isRealSelectedProduct(p) && p?.manufacturer==="Recor")
-    .reduce((sum,p)=>sum+Math.max(0,Number(p?.mandatoryFreight)||0),0);
+    .reduce((sum,p)=>sum+Math.max(0,Number(p?.mandatoryFreight)||0)*itemQuantity(p),0);
 }
 function manualSupplierShipping(){
   return Math.max(0,Number(state.commercial?.supplierShippingFee)||0);
@@ -2414,11 +2491,49 @@ function effectiveSaleValue(p){
   return merchandise*(1-effectiveDiscountRate(p)/100);
 }
 
+
+function quoteTextOverride(obj,key,fallback=""){
+  if(obj && Object.prototype.hasOwnProperty.call(obj,key))return String(obj[key]??"");
+  return String(fallback??"");
+}
+function quoteLineReference(p){return quoteTextOverride(p,"quoteReferenceOverride",p?.reference||"")}
+function quoteLineDesignation(p){return quoteTextOverride(p,"quoteDesignationOverride",clientFacingDesignation(p))}
+function quoteLineLeadTime(p){return quoteTextOverride(p,"quoteLeadTimeOverride",p?.leadTime||"")}
+function quoteLineUnit(p){
+  const raw=p?.quoteUnitOverride;
+  if(raw!==undefined && raw!==null && raw!=="" && Number.isFinite(Number(raw)))return Math.max(0,Number(raw));
+  return articleListTotal(p);
+}
+function quoteLineDiscount(p){
+  const raw=p?.quoteDiscountOverride;
+  if(raw!==undefined && raw!==null && raw!=="" && Number.isFinite(Number(raw)))return clampPercent(raw);
+  return effectiveDiscountRate(p);
+}
+function quoteLineNetUnit(p){return quoteLineUnit(p)*(1-quoteLineDiscount(p)/100)}
+function manualItemQuantity(m){return normalizedQuantity(m?.quantity)}
+function manualQuoteReference(m){return quoteTextOverride(m,"quoteReferenceOverride","")}
+function manualQuoteDesignation(m){return quoteTextOverride(m,"quoteDesignationOverride",m?.label||"")}
+function manualQuoteLeadTime(m){return quoteTextOverride(m,"quoteLeadTimeOverride",m?.leadTime||"")}
+function manualQuoteUnit(m){
+  const raw=m?.quoteUnitOverride;
+  if(raw!==undefined && raw!==null && raw!=="" && Number.isFinite(Number(raw)))return Math.max(0,Number(raw));
+  return Math.max(0,Number(m?.price)||0);
+}
+function manualQuoteDiscount(m){
+  const raw=m?.quoteDiscountOverride;
+  if(raw!==undefined && raw!==null && raw!=="" && Number.isFinite(Number(raw)))return clampPercent(raw);
+  return clientDiscountRate();
+}
+function manualQuoteNetUnit(m){return manualQuoteUnit(m)*(1-manualQuoteDiscount(m)/100)}
+function clearQuoteLineOverrides(obj){
+  ["quoteReferenceOverride","quoteDesignationOverride","quoteLeadTimeOverride","quoteUnitOverride","quoteDiscountOverride"].forEach(k=>delete obj[k]);
+}
+
 function supplierDiscountRate(manufacturer){
   return clampPercent(state.commercial?.supplierDiscounts?.[manufacturer]||0);
 }
 function selectedCatalogTotal(){
-  return (state.selected||[]).filter(isRealSelectedProduct).reduce((sum,p)=>sum+articleListTotal(p),0);
+  return (state.selected||[]).filter(isRealSelectedProduct).reduce((sum,p)=>sum+quoteLineUnit(p)*itemQuantity(p),0);
 }
 
 let manualCleanupPending=false;
@@ -2477,7 +2592,7 @@ function purgeDuplicateManualItems(){
 }
 
 function selectedManualTotal(){
-  return (state.rooms||[]).reduce((sum,r)=>sum+validManualItemsForRoom(r).reduce((s,m)=>s+Number(m.price||0),0),0);
+  return (state.rooms||[]).reduce((sum,r)=>sum+validManualItemsForRoom(r).reduce((s,m)=>s+manualQuoteUnit(m)*manualItemQuantity(m),0),0);
 }
 function quoteSubtotal(){
   return selectedCatalogTotal()+selectedManualTotal();
@@ -2498,15 +2613,17 @@ function purchaseCostFor(p){
   return catalogPurchaseBase(p)*(1-purchaseDiscountFor(p)/100);
 }
 function projectPurchaseCost(){
-  return (state.selected||[]).filter(isRealSelectedProduct).reduce((sum,p)=>sum+purchaseCostFor(p),0);
+  return (state.selected||[]).filter(isRealSelectedProduct).reduce((sum,p)=>sum+purchaseCostFor(p)*itemQuantity(p),0);
 }
 function projectFinancials(){
   const productList=selectedCatalogTotal();
   const manualList=selectedManualTotal();
   const list=productList+manualList;
 
-  const productsNet=(state.selected||[]).filter(isRealSelectedProduct).reduce((sum,p)=>sum+effectiveSaleValue(p),0);
-  const manualNet=manualList*(1-clientDiscountRate()/100);
+  const productsNet=(state.selected||[]).filter(isRealSelectedProduct)
+    .reduce((sum,p)=>sum+quoteLineNetUnit(p)*itemQuantity(p),0);
+  const manualNet=(state.rooms||[]).reduce((sum,r)=>
+    sum+validManualItemsForRoom(r).reduce((s,m)=>s+manualQuoteNetUnit(m)*manualItemQuantity(m),0),0);
   const netBeforeShipping=productsNet+manualNet;
   const discountAmount=list-netBeforeShipping;
 
@@ -2517,7 +2634,6 @@ function projectFinancials(){
   const net=netBeforeShipping+shipping+supplierShipping;
 
   const purchaseProducts=projectPurchaseCost();
-  // Port fournisseur est traité comme un coût refacturé à l'identique : marge neutre.
   const purchase=purchaseProducts+shipping+supplierShipping;
 
   const margin=productsNet-purchaseProducts;
@@ -2546,6 +2662,105 @@ function commercialPriceHtml(value,p=null){
 function commercialManufacturers(){
   return [...new Set(state.selected.map(p=>p.manufacturer).filter(Boolean))].sort((x,y)=>x.localeCompare(y,"fr"));
 }
+
+function quoteEditorRows(){
+  const rows=[];
+  for(const room of state.rooms||[]){
+    (state.selected||[]).forEach((p,sourceIndex)=>{
+      if(p.roomId!==room.id || !isRealSelectedProduct(p))return;
+      rows.push({
+        kind:"product",sourceIndex,roomId:room.id,room:room.title,
+        manufacturer:p.manufacturer||"",finish:p.finish||"",
+        reference:quoteLineReference(p),designation:quoteLineDesignation(p),
+        leadTime:quoteLineLeadTime(p),qty:itemQuantity(p),
+        unit:quoteLineUnit(p),discount:quoteLineDiscount(p),
+        total:quoteLineNetUnit(p)*itemQuantity(p)
+      });
+    });
+    validManualItemsForRoom(room).forEach((m,manualIndex)=>{
+      rows.push({
+        kind:"manual",manualIndex,roomId:room.id,room:room.title,
+        manufacturer:"Élément libre",finish:"",
+        reference:manualQuoteReference(m),designation:manualQuoteDesignation(m),
+        leadTime:manualQuoteLeadTime(m),qty:manualItemQuantity(m),
+        unit:manualQuoteUnit(m),discount:manualQuoteDiscount(m),
+        total:manualQuoteNetUnit(m)*manualItemQuantity(m)
+      });
+    });
+  }
+  return rows;
+}
+function quoteEditorTarget(el){
+  if(el.dataset.kind==="product")return (state.selected||[])[Number(el.dataset.index)];
+  const room=roomById(el.dataset.room);
+  return room?.manual?.[Number(el.dataset.manual)]||null;
+}
+function quoteEditorAttributes(row){
+  return row.kind==="product"
+    ? 'data-kind="product" data-index="'+row.sourceIndex+'"'
+    : 'data-kind="manual" data-room="'+esc(row.roomId)+'" data-manual="'+row.manualIndex+'"';
+}
+function renderQuoteEditor(){
+  const host=$("#quoteEditor");if(!host)return;
+  const rows=quoteEditorRows();
+
+  if(!rows.length){
+    host.innerHTML='<div class="margin-empty">Ajoutez des articles au projet pour construire le devis.</div>';
+  }else{
+    host.innerHTML='<div class="quote-editor-wrap"><table class="quote-editor-table">'+
+      '<thead><tr><th>Pièce</th><th>Référence</th><th>Désignation</th><th>Délai</th><th>Qté</th><th>PU HT</th><th>Remise</th><th>Total HT</th><th></th></tr></thead>'+
+      '<tbody>'+rows.map(row=>{
+        const attrs=quoteEditorAttributes(row);
+        return '<tr>'+
+          '<td class="qe-room"><b>'+esc(row.room)+'</b><small>'+esc(row.manufacturer)+(row.finish?' · '+esc(row.finish):'')+'</small></td>'+
+          '<td><input class="qe-input qe-ref" '+attrs+' value="'+esc(row.reference)+'"></td>'+
+          '<td><input class="qe-input qe-designation" '+attrs+' value="'+esc(row.designation)+'"></td>'+
+          '<td><input class="qe-input qe-lead" '+attrs+' value="'+esc(row.leadTime)+'" placeholder="Délai"></td>'+
+          '<td><input class="qe-input qe-qty" '+attrs+' type="number" min="1" max="999" step="1" value="'+row.qty+'"></td>'+
+          '<td><input class="qe-input qe-unit" '+attrs+' type="number" min="0" step="0.01" value="'+Number(row.unit||0).toFixed(2)+'"></td>'+
+          '<td><div class="qe-percent"><input class="qe-input qe-discount" '+attrs+' type="number" min="0" max="100" step="0.1" value="'+Number(row.discount||0).toFixed(1)+'"><span>%</span></div></td>'+
+          '<td class="qe-total">'+euro(row.total)+'</td>'+
+          '<td><button type="button" class="tiny qe-reset" '+attrs+' title="Réinitialiser cette ligne">↺</button></td>'+
+        '</tr>';
+      }).join('')+'</tbody></table></div>';
+  }
+
+  const commit=(el,key,mode="text")=>{
+    const target=quoteEditorTarget(el);if(!target)return;
+    if(mode==="qty"){
+      if(el.dataset.kind==="product")setProductQuantity(target.id,el.value);
+      else target.quantity=normalizedQuantity(el.value);
+    }else if(mode==="money"){
+      target[key]=Math.max(0,Number(el.value)||0);
+    }else if(mode==="percent"){
+      target[key]=clampPercent(el.value);
+    }else{
+      target[key]=String(el.value||"");
+    }
+    saveState();renderMarginDashboard();
+  };
+
+  $$(".qe-ref",host).forEach(el=>el.onchange=()=>commit(el,"quoteReferenceOverride"));
+  $$(".qe-designation",host).forEach(el=>el.onchange=()=>commit(el,"quoteDesignationOverride"));
+  $$(".qe-lead",host).forEach(el=>el.onchange=()=>commit(el,"quoteLeadTimeOverride"));
+  $$(".qe-qty",host).forEach(el=>el.onchange=()=>commit(el,"quantity","qty"));
+  $$(".qe-unit",host).forEach(el=>el.onchange=()=>commit(el,"quoteUnitOverride","money"));
+  $$(".qe-discount",host).forEach(el=>el.onchange=()=>commit(el,"quoteDiscountOverride","percent"));
+
+  $$(".qe-reset",host).forEach(btn=>btn.onclick=()=>{
+    const target=quoteEditorTarget(btn);if(!target)return;
+    clearQuoteLineOverrides(target);saveState();renderMarginDashboard();
+  });
+
+  const reset=$("#resetQuoteEditorBtn");
+  if(reset)reset.onclick=()=>{
+    if(!confirm("Réinitialiser les modifications du devis ? Les quantités du projet seront conservées."))return;
+    (state.selected||[]).forEach(clearQuoteLineOverrides);
+    (state.rooms||[]).forEach(r=>validManualItemsForRoom(r).forEach(clearQuoteLineOverrides));
+    saveState();renderMarginDashboard();
+  };
+}
+
 function renderMarginDashboard(){
   const root=$("#view-margin"); if(!root)return;
   const cd=$("#clientDiscount"), vat=$("#quoteVatRate"), ship=$("#shippingFee"), supplierShip=$("#supplierShippingFee");
@@ -2591,13 +2806,14 @@ function renderMarginDashboard(){
   if(detail){
     const rows=makers.map(m=>{
       const ps=state.selected.filter(p=>p.manufacturer===m);
-      const list=ps.reduce((s,p)=>s+articleListTotal(p),0);
-      const sale=ps.reduce((s,p)=>s+effectiveSaleValue(p),0);
-      const cost=ps.reduce((s,p)=>s+purchaseCostFor(p),0);
+      const qty=ps.reduce((s,p)=>s+itemQuantity(p),0);
+      const list=ps.reduce((s,p)=>s+quoteLineUnit(p)*itemQuantity(p),0);
+      const sale=ps.reduce((s,p)=>s+quoteLineNetUnit(p)*itemQuantity(p),0);
+      const cost=ps.reduce((s,p)=>s+purchaseCostFor(p)*itemQuantity(p),0);
       const mg=sale-cost;
       const tm=sale?mg/sale*100:0;
       const purchaseLabel=m==="Hotbath"?`${supplierDiscountRate(m).toLocaleString("fr-FR",{maximumFractionDigits:1})}% · Archie 55%`:m==="Recor"?"Net fourni · coeff. public 2,6":`${supplierDiscountRate(m).toLocaleString("fr-FR",{maximumFractionDigits:1})}%`;
-      return `<tr><td>${m}</td><td>${ps.length}</td><td>${euro(list)}</td><td>${purchaseLabel}</td><td>${euro(cost)}</td><td>${euro(sale)}</td><td class="${mg<0?"negative":""}">${euro(mg)} <small>${tm.toLocaleString("fr-FR",{maximumFractionDigits:1})}%</small></td></tr>`;
+      return `<tr><td>${m}</td><td>${qty}</td><td>${euro(list)}</td><td>${purchaseLabel}</td><td>${euro(cost)}</td><td>${euro(sale)}</td><td class="${mg<0?"negative":""}">${euro(mg)} <small>${tm.toLocaleString("fr-FR",{maximumFractionDigits:1})}%</small></td></tr>`;
     }).join("");
     detail.innerHTML=makers.length?`<div class="margin-table-wrap"><table class="margin-table"><thead><tr><th>Fabricant</th><th>Qté</th><th>Tarif HT</th><th>Remise achat</th><th>Coût HT</th><th>Vente nette HT</th><th>Marge brute</th></tr></thead><tbody>${rows}</tbody></table></div>`:`<div class="margin-empty">Aucun produit sélectionné.</div>`;
   }
@@ -2606,6 +2822,8 @@ function renderMarginDashboard(){
     state.commercial.supplierDiscounts[inp.dataset.maker]=clampPercent(inp.value);
     saveState(); renderMarginDashboard();
   });
+
+  renderQuoteEditor();
 }
 function bindCommercial(){
   const cd=$("#clientDiscount"), vat=$("#quoteVatRate"), ship=$("#shippingFee"), supplierShip=$("#supplierShippingFee");
@@ -2631,44 +2849,28 @@ function clientFacingDesignation(p){
 }
 function quoteRows(){
   const rows=[];
-  for(const r of state.rooms){
-    const roomProducts=selectedProductsForDocument(r.id);
-    const grouped=new Map();
-    roomProducts.forEach(p=>{
-      const discount=effectiveDiscountRate(p);
-      const leadTime=String(p.leadTime||"").trim();
-      const key=[p.reference,p.finish,p.manufacturer,discount,leadTime].join("|");
-      if(!grouped.has(key)) grouped.set(key,{...p,qty:0,_effectiveDiscount:discount,_leadTime:leadTime});
-      grouped.get(key).qty++;
-    });
-    for(const p of grouped.values()){
+  for(const room of state.rooms||[]){
+    (state.selected||[]).forEach((p,sourceIndex)=>{
+      if(p.roomId!==room.id || !isRealSelectedProduct(p))return;
+      const qty=itemQuantity(p);
+      const unit=quoteLineUnit(p);
+      const discount=quoteLineDiscount(p);
       rows.push({
-        room:r.title,reference:p.reference,designation:clientFacingDesignation(p),finish:p.finish,
-        manufacturer:p.manufacturer,qty:p.qty,
-        unit:articleListTotal(p),
-        netUnit:effectiveSaleValue(p),
-        freight:0,
-        leadTime:p._leadTime||"",
-        manual:false,discount:p._effectiveDiscount
+        room:room.title,reference:quoteLineReference(p),designation:quoteLineDesignation(p),finish:p.finish||"",
+        manufacturer:p.manufacturer||"",qty,unit,netUnit:unit*(1-discount/100),
+        freight:0,leadTime:quoteLineLeadTime(p),manual:false,discount,sourceIndex,sourceId:p.id||""
       });
-    }
-    const mg=new Map();
-    validManualItemsForRoom(r).forEach(m=>{
-      const leadTime=String(m.leadTime||"").trim();
-      const key=[m.label,Number(m.price||0),leadTime].join("|");
-      if(!mg.has(key)) mg.set(key,{...m,qty:0});
-      mg.get(key).qty++;
     });
-    for(const m of mg.values()){
-      const unit=Number(m.price||0);
+    validManualItemsForRoom(room).forEach((m,manualIndex)=>{
+      const qty=manualItemQuantity(m);
+      const unit=manualQuoteUnit(m);
+      const discount=manualQuoteDiscount(m);
       rows.push({
-        room:r.title,reference:"",designation:m.label,finish:"",
-        manufacturer:"Élément libre",qty:m.qty,unit,
-        netUnit:unit*(1-clientDiscountRate()/100),
-        freight:0,leadTime:String(m.leadTime||"").trim(),
-        manual:true,discount:clientDiscountRate()
+        room:room.title,reference:manualQuoteReference(m),designation:manualQuoteDesignation(m),finish:"",
+        manufacturer:"Élément libre",qty,unit,netUnit:unit*(1-discount/100),
+        freight:0,leadTime:manualQuoteLeadTime(m),manual:true,discount,roomId:room.id,manualIndex
       });
-    }
+    });
   }
   return rows;
 }
@@ -2966,7 +3168,7 @@ function renderRoomsCore(){
             <button class="tiny reset-article-text" data-id="${p.id}" type="button">Rétablir désignation + prix</button>
           </div>
         </details>
-        <div class="image-actions"><button class="tiny enrich-btn" data-id="${p.id}">${p.image?"Actualiser photo + documents":"Chercher photo + documents"}</button>${hotbathNeedsFinishFallback(p)?`<button class="tiny hotbath-web-selected" data-id="${p.id}">Chercher finition web</button>`:""}${hotbathNeedsFinishFallback(p)&&p.remoteImageUrl?`<button class="tiny hotbath-sim-selected" data-id="${p.id}">Simuler ${p.finish||"la finition"}</button>`:""}<a target="_blank" href="${p.resolvedManufacturerUrl||p.manufacturerUrl}">Fiche officielle ↗</a>${technicalSheetHref(p)?`<a target="_blank" class="technical-sheet-link" href="${technicalSheetHref(p)}">${p.customTechnicalSheet?"Fiche personnalisée":(/zucchetti/i.test(p.manufacturer||"")?"Fiche technique complète":"Fiche technique")} ↗</a>${technicalSheetIsPdf(p)&&!/zucchetti/i.test(p.manufacturer||"")?`<label class="drawing-toggle"><input type="checkbox" class="techsheet-check" data-id="${p.id}" ${p.includeTechnicalSheet?"checked":""}> ${/^Ritmonio$/i.test(String(p.manufacturer||""))?"Inclure la Scheda tecnica":"Inclure la fiche technique"}</label>`:""}`:`${/^Ritmonio$/i.test(String(p.manufacturer||""))?`<button class="tiny ritmonio-tech-refresh" data-id="${p.id}">Récupérer la Scheda tecnica</button>`:`<span class="tech">${/lefroy brooks/i.test(p.manufacturer||"")?"Fiche technique Lefroy à récupérer":"Fiche technique à récupérer"}</span>`}`}${p.installationGuideUrl?`<a target="_blank" href="${p.installationGuideUrl}">Notice installation ↗</a><label class="drawing-toggle"><input type="checkbox" class="install-check" data-id="${p.id}" ${p.includeInstallationGuide?"checked":""}> Inclure la notice</label>`:""}${p.drawingUrl?`<a target="_blank" href="${p.drawingUrl}">${/zucchetti/i.test(p.manufacturer||"")?"Dessin technique p.3":"Drawing 2D"} ↗</a>${["pdf","image"].includes(p.drawingType)?`<label class="drawing-toggle"><input type="checkbox" class="drawing-check" data-id="${p.id}" ${p.includeDrawing?"checked":""}> ${/zucchetti/i.test(p.manufacturer||"")?"Inclure le dessin p.3":"Inclure le drawing"}</label>`:`<span class="tech">DWG consultable, non intégrable au PDF</span>`}`:`<span class="tech">Drawing 2D à récupérer</span>`}${p.cadDrawingUrl?`<a target="_blank" href="${p.cadDrawingUrl}">Fichier 2D CAD ↗</a>`:""}${(!p.image && p.fallbackImage)?`<button class="tiny fallback-btn" data-id="${p.id}">Catalogue en secours</button>`:""}</div></div>
+        <div class="image-actions"><button class="tiny enrich-btn" data-id="${p.id}">${p.image?"Actualiser photo + documents":"Chercher photo + documents"}</button>${hotbathNeedsFinishFallback(p)?`<button class="tiny hotbath-web-selected" data-id="${p.id}">Chercher finition web</button>`:""}${hotbathNeedsFinishFallback(p)&&p.remoteImageUrl?`<button class="tiny hotbath-sim-selected" data-id="${p.id}">Simuler ${p.finish||"la finition"}</button>`:""}<a target="_blank" href="${p.resolvedManufacturerUrl||p.manufacturerUrl}">Fiche officielle ↗</a>${technicalSheetHref(p)?`<a target="_blank" class="technical-sheet-link" href="${technicalSheetHref(p)}">${p.customTechnicalSheet?"Fiche personnalisée":(/zucchetti/i.test(p.manufacturer||"")?"Fiche technique complète":"Fiche technique")} ↗</a>${technicalSheetIsPdf(p)&&!/zucchetti/i.test(p.manufacturer||"")?`<label class="drawing-toggle"><input type="checkbox" class="techsheet-check" data-id="${p.id}" ${p.includeTechnicalSheet?"checked":""}> ${/^Ritmonio$/i.test(String(p.manufacturer||""))?"Inclure la Scheda tecnica":"Inclure la fiche technique"}</label>`:""}`:`${/^Ritmonio$/i.test(String(p.manufacturer||""))?`<button class="tiny ritmonio-tech-refresh" data-id="${p.id}">Récupérer la Scheda tecnica</button>`:`<span class="tech">${/lefroy brooks/i.test(p.manufacturer||"")?"Fiche technique Lefroy à récupérer":"Fiche technique à récupérer"}</span>`}`}${installationGuideHref(p)?`<a target="_blank" href="${esc(installationGuideHref(p))}">Notice installation ↗</a><label class="drawing-toggle"><input type="checkbox" class="install-check" data-id="${p.id}" ${p.includeInstallationGuide?"checked":""}> Inclure la notice</label>`:""}${p.drawingUrl?`<a target="_blank" href="${p.drawingUrl}">${/zucchetti/i.test(p.manufacturer||"")?"Dessin technique p.3":"Drawing 2D"} ↗</a>${["pdf","image"].includes(p.drawingType)?`<label class="drawing-toggle"><input type="checkbox" class="drawing-check" data-id="${p.id}" ${p.includeDrawing?"checked":""}> ${/zucchetti/i.test(p.manufacturer||"")?"Inclure le dessin p.3":"Inclure le drawing"}</label>`:`<span class="tech">DWG consultable, non intégrable au PDF</span>`}`:`<span class="tech">Drawing 2D à récupérer</span>`}${p.cadDrawingUrl?`<a target="_blank" href="${p.cadDrawingUrl}">Fichier 2D CAD ↗</a>`:""}${(!p.image && p.fallbackImage)?`<button class="tiny fallback-btn" data-id="${p.id}">Catalogue en secours</button>`:""}</div></div>
         <div class="article-leadtime-panel">
           <label>Délai
             <input class="article-leadtime-input" data-id="${p.id}" type="text" placeholder="ex. 3 à 4 semaines" value="${(p.leadTime||"").replace(/"/g,"&quot;")}">
@@ -3069,7 +3271,7 @@ function renderRoomsCore(){
      const normalized=await normalizeImageFile(f,1800,1400,.92);
      const blob=await (await fetch(normalized)).blob();
      await assetSet(`photo:${p.id}`,blob);
-     const url=URL.createObjectURL(blob);
+     const url=p.isFreeArticle?normalized:URL.createObjectURL(blob);
      p.image=url;p.images=[url];p.pdfImage=url;p.pdfImages=[url];
      p.imageSource="Photo personnalisée";p.customImage=true;p.imageStatus="Photo personnalisée";
      saveState();renderRooms();renderSelection();
@@ -3149,7 +3351,7 @@ function renderRoomsCore(){
      const data=await normalizeImageFile(f,1800,1400,.92);
      const blob=await (await fetch(data)).blob();
      await assetSet(`photo:${p.id}`,blob);
-     const url=URL.createObjectURL(blob);
+     const url=p.isFreeArticle?data:URL.createObjectURL(blob);
      p.image=url;p.images=[url];p.pdfImage=url;p.pdfImages=[url];
      p.imageSource="Photo personnalisée";p.customImage=true;p.imageStatus="Photo personnalisée";
      saveState();renderRooms();renderSelection();
@@ -3184,6 +3386,7 @@ function renderRoomsFallback(error){
   host.innerHTML=`<div class="project-render-warning">
     <b>Affichage simplifié activé.</b>
     <span>Une donnée produit a empêché l’affichage détaillé ; les produits du projet restent accessibles ci-dessous.</span>
+    <small class="project-render-error">${esc(error?.message||"Erreur inconnue")}</small>
   </div>`+rooms.map(r=>{
     const ps=selected.filter(p=>p.roomId===r.id);
     return `<article class="room-card room-card-fallback">
@@ -3220,6 +3423,7 @@ function renderRooms(){
   }catch(e){
     renderRoomsFallback(e);
   }
+  try{enhanceProductQuantities()}catch(e){console.warn("[V11.42 quantity enhancement]",e)}
 }
 
 
@@ -3388,6 +3592,15 @@ function showView(v){
   }
 }
 function pdfPageImageProxyUrl(p,url,pageNumber=1,scale=1.8){
+  if(/^\/assets\/vismara\/tech-\d+\.pdf$/.test(url))return `/api/catalog-pdf-page?file=${encodeURIComponent(url)}`;
+  if(p?.technicalSheetAsset?.file || p?.installationGuideAsset?.file){
+    try{const u=new URL(url,location.origin);
+      if(u.origin===location.origin && u.pathname.startsWith('/api/project-assets/')){
+        u.pathname+='/page-image';u.searchParams.set('page',String(pageNumber));u.searchParams.set('scale',String(scale));return u.href;
+      }
+    }catch{}
+  }
+
   const page=Math.max(1,Number(pageNumber)||1);
   const qs=new URLSearchParams({url:String(url||""),page:String(page),scale:String(scale)});
   // Recor protects static PDF files with an anti-bot layer. Giving the server the
@@ -3420,7 +3633,7 @@ function isRealSelectedProduct(p){
   return !!String(p.designation||p.reference||"").trim();
 }
 function selectedProductsForDocument(roomId){
-  return (state.selected||[]).filter(p=>p.roomId===roomId && isRealSelectedProduct(p));
+  return (state.selected||[]).filter(p=>p.roomId===roomId && isRealSelectedProduct(p) && !p.hideFromDossier);
 }
 function manualItemsForDocument(room){
   return validManualItemsForRoom(room)
@@ -3572,7 +3785,7 @@ function clientVisualNeedsDisclaimer(p){
 
 function recorLinkedAccessoriesForBath(p){
   if(!p?.id || p.manufacturer!=="Recor" || p.category!=="Bain")return {feet:[],wastes:[]};
-  const linked=(state.selected||[]).filter(x=>x.accessoryFor===p.id && x.manufacturer==="Recor");
+  const linked=(state.selected||[]).filter(x=>x.accessoryFor===p.id && x.manufacturer==="Recor" && !x.hideFromDossier);
   const feet=linked.filter(x=>x.collection==="Pieds Recor");
   const wastes=linked.filter(x=>{
     if(x.collection!=="Accessoires Recor")return false;
@@ -3598,17 +3811,19 @@ function boardVisualWithRecorOptions(p){
   return `<div class="recor-bath-composite"><div class="recor-bath-main">${base}</div>${rail}</div>`;
 }
 function boardItemHtml(p,idx){
- const isManual=!!p.manual || p.manufacturer==="Sélection libre";
+ const isManual=!!p.manual && !p.isFreeArticle;
  const designation=isManual?String(p.designation||p.label||"Élément libre").trim():clientFacingDesignation(p);
  const visual=isManual
    ?(p.image?`<figure class="board-single-image"><img src="${p.image}" alt="${designation}" loading="eager"></figure>`:`<div class="board-image-fallback manual-board-fallback">Élément libre</div>`)
    :boardVisualWithRecorOptions(p);
  const priceValue=Math.max(0,Number(p.totalPrice??p.price)||0);
- return `<article class="board-item board-item-${idx+1}">
+ const layoutId=esc(String(p.id||((p.roomId||"room")+"-"+idx)));
+ return `<article class="board-item board-item-${idx+1}" data-layout-block="item:${layoutId}">
    <div class="board-visual">${visual}</div>
    <div class="board-copy">
      <div class="board-brand">${esc(isManual?"Sélection libre":(p.manufacturer||"Sélection"))}${!isManual&&p.collection?` · ${esc(p.collection)}`:""}</div>
      <h3>${esc(designation)}</h3>
+     ${p.isFreeArticle?`<div class="board-finish">Quantité : ${itemQuantity(p)}${p.leadTime?` · Délai : ${esc(p.leadTime)}`:""}</div>`:""}
      ${p.finish?`<div class="board-finish">${esc(p.finish)}</div>`:""}
      ${clientVisualNeedsDisclaimer(p)?`<div class="board-simulation-note">Visuel non contractuel</div>`:""}
      ${state.showSupplierReferences!==false && p.reference?`<div class="board-ref">Réf. ${esc(p.reference)}</div>`:""}
@@ -3648,7 +3863,7 @@ function catalanoClientGalleryPages(r,p,startNo){
 
 function coverMoodboardImages(){
   const seen=new Set(), images=[];
-  for(const p of (state.selected||[]).filter(isRealSelectedProduct)){
+  for(const p of (state.selected||[]).filter(p=>isRealSelectedProduct(p)&&!p.hideFromDossier)){
     const candidates=[];
     if(p.pdfImage)candidates.push(p.pdfImage);
     if(p.image)candidates.push(p.image);
@@ -3686,6 +3901,322 @@ function hotbathDrawingProxyUrl(p){
   const productUrl=p.resolvedManufacturerUrl||p.manufacturerUrl||"";
   if(!productUrl)return "";
   return `/api/hotbath-drawing-image?url=${encodeURIComponent(p.drawingUrl)}&productUrl=${encodeURIComponent(productUrl)}`;
+}
+
+
+/* V11.44_PRESENTATION_LAYOUT */
+let presentationLayoutEditing=false;
+
+function ensurePresentationLayoutState(){
+  if(!state.presentationLayout||typeof state.presentationLayout!=="object")state.presentationLayout={blocks:{}};
+  if(!state.presentationLayout.blocks||typeof state.presentationLayout.blocks!=="object")state.presentationLayout.blocks={};
+  return state.presentationLayout;
+}
+function presentationLayoutKey(el){
+  const page=el.closest(".visual-board-page[data-layout-page]");
+  const block=el.dataset.layoutBlock||"";
+  return page&&block?page.dataset.layoutPage+"|"+block:"";
+}
+function presentationLayoutParent(el){
+  return el.classList.contains("board-item")?el.closest(".visual-board"):el.closest(".visual-board-page");
+}
+function presentationLayoutRecord(el){
+  const key=presentationLayoutKey(el);
+  return key?ensurePresentationLayoutState().blocks[key]||null:null;
+}
+function presentationLayoutSnap(v){return Math.round(v/4)*4}
+function presentationLayoutClamp(v,min,max){return Math.max(min,Math.min(max,v))}
+function presentationLayoutGeometry(el,parent){
+  const er=el.getBoundingClientRect(),pr=parent.getBoundingClientRect();
+  return {x:er.left-pr.left,y:er.top-pr.top,w:er.width,h:er.height,pw:pr.width,ph:pr.height};
+}
+function presentationLayoutApplyBox(el,x,y,w,h,unit="px"){
+  el.dataset.layoutCustom="1";
+  el.style.setProperty("position","absolute","important");
+  el.style.setProperty("inset","auto","important");
+  el.style.setProperty("left",x+unit,"important");
+  el.style.setProperty("top",y+unit,"important");
+  el.style.setProperty("width",w+unit,"important");
+  el.style.setProperty("height",h+unit,"important");
+  el.style.setProperty("right","auto","important");
+  el.style.setProperty("bottom","auto","important");
+  el.style.setProperty("grid-column","auto","important");
+  el.style.setProperty("grid-row","auto","important");
+  el.style.setProperty("display","block","important");
+  el.style.setProperty("transform","none","important");
+}
+function presentationLayoutMakeAbsolute(el,parent){
+  const g=presentationLayoutGeometry(el,parent);
+  presentationLayoutApplyBox(el,g.x,g.y,g.w,g.h,"px");
+  return g;
+}
+function presentationLayoutSaveGeometry(el){
+  const parent=presentationLayoutParent(el),key=presentationLayoutKey(el);
+  if(!parent||!key)return;
+  const g=presentationLayoutGeometry(el,parent);
+  const current=ensurePresentationLayoutState().blocks[key]||{};
+  ensurePresentationLayoutState().blocks[key]={
+    ...current,
+    x:+(g.x/Math.max(g.pw,1)*100).toFixed(3),
+    y:+(g.y/Math.max(g.ph,1)*100).toFixed(3),
+    w:+(g.w/Math.max(g.pw,1)*100).toFixed(3),
+    h:+(g.h/Math.max(g.ph,1)*100).toFixed(3)
+  };
+  el.dataset.layoutCustom="1";
+  syncPresentationBlockMedia(el);
+  saveState();
+}
+function applyPresentationLayoutGeometry(el,rec){
+  const parent=presentationLayoutParent(el);
+  if(!parent||!rec||![rec.x,rec.y,rec.w,rec.h].every(Number.isFinite))return;
+  presentationLayoutApplyBox(el,rec.x,rec.y,rec.w,rec.h,"%");
+  syncPresentationBlockMedia(el);
+}
+function syncPresentationBlockMedia(el){
+  if(!el?.classList?.contains("board-item"))return;
+  const rect=el.getBoundingClientRect();
+  if(!rect.width||!rect.height)return;
+  const visual=$(".board-visual",el),copy=$(".board-copy",el);
+  if(!visual||!copy)return;
+
+  const scale=Math.max(.68,Math.min(1.18,Math.min(rect.width/260,rect.height/190)));
+  el.style.setProperty("--layout-title-size",(8.2*scale).toFixed(2)+"pt");
+  el.style.setProperty("--layout-maker-size",(5.2*scale).toFixed(2)+"pt");
+  el.style.setProperty("--layout-meta-size",(5.5*scale).toFixed(2)+"pt");
+
+  copy.style.height="auto";
+  copy.style.minHeight="0";
+  const measured=Math.max(38,copy.scrollHeight+6);
+  const copyH=Math.min(rect.height*.46,measured);
+  el.style.setProperty("--layout-copy-height",copyH+"px");
+
+  copy.style.setProperty("position","absolute","important");
+  copy.style.setProperty("left","0","important");
+  copy.style.setProperty("right","0","important");
+  copy.style.setProperty("bottom","0","important");
+  copy.style.setProperty("top","auto","important");
+  copy.style.setProperty("height",copyH+"px","important");
+  copy.style.setProperty("min-height","0","important");
+  copy.style.setProperty("overflow","hidden","important");
+
+  visual.style.setProperty("position","absolute","important");
+  visual.style.setProperty("left","0","important");
+  visual.style.setProperty("right","0","important");
+  visual.style.setProperty("top","0","important");
+  visual.style.setProperty("bottom",copyH+"px","important");
+  visual.style.setProperty("height","auto","important");
+  visual.style.setProperty("min-height","0","important");
+  visual.style.setProperty("overflow","hidden","important");
+
+  visual.querySelectorAll("img").forEach(img=>{
+    img.style.setProperty("width","100%","important");
+    img.style.setProperty("height","100%","important");
+    img.style.setProperty("max-width","100%","important");
+    img.style.setProperty("max-height","100%","important");
+    img.style.setProperty("object-fit","contain","important");
+  });
+}
+function presentationLayoutAttachObserver(el){
+  if(!el.classList.contains("board-item")||el._hydroLayoutObserver||typeof ResizeObserver!=="function")return;
+  const obs=new ResizeObserver(()=>{
+    if(el.dataset.layoutCustom==="1")syncPresentationBlockMedia(el);
+  });
+  obs.observe(el);
+  el._hydroLayoutObserver=obs;
+}
+function presentationLayoutControlHtml(locked){
+  return '<div class="layout-controls">'+
+    '<button type="button" class="layout-drag-handle" title="Déplacer">✥</button>'+ 
+    '<button type="button" class="layout-lock-handle" title="'+(locked?"Déverrouiller":"Verrouiller")+'">'+(locked?"🔒":"🔓")+'</button>'+ 
+    '<button type="button" class="layout-resize-handle" title="Redimensionner">↘</button>'+ 
+  '</div>';
+}
+function presentationLayoutBindPointer(el,control,mode){
+  control.onpointerdown=e=>{
+    e.preventDefault();
+    e.stopPropagation();
+
+    const key=presentationLayoutKey(el),parent=presentationLayoutParent(el);
+    if(!key||!parent)return;
+
+    const rec=ensurePresentationLayoutState().blocks[key]||{};
+    if(rec.locked)return;
+
+    const start=presentationLayoutMakeAbsolute(el,parent);
+    const sx=e.clientX,sy=e.clientY;
+    const minW=el.classList.contains("board-item")?110:140;
+    const minH=el.classList.contains("board-item")?90:38;
+
+    control.setPointerCapture?.(e.pointerId);
+    document.body.classList.add("presentation-layout-dragging");
+
+    const move=ev=>{
+      const dx=ev.clientX-sx,dy=ev.clientY-sy;
+
+      if(mode==="drag"){
+        const minY=el.classList.contains("board-item")?-start.ph*.12:0;
+        const x=presentationLayoutSnap(
+          presentationLayoutClamp(start.x+dx,0,start.pw-start.w)
+        );
+        const y=presentationLayoutSnap(
+          presentationLayoutClamp(start.y+dy,minY,start.ph-start.h)
+        );
+        el.style.setProperty("left",x+"px","important");
+        el.style.setProperty("top",y+"px","important");
+      }else{
+        const w=presentationLayoutSnap(
+          presentationLayoutClamp(start.w+dx,minW,start.pw-start.x)
+        );
+        const h=presentationLayoutSnap(
+          presentationLayoutClamp(start.h+dy,minH,start.ph-start.y)
+        );
+        el.style.setProperty("width",w+"px","important");
+        el.style.setProperty("height",h+"px","important");
+        el.dataset.layoutCustom="1";
+        syncPresentationBlockMedia(el);
+      }
+    };
+
+    const up=()=>{
+      window.removeEventListener("pointermove",move);
+      window.removeEventListener("pointerup",up);
+      window.removeEventListener("pointercancel",up);
+      document.body.classList.remove("presentation-layout-dragging");
+      presentationLayoutSaveGeometry(el);
+    };
+
+    window.addEventListener("pointermove",move);
+    window.addEventListener("pointerup",up,{once:true});
+    window.addEventListener("pointercancel",up,{once:true});
+  };
+}
+function presentationLayoutDecorate(el){
+  const key=presentationLayoutKey(el);
+  if(!key)return;
+
+  const rec=presentationLayoutRecord(el);
+  if(rec)applyPresentationLayoutGeometry(el,rec);
+  presentationLayoutAttachObserver(el);
+
+  $(".layout-controls",el)?.remove();
+
+  if(!presentationLayoutEditing)return;
+
+  el.classList.add("layout-editable-block");
+  el.insertAdjacentHTML("beforeend",presentationLayoutControlHtml(!!rec?.locked));
+
+  const controls=$(".layout-controls",el);
+  const drag=$(".layout-drag-handle",controls);
+  const resize=$(".layout-resize-handle",controls);
+  const lock=$(".layout-lock-handle",controls);
+
+  presentationLayoutBindPointer(el,drag,"drag");
+  presentationLayoutBindPointer(el,resize,"resize");
+
+  lock.onclick=e=>{
+    e.preventDefault();
+    e.stopPropagation();
+
+    const current=ensurePresentationLayoutState().blocks[key]||{};
+    if(![current.x,current.y,current.w,current.h].every(Number.isFinite)){
+      presentationLayoutMakeAbsolute(el,presentationLayoutParent(el));
+      presentationLayoutSaveGeometry(el);
+    }
+
+    const next=ensurePresentationLayoutState().blocks[key]||{};
+    next.locked=!next.locked;
+    ensurePresentationLayoutState().blocks[key]=next;
+
+    saveState();
+    initPresentationLayoutEditor();
+  };
+
+  el.classList.toggle("layout-locked",!!presentationLayoutRecord(el)?.locked);
+}
+function presentationCurrentLayoutPage(){
+  const pages=[...document.querySelectorAll("#document .visual-board-page[data-layout-page]")];
+  if(!pages.length)return null;
+
+  const host=$(".preview-bg"),hr=host?.getBoundingClientRect();
+  const cy=hr?(hr.top+hr.bottom)/2:window.innerHeight/2;
+
+  return pages.sort((a,b)=>{
+    const ar=a.getBoundingClientRect(),br=b.getBoundingClientRect();
+    return Math.abs((ar.top+ar.bottom)/2-cy)-Math.abs((br.top+br.bottom)/2-cy);
+  })[0];
+}
+function resetPresentationLayoutPage(){
+  const page=presentationCurrentLayoutPage();
+  if(!page)return;
+
+  const prefix=page.dataset.layoutPage+"|";
+  const blocks=ensurePresentationLayoutState().blocks;
+
+  Object.keys(blocks).forEach(k=>{
+    if(k.startsWith(prefix))delete blocks[k];
+  });
+
+  saveState();
+  buildDocument();
+}
+function resetPresentationLayoutAll(){
+  if(!confirm("Réinitialiser toute la mise en page de la présentation client ?"))return;
+  state.presentationLayout={blocks:{}};
+  saveState();
+  buildDocument();
+}
+function updatePresentationLayoutToolbar(){
+  const edit=$("#layoutEditBtn"),page=$("#layoutResetPageBtn"),all=$("#layoutResetAllBtn");
+
+  if(edit){
+    edit.textContent=presentationLayoutEditing
+      ?"Terminer la mise en page"
+      :"Modifier la mise en page";
+    edit.classList.toggle("primary",presentationLayoutEditing);
+  }
+
+  if(page)page.disabled=!presentationLayoutEditing;
+  if(all)all.disabled=!Object.keys(ensurePresentationLayoutState().blocks).length;
+
+  document.body.classList.toggle("presentation-layout-editing",presentationLayoutEditing);
+}
+function bindPresentationLayoutToolbar(){
+  const edit=$("#layoutEditBtn"),page=$("#layoutResetPageBtn"),all=$("#layoutResetAllBtn");
+
+  if(edit)edit.onclick=()=>{
+    presentationLayoutEditing=!presentationLayoutEditing;
+    initPresentationLayoutEditor();
+  };
+  if(page)page.onclick=resetPresentationLayoutPage;
+  if(all)all.onclick=resetPresentationLayoutAll;
+
+  updatePresentationLayoutToolbar();
+}
+function initPresentationLayoutEditor(){
+  ensurePresentationLayoutState();
+
+  const doc=$("#document");
+  if(!doc){
+    bindPresentationLayoutToolbar();
+    return;
+  }
+
+  doc.querySelectorAll(".layout-controls").forEach(x=>x.remove());
+  doc.querySelectorAll(".layout-editable-block").forEach(x=>{
+    x.classList.remove("layout-editable-block","layout-locked");
+  });
+
+  doc.querySelectorAll(".visual-board-page[data-layout-page]").forEach(page=>{
+    const head=$(".board-head",page),intro=$(".board-intro",page);
+
+    if(head)head.dataset.layoutBlock="head";
+    if(intro)intro.dataset.layoutBlock="intro";
+
+    [head,intro].filter(Boolean).forEach(presentationLayoutDecorate);
+    $$(".board-item",page).forEach(presentationLayoutDecorate);
+  });
+
+  bindPresentationLayoutToolbar();
 }
 
 function buildDocument(){
@@ -3729,10 +4260,10 @@ function buildDocument(){
      for(let i=0;i<Math.ceil(group.items.length/5);i++){
        const ch=group.items.slice(i*5,i*5+5);
        const continuation=i>0?" · suite":"";
-       html+=`<section class="page editorial-page room-page visual-board-page board-${group.space.toLowerCase()}" data-parallax-page>
+       html+=`<section class="page editorial-page room-page visual-board-page board-${group.space.toLowerCase()}" data-parallax-page data-layout-page="${esc(String(r.id)+":"+group.space+":"+i)}">
          <div class="page-ambient page-ambient-a" data-parallax-layer="0.05"></div>
-         <div class="board-head"><div><div class="section-kicker">${esc(r.title)}${continuation}</div><h2>${group.label}</h2></div><div class="editorial-brand">Hydropolis</div></div>
-         <div class="board-intro">${group.intro}</div>
+         <div class="board-head" data-layout-block="head"><div><div class="section-kicker">${esc(r.title)}${continuation}</div><h2>${group.label}</h2></div><div class="editorial-brand">Hydropolis</div></div>
+         <div class="board-intro" data-layout-block="intro">${group.intro}</div>
          <div class="visual-board count-${Math.max(1,ch.length)}">${ch.map((p,idx)=>boardItemHtml(p,idx)).join("")}</div>
          <div class="page-no">${no++}</div><div class="editorial-footer"><span>Maison Hydropolis</span><span>${esc(r.title)} · ${esc(group.label)}</span></div>
        </section>`;
@@ -3764,8 +4295,8 @@ function buildDocument(){
    });
 
    // Optional official installation manuals.
-   products.filter(p=>p.includeInstallationGuide&&p.installationGuideUrl&&/\.pdf(?:\?|$)/i.test(p.installationGuideUrl)).forEach(p=>{
-     html+=technicalDocumentPage(r,p,p.installationGuideUrl,"Notice d’installation",no++,1);
+   products.filter(p=>p.includeInstallationGuide&&installationGuideHref(p)&&(p.installationGuideAsset?.file||/\.pdf(?:\?|$)/i.test(installationGuideHref(p)))).forEach(p=>{
+     html+=technicalDocumentPage(r,p,installationGuideHref(p),"Notice d’installation",no++,1);
    });
 
    // Optional technical drawing pages, one page per selected product.
@@ -3802,6 +4333,7 @@ function buildDocument(){
  html+=quote.html;
  no=quote.nextNo;
  $("#document").innerHTML=html;
+ initPresentationLayoutEditor();
  initPreviewParallax();
 }
 
@@ -4091,7 +4623,7 @@ async function bootstrap(){
   const ok=await checkAuth();
   if(ok){loadFavorites();await startHydropolisWorkspace()}
 }
-bootstrap();
+/* V11.45_BOOTSTRAP_DEFERRED: bootstrap is called by v1145.js after overrides */
 ["searchInput","finishFilter","targetRoom"].forEach(id=>{
   const el=$("#"+id);if(!el)return;
   el.addEventListener("input",renderCatalog);
@@ -4195,3 +4727,1673 @@ if($("#exportsExcelBtn"))$("#exportsExcelBtn").onclick=exportExcel;
 if($("#exportsMoodboardBtn"))$("#exportsMoodboardBtn").onclick=()=>exportMoodboard().catch(e=>alert("Moodboard impossible : "+e.message));
 
 $$(".nav").forEach(n=>n.onclick=()=>showView(n.dataset.view));
+
+;
+/* SOURCE public/v1145-pricing.js */
+/* HYDROPOLIS_V11_45_PRICING */
+(function(root,factory){
+  const api=factory();
+  if(typeof module!=="undefined"&&module.exports)module.exports=api;
+  if(root)root.HydropolisV1145Pricing=api;
+})(typeof globalThis!=="undefined"?globalThis:this,function(){
+  "use strict";
+  const round=(v,d=4)=>{const f=10**d;return Math.round((Number(v)+Number.EPSILON)*f)/f};
+  function positive(v,fallback=0){const n=Number(v);return Number.isFinite(n)&&n>0?n:fallback}
+  function requestedSqm(product,value){
+    return round(positive(value,positive(product?.requestedSqm,positive(product?.quantity,1))),3);
+  }
+  function isFioraneseSqm(product){
+    return /^Fioranese$/i.test(String(product?.manufacturer||"")) && product?.pricingUnit==="sqm" && positive(product?.sqmPerBox)>0;
+  }
+  function boxCount(product,value){
+    if(!isFioraneseSqm(product))return 0;
+    const sqm=requestedSqm(product,value), per=positive(product.sqmPerBox);
+    return Math.max(1,Math.ceil((sqm-1e-9)/per));
+  }
+  function orderedSqm(product,value){
+    if(!isFioraneseSqm(product))return requestedSqm(product,value);
+    return round(boxCount(product,value)*positive(product.sqmPerBox),4);
+  }
+  function fioraneseLine(product,value){
+    const requested=requestedSqm(product,value);
+    const boxes=boxCount(product,requested);
+    const ordered=orderedSqm(product,requested);
+    const unitPrice=Math.max(0,Number(product?.priceOverride??product?.price??product?.totalPrice??0)||0);
+    return {requestedSqm:requested,boxes,orderedSqm:ordered,unitPrice,total:round(ordered*unitPrice,2),wasteSqm:round(Math.max(0,ordered-requested),4)};
+  }
+  function supplementTotal(config,selection){
+    const rules=Array.isArray(config?.knownSupplements)?config.knownSupplements:[];
+    let total=0;const applied=[];
+    for(const rule of rules){
+      if(Array.isArray(rule.appliesTo)&&rule.appliesTo.length&& !rule.appliesTo.includes(selection?.model))continue;
+      const active=selection?.options?.includes(rule.id) || (rule.input && positive(selection?.[rule.input])>0) || (rule.id==="ral" && String(selection?.ralNcs||"").trim());
+      if(!active)continue;
+      let amount=0;
+      if(rule.type==="fixed")amount=Number(rule.amount)||0;
+      else if(rule.type==="perCm")amount=(Number(rule.amount)||0)*positive(selection?.[rule.input]);
+      if(amount){total+=amount;applied.push({id:rule.id,label:rule.label,amount:round(amount,2),sourcePage:rule.sourcePage||""});}
+    }
+    return {total:round(total,2),applied};
+  }
+  function resigresManualQuote(basePrice,groupConfig,selection){
+    const base=Math.max(0,Number(basePrice)||0);
+    const supplements=supplementTotal(groupConfig,selection||{});
+    return {basePrice:base,supplements,total:round(base+supplements.total,2),pricingStatus:base>0?"manual-verified-from-pdf":"pending"};
+  }
+  return {round,positive,requestedSqm,isFioraneseSqm,boxCount,orderedSqm,fioraneseLine,supplementTotal,resigresManualQuote};
+});
+
+;
+/* SOURCE public/v1145.js */
+/* HYDROPOLIS_STUDIO_V11_45 */
+(() => {
+  "use strict";
+  const V = window.HydropolisV1145Pricing;
+  if(!V){console.error("[V11.45] moteur de calcul absent");return;}
+
+  const baseItemQuantity=itemQuantity;
+  const baseSetProductQuantity=setProductQuantity;
+  const baseEnhanceProductQuantities=enhanceProductQuantities;
+  const baseRenderQuoteEditor=renderQuoteEditor;
+  const baseRenderCatalog=renderCatalog;
+  const baseHarmonizeSavedCatalogProducts=harmonizeSavedCatalogProducts;
+  const baseAddCatalogProduct=addCatalogProduct;
+
+  const fmt=(n,d=3)=>Number(n||0).toLocaleString("fr-FR",{maximumFractionDigits:d});
+  const esc45=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const slug45=v=>String(v||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase().replace(/[^A-Z0-9]+/g,"-").replace(/^-|-$/g,"");
+
+  function isFioSqm(p){return V.isFioraneseSqm(p)}
+  function fioRequested(p){return V.requestedSqm(p)}
+  function fioLine(p,value){return V.fioraneseLine(p,value)}
+
+  // Important: all existing V11.42/V11.43 totals already multiply by itemQuantity().
+  // For Fioranese billed by m², itemQuantity() therefore becomes the *purchased* m²,
+  // rounded to whole boxes. requestedSqm remains the user's design surface.
+  itemQuantity=function(p){
+    return isFioSqm(p)?V.orderedSqm(p):baseItemQuantity(p);
+  };
+  setProductQuantity=function(id,value){
+    const p=(state.selected||[]).find(x=>x.id===id);
+    if(!p)return false;
+    if(!isFioSqm(p))return baseSetProductQuantity(id,value);
+    const requested=V.requestedSqm(p,value);
+    p.requestedSqm=requested;
+    p.quantity=requested;
+    return true;
+  };
+
+  function enhanceFioraneseCard(card,p){
+    const box=card.querySelector(".article-quantity-compact");
+    if(!box||!isFioSqm(p))return;
+    const line=fioLine(p);
+    box.classList.add("v1145-fio-qty");
+    box.innerHTML=`<span>Surface</span>
+      <input class="article-quantity-input v1145-fio-input" type="number" min="0.01" step="0.01" value="${fioRequested(p)}" inputmode="decimal" aria-label="Surface souhaitée en m²">
+      <small class="v1145-box-summary">${line.boxes} boîte${line.boxes>1?"s":""} · ${fmt(line.orderedSqm)} m² commandés</small>`;
+    const input=box.querySelector("input");
+    input.onchange=()=>{
+      setProductQuantity(p.id,input.value);
+      saveState();renderRooms();renderSelection();renderMarginDashboard();
+    };
+    const oldTotal=card.querySelector(".article-quantity-total");
+    if(oldTotal)oldTotal.innerHTML=`Demandé <b>${fmt(line.requestedSqm)} m²</b> · commandé <b>${fmt(line.orderedSqm)} m²</b> · ${line.boxes} boîte${line.boxes>1?"s":""}<br>Total <b>${euro(line.total)} HT</b>`;
+  }
+
+  enhanceProductQuantities=function(){
+    baseEnhanceProductQuantities();
+    document.querySelectorAll(".room-product").forEach(card=>{
+      const del=card.querySelector(".del-prod,.fallback-del-prod");
+      const p=(state.selected||[]).find(x=>x.id===del?.dataset?.id);
+      if(p)enhanceFioraneseCard(card,p);
+    });
+  };
+
+  renderQuoteEditor=function(){
+    baseRenderQuoteEditor();
+    const host=document.querySelector("#quoteEditor");if(!host)return;
+    host.querySelectorAll('.qe-qty[data-kind="product"]').forEach(input=>{
+      const p=(state.selected||[])[Number(input.dataset.index)];
+      if(!isFioSqm(p))return;
+      input.min="0.01";input.max="99999";input.step="0.01";input.value=String(fioRequested(p));
+      const boxes=V.boxCount(p), ordered=V.orderedSqm(p);
+      input.title=`Surface souhaitée. Commande réelle : ${fmt(ordered)} m² (${boxes} boîte${boxes>1?"s":""}).`;
+      const td=input.closest("td");
+      if(td){
+        td.classList.add("v1145-fio-quote-qty");
+        td.querySelector(".v1145-quote-box-summary")?.remove();
+        input.insertAdjacentHTML("afterend",`<small class="v1145-quote-box-summary">${boxes} boîte${boxes>1?"s":""} · ${fmt(ordered)} m² facturés</small>`);
+      }
+    });
+  };
+
+  // Catalog refresh used to overwrite configured finish/designation and would also
+  // destroy Fioranese/Resigres runtime choices. Snapshot and restore user/runtime data.
+  harmonizeSavedCatalogProducts=function(){
+    const fields=[
+      "designation","finish","finishCode","quantity","requestedSqm","pricingUnit","sqmPerBox","pcsPerBox",
+      "resigresConfiguration","pricingStatus","pricingSource","sourcePage","price","totalPrice","priceOverride",
+      "quoteReferenceOverride","quoteDesignationOverride","quoteLeadTimeOverride","quoteUnitOverride","quoteDiscountOverride",
+      "leadTime","clientDiscountOverride","catalogPrice","catalogTotalPrice","originalDesignation"
+    ];
+    const snapshots=new Map((state.selected||[]).map(p=>[p.id,Object.fromEntries(fields.filter(k=>Object.prototype.hasOwnProperty.call(p,k)).map(k=>[k,p[k]]))]));
+    baseHarmonizeSavedCatalogProducts();
+    for(const p of state.selected||[]){const snap=snapshots.get(p.id);if(snap)Object.assign(p,snap)}
+  };
+
+  function postProcessCatalog(){
+    document.querySelectorAll("#results .result[data-key]").forEach(card=>{
+      const p=CATALOG.find(x=>productKey(x)===card.dataset.key) || serverSearchRows.find(x=>productKey(x)===card.dataset.key);
+      if(!p)return;
+      const price=card.querySelector(".price");
+      const button=card.querySelector("button.add");
+      const internal=card.querySelector(".price-box .internal");
+      if(/^Fioranese$/i.test(p.manufacturer||"") && p.pricingUnit==="sqm" && Number(p.sqmPerBox)>0){
+        if(price)price.innerHTML=`${euro(p.price)} HT <small>/m²</small>`;
+        if(internal)internal.innerHTML=`Boîte : <b>${fmt(p.sqmPerBox)} m²</b>${p.pcsPerBox?` · ${p.pcsPerBox} pce${p.pcsPerBox>1?"s":""}`:""}`;
+      }else if(/^Fioranese$/i.test(p.manufacturer||"") && p.pricingUnit==="piece"){
+        if(price)price.innerHTML=`${euro(p.price)} HT <small>/pièce</small>`;
+      }
+      if(p.configuratorType==="fioranese-source"){
+        if(price)price.textContent="Tarif PDF";
+        if(button)button.textContent="Voir la collection";
+        if(internal)internal.textContent=p.sourcePage?`Tarif 2025 · pages ${p.sourcePage}`:"Tarif 2025 · chiffrage depuis le PDF";
+      }
+      if(p.configuratorType==="resigres"){
+        if(price)price.textContent="À configurer";
+        if(button)button.textContent="Configurer";
+        if(internal)internal.textContent=`Tarif Resigres 2026 · page ${p.sourcePage||"—"}`;
+      }
+    });
+  }
+  renderCatalog=function(){baseRenderCatalog();postProcessCatalog()};
+
+  let resigresConfigPromise=null;
+  function loadResigresConfig(){
+    if(!resigresConfigPromise)resigresConfigPromise=fetch("/resigres_2026_config.json",{cache:"force-cache"}).then(r=>{if(!r.ok)throw new Error(`HTTP ${r.status}`);return r.json()});
+    return resigresConfigPromise;
+  }
+  function closeResigresConfigurator(){document.querySelector("#resigresConfigurator")?.remove()}
+
+  function resigresCommonFields(p,config){
+    const g=config.global||{};
+    const colors=g.standardColors||[];
+    const finishes=g.finishes||[];
+    const dims=/shower-tray|basin-top|furniture-basin-top|furniture|mirror|accessory/.test(p.resigresKind||"");
+    return `
+      <div class="v1145-field-grid">
+        <label>Finition<select id="rgFinish">${finishes.map(x=>`<option>${esc45(x)}</option>`).join("")}</select></label>
+        <label>Coloris<select id="rgColor">${colors.map(x=>`<option>${esc45(x)}</option>`).join("")}<option>RAL/NCS</option></select></label>
+        ${dims?'<label>Largeur (cm)<input id="rgWidth" type="number" min="1" step="0.1"></label><label>Longueur / hauteur (cm)<input id="rgLength" type="number" min="1" step="0.1"></label>':""}
+        ${p.resigresKind==="bath"?'<label>Dimension / version<input id="rgSize" placeholder="ex. 170 × 80 cm"></label><label>Matériau<select id="rgMaterial"><option>Solid Surface</option><option>Laquée</option><option>Acrylique brillant</option><option>Acrylique mat</option></select></label>':""}
+        <label class="v1145-span-2">Détails / options de configuration<input id="rgDetails" placeholder="ex. 2 vasques, retombée 14 cm, bonde verticale…"></label>
+        <label class="v1145-span-2 rg-ral hidden">Référence RAL/NCS<input id="rgRal" placeholder="ex. RAL 7032"></label>
+      </div>`;
+  }
+
+  async function openResigresConfigurator(p,roomId){
+    closeResigresConfigurator();
+    const config=await loadResigresConfig();
+    const group=config.groups?.[p.resigresKind]||{};
+    const sourcePage=p.sourcePage||config.models?.find(x=>x.name===p.resigresModel)?.sourcePage||"";
+    const overlay=document.createElement("div");
+    overlay.id="resigresConfigurator";overlay.className="v1145-modal-overlay";
+    overlay.innerHTML=`<div class="v1145-modal" role="dialog" aria-modal="true" aria-labelledby="rgTitle">
+      <div class="v1145-modal-head"><div><div class="eyebrow">Resigres 2026 · configurateur</div><h2 id="rgTitle">${esc45(p.resigresModel||p.designation)}</h2><p>Configurez la variante. Les grilles du tarif qui ne sont pas lisibles sans ambiguïté ne sont jamais extrapolées automatiquement.</p></div><button type="button" class="icon rg-close" aria-label="Fermer">×</button></div>
+      <div class="v1145-source-note"><b>Source :</b> Tarif Resigres FR 2026 · page ${esc45(sourcePage||"—")} ${p.manufacturerUrl?`· <a href="${esc45(p.manufacturerUrl)}" target="_blank" rel="noopener">site fabricant ↗</a>`:""}</div>
+      ${resigresCommonFields(p,config)}
+      <div id="rgKnownOptions" class="v1145-known-options"></div>
+      <div class="v1145-pricing-panel">
+        <div><b>Prix public HT de base</b><small>À saisir depuis la grille de la page ${esc45(sourcePage||"indiquée")}. Cette saisie est obligatoire tant qu’une cellule de matrice n’est pas certifiée.</small></div>
+        <input id="rgBasePrice" type="number" min="0.01" step="0.01" placeholder="0,00">
+      </div>
+      <div id="rgCalc" class="v1145-calc"></div>
+      <div class="v1145-modal-error" aria-live="polite"></div>
+      <div class="v1145-modal-actions"><button type="button" class="btn ghost rg-cancel">Annuler</button><button type="button" class="btn primary rg-confirm">Ajouter la configuration</button></div>
+    </div>`;
+    document.body.appendChild(overlay);
+    const $r=s=>overlay.querySelector(s);
+    const optionsHost=$r("#rgKnownOptions");
+    const supp=Array.isArray(group.knownSupplements)?group.knownSupplements:[];
+    if(supp.length){
+      optionsHost.innerHTML='<b>Suppléments vérifiés</b>'+supp.map(rule=>rule.type==="perCm"
+        ?`<label><span>${esc45(rule.label)} · ${fmt(rule.amount,2)} €/cm</span><input data-rule-input="${esc45(rule.input)}" type="number" min="0" step="0.1" placeholder="cm"></label>`
+        :`<label><input type="checkbox" data-rule="${esc45(rule.id)}"><span>${esc45(rule.label)} · +${euro(rule.amount)} HT</span></label>`).join("");
+    }
+    const update=()=>{
+      const selection=readSelection();
+      const q=V.resigresManualQuote($r("#rgBasePrice").value,group,selection);
+      $r("#rgCalc").innerHTML=`<span>Suppléments vérifiés : <b>${euro(q.supplements.total)}</b></span><strong>Total public HT : ${euro(q.total)}</strong>`;
+    };
+    const readSelection=()=>{
+      const options=[...overlay.querySelectorAll("[data-rule]:checked")].map(x=>x.dataset.rule);
+      const selection={model:p.resigresModel,finish:$r("#rgFinish")?.value||"",color:$r("#rgColor")?.value||"",widthCm:Number($r("#rgWidth")?.value)||null,lengthCm:Number($r("#rgLength")?.value)||null,size:$r("#rgSize")?.value||"",material:$r("#rgMaterial")?.value||"",details:$r("#rgDetails")?.value||"",ralNcs:$r("#rgRal")?.value||"",options};
+      overlay.querySelectorAll("[data-rule-input]").forEach(x=>selection[x.dataset.ruleInput]=Number(x.value)||0);
+      return selection;
+    };
+    $r("#rgColor")?.addEventListener("change",()=>{$r(".rg-ral")?.classList.toggle("hidden",$r("#rgColor").value!=="RAL/NCS");update()});
+    overlay.querySelectorAll("input,select").forEach(x=>x.addEventListener("input",update));
+    overlay.querySelectorAll("select").forEach(x=>x.addEventListener("change",update));
+    const close=()=>closeResigresConfigurator();
+    $r(".rg-close").onclick=close;$r(".rg-cancel").onclick=close;overlay.addEventListener("click",e=>{if(e.target===overlay)close()});
+    $r(".rg-confirm").onclick=()=>{
+      const err=$r(".v1145-modal-error"),base=Number($r("#rgBasePrice").value)||0;
+      if(base<=0){err.textContent=`Saisissez le prix public HT lu dans le tarif Resigres 2026, page ${sourcePage||"indiquée"}.`;return;}
+      const selection=readSelection();
+      if(selection.color==="RAL/NCS"&&!String(selection.ralNcs||"").trim()){err.textContent="Indiquez la référence RAL/NCS.";return;}
+      const quote=V.resigresManualQuote(base,group,selection);
+      const dims=selection.widthCm&&selection.lengthCm?`${fmt(selection.widthCm,1)} × ${fmt(selection.lengthCm,1)} cm`:selection.size;
+      const designation=[p.resigresModel,dims,selection.finish,selection.color,selection.details].filter(Boolean).join(" · ");
+      const configured={...p,
+        reference:`${p.reference}-CFG-${Date.now().toString(36).toUpperCase()}`,
+        designation,finish:[selection.finish,selection.color].filter(Boolean).join(" · "),
+        price:quote.total,totalPrice:quote.total,pricingStatus:"manual-verified-from-pdf",pricingSource:`Tarif Resigres FR 2026 · p.${sourcePage}`,
+        resigresConfiguration:{...selection,basePrice:base,supplements:quote.supplements.applied,total:quote.total,sourcePage},
+        configOriginReference:p.reference,configuratorType:"resigres-configured"
+      };
+      const record=createSelectedProductRecord(configured,roomId,"");
+      if(!record){err.textContent="Impossible de préparer la configuration.";return;}
+      Object.assign(record,{resigresConfiguration:configured.resigresConfiguration,pricingStatus:configured.pricingStatus,pricingSource:configured.pricingSource,price:quote.total,totalPrice:quote.total,catalogPrice:quote.total,catalogTotalPrice:quote.total,originalDesignation:designation});
+      commitSelectedRecords([record],{showProject:true});
+      close();
+    };
+    update();
+    $r("#rgFinish")?.focus();
+  }
+
+  addCatalogProduct=function(ref,roomId,key=""){
+    const p=productFromCatalogSources(ref,key);
+    if(p?.configuratorType==="resigres"){
+      openResigresConfigurator(p,normalizedRoomId(roomId)).catch(e=>{console.error("[Resigres configurator]",e);alert("Configurateur Resigres indisponible : "+e.message)});
+      return;
+    }
+    if(p?.configuratorType==="fioranese-source"){
+      const page=p.sourcePage?` pages ${p.sourcePage}`:"";
+      const msg=`${p.collection} : cette collection est indexée mais ses cellules tarifaires ne sont pas encore assez sûres pour créer un prix automatique. Consultez le tarif Fioranese 2025${page}.`;
+      if(p.manufacturerUrl)window.open(p.manufacturerUrl,"_blank","noopener");
+      if(typeof toast==="function")toast(msg);else alert(msg);
+      return;
+    }
+    return baseAddCatalogProduct(ref,roomId,key);
+  };
+
+  // Add an explicit note in room cards for configured Resigres lines.
+  const baseRenderRooms=renderRooms;
+  renderRooms=function(){
+    baseRenderRooms();
+    document.querySelectorAll(".room-product").forEach(card=>{
+      const id=card.querySelector(".del-prod,.fallback-del-prod")?.dataset?.id;
+      const p=(state.selected||[]).find(x=>x.id===id);
+      if(!p?.resigresConfiguration)return;
+      if(card.querySelector(".v1145-resigres-summary"))return;
+      const host=card.querySelector(".price-total")||card;
+      const c=p.resigresConfiguration;
+      host.insertAdjacentHTML("beforeend",`<div class="v1145-resigres-summary"><b>Resigres configuré</b> · ${esc45([c.widthCm&&c.lengthCm?`${fmt(c.widthCm,1)} × ${fmt(c.lengthCm,1)} cm`:c.size,c.finish,c.color].filter(Boolean).join(" · "))}<small>Prix saisi depuis tarif 2026 · p.${esc45(c.sourcePage||p.sourcePage||"—")}</small></div>`);
+    });
+  };
+
+  // Run bootstrap only after all V11.45 overrides are installed. The consolidation
+  // installer removes the legacy direct bootstrap() call from app.js.
+  /* Startup is called once after all consolidated modules. */
+})();
+
+;
+/* SOURCE public/v1146-pricing.js */
+/* HYDROPOLIS_V11_46_PRICING */
+(function(root,factory){
+  const api=factory();
+  if(typeof module!=="undefined"&&module.exports)module.exports=api;
+  if(root)root.HydropolisV1146Pricing=api;
+})(typeof globalThis!=="undefined"?globalThis:this,function(){
+  "use strict";
+  const round=(v,d=4)=>{const f=10**d;return Math.round((Number(v)+Number.EPSILON)*f)/f};
+  const positive=(v,fallback=0)=>{const n=Number(v);return Number.isFinite(n)&&n>0?n:fallback};
+  function requestedSqm(product,value){return round(positive(value,positive(product?.requestedSqm,positive(product?.quantity,1))),3)}
+  function isFioraneseSqm(product){return /^Fioranese$/i.test(String(product?.manufacturer||""))&&product?.pricingUnit==="sqm"&&positive(product?.sqmPerBox)>0}
+  function boxCount(product,value){if(!isFioraneseSqm(product))return 0;return Math.max(1,Math.ceil((requestedSqm(product,value)-1e-9)/positive(product.sqmPerBox)))}
+  function orderedSqm(product,value){if(!isFioraneseSqm(product))return requestedSqm(product,value);return round(boxCount(product,value)*positive(product.sqmPerBox),4)}
+  function fioraneseLine(product,value){const requested=requestedSqm(product,value),boxes=boxCount(product,requested),ordered=orderedSqm(product,requested),unitPrice=Math.max(0,Number(product?.priceOverride??product?.price??product?.totalPrice??0)||0);return{requestedSqm:requested,boxes,orderedSqm:ordered,unitPrice,total:round(ordered*unitPrice,2),wasteSqm:round(Math.max(0,ordered-requested),4)}}
+
+  function modelConfig(config,model,kind){const rows=(config?.models||[]).filter(x=>x.name===model);return (kind?rows.find(x=>x.kind===kind):null)||rows[0]||null}
+  function variantConfig(model,variant){const vs=model?.variants||[];return vs.find(x=>x.id===variant)||vs[0]||null}
+  function ruleById(model,id){return (model?.pricingRules||[]).find(x=>x.id===id)||null}
+  function selectedRule(model,selection){
+    const variant=variantConfig(model,selection?.variant);
+    let id=variant?.pricingRule||"";
+    if(!id&&variant?.pricingRuleByFinish)id=variant.pricingRuleByFinish[selection?.finish]||"";
+    return {variant,rule:ruleById(model,id)};
+  }
+  function inRange(v,range){return !Array.isArray(range)||range.length<2||(Number(v)>=Number(range[0])&&Number(v)<=Number(range[1]))}
+  function ceilIndex(values,n){for(let i=0;i<values.length;i++)if(Number(n)<=Number(values[i]))return i;return -1}
+  function baseQuote(config,selection){
+    const model=modelConfig(config,selection?.model,selection?.kind);if(!model)return{status:"pending",reason:"Modèle Resigres introuvable"};
+    const {variant,rule}=selectedRule(model,selection||{});if(!rule)return{status:"pending",reason:"Tarif automatique non certifié pour cette variante",model,variant};
+    let base=0,breakdown="";
+    if(rule.type==="sqm"){
+      const w=positive(selection.widthCm),l=positive(selection.lengthCm);if(!w||!l)return{status:"pending",reason:"Indiquez largeur et longueur",model,variant,rule};
+      if(!inRange(w,rule.widthRange)||!inRange(l,rule.lengthRange))return{status:"pending",reason:`Dimensions hors plage tarifaire ${rule.widthRange?.join("–")||""} × ${rule.lengthRange?.join("–")||""} cm`,model,variant,rule};
+      const rate=Number(rule.rates?.[selection.finish]);if(!(rate>0))return{status:"pending",reason:"Finition sans tarif automatique certifié",model,variant,rule};
+      const actual=round(w*l/10000,4),billable=Math.max(actual,Number(rule.minSqm)||0);base=round(billable*rate,2);breakdown=`${round(billable,3)} m² × ${rate} €/m²`;
+      return{status:"automatic",basePrice:base,breakdown,areaSqm:actual,billableSqm:billable,rate,model,variant,rule};
+    }
+    if(rule.type==="matrix"){
+      const w=positive(selection.widthCm),l=positive(selection.lengthCm);if(!w||!l)return{status:"pending",reason:"Indiquez largeur et longueur",model,variant,rule};
+      const wi=ceilIndex(rule.widths||[],w),li=ceilIndex(rule.lengths||[],l);if(wi<0||li<0)return{status:"pending",reason:"Dimensions hors grille tarifaire",model,variant,rule};
+      const cell=rule.matrix?.[wi]?.[li];if(!(Number(cell)>0))return{status:"pending",reason:"Cette cellule du PDF n’est pas certifiée automatiquement",model,variant,rule,matchedWidth:rule.widths[wi],matchedLength:rule.lengths[li]};
+      base=Number(cell);breakdown=`Grille ${rule.label} · ${rule.widths[wi]} × ${rule.lengths[li]} cm`;
+      return{status:"automatic",basePrice:base,breakdown,matchedWidth:rule.widths[wi],matchedLength:rule.lengths[li],model,variant,rule};
+    }
+    if(rule.type==="option"){
+      const key=String(selection?.[rule.optionField]||"");const price=Number(rule.prices?.[key]);if(!(price>0))return{status:"pending",reason:"Choisissez une matière tarifée",model,variant,rule};
+      return{status:"automatic",basePrice:price,breakdown:`${rule.label} · ${key}`,model,variant,rule};
+    }
+    if(rule.type==="sizeMap"){
+      const key=String(selection?.[rule.sizeField||"size"]||"");const price=Number(rule.prices?.[key]);if(!(price>0))return{status:"pending",reason:"Choisissez une dimension tarifée",model,variant,rule};
+      return{status:"automatic",basePrice:price,breakdown:`${rule.label} · ${key}`,model,variant,rule};
+    }
+    return{status:"pending",reason:"Règle tarifaire non prise en charge",model,variant,rule};
+  }
+  function supplements(config,selection){
+    const model=modelConfig(config,selection?.model,selection?.kind);const rules=model?.supplements||[];let total=0;const applied=[];
+    for(const rule of rules){
+      let active=false,amount=0;
+      if(rule.autoWhen==="ral")active=String(selection?.color||"")==="RAL/NCS";
+      else if(rule.type==="perCm")active=positive(selection?.[rule.input])>0;
+      else active=Array.isArray(selection?.options)&&selection.options.includes(rule.id);
+      if(!active)continue;
+      if(rule.type==="fixed")amount=Number(rule.amount)||0;
+      if(rule.type==="perCm")amount=(Number(rule.amount)||0)*positive(selection?.[rule.input]);
+      if(amount>0){total+=amount;applied.push({id:rule.id,label:rule.label,amount:round(amount,2),sourcePage:rule.sourcePage||model?.sourcePage||""})}
+    }
+    return{total:round(total,2),applied};
+  }
+  function resigresQuote(config,selection,manualBase=0){
+    const base=baseQuote(config,selection||{}),supp=supplements(config,selection||{});
+    if(base.status==="automatic")return{...base,supplements:supp,total:round(base.basePrice+supp.total,2),pricingStatus:"automatic-verified"};
+    const manual=Math.max(0,Number(manualBase)||0);return{...base,basePrice:manual,supplements:supp,total:round(manual+supp.total,2),pricingStatus:manual>0?"manual-verified-from-pdf":"pending"};
+  }
+  return{round,positive,requestedSqm,isFioraneseSqm,boxCount,orderedSqm,fioraneseLine,modelConfig,variantConfig,selectedRule,baseQuote,supplements,resigresQuote};
+});
+
+;
+/* SOURCE public/v1146.js */
+/* HYDROPOLIS_STUDIO_V11_46 */
+(() => {
+  "use strict";
+  const V = window.HydropolisV1146Pricing;
+  if(!V){console.error("[V11.46] moteur de calcul absent");return;}
+
+  const baseItemQuantity=itemQuantity;
+  const baseSetProductQuantity=setProductQuantity;
+  const baseEnhanceProductQuantities=enhanceProductQuantities;
+  const baseRenderQuoteEditor=renderQuoteEditor;
+  const baseRenderCatalog=renderCatalog;
+  const baseHarmonizeSavedCatalogProducts=harmonizeSavedCatalogProducts;
+  const baseAddCatalogProduct=addCatalogProduct;
+
+  const fmt=(n,d=3)=>Number(n||0).toLocaleString("fr-FR",{maximumFractionDigits:d});
+  const esc45=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const slug45=v=>String(v||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase().replace(/[^A-Z0-9]+/g,"-").replace(/^-|-$/g,"");
+
+  function isFioSqm(p){return V.isFioraneseSqm(p)}
+  function fioRequested(p){return V.requestedSqm(p)}
+  function fioLine(p,value){return V.fioraneseLine(p,value)}
+
+  // Important: all existing V11.42/V11.43 totals already multiply by itemQuantity().
+  // For Fioranese billed by m², itemQuantity() therefore becomes the *purchased* m²,
+  // rounded to whole boxes. requestedSqm remains the user's design surface.
+  itemQuantity=function(p){
+    return isFioSqm(p)?V.orderedSqm(p):baseItemQuantity(p);
+  };
+  setProductQuantity=function(id,value){
+    const p=(state.selected||[]).find(x=>x.id===id);
+    if(!p)return false;
+    if(!isFioSqm(p))return baseSetProductQuantity(id,value);
+    const requested=V.requestedSqm(p,value);
+    p.requestedSqm=requested;
+    p.quantity=requested;
+    return true;
+  };
+
+  function enhanceFioraneseCard(card,p){
+    const box=card.querySelector(".article-quantity-compact");
+    if(!box||!isFioSqm(p))return;
+    const line=fioLine(p);
+    box.classList.add("v1146-fio-qty");
+    box.innerHTML=`<span>Surface</span>
+      <input class="article-quantity-input v1146-fio-input" type="number" min="0.01" step="0.01" value="${fioRequested(p)}" inputmode="decimal" aria-label="Surface souhaitée en m²">
+      <small class="v1146-box-summary">${line.boxes} boîte${line.boxes>1?"s":""} · ${fmt(line.orderedSqm)} m² commandés</small>`;
+    const input=box.querySelector("input");
+    input.onchange=()=>{
+      setProductQuantity(p.id,input.value);
+      saveState();renderRooms();renderSelection();renderMarginDashboard();
+    };
+    const oldTotal=card.querySelector(".article-quantity-total");
+    if(oldTotal)oldTotal.innerHTML=`Demandé <b>${fmt(line.requestedSqm)} m²</b> · commandé <b>${fmt(line.orderedSqm)} m²</b> · ${line.boxes} boîte${line.boxes>1?"s":""}<br>Total <b>${euro(line.total)} HT</b>`;
+  }
+
+  enhanceProductQuantities=function(){
+    baseEnhanceProductQuantities();
+    document.querySelectorAll(".room-product").forEach(card=>{
+      const del=card.querySelector(".del-prod,.fallback-del-prod");
+      const p=(state.selected||[]).find(x=>x.id===del?.dataset?.id);
+      if(p)enhanceFioraneseCard(card,p);
+    });
+  };
+
+  renderQuoteEditor=function(){
+    baseRenderQuoteEditor();
+    const host=document.querySelector("#quoteEditor");if(!host)return;
+    host.querySelectorAll('.qe-qty[data-kind="product"]').forEach(input=>{
+      const p=(state.selected||[])[Number(input.dataset.index)];
+      if(!isFioSqm(p))return;
+      input.min="0.01";input.max="99999";input.step="0.01";input.value=String(fioRequested(p));
+      const boxes=V.boxCount(p), ordered=V.orderedSqm(p);
+      input.title=`Surface souhaitée. Commande réelle : ${fmt(ordered)} m² (${boxes} boîte${boxes>1?"s":""}).`;
+      const td=input.closest("td");
+      if(td){
+        td.classList.add("v1146-fio-quote-qty");
+        td.querySelector(".v1146-quote-box-summary")?.remove();
+        input.insertAdjacentHTML("afterend",`<small class="v1146-quote-box-summary">${boxes} boîte${boxes>1?"s":""} · ${fmt(ordered)} m² facturés</small>`);
+      }
+    });
+  };
+
+  // Catalog refresh used to overwrite configured finish/designation and would also
+  // destroy Fioranese/Resigres runtime choices. Snapshot and restore user/runtime data.
+  harmonizeSavedCatalogProducts=function(){
+    const fields=[
+      "designation","finish","finishCode","quantity","requestedSqm","pricingUnit","sqmPerBox","pcsPerBox",
+      "resigresConfiguration","pricingStatus","pricingSource","sourcePage","price","totalPrice","priceOverride",
+      "quoteReferenceOverride","quoteDesignationOverride","quoteLeadTimeOverride","quoteUnitOverride","quoteDiscountOverride",
+      "leadTime","clientDiscountOverride","catalogPrice","catalogTotalPrice","originalDesignation"
+    ];
+    const snapshots=new Map((state.selected||[]).map(p=>[p.id,Object.fromEntries(fields.filter(k=>Object.prototype.hasOwnProperty.call(p,k)).map(k=>[k,p[k]]))]));
+    baseHarmonizeSavedCatalogProducts();
+    for(const p of state.selected||[]){const snap=snapshots.get(p.id);if(snap)Object.assign(p,snap)}
+  };
+
+  function postProcessCatalog(){
+    document.querySelectorAll("#results .result[data-key]").forEach(card=>{
+      const p=CATALOG.find(x=>productKey(x)===card.dataset.key) || serverSearchRows.find(x=>productKey(x)===card.dataset.key);
+      if(!p)return;
+      const price=card.querySelector(".price");
+      const button=card.querySelector("button.add");
+      const internal=card.querySelector(".price-box .internal");
+      if(/^Fioranese$/i.test(p.manufacturer||"") && p.pricingUnit==="sqm" && Number(p.sqmPerBox)>0){
+        if(price)price.innerHTML=`${euro(p.price)} HT <small>/m²</small>`;
+        if(internal)internal.innerHTML=`Boîte : <b>${fmt(p.sqmPerBox)} m²</b>${p.pcsPerBox?` · ${p.pcsPerBox} pce${p.pcsPerBox>1?"s":""}`:""}`;
+      }else if(/^Fioranese$/i.test(p.manufacturer||"") && p.pricingUnit==="piece"){
+        if(price)price.innerHTML=`${euro(p.price)} HT <small>/pièce</small>`;
+      }
+      if(p.configuratorType==="fioranese-source"){
+        if(price)price.textContent="Tarif PDF";
+        if(button)button.textContent="Voir la collection";
+        if(internal)internal.textContent=p.sourcePage?`Tarif 2025 · pages ${p.sourcePage}`:"Tarif 2025 · chiffrage depuis le PDF";
+      }
+      if(p.configuratorType==="resigres"){
+        if(price)price.textContent="À configurer";
+        if(button)button.textContent="Configurer";
+        if(internal)internal.textContent=`Tarif Resigres 2026 · page ${p.sourcePage||"—"}`;
+      }
+    });
+  }
+  renderCatalog=function(){baseRenderCatalog();postProcessCatalog()};
+
+  let resigresConfigPromise=null;
+  function loadResigresConfig(){
+    if(!resigresConfigPromise)resigresConfigPromise=fetch("/resigres_2026_config.json",{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error(`HTTP ${r.status}`);return r.json()});
+    return resigresConfigPromise;
+  }
+  function closeResigresConfigurator(){document.querySelector("#resigresConfigurator")?.remove()}
+  function optionHtml(items){return (items||[]).map(x=>`<option value="${esc45(x)}">${esc45(x)}</option>`).join("")}
+
+  function modelCfg(config,p){return V.modelConfig(config,p.resigresModel,p.resigresKind)||null}
+  function variantCfg(model,id){return V.variantConfig(model,id)||null}
+  function finishOptions(model,variant){return variant?.finishOptions||model?.finishOptions||[]}
+  function materialOptions(variant){return variant?.materialOptions||[]}
+  function sizeOptions(variant){return variant?.sizeOptions||[]}
+
+  async function openResigresConfigurator(p,roomId){
+    closeResigresConfigurator();
+    const config=await loadResigresConfig();
+    const model=modelCfg(config,p)||{};
+    const variants=model.variants||[{id:"default",label:p.resigresModel||p.designation}];
+    const sourcePage=p.sourcePage||model.sourcePage||"";
+    const isDims=/shower-tray|basin-top|furniture-basin-top|furniture|mirror|accessory/.test(p.resigresKind||"");
+    const overlay=document.createElement("div");
+    overlay.id="resigresConfigurator";overlay.className="v1146-modal-overlay";
+    overlay.innerHTML=`<div class="v1146-modal" role="dialog" aria-modal="true" aria-labelledby="rgTitle">
+      <div class="v1146-modal-head"><div><div class="eyebrow">Resigres 2026 · tarifs intégrés</div><h2 id="rgTitle">${esc45(p.resigresModel||p.designation)}</h2><p>Le tarif 2026 est calculé automatiquement quand la grille est certifiée. Aucune valeur illisible du PDF n’est extrapolée.</p></div><button type="button" class="icon rg-close" aria-label="Fermer">×</button></div>
+      <div class="v1146-source-note"><b>Source :</b> Tarif Resigres FR 2026 · page ${esc45(sourcePage||"—")} ${p.manufacturerUrl?`· <a href="${esc45(p.manufacturerUrl)}" target="_blank" rel="noopener">site fabricant ↗</a>`:""}</div>
+      <div class="v1146-field-grid">
+        <label class="v1146-span-2">Version<select id="rgVariant">${variants.map(x=>`<option value="${esc45(x.id)}">${esc45(x.label)}</option>`).join("")}</select></label>
+        <label class="rg-finish">Finition<select id="rgFinish"></select></label>
+        <label class="rg-color">Coloris<select id="rgColor"></select></label>
+        ${isDims?'<label>Largeur (cm)<input id="rgWidth" type="number" min="1" step="0.1"></label><label>Longueur / hauteur (cm)<input id="rgLength" type="number" min="1" step="0.1"></label>':""}
+        <label class="rg-material hidden">Matière<select id="rgMaterial"></select></label>
+        <label class="rg-size hidden">Dimension<select id="rgSize"></select></label>
+        <label class="v1146-span-2 rg-ral hidden">Référence RAL/NCS<input id="rgRal" placeholder="ex. RAL 7031"></label>
+        <label class="v1146-span-2">Détails / options de configuration<input id="rgDetails" placeholder="ex. position bonde, 2 vasques, retombée…"></label>
+      </div>
+      <div id="rgKnownOptions" class="v1146-known-options"></div>
+      <div class="v1146-pricing-panel"><div><b id="rgPriceTitle">Prix public HT calculé</b><small id="rgPriceHelp">Calcul issu du tarif Resigres 2026.</small></div><div id="rgAutoPrice" class="v1146-auto-price">—</div><input id="rgBasePrice" class="hidden" type="number" min="0.01" step="0.01" placeholder="0,00"></div>
+      <div id="rgCalc" class="v1146-calc"></div>
+      <div class="v1146-modal-error" aria-live="polite"></div>
+      <div class="v1146-modal-actions"><button type="button" class="btn ghost rg-cancel">Annuler</button><button type="button" class="btn primary rg-confirm">Ajouter la configuration</button></div>
+    </div>`;
+    document.body.appendChild(overlay);
+    const $r=s=>overlay.querySelector(s);
+    const global=config.global||{};
+
+    function renderVariantFields(){
+      const variant=variantCfg(model,$r("#rgVariant")?.value)||variants[0];
+      let finishes=finishOptions(model,variant),materials=materialOptions(variant),sizes=sizeOptions(variant);
+      if(!finishes.length&&!materials.length&&!sizes.length)finishes=global.finishes||[];
+      if(!materials.length&&p.resigresKind==="bath")materials=["Solid Surface","Laquée","Acrylique brillant","Acrylique mat"];
+      const finishWrap=$r(".rg-finish"),matWrap=$r(".rg-material"),sizeWrap=$r(".rg-size");
+      if(finishWrap){finishWrap.classList.toggle("hidden",!finishes.length);$r("#rgFinish").innerHTML=optionHtml(finishes)}
+      if(matWrap){matWrap.classList.toggle("hidden",!materials.length);$r("#rgMaterial").innerHTML=optionHtml(materials)}
+      if(sizeWrap){sizeWrap.classList.toggle("hidden",!sizes.length);$r("#rgSize").innerHTML=optionHtml(sizes)}
+      const colors=global.standardColors||[];$r("#rgColor").innerHTML=optionHtml(colors)+'<option value="RAL/NCS">RAL/NCS</option>';
+      renderSupplements();update();
+    }
+    function renderSupplements(){
+      const rules=model.supplements||[];const host=$r("#rgKnownOptions");
+      if(!rules.length){host.innerHTML="";return}
+      host.innerHTML='<b>Suppléments tarifaires</b>'+rules.filter(x=>x.autoWhen!=="ral").map(rule=>rule.type==="perCm"
+        ?`<label><span>${esc45(rule.label)} · ${fmt(rule.amount,2)} €/cm</span><input data-rule-input="${esc45(rule.input)}" type="number" min="0" step="0.1" value="0"></label>`
+        :`<label><input type="checkbox" data-rule="${esc45(rule.id)}"><span>${esc45(rule.label)} · +${euro(rule.amount)} HT</span></label>`).join("");
+      host.querySelectorAll("input").forEach(x=>x.addEventListener("input",update));
+    }
+    function readSelection(){
+      const options=[...overlay.querySelectorAll("[data-rule]:checked")].map(x=>x.dataset.rule);
+      const selection={model:p.resigresModel,kind:p.resigresKind,variant:$r("#rgVariant")?.value||"",finish:$r("#rgFinish")?.value||"",color:$r("#rgColor")?.value||"",widthCm:Number($r("#rgWidth")?.value)||null,lengthCm:Number($r("#rgLength")?.value)||null,size:$r("#rgSize")?.value||"",material:$r("#rgMaterial")?.value||"",details:$r("#rgDetails")?.value||"",ralNcs:$r("#rgRal")?.value||"",options};
+      overlay.querySelectorAll("[data-rule-input]").forEach(x=>selection[x.dataset.ruleInput]=Number(x.value)||0);
+      return selection;
+    }
+    function update(){
+      const selection=readSelection();$r(".rg-ral")?.classList.toggle("hidden",selection.color!=="RAL/NCS");
+      const q=V.resigresQuote(config,selection,$r("#rgBasePrice")?.value);
+      const auto=q.status==="automatic";
+      $r("#rgBasePrice").classList.toggle("hidden",auto);
+      $r("#rgAutoPrice").classList.toggle("hidden",!auto);
+      $r("#rgPriceTitle").textContent=auto?"Prix public HT calculé":"Prix public HT de base";
+      $r("#rgPriceHelp").textContent=auto?(q.breakdown+` · page ${q.rule?.sourcePage||sourcePage}`):(q.reason+`. Saisissez le prix uniquement pour cette cellule.`);
+      if(auto)$r("#rgAutoPrice").textContent=euro(q.basePrice);
+      $r("#rgCalc").innerHTML=`<span>Base : <b>${euro(q.basePrice||0)}</b> · suppléments : <b>${euro(q.supplements.total)}</b></span><strong>Total public HT : ${euro(q.total)}</strong>${q.supplements.applied.length?`<small>${q.supplements.applied.map(x=>esc45(x.label)+" +"+euro(x.amount)).join(" · ")}</small>`:""}`;
+      overlay._rgQuote=q;
+    }
+    $r("#rgVariant").addEventListener("change",renderVariantFields);
+    $r("#rgColor").addEventListener("change",update);
+    overlay.querySelectorAll("input,select").forEach(x=>{if(x.id!=="rgVariant")x.addEventListener("input",update);if(x.tagName==="SELECT"&&x.id!=="rgVariant")x.addEventListener("change",update)});
+    const close=()=>closeResigresConfigurator();$r(".rg-close").onclick=close;$r(".rg-cancel").onclick=close;overlay.addEventListener("click",e=>{if(e.target===overlay)close()});
+    $r(".rg-confirm").onclick=()=>{
+      const err=$r(".v1146-modal-error"),selection=readSelection();
+      if(selection.color==="RAL/NCS"&&!String(selection.ralNcs||"").trim()){err.textContent="Indiquez la référence RAL/NCS.";return}
+      const q=V.resigresQuote(config,selection,$r("#rgBasePrice").value);
+      if(!(q.total>0)){err.textContent=q.reason||"Tarif non déterminé.";return}
+      const variant=variantCfg(model,selection.variant);const dims=selection.widthCm&&selection.lengthCm?`${fmt(selection.widthCm,1)} × ${fmt(selection.lengthCm,1)} cm`:selection.size;
+      const designation=[variant?.label||p.resigresModel,dims,selection.finish||selection.material,selection.color,selection.details].filter(Boolean).join(" · ");
+      const configured={...p,reference:`${p.reference}-CFG-${Date.now().toString(36).toUpperCase()}`,designation,finish:[selection.finish||selection.material,selection.color].filter(Boolean).join(" · "),price:q.total,totalPrice:q.total,pricingStatus:q.pricingStatus,pricingSource:`Tarif Resigres FR 2026 · p.${q.rule?.sourcePage||sourcePage}`,resigresConfiguration:{...selection,basePrice:q.basePrice,baseBreakdown:q.breakdown||"",supplements:q.supplements.applied,total:q.total,sourcePage:q.rule?.sourcePage||sourcePage},configOriginReference:p.reference,configuratorType:"resigres-configured"};
+      const record=createSelectedProductRecord(configured,roomId,"");if(!record){err.textContent="Impossible de préparer la configuration.";return}
+      Object.assign(record,{resigresConfiguration:configured.resigresConfiguration,pricingStatus:configured.pricingStatus,pricingSource:configured.pricingSource,price:q.total,totalPrice:q.total,catalogPrice:q.total,catalogTotalPrice:q.total,originalDesignation:designation});commitSelectedRecords([record],{showProject:true});close();
+    };
+    renderVariantFields();$r("#rgVariant")?.focus();
+  }
+
+  addCatalogProduct=function(ref,roomId,key=""){
+    const p=productFromCatalogSources(ref,key);
+    if(p?.configuratorType==="resigres"){openResigresConfigurator(p,normalizedRoomId(roomId)).catch(e=>{console.error("[Resigres configurator]",e);alert("Configurateur Resigres indisponible : "+e.message)});return}
+    if(p?.configuratorType==="fioranese-source"){
+      const page=p.sourcePage?` pages ${p.sourcePage}`:"";const msg=`${p.collection} : cette collection est indexée mais ses cellules tarifaires ne sont pas encore assez sûres pour créer un prix automatique. Consultez le tarif Fioranese 2025${page}.`;
+      if(p.manufacturerUrl)window.open(p.manufacturerUrl,"_blank","noopener");if(typeof toast==="function")toast(msg);else alert(msg);return;
+    }
+    return baseAddCatalogProduct(ref,roomId,key);
+  };
+
+  // Add an explicit note in room cards for configured Resigres lines.
+  const baseRenderRooms=renderRooms;
+  renderRooms=function(){
+    baseRenderRooms();
+    document.querySelectorAll(".room-product").forEach(card=>{
+      const id=card.querySelector(".del-prod,.fallback-del-prod")?.dataset?.id;
+      const p=(state.selected||[]).find(x=>x.id===id);
+      if(!p?.resigresConfiguration)return;
+      if(card.querySelector(".v1146-resigres-summary"))return;
+      const host=card.querySelector(".price-total")||card;
+      const c=p.resigresConfiguration;
+      host.insertAdjacentHTML("beforeend",`<div class="v1146-resigres-summary"><b>Resigres configuré</b> · ${esc45([c.widthCm&&c.lengthCm?`${fmt(c.widthCm,1)} × ${fmt(c.lengthCm,1)} cm`:c.size,c.finish,c.color].filter(Boolean).join(" · "))}<small>Prix saisi depuis tarif 2026 · p.${esc45(c.sourcePage||p.sourcePage||"—")}</small></div>`);
+    });
+  };
+
+  // Run bootstrap only after all V11.45 overrides are installed. The consolidation
+  // installer removes the legacy direct bootstrap() call from app.js.
+  Promise.resolve(bootstrap()).catch(e=>console.error("[Hydropolis V11.46 bootstrap]",e));
+})();
+
+;
+/* SOURCE public/v1147.js */
+/* HYDROPOLIS_STUDIO_V11_49_RESIGRES_ASSETS */
+/* HYDROPOLIS_STUDIO_V11_47 compatibility marker */
+(() => {
+  "use strict";
+
+  const RESIGRES_RESOLVER_VERSION="11.49";
+  const isResigres=p=>/^Resigres$/i.test(String(p?.manufacturer||""));
+  const baseFetchManufacturerImage=fetchManufacturerImage;
+  const baseAutomaticImageEligible=automaticImageEligible;
+  const baseSelectedImageNeedsForcedRefresh=selectedImageNeedsForcedRefresh;
+  const baseImageBadge=imageBadge;
+  const baseUpdateCatalogCardVisual=updateCatalogCardVisual;
+  const baseRenderCatalog=renderCatalog;
+  const baseRenderRooms=renderRooms;
+
+  function resigresKind(p){
+    if(p?.resigresKind)return p.resigresKind;
+    const c=String(p?.category||"").toLowerCase();
+    if(c.includes("receveur"))return "shower-tray";
+    if(c.includes("plan de vasque pour meuble"))return "furniture-basin-top";
+    if(c.includes("plan de vasque"))return "basin-top";
+    if(c.includes("vasque"))return "basin";
+    if(c.includes("baignoire"))return "bath";
+    if(c.includes("meuble"))return "furniture";
+    if(c.includes("miroir"))return "mirror";
+    return "accessory";
+  }
+  function resigresModel(p){return String(p?.resigresModel||p?.designation||p?.collection||"").trim()}
+  function proxyImage(url){return url?`/api/image-proxy?url=${encodeURIComponent(url)}`:""}
+  function isOfficialResigresCache(c){return !!(c?.src && /Site officiel Resigres/i.test(String(c?.source||"")) && c?.resigresResolverVersion===RESIGRES_RESOLVER_VERSION)}
+
+  async function fetchResigresAssets(p,force=false){
+    const key=manufacturerCacheKey(p);
+    const cached=manufacturerImageCache[key];
+    if(!force && isOfficialResigresCache(cached))return cached;
+
+    const directProductUrl=/\/producto\.php\?/i.test(String(p?.resolvedManufacturerUrl||p?.manufacturerUrl||""))?(p.resolvedManufacturerUrl||p.manufacturerUrl):"";
+    const qs=new URLSearchParams({model:resigresModel(p),kind:resigresKind(p),productUrl:p.resolvedManufacturerUrl||p.manufacturerUrl||""});
+    if(directProductUrl)qs.set("productUrl",directProductUrl);
+    const r=await fetch(`/api/resigres-assets?${qs.toString()}`,{cache:force?"no-store":"default"});
+    let data={};try{data=await r.json()}catch{}
+    if(!r.ok)throw new Error(data.detail||data.error||`Resigres HTTP ${r.status}`);
+    if(!data.image && !data.technicalSheetUrl)throw new Error("Aucun asset officiel Resigres trouvé");
+
+    const remoteImages=Array.isArray(data.images)?data.images.filter(Boolean):[];
+    const proxied=remoteImages.map(proxyImage).filter(Boolean);
+    const item={
+      src:proxyImage(data.image||remoteImages[0]||""),
+      images:proxied,
+      remoteUrl:data.image||remoteImages[0]||"",
+      remoteImages,
+      source:"Site officiel Resigres",
+      finishMatch:"model-exact",
+      checkedAt:new Date().toISOString(),
+      resolvedManufacturerUrl:data.productUrl||p.manufacturerUrl||"",
+      technicalSheetUrl:data.technicalSheetUrl||"",
+      technicalSheetLabel:data.technicalSheetLabel||"Fiche technique Resigres",
+      technicalSheetType:data.technicalSheetUrl?"pdf":"",
+      technicalSheetPage:1,
+      installationGuideUrl:data.installationGuideUrl||"",
+      installationGuideLabel:data.installationGuideLabel||"Guide Resigres",
+      model3dUrl:data.model3dUrl||"",
+      model3dLabel:data.model3dLabel||"Fichier 3D Resigres",
+      resigresAssetTitle:data.title||resigresModel(p),
+      resigresAssetMatch:data.match||"official",
+      resolverVersion:data.resolverVersion||"",
+      resigresResolverVersion:data.resolverVersion||RESIGRES_RESOLVER_VERSION
+    };
+    manufacturerImageCache[key]=item;
+    // V11.49: erase stale Resigres cache variants that were produced by the old resolver.
+    for(const cacheKey of Object.keys(manufacturerImageCache||{})){
+      const row=manufacturerImageCache[cacheKey];
+      if(cacheKey!==key && /Site officiel Resigres/i.test(String(row?.source||"")) && row?.resigresResolverVersion!==RESIGRES_RESOLVER_VERSION)delete manufacturerImageCache[cacheKey];
+    }
+    saveManufacturerCache();
+    return item;
+  }
+
+  fetchManufacturerImage=async function(p,force=false,options={}){
+    if(isResigres(p))return fetchResigresAssets(p,force);
+    return baseFetchManufacturerImage(p,force,options);
+  };
+
+  automaticImageEligible=function(p){
+    if(isResigres(p)){
+      const c=manufacturerImageCache[manufacturerCacheKey(p)];
+      const failedAt=autoPhotoFailures.get(autoPhotoGroupKey(p))||0;
+      return !isOfficialResigresCache(c) && Date.now()-failedAt>5*60*1000;
+    }
+    return baseAutomaticImageEligible(p);
+  };
+
+  selectedImageNeedsForcedRefresh=function(p){
+    if(isResigres(p))return true;
+    return baseSelectedImageNeedsForcedRefresh(p);
+  };
+
+  imageBadge=function(img,p){
+    if(isResigres(p) && /Site officiel Resigres/i.test(String(img?.source||""))){
+      return "✓ Photo officielle Resigres · modèle exact";
+    }
+    return baseImageBadge(img,p);
+  };
+
+  function ensureResigresResourceLinks(card,p,img){
+    if(!card||!isResigres(p)||!img)return;
+    const tools=card.querySelector(".manufacturer-tools");if(!tools)return;
+    const productUrl=img.resolvedManufacturerUrl||p.resolvedManufacturerUrl||p.manufacturerUrl||"";
+    let fiche=tools.querySelector('a[data-v1147="product"]');
+    const existing=[...tools.querySelectorAll("a.source-link")].find(a=>!/Technique|3D/i.test(a.textContent||""));
+    if(productUrl){
+      if(existing){existing.href=productUrl;existing.textContent="Produit ↗";existing.dataset.v1147="product";fiche=existing}
+      else if(!fiche){tools.insertAdjacentHTML("beforeend",`<a class="source-link v1147-resigres-resource" data-v1147="product" target="_blank" rel="noopener" href="${esc(productUrl)}">Produit ↗</a>`)}
+    }
+    if(img.technicalSheetUrl && !tools.querySelector('a[data-v1147="tech"]')){
+      tools.insertAdjacentHTML("beforeend",`<a class="source-link v1147-resigres-resource" data-v1147="tech" target="_blank" rel="noopener" href="${esc(img.technicalSheetUrl)}">Fiche PDF ↗</a>`);
+    }
+    if(img.installationGuideUrl && !tools.querySelector('a[data-v1147="guide"]')){
+      tools.insertAdjacentHTML("beforeend",`<a class="source-link v1147-resigres-resource" data-v1147="guide" target="_blank" rel="noopener" href="${esc(img.installationGuideUrl)}">Guide ↗</a>`);
+    }
+    if(img.model3dUrl && !tools.querySelector('a[data-v1147="3d"]')){
+      tools.insertAdjacentHTML("beforeend",`<a class="source-link v1147-resigres-resource is-3d" data-v1147="3d" target="_blank" rel="noopener" href="${esc(img.model3dUrl)}">3D ↗</a>`);
+    }
+    const status=card.querySelector(".photo-status");
+    if(status)status.innerHTML='<b class="v1147-resigres-status">✓ Site officiel Resigres · photo + documents</b>';
+  }
+
+  updateCatalogCardVisual=function(p,img){
+    baseUpdateCatalogCardVisual(p,img);
+    if(isResigres(p))ensureResigresResourceLinks(catalogCardForProduct(p),p,img);
+  };
+
+  function decorateCachedResigresCards(){
+    document.querySelectorAll("#results .result[data-key]").forEach(card=>{
+      const p=productFromCompareKey(card.dataset.key||"");
+      if(!isResigres(p))return;
+      const c=manufacturerImageCache[manufacturerCacheKey(p)];
+      if(isOfficialResigresCache(c))ensureResigresResourceLinks(card,p,c);
+    });
+  }
+
+  renderCatalog=function(){
+    baseRenderCatalog();
+    decorateCachedResigresCards();
+  };
+
+  function copyResigresAssetsToSelected(p,img){
+    if(!p||!img)return false;
+    let changed=false;
+    const assign=(k,v)=>{if(v && p[k]!==v){p[k]=v;changed=true}};
+    assign("resolvedManufacturerUrl",img.resolvedManufacturerUrl);
+    assign("technicalSheetUrl",img.technicalSheetUrl);
+    assign("technicalSheetLabel",img.technicalSheetLabel);
+    assign("technicalSheetType",img.technicalSheetType||"pdf");
+    if(img.installationGuideUrl){assign("installationGuideUrl",img.installationGuideUrl);assign("installationGuideLabel",img.installationGuideLabel)}
+    if(img.model3dUrl){assign("model3dUrl",img.model3dUrl);assign("model3dLabel",img.model3dLabel)}
+    if(img.src && !p.customImage){
+      assign("image",img.src);assign("pdfImage",img.src);assign("imageSource","Site officiel Resigres");assign("imageStatus","Photo officielle Resigres · modèle exact");
+      p.images=img.images||[img.src];p.pdfImages=(img.images||[img.src]).slice(0,4);p.remoteImageUrl=img.remoteUrl||"";p.remoteImages=img.remoteImages||[];changed=true;
+    }
+    return changed;
+  }
+
+  let resigresSelectedHydrationRunning=false;
+  async function hydrateSelectedResigres(){
+    if(resigresSelectedHydrationRunning)return;
+    const list=(state.selected||[]).filter(isResigres);
+    if(!list.length)return;
+    resigresSelectedHydrationRunning=true;
+    let changed=false;
+    try{
+      for(const p of list){
+        try{
+          const img=await fetchResigresAssets(p,false);
+          if(copyResigresAssetsToSelected(p,img))changed=true;
+        }catch(e){console.warn("[Resigres V11.47 selected assets]",p.reference,e.message)}
+      }
+      if(changed){saveState();baseRenderRooms();if($("#view-preview")?.classList.contains("active"))buildDocument();}
+    }finally{resigresSelectedHydrationRunning=false}
+  }
+
+  renderRooms=function(){
+    baseRenderRooms();
+    hydrateSelectedResigres().catch(e=>console.warn("[Resigres V11.47 hydrate]",e));
+  };
+
+  // V11.49: force first official refresh and invalidate all stale V11.47/V11.48 Resigres caches.
+  try{
+    let dirty=false;
+    for(const cacheKey of Object.keys(manufacturerImageCache||{})){
+      const row=manufacturerImageCache[cacheKey];
+      if(/Site officiel Resigres/i.test(String(row?.source||"")) && row?.resigresResolverVersion!==RESIGRES_RESOLVER_VERSION){delete manufacturerImageCache[cacheKey];dirty=true}
+    }
+    if(dirty)saveManufacturerCache();
+  }catch(e){console.warn("[Resigres V11.49 cache reset]",e)}
+
+  // Force a first official refresh in the current catalogue view, including stale generic caches.
+  queueMicrotask(()=>{
+    try{
+      (CATALOG||[]).filter(isResigres).slice(0,8).forEach(p=>enqueueAutomaticImage(p));
+      decorateCachedResigresCards();
+      hydrateSelectedResigres();
+    }catch(e){console.warn("[Resigres V11.47 init]",e)}
+  });
+})();
+
+;
+/* SOURCE public/v1148-pricing.js */
+/* HYDROPOLIS_V11_48_PRICING */
+(function(root,factory){
+  const api=factory(root&&root.HydropolisV1146Pricing);
+  if(typeof module!=="undefined"&&module.exports)module.exports=api;
+  if(root)root.HydropolisV1148Pricing=api;
+})(typeof globalThis!=="undefined"?globalThis:this,function(V46){
+  "use strict";
+  const round=(v,d=2)=>{const f=10**d;return Math.round((Number(v)+Number.EPSILON)*f)/f};
+  const list=v=>Array.isArray(v)?v:[];
+  function modelConfig(config,name,kind){
+    const rows=list(config?.models).filter(x=>x.name===name);
+    return (kind?rows.find(x=>x.kind===kind):null)||rows[0]||null;
+  }
+  function dependencyMatrix(config,selection){
+    return modelConfig(config,selection?.model,selection?.kind)?.dependencyMatrix||null;
+  }
+  function sizeOption(matrix,id){return list(matrix?.sizes).find(x=>x.id===id)||null}
+  function materialOption(size,id){return list(size?.materials).find(x=>x.id===id)||null}
+  function colorOption(material,id){return list(material?.colors).find(x=>x.id===id)||null}
+  function availableSizes(config,selection){return list(dependencyMatrix(config,selection)?.sizes)}
+  function availableMaterials(config,selection){return list(sizeOption(dependencyMatrix(config,selection),selection?.size)?.materials)}
+  function availableColors(config,selection){
+    const matrix=dependencyMatrix(config,selection), size=sizeOption(matrix,selection?.size), material=materialOption(size,selection?.material);
+    return list(material?.colors);
+  }
+  function dependentQuote(config,selection){
+    const matrix=dependencyMatrix(config,selection);
+    if(!matrix)return {status:"not-dependent",reason:"Pas de matrice dépendante"};
+    const size=sizeOption(matrix,selection?.size);
+    if(!size)return {status:"pending",reason:"Choisissez d’abord la dimension",matrix};
+    const material=materialOption(size,selection?.material);
+    if(!material)return {status:"pending",reason:"Choisissez ensuite la matière",matrix,size};
+    const color=colorOption(material,selection?.color);
+    if(!color)return {status:"pending",reason:"Choisissez enfin la finition / couleur",matrix,size,material};
+    const base=Number(color.price)||0;
+    if(!(base>0))return {status:"pending",reason:"Tarif non certifié pour cette combinaison",matrix,size,material,color};
+    const supp=V46?.supplements?V46.supplements(config,selection):{total:0,applied:[]};
+    const label=[size.label,material.label,color.label].filter(Boolean).join(" · ");
+    return {status:"automatic",pricingStatus:"automatic-verified",basePrice:base,total:round(base+(Number(supp.total)||0),2),supplements:supp,breakdown:label,matrix,size,material,color,rule:{sourcePage:matrix.sourcePage||modelConfig(config,selection?.model,selection?.kind)?.sourcePage||""}};
+  }
+  function finishColors(config,finish){
+    const map=config?.global?.finishColorMap||{};
+    return list(map[finish]);
+  }
+  function genericFinishes(config,model,variant){
+    const vs=list(model?.variants);const v=variant?(vs.find(x=>x.id===variant)||null):null;
+    const fromVariant=list(v?.finishOptions);if(fromVariant.length)return fromVariant;
+    return list(model?.finishOptions);
+  }
+  function quote(config,selection,manualBase=0){
+    if(dependencyMatrix(config,selection))return dependentQuote(config,selection);
+    return V46?.resigresQuote?V46.resigresQuote(config,selection,manualBase):{status:"pending",basePrice:Number(manualBase)||0,total:Number(manualBase)||0,supplements:{total:0,applied:[]},reason:"Moteur V11.46 absent"};
+  }
+  return {modelConfig,dependencyMatrix,sizeOption,materialOption,colorOption,availableSizes,availableMaterials,availableColors,dependentQuote,finishColors,genericFinishes,quote};
+});
+
+;
+/* SOURCE public/v1148.js */
+/* HYDROPOLIS_STUDIO_V11_48 */
+(() => {
+  "use strict";
+  const V48=window.HydropolisV1148Pricing;
+  const V46=window.HydropolisV1146Pricing;
+  if(!V48||!V46){console.error("[V11.48] moteur Resigres incomplet");return;}
+
+  const baseAddCatalogProduct=addCatalogProduct;
+  const esc48=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const fmt48=(n,d=2)=>Number(n||0).toLocaleString("fr-FR",{maximumFractionDigits:d});
+  let configPromise=null;
+  function loadConfig(){if(!configPromise)configPromise=fetch("/resigres_2026_config.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error(`HTTP ${r.status}`);return r.json()});return configPromise}
+  function close(){document.querySelector("#resigresConfigurator")?.remove()}
+  function optionHtml(items,placeholder="Choisir…"){
+    return `<option value="">${esc48(placeholder)}</option>`+(items||[]).map(x=>{
+      const id=typeof x==="string"?x:x.id,label=typeof x==="string"?x:(x.label||x.id);return `<option value="${esc48(id)}">${esc48(label)}</option>`
+    }).join("");
+  }
+  function sourcePageOf(p,model,q){return q?.rule?.sourcePage||model?.dependencyMatrix?.sourcePage||model?.sourcePage||p.sourcePage||""}
+  function commonShell(p,model,sourcePage,body){
+    const overlay=document.createElement("div");overlay.id="resigresConfigurator";overlay.className="v1146-modal-overlay v1148-modal-overlay";
+    overlay.innerHTML=`<div class="v1146-modal v1148-modal" role="dialog" aria-modal="true" aria-labelledby="rgTitle">
+      <div class="v1146-modal-head"><div><div class="eyebrow">Resigres 2026 · configurateur dépendant</div><h2 id="rgTitle">${esc48(p.resigresModel||p.designation)}</h2><p>Chaque choix filtre le suivant. Une combinaison non disponible dans le tarif fabricant n’est jamais proposée.</p></div><button type="button" class="icon rg-close" aria-label="Fermer">×</button></div>
+      <div class="v1146-source-note"><b>Source :</b> Tarif Resigres FR 2026 · page ${esc48(sourcePage||"—")} ${p.manufacturerUrl?`· <a href="${esc48(p.manufacturerUrl)}" target="_blank" rel="noopener">site fabricant ↗</a>`:""}</div>
+      ${body}
+      <div class="v1146-modal-error" aria-live="polite"></div>
+      <div class="v1146-modal-actions"><button type="button" class="btn ghost rg-cancel">Annuler</button><button type="button" class="btn primary rg-confirm">Ajouter la configuration</button></div>
+    </div>`;
+    document.body.appendChild(overlay);
+    const x=overlay.querySelector.bind(overlay);x(".rg-close").onclick=close;x(".rg-cancel").onclick=close;overlay.addEventListener("click",e=>{if(e.target===overlay)close()});return overlay;
+  }
+  function commitConfigured(p,roomId,selection,q,model){
+    const dims=selection.sizeLabel||(selection.widthCm&&selection.lengthCm?`${fmt48(selection.widthCm,1)} × ${fmt48(selection.lengthCm,1)} cm`:selection.size||"");
+    const variantLabel=(model?.variants||[]).find(x=>x.id===selection.variant)?.label||"";
+    const colorLabel=selection.colorLabel||selection.color||"";
+    const designation=[variantLabel||p.resigresModel,dims,selection.materialLabel||selection.material,selection.finish,colorLabel,selection.details].filter(Boolean).join(" · ");
+    const finish=[selection.materialLabel||selection.material,selection.finish,colorLabel].filter(Boolean).join(" · ");
+    const page=sourcePageOf(p,model,q);
+    const configured={...p,reference:`${p.reference}-CFG-${Date.now().toString(36).toUpperCase()}`,designation,finish,price:q.total,totalPrice:q.total,pricingStatus:q.pricingStatus,pricingSource:`Tarif Resigres FR 2026 · p.${page}`,resigresConfiguration:{...selection,basePrice:q.basePrice,baseBreakdown:q.breakdown||"",supplements:q.supplements?.applied||[],total:q.total,sourcePage:page},configOriginReference:p.reference,configuratorType:"resigres-configured"};
+    const record=createSelectedProductRecord(configured,roomId,"");if(!record)throw new Error("Impossible de préparer la configuration.");
+    Object.assign(record,{resigresConfiguration:configured.resigresConfiguration,pricingStatus:configured.pricingStatus,pricingSource:configured.pricingSource,price:q.total,totalPrice:q.total,catalogPrice:q.total,catalogTotalPrice:q.total,originalDesignation:designation});
+    commitSelectedRecords([record],{showProject:true});close();
+  }
+
+  function openDependent(p,roomId,config,model){
+    const matrix=model.dependencyMatrix,sourcePage=matrix.sourcePage||model.sourcePage||p.sourcePage||"";
+    const overlay=commonShell(p,model,sourcePage,`<div class="v1148-flow"><div class="v1148-step active"><span>1</span><b>Dimension</b></div><div class="v1148-step"><span>2</span><b>Matière</b></div><div class="v1148-step"><span>3</span><b>Finition / couleur</b></div></div>
+      <div class="v1146-field-grid v1148-dependent-grid">
+        <label class="v1146-span-2">1. Dimension<select id="rg48Size">${optionHtml(matrix.sizes,"Choisir une dimension…")}</select></label>
+        <label class="v1146-span-2 rg48-material hidden">2. Matière<select id="rg48Material"></select></label>
+        <label class="v1146-span-2 rg48-color hidden">3. Finition / couleur<select id="rg48Color"></select></label>
+        <label class="v1146-span-2 rg48-ral hidden">Référence RAL/NCS<input id="rg48Ral" placeholder="ex. RAL 7031 ou NCS S 2005-Y20R"></label>
+        <label class="v1146-span-2">Détails complémentaires<input id="rg48Details" placeholder="Option ou précision client éventuelle"></label>
+      </div>
+      <div class="v1148-compat-note" id="rg48Compat">Commencez par choisir la dimension.</div>
+      <div class="v1146-pricing-panel"><div><b>Prix public HT</b><small id="rg48PriceHelp">Le tarif apparaîtra après les trois choix.</small></div><div id="rg48Price" class="v1146-auto-price">—</div></div>
+      <div id="rg48Calc" class="v1146-calc"></div>`);
+    const $r=s=>overlay.querySelector(s),sizeSel=$r("#rg48Size"),matSel=$r("#rg48Material"),colSel=$r("#rg48Color");
+    function selection(){
+      const size=V48.sizeOption(matrix,sizeSel.value),mat=V48.materialOption(size,matSel.value),col=V48.colorOption(mat,colSel.value);
+      return {model:p.resigresModel,kind:p.resigresKind,size:sizeSel.value,sizeLabel:size?.label||"",widthCm:size?.widthCm||null,lengthCm:size?.lengthCm||null,material:matSel.value,materialLabel:mat?.label||"",finish:mat?.finish||"",color:colSel.value,colorLabel:col?.label||"",ralNcs:$r("#rg48Ral")?.value||"",details:$r("#rg48Details")?.value||"",options:[]};
+    }
+    function updatePrice(){
+      const s=selection(),q=V48.quote(config,s,0);overlay._rg48Quote=q;
+      const auto=q.status==="automatic";$r("#rg48Price").textContent=auto?euro(q.basePrice):"—";$r("#rg48PriceHelp").textContent=auto?`${q.breakdown} · page ${sourcePage}`:q.reason||"Choix incomplet";
+      $r("#rg48Calc").innerHTML=auto?`<span>Base : <b>${euro(q.basePrice)}</b></span><strong>Total public HT : ${euro(q.total)}</strong>`:"";
+      const selectedSize=V48.sizeOption(matrix,sizeSel.value),selectedMat=V48.materialOption(selectedSize,matSel.value);
+      if(selectedMat)$r("#rg48Compat").innerHTML=`<b>${esc48(selectedSize.label)}</b> → ${esc48(selectedMat.label)} → ${colSel.value?esc48(V48.colorOption(selectedMat,colSel.value)?.label||colSel.value):"choisissez la finition/couleur"}`;
+    }
+    function onSize(){
+      const size=V48.sizeOption(matrix,sizeSel.value);matSel.innerHTML=optionHtml(size?.materials||[],"Choisir la matière…");matSel.value="";colSel.innerHTML=optionHtml([],"Choisir d’abord la matière…");colSel.value="";
+      $r(".rg48-material").classList.toggle("hidden",!size);$r(".rg48-color").classList.add("hidden");$r(".rg48-ral").classList.add("hidden");
+      const allowed=(size?.materials||[]).map(x=>x.label).join(" / ");$r("#rg48Compat").innerHTML=size?`Pour <b>${esc48(size.label)}</b>, matières disponibles : <b>${esc48(allowed)}</b>.`:"Commencez par choisir la dimension.";updatePrice();
+    }
+    function onMaterial(){
+      const size=V48.sizeOption(matrix,sizeSel.value),mat=V48.materialOption(size,matSel.value);colSel.innerHTML=optionHtml(mat?.colors||[],"Choisir la finition / couleur…");colSel.value="";$r(".rg48-color").classList.toggle("hidden",!mat);$r(".rg48-ral").classList.add("hidden");
+      const allowed=(mat?.colors||[]).map(x=>x.label).join(" / ");$r("#rg48Compat").innerHTML=mat?`<b>${esc48(mat.label)}</b> : ${esc48(allowed)}.`:`Choisissez la matière.`;updatePrice();
+    }
+    function onColor(){
+      const size=V48.sizeOption(matrix,sizeSel.value),mat=V48.materialOption(size,matSel.value),col=V48.colorOption(mat,colSel.value);$r(".rg48-ral").classList.toggle("hidden",!col?.customCode);if(!col?.customCode)$r("#rg48Ral").value="";updatePrice();
+    }
+    sizeSel.addEventListener("change",onSize);matSel.addEventListener("change",onMaterial);colSel.addEventListener("change",onColor);$r("#rg48Ral").addEventListener("input",updatePrice);$r("#rg48Details").addEventListener("input",updatePrice);
+    $r(".rg-confirm").onclick=()=>{const err=$r(".v1146-modal-error"),s=selection(),q=V48.quote(config,s,0),size=V48.sizeOption(matrix,s.size),mat=V48.materialOption(size,s.material),col=V48.colorOption(mat,s.color);if(!size){err.textContent="Choisissez la dimension.";return}if(!mat){err.textContent="Choisissez la matière.";return}if(!col){err.textContent="Choisissez la finition / couleur.";return}if(col.customCode&&!String(s.ralNcs||"").trim()){err.textContent="Indiquez la référence RAL/NCS.";return}if(!(q.total>0)){err.textContent=q.reason||"Tarif non déterminé.";return}commitConfigured(p,roomId,s,q,model)};
+    sizeSel.focus();
+  }
+
+  function openGeneric(p,roomId,config,model){
+    const sourcePage=model.sourcePage||p.sourcePage||"",variants=model.variants||[],hasVariant=variants.length>1,kind=p.resigresKind||model.kind||"";
+    const needsDims=/shower-tray|basin-top|furniture-basin-top|furniture|accessory/.test(kind),hasSize=(model.variants||[]).some(v=>Array.isArray(v.sizeOptions)&&v.sizeOptions.length);
+    const overlay=commonShell(p,model,sourcePage,`<div class="v1148-safe-note">Les listes affichées sont limitées aux choix explicitement certifiés pour ce modèle. Si le tarif n’est pas encore matricé, le prix reste saisissable manuellement sans inventer de combinaison.</div>
+      <div class="v1146-field-grid">
+        ${hasVariant?`<label class="v1146-span-2">Version<select id="rg48Variant">${optionHtml(variants,"Choisir une version…")}</select></label>`:""}
+        ${needsDims?'<label>Largeur (cm)<input id="rg48Width" type="number" min="1" step="0.1"></label><label>Longueur / hauteur (cm)<input id="rg48Length" type="number" min="1" step="0.1"></label>':""}
+        ${hasSize?'<label class="v1146-span-2 rg48-size">Dimension<select id="rg48Size"></select></label>':""}
+        <label class="v1146-span-2 rg48-finish hidden">Finition / matière<select id="rg48Finish"></select></label>
+        <label class="v1146-span-2 rg48-color hidden">Coloris<select id="rg48Color"></select></label>
+        <label class="v1146-span-2 rg48-ral hidden">Référence RAL/NCS<input id="rg48Ral" placeholder="ex. RAL 7031"></label>
+        <label class="v1146-span-2">Détails / options<input id="rg48Details" placeholder="Configuration complémentaire"></label>
+      </div>
+      <div id="rg48Options" class="v1146-known-options"></div>
+      <div class="v1146-pricing-panel"><div><b id="rg48PriceTitle">Prix public HT</b><small id="rg48PriceHelp">Calcul automatique si la grille est certifiée.</small></div><div id="rg48AutoPrice" class="v1146-auto-price hidden">—</div><input id="rg48ManualPrice" type="number" min="0.01" step="0.01" placeholder="Prix HT lu dans le tarif"></div>
+      <div id="rg48Calc" class="v1146-calc"></div>`);
+    const $r=s=>overlay.querySelector(s);
+    function variant(){const id=$r("#rg48Variant")?.value||variants[0]?.id||"";return (variants||[]).find(x=>x.id===id)||variants[0]||null}
+    function renderChoices(reset=true){
+      const v=variant(),finishes=V48.genericFinishes(config,model,v?.id);const f=$r("#rg48Finish");if(f){f.innerHTML=optionHtml(finishes,"Choisir une finition…");if(reset)f.value="";$r(".rg48-finish").classList.toggle("hidden",!finishes.length)}
+      const sizes=v?.sizeOptions||[];const s=$r("#rg48Size");if(s){s.innerHTML=optionHtml(sizes,"Choisir une dimension…");if(reset)s.value=""}
+      renderColor(true);renderOptions();update();
+    }
+    function renderColor(reset=true){const finish=$r("#rg48Finish")?.value||"",colors=V48.finishColors(config,finish),c=$r("#rg48Color");if(c){c.innerHTML=optionHtml(colors,"Choisir un coloris…");if(reset)c.value="";$r(".rg48-color").classList.toggle("hidden",!finish||!colors.length)}$r(".rg48-ral")?.classList.toggle("hidden",true)}
+    function renderOptions(){const host=$r("#rg48Options"),rules=model.supplements||[];if(!rules.length){host.innerHTML="";return}host.innerHTML='<b>Options tarifaires vérifiées</b>'+rules.filter(x=>x.autoWhen!=="ral").map(rule=>rule.type==="perCm"?`<label><span>${esc48(rule.label)} · ${fmt48(rule.amount)} €/cm</span><input data-rule-input="${esc48(rule.input)}" type="number" min="0" step="0.1" value="0"></label>`:`<label><input type="checkbox" data-rule="${esc48(rule.id)}"><span>${esc48(rule.label)} · +${euro(rule.amount)} HT</span></label>`).join("");host.querySelectorAll("input").forEach(x=>x.addEventListener("input",update))}
+    function selection(){const opts=[...overlay.querySelectorAll("[data-rule]:checked")].map(x=>x.dataset.rule),finish=$r("#rg48Finish")?.value||"",color=$r("#rg48Color")?.value||"";const s={model:p.resigresModel,kind,variant:$r("#rg48Variant")?.value||variants[0]?.id||"",finish,color,widthCm:Number($r("#rg48Width")?.value)||null,lengthCm:Number($r("#rg48Length")?.value)||null,size:$r("#rg48Size")?.value||"",details:$r("#rg48Details")?.value||"",ralNcs:$r("#rg48Ral")?.value||"",options:opts};overlay.querySelectorAll("[data-rule-input]").forEach(x=>s[x.dataset.ruleInput]=Number(x.value)||0);return s}
+    function update(){const s=selection();$r(".rg48-ral")?.classList.toggle("hidden",s.color!=="RAL/NCS");const q=V48.quote(config,s,$r("#rg48ManualPrice")?.value);overlay._rg48Quote=q;const auto=q.status==="automatic";$r("#rg48AutoPrice").classList.toggle("hidden",!auto);$r("#rg48ManualPrice").classList.toggle("hidden",auto);$r("#rg48PriceTitle").textContent=auto?"Prix public HT calculé":"Prix public HT de base";$r("#rg48PriceHelp").textContent=auto?`${q.breakdown||"Grille certifiée"} · page ${sourcePage}`:((q.reason||"Tarif automatique non certifié")+". Saisie manuelle autorisée pour cette configuration uniquement.");if(auto)$r("#rg48AutoPrice").textContent=euro(q.basePrice);$r("#rg48Calc").innerHTML=`<span>Base : <b>${euro(q.basePrice||0)}</b> · suppléments : <b>${euro(q.supplements?.total||0)}</b></span><strong>Total public HT : ${euro(q.total||0)}</strong>`}
+    $r("#rg48Variant")?.addEventListener("change",()=>renderChoices(true));$r("#rg48Finish")?.addEventListener("change",()=>{renderColor(true);update()});$r("#rg48Color")?.addEventListener("change",update);overlay.querySelectorAll("input,select").forEach(el=>{if(!["rg48Variant","rg48Finish","rg48Color"].includes(el.id)){el.addEventListener("input",update);if(el.tagName==="SELECT")el.addEventListener("change",update)}});
+    $r(".rg-confirm").onclick=()=>{const err=$r(".v1146-modal-error"),s=selection(),q=V48.quote(config,s,$r("#rg48ManualPrice")?.value);if(s.color==="RAL/NCS"&&!String(s.ralNcs||"").trim()){err.textContent="Indiquez la référence RAL/NCS.";return}if(!(q.total>0)){err.textContent=q.reason||"Indiquez un prix public HT pour cette configuration.";return}commitConfigured(p,roomId,s,q,model)};
+    renderChoices(false);($r("#rg48Variant")||$r("#rg48Width")||$r("#rg48Finish")||$r("#rg48Details"))?.focus();
+  }
+
+  async function openConfigurator(p,roomId){close();const config=await loadConfig(),model=V48.modelConfig(config,p.resigresModel,p.resigresKind)||{};if(model.dependencyMatrix?.type==="dependent-combinations")return openDependent(p,roomId,config,model);return openGeneric(p,roomId,config,model)}
+
+  addCatalogProduct=function(ref,roomId,key=""){
+    const p=productFromCatalogSources(ref,key);
+    if(p?.configuratorType==="resigres"){openConfigurator(p,normalizedRoomId(roomId)).catch(e=>{console.error("[Resigres V11.48]",e);alert("Configurateur Resigres indisponible : "+e.message)});return}
+    return baseAddCatalogProduct(ref,roomId,key);
+  };
+})();
+
+;
+/* SOURCE public/v1149-pricing.js */
+"use strict";
+(function(root,factory){const api=factory();if(typeof module!=="undefined"&&module.exports)module.exports=api;if(root)root.HydropolisV1149Pricing=api;})(typeof window!=="undefined"?window:globalThis,function(){
+  const round2=n=>Math.round((Number(n)||0)*100)/100;
+  const modelConfig=(config,name,kind)=>((config&&config.models)||[]).find(x=>x.name===name&&(!kind||x.kind===kind))||null;
+  const ceilTier=(value,tiers)=>{const n=Number(value),arr=(tiers||[]).map(Number).filter(Number.isFinite).sort((a,b)=>a-b);if(!Number.isFinite(n)||!arr.length)return null;return arr.find(x=>n<=x)??null};
+  function optionSupplements(model,s){
+    const applied=[];let total=0;
+    const chosen=new Set(Array.isArray(s.options)?s.options:[]);
+    for(const rule of model?.supplements||[]){
+      if(rule.autoWhen==="ral"){
+        if(String(s.color||"").toUpperCase()==="RAL/NCS"){total+=Number(rule.amount)||0;applied.push({id:rule.id,label:rule.label,amount:round2(rule.amount)});}
+        continue;
+      }
+      if(rule.type==="perCm"){
+        const qty=Number(s[rule.input]||0);if(qty>0){const a=qty*(Number(rule.amount)||0);total+=a;applied.push({id:rule.id,label:rule.label,amount:round2(a),quantity:qty});}
+      }else if(chosen.has(rule.id)){
+        const a=Number(rule.amount)||0;total+=a;applied.push({id:rule.id,label:rule.label,amount:round2(a)});
+      }
+    }
+    return {total:round2(total),applied};
+  }
+  function showerQuote(config,s){
+    const model=modelConfig(config,s.model,"shower-tray");if(!model)return {status:"pending",pricingStatus:"manual",reason:"Modèle receveur introuvable",total:0};
+    const variant=(model.variants||[]).find(v=>v.id===s.variant)||(model.variants||[])[0];if(!variant)return {status:"pending",pricingStatus:"manual",reason:"Version non sélectionnée",total:0};
+    const finish=String(s.finish||"");
+    const ruleId=variant.pricingRuleByFinish?.[finish]||variant.pricingRule;
+    const rule=(model.pricingRules||[]).find(r=>r.id===ruleId);
+    if(!rule)return {status:"pending",pricingStatus:"manual",reason:"Grille tarifaire non certifiée pour cette matière",total:0};
+    const w=Number(s.widthCm),l=Number(s.lengthCm);if(!(w>0&&l>0))return {status:"pending",pricingStatus:"manual",reason:"Indiquez largeur et longueur",total:0,rule};
+    let basePrice=0,breakdown="",pricedWidth=null,pricedLength=null;
+    if(rule.type==="matrix"){
+      const widths=(rule.widths||[]).map(Number),lengths=(rule.lengths||[]).map(Number);
+      const minW=Math.min(...widths),maxW=Math.max(...widths),minL=Math.min(...lengths),maxL=Math.max(...lengths);
+      if(w<minW||w>maxW||l<minL||l>maxL)return {status:"pending",pricingStatus:"manual",reason:`Dimensions hors grille certifiée (${minW}–${maxW} × ${minL}–${maxL} cm)`,total:0,rule};
+      pricedWidth=ceilTier(w,widths);pricedLength=ceilTier(l,lengths);
+      const wi=widths.indexOf(pricedWidth),li=lengths.indexOf(pricedLength);basePrice=Number(rule.matrix?.[wi]?.[li]);
+      if(!(basePrice>0))return {status:"pending",pricingStatus:"manual",reason:`Cellule ${pricedWidth} × ${pricedLength} non certifiée : vérifier le tarif`,total:0,rule,pricedWidth,pricedLength};
+      breakdown=`${w} × ${l} cm → palier tarifaire ${pricedWidth} × ${pricedLength} cm · ${finish}`;
+    }else if(rule.type==="sqm"){
+      const [minW,maxW]=rule.widthRange||[0,Infinity],[minL,maxL]=rule.lengthRange||[0,Infinity];
+      if(w<minW||w>maxW||l<minL||l>maxL)return {status:"pending",pricingStatus:"manual",reason:`Dimensions hors plage Contract (${minW}–${maxW} × ${minL}–${maxL} cm)`,total:0,rule};
+      const rate=Number(rule.rates?.[finish]);if(!(rate>0))return {status:"pending",pricingStatus:"manual",reason:"Tarif au m² absent pour cette matière",total:0,rule};
+      const actualSqm=(w*l)/10000,minSqm=Number(rule.minSqm)||0,billedSqm=Math.max(minSqm,actualSqm);
+      basePrice=round2(billedSqm*rate);
+      breakdown=actualSqm<minSqm
+        ?`${round2(actualSqm)} m² réels → minimum facturé ${round2(billedSqm)} m² × ${rate} €/m² · ${finish}`
+        :`${round2(actualSqm)} m² réels × ${rate} €/m² · ${finish}`;
+      Object.assign(rule,{actualSqm:round2(actualSqm),billedSqm:round2(billedSqm),ratePerSqm:rate});
+    }else return {status:"pending",pricingStatus:"manual",reason:"Règle tarifaire non prise en charge",total:0,rule};
+    const supplements=optionSupplements(model,s);const total=round2(basePrice+supplements.total);
+    return {status:"automatic",pricingStatus:"automatic-verified",basePrice:round2(basePrice),supplements,total,breakdown,rule,pricedWidth,pricedLength};
+  }
+  function seleneQuote(config,s){
+    const model=modelConfig(config,"Selene","furniture-basin-top"),v=model?.v49Selene;if(!v)return {status:"pending",pricingStatus:"manual",reason:"Matrice Selene absente",total:0};
+    const shape=(v.shapes||[]).find(x=>x.id===s.shape);if(!shape)return {status:"pending",pricingStatus:"manual",reason:"Choisissez la forme de vasque",total:0};
+    const material=(v.materials||[]).find(x=>x.id===s.material);if(!material)return {status:"pending",pricingStatus:"manual",reason:"Choisissez la matière",total:0};
+    if(!(material.colors||[]).includes(s.color))return {status:"pending",pricingStatus:"manual",reason:"Coloris non disponible pour cette matière",total:0};
+    const group=(v.groups||[]).find(x=>x.id===s.basinGroup);if(!group||!(shape.groups||[]).includes(group.id))return {status:"pending",pricingStatus:"manual",reason:"Configuration de vasque incompatible avec la forme choisie",total:0};
+    const w=Number(s.widthCm),l=Number(s.lengthCm);if(!(w>0&&l>0))return {status:"pending",pricingStatus:"manual",reason:"Indiquez les dimensions du plan",total:0};
+    if(w>Number(v.maxWidthCm||51))return {status:"pending",pricingStatus:"manual",reason:`Largeur maximale ${v.maxWidthCm} cm`,total:0};
+    if(l>Number(v.maxLengthCm||201))return {status:"pending",pricingStatus:"manual",reason:`Longueur maximale ${v.maxLengthCm} cm`,total:0};
+    const pricedLength=ceilTier(l,group.lengthTiers);if(pricedLength==null)return {status:"pending",pricingStatus:"manual",reason:"Longueur hors grille tarifaire",total:0};
+    const li=(group.lengthTiers||[]).map(Number).indexOf(pricedLength),priceClass=material.priceClass||"resin";const basePrice=Number(group.prices?.[priceClass]?.[li]);
+    if(!(basePrice>0))return {status:"pending",pricingStatus:"manual",reason:"Tarif Selene non certifié pour cette combinaison",total:0};
+    const applied=[];let extra=0;
+    if(String(s.color||"").toUpperCase()==="RAL/NCS"){extra+=Number(v.ralSupplement)||0;applied.push({id:"ral",label:"Coloris RAL/NCS",amount:Number(v.ralSupplement)||0});}
+    const paid=s.paidOptions||{};
+    for(const rule of v.paidOptions||[]){const q=Number(paid[rule.id]||0);if(!(q>0))continue;const a=(Number(rule.amount)||0)*q;extra+=a;applied.push({id:rule.id,label:rule.label,amount:round2(a),quantity:q,unit:rule.unit||""});}
+    const supplements={total:round2(extra),applied};
+    return {status:"automatic",pricingStatus:"automatic-verified",basePrice:round2(basePrice),supplements,total:round2(basePrice+extra),pricedLength,breakdown:`${group.label} · ${material.label} · largeur ${w} cm · longueur ${l} cm → palier ${pricedLength} cm`,rule:{sourcePage:v.sourcePage||model.sourcePage}};
+  }
+  return {round2,ceilTier,modelConfig,showerQuote,seleneQuote};
+});
+
+;
+/* SOURCE public/v1149.js */
+/* HYDROPOLIS_STUDIO_V11_49 */
+(() => {
+  "use strict";
+  const V49=window.HydropolisV1149Pricing;
+  if(!V49){console.error("[V11.49] moteur tarifaire absent");return;}
+  const baseAddCatalogProduct=addCatalogProduct;
+  const esc49=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const fmt49=(n,d=2)=>Number(n||0).toLocaleString("fr-FR",{maximumFractionDigits:d});
+  const money49=n=>`${fmt49(n,2)} €`;
+  let configPromise49=null;
+  const loadConfig49=()=>configPromise49||(configPromise49=fetch("/resigres_2026_config.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error(`HTTP ${r.status}`);return r.json()}));
+  const close49=()=>document.querySelector("#resigresConfigurator")?.remove();
+  function optionHtml49(items,placeholder="Choisir…"){
+    return `<option value="">${esc49(placeholder)}</option>`+(items||[]).map(x=>{const id=typeof x==="string"?x:x.id,label=typeof x==="string"?x:(x.label||x.id);return `<option value="${esc49(id)}">${esc49(label)}</option>`}).join("");
+  }
+  function shell49(p,sourcePage,title,subtitle,body){
+    close49();const overlay=document.createElement("div");overlay.id="resigresConfigurator";overlay.className="v1146-modal-overlay v1149-modal-overlay";
+    overlay.innerHTML=`<div class="v1146-modal v1149-modal" role="dialog" aria-modal="true"><div class="v1146-modal-head"><div><div class="eyebrow">RESIGRES 2026 · V11.49</div><h2>${esc49(title)}</h2><p>${esc49(subtitle)}</p></div><button type="button" class="icon rg49-close">×</button></div><div class="v1146-source-note"><b>Source :</b> Tarif Resigres FR 2026 · page ${esc49(sourcePage||"—")}</div>${body}<div class="v1146-modal-error" aria-live="polite"></div><div class="v1146-modal-actions"><button type="button" class="btn ghost rg49-cancel">Annuler</button><button type="button" class="btn primary rg49-confirm">Ajouter la configuration</button></div></div>`;
+    document.body.appendChild(overlay);overlay.querySelector(".rg49-close").onclick=close49;overlay.querySelector(".rg49-cancel").onclick=close49;overlay.addEventListener("click",e=>{if(e.target===overlay)close49()});return overlay;
+  }
+  function commit49(p,roomId,selection,q,model){
+    const dims=selection.widthCm&&selection.lengthCm?`${fmt49(selection.widthCm,1)} × ${fmt49(selection.lengthCm,1)} cm`:selection.sizeLabel||selection.size||"";
+    const parts=[selection.variantLabel||p.resigresModel,selection.shapeLabel,selection.basinGroupLabel,dims,selection.materialLabel||selection.finish,selection.colorLabel||selection.color].filter(Boolean);
+    const designation=parts.join(" · ");const finish=[selection.materialLabel||selection.finish,selection.colorLabel||selection.color].filter(Boolean).join(" · ");
+    const page=q?.rule?.sourcePage||model?.v49Selene?.sourcePage||model?.sourcePage||p.sourcePage||"";
+    const configured={...p,reference:`${p.reference}-CFG-${Date.now().toString(36).toUpperCase()}`,designation,finish,price:q.total,totalPrice:q.total,pricingStatus:q.pricingStatus||"automatic-verified",pricingSource:`Tarif Resigres FR 2026 · p.${page}`,resigresConfiguration:{...selection,basePrice:q.basePrice,baseBreakdown:q.breakdown||"",supplements:q.supplements?.applied||[],total:q.total,sourcePage:page},configOriginReference:p.reference,configuratorType:"resigres-configured"};
+    const record=createSelectedProductRecord(configured,roomId,"");if(!record)throw new Error("Impossible de préparer la configuration.");Object.assign(record,{resigresConfiguration:configured.resigresConfiguration,pricingStatus:configured.pricingStatus,pricingSource:configured.pricingSource,price:q.total,totalPrice:q.total,catalogPrice:q.total,catalogTotalPrice:q.total,originalDesignation:designation});commitSelectedRecords([record],{showProject:true});close49();
+  }
+  function finishColors49(config,finish){return config?.global?.finishColorMap?.[finish]||[]}
+  function paidOptionInput(rule){const unit=rule.unit==="cm"?"cm":"quantité";return `<label class="v1149-option-row"><input type="checkbox" data-rg49-paid-check="${esc49(rule.id)}"><span><b>${esc49(rule.label)}</b><small>${fmt49(rule.amount)} €/${esc49(rule.unit||"ud")}</small></span><input class="v1149-option-qty" data-rg49-paid="${esc49(rule.id)}" type="number" min="0" step="${rule.unit==="cm"?"0.1":"1"}" value="0" aria-label="${esc49(unit)}"></label>`}
+
+  function openShower49(p,roomId,config,model){
+    const variants=model.variants||[],sourcePage=model.sourcePage||p.sourcePage||"";
+    const overlay=shell49(p,sourcePage,p.resigresModel||p.designation,"Dimensions réelles → matière → coloris → options. Grille standard : palier supérieur. Version Contract : tarif au m² réel.",`<div class="v1149-flow"><b>1. Version</b><span>→</span><b>2. Dimensions</b><span>→</span><b>3. Matière</b><span>→</span><b>4. Coloris</b><span>→</span><b>5. Options</b></div><div class="v1146-field-grid"><label class="v1146-span-2">Version<select id="rg49Variant">${optionHtml49(variants,"Choisir une version…")}</select></label><label>Largeur réelle (cm)<input id="rg49Width" type="number" min="1" step="1"></label><label>Longueur réelle (cm)<input id="rg49Length" type="number" min="1" step="1"></label><label class="v1146-span-2">Matière / finition<select id="rg49Finish"><option value="">Choisir d’abord la version…</option></select></label><label class="v1146-span-2">Coloris<select id="rg49Color"><option value="">Choisir d’abord la matière…</option></select></label><label class="v1146-span-2 rg49-ral hidden">Référence RAL/NCS<input id="rg49Ral" placeholder="ex. RAL 7031"></label></div><div class="v1149-tier-note" id="rg49Tier">Saisissez les dimensions réelles.</div><details class="v1149-options"><summary>Options et suppléments</summary><div id="rg49ShowerOptions" class="v1149-options-body"></div></details><div class="v1146-pricing-panel"><div><b>Prix public HT calculé</b><small id="rg49PriceHelp">Complétez la configuration.</small></div><div id="rg49Price" class="v1146-auto-price">—</div></div><div id="rg49Calc" class="v1146-calc"></div><div class="v1149-manual hidden" id="rg49ManualWrap"><label>Prix HT manuel si cellule non certifiée<input id="rg49Manual" type="number" min="0.01" step="0.01"></label></div>`);
+    const $=s=>overlay.querySelector(s),variantSel=$("#rg49Variant"),finishSel=$("#rg49Finish"),colorSel=$("#rg49Color");
+    function variant(){return variants.find(v=>v.id===variantSel.value)||null}
+    function renderFinish(){const v=variant();finishSel.innerHTML=optionHtml49(v?.finishOptions||[],"Choisir la matière…");finishSel.value="";colorSel.innerHTML='<option value="">Choisir d’abord la matière…</option>';update()}
+    function renderColor(){const colors=finishColors49(config,finishSel.value);colorSel.innerHTML=optionHtml49(colors,"Choisir le coloris…");colorSel.value="";update()}
+    function renderOptions(){const host=$("#rg49ShowerOptions"),rules=model.supplements||[];host.innerHTML=rules.filter(r=>r.autoWhen!=="ral").map(r=>r.type==="perCm"?`<label class="v1149-option-row"><input type="checkbox" data-rg49-shower-check="${esc49(r.id)}"><span><b>${esc49(r.label)}</b><small>${fmt49(r.amount)} €/cm</small></span><input class="v1149-option-qty" data-rg49-input="${esc49(r.input)}" type="number" min="0" step="0.1" value="0"></label>`:`<label class="v1149-option-row"><input type="checkbox" data-rg49-shower-option="${esc49(r.id)}"><span><b>${esc49(r.label)}</b><small>+ ${money49(r.amount)}</small></span></label>`).join("")||"<small>Aucun supplément tarifé pour cette version.</small>";host.querySelectorAll("input").forEach(el=>el.addEventListener("input",update));}
+    function selection(){const s={model:p.resigresModel,kind:"shower-tray",variant:variantSel.value,finish:finishSel.value,color:colorSel.value,widthCm:Number($("#rg49Width").value)||0,lengthCm:Number($("#rg49Length").value)||0,ralNcs:$("#rg49Ral").value||"",options:[...overlay.querySelectorAll("[data-rg49-shower-option]:checked")].map(x=>x.dataset.rg49ShowerOption)};overlay.querySelectorAll("[data-rg49-input]").forEach(x=>{const check=x.closest("label")?.querySelector("[data-rg49-shower-check]");s[x.dataset.rg49Input]=check?.checked?(Number(x.value)||0):0});const v=variant();s.variantLabel=v?.label||"";return s}
+    function update(){const s=selection(),q=V49.showerQuote(config,s);overlay._q=q;$(".rg49-ral").classList.toggle("hidden",s.color!=="RAL/NCS");const auto=q.status==="automatic";$("#rg49Price").textContent=auto?money49(q.total):"—";$("#rg49PriceHelp").textContent=auto?q.breakdown:(q.reason||"Configuration incomplète");$("#rg49Calc").innerHTML=auto?`<span>Base : <b>${money49(q.basePrice)}</b> · suppléments : <b>${money49(q.supplements?.total||0)}</b></span><strong>Total public HT : ${money49(q.total)}</strong>`:"";if(q.rule?.type==="sqm"&&auto){const a=q.rule.actualSqm,b=q.rule.billedSqm,r=q.rule.ratePerSqm;$("#rg49Tier").innerHTML=`Version <b>Contract</b> : surface réelle <b>${fmt49(a,4)} m²</b>${b>a?` · minimum facturé <b>${fmt49(b,2)} m²</b>`:""} · tarif <b>${fmt49(r,2)} €/m²</b>. Aucun palier supérieur.`;}else if(q.pricedWidth&&q.pricedLength)$("#rg49Tier").innerHTML=`Dimensions saisies <b>${fmt49(s.widthCm,1)} × ${fmt49(s.lengthCm,1)} cm</b> → prix du palier supérieur <b>${q.pricedWidth} × ${q.pricedLength} cm</b>.`;else $("#rg49Tier").textContent=auto?q.breakdown:(q.reason||"Saisissez les dimensions réelles.");$("#rg49ManualWrap").classList.toggle("hidden",auto||!/cellule/i.test(q.reason||""));}
+    variantSel.addEventListener("change",renderFinish);finishSel.addEventListener("change",renderColor);colorSel.addEventListener("change",update);["#rg49Width","#rg49Length","#rg49Ral","#rg49Manual"].forEach(s=>$(s)?.addEventListener("input",update));renderOptions();
+    $(".rg49-confirm").onclick=()=>{const err=$(".v1146-modal-error"),s=selection();let q=V49.showerQuote(config,s);if(!s.variant){err.textContent="Choisissez la version.";return}if(!(s.widthCm>0&&s.lengthCm>0)){err.textContent="Indiquez largeur et longueur.";return}if(!s.finish){err.textContent="Choisissez la matière.";return}if(!s.color){err.textContent="Choisissez le coloris.";return}if(s.color==="RAL/NCS"&&!s.ralNcs.trim()){err.textContent="Indiquez la référence RAL/NCS.";return}if(q.status!=="automatic"){const manual=Number($("#rg49Manual").value);if(!(manual>0)){err.textContent=q.reason||"Tarif non déterminé.";return}q={...q,status:"manual",pricingStatus:"manual-verified-by-user",basePrice:manual,total:manual+(q.supplements?.total||0)}}commit49(p,roomId,s,q,model)};
+    variantSel.focus();
+  }
+
+  function openSelene49(p,roomId,config,model){
+    const v=model.v49Selene,sourcePage=v.sourcePage||model.sourcePage||"26";
+    const cards=(v.shapes||[]).map(x=>`<button type="button" class="v1149-shape" data-shape="${esc49(x.id)}"><img src="${esc49(x.image)}" alt="Vasque ${esc49(x.label)}"><span><b>${esc49(x.label)}</b><small>${esc49(x.dimensions)}</small></span></button>`).join("");
+    const overlay=shell49(p,sourcePage,"Selene","Forme de vasque → matière → coloris → configuration → dimensions → options.",`<div class="v1149-flow"><b>1. Forme</b><span>→</span><b>2. Matière</b><span>→</span><b>3. Coloris</b><span>→</span><b>4. Vasques</b><span>→</span><b>5. Dimensions</b></div><div class="v1149-shapes">${cards}</div><div class="v1146-field-grid"><label class="v1146-span-2">Matière<select id="rg49SelMat">${optionHtml49(v.materials,"Choisir une matière…")}</select></label><label class="v1146-span-2">Coloris<select id="rg49SelColor"><option value="">Choisir d’abord la matière…</option></select></label><label class="v1146-span-2 rg49-sel-ral hidden">Référence RAL/NCS<input id="rg49SelRal" placeholder="ex. RAL 7031"></label><label class="v1146-span-2">Configuration<select id="rg49SelGroup"><option value="">Choisir d’abord la forme…</option></select></label><label>Largeur du plan (cm)<input id="rg49SelWidth" type="number" min="1" max="${esc49(v.maxWidthCm)}" step="0.1"></label><label>Longueur du plan (cm)<input id="rg49SelLength" type="number" min="1" max="${esc49(v.maxLengthCm)}" step="0.1"></label></div><div class="v1149-tier-note" id="rg49SelTier">Largeur maxi ${esc49(v.maxWidthCm)} cm · longueur maxi ${esc49(v.maxLengthCm)} cm.</div><details class="v1149-options"><summary>Options comprises et suppléments payants</summary><div class="v1149-options-columns"><div><h4>Compris dans le prix</h4>${(v.includedOptions||[]).map(o=>`<label class="v1149-check"><input type="checkbox" data-rg49-included="${esc49(o.id)}"><span>${esc49(o.label)}</span></label>`).join("")}</div><div><h4>Avec supplément</h4>${(v.paidOptions||[]).map(paidOptionInput).join("")}</div></div></details><div class="v1146-pricing-panel"><div><b>Prix public HT calculé</b><small id="rg49SelHelp">Complétez la configuration.</small></div><div id="rg49SelPrice" class="v1146-auto-price">—</div></div><div id="rg49SelCalc" class="v1146-calc"></div>`);
+    const $=s=>overlay.querySelector(s);let shapeId="";
+    function shape(){return (v.shapes||[]).find(x=>x.id===shapeId)||null}function material(){return (v.materials||[]).find(x=>x.id===$("#rg49SelMat").value)||null}function group(){return (v.groups||[]).find(x=>x.id===$("#rg49SelGroup").value)||null}
+    function renderMat(){const m=material();$("#rg49SelColor").innerHTML=optionHtml49(m?.colors||[],"Choisir le coloris…");$("#rg49SelColor").value="";updateSel()}
+    function renderGroup(){const sh=shape(),groups=(sh?.groups||[]).map(id=>(v.groups||[]).find(g=>g.id===id)).filter(Boolean);$("#rg49SelGroup").innerHTML=optionHtml49(groups,"Choisir la configuration…");if(groups.length===1){$("#rg49SelGroup").value=groups[0].id}updateSel()}
+    function paidOptions(){const out={};overlay.querySelectorAll("[data-rg49-paid]").forEach(q=>{const id=q.dataset.rg49Paid,check=overlay.querySelector(`[data-rg49-paid-check="${CSS.escape(id)}"]`);out[id]=check?.checked?(Number(q.value)||0):0});return out}
+    function selection(){const sh=shape(),m=material(),g=group();return {model:"Selene",kind:"furniture-basin-top",shape:shapeId,shapeLabel:sh?.label||"",material:m?.id||"",materialLabel:m?.label||"",color:$("#rg49SelColor").value||"",colorLabel:$("#rg49SelColor").value||"",ralNcs:$("#rg49SelRal").value||"",basinGroup:g?.id||"",basinGroupLabel:g?.label||"",widthCm:Number($("#rg49SelWidth").value)||0,lengthCm:Number($("#rg49SelLength").value)||0,includedOptions:[...overlay.querySelectorAll("[data-rg49-included]:checked")].map(x=>x.dataset.rg49Included),paidOptions:paidOptions()}}
+    function updateSel(){const s=selection(),q=V49.seleneQuote(config,s);overlay._q=q;$(".rg49-sel-ral").classList.toggle("hidden",s.color!=="RAL/NCS");$("#rg49SelPrice").textContent=q.status==="automatic"?money49(q.total):"—";$("#rg49SelHelp").textContent=q.status==="automatic"?q.breakdown:(q.reason||"Configuration incomplète");$("#rg49SelCalc").innerHTML=q.status==="automatic"?`<span>Base : <b>${money49(q.basePrice)}</b> · suppléments : <b>${money49(q.supplements?.total||0)}</b></span><strong>Total public HT : ${money49(q.total)}</strong>`:"";$("#rg49SelTier").innerHTML=q.pricedLength?`Longueur saisie <b>${fmt49(s.lengthCm,1)} cm</b> → palier tarifaire <b>${q.pricedLength} cm</b>. Largeur : <b>${fmt49(s.widthCm,1)} cm</b> / maxi ${v.maxWidthCm} cm.`:`Largeur maxi ${v.maxWidthCm} cm · longueur maxi ${v.maxLengthCm} cm.`}
+    overlay.querySelectorAll(".v1149-shape").forEach(btn=>btn.onclick=()=>{shapeId=btn.dataset.shape;overlay.querySelectorAll(".v1149-shape").forEach(x=>x.classList.toggle("selected",x===btn));renderGroup();updateSel()});$("#rg49SelMat").addEventListener("change",renderMat);$("#rg49SelColor").addEventListener("change",updateSel);$("#rg49SelGroup").addEventListener("change",updateSel);["#rg49SelWidth","#rg49SelLength","#rg49SelRal"].forEach(s=>$(s).addEventListener("input",updateSel));overlay.querySelectorAll("[data-rg49-included],[data-rg49-paid-check],[data-rg49-paid]").forEach(x=>x.addEventListener("input",updateSel));
+    $(".rg49-confirm").onclick=()=>{const err=$(".v1146-modal-error"),s=selection(),q=V49.seleneQuote(config,s);if(!s.shape){err.textContent="Choisissez la forme de vasque.";return}if(!s.material){err.textContent="Choisissez la matière.";return}if(!s.color){err.textContent="Choisissez le coloris.";return}if(s.color==="RAL/NCS"&&!s.ralNcs.trim()){err.textContent="Indiquez la référence RAL/NCS.";return}if(!s.basinGroup){err.textContent="Choisissez 1 vasque, 1 grande vasque ou 2 vasques.";return}if(!(s.widthCm>0&&s.lengthCm>0)){err.textContent="Indiquez les dimensions du plan.";return}if(q.status!=="automatic"){err.textContent=q.reason||"Tarif non déterminé.";return}commit49(p,roomId,s,q,model)};
+  }
+
+  async function open49(p,roomId){const config=await loadConfig49(),model=V49.modelConfig(config,p.resigresModel,p.resigresKind);if(!model)throw new Error("Modèle Resigres absent de la configuration");if(p.resigresKind==="shower-tray"&&model.v49ShowerConfigurator?.enabled)return openShower49(p,roomId,config,model);if(p.resigresKind==="furniture-basin-top"&&model.name==="Selene"&&model.v49Selene)return openSelene49(p,roomId,config,model);return baseAddCatalogProduct(p.reference,roomId,p.compareKey||"")}
+  addCatalogProduct=function(ref,roomId,key=""){const p=productFromCatalogSources(ref,key);if(p?.configuratorType==="resigres"&&((p.resigresKind==="shower-tray")||(p.resigresKind==="furniture-basin-top"&&p.resigresModel==="Selene"))){open49(p,normalizedRoomId(roomId)).catch(e=>{console.error("[Resigres V11.49]",e);alert("Configurateur Resigres indisponible : "+e.message)});return}return baseAddCatalogProduct(ref,roomId,key)};
+})();
+
+;
+/* SOURCE public/v1150-pricing.js */
+"use strict";
+(function(root,factory){const api=factory();if(typeof module!=="undefined"&&module.exports)module.exports=api;if(root)root.HydropolisV1150Pricing=api;})(typeof window!=="undefined"?window:globalThis,function(){
+  const round2=n=>Math.round((Number(n)||0)*100)/100;
+  const ceilTier=(value,tiers)=>{const n=Number(value),arr=(tiers||[]).map(Number).filter(Number.isFinite).sort((a,b)=>a-b);if(!Number.isFinite(n)||!arr.length)return null;return arr.find(x=>n<=x)??null};
+  const modelConfig=(config,name,kind)=>((config&&config.models)||[]).find(x=>x.name===name&&(!kind||x.kind===kind))||null;
+  function paidSupplements(v,s){const paid=s.paidOptions||{};const applied=[];let total=0;for(const rule of v?.paidOptions||[]){let q=Number(paid[rule.id]||0);if(rule.id==="ral"&&String(s.color||"").toUpperCase()==="RAL/NCS"&&q<=0)q=1;if(!(q>0))continue;const a=(Number(rule.amount)||0)*(rule.type==="fixed"?1:q);total+=a;applied.push({id:rule.id,label:rule.label,amount:round2(a),quantity:q,unit:rule.unit||""});}if(String(s.color||"").toUpperCase()==="RAL/NCS"&&Number(v?.ralSupplement)>0&&!applied.some(x=>x.id==="ral")){const a=Number(v.ralSupplement);total+=a;applied.push({id:"ral",label:"Coloris RAL/NCS",amount:round2(a),quantity:1});}return {total:round2(total),applied};}
+  function validateMaterial(v,s){const shape=(v.shapes||[]).find(x=>x.id===s.shape);if(!shape)return {error:"Choisissez la forme / vasque"};const mat=(v.materials||[]).find(x=>x.id===s.material);if(!mat)return {error:"Choisissez la matière"};const allowed=v.shapeMaterialRestrictions?.[shape.id];if(Array.isArray(allowed)&&!allowed.includes(mat.id))return {error:"Matière indisponible pour cette forme"};if(!(mat.colors||[]).includes(s.color))return {error:"Coloris indisponible pour cette matière"};return {shape,mat};}
+  function basinQuote(config,s){const model=modelConfig(config,s.model,s.kind),v=model?.v50BasinTop;if(!v)return {status:"pending",pricingStatus:"manual",reason:"Matrice plan vasque V11.50 absente",total:0};const vm=validateMaterial(v,s);if(vm.error)return {status:"pending",pricingStatus:"manual",reason:vm.error,total:0};const {shape,mat}=vm;const w=Number(s.widthCm),l=Number(s.lengthCm),h=Number(s.heightCm||0);if(!(w>0&&l>0))return {status:"pending",pricingStatus:"manual",reason:"Indiquez largeur et longueur",total:0};
+    if(v.mode==="contract"){
+      const [minW,maxW]=v.widthRange||[0,Infinity],[minL,maxL]=v.lengthRange||[0,Infinity];if(w<minW||w>maxW||l<minL||l>maxL)return {status:"pending",pricingStatus:"manual",reason:`Dimensions hors plage ${minW}–${maxW} × ${minL}–${maxL} cm`,total:0};if(v.heightRange&&h>0&&(h<v.heightRange[0]||h>v.heightRange[1]))return {status:"pending",pricingStatus:"manual",reason:`Hauteur hors plage ${v.heightRange[0]}–${v.heightRange[1]} cm`,total:0};const rate=Number(v.ratesPerLengthCm?.[mat.priceClass]);if(!(rate>0))return {status:"pending",pricingStatus:"manual",reason:"Tarif de matière sur demande",total:0};let count=Math.max(1,Number(s.basinCount)||1);const integration=Number(v.integrationPrices?.[shape.integrationClass]||0)*count;const base=round2(l*rate+integration);const sup=paidSupplements(v,s);return {status:"automatic",pricingStatus:"automatic-verified",basePrice:base,supplements:sup,total:round2(base+sup.total),breakdown:`${l} cm × ${rate} €/cm + intégration ${shape.label}${count>1?` × ${count}`:""}`,rule:{sourcePage:v.sourcePage||model.sourcePage}};
+    }
+    if(v.maxWidthCm&&w>Number(v.maxWidthCm))return {status:"pending",pricingStatus:"manual",reason:`Largeur maximale ${v.maxWidthCm} cm`,total:0};if(v.maxLengthCm&&l>Number(v.maxLengthCm))return {status:"pending",pricingStatus:"manual",reason:`Longueur maximale ${v.maxLengthCm} cm`,total:0};
+    let group=(v.groups||[]).find(x=>x.id===s.basinGroup);if(!group&&v.groups?.length===1)group=v.groups[0];if(!group)return {status:"pending",pricingStatus:"manual",reason:"Choisissez la configuration de vasque",total:0};if(Array.isArray(shape.groups)&&shape.groups.length&&!shape.groups.includes(group.id))return {status:"pending",pricingStatus:"manual",reason:"Configuration de vasque incompatible avec la forme",total:0};const pricedLength=ceilTier(l,group.lengthTiers||[]);const sup=paidSupplements(v,s);if(v.pricingMode==="manual-safe"||!Object.keys(group.prices||{}).length)return {status:"pending",pricingStatus:"manual",reason:`Structure certifiée, cellule tarifaire à vérifier page ${v.sourcePage||model.sourcePage}`,total:0,supplements:sup,pricedLength,rule:{sourcePage:v.sourcePage||model.sourcePage}};if(pricedLength==null)return {status:"pending",pricingStatus:"manual",reason:"Longueur hors grille tarifaire",total:0};const arr=group.prices?.[mat.priceClass]||[],li=(group.lengthTiers||[]).map(Number).indexOf(pricedLength),basePrice=Number(arr[li]);if(!(basePrice>0))return {status:"pending",pricingStatus:"manual",reason:"Cellule tarifaire non certifiée pour cette combinaison",total:0,supplements:sup,pricedLength};return {status:"automatic",pricingStatus:"automatic-verified",basePrice:round2(basePrice),supplements:sup,total:round2(basePrice+sup.total),pricedLength,breakdown:`${group.label} · ${mat.label} · ${w} × ${l} cm → palier ${pricedLength} cm`,rule:{sourcePage:v.sourcePage||model.sourcePage}};
+  }
+  function furnitureQuote(config,s){const model=modelConfig(config,s.model,"furniture"),v=model?.v50Furniture;if(!v)return {status:"pending",pricingStatus:"manual",reason:"Matrice meuble V11.50 absente",total:0};const type=(v.types||[]).find(x=>x.id===s.type);if(!type)return {status:"pending",pricingStatus:"manual",reason:"Choisissez le type de meuble",total:0};const mat=(v.materials||[]).find(x=>x.id===s.material);if(!mat)return {status:"pending",pricingStatus:"manual",reason:"Choisissez la matière",total:0};if(!(mat.colors||[]).includes(s.color))return {status:"pending",pricingStatus:"manual",reason:"Coloris indisponible pour cette matière",total:0};const w=Number(s.widthCm),l=Number(s.lengthCm),h=Number(s.heightCm),d=Number(s.depthCm);if(type.widthRange&&w>0&&(w<type.widthRange[0]||w>type.widthRange[1]))return {status:"pending",pricingStatus:"manual",reason:`Largeur autorisée ${type.widthRange[0]}–${type.widthRange[1]} cm`,total:0};if(type.heightRange&&h>0&&(h<type.heightRange[0]||h>type.heightRange[1]))return {status:"pending",pricingStatus:"manual",reason:`Hauteur autorisée ${type.heightRange[0]}–${type.heightRange[1]} cm`,total:0};if(type.depthRange&&d>0&&(d<type.depthRange[0]||d>type.depthRange[1]))return {status:"pending",pricingStatus:"manual",reason:`Profondeur autorisée ${type.depthRange[0]}–${type.depthRange[1]} cm`,total:0};const sup=paidSupplements(v,s);
+    if(v.pricingMode==="automatic"&&v.prices){if(!(l>0))return {status:"pending",pricingStatus:"manual",reason:"Indiquez la longueur",total:0};if(v.dimensionRules?.maxDepthCm&&w>Number(v.dimensionRules.maxDepthCm))return {status:"pending",pricingStatus:"manual",reason:`Largeur/profondeur maximale ${v.dimensionRules.maxDepthCm} cm`,total:0};const pricedLength=ceilTier(l,v.dimensionRules?.lengthTiers||[]),li=(v.dimensionRules?.lengthTiers||[]).map(Number).indexOf(pricedLength),base=Number(v.prices?.[mat.priceClass]?.[li]);if(!(base>0))return {status:"pending",pricingStatus:"manual",reason:"Cellule tarifaire non certifiée",total:0,supplements:sup,pricedLength};return {status:"automatic",pricingStatus:"automatic-verified",basePrice:round2(base),supplements:sup,total:round2(base+sup.total),pricedLength,breakdown:`${type.label} · ${mat.label} · longueur ${l} cm → palier ${pricedLength} cm`,rule:{sourcePage:v.sourcePage||model.sourcePage}};}
+    return {status:"pending",pricingStatus:"manual",reason:`Structure ${type.label} certifiée, prix à vérifier page ${v.sourcePage||model.sourcePage}`,total:0,supplements:sup,rule:{sourcePage:v.sourcePage||model.sourcePage}};
+  }
+  return {round2,ceilTier,modelConfig,basinQuote,furnitureQuote};
+});
+
+;
+/* SOURCE public/v1150.js */
+/* HYDROPOLIS_STUDIO_V11_50 */
+(() => {
+  "use strict";
+  const V50=window.HydropolisV1150Pricing;
+  if(!V50){console.error("[V11.50] moteur tarifaire absent");return;}
+  const baseAdd50=addCatalogProduct;
+  const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const fmt=(n,d=2)=>Number(n||0).toLocaleString("fr-FR",{maximumFractionDigits:d});
+  const money=n=>`${fmt(n,2)} €`;
+  let configPromise=null;
+  const loadConfig=()=>configPromise||(configPromise=fetch("/resigres_2026_config.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error(`HTTP ${r.status}`);return r.json()}));
+  const close=()=>document.querySelector("#resigresConfigurator")?.remove();
+  function options(items,placeholder="Choisir…"){return `<option value="">${esc(placeholder)}</option>`+(items||[]).map(x=>{const id=typeof x==="string"?x:x.id,label=typeof x==="string"?x:(x.label||x.id);return `<option value="${esc(id)}">${esc(label)}</option>`}).join("")}
+  function shell(sourcePage,title,subtitle,body){close();const o=document.createElement("div");o.id="resigresConfigurator";o.className="v1146-modal-overlay v1150-modal-overlay";o.innerHTML=`<div class="v1146-modal v1149-modal v1150-modal" role="dialog" aria-modal="true"><div class="v1146-modal-head"><div><div class="eyebrow">RESIGRES 2026 · V11.50 FULL MATRIX</div><h2>${esc(title)}</h2><p>${esc(subtitle)}</p></div><button type="button" class="icon rg50-close">×</button></div><div class="v1146-source-note"><b>Source :</b> Tarif Resigres FR 2026 · page ${esc(sourcePage||"—")}</div>${body}<div class="v1146-modal-error" aria-live="polite"></div><div class="v1146-modal-actions"><button type="button" class="btn ghost rg50-cancel">Annuler</button><button type="button" class="btn primary rg50-confirm">Ajouter la configuration</button></div></div>`;document.body.appendChild(o);o.querySelector(".rg50-close").onclick=close;o.querySelector(".rg50-cancel").onclick=close;o.addEventListener("click",e=>{if(e.target===o)close()});return o}
+  function optionRows(included,paid){return `<details class="v1149-options"><summary>Options comprises et suppléments payants</summary><div class="v1149-options-columns"><div><h4>Compris dans le prix</h4>${(included||[]).map(r=>`<label class="v1149-check"><input type="checkbox" data-rg50-included="${esc(r.id)}"><span>${esc(r.label)}</span></label>`).join("")||"<small>Aucune option comprise répertoriée.</small>"}</div><div><h4>Avec supplément de prix</h4>${(paid||[]).map(r=>`<label class="v1149-option-row"><input type="checkbox" data-rg50-paid-check="${esc(r.id)}"><span><b>${esc(r.label)}</b><small>${r.type==="fixed"?`+ ${money(r.amount)}`:`${fmt(r.amount)} €/${esc(r.unit||"ud")}`}</small></span><input class="v1149-option-qty" data-rg50-paid="${esc(r.id)}" type="number" min="0" step="${r.unit==="cm"?"0.1":"1"}" value="0"></label>`).join("")||"<small>Aucun supplément répertorié.</small>"}</div></div></details>`}
+  function paidSelection(overlay){const out={};overlay.querySelectorAll("[data-rg50-paid]").forEach(q=>{const id=q.dataset.rg50Paid,check=q.closest("label")?.querySelector(`[data-rg50-paid-check="${CSS.escape(id)}"]`);out[id]=check?.checked?(Number(q.value)||1):0});return out}
+  function includedSelection(overlay){return [...overlay.querySelectorAll("[data-rg50-included]:checked")].map(x=>x.dataset.rg50Included)}
+  function commit(p,roomId,s,q,model){const dims=[s.widthCm&&`${fmt(s.widthCm,1)} cm`,s.lengthCm&&`${fmt(s.lengthCm,1)} cm`,s.heightCm&&`${fmt(s.heightCm,1)} cm`].filter(Boolean).join(" × ");const parts=[p.resigresModel,s.typeLabel,s.shapeLabel,s.basinGroupLabel,dims,s.materialLabel,s.colorLabel].filter(Boolean);const designation=parts.join(" · ");const finish=[s.materialLabel,s.colorLabel].filter(Boolean).join(" · ");const page=q?.rule?.sourcePage||model?.sourcePage||p.sourcePage||"";const configured={...p,reference:`${p.reference}-CFG-${Date.now().toString(36).toUpperCase()}`,designation,finish,price:q.total,totalPrice:q.total,pricingStatus:q.pricingStatus||"automatic-verified",pricingSource:`Tarif Resigres FR 2026 · p.${page}`,resigresConfiguration:{...s,basePrice:q.basePrice,baseBreakdown:q.breakdown||"",supplements:q.supplements?.applied||[],total:q.total,sourcePage:page},configOriginReference:p.reference,configuratorType:"resigres-configured"};const record=createSelectedProductRecord(configured,roomId,"");if(!record)throw new Error("Impossible de préparer la configuration.");Object.assign(record,{resigresConfiguration:configured.resigresConfiguration,pricingStatus:configured.pricingStatus,pricingSource:configured.pricingSource,price:q.total,totalPrice:q.total,catalogPrice:q.total,catalogTotalPrice:q.total,originalDesignation:designation});commitSelectedRecords([record],{showProject:true});close()}
+
+  function openBasin(p,roomId,config,model){const v=model.v50BasinTop,sourcePage=v.sourcePage||model.sourcePage;let shapeId="";const shapeCards=(v.shapes||[]).map(s=>`<button type="button" class="v1149-shape rg50-shape" data-shape="${esc(s.id)}">${s.image?`<img src="${esc(s.image)}" alt="${esc(s.label)}">`:`<div class="v1150-shape-placeholder">${esc(s.label)}</div>`}<span><b>${esc(s.label)}</b><small>${esc(s.dimensions||"")}</small></span></button>`).join("");const o=shell(sourcePage,p.resigresModel||p.designation,"Forme / vasque → matière → coloris → configuration → dimensions → options.",`<div class="v1149-flow"><b>1. Forme</b><span>→</span><b>2. Matière</b><span>→</span><b>3. Coloris</b><span>→</span><b>4. Vasque(s)</b><span>→</span><b>5. Dimensions</b><span>→</span><b>6. Options</b></div><div class="v1149-shapes">${shapeCards}</div><div class="v1146-field-grid"><label>Matière<select id="rg50Mat"><option value="">Choisir la forme…</option></select></label><label>Coloris<select id="rg50Color"><option value="">Choisir la matière…</option></select></label><label class="v1146-span-2 rg50-ral hidden">Référence RAL/NCS<input id="rg50Ral" placeholder="ex. RAL 7031"></label><label class="v1146-span-2">Configuration de vasque<select id="rg50Group"><option value="">Choisir la forme…</option></select></label><label>Largeur du plan (cm)<input id="rg50Width" type="number" min="1" step="1"></label><label>Longueur du plan (cm)<input id="rg50Length" type="number" min="1" step="1"></label>${v.mode==="contract"||v.mode==="slab"?`<label class="v1146-span-2">Hauteur / épaisseur (cm)<input id="rg50Height" type="number" min="0" step="0.1" value="${v.heightRange?.[0]||v.minHeightCm||v.thicknessCm||""}"></label>`:""}</div><div class="v1149-tier-note" id="rg50Tier">Choisissez la forme ou la vasque.</div>${optionRows(v.includedOptions,v.paidOptions)}<div class="v1146-pricing-panel"><div><b>Prix public HT</b><small id="rg50Help">Complétez la configuration.</small></div><div id="rg50Price" class="v1146-auto-price">—</div></div><div id="rg50Calc" class="v1146-calc"></div><div class="v1149-manual hidden" id="rg50ManualWrap"><label>Prix public HT de base à saisir depuis le tarif page ${esc(sourcePage)}<input id="rg50Manual" type="number" min="0.01" step="0.01"></label></div>`);const $=s=>o.querySelector(s),matSel=$("#rg50Mat"),colorSel=$("#rg50Color"),groupSel=$("#rg50Group");const shape=()=>v.shapes?.find(x=>x.id===shapeId)||null;
+    function renderMaterial(){const sh=shape(),allowed=v.shapeMaterialRestrictions?.[sh?.id];const mats=(v.materials||[]).filter(m=>!allowed||allowed.includes(m.id));matSel.innerHTML=options(mats,"Choisir la matière…");matSel.value="";colorSel.innerHTML='<option value="">Choisir la matière…</option>';renderGroup();update()}
+    function renderColor(){const m=v.materials?.find(x=>x.id===matSel.value);colorSel.innerHTML=options(m?.colors||[],"Choisir le coloris…");colorSel.value="";update()}
+    function renderGroup(){const sh=shape();let groups=[];if(v.mode==="contract")groups=[{id:"one",label:"1 vasque"},{id:"two",label:"2 vasques"}];else groups=(v.groups||[]).filter(g=>!sh?.groups?.length||sh.groups.includes(g.id));groupSel.innerHTML=options(groups,"Choisir la configuration…");groupSel.value=""}
+    function selection(){const sh=shape(),m=v.materials?.find(x=>x.id===matSel.value),g=(v.groups||[]).find(x=>x.id===groupSel.value);return {model:p.resigresModel,kind:p.resigresKind,shape:shapeId,shapeLabel:sh?.label||"",material:matSel.value,materialLabel:m?.label||"",color:colorSel.value,colorLabel:colorSel.value,ralNcs:$("#rg50Ral").value||"",basinGroup:groupSel.value,basinGroupLabel:v.mode==="contract"?(groupSel.value==="two"?"2 vasques":"1 vasque"):(g?.label||""),basinCount:groupSel.value==="two"?2:1,widthCm:Number($("#rg50Width").value)||0,lengthCm:Number($("#rg50Length").value)||0,heightCm:Number($("#rg50Height")?.value)||0,includedOptions:includedSelection(o),paidOptions:paidSelection(o)}}
+    function update(){const s=selection(),q=V50.basinQuote(config,s);o._q=q;$(".rg50-ral").classList.toggle("hidden",s.color!=="RAL/NCS");const auto=q.status==="automatic";$("#rg50Price").textContent=auto?money(q.total):"—";$("#rg50Help").textContent=auto?q.breakdown:(q.reason||"Configuration incomplète");$("#rg50Calc").innerHTML=auto?`<span>Base : <b>${money(q.basePrice)}</b> · suppléments : <b>${money(q.supplements?.total||0)}</b></span><strong>Total public HT : ${money(q.total)}</strong>`:"";$("#rg50Tier").textContent=q.pricedLength?`Longueur saisie ${fmt(s.lengthCm,1)} cm → palier tarifaire ${q.pricedLength} cm.`:(q.reason||"Complétez la configuration.");$("#rg50ManualWrap").classList.toggle("hidden",auto)}
+    o.querySelectorAll(".rg50-shape").forEach(b=>b.onclick=()=>{shapeId=b.dataset.shape;o.querySelectorAll(".rg50-shape").forEach(x=>x.classList.toggle("selected",x===b));renderMaterial()});matSel.addEventListener("change",renderColor);colorSel.addEventListener("change",update);groupSel.addEventListener("change",update);["#rg50Width","#rg50Length","#rg50Height","#rg50Ral","#rg50Manual"].forEach(s=>$(s)?.addEventListener("input",update));o.querySelectorAll("[data-rg50-included],[data-rg50-paid-check],[data-rg50-paid]").forEach(x=>x.addEventListener("input",update));$(".rg50-confirm").onclick=()=>{const err=$(".v1146-modal-error"),s=selection();let q=V50.basinQuote(config,s);if(!s.shape){err.textContent="Choisissez la forme / vasque.";return}if(!s.material){err.textContent="Choisissez la matière.";return}if(!s.color){err.textContent="Choisissez le coloris.";return}if(s.color==="RAL/NCS"&&!s.ralNcs.trim()){err.textContent="Indiquez la référence RAL/NCS.";return}if(!s.basinGroup&&v.mode!=="slab"){err.textContent="Choisissez la configuration de vasque.";return}if(!(s.widthCm>0&&s.lengthCm>0)){err.textContent="Indiquez les dimensions.";return}if(q.status!=="automatic"){const manual=Number($("#rg50Manual").value);if(!(manual>0)){err.textContent=q.reason||"Tarif non déterminé.";return}q={...q,status:"manual",pricingStatus:"manual-verified-by-user",basePrice:manual,total:manual+(q.supplements?.total||0),rule:q.rule||{sourcePage}}}commit(p,roomId,s,q,model)};
+  }
+
+  function openFurniture(p,roomId,config,model){const v=model.v50Furniture,sourcePage=v.sourcePage||model.sourcePage;const o=shell(sourcePage,p.resigresModel||p.designation,"Type → dimensions → matière → coloris → options.",`<div class="v1149-flow"><b>1. Type</b><span>→</span><b>2. Dimensions</b><span>→</span><b>3. Matière</b><span>→</span><b>4. Coloris</b><span>→</span><b>5. Options</b></div><div class="v1146-field-grid"><label class="v1146-span-2">Type / configuration<select id="rg50FType">${options(v.types,"Choisir le type…")}</select></label><label>Largeur / profondeur (cm)<input id="rg50FWidth" type="number" min="0" step="1"></label><label>Longueur (cm)<input id="rg50FLength" type="number" min="0" step="1"></label><label>Hauteur (cm)<input id="rg50FHeight" type="number" min="0" step="1"></label><label>Profondeur (cm)<input id="rg50FDepth" type="number" min="0" step="1"></label><label>Matière<select id="rg50FMat">${options(v.materials,"Choisir la matière…")}</select></label><label>Coloris<select id="rg50FColor"><option value="">Choisir la matière…</option></select></label>${v.topFinishes?`<label>Finition plan vasque<select id="rg50FTop">${options(v.topFinishes,"Choisir…")}</select></label><label>Coloris plan<select id="rg50FTopColor"><option value="">Choisir la finition…</option></select></label>`:""}</div><div class="v1149-tier-note" id="rg50FNote">Choisissez le type de meuble.</div>${optionRows(v.includedOptions,v.paidOptions)}<div class="v1146-pricing-panel"><div><b>Prix public HT</b><small id="rg50FHelp">Complétez la configuration.</small></div><div id="rg50FPrice" class="v1146-auto-price">—</div></div><div id="rg50FCalc" class="v1146-calc"></div><div class="v1149-manual hidden" id="rg50FManualWrap"><label>Prix public HT de base à saisir depuis le tarif page ${esc(sourcePage)}<input id="rg50FManual" type="number" min="0.01" step="0.01"></label></div>`);const $=s=>o.querySelector(s),typeSel=$("#rg50FType"),matSel=$("#rg50FMat"),colorSel=$("#rg50FColor");function renderColor(){const m=v.materials?.find(x=>x.id===matSel.value);colorSel.innerHTML=options(m?.colors||[],"Choisir le coloris…");colorSel.value="";update()}function renderTop(){const t=v.topFinishes?.find(x=>x.id===$("#rg50FTop")?.value);if($("#rg50FTopColor"))$("#rg50FTopColor").innerHTML=options(t?.colors||[],"Choisir le coloris…")}
+    function selection(){const t=v.types?.find(x=>x.id===typeSel.value),m=v.materials?.find(x=>x.id===matSel.value),tf=v.topFinishes?.find(x=>x.id===$("#rg50FTop")?.value);return {model:p.resigresModel,kind:"furniture",type:typeSel.value,typeLabel:t?.label||"",material:matSel.value,materialLabel:m?.label||"",color:colorSel.value,colorLabel:colorSel.value,widthCm:Number($("#rg50FWidth").value)||0,lengthCm:Number($("#rg50FLength").value)||0,heightCm:Number($("#rg50FHeight").value)||0,depthCm:Number($("#rg50FDepth").value)||0,topFinish:tf?.id||"",topFinishLabel:tf?.label||"",topColor:$("#rg50FTopColor")?.value||"",includedOptions:includedSelection(o),paidOptions:paidSelection(o)}}
+    function update(){const s=selection(),q=V50.furnitureQuote(config,s);o._q=q;const auto=q.status==="automatic";$("#rg50FPrice").textContent=auto?money(q.total):"—";$("#rg50FHelp").textContent=auto?q.breakdown:(q.reason||"Configuration incomplète");$("#rg50FCalc").innerHTML=auto?`<span>Base : <b>${money(q.basePrice)}</b> · suppléments : <b>${money(q.supplements?.total||0)}</b></span><strong>Total public HT : ${money(q.total)}</strong>`:"";const t=v.types?.find(x=>x.id===s.type);$("#rg50FNote").textContent=t?[t.widthRange&&`largeur ${t.widthRange.join("–")} cm`,t.heightRange&&`hauteur ${t.heightRange.join("–")} cm`,t.depthRange&&`profondeur ${t.depthRange.join("–")} cm`,v.dimensionRules?.lengthRange&&`longueur ${v.dimensionRules.lengthRange.join("–")} cm`].filter(Boolean).join(" · ")||"Dimensions selon tarif Resigres":"Choisissez le type de meuble.";$("#rg50FManualWrap").classList.toggle("hidden",auto)}
+    matSel.addEventListener("change",renderColor);typeSel.addEventListener("change",update);["#rg50FWidth","#rg50FLength","#rg50FHeight","#rg50FDepth","#rg50FManual"].forEach(s=>$(s)?.addEventListener("input",update));$("#rg50FTop")?.addEventListener("change",()=>{renderTop();update()});$("#rg50FTopColor")?.addEventListener("change",update);colorSel.addEventListener("change",update);o.querySelectorAll("[data-rg50-included],[data-rg50-paid-check],[data-rg50-paid]").forEach(x=>x.addEventListener("input",update));$(".rg50-confirm").onclick=()=>{const err=$(".v1146-modal-error"),s=selection();let q=V50.furnitureQuote(config,s);if(!s.type){err.textContent="Choisissez le type de meuble.";return}if(!s.material){err.textContent="Choisissez la matière.";return}if(!s.color){err.textContent="Choisissez le coloris.";return}if(q.status!=="automatic"){const manual=Number($("#rg50FManual").value);if(!(manual>0)){err.textContent=q.reason||"Tarif non déterminé.";return}q={...q,status:"manual",pricingStatus:"manual-verified-by-user",basePrice:manual,total:manual+(q.supplements?.total||0),rule:q.rule||{sourcePage}}}commit(p,roomId,s,q,model)};
+  }
+
+  async function open50(p,roomId){const config=await loadConfig(),model=V50.modelConfig(config,p.resigresModel,p.resigresKind);if(!model)throw new Error("Modèle Resigres absent de la configuration V11.50");if((p.resigresKind==="basin-top"||p.resigresKind==="furniture-basin-top")&&model.v50BasinTop)return openBasin(p,roomId,config,model);if(p.resigresKind==="furniture"&&model.v50Furniture)return openFurniture(p,roomId,config,model);return baseAdd50(p.reference,roomId,p.compareKey||"")}
+  addCatalogProduct=function(ref,roomId,key=""){const p=productFromCatalogSources(ref,key);if(p?.configuratorType==="resigres"&&["basin-top","furniture-basin-top","furniture"].includes(p.resigresKind)){open50(p,normalizedRoomId(roomId)).catch(e=>{console.error("[Resigres V11.50]",e);alert("Configurateur Resigres indisponible : "+e.message)});return}return baseAdd50(ref,roomId,key)};
+})();
+
+;
+/* SOURCE public/v1152.js */
+/* HYDROPOLIS_STUDIO_V11_52 */
+(() => {
+  "use strict";
+  const V52="11.52";
+  const isShowerBrand=p=>/^(Vismaravetro|TDA)$/i.test(String(p?.manufacturer||""));
+  const isResigres=p=>/^Resigres$/i.test(String(p?.manufacturer||""));
+  const baseFetch52=fetchManufacturerImage;
+  const baseAuto52=automaticImageEligible;
+  const baseBadge52=imageBadge;
+  const baseRenderCatalog52=renderCatalog;
+  const baseRenderRooms52=renderRooms;
+  const proxy=u=>u?`/api/image-proxy?url=${encodeURIComponent(u)}`:"";
+  const showerCacheOK=c=>!!(c?.src&&c?.hydroShowerAssetVersion===V52);
+
+  async function fetchShowerAssets52(p,force=false){
+    const key=manufacturerCacheKey(p),cached=manufacturerImageCache[key];
+    if(!force&&showerCacheOK(cached))return cached;
+    const url=String(p?.resolvedManufacturerUrl||p?.manufacturerUrl||"");
+    const q=new URLSearchParams({manufacturer:p.manufacturer||"",collection:p.collection||p.designation||"",url});
+    const r=await fetch(`/api/shower-screen-assets?${q.toString()}`,{cache:force?"no-store":"default"});let data={};try{data=await r.json()}catch{}
+    if(!r.ok)throw new Error(data.detail||data.error||`HTTP ${r.status}`);
+    const rem=Array.isArray(data.images)?data.images.filter(Boolean):[],imgs=rem.map(proxy).filter(Boolean);
+    const item={src:proxy(data.image||rem[0]||""),images:imgs,remoteUrl:data.image||rem[0]||"",remoteImages:rem,source:`Site officiel ${p.manufacturer}`,finishMatch:"collection-exact",checkedAt:new Date().toISOString(),resolvedManufacturerUrl:data.productUrl||url,technicalSheetUrl:data.technicalSheetUrl||"",technicalSheetLabel:data.technicalSheetLabel||`Fiche technique ${p.manufacturer}`,technicalSheetType:data.technicalSheetUrl?"pdf":"",technicalSheetPage:1,installationGuideUrl:data.installationGuideUrl||"",installationGuideLabel:data.installationGuideLabel||"Notice installation",model3dUrl:data.model3dUrl||"",model3dLabel:data.model3dLabel||"Fichier 3D",hydroShowerAssetVersion:data.resolverVersion||V52};manufacturerImageCache[key]=item;saveManufacturerCache();return item;
+  }
+  fetchManufacturerImage=async function(p,force=false,options={}){if(isShowerBrand(p))return fetchShowerAssets52(p,force);return baseFetch52(p,force,options)};
+  automaticImageEligible=function(p){if(isShowerBrand(p)){const c=manufacturerImageCache[manufacturerCacheKey(p)];return !showerCacheOK(c)}return baseAuto52(p)};
+  imageBadge=function(img,p){if(isShowerBrand(p)&&showerCacheOK(img))return `✓ Visuel officiel ${p.manufacturer} · ${p.collection||"collection"}`;return baseBadge52(img,p)};
+
+  function decorateShowerCards52(){
+    document.querySelectorAll("#results .result[data-key]").forEach(card=>{const p=productFromCompareKey(card.dataset.key||"");if(!isShowerBrand(p))return;const price=card.querySelector(".price-box .price");if(price)price.textContent="À chiffrer";const internal=card.querySelector(".price-box .internal");if(internal)internal.textContent="Visuel et documentation : site officiel";const c=manufacturerImageCache[manufacturerCacheKey(p)];if(!showerCacheOK(c)){try{enqueueAutomaticImage(p)}catch{}}});
+  }
+  renderCatalog=function(){baseRenderCatalog52();decorateShowerCards52()};
+
+  let resigresDocsBusy=false;
+  function resigresModel52(p){return String(p?.resigresModel||p?.configOriginDesignation||p?.designation||p?.collection||"").split(" · ")[0].trim()}
+  function resigresKind52(p){if(p?.resigresKind)return p.resigresKind;const c=String(p?.category||"").toLowerCase();if(c.includes("receveur"))return "shower-tray";if(c.includes("plan de vasque pour meuble"))return "furniture-basin-top";if(c.includes("plan de vasque"))return "basin-top";if(c.includes("vasque"))return "basin";if(c.includes("baignoire"))return "bath";if(c.includes("meuble"))return "furniture";if(c.includes("miroir"))return "mirror";return "accessory"}
+  async function fetchResigresDoc52(p){const q=new URLSearchParams({model:resigresModel52(p),kind:resigresKind52(p),productUrl:p.resolvedManufacturerUrl||p.manufacturerUrl||"",v:"11.52"});const r=await fetch(`/api/resigres-assets?${q.toString()}`,{cache:"no-store"});let d={};try{d=await r.json()}catch{};if(!r.ok)throw new Error(d.detail||d.error||`HTTP ${r.status}`);if(!d.technicalSheetUrl)throw new Error("Fiche technique PDF non trouvée sur la page Resigres");p.resolvedManufacturerUrl=d.productUrl||p.resolvedManufacturerUrl||p.manufacturerUrl||"";p.technicalSheetUrl=d.technicalSheetUrl;p.technicalSheetLabel=d.technicalSheetLabel||"Fiche technique Resigres";p.technicalSheetType="pdf";p.technicalSheetPage=1;if(d.installationGuideUrl){p.installationGuideUrl=d.installationGuideUrl;p.installationGuideLabel=d.installationGuideLabel||"Notice installation Resigres"}saveState();return true}
+  function decorateResigresTech52(){
+    (state.selected||[]).filter(isResigres).forEach(p=>{const anchor=document.querySelector(`.enrich-btn[data-id="${CSS.escape(p.id)}"]`);const card=anchor?.closest(".room-product");const actions=card?.querySelector(".image-actions");if(!actions)return;if(p.technicalSheetUrl)return;if(actions.querySelector(`[data-v1152-resigres-tech="${CSS.escape(p.id)}"]`))return;const b=document.createElement("button");b.type="button";b.className="tiny";b.dataset.v1152ResigresTech=p.id;b.textContent="Récupérer la fiche technique Resigres";b.onclick=async()=>{b.disabled=true;b.textContent="Recherche de la fiche…";try{await fetchResigresDoc52(p);renderRooms()}catch(e){b.disabled=false;b.textContent="Réessayer la fiche technique";alert(`Fiche technique Resigres : ${e.message}`)}};actions.appendChild(b)});
+  }
+  async function hydrateResigresDocs52(){if(resigresDocsBusy)return;const list=(state.selected||[]).filter(p=>isResigres(p)&&!p.technicalSheetUrl);if(!list.length)return;resigresDocsBusy=true;let changed=false;try{for(const p of list){try{await fetchResigresDoc52(p);changed=true}catch{}}}finally{resigresDocsBusy=false}if(changed)baseRenderRooms52();decorateResigresTech52()}
+  renderRooms=function(){baseRenderRooms52();decorateResigresTech52();queueMicrotask(()=>hydrateResigresDocs52().catch(e=>console.warn("[V11.52 Resigres docs]",e)))};
+
+  try{let dirty=false;for(const k of Object.keys(manufacturerImageCache||{})){const row=manufacturerImageCache[k];if(/^Resigres\|/i.test(k)&&row?.src&&!row?.technicalSheetUrl){delete manufacturerImageCache[k];dirty=true}}if(dirty)saveManufacturerCache()}catch(e){console.warn("[V11.52 cache tech reset]",e)}
+  queueMicrotask(()=>{decorateShowerCards52();decorateResigresTech52();hydrateResigresDocs52().catch(()=>{})});
+})();
+
+;
+/* SOURCE public/v1153.js */
+/* HYDROPOLIS_STUDIO_V11_53 */
+(() => {
+  "use strict";
+  const V53="11.53";
+  const isShower53=p=>/^(Vismaravetro|TDA)$/i.test(String(p?.manufacturer||""));
+  const isSira53=p=>/^Sira Concrete$/i.test(String(p?.manufacturer||""));
+  const esc53=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const fmt53=(n,d=1)=>Number(n||0).toLocaleString("fr-FR",{maximumFractionDigits:d});
+  const money53=n=>`${Number(n||0).toLocaleString("fr-FR",{minimumFractionDigits:2,maximumFractionDigits:2})} €`;
+  const proxy53=u=>u?`/api/image-proxy?url=${encodeURIComponent(u)}`:"";
+  const baseAdd53=addCatalogProduct;
+  const baseRenderCatalog53=renderCatalog;
+  const baseFetch53=fetchManufacturerImage;
+  const baseAuto53=automaticImageEligible;
+  const baseBadge53=imageBadge;
+  let modal53=null;
+
+  try{
+    state.commercial=state.commercial||{};
+    state.commercial.supplierDiscounts=state.commercial.supplierDiscounts||{};
+    for(const maker of ["Sira Concrete","TDA","Vismaravetro"]){
+      state.commercial.supplierDiscounts[maker]=50;
+    }
+    saveState();
+  }catch(e){console.warn("[V11.53 Sira remise]",e)}
+
+  function close53(){document.querySelector("#hydroV1153Configurator")?.remove();modal53=null}
+  function shell53(title,subtitle,body){
+    close53();const o=document.createElement("div");o.id="hydroV1153Configurator";o.className="v1153-overlay";
+    o.innerHTML=`<div class="v1153-modal" role="dialog" aria-modal="true"><header><div><div class="eyebrow">HYDROPOLIS STUDIO · V11.53</div><h2>${esc53(title)}</h2><p>${esc53(subtitle)}</p></div><button type="button" class="icon v1153-close">×</button></header><div class="v1153-body">${body}</div><div class="v1153-error" aria-live="polite"></div><footer><button type="button" class="btn ghost v1153-cancel">Annuler</button><button type="button" class="btn primary v1153-confirm">Ajouter la configuration</button></footer></div>`;
+    document.body.appendChild(o);o.querySelector(".v1153-close").onclick=close53;o.querySelector(".v1153-cancel").onclick=close53;o.addEventListener("click",e=>{if(e.target===o)close53()});modal53=o;return o;
+  }
+  async function json53(url){const r=await fetch(url,{cache:"no-store"});let d={};try{d=await r.json()}catch{}if(!r.ok)throw new Error(d.detail||d.error||`HTTP ${r.status}`);return d}
+  function opts53(rows,placeholder="Choisir…",valueKey="value",labelKey="label"){
+    return `<option value="">${esc53(placeholder)}</option>`+(rows||[]).map(r=>{if(typeof r==="string")return `<option value="${esc53(r)}">${esc53(r)}</option>`;const v=r[valueKey]??r.url??r.code??r.label,l=r[labelKey]??r.label??r.code??r.url;return `<option value="${esc53(v)}">${esc53(l)}</option>`}).join("")
+  }
+  function loading53(host,msg="Chargement des données fabricant…"){host.innerHTML=`<div class="v1153-loading"><span></span>${esc53(msg)}</div>`}
+  function setError53(o,msg=""){const e=o.querySelector(".v1153-error");if(e)e.textContent=msg}
+  function selectedRoom53(roomId){return roomId||document.querySelector("#targetRoom")?.value||state.rooms?.[0]?.id||""}
+  function storeConfigured53(base,roomId,patch){
+    const configured={...base,...patch};const record=createSelectedProductRecord(configured,selectedRoom53(roomId),"");if(!record)throw new Error("Impossible de préparer l'article configuré.");
+    Object.assign(record,patch,{originalDesignation:patch.designation||configured.designation});commitSelectedRecords([record],{showProject:true});close53();return record;
+  }
+
+  const SIRA_FALLBACK={
+    "Bench Collection":["Glacier","Oasis","Bay","Lagoon","Moon","Isla","Cala","Geyser","Volcano"],
+    "Freestanding Collection":["Cliff","Cenote"],
+    "Bathtub Collection":["Duna","Creek","Fiord","Valley"],
+    "Arctic Countertops":["arctic-encimera-con-lavabo","arctic-encimera-con-faldon-y-lavabo","arctic-encimera-con-faldon-sin-lavabo","arctic-encimera-sin-lavabo"].map(slug=>({url:`https://siraconcrete.com/producto/${slug}/`,label:slug.replace(/^arctic-/,'').replace(/-/g,' ')})),
+    "Wall Collection":["Hill","Palangana","River","Tundra","Aurora","Dome"].map(x=>({url:`https://siraconcrete.com/producto/${x.toLowerCase().replace(/\s+/g,'-')}/`,label:x}))
+  };
+  function siraFallback53(collection){return (SIRA_FALLBACK[collection]||[]).map(x=>typeof x==="string"?{url:`https://siraconcrete.com/producto/${x.toLowerCase().replace(/\s+/g,"-")}/`,label:x}:x)}
+
+  async function fetchSiraCard53(p,force=false){
+    const key=manufacturerCacheKey(p),c=manufacturerImageCache[key];if(!force&&c?.hydroSiraVersion===V53&&c?.src)return c;
+    const q=new URLSearchParams({url:p.siraCategoryUrl||p.manufacturerUrl||""}),d=await json53(`/api/sira-category?${q}`),remote=d.images?.[0]||"";
+    const item={src:proxy53(remote),images:(d.images||[]).map(proxy53),remoteUrl:remote,remoteImages:d.images||[],source:"Site officiel Sira Concrete",finishMatch:"collection",checkedAt:new Date().toISOString(),resolvedManufacturerUrl:p.manufacturerUrl||"",hydroSiraVersion:V53};manufacturerImageCache[key]=item;saveManufacturerCache();return item
+  }
+  fetchManufacturerImage=async function(p,force=false,options={}){if(isSira53(p))return fetchSiraCard53(p,force);return baseFetch53(p,force,options)};
+  automaticImageEligible=function(p){if(isSira53(p)){const c=manufacturerImageCache[manufacturerCacheKey(p)];return !(c?.src&&c?.hydroSiraVersion===V53)}return baseAuto53(p)};
+  imageBadge=function(img,p){if(isSira53(p)&&img?.hydroSiraVersion===V53)return "✓ Visuel officiel Sira Concrete";return baseBadge53(img,p)};
+
+  function decorateCards53(){
+    document.querySelectorAll("#results .result[data-key]").forEach(card=>{const p=productFromCompareKey(card.dataset.key||"");if(!p||(!isShower53(p)&&!isSira53(p)))return;const price=card.querySelector(".price-box .price"),internal=card.querySelector(".price-box .internal"),add=card.querySelector("button.add");if(price)price.textContent="Configurer";if(internal)internal.textContent=isSira53(p)?"Tarif public à renseigner · remise achat Sira 50 %":"Configuration fabricant · tarif 2026 à renseigner si non résolu";if(add)add.textContent="Configurer + ajouter";if(isSira53(p)&&automaticImageEligible(p)){try{enqueueAutomaticImage(p)}catch{}}});
+  }
+  renderCatalog=function(){baseRenderCatalog53();decorateCards53()};
+
+  async function openShower53(p,roomId){
+    const maker=p.manufacturer,collection=p.collection||p.designation,o=shell53(`${maker} · ${collection}`,"Modèle → implantation → dimensions → profil → verre → options → prix public HT · remise achat 50 %.",`<div class="v1153-flow"><b>1 Modèle</b><span>→</span><b>2 Implantation</b><span>→</span><b>3 Dimensions</b><span>→</span><b>4 Profil</b><span>→</span><b>5 Verre</b><span>→</span><b>6 Options</b></div><div class="v1153-grid"><label class="span2">Modèle exact<select id="v53Model"><option value="">Chargement…</option></select></label><label>Implantation<select id="v53Install"><option value="">Choisir le modèle…</option></select></label><label>Hauteur (cm)<input id="v53Height" type="number" min="1" step="1"></label><label>Largeur / longueur (cm)<input id="v53Width" type="number" min="1" step="1"></label><label>Deuxième côté (cm)<input id="v53Side2" type="number" min="0" step="1" placeholder="si angle / 3 côtés"></label><label>Finition profil<select id="v53Profile"><option value="">Choisir le modèle…</option></select></label><label>Verre<select id="v53Glass"><option value="">Choisir le modèle…</option></select></label></div><div id="v53ModelInfo" class="v1153-info">Recherche des modèles sur le site officiel ${esc53(maker)}…</div><details class="v1153-options"><summary>Options / extras du modèle</summary><div id="v53Extras" class="v1153-checks"><small>Choisissez d'abord un modèle.</small></div></details><div class="v1153-price-panel"><div><b>Prix public HT 2026</b><small>Le configurateur conserve toutes les caractéristiques. Si le tarif n'est pas résolu automatiquement, saisissez ici le prix de la combinaison.</small></div><input id="v53Price" type="number" min="0" step="0.01" placeholder="0,00"></div><div class="v1153-note">Le tarif n'est jamais extrapolé depuis une autre année. Un prix à 0 signifie « tarif non résolu » et ne doit pas être considéré comme un tarif fabricant.</div>`);
+    const $=s=>o.querySelector(s),modelSel=$("#v53Model"),info=$("#v53ModelInfo");let collectionData=null,modelData=null;
+    try{collectionData=await json53(`/api/shower-configurator-collection?${new URLSearchParams({manufacturer:maker,url:p.manufacturerUrl||""})}`);let models=collectionData.models||[];if(!models.length){modelSel.innerHTML='<option value="">Aucun modèle détecté automatiquement</option>';info.innerHTML=`<b>Le site officiel ne fournit pas ses liens modèles sous une forme exploitable.</b><br>La fiche de collection reste disponible : <a target="_blank" href="${esc53(p.manufacturerUrl||"")}">ouvrir la collection ↗</a>`}else{modelSel.innerHTML=opts53(models,"Choisir le modèle exact…","url","label");info.textContent=`${models.length} modèle(s) détecté(s) sur le site officiel.`}}catch(e){modelSel.innerHTML='<option value="">Erreur de lecture du site</option>';setError53(o,e.message)}
+    async function loadModel(){const url=modelSel.value;if(!url)return;setError53(o,"");loading53(info,"Lecture de la fiche modèle officielle…");try{modelData=await json53(`/api/shower-configurator-model?${new URLSearchParams({manufacturer:maker,url})}`);$("#v53Install").innerHTML=opts53(modelData.installations||[],"Choisir l'implantation…");$("#v53Profile").innerHTML=opts53(modelData.profiles||[],"Choisir la finition…");$("#v53Glass").innerHTML=opts53(modelData.glasses||[],"Choisir le verre…");const h=$("#v53Height"),w=$("#v53Width");if(modelData.standardHeight)h.value=modelData.standardHeight;if(modelData.minHeight)h.min=modelData.minHeight;if(modelData.maxHeight)h.max=modelData.maxHeight;if(modelData.minWidth)w.min=modelData.minWidth;if(modelData.maxWidth)w.max=modelData.maxWidth;const dims=[modelData.minWidth&&modelData.maxWidth?`L ${modelData.minWidth}–${modelData.maxWidth} cm`:"",modelData.minHeight&&modelData.maxHeight?`H ${modelData.minHeight}–${modelData.maxHeight} cm`:modelData.standardHeight?`H ${modelData.standardHeight} cm`:""].filter(Boolean).join(" · ");info.innerHTML=`<b>${esc53(modelData.title||modelSel.options[modelSel.selectedIndex]?.text||"")}</b>${dims?`<br>${esc53(dims)}`:""}${modelData.characteristics?.length?`<br><small>${esc53(modelData.characteristics.slice(0,5).join(" · "))}</small>`:""}${modelData.technicalSheetUrl?`<br><a target="_blank" href="${esc53(modelData.technicalSheetUrl)}">Fiche technique officielle ↗</a>`:""}`;$("#v53Extras").innerHTML=(modelData.extras||[]).map((x,i)=>`<label><input type="checkbox" value="${esc53(x)}"> <span>${esc53(x)}</span></label>`).join("")||"<small>Aucun extra explicite détecté sur la fiche.</small>"}catch(e){modelData=null;info.textContent="Impossible de lire la fiche modèle.";setError53(o,e.message)}}
+    modelSel.addEventListener("change",loadModel);
+    o.querySelector(".v1153-confirm").onclick=()=>{try{setError53(o,"");if(!modelData)throw new Error("Choisissez un modèle exact.");const width=Number($("#v53Width").value)||0,height=Number($("#v53Height").value)||0,side2=Number($("#v53Side2").value)||0;if(!(width>0))throw new Error("Indiquez la largeur de la paroi.");if(modelData.minWidth&&width<modelData.minWidth)throw new Error(`Largeur minimale fabricant : ${modelData.minWidth} cm.`);if(modelData.maxWidth&&width>modelData.maxWidth)throw new Error(`Largeur maximale fabricant : ${modelData.maxWidth} cm.`);if(modelData.minHeight&&height&&height<modelData.minHeight)throw new Error(`Hauteur minimale fabricant : ${modelData.minHeight} cm.`);if(modelData.maxHeight&&height>modelData.maxHeight)throw new Error(`Hauteur maximale fabricant : ${modelData.maxHeight} cm.`);const installation=$("#v53Install").value,profile=$("#v53Profile").value,glass=$("#v53Glass").value,extras=[...$("#v53Extras").querySelectorAll("input:checked")].map(x=>x.value),price=Math.max(0,Number($("#v53Price").value)||0),label=modelData.title||modelSel.options[modelSel.selectedIndex]?.text||collection;const dims=[width&&`${fmt53(width)} cm`,side2&&`${fmt53(side2)} cm`,height&&`H ${fmt53(height)} cm`].filter(Boolean).join(" × ");const remote=modelData.images?.[0]||"",designation=[label,installation,dims].filter(Boolean).join(" · ");storeConfigured53(p,roomId,{reference:`${p.reference}-CFG-${Date.now().toString(36).toUpperCase()}`,designation,finish:[profile,glass].filter(Boolean).join(" · "),price,totalPrice:price,catalogPrice:price,catalogTotalPrice:price,pricingStatus:price>0?"manual-2026-verified-by-user":"configured-price-pending",pricingSource:price>0?"Tarif public HT 2026 saisi lors de la configuration":"Prix à compléter",manufacturerUrl:modelData.url,resolvedManufacturerUrl:modelData.url,image:proxy53(remote),pdfImage:proxy53(remote),images:(modelData.images||[]).map(proxy53),pdfImages:(modelData.images||[]).slice(0,4).map(proxy53),remoteImageUrl:remote,remoteImages:modelData.images||[],imageSource:`Site officiel ${maker}`,technicalSheetUrl:modelData.technicalSheetUrl||"",technicalSheetLabel:modelData.technicalSheetLabel||`Fiche technique ${maker}`,technicalSheetType:modelData.technicalSheetUrl?"pdf":"",technicalSheetPage:1,installationGuideUrl:modelData.installationGuideUrl||"",installationGuideLabel:modelData.installationGuideLabel||"Notice installation",showerConfiguration:{manufacturer:maker,collection,model:label,modelUrl:modelData.url,installation,widthCm:width,side2Cm:side2,heightCm:height,profile,glass,extras,source:"site officiel fabricant"},purchaseDiscount:50,configuratorType:"shower-screen-v1153"})}catch(e){setError53(o,e.message)}};
+  }
+
+  async function openSira53(p,roomId){
+    const o=shell53(`Sira Concrete · ${p.collection}`,"Produit → couleur Sira → pose / options → tarif public → coût achat automatique -50 %.",`<div class="v1153-flow"><b>1 Produit</b><span>→</span><b>2 Pigment</b><span>→</span><b>3 Pose / options</b><span>→</span><b>4 Tarif</b></div><div class="v1153-grid"><label class="span2">Produit exact<select id="v53SiraProduct"><option value="">Chargement…</option></select></label><label>Couleur / pigment<select id="v53SiraColor"><option value="">Choisir le produit…</option></select></label><label>Pose<select id="v53SiraInstall"><option value="">Selon fiche produit</option></select></label><label class="span2 v53-sira-width hidden">Largeur totale du plan (cm)<input id="v53SiraWidth" type="number" min="60" max="175" step="1" value="60"></label><label class="v53-sira-holes hidden">Trous robinet<select id="v53SiraHoles"><option>0</option><option>1</option><option>2</option><option>3</option></select></label></div><div id="v53SiraInfo" class="v1153-info">Lecture de la collection officielle Sira…</div><details class="v1153-options"><summary>Options / accessoires</summary><div id="v53SiraOptions" class="v1153-checks"><small>Choisissez d'abord un produit.</small></div></details><div class="v1153-price-panel sira"><div><b>Tarif public HT</b><small>Le prix affiché à 1 € sur siraconcrete.com n'est pas utilisé comme tarif. Saisissez le tarif public de votre grille Sira.</small></div><input id="v53SiraPrice" type="number" min="0" step="0.01" placeholder="0,00"></div><div class="v1153-sira-cost"><span>Remise achat Hydropolis</span><b>50 %</b><span>Coût achat calculé</span><strong id="v53SiraCost">—</strong></div>`);
+    const $=s=>o.querySelector(s),sel=$("#v53SiraProduct"),info=$("#v53SiraInfo");let productData=null;
+    try{const d=await json53(`/api/sira-category?${new URLSearchParams({url:p.siraCategoryUrl||p.manufacturerUrl||""})}`);let products=d.products||[];if(!products.length)products=siraFallback53(p.collection);sel.innerHTML=opts53(products,"Choisir le produit Sira…","url","label");info.textContent=`${products.length} produit(s) disponible(s) dans cette collection.`}catch(e){const products=siraFallback53(p.collection);sel.innerHTML=opts53(products,"Choisir le produit Sira…","url","label");info.textContent=products.length?"Liste de secours issue du catalogue Sira officiel.":"Impossible de charger la collection.";if(!products.length)setError53(o,e.message)}
+    function siraInstallOptions(d){const t=(d.options||[]).join(" ").toLowerCase(),rows=[];if(/wall|mural|pared|paret/.test(t))rows.push("Mural");if(/surface|encimera|plan|counter/.test(t))rows.push("À poser");if(p.siraKind==="bath")rows.push("À poser");if(p.siraKind==="countertop")rows.push("Plan vasque / console");return [...new Set(rows.length?rows:["Selon fiche produit"])]}
+    async function loadSiraProduct(){if(!sel.value)return;loading53(info,"Lecture de la fiche Sira officielle…");setError53(o,"");try{productData=await json53(`/api/sira-product-v1154?${new URLSearchParams({url:sel.value})}`);$("#v53SiraColor").innerHTML=opts53(productData.colors||[],"Choisir le pigment…","code","label");$("#v53SiraInstall").innerHTML=opts53(siraInstallOptions(productData),"Choisir la pose…");const isArctic=p.siraKind==="countertop";o.querySelector(".v53-sira-width")?.classList.toggle("hidden",!isArctic);o.querySelector(".v53-sira-holes")?.classList.toggle("hidden",!isArctic);$("#v53SiraOptions").innerHTML=(productData.options||[]).map(x=>`<label><input type="checkbox" value="${esc53(x)}"> <span>${esc53(x)}</span></label>`).join("")||"<small>Aucune option textuelle supplémentaire détectée.</small>";info.innerHTML=`<b>${esc53(productData.title)}</b>${productData.dimensions?`<br>Dimensions : ${esc53(productData.dimensions)}`:""}${productData.weight?` · Poids : ${esc53(productData.weight)}`:""}${productData.capacity?` · Capacité : ${esc53(productData.capacity)}`:""}${productData.technicalSheetUrl?`<br><a target="_blank" href="${esc53(productData.technicalSheetUrl)}">Fiche technique Sira ↗</a>`:""}`;}catch(e){productData=null;info.textContent="Impossible de lire cette fiche Sira.";setError53(o,e.message)}}
+    sel.addEventListener("change",loadSiraProduct);$("#v53SiraPrice").addEventListener("input",()=>{const price=Math.max(0,Number($("#v53SiraPrice").value)||0);$("#v53SiraCost").textContent=price?money53(price*.5):"—"});
+    o.querySelector(".v1153-confirm").onclick=()=>{try{setError53(o,"");if(!productData)throw new Error("Choisissez un produit Sira.");const color=$("#v53SiraColor").value;if(!color)throw new Error("Choisissez le pigment Sira.");const colorLabel=$("#v53SiraColor").options[$("#v53SiraColor").selectedIndex]?.text||color,installation=$("#v53SiraInstall").value,price=Math.max(0,Number($("#v53SiraPrice").value)||0),options=[...$("#v53SiraOptions").querySelectorAll("input:checked")].map(x=>x.value),isArctic=p.siraKind==="countertop",width=isArctic?(Number($("#v53SiraWidth").value)||0):0,holes=isArctic?(Number($("#v53SiraHoles").value)||0):0;if(isArctic&&(width<60||width>175))throw new Error("Les plans Arctic sont configurés entre 60 et 175 cm.");const remote=productData.primaryImage||productData.images?.[0]||"",dims=isArctic?`${fmt53(width,0)} cm · ${holes} trou(x) robinet`:productData.dimensions||"";storeConfigured53(p,roomId,{reference:`SIRA-${String(productData.title||"PROD").toUpperCase().replace(/[^A-Z0-9]+/g,"-")}-CFG`,collection:p.collection,designation:[productData.title,dims,colorLabel].filter(Boolean).join(" · "),finish:colorLabel,price,totalPrice:price,catalogPrice:price,catalogTotalPrice:price,pricingStatus:price>0?"manual-sira-tariff":"configured-price-pending",pricingSource:price>0?"Tarif Sira saisi par Hydropolis":"Tarif Sira à compléter",purchaseDiscount:50,manufacturerUrl:productData.url,resolvedManufacturerUrl:productData.url,image:proxy53(remote),pdfImage:proxy53(remote),images:(productData.images||[]).map(proxy53),pdfImages:(productData.images||[]).slice(0,4).map(proxy53),remoteImageUrl:remote,remoteImages:productData.images||[],imageSource:"Site officiel Sira Concrete",technicalSheetUrl:productData.technicalSheetUrl||"",technicalSheetLabel:productData.technicalSheetLabel||"Fiche technique Sira",technicalSheetType:productData.technicalSheetUrl?"pdf":"",technicalSheetPage:1,siraConfiguration:{product:productData.title,productUrl:productData.url,color,colorLabel,installation,options,widthCm:width,tapHoles:holes,discountPercent:50,source:"siraconcrete.com"},configuratorType:"sira-v1153"})}catch(e){setError53(o,e.message)}};
+  }
+
+  addCatalogProduct=function(ref,roomId,key=""){
+    const p=productFromCatalogSources(ref,key);if(isShower53(p)){openShower53(p,roomId).catch(e=>alert(`Configurateur ${p.manufacturer} : ${e.message}`));return}if(isSira53(p)){openSira53(p,roomId).catch(e=>alert(`Configurateur Sira : ${e.message}`));return}return baseAdd53(ref,roomId,key)
+  };
+
+  queueMicrotask(()=>{try{decorateCards53();renderCatalog()}catch(e){console.warn("[V11.53 init]",e)}});
+})();
+
+;
+/* SOURCE public/v1154.js */
+/* Hydropolis Studio V11.54 - supplier discount guard + UI integrity */
+(()=>{
+  'use strict';
+  const MAKERS=['Sira Concrete','TDA','Vismaravetro'];
+  function enforce(){
+    try{
+      if(!window.state)return;
+      state.commercial=state.commercial||{};state.commercial.supplierDiscounts=state.commercial.supplierDiscounts||{};
+      for(const m of MAKERS)state.commercial.supplierDiscounts[m]=50;
+      for(const p of (state.selected||[]))if(MAKERS.includes(String(p.manufacturer||'')))p.purchaseDiscount=50;
+      if(typeof saveProject==='function')saveProject();
+    }catch(e){console.warn('[V11.54 discount guard]',e)}
+  }
+  window.HydropolisV1154={version:'11.54.0',supplierDiscounts:{'Sira Concrete':50,TDA:50,Vismaravetro:50},enforce};
+  queueMicrotask(enforce);
+})();
+
+;
+/* SOURCE public/free-articles.js */
+/* Hydropolis V11.54 — articles libres et conditions commerciales */
+(() => {
+  'use strict';
+  const escF = v => String(v ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const uid = () => crypto.randomUUID ? crypto.randomUUID() : 'free-'+Date.now()+'-'+Math.random().toString(36).slice(2);
+  const numberF = (v, fallback=0) => { const n=Number(String(v??'').replace(',','.'));return Number.isFinite(n)?Math.max(0,n):fallback; };
+  const safeUrl = v => { const s=String(v||'').trim();if(!s)return '';if(!/^https?:\/\//i.test(s))throw new Error('Utilisez une adresse commençant par https:// ou http://.');return s; };
+  function freeRecord(values,roomId) {
+    const price=numberF(values.price), id=values.id||uid();
+    return {...values,id,roomId,isFreeArticle:true,manual:false,manufacturer:values.manufacturer||'Sélection libre',collection:values.collection||'',category:values.category||'Autres',
+      designation:String(values.designation||values.label||'').trim(),reference:String(values.reference||''),quantity:normalizedQuantity(values.quantity),
+      price,totalPrice:price,catalogPrice:price,catalogTotalPrice:price,priceOverride:null,originalDesignation:String(values.designation||values.label||'').trim(),
+      image:values.image||'',images:values.image?[values.image]:[],pdfImage:values.image||'',pdfImages:values.image?[values.image]:[],customImage:!!values.image,
+      imageSource:values.image?'Photo personnalisée':'Article libre',imageStatus:values.image?'Photo personnalisée':'Photo à ajouter',
+      leadTime:values.leadTime||'',purchasePrice:values.purchasePrice??0,pricingStatus:'user-entered',includeTechnicalSheet:!!values.includeTechnicalSheet,includeInstallationGuide:!!values.includeInstallationGuide};
+  }
+  function migrateFreeArticles() {
+    let changed=false;
+    for(const room of state.rooms||[]) {
+      const pending=[];
+      (room.manual||[]).forEach((m,i)=>{
+        if(!String(m?.label||m?.designation||'').trim()){pending.push(m);return;}
+        const legacyKey=`${room.id}:${i}:${m.id||''}`;
+        if(!(state.selected||[]).some(p=>p.legacyFreeKey===legacyKey)) {
+          const p=freeRecord({...m,legacyFreeKey:legacyKey},room.id);
+          state.selected.push(p);
+          const oldKey=`item:manual-${room.id}-${i}`,newKey=`item:${p.id}`;
+          if(state.presentationLayout?.blocks?.[oldKey]){state.presentationLayout.blocks[newKey]=state.presentationLayout.blocks[oldKey];delete state.presentationLayout.blocks[oldKey];}
+        }
+        changed=true;
+      });
+      room.manual=pending;
+    }
+    return changed;
+  }
+  const oldLoad=loadState;
+  loadState=function(...args){const r=oldLoad(...args);migrateFreeArticles();return r;};
+  const oldSearch=enqueueSelectedImageSearch;
+  enqueueSelectedImageSearch=function(p,...args){if(p?.isFreeArticle)return;return oldSearch(p,...args);};
+  const oldAuto=automaticImageEligible;
+  automaticImageEligible=function(p,...args){return p?.isFreeArticle?false:oldAuto(p,...args);};
+
+  async function uploadNotice(p,file){
+    if(file.size>10*1024*1024)throw new Error('La notice doit faire moins de 10 Mo.');
+    if(file.type!=='application/pdf'&&!/\.pdf$/i.test(file.name))throw new Error('Choisissez une notice PDF.');
+    if(!cloud.currentProjectId)await saveCloudProject();
+    if(!cloud.currentProjectId)throw new Error('Enregistrez le projet avant de joindre le PDF.');
+    const result=await apiFetch(`/api/projects/${encodeURIComponent(cloud.currentProjectId)}/assets/${encodeURIComponent(p.id)}/installation-guide`,{method:'POST',body:JSON.stringify({fileName:file.name,mime:'application/pdf',dataBase64:await fileToBase64(file)})});
+    p.installationGuideAsset=result.asset;p.installationGuideUrl='';p.installationGuideLabel=file.name;p.includeInstallationGuide=true;
+  }
+  function closeEditor(){document.getElementById('freeArticleModal')?.remove();}
+  function openFreeArticleEditor(roomId,id='') {
+    closeEditor();
+    const current=id?state.selected.find(p=>p.id===id):null;
+    if(id&&!current)return;
+    const p=current||{quantity:1};
+    const overlay=document.createElement('div');overlay.id='freeArticleModal';overlay.className='v1153-overlay';
+    overlay.innerHTML=`<form class="v1153-modal free-article-modal" role="dialog" aria-modal="true" aria-labelledby="freeArticleTitle">
+      <header><div><div class="eyebrow">ARTICLE LIBRE</div><h2 id="freeArticleTitle">${current?'Modifier l’article':'Ajouter un article'}</h2><p>Retrouvé dans le dossier client, le devis et les calculs du projet.</p></div><button type="button" class="icon close-free" aria-label="Fermer">×</button></header>
+      <div class="v1153-body"><div class="v1153-grid">
+        <label class="span2">Désignation *<input name="designation" required value="${escF(p.designation||'')}" placeholder="Ex. Meuble vasque sur mesure"></label>
+        <label>Référence<input name="reference" value="${escF(p.reference||'')}"></label>
+        <label>Marque / fournisseur<input name="manufacturer" value="${escF(p.manufacturer||'')}" placeholder="Sélection libre"></label>
+        <label>Prix unitaire public HT *<input name="price" type="number" min="0" step="0.01" required value="${current?articleMerchandisePrice(p):''}"></label>
+        <label>Quantité *<input name="quantity" type="number" min="1" max="999" step="1" required value="${itemQuantity(p)}"></label>
+        <label>Remise client (%)<input name="discount" type="number" min="0" max="100" step="0.1" value="${hasItemDiscountOverride(p)?itemDiscountRate(p):''}" placeholder="Globale : ${clientDiscountRate()} %"></label>
+        <label>Délai<input name="leadTime" value="${escF(p.leadTime||'')}" placeholder="Ex. 3 à 4 semaines"></label>
+        <label>Coût achat unitaire HT<input name="purchasePrice" type="number" min="0" step="0.01" value="${p.purchasePrice??''}" placeholder="0,00"></label>
+        <label class="free-check"><input name="showInDossier" type="checkbox" ${p.hideFromDossier?'':'checked'}> Afficher dans le dossier photo</label>
+        <label>Photo<input name="photo" type="file" accept="image/*">${p.image?`<img class="free-photo-preview" src="${escF(p.image)}" alt="Photo actuelle">`:''}</label>
+        <label>Photo — URL<input name="imageUrl" type="url" placeholder="https://…" value="${/^https?:/i.test(p.image||'')?escF(p.image):''}"></label>
+        <label>Fiche technique — PDF<input name="technicalPdf" type="file" accept=".pdf,application/pdf"><small>${escF(p.technicalSheetAsset?.name||p.technicalSheetLabel||'PDF facultatif · 10 Mo maximum')}</small></label>
+        <label>Fiche technique — URL<input name="technicalUrl" type="url" placeholder="https://…" value="${/^https?:/i.test(p.technicalSheetUrl||'')?escF(p.technicalSheetUrl):''}"></label>
+        <label>Notice — PDF<input name="noticePdf" type="file" accept=".pdf,application/pdf"><small>${escF(p.installationGuideAsset?.name||p.installationGuideLabel||'PDF facultatif · 10 Mo maximum')}</small></label>
+        <label>Notice — URL<input name="noticeUrl" type="url" placeholder="https://…" value="${/^https?:/i.test(p.installationGuideUrl||'')?escF(p.installationGuideUrl):''}"></label>
+        <label class="free-check"><input name="includeTech" type="checkbox" ${!current||p.includeTechnicalSheet?'checked':''}> Inclure la fiche technique au dossier</label>
+        <label class="free-check"><input name="includeNotice" type="checkbox" ${!current||p.includeInstallationGuide?'checked':''}> Inclure la notice au dossier</label>
+      </div><div class="free-total" aria-live="polite"></div></div>
+      <div class="v1153-error" aria-live="polite"></div><footer><button type="button" class="btn ghost close-free">Annuler</button><button type="submit" class="btn primary">${current?'Enregistrer':'Ajouter l’article'}</button></footer>
+    </form>`;
+    document.body.appendChild(overlay);const form=overlay.querySelector('form'), field=name=>form.elements.namedItem(name);
+    overlay.querySelectorAll('.close-free').forEach(b=>b.onclick=closeEditor);
+    const update=()=>{const d=field('discount').value===''?clientDiscountRate():clampPercent(field('discount').value);overlay.querySelector('.free-total').textContent=`Total HT : ${euro(numberF(field('price').value)*itemQuantity({quantity:field('quantity').value})*(1-d/100))}`;};
+    form.addEventListener('input',update);update();field('designation').focus();
+    overlay.addEventListener('keydown',e=>{if(e.key==='Escape')closeEditor();});
+    let savedId=current?.id||'';
+    form.onsubmit=async e=>{
+      e.preventDefault();const error=overlay.querySelector('.v1153-error'),button=form.querySelector('[type=submit]');error.textContent='';button.disabled=true;
+      try {
+        const designation=field('designation').value.trim();if(!designation)throw new Error('Renseignez la désignation.');
+        const price=numberF(field('price').value),qty=normalizedQuantity(field('quantity').value);
+        const imageUrl=safeUrl(field('imageUrl').value),technicalUrl=safeUrl(field('technicalUrl').value),noticeUrl=safeUrl(field('noticeUrl').value);
+        const photo=field('photo').files?.[0],tech=field('technicalPdf').files?.[0],notice=field('noticePdf').files?.[0];
+        for(const file of [tech,notice].filter(Boolean)){if(file.size>10*1024*1024)throw new Error('Les PDF doivent faire moins de 10 Mo.');if(!/\.pdf$/i.test(file.name)&&file.type!=='application/pdf')throw new Error('Choisissez un document PDF.');}
+        let record=state.selected.find(x=>x.id===savedId);
+        const values={...(record||{}),designation,reference:field('reference').value.trim(),manufacturer:field('manufacturer').value.trim()||'Sélection libre',price,quantity:qty,leadTime:field('leadTime').value.trim(),purchasePrice:numberF(field('purchasePrice').value),hideFromDossier:!field('showInDossier').checked};
+        if(!record){record=freeRecord(values,roomId);state.selected.push(record);savedId=record.id;}else Object.assign(record,values,{totalPrice:price,catalogPrice:price,catalogTotalPrice:price,priceOverride:null});
+        for(const key of ['quoteReferenceOverride','quoteDesignationOverride','quoteLeadTimeOverride','quoteUnitOverride','quoteDiscountOverride'])delete record[key];
+        if(field('discount').value==='')delete record.clientDiscountOverride;else record.clientDiscountOverride=clampPercent(field('discount').value);
+        if(photo){
+          const data=await normalizeImageFile(photo,1200,1000,.88),blob=await(await fetch(data)).blob();await assetSet(`photo:${record.id}`,blob);
+          record.image=data;record.images=[data];record.pdfImage=data;record.pdfImages=[data];record.customImage=true;record.imageStatus='Photo personnalisée';record.imageSource='Photo personnalisée';
+        }else if(imageUrl){record.image=imageUrl;record.images=[imageUrl];record.pdfImage=imageUrl;record.pdfImages=[imageUrl];record.customImage=true;record.imageStatus='Photo personnalisée';}
+        if(technicalUrl&&technicalUrl!==record.technicalSheetUrl){delete record.technicalSheetAsset;record.technicalSheetUrl=technicalUrl;record.technicalSheetType=/\.pdf(?:\?|$)/i.test(technicalUrl)?'pdf':'link';record.customTechnicalSheet=false;}
+        if(noticeUrl&&noticeUrl!==record.installationGuideUrl){delete record.installationGuideAsset;record.installationGuideUrl=noticeUrl;}
+        record.includeTechnicalSheet=field('includeTech').checked;record.includeInstallationGuide=field('includeNotice').checked;
+        saveState();
+        if(tech){await uploadTechnicalSheet(record,tech);record.includeTechnicalSheet=field('includeTech').checked;field('technicalPdf').value='';}
+        if(notice){await uploadNotice(record,notice);record.includeInstallationGuide=field('includeNotice').checked;field('noticePdf').value='';}
+        if(!saveState())throw new Error('Le stockage local est plein. Le projet reste en mémoire ; enregistrez-le en ligne.');
+        if(cloud.user)await saveCloudProject();
+        renderRooms();renderSelection();renderMarginDashboard();closeEditor();
+      }catch(err){error.textContent=err.message;button.disabled=false;}
+    };
+  }
+  window.openFreeArticleEditor=openFreeArticleEditor;
+  window.HydropolisFreeArticles={migrate:migrateFreeArticles,create:freeRecord};
+  const oldRooms=renderRooms;
+  renderRooms=function(...args){
+    if(migrateFreeArticles())saveState();
+    const result=oldRooms(...args);
+    document.querySelectorAll('.manual-zone').forEach(zone=>{
+      const roomId=zone.querySelector('.manual-btn')?.dataset.id;if(!roomId)return;
+      zone.innerHTML='<b>Articles libres</b><div class="tech">Mobilier, miroir, pose ou produit hors catalogue · photo et documents inclus</div><button type="button" class="btn ghost free-create">+ Ajouter un article libre</button>';
+      zone.querySelector('button').onclick=()=>openFreeArticleEditor(roomId);
+    });
+    document.querySelectorAll('.room-product').forEach(card=>{
+      const id=card.querySelector('.del-prod,.fallback-del-prod')?.dataset.id,p=state.selected.find(x=>x.id===id);if(!p)return;
+      if(p.isFreeArticle){
+        card.classList.add('free-product');
+        const editor=card.querySelector('.article-editor');if(editor){editor.innerHTML='<summary>Modifier l’article libre</summary><button type="button" class="btn ghost free-edit">Modifier les informations, photo et documents</button>';editor.querySelector('button').onclick=()=>openFreeArticleEditor(p.roomId,p.id);}
+        const actions=card.querySelector('.image-actions');
+        actions?.querySelectorAll('.enrich-btn').forEach(x=>x.remove());
+        actions?.querySelectorAll('a').forEach(x=>{if(!x.getAttribute('href')||x.getAttribute('href')==='undefined')x.remove();});
+      }
+      const panel=card.querySelector('.article-discount-panel');
+      if(panel&&!panel.querySelector('.dossier-visible-check')){
+        const label=document.createElement('label');label.className='free-check';label.innerHTML=`<input class="dossier-visible-check" type="checkbox" ${p.hideFromDossier?'':'checked'}> Afficher dans le dossier photo`;
+        label.querySelector('input').onchange=e=>{p.hideFromDossier=!e.target.checked;saveState();renderRooms();renderMarginDashboard();};panel.appendChild(label);
+      }
+    });
+    return result;
+  };
+})();
+
+;
+/* SOURCE public/tda-configurator.js */
+/* TDA 2026 : choix exact dans le classeur fournisseur, sans interpolation */
+(()=>{
+ 'use strict';
+ const escT=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const opts=(rows,selected='')=>'<option value="">Choisir…</option>'+rows.map(x=>`<option value="${escT(x.value)}" ${x.value===selected?'selected':''}>${escT(x.label)}</option>`).join('');
+ async function openTda(p,roomId){
+  document.getElementById('tdaTariffModal')?.remove();const o=document.createElement('div');o.id='tdaTariffModal';o.className='v1153-overlay';
+  o.innerHTML=`<div class="v1153-modal" role="dialog" aria-modal="true"><header><div><div class="eyebrow">TDA · TARIF 2026</div><h2>Configurer une paroi</h2><p>Gamme → modèle → dimension → finition → verre</p></div><button class="icon close-tda">×</button></header><div class="v1153-body"><div class="v1153-grid">${[['gamme','Gamme'],['model','Modèle'],['base','Dimension / élément'],['profile','Finition du profil'],['glass','Verre']].map(([key,label])=>`<label>${label}<select data-field="${key}" disabled></select></label>`).join('')}<label>Référence complète<select data-field="reference" disabled></select></label></div><div class="v1153-info tda-info">Chargement du tarif…</div><div class="v1153-price-panel"><b>Prix public HT</b><strong class="tda-price">—</strong></div><div class="v1153-note">Le prix correspond à cet élément. Pour un angle ou plusieurs côtés, ajoutez chaque élément de la composition.</div></div><div class="v1153-error" aria-live="polite"></div><footer><button class="btn ghost close-tda">Annuler</button><button class="btn primary tda-add" disabled>Ajouter l’article</button></footer></div>`;
+  document.body.appendChild(o);o.querySelectorAll('.close-tda').forEach(b=>b.onclick=()=>o.remove());
+  const keys=['gamme','model','base','profile','glass','reference'],select=k=>o.querySelector(`[data-field="${k}"]`),mapping={gamme:'gammes',model:'models',base:'bases',profile:'profiles',glass:'glasses'};let entry=null,seq=0;
+  async function refresh(changed=-1){
+   const ticket=++seq,query=new URLSearchParams();entry=null;o.querySelector('.tda-add').disabled=true;o.querySelector('.tda-price').textContent='—';
+   keys.forEach((k,i)=>{if(i<=changed&&select(k).value)query.set(k,select(k).value);if(i>changed){select(k).innerHTML='<option>—</option>';select(k).disabled=true;}});
+   try{const resp=await fetch('/api/tda-tariff?'+query),data=await resp.json();if(!resp.ok)throw new Error(data.error);if(ticket!==seq)return;
+    const next=keys[changed+1];
+    if(next&&next!=='reference'){let rows=data[mapping[next]]||[];select(next).innerHTML=opts(rows);select(next).disabled=false;
+      const initial=next==='gamme'?rows.find(x=>x.value.toLowerCase()===String(p.collection).toLowerCase()):null;
+      if(initial){select(next).value=initial.value;return refresh(0);}
+      if(rows.length===1){select(next).value=rows[0].value;return refresh(changed+1);}
+    }
+    if(changed>=4){const seen=new Set(),matches=data.matches.filter(x=>{const key=x.reference+'|'+x.price;if(seen.has(key))return false;seen.add(key);return true;});select('reference').innerHTML=opts(matches.map(x=>({value:x.reference,label:`${x.reference} · ${euro(x.price)} HT · ${x.series}`})));select('reference').disabled=false;
+      if(matches.length===1){select('reference').value=matches[0].reference;entry=matches[0];}
+      else if(changed===5){const chosen=matches.filter(x=>x.reference===query.get('reference'));if(chosen.length===1){entry=chosen[0];select('reference').value=entry.reference;}}
+    }
+    o.querySelector('.tda-info').textContent=entry?`${entry.designation} · réglage ${entry.range} · ${entry.profile} · ${entry.glass} · coût achat : ${euro(entry.price*.5)} HT`:`${data.count.toLocaleString('fr-FR')} combinaison(s) · tarif fournisseur 2026`;
+    if(entry){o.querySelector('.tda-price').textContent=euro(entry.price)+' HT';o.querySelector('.tda-add').disabled=false;}
+   }catch(e){if(ticket===seq)o.querySelector('.v1153-error').textContent=e.message;}
+  }
+  keys.forEach((k,i)=>select(k).onchange=()=>refresh(i));
+  o.querySelector('.tda-add').onclick=()=>{if(!entry)return;const e=entry;
+   const record=createSelectedProductRecord({...p,reference:e.reference,collection:e.gamme,designation:e.designation,finish:`${e.profile} · ${e.glass}`,price:e.price,totalPrice:e.price,purchaseDiscount:50},roomId);
+   Object.assign(record,{price:e.price,totalPrice:e.price,catalogPrice:e.price,catalogTotalPrice:e.price,purchaseDiscount:50,pricingStatus:'verified-tda-2026-xlsx',pricingSource:'TDA France tarif parois 2026 · référence complète '+e.reference,showerConfiguration:{manufacturer:'TDA',collection:e.gamme,model:e.model,baseReference:e.base,profile:e.profile,glass:e.glass,range:e.range,series:e.series},configuratorType:'tda-2026-tariff'});
+   commitSelectedRecords([record],{showProject:true});o.remove();
+  };
+  await refresh();
+ }
+ const previous=addCatalogProduct;
+ addCatalogProduct=function(ref,roomId,key=''){const p=productFromCatalogSources(ref,key);if(/^TDA$/i.test(p?.manufacturer||'')){openTda(p,roomId).catch(e=>alert(e.message));return;}return previous(ref,roomId,key);};
+})();
+
+;
+/* SOURCE public/sira-configurator.js */
+/* Sira : tarifs publics du PDF 2024/25 T006, supports facturés séparément. */
+(()=>{
+ 'use strict';let tariff=null;
+ const e=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const options=rows=>rows.map(([v,l])=>`<option value="${e(v)}">${e(l)}</option>`).join('');
+ async function open(p,roomId){
+  if(!tariff){const r=await fetch('/sira_tariff_2024.json');if(!r.ok)throw new Error('Tarif Sira indisponible.');tariff=await r.json();}
+  const isArctic=p.siraKind==='countertop'||/Arctic/i.test(p.collection),products=tariff.products.filter(x=>x.collection===p.collection);
+  const o=document.createElement('div');o.className='v1153-overlay';o.id='siraTariffModal';
+  o.innerHTML=`<div class="v1153-modal" role="dialog" aria-modal="true"><header><div><div class="eyebrow">SIRA CONCRETE · TARIF 2024/25 T006</div><h2>${e(p.collection)}</h2><p>Produit → dimensions → pigment → options</p></div><button class="icon close-sira">×</button></header><div class="v1153-body"><div class="v1153-grid"><label>Produit<select class="sira-product">${options(isArctic?Object.entries(tariff.arcticLabels):products.map(x=>[x.code,x.name]))}</select></label><label>Pigment<select class="sira-color">${options(Object.entries(tariff.colors).map(([k,v])=>[k,v+' · '+k]))}</select></label>${isArctic?`<label>Largeur (cm)<select class="sira-width">${options(Object.keys(tariff.arctic.AR1).map(v=>[v,v+' cm']))}</select></label><label>Position de la vasque<select class="sira-position">${options([['C','Centrée'],['L','Gauche'],['R','Droite'],['0','Sans vasque']])}</select></label>`:''}<label>Trous de robinet<select class="sira-holes">${options([0,1,2,3].map(n=>[n,String(n)]))}</select></label><label class="free-check"><input type="checkbox" class="sira-supports"> Ajouter les supports préconisés</label><label class="free-check"><input type="checkbox" class="sira-waste"> Ajouter la bonde assortie</label></div><div class="sira-details v1153-info"></div><div class="v1153-price-panel"><b>Prix public HT</b><strong class="sira-price"></strong></div><p class="v1153-note">Tarif fourni 2024/25. Les supports sont vendus séparément. Pour une largeur Arctic intermédiaire, utilisez un prix confirmé par le fournisseur.</p></div><footer><button class="btn ghost close-sira">Annuler</button><button class="btn primary sira-add">Ajouter la configuration</button></footer></div>`;
+  document.body.appendChild(o);o.querySelectorAll('.close-sira').forEach(b=>b.onclick=()=>o.remove());const $=s=>o.querySelector(s);let selected=null;
+  function calc(){
+   const code=$('.sira-product').value,color=$('.sira-color').value,width=isArctic?Number($('.sira-width').value):0;
+   selected=isArctic?{code,name:'Arctic · '+tariff.arcticLabels[code],price:tariff.arctic[code][width],page:9,supports:width>=120?2:1}:products.find(x=>x.code===code);if(!selected)return;
+   const holes=$('.sira-holes'),allowed=selected.name==='Tundra'?[0,2,4,6]:isArctic?[0,1,2,3,4,5,6]:[0,1,2,3];const old=holes.value;holes.innerHTML=options(allowed.map(n=>[n,String(n)]));holes.value=allowed.map(String).includes(old)?old:'0';
+   if(isArctic){const pos=$('.sira-position');if(['AR3','AR4'].includes(code)){pos.value='0';pos.disabled=true;}else{pos.disabled=false;if(pos.value==='0')pos.value='C';}}
+   $('.sira-supports').disabled=!selected.supports;if(!selected.supports)$('.sira-supports').checked=false;
+   const supportCost=$('.sira-supports').checked?selected.supports*108:0,wasteCode=selected.collection==='Bathtub Collection'?'VB2':'VL1',wasteCost=$('.sira-waste').checked?tariff.extras[wasteCode].price:0,total=selected.price+supportCost+wasteCost;
+   $('.sira-price').textContent=euro(total)+' HT';$('.sira-details').innerHTML=`${selected.image?`<img src="${selected.image}" style="height:110px;max-width:170px;object-fit:contain;float:right" alt="${e(selected.name)}">`:''}<b>${e(selected.name)}</b><br>Réf. ${e(code)}${isArctic?' · '+width+' cm':''}<br>Prix produit : ${euro(selected.price)} HT${supportCost?`<br>Supports : ${selected.supports} jeu(x) × 108 € HT`:''}${wasteCost?`<br>Bonde : ${euro(wasteCost)} HT`:''}<br>Remise achat : 50 % · coût ${euro(total*.5)} HT`;
+  }
+  o.querySelectorAll('select,input').forEach(x=>x.addEventListener('change',calc));calc();
+  $('.sira-add').onclick=()=>{
+   if(!selected)return;const color=$('.sira-color').value,width=isArctic?$('.sira-width').value:'',position=isArctic?$('.sira-position').value:'',holes=$('.sira-holes').value;
+   const ref=[selected.code,isArctic?String(width).padStart(3,'0'):'',position,color,holes].filter(x=>x!=='').join(' '),price=selected.price;
+   const rec=createSelectedProductRecord({...p,reference:ref,designation:[selected.name,width?width+' cm':'',tariff.colors[color]].filter(Boolean).join(' · '),finish:tariff.colors[color],price,totalPrice:price,purchaseDiscount:50},roomId);
+   Object.assign(rec,{price,totalPrice:price,catalogPrice:price,catalogTotalPrice:price,purchaseDiscount:50,pricingStatus:'verified-sira-2024-25',pricingSource:tariff.source+' · p. '+selected.page,siraConfiguration:{product:selected.name,code:selected.code,color,widthCm:Number(width)||null,sinkPosition:position,tapHoles:Number(holes)},configuratorType:'sira-2024-tariff'});
+   if(selected.image)Object.assign(rec,{image:selected.image,pdfImage:selected.image,images:[selected.image],pdfImages:[selected.image],customImage:true,imageStatus:'Photo produit · catalogue Sira 2024/25',imageSource:'Catalogue Sira 2024/25'});
+   const exactUrl=isArctic?'':`https://siraconcrete.com/producto/${selected.name.toLowerCase()}/`;if(exactUrl){rec.manufacturerUrl=exactUrl;rec.resolvedManufacturerUrl=exactUrl;}
+   const records=[rec];
+   const extra=(code,qty)=>{const x=tariff.extras[code],item=createSelectedProductRecord({manufacturer:'Sira Concrete',reference:code,designation:x.name,collection:'Compléments',price:x.price,totalPrice:x.price,purchaseDiscount:50},roomId,rec.id);Object.assign(item,{quantity:qty,quantityPerParent:qty,purchaseDiscount:50,pricingStatus:'verified-sira-2024-25',pricingSource:tariff.source+' · p. '+x.page});records.push(item);};
+   if($('.sira-supports').checked)extra('SP1',selected.supports);if($('.sira-waste').checked)extra(selected.collection==='Bathtub Collection'?'VB2':'VL1',1);
+   commitSelectedRecords(records,{showProject:true});o.remove();
+  };
+ }
+ const prev=addCatalogProduct;addCatalogProduct=function(ref,roomId,key=''){const p=productFromCatalogSources(ref,key);if(p?.manufacturer==='Sira Concrete'){open(p,roomId).catch(e=>alert(e.message));return;}return prev(ref,roomId,key);};
+})();
+
+;
+/* SOURCE public/vismara-configurator.js */
+/* Mini-configurateur Vismaravetro : combinaisons du tarif fourni. */
+(()=>{
+'use strict';let data;
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function openVismara(p,roomId){
+ if(!data){const r=await fetch('/vismara_tariff_2026.json');if(!r.ok)throw Error('Tarif indisponible');data=await r.json();}
+ const o=document.createElement('div');o.className='v1153-overlay';o.id='vismaraTariffModal';
+ o.innerHTML=`<div class="v1153-modal vismara-modal" role="dialog" aria-modal="true"><header><div><div class="eyebrow">VISMARAVETRO · JANVIER 2026</div><h2>Configurer une paroi</h2><p>Choisissez le modèle, les dimensions, le profil et le verre.</p></div><button class="icon close-vismara">×</button></header><div class="v1153-body"><div class="v1153-grid"><label>Collection<select class="vismara-collection"></select></label><label>Modèle<select class="vismara-model"></select></label><label>Dimensions / référence<select class="vismara-range"></select></label><label>Profil<select class="vismara-profile"></select></label><label>Verre<select class="vismara-glass"></select></label><label>Cotes et sens d’ouverture<input class="vismara-dimensions" placeholder="Préciser les cotes de fabrication et le sens"></label><label>Suppléments confirmés HT<input class="vismara-extras" type="number" min="0" step="0.01" value="0"></label><label>Détail des suppléments<input class="vismara-extra-description" placeholder="Option et montant vérifiés dans le tarif"></label></div><div class="v1153-price-panel"><b>Prix public HT</b><strong class="vismara-price"></strong></div><p class="v1153-note">Prix de l’élément sélectionné. Pour une composition, ajoutez chaque élément. Les options spéciales non incluses dans les choix doivent être vérifiées dans la grille ci-dessous.</p><details><summary>Consulter la grille tarifaire source</summary><div class="vismara-grid-image"></div></details><div class="vismara-fallback hidden"><p>Ce modèle nécessite une sélection dans la grille : choisissez son prix et renseignez sa configuration exacte.</p><label>Référence<input class="vismara-reference"></label><label>Profil et verre<input class="vismara-finish"></label></div></div><div class="v1153-error" aria-live="polite"></div><footer><button class="btn ghost close-vismara">Annuler</button><button class="btn primary vismara-add" disabled>Ajouter l’article</button></footer></div>`;
+ document.body.appendChild(o);const $=s=>o.querySelector(s);o.querySelectorAll('.close-vismara').forEach(b=>b.onclick=()=>o.remove());let page,base=null;
+ function options(selector,values,labels={}){$(selector).innerHTML=values.map(v=>`<option value="${esc(v)}">${esc(labels[v]?v+' · '+labels[v]:v)}</option>`).join('');}
+ options('.vismara-collection',[...new Set(data.pages.map(x=>x.collection))]);const desired=String(p.collection||'').toLowerCase().replace('série','serie');if([...$('.vismara-collection').options].some(x=>x.value===desired))$('.vismara-collection').value=desired;
+ const selectedRows=()=>page.matrix.filter(r=>JSON.stringify([r.type,r.range])===$('.vismara-range').value);
+ function price(){const extra=Math.max(0,Number($('.vismara-extras').value)||0);$('.vismara-price').textContent=base==null?'Configuration à vérifier dans la grille':`${euro(base+extra)} HT · achat ${euro((base+extra)*.5)} HT`;$('.vismara-add').disabled=base==null;}
+ function glassChanged(){const prices=[...new Set(selectedRows().filter(r=>r.profiles.includes($('.vismara-profile').value)&&r.glasses.includes($('.vismara-glass').value)).map(r=>r.price))];base=prices.length===1?prices[0]:null;price();}
+ function profileChanged(){options('.vismara-glass',[...new Set(selectedRows().filter(r=>r.profiles.includes($('.vismara-profile').value)).flatMap(r=>r.glasses))],data.glassLabels);glassChanged();}
+ function rangeChanged(){options('.vismara-profile',[...new Set(selectedRows().flatMap(r=>r.profiles))],data.profileLabels);profileChanged();}
+ function showPage(){page=data.pages.find(x=>x.pdfPage===Number($('.vismara-model').value));base=null;$('.vismara-extras').value=0;$('.vismara-extra-description').value='';$('.vismara-dimensions').value='';const groups=[...new Set(page.matrix.map(r=>JSON.stringify([r.type,r.range])))];$('.vismara-range').innerHTML=groups.map(v=>`<option value="${esc(v)}">${esc(JSON.parse(v).join(' · '))}</option>`).join('');$('.vismara-fallback').classList.toggle('hidden',!!groups.length);
+ $('.vismara-grid-image').innerHTML=`<div class="vismara-sheet"><img src="${page.image}" alt="Tarif ${esc(page.model)} page ${page.printedPage}">${!groups.length?page.cells.map((c,i)=>`<button type="button" class="vismara-cell" data-i="${i}" aria-label="Choisir ${c.label} euros HT" style="left:${c.box[0]}%;top:${c.box[1]}%;width:${c.box[2]}%;height:${c.box[3]}%"></button>`).join(''):''}</div>`;
+ $('.vismara-grid-image').querySelectorAll('button').forEach(b=>b.onclick=()=>{base=page.cells[Number(b.dataset.i)].value;price();});if(groups.length)rangeChanged();else{options('.vismara-profile',[]);options('.vismara-glass',[]);price();}
+ }
+ function models(){const ps=data.pages.filter(x=>x.collection===$('.vismara-collection').value);$('.vismara-model').innerHTML=ps.map(x=>`<option value="${x.pdfPage}">${esc(x.model)} · p. ${x.printedPage}</option>`).join('');showPage();}
+ $('.vismara-collection').onchange=models;$('.vismara-model').onchange=showPage;$('.vismara-range').onchange=rangeChanged;$('.vismara-profile').onchange=profileChanged;$('.vismara-glass').onchange=glassChanged;$('.vismara-extras').oninput=price;models();
+ $('.vismara-add').onclick=()=>{const extra=Math.max(0,Number($('.vismara-extras').value)||0),detail=$('.vismara-extra-description').value.trim(),dimensions=$('.vismara-dimensions').value.trim(),group=$('.vismara-range').value?JSON.parse($('.vismara-range').value):null;const ref=group?group[1]:$('.vismara-reference').value.trim(),finish=group?`${$('.vismara-profile').value} ${data.profileLabels[$('.vismara-profile').value]||''} · ${$('.vismara-glass').value} ${data.glassLabels[$('.vismara-glass').value]||''}`:$('.vismara-finish').value.trim();
+ if(base==null||!ref||!finish||(extra&&!detail)||(group?.[0]==='Sur mesure'&&!dimensions)){$('.v1153-error').textContent='Complétez la configuration, les cotes sur mesure et le détail des suppléments éventuels.';return;}
+ const total=base+extra,record=createSelectedProductRecord({...p,reference:ref,designation:`${page.collection} ${page.model} · ${ref}${dimensions?' · '+dimensions:''}`,collection:page.collection,finish,price:total,totalPrice:total,purchaseDiscount:50},roomId);
+ Object.assign(record,{price:total,totalPrice:total,catalogPrice:total,catalogTotalPrice:total,purchaseDiscount:50,pricingStatus:'vismara-2026-matrix',pricingSource:data.source+' · p. '+page.printedPage,technicalSheetUrl:page.technicalSheetUrl,technicalSheetType:page.technicalSheetUrl?'pdf':'',technicalSheetLabel:'Fiche modèle Vismaravetro 2026',showerConfiguration:{model:page.model,collection:page.collection,sourcePdfPage:page.pdfPage,basePrice:base,supplements:extra,supplementDescription:detail,reference:ref,finish,dimensions},configuratorType:'vismara-2026'});commitSelectedRecords([record],{showProject:true});o.remove();};
+}
+const previous=addCatalogProduct;addCatalogProduct=function(ref,roomId,key=''){const p=productFromCatalogSources(ref,key);if(/^Vismaravetro$/i.test(p?.manufacturer||'')){openVismara(p,roomId).catch(e=>alert(e.message));return;}return previous(ref,roomId,key);};
+})();
+
+;Promise.resolve(bootstrap()).catch(e=>console.error("[Hydropolis V11.54]",e));

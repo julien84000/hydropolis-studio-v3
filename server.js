@@ -13,7 +13,9 @@ const app = express();
 const PORT = process.env.PORT || 10000;
 
 app.use(express.json({limit:"20mb"}));
+require("./assets-server")(app);
 app.use(express.static(path.join(__dirname,"public")));
+require("./tariff-server")(app);
 
 /* =========================================================
    V9.4 — Comptes + projets persistants PostgreSQL / Supabase
@@ -842,7 +844,7 @@ app.get("/api/catalog/search",requireAuth,async(req,res)=>{
 
 app.get("/api/health",(req,res)=>res.json({
   ok:true,
-  service:"Hydropolis Studio V11.41",
+  service:"Hydropolis Studio V11.47",
   database:USE_POSTGRES?"postgresql":"local-fallback",
   time:new Date().toISOString()
 }));
@@ -3960,7 +3962,7 @@ function safeAssetName(v){
   return /^[a-zA-Z0-9._-]+$/.test(name)?name:"";
 }
 
-app.post("/api/projects/:id/assets/:productId/technical-sheet",requireAuth,async(req,res)=>{
+app.post(["/api/projects/:id/assets/:productId/technical-sheet","/api/projects/:id/assets/:productId/installation-guide"],requireAuth,async(req,res)=>{
   try{
     const project=await storeGetProject(req.user.id,req.params.id);
     if(!project)return res.status(404).json({error:"Projet introuvable"});
@@ -3978,7 +3980,7 @@ app.post("/api/projects/:id/assets/:productId/technical-sheet",requireAuth,async
     }
 
     const previous=safeAssetName(req.body?.previousFile);
-    if(previous)await storeAssetDelete(req.user.id,project.id,previous);
+
 
     const stored=`tech-${String(req.params.productId).replace(/[^a-zA-Z0-9_-]/g,"").slice(0,40)}-${crypto.randomUUID()}.pdf`;
     await storeAssetPut(req.user.id,project.id,{
@@ -3987,6 +3989,7 @@ app.post("/api/projects/:id/assets/:productId/technical-sheet",requireAuth,async
       mime:"application/pdf",data:buf
     });
 
+    if(previous)await storeAssetDelete(req.user.id,project.id,previous);
     res.json({asset:{file:stored,name:path.basename(fileName)||"fiche-technique.pdf",mime:"application/pdf",size:buf.length}});
   }catch(e){
     console.error("[technical upload]",e);
@@ -4003,6 +4006,24 @@ app.delete("/api/projects/:id/assets/:file",requireAuth,async(req,res)=>{
     await storeAssetDelete(req.user.id,project.id,file);
     res.json({ok:true});
   }catch(e){res.status(500).json({error:"Suppression du fichier impossible"})}
+});
+
+app.get("/api/project-assets/:projectId/:file/page-image",requireAuth,async(req,res)=>{
+  let pdf;
+  try{
+    const project=await storeGetProject(req.user.id,req.params.projectId);
+    if(!project)return res.status(404).send("Projet introuvable");
+    const file=safeAssetName(req.params.file),asset=file?await storeAssetGet(req.user.id,project.id,file):null;
+    if(!asset)return res.status(404).send("Fichier introuvable");
+    const [{getDocument},{createCanvas}]=await Promise.all([import("pdfjs-dist/legacy/build/pdf.mjs"),import("@napi-rs/canvas")]);
+    pdf=await getDocument({data:new Uint8Array(asset.data),disableWorker:true,useSystemFonts:true}).promise;
+    const page=await pdf.getPage(Math.max(1,Math.min(pdf.numPages,parseInt(req.query.page,10)||1)));
+    const base=page.getViewport({scale:1}),scale=Math.min(Math.max(1,Math.min(3.2,Number(req.query.scale)||1.8)),2200/Math.max(base.width,base.height));
+    const viewport=page.getViewport({scale}),canvas=createCanvas(Math.ceil(viewport.width),Math.ceil(viewport.height)),ctx=canvas.getContext('2d');
+    ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);await page.render({canvasContext:ctx,viewport}).promise;
+    res.set('Content-Type','image/png');res.set('Cache-Control','private, no-store');res.send(await canvas.encode('png'));
+  }catch(e){console.error('[private PDF render]',e.message);res.status(500).send('PDF non lisible');}
+  finally{if(pdf)await pdf.destroy().catch(()=>{});}
 });
 
 app.get("/api/project-assets/:projectId/:file",requireAuth,async(req,res)=>{
@@ -4036,7 +4057,7 @@ const REMOTE_HOST_SUFFIXES=[
   // image/file CDN hosts, not from coalbrookuk.co.uk itself. Keep the allowlist
   // deliberately narrow to Coalbrook-owned hostnames rather than all svdcdn.com.
   "coalbrook-bathrooms.transforms.svdcdn.com","coalbrook-bathrooms.files.svdcdn.com",
-  "catalano.it","recor.pt","amphoradesign.it","sanitairkamer.nl","ritmonio.it","nicolazzi.it","designertapwareco.com.au","cdn.shopify.com","gessi.com","areapro.gessi.com","gwebassets.gessi.com","gessistorage.blob.core.windows.net",
+  "catalano.it","recor.pt","fioranese.it","resigres.com","vismaravetro.it","tda.it","siraconcrete.com","amphoradesign.it","sanitairkamer.nl","ritmonio.it","nicolazzi.it","designertapwareco.com.au","cdn.shopify.com","gessi.com","areapro.gessi.com","gwebassets.gessi.com","gessistorage.blob.core.windows.net",
   // Lefroy Brooks is hosted on Squarespace. Product imagery is served from
   // these dedicated CDN hosts while product pages/downloads stay on lefroybrooks.com.
   "images.squarespace-cdn.com","static1.squarespace.com","file.squarespace-cdn.com"
@@ -4261,6 +4282,314 @@ app.get("/api/nicolazzi-pdf-asset",(req,res)=>{
   }
 });
 
+/* V11.49_RESIGRES_OFFICIAL_ASSETS */
+/* V11.47_RESIGRES_OFFICIAL_ASSETS compatibility marker */
+const RESIGRES_RESOLVER_VERSION="11.49";
+const RESIGRES_ASSET_CACHE=new Map();
+const RESIGRES_CATEGORY_INDEX_CACHE=new Map();
+const RESIGRES_CATEGORY_URLS={
+  "shower-tray":"https://resigres.com/productos-platos-ducha.php",
+  "basin-top":"https://resigres.com/productos-encimeras-suspendidas.php",
+  "furniture-basin-top":"https://resigres.com/productos-encimeras-mueble.php",
+  "basin":"https://resigres.com/productos-lavabos.php",
+  "bath":"https://resigres.com/productos-banyeras.php",
+  "furniture":"https://resigres.com/productos-mobiliario.php",
+  "mirror":"https://resigres.com/productos-espejos.php",
+  "accessory":"https://resigres.com/productos-complementos.php"
+};
+const RESIGRES_KNOWN_PRODUCT_URLS={
+  "bath|delia":"https://resigres.com/producto.php?id=53&origen=productos-banyeras.php",
+  "basin-top|atenea":"https://resigres.com/producto.php?id=6&origen=productos-encimeras-suspendidas.php",
+  "basin-top|cosmo cf":"https://resigres.com/producto.php?id=9&origen=productos-encimeras-suspendidas.php",
+  "shower-tray|nix nix contract":"https://resigres.com/producto.php?id=52&origen=productos-platos-ducha.php"
+};
+const RESIGRES_MODEL_ALIASES={
+  "extraplano lateral":["plato extraplano lateral"],
+  "extraplano central 1 4 rond":["plato extraplano central","plato extraplano semicircular"],
+  "vento vento contract":["plato de ducha vento","plato vento"],
+  "cosmo cosmo contract":["plato cosmo","plato de ducha cosmo"],
+  "nix nix contract":["plato nix","plato de ducha nix"],
+  "atenea":["encimera atenea","encimera atena"],
+  "vento cf":["encimera vento cf","encimera cf vento"],
+  "cosmo cf":["encimera cosmo cf","encimera cf cosmo"],
+  "urban cf":["encimera urban cf","encimera cf urban"],
+  "gea cf":["encimera gea cf","encimera cf gea"],
+  "selene":["encimera selene"],
+  "vento sf":["encimera vento sf","encimera sf vento"],
+  "cosmo sf":["encimera cosmo sf","encimera sf cosmo"],
+  "urban sf":["encimera urban sf","encimera sf urban"],
+  "gea sf":["encimera gea sf","encimera sf gea"],
+  "axis":["lavabo axis"],
+  "ares":["lavabo ares"],
+  "crono":["lavabo crono"],
+  "kos neo":["lavabo kos","lavabo neo"],
+  "gesto frame":["lavabo gesto","lavabo frame"],
+  "urban":["lavabo urban","plato urban","plato de ducha urban"],
+  "nalu":["banera nalu"],
+  "delia":["banera delia"],
+  "nesta":["banera nesta"],
+  "vento":["banera vento"],
+  "tiroirs sur mesure":["cajones a medida"],
+  "portes vides et colonnes":["puertas a medida","huecos a medida","columnas a medida"],
+  "rd sq":["espejo rd","espejo sq","espejos a medida"],
+  "fs fl":["espejo fs","espejo fl","espejos a medida"],
+  "frame gesto":["espejo frame","espejo gesto"],
+  "porte serviettes":["toallero","porta toallas"],
+  "panneaux etageres":["paneles","estantes"]
+};
+function rgNorm(v){return String(v||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/&amp;/g," ").replace(/[^a-z0-9]+/g," ").trim()}
+function rgCore(v){
+  const stop=new Set(["resigres","receveur","plato","ducha","extraplano","plan","vasque","encimera","bano","suspendida","suspendidas","mueble","lavabo","banera","baignoire","mobiliario","meuble","espejo","miroir","complemento","contract","cf","sf","standard","estandar","sur","mesure","de","pour","et"]);
+  return rgNorm(v).split(/\s+/).filter(x=>x&&!stop.has(x));
+}
+function rgTerms(model){const n=rgNorm(model);return [model,...(RESIGRES_MODEL_ALIASES[n]||[])].filter(Boolean)}
+function rgScoreOne(title,model){
+  const hay=rgNorm(title),tokens=rgCore(model);if(!tokens.length)return 0;
+  let score=0;for(const t of tokens){if(new RegExp(`(^|\\s)${t}(\\s|$)`).test(hay))score+=38;else if(hay.includes(t))score+=24;else score-=14}
+  const full=rgNorm(model).replace(/\b(contract|cf|sf)\b/g,"").replace(/\s+/g," ").trim();if(full&&hay.includes(full))score+=80;
+  return score;
+}
+function rgScore(title,model){return Math.max(...rgTerms(model).map(term=>rgScoreOne(title,term)),0)}
+function rgAbs(base,href){try{return new URL(String(href||"").replace(/&amp;/g,"&"),base).href}catch{return ""}}
+function rgAllowed(url){try{const u=new URL(url);return /^https?:$/.test(u.protocol)&&/(^|\.)resigres\.com$/i.test(u.hostname)}catch{return false}}
+function rgProductUrl(url){return rgAllowed(url)&&/\/producto\.php\?[^#]*\bid=\d+/i.test(url)}
+function rgExtractProductCandidates(html,base){
+  const $=cheerio.load(String(html||""));const map=new Map();
+  function add(raw,label=""){
+    const abs=rgAbs(base,raw);if(!abs||!rgProductUrl(abs))return;
+    const prev=map.get(abs);const clean=String(label||"").replace(/\s+/g," ").trim().slice(0,500);
+    if(!prev||clean.length>prev.label.length)map.set(abs,{url:abs,label:clean});
+  }
+  $("*").each((_,el)=>{
+    const e=$(el);let label=[e.text(),e.attr("title"),e.attr("aria-label"),e.find("img").attr("alt")].filter(Boolean).join(" ");
+    const parent=e.closest("article,li,.producto,.product,.item,.card,div");if(parent?.length)label+=" "+parent.first().text();
+    for(const attr of ["href","data-href","data-url","data-link","data-target","onclick"]){
+      const raw=String(e.attr(attr)||"");if(!raw)continue;
+      for(const m of raw.matchAll(/producto\.php\?[^'\"<>\s)]*\bid=\d+[^'\"<>\s)]*/gi))add(m[0],label);
+      const m2=raw.match(/producto\.php\?id=\d+(?:[^'\"<>\s)]*)?/i);if(m2)add(m2[0],label);
+    }
+  });
+  const raw=String(html||"");
+  for(const m of raw.matchAll(/producto\.php\?id=\d+(?:(?:&amp;|&)[^'\"<>\s)]*)?/gi))add(m[0],"");
+  return [...map.values()];
+}
+async function rgGet(url,timeout=16000){return safeRemoteGet(url,{timeout,maxContentLength:6*1024*1024,maxBodyLength:6*1024*1024,headers:{"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/150 Safari/537.36","Accept-Language":"es-ES,es;q=0.9,fr;q=0.8,en;q=0.6","Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8","Cache-Control":"no-cache"}})}
+function rgExtractCategoryImages(html,base){
+  const $=cheerio.load(String(html||""));const out=[];
+  $("img").each((_,el)=>{const e=$(el),raw=e.attr("src")||e.attr("data-src")||e.attr("data-lazy-src")||e.attr("data-original");if(!raw)return;const url=rgAbs(base,raw);if(!rgAllowed(url)||!/\.(?:jpe?g|png|webp|avif)(?:\?|$)/i.test(url))return;let label=[e.attr("alt"),e.attr("title")].filter(Boolean).join(" ");const block=e.closest("a,article,li,.producto,.product,.item,.card,div").first();if(block?.length)label+=" "+block.text();out.push({url,label:String(label||"").replace(/\s+/g," ").trim()})});
+  return out;
+}
+async function rgCategoryIndex(kind){
+  const category=RESIGRES_CATEGORY_URLS[kind]||RESIGRES_CATEGORY_URLS.accessory;
+  const cached=RESIGRES_CATEGORY_INDEX_CACHE.get(category);if(cached&&Date.now()-cached.at<6*60*60*1000)return cached.data;
+  const page=await rgGet(category),html=String(page.data||""),candidates=rgExtractProductCandidates(html,category),categoryImages=rgExtractCategoryImages(html,category),rows=[];
+  for(let i=0;i<candidates.length;i+=6){
+    const batch=candidates.slice(i,i+6);
+    const found=await Promise.all(batch.map(async c=>{try{const p=await rgGet(c.url,14000),$p=cheerio.load(String(p.data||"")),title=$p("h1").first().text().trim()||$p("title").text().trim();return {...c,title}}catch(e){return {...c,title:"",error:e.message}}}));
+    rows.push(...found);
+  }
+  const data={category,rows,categoryImages};RESIGRES_CATEGORY_INDEX_CACHE.set(category,{at:Date.now(),data});return data;
+}
+async function rgResolveProductUrl(model,kind,directUrl=""){
+  const direct=rgAbs("https://resigres.com/",directUrl);if(rgProductUrl(direct))return {url:direct,match:"catalog-direct",category:RESIGRES_CATEGORY_URLS[kind]||""};
+  const known=RESIGRES_KNOWN_PRODUCT_URLS[`${kind}|${rgNorm(model)}`];if(known)return {url:known,match:"verified-map",category:RESIGRES_CATEGORY_URLS[kind]||""};
+  const index=await rgCategoryIndex(kind);let best=null;
+  for(const row of index.rows){const combined=[row.title,row.label].filter(Boolean).join(" "),score=rgScore(combined,model);if(!best||score>best.score)best={...row,score}}
+  if(best?.score>=20)return {url:best.url,match:"category-index",category:index.category,title:best.title,score:best.score};
+  let bestImage=null;for(const row of index.categoryImages||[]){const score=rgScore(row.label+" "+row.url,model);if(!bestImage||score>bestImage.score)bestImage={...row,score}}
+  if(bestImage?.score>=20)return {url:"",assetImage:bestImage.url,match:"category-image",category:index.category,title:model,score:bestImage.score};
+  throw new Error(`Produit Resigres introuvable pour ${model} (${index.rows.length} pages produit, ${(index.categoryImages||[]).length} images catégorie)`);
+}
+function rgImageScore(url,label,model){
+  const n=rgNorm(url+" "+label),tokens=rgCore(model);let s=0;
+  for(const t of tokens)if(n.includes(t))s+=24;
+  if(/producto|product|galeria|gallery|foto|imagen|uploads/i.test(n))s+=15;
+  if(/logo|icon|bandera|flag|social|cookie|spinner|arrow|flecha|menu/i.test(n))s-=150;
+  return s;
+}
+function rgExtractImages($,html,pageUrl,model){
+  const map=new Map();
+  function add(raw,label=""){
+    if(!raw)return;const first=String(raw).split(/\s*,\s*/)[0].trim().split(/\s+/)[0];const u=rgAbs(pageUrl,first);if(!rgAllowed(u)||!(/\.(?:jpe?g|png|webp|avif)(?:\?|$)/i.test(u)))return;
+    const score=rgImageScore(u,label,model);const prev=map.get(u);if(!prev||score>prev.score)map.set(u,{url:u,label,score});
+  }
+  const og=$("meta[property='og:image']").attr("content");if(og)add(og,"og image");
+  $("img").each((_,el)=>{const e=$(el),label=[e.attr("alt"),e.attr("title"),e.closest("figure,.gallery,.producto,.product,.item,div").first().text()].filter(Boolean).join(" ");for(const a of ["src","data-src","data-lazy-src","data-original","srcset","data-srcset"])add(e.attr(a),label)});
+  $("source").each((_,el)=>{const e=$(el);add(e.attr("srcset")||e.attr("data-srcset"),"")});
+  const raw=String(html||"");for(const m of raw.matchAll(/(?:https?:\/\/[^'\"<>\s]+|(?:\.\.\/|\.\/|\/)?[^'\"<>\s]+)\.(?:jpe?g|png|webp|avif)(?:\?[^'\"<>\s]*)?/gi))add(m[0],"");
+  return [...map.values()].sort((a,b)=>b.score-a.score).map(x=>x.url);
+}
+async function rgAssets(model,kind,directUrl=""){
+  const cacheKey=rgNorm(kind+"|"+model+"|"+directUrl);const hit=RESIGRES_ASSET_CACHE.get(cacheKey);if(hit&&Date.now()-hit.at<12*60*60*1000)return hit.data;
+  const resolved=await rgResolveProductUrl(model,kind,directUrl);
+  if(!resolved.url){
+    const data={resolverVersion:RESIGRES_RESOLVER_VERSION,title:resolved.title||model,productUrl:"",categoryUrl:resolved.category,match:resolved.match,image:resolved.assetImage||"",images:resolved.assetImage?[resolved.assetImage]:[],technicalSheetUrl:"",technicalSheetLabel:"",installationGuideUrl:"",installationGuideLabel:"",model3dUrl:"",model3dLabel:""};
+    if(!data.image)throw new Error(`Image Resigres introuvable pour ${model}`);RESIGRES_ASSET_CACHE.set(cacheKey,{at:Date.now(),data});return data;
+  }
+  const page=await rgGet(resolved.url),html=String(page.data||""),$=cheerio.load(html);
+  const title=$("h1").first().text().trim()||String(model||"");const images=rgExtractImages($,html,resolved.url,model),pdfs=[],models=[],guides=[];
+  $("a[href]").each((_,el)=>{const a=$(el),u=rgAbs(resolved.url,a.attr("href")),label=a.text().replace(/\s+/g," ").trim();if(!rgAllowed(u))return;if(/\.pdf(?:\?|$)/i.test(u)){const row={url:u,label:label||decodeURIComponent(u.split("/").pop()||"Fiche technique")};(/guia|guide|manual|instal|mantenimiento/i.test(row.label+" "+u)?guides:pdfs).push(row)}else if(/\.(?:zip|dwg|dxf|stp|step|skp|3ds)(?:\?|$)/i.test(u))models.push({url:u,label:label||decodeURIComponent(u.split("/").pop()||"Fichier 3D")})});
+  const technical=pdfs[0]||guides[0]||null,guide=guides[0]||null,model3d=models[0]||null;
+  if(!images.length){const idx=await rgCategoryIndex(kind);let bestImage=null;for(const row of idx.categoryImages||[]){const score=rgScore(row.label+" "+row.url,model);if(!bestImage||score>bestImage.score)bestImage={...row,score}}if(bestImage?.score>=20)images.push(bestImage.url)}
+  const data={resolverVersion:RESIGRES_RESOLVER_VERSION,title,productUrl:resolved.url,categoryUrl:resolved.category,match:resolved.match,image:images[0]||"",images:images.slice(0,12),technicalSheetUrl:technical?.url||"",technicalSheetLabel:technical?.label||"",installationGuideUrl:guide?.url||"",installationGuideLabel:guide?.label||"",model3dUrl:model3d?.url||"",model3dLabel:model3d?.label||""};
+  if(!data.image&&!data.technicalSheetUrl&&!data.model3dUrl)throw new Error(`Page Resigres trouvée mais aucun asset exploitable pour ${model}`);
+  RESIGRES_ASSET_CACHE.set(cacheKey,{at:Date.now(),data});return data;
+}
+app.get("/api/resigres-assets",async(req,res)=>{
+  const model=String(req.query.model||"").trim(),kind=String(req.query.kind||"").trim(),productUrl=String(req.query.productUrl||"").trim();if(!model)return res.status(400).json({error:"Modèle Resigres requis"});
+  try{const data=await rgAssets(model,kind,productUrl);res.set("Cache-Control","no-store");res.json(data)}catch(e){console.warn("[resigres-assets-v11.49]",model,kind,e.message);res.status(404).json({error:"Assets Resigres introuvables",detail:e.message})}
+});
+/* V11.52_SHOWER_SCREEN_OFFICIAL_ASSETS */
+const HYDRO_SHOWER_ASSET_VERSION="11.52";
+const HYDRO_SHOWER_ASSET_CACHE=new Map();
+function hsNorm(v){return String(v||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim()}
+function hsBrand(v){const n=hsNorm(v);if(n==="vismaravetro"||n==="vismara")return "Vismaravetro";if(n==="tda")return "TDA";return ""}
+function hsAllowed(brand,url){try{const u=new URL(url);if(!/^https?:$/.test(u.protocol))return false;const h=u.hostname.toLowerCase();return brand==="Vismaravetro"?/(^|\.)vismaravetro\.it$/.test(h):brand==="TDA"?/(^|\.)tda\.it$/.test(h):false}catch{return false}}
+function hsAbs(base,raw){try{return new URL(String(raw||"").replace(/&amp;/g,"&"),base).href}catch{return ""}}
+function hsImageScore(url,label,collection){const n=hsNorm(url+" "+label),tokens=hsNorm(collection).split(/\s+/).filter(Boolean);let s=0;for(const t of tokens)if(n.includes(t))s+=32;if(/og image|hero|banner|gallery|collezione|collection|post thumb|prodotto|product/i.test(n))s+=28;if(/logo|icon|social|flag|bandier|cookie|spinner|arrow|menu|avatar/i.test(n))s-=220;return s}
+function hsExtractImages($,html,pageUrl,collection,brand){const map=new Map();function add(raw,label=""){if(!raw)return;const first=String(raw).split(/\s*,\s*/)[0].trim().split(/\s+/)[0];const u=hsAbs(pageUrl,first);if(!hsAllowed(brand,u)||!(/\.(?:jpe?g|png|webp|avif)(?:\?|$)/i.test(u)))return;const score=hsImageScore(u,label,collection);const prev=map.get(u);if(!prev||score>prev.score)map.set(u,{url:u,score,label})}add($("meta[property='og:image']").attr("content"),"og image");add($("meta[name='twitter:image']").attr("content"),"twitter image");$("img").each((_,el)=>{const e=$(el),label=[e.attr("alt"),e.attr("title"),e.closest("figure,.gallery,.swiper,.slider,.collection,.collezione,.product,.prodotto,article,div").first().text()].filter(Boolean).join(" ");for(const a of ["src","data-src","data-lazy-src","data-original","srcset","data-srcset"])add(e.attr(a),label)});const raw=String(html||"");for(const m of raw.matchAll(/(?:https?:\/\/[^'\"<>\s]+|(?:\.\.\/|\.\/|\/)?[^'\"<>\s]+)\.(?:jpe?g|png|webp|avif)(?:\?[^'\"<>\s]*)?/gi))add(m[0],"");return [...map.values()].sort((a,b)=>b.score-a.score).map(x=>x.url)}
+function hsExtractDocs($,pageUrl,brand){const pdfs=[],guides=[],models=[];$("a[href]").each((_,el)=>{const a=$(el),u=hsAbs(pageUrl,a.attr("href")),label=a.text().replace(/\s+/g," ").trim();if(!hsAllowed(brand,u))return;if(/\.pdf(?:\?|$)/i.test(u)){const row={url:u,label:label||decodeURIComponent(u.split("/").pop()||"Fiche technique")};(/manual|assembly|montage|install|istruz|notice|guide/i.test(row.label+" "+u)?guides:pdfs).push(row)}else if(/\.(?:zip|dwg|dxf|stp|step|skp|3ds)(?:\?|$)/i.test(u))models.push({url:u,label:label||"Fichier technique"})});return {technical:pdfs[0]||null,guide:guides[0]||null,model3d:models[0]||null}}
+async function hsAssets(manufacturer,collection,pageUrl){const brand=hsBrand(manufacturer);if(!brand)throw new Error("Fabricant paroi non pris en charge");if(!hsAllowed(brand,pageUrl))throw new Error(`URL officielle ${brand} invalide`);const key=hsNorm(brand+"|"+collection+"|"+pageUrl),hit=HYDRO_SHOWER_ASSET_CACHE.get(key);if(hit&&Date.now()-hit.at<6*60*60*1000)return hit.data;const page=await safeRemoteGet(pageUrl,{timeout:16000,maxContentLength:8*1024*1024,maxBodyLength:8*1024*1024,headers:{"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/150 Safari/537.36","Accept-Language":"fr-FR,fr;q=0.9,it;q=0.8,en;q=0.7","Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8","Cache-Control":"no-cache"}});const html=String(page.data||""),$=cheerio.load(html),images=hsExtractImages($,html,pageUrl,collection,brand),docs=hsExtractDocs($,pageUrl,brand);if(!images.length&&!docs.technical)throw new Error(`Aucun visuel officiel exploitable trouvé pour ${brand} ${collection}`);const data={resolverVersion:HYDRO_SHOWER_ASSET_VERSION,manufacturer:brand,collection,productUrl:pageUrl,image:images[0]||"",images:images.slice(0,16),technicalSheetUrl:docs.technical?.url||"",technicalSheetLabel:docs.technical?.label||"",installationGuideUrl:docs.guide?.url||"",installationGuideLabel:docs.guide?.label||"",model3dUrl:docs.model3d?.url||"",model3dLabel:docs.model3d?.label||""};HYDRO_SHOWER_ASSET_CACHE.set(key,{at:Date.now(),data});return data}
+app.get("/api/shower-screen-assets",async(req,res)=>{const manufacturer=String(req.query.manufacturer||"").trim(),collection=String(req.query.collection||"").trim(),url=String(req.query.url||"").trim();if(!manufacturer||!collection||!url)return res.status(400).json({error:"Fabricant, collection et URL requis"});try{const data=await hsAssets(manufacturer,collection,url);res.set("Cache-Control","no-store");res.json(data)}catch(e){console.warn("[shower-screen-assets-v11.52]",manufacturer,collection,e.message);res.status(404).json({error:"Assets officiels introuvables",detail:e.message})}});
+/* V11.53_CONFIGURATORS_SIRA */
+const V1153_CONFIG_CACHE=new Map();
+function v53Norm(v){return String(v||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g," ").trim()}
+function v53Abs(base,href){try{return new URL(String(href||"").replace(/&amp;/g,"&"),base).href}catch{return ""}}
+function v53Allowed(url,brand=""){
+  try{
+    const h=new URL(url).hostname.toLowerCase();
+    if(/^TDA$/i.test(brand))return /(^|\.)tda\.it$/.test(h);
+    if(/^Vismaravetro$/i.test(brand))return /(^|\.)vismaravetro\.it$/.test(h);
+    if(/^Sira Concrete$/i.test(brand)||/^Sira$/i.test(brand))return /(^|\.)siraconcrete\.com$/.test(h);
+    return /(^|\.)(tda\.it|vismaravetro\.it|siraconcrete\.com)$/.test(h);
+  }catch{return false}
+}
+async function v53Get(url){
+  return safeRemoteGet(url,{timeout:18000,maxContentLength:8*1024*1024,maxBodyLength:8*1024*1024,headers:{"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/150 Safari/537.36","Accept-Language":"fr-FR,fr;q=0.9,en;q=0.8,it;q=0.7,es;q=0.6","Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8","Cache-Control":"no-cache"}})
+}
+function v53Images($,base,brand){
+  const out=[],seen=new Set();
+  function add(raw,label=""){
+    if(!raw)return;const first=String(raw).split(",")[0].trim().split(/\s+/)[0];const u=v53Abs(base,first);if(!u||!v53Allowed(u,brand)||!/\.(?:jpe?g|png|webp|avif)(?:\?|$)/i.test(u)||seen.has(u))return;
+    const txt=(u+" "+label).toLowerCase();if(/logo|icon|flag|bandera|social|cookie|spinner|arrow|flecha|placeholder/.test(txt))return;seen.add(u);out.push(u);
+  }
+  add($("meta[property='og:image']").attr("content"),"og");
+  $("img").each((_,el)=>{const e=$(el),label=[e.attr("alt"),e.attr("title"),e.closest("figure,.gallery,.product,.item,.card,div").first().text()].filter(Boolean).join(" ");for(const a of ["src","data-src","data-lazy-src","data-original","srcset","data-srcset"])add(e.attr(a),label)});
+  return out.slice(0,24);
+}
+function v53Docs($,base,brand){
+  const pdf=[],other=[];const seen=new Set();
+  $("a[href]").each((_,el)=>{const a=$(el),u=v53Abs(base,a.attr("href"));if(!u||!v53Allowed(u,brand)||seen.has(u))return;const label=v53Norm([a.text(),a.attr("title"),a.attr("aria-label")].filter(Boolean).join(" "));if(/\.pdf(?:\?|$)/i.test(u)){seen.add(u);pdf.push({url:u,label:label||decodeURIComponent(u.split("/").pop()||"PDF")})}else if(/\.(?:zip|dwg|dxf|stp|step|skp|3ds|rfa|ifc)(?:\?|$)/i.test(u)){seen.add(u);other.push({url:u,label:label||decodeURIComponent(u.split("/").pop()||"Fichier")})}});
+  return {pdf,other};
+}
+function v53SectionList($,needles){
+  const wanted=(needles||[]).map(x=>v53Norm(x).toLowerCase()),out=[];let start=null;
+  $("h1,h2,h3,h4,h5,h6,strong,.title,.heading").each((_,el)=>{if(start)return;const t=v53Norm($(el).text()).toLowerCase();if(wanted.some(n=>t===n||t.includes(n)))start=$(el)});
+  if(!start)return out;
+  let n=start.next();let hops=0;
+  while(n?.length&&hops++<16){if(/^H[1-6]$/i.test(n[0]?.tagName||"")&&v53Norm(n.text()))break;n.find("li,h5,h6,p,span").addBack("li,h5,h6,p").each((_,el)=>{const t=v53Norm($(el).text());if(t&&t.length<180&&!out.includes(t))out.push(t)});n=n.next()}
+  return out.slice(0,30);
+}
+function v53TdaModels($,base){
+  const rows=[],seen=new Set(),basePath=new URL(base).pathname.replace(/\/$/,"")+"/";
+  $("a[href]").each((_,el)=>{const a=$(el),u=v53Abs(base,a.attr("href"));if(!u||!v53Allowed(u,"TDA"))return;let p;try{p=new URL(u).pathname}catch{return}if(!p.startsWith(basePath)||p===basePath)return;const rest=p.slice(basePath.length).replace(/^\/|\/$/g,"");if(!rest||rest.includes("/"))return;const label=v53Norm(a.text()||a.closest("article,.item,.card,li,div").first().text());if(seen.has(u))return;seen.add(u);rows.push({url:u,label:label||rest.replace(/-/g," "),code:(label.match(/\b[A-Z]{1,4}[-+][A-Z0-9+\-]+\b/)||[])[0]||""})});
+  return rows;
+}
+function v53VismaraModels($,base){
+  const rows=[],seen=new Set();
+  $("a[href]").each((_,el)=>{const a=$(el),u=v53Abs(base,a.attr("href"));if(!u||!v53Allowed(u,"Vismaravetro")||!/\/model\//i.test(new URL(u).pathname)||seen.has(u))return;seen.add(u);let label=v53Norm([a.text(),a.attr("title"),a.find("img").attr("alt"),a.closest("article,.item,.card,li,div").first().text()].filter(Boolean).join(" "));const slug=decodeURIComponent(new URL(u).pathname.split("/").filter(Boolean).pop()||"");rows.push({url:u,label:label||slug.replace(/-/g," "),code:""})});
+  return rows;
+}
+function v53SiraProducts($,base){
+  const rows=[],seen=new Set();
+  $("a[href]").each((_,el)=>{const a=$(el),u=v53Abs(base,a.attr("href"));if(!u||!v53Allowed(u,"Sira Concrete")||!/\/producto\//i.test(new URL(u).pathname)||seen.has(u))return;const path=new URL(u).pathname;if(/\/producto\/?$/i.test(path))return;let label=v53Norm(a.text()||a.closest("article,.product,.type-product,li,div").first().find("h2,h3,h4").first().text());if(!label||/seleccionar|select|choisir|ver mas|voir/i.test(label)){label=v53Norm(a.closest("article,.product,.type-product,li,div").first().find("h2,h3,h4").first().text())}if(!label)return;seen.add(u);rows.push({url:u,label})});
+  return rows;
+}
+app.get("/api/shower-configurator-collection",async(req,res)=>{
+  const manufacturer=String(req.query.manufacturer||"").trim(),url=String(req.query.url||"").trim();if(!/^(TDA|Vismaravetro)$/i.test(manufacturer)||!v53Allowed(url,manufacturer))return res.status(400).json({error:"Collection paroi invalide"});
+  const key=`collection|${manufacturer}|${url}`,hit=V1153_CONFIG_CACHE.get(key);if(hit&&Date.now()-hit.at<6*60*60*1000)return res.json(hit.data);
+  try{const page=await v53Get(url),html=String(page.data||""),$=cheerio.load(html),models=/^TDA$/i.test(manufacturer)?v53TdaModels($,url):v53VismaraModels($,url),images=v53Images($,url,manufacturer);const data={manufacturer,collection:v53Norm($("h1,h2").first().text())||"",url,models,images};V1153_CONFIG_CACHE.set(key,{at:Date.now(),data});res.set("Cache-Control","no-store").json(data)}catch(e){res.status(502).json({error:"Impossible de lire la collection fabricant",detail:e.message})}
+});
+app.get("/api/shower-configurator-model",async(req,res)=>{
+  const manufacturer=String(req.query.manufacturer||"").trim(),url=String(req.query.url||"").trim();if(!/^(TDA|Vismaravetro)$/i.test(manufacturer)||!v53Allowed(url,manufacturer))return res.status(400).json({error:"Modèle paroi invalide"});
+  const key=`model|${manufacturer}|${url}`,hit=V1153_CONFIG_CACHE.get(key);if(hit&&Date.now()-hit.at<6*60*60*1000)return res.json(hit.data);
+  try{
+    const page=await v53Get(url),html=String(page.data||""),$=cheerio.load(html),txt=v53Norm($.root().text()),images=v53Images($,url,manufacturer),docs=v53Docs($,url,manufacturer);
+    const h1=v53Norm($("h1").first().text()),h2=v53Norm($("h2").first().text()),title=[h2,h1].filter(Boolean).join(" · ")||v53Norm($("title").text());
+    let minWidth=null,maxWidth=null,minHeight=null,maxHeight=null,standardHeight=null,installations=[],profiles=[],glasses=[],extras=[],characteristics=[];
+    if(/^Vismaravetro$/i.test(manufacturer)){
+      let m=txt.match(/L\s*:\s*Min\s*([0-9.,]+)\s*-\s*Max\s*([0-9.,]+)\s*cm/i);if(m){minWidth=Number(m[1].replace(",","."));maxWidth=Number(m[2].replace(",","."))}
+      m=txt.match(/H\s*:\s*Min\s*([0-9.,]+)\s*-\s*Max\s*([0-9.,]+)\s*cm/i);if(m){minHeight=Number(m[1].replace(",","."));maxHeight=Number(m[2].replace(",","."))}
+      m=txt.match(/H\s*standard\s*:\s*([0-9.,]+)\s*cm/i);if(m)standardHeight=Number(m[1].replace(",","."));
+      const profileCandidates=["09 Matt Black","21 Bright Silver","23 Bright Gold","31 Satin Silver","32 Satin Bronze","33 Satin Gold","38 Moka","39 Metal Gun","84 Bond Copper","White","Grey","Black","Dove grey","Mocha"];
+      profiles=profileCandidates.filter(x=>txt.toLowerCase().includes(x.replace(/^\d+\s*/,"").toLowerCase()));
+      const glassCandidates=["Timeless 05","Clear 04","Reflecting 06","Clear grey 07","Satin 08","Extra-light 12","Bronze 03","Kathedral","Nuvola","Personal Glass"];
+      glasses=glassCandidates.filter(x=>txt.toLowerCase().includes(x.replace(/\s\d+$/,"").toLowerCase()));
+      extras=[...new Set([...(txt.match(/TPA Treatment[^.]{0,100}/ig)||[]),...(txt.match(/black rubber seals[^.]{0,100}/ig)||[]),...(txt.match(/Custom Made[^.]{0,80}/ig)||[])].map(v53Norm))].slice(0,12);
+      characteristics=v53SectionList($,["CHARACTERISTICS","CARACTÉRISTIQUES","CARATTERISTICHE"]);
+      const low=txt.toLowerCase();if(low.includes("recess"))installations.push("Niche");if(low.includes("corner"))installations.push("Angle");if(low.includes("wall"))installations.push("Mur");if(low.includes("small wall"))installations.push("Muret");
+    }else{
+      let m=txt.match(/(?:Height|Hauteur|Altezza)\s*:\s*([0-9.,]+)\s*cm/i);if(m){standardHeight=Number(m[1].replace(",","."));minHeight=standardHeight;maxHeight=standardHeight}
+      const installCandidates=["NICHE","RECESS","ANGLE","CORNER","3 SIDES","3 CÔTÉS","SIDE","CENTRAL","CENTRE","WALK-IN"];
+      installations=[...new Set(installCandidates.filter(x=>txt.toUpperCase().includes(x)).map(x=>x.replace("RECESS","NICHE").replace("CORNER","ANGLE").replace("3 SIDES","3 CÔTÉS").replace("SIDE","LATÉRAL").replace("CENTRAL","CENTRAL")))];
+      const profileCandidates=["RAL9010","TCROM®","TCROM","TINOX®","TINOX","BIANCO","BLANC","NERO","NOIR","NCS S 9000-N","ORIGIN","INOX"];
+      profiles=[...new Set(profileCandidates.filter(x=>txt.toUpperCase().includes(x.toUpperCase())))];
+      const glassCandidates=["CLEAR","TRANSPARENT","SATINATO","SATINÉ","ACRYLIC SATIN","ACRYLIQUE SATIN","CINCILLA'","FLACK","FROZEN","BRONZE","GREY","GRIS"];
+      glasses=[...new Set(glassCandidates.filter(x=>txt.toUpperCase().includes(x.toUpperCase())))];
+      extras=v53SectionList($,["EXTRA AVAILABLE","EXTRA DISPONIBLES","EXTRA DISPONIBILI"]);
+      characteristics=v53SectionList($,["CHARACTERISTICS","CARACTÉRISTIQUES","CARATTERISTICHE"]);
+    }
+    if(!profiles.length)profiles=["Standard fabricant"];
+    if(!glasses.length)glasses=["Verre standard fabricant"];
+    if(!installations.length)installations=["Configuration selon fiche fabricant"];
+    const technical=docs.pdf.find(x=>/sheet|fiche|scheda|form|tech/i.test(x.label+x.url))||docs.pdf[0]||null;
+    const installDoc=docs.pdf.find(x=>/install|montage|assembly/i.test(x.label+x.url))||null;
+    const data={manufacturer,url,title,images,installations,profiles,glasses,extras,characteristics,minWidth,maxWidth,minHeight,maxHeight,standardHeight,technicalSheetUrl:technical?.url||"",technicalSheetLabel:technical?.label||"Fiche technique",installationGuideUrl:installDoc?.url||"",installationGuideLabel:installDoc?.label||"Notice installation",otherFiles:docs.other};
+    V1153_CONFIG_CACHE.set(key,{at:Date.now(),data});res.set("Cache-Control","no-store").json(data)
+  }catch(e){res.status(502).json({error:"Impossible de lire le modèle fabricant",detail:e.message})}
+});
+app.get("/api/sira-category",async(req,res)=>{
+  const url=String(req.query.url||"").trim();if(!v53Allowed(url,"Sira Concrete"))return res.status(400).json({error:"Catégorie Sira invalide"});const key=`sira-cat|${url}`,hit=V1153_CONFIG_CACHE.get(key);if(hit&&Date.now()-hit.at<6*60*60*1000)return res.json(hit.data);
+  try{const page=await v53Get(url),html=String(page.data||""),$=cheerio.load(html),products=v53SiraProducts($,url),images=v53Images($,url,"Sira Concrete"),data={url,title:v53Norm($("h1,h2").first().text()),products,images};V1153_CONFIG_CACHE.set(key,{at:Date.now(),data});res.set("Cache-Control","no-store").json(data)}catch(e){res.status(502).json({error:"Impossible de lire la catégorie Sira",detail:e.message})}
+});
+app.get("/api/sira-product",async(req,res)=>{
+  const url=String(req.query.url||"").trim();if(!v53Allowed(url,"Sira Concrete")||!/\/producto\//i.test(url))return res.status(400).json({error:"Produit Sira invalide"});const key=`sira-product|${url}`,hit=V1153_CONFIG_CACHE.get(key);if(hit&&Date.now()-hit.at<6*60*60*1000)return res.json(hit.data);
+  try{
+    const page=await v53Get(url),html=String(page.data||""),$=cheerio.load(html),txt=v53Norm($.root().text()),images=v53Images($,url,"Sira Concrete"),docs=v53Docs($,url,"Sira Concrete"),title=v53Norm($("h1").first().text())||v53Norm($("title").text());
+    const colors=[{code:"CH",label:"Charcoal"},{code:"CG",label:"Concrete Grey"},{code:"DC",label:"Dark Clay"},{code:"FG",label:"Fog Grey"},{code:"LS",label:"Light Sun"},{code:"MI",label:"Mint"},{code:"MG",label:"Moss Green"},{code:"OB",label:"Ocean Blue"},{code:"PW",label:"Pearl White"},{code:"SP",label:"Salt Pink"},{code:"SA",label:"Sand"},{code:"TE",label:"Terracota"}].filter(c=>txt.toLowerCase().includes(c.label.toLowerCase())||txt.includes(`(${c.code})`));
+    const specs=[];$("h4,h5,h6").each((_,el)=>{const k=v53Norm($(el).text());if(!k||k.length>80)return;const n=$(el).next();const v=v53Norm(n.text());if(v&&v.length<160&&!specs.some(x=>x.label===k))specs.push({label:k,value:v})});
+    const optionTexts=[];$("h5,h6,p,strong").each((_,el)=>{const t=v53Norm($(el).text());if(t&&t.length>10&&t.length<240&&/(monta|mount|support|grifo|faucet|trou|hole|personali|custom|inclu|include)/i.test(t)&&!optionTexts.includes(t))optionTexts.push(t)});
+    const technical=docs.pdf.find(x=>/spec|tech|ficha|fiche|sheet/i.test(x.label+x.url))||docs.pdf[0]||null;
+    const dimMatch=txt.match(/(?:MEDIDAS|SIZES|DIMENSIONS?)\s+([Ø0-9][0-9 x×Ø.,\-–]+MM)/i);
+    const weightMatch=txt.match(/(?:PESO|WEIGHT|POIDS)\s+([0-9.,]+\s*KG)/i),capacityMatch=txt.match(/(?:CAPACIDAD|CAPACITY|CAPACITÉ)\s+([0-9.,]+\s*L)/i);
+    const data={url,title,images,colors:colors.length?colors:[{code:"CH",label:"Charcoal"},{code:"CG",label:"Concrete Grey"},{code:"DC",label:"Dark Clay"},{code:"FG",label:"Fog Grey"},{code:"LS",label:"Light Sun"},{code:"MI",label:"Mint"},{code:"MG",label:"Moss Green"},{code:"OB",label:"Ocean Blue"},{code:"PW",label:"Pearl White"},{code:"SP",label:"Salt Pink"},{code:"SA",label:"Sand"},{code:"TE",label:"Terracota"}],specs:specs.slice(0,16),options:optionTexts.slice(0,12),dimensions:dimMatch?.[1]||"",weight:weightMatch?.[1]||"",capacity:capacityMatch?.[1]||"",technicalSheetUrl:technical?.url||"",technicalSheetLabel:technical?.label||"Fiche technique Sira",otherFiles:docs.other};
+    V1153_CONFIG_CACHE.set(key,{at:Date.now(),data});res.set("Cache-Control","no-store").json(data)
+  }catch(e){res.status(502).json({error:"Impossible de lire le produit Sira",detail:e.message})}
+});
+/* V11.54_SIRA_EXACT_IMAGE */
+app.get("/api/sira-product-v54",async(req,res)=>{
+  const url=String(req.query.url||"").trim();
+  if(!v53Allowed(url,"Sira Concrete")||!/\/producto\//i.test(url))return res.status(400).json({error:"Produit Sira invalide"});
+  try{
+    const page=await v53Get(url),html=String(page.data||""),$=cheerio.load(html),images=[],seen=new Set();
+    function add(raw){
+      if(!raw)return;const u=v53Abs(url,String(raw).split(",")[0].trim().split(/\s+/)[0]);
+      if(!u||!v53Allowed(u,"Sira Concrete")||!/\.(?:jpe?g|png|webp|avif)(?:\?|$)/i.test(u)||seen.has(u))return;
+      const low=u.toLowerCase();if(/logo|icon|flag|cookie|spinner|placeholder|avatar/.test(low))return;seen.add(u);images.push(u);
+    }
+    // Strict priority: product gallery / featured image, then OG image. Do not scan
+    // the entire document, because that also contains related products and footer cards.
+    $(".woocommerce-product-gallery img, .product-images img, .product-gallery img, img.wp-post-image, .single-product img.wp-post-image").each((_,el)=>{
+      const e=$(el);for(const a of ["data-large_image","data-src","src","srcset"])add(e.attr(a));
+    });
+    add($("meta[property='og:image']").attr("content"));
+    add($("meta[name='twitter:image']").attr("content"));
+    if(!images.length){
+      $("main .product img, article.product img").each((_,el)=>add($(el).attr("src")||$(el).attr("data-src")));
+    }
+    res.set("Cache-Control","no-store").json({url,title:v53Norm($("h1").first().text()),image:images[0]||"",images:images.slice(0,12)});
+  }catch(e){res.status(502).json({error:"Impossible de récupérer le visuel Sira exact",detail:e.message})}
+});
 app.get("/api/image-proxy",async(req,res)=>{
   const url=req.query.url;
   if(!url||!/^https?:\/\//i.test(url)) return res.status(400).send("URL invalide");
@@ -4290,7 +4619,7 @@ app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")))
 async function startServer(){
   try{
     await initPersistentStore();
-    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.41 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
+    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.54 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
   }catch(e){
     console.error("[Hydropolis] Démarrage impossible :",e);
     process.exit(1);

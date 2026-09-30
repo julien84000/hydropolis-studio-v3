@@ -1,6 +1,6 @@
 {
-  "version": "11.40.0",
-  "total": 89709,
+  "version": "11.53.0",
+  "total": 90922,
   "chunks": [
     {
       "file": "catalog_coalbrook.json",
@@ -76,9 +76,34 @@
       "file": "catalog_zucchetti_7.json",
       "label": "Zucchetti 7/7",
       "count": 53
+    },
+    {
+      "file": "catalog_fioranese_2025.json",
+      "label": "Fioranese 2025",
+      "count": 1135
+    },
+    {
+      "file": "catalog_resigres_2026.json",
+      "label": "Resigres 2026",
+      "count": 38
+    },
+    {
+      "file": "catalog_vismaravetro_web.json",
+      "label": "Vismaravetro · Parois de douche",
+      "count": 15
+    },
+    {
+      "file": "catalog_tda_web.json",
+      "label": "TDA · Parois de douche",
+      "count": 20
+    },
+    {
+      "file": "catalog_sira_web.json",
+      "label": "Sira Concrete · vasques, plans et baignoires",
+      "count": 5
     }
   ],
-  "engineVersion": "11.40.0",
+  "engineVersion": "11.53.0",
   "manufacturersManifest": "manufacturers_manifest.json",
   "storage": "gzip for large supplier catalogs"
 }
