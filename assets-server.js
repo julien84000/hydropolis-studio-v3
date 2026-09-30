@@ -14,6 +14,7 @@ function getAsset(url){
  return {mime:/\.pdf$/i.test(url)?'application/pdf':/\.webp$/i.test(url)?'image/webp':/\.png$/i.test(url)?'image/png':'image/jpeg',data:fs.readFileSync(local)};
 }
 module.exports=function(app){
+ require('./official-assets-server')(app);
  app.use((req,res,next)=>{
   if(!['GET','HEAD'].includes(req.method)||!index[req.path])return next();
   try{const a=getAsset(req.path);if(!a)return next();res.type(a.mime);res.set('Cache-Control','public,max-age=86400');return res.send(a.data);}catch(e){console.error('[assets]',e.message);res.status(500).send('Ressource indisponible');}

@@ -1,7 +1,12 @@
 {
-  "version": "11.53.0",
-  "total": 90922,
+  "version": "11.55.2",
+  "total": 93963,
   "chunks": [
+    {
+      "file": "alpi_catalog_2025.json",
+      "label": "Alpi 2025",
+      "count": 3041
+    },
     {
       "file": "catalog_coalbrook.json",
       "label": "Coalbrook",
@@ -103,7 +108,7 @@
       "count": 5
     }
   ],
-  "engineVersion": "11.53.0",
+  "engineVersion": "11.55.2",
   "manufacturersManifest": "manufacturers_manifest.json",
   "storage": "gzip for large supplier catalogs"
 }

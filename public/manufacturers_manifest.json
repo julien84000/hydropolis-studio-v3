@@ -1,6 +1,19 @@
 {
-  "version": "11.54.0",
+  "version": "11.55.2",
   "manufacturers": [
+    {
+      "name": "Alpi",
+      "catalog": "alpi_catalog_2025.json",
+      "purchaseDiscount": 55,
+      "capabilities": [
+        "catalog",
+        "official-site-image",
+        "official-technical-sheet",
+        "official-only-assets",
+        "required-rough-in",
+        "purchase-discount-55"
+      ]
+    },
     {
       "name": "Amphora",
       "catalog": "amphora_catalog.json",
@@ -66,7 +79,8 @@
         "manufacturer-image",
         "technical-docs",
         "finish-specific-images",
-        "finish-swatch-overlay"
+        "finish-swatch-overlay",
+        "official-area-pro-resolver"
       ]
     },
     {
@@ -187,6 +201,7 @@
         "official-site-image",
         "official-technical-sheet",
         "12-pigments",
+        "exact-variation-image-resolver",
         "purchase-discount-50"
       ],
       "purchaseDiscount": 50
