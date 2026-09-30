@@ -6,8 +6,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "check": "node --check server.js && node --check assets-server.js && node --check official-assets-server.js && node --check tariff-server.js && node --check public/app.js && node --check public/sw.js",
-    "test": "node verify-release.js",
+    "check": "node --check server.js && node --check assets-server.js && node --check official-assets-server.js && node --check tariff-server.js && node --check public/app.js && node --check public/sw.js && node --check tests/v11.55.2-repair-static.js",
+    "test": "node verify-release.js && node tests/v11.55.2-repair-static.js",
     "build": "npm run check && npm test"
   },
   "engines": {
