@@ -1,8 +1,21 @@
 'use strict';
 const fs=require('fs'),path=require('path'),zlib=require('zlib');
-const root=__dirname,indexPath=path.join(root,'assets_index.json');
+const packageInfo=require('./package.json');
+const root=__dirname,indexPath=path.join(root,'assets_index.json'),publicIndexPath=path.join(root,'public','index.html');
 const index=fs.existsSync(indexPath)?JSON.parse(fs.readFileSync(indexPath,'utf8')):{};
 const cache=new Map();
+const APP_VERSION=String(packageInfo.version||'11.55.2');
+
+function versionedIndexHtml(){
+ let html=fs.readFileSync(publicIndexPath,'utf8');
+ html=html.replace(/Hydropolis Studio V\d+\.\d+(?:\.\d+)? · Render/g,`Hydropolis Studio V${APP_VERSION} · Render`);
+ html=html.replace(/<em>V\d+\.\d+(?:\.\d+)?<\/em>/g,`<em>V${APP_VERSION}</em>`);
+ html=html.replace(/styles\.css\?v=[^"']+/g,`styles.css?v=${APP_VERSION}`);
+ return html;
+}
+function runtimeDatabase(){
+ return /^postgres(?:ql)?:\/\//i.test(String(process.env.DATABASE_URL||''))?'postgresql':'local-fallback';
+}
 function getAsset(url){
  const pack=index[url];
  if(pack){
@@ -15,6 +28,28 @@ function getAsset(url){
 }
 module.exports=function(app){
  require('./official-assets-server')(app);
+
+ // package.json is the runtime source of truth for the deployed version.
+ // These routes are registered before express.static/server legacy routes.
+ app.get(['/','/index.html'],(req,res)=>{
+  try{
+   res.type('html');
+   res.set('Cache-Control','no-cache');
+   return res.send(versionedIndexHtml());
+  }catch(e){
+   console.error('[versioned index]',e.message);
+   return res.status(500).send('Interface indisponible');
+  }
+ });
+ app.get('/api/version',(req,res)=>res.set('Cache-Control','no-store').json({version:APP_VERSION}));
+ app.get('/api/health',(req,res)=>res.set('Cache-Control','no-store').json({
+  ok:true,
+  service:`Hydropolis Studio V${APP_VERSION}`,
+  version:APP_VERSION,
+  database:runtimeDatabase(),
+  time:new Date().toISOString()
+ }));
+
  app.use((req,res,next)=>{
   if(!['GET','HEAD'].includes(req.method)||!index[req.path])return next();
   try{const a=getAsset(req.path);if(!a)return next();res.type(a.mime);res.set('Cache-Control','public,max-age=86400');return res.send(a.data);}catch(e){console.error('[assets]',e.message);res.status(500).send('Ressource indisponible');}
