@@ -1,5 +1,5 @@
-const CACHE="hydropolis-v11-54-clean-final-shell";
-const CATALOG_CACHE="hydropolis-v11-54-clean-final-catalogs";
+const CACHE="hydropolis-v11-55-2-shell";
+const CATALOG_CACHE="hydropolis-v11-55-2-catalogs";
 const SHELL=["/","/index.html","/styles.css","/app.js","/catalog_manifest.json","/manufacturers_manifest.json","/manifest.webmanifest"];
 
 self.addEventListener("install",event=>event.waitUntil(
@@ -20,12 +20,17 @@ self.addEventListener("fetch",event=>{
   // localStorage under the authenticated browser profile, not in a shared HTTP cache.
   if(url.pathname.startsWith("/api/"))return;
 
-  const isCatalog=/\/(?:catalog_.*\.json(?:\.gz)?|amphora_catalog\.json|catalog_manifest\.json|manufacturers_manifest\.json)$/.test(url.pathname);
+  const isCatalog=/\/(?:catalog_.*\.json(?:\.gz)?|(?:amphora|alpi)_catalog(?:_2025)?\.json|catalog_manifest\.json|manufacturers_manifest\.json)$/.test(url.pathname);
   if(isCatalog){
     event.respondWith(caches.open(CATALOG_CACHE).then(async cache=>{
+      // Network-first for supplier data: a deployment must never keep serving an old
+      // manifest/catalog merely because a previous version exists in Cache Storage.
+      try{
+        const fresh=await fetch(req,{cache:"no-store"});
+        if(fresh.ok){cache.put(req,fresh.clone());return fresh;}
+      }catch{}
       const hit=await cache.match(req);
-      const network=fetch(req).then(r=>{if(r.ok)cache.put(req,r.clone());return r}).catch(()=>null);
-      return hit||await network||new Response("[]",{headers:{"Content-Type":"application/json"}});
+      return hit||new Response("[]",{headers:{"Content-Type":"application/json"}});
     }));
     return;
   }
