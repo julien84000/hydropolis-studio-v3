@@ -78,7 +78,7 @@
     <button class="btn ghost" id="saveBtn"><span class="btn-symbol">⌘</span> Enregistrer</button>
     <button class="btn ghost" id="previewTopBtn">Aperçu A4</button>
     <button class="btn ghost" id="exportExcelTopBtn">Excel</button>
-    <button class="btn ghost" id="exportMoodboardTopBtn">Moodboard</button>
+    <button id="exportMoodboardTopBtn" type="button" hidden aria-hidden="true"></button>
     <button class="btn primary" id="exportPdfTopBtn"><span class="btn-symbol">⇩</span> Exporter PDF</button>
   </div>
 </header>
@@ -196,7 +196,7 @@
       <article class="card ecosystem-card"><div class="ecosystem-icon">✦</div><h3>Suggestions intelligentes</h3><p>Des alternatives pertinentes pour aller plus loin.</p><button class="btn ghost ecosystem-action" data-go-view="catalog" data-suggest="1">Explorer</button></article>
       <article class="card ecosystem-card"><div class="ecosystem-icon">⇄</div><h3>Comparatif produit</h3><p>Visualisez et choisissez en un coup d’œil.</p><button class="btn ghost ecosystem-action" data-go-view="compare">Voir le comparateur</button></article>
       <article class="card ecosystem-card"><div class="ecosystem-icon">◌</div><h3>Prix, finitions, disponibilités</h3><p>Des informations fiables et toujours à jour.</p><button class="btn ghost ecosystem-action" data-go-view="catalog">Consulter</button></article>
-      <article class="card ecosystem-card"><div class="ecosystem-icon">⇩</div><h3>Exports enrichis</h3><p>PDF, Excel, moodboard et visuels HD.</p><button class="btn ghost ecosystem-action" data-go-view="exports">Accéder aux exports</button></article>
+      <article class="card ecosystem-card"><div class="ecosystem-icon">⇩</div><h3>Exports enrichis</h3><p>PDF, Excel et visuels HD.</p><button class="btn ghost ecosystem-action" data-go-view="exports">Accéder aux exports</button></article>
     </section>
   </div>
 </section>
@@ -212,11 +212,10 @@
 </section>
 
 <section id="view-exports" class="view">
-  <div class="section-head"><div><div class="eyebrow">Sorties</div><h2>Exports enrichis</h2><span>Diffusez votre projet en PDF, Excel et moodboard.</span></div></div>
+  <div class="section-head"><div><div class="eyebrow">Sorties</div><h2>Exports enrichis</h2><span>Diffusez votre projet en PDF et Excel.</span></div></div>
   <div class="exports-grid-v11">
     <article class="card export-card"><div class="ecosystem-icon">⇩</div><h3>PDF dossier client</h3><p>Présentation A4 paysage avec pièces, produits et devis.</p><button class="btn primary" id="exportsPdfBtn">Exporter le PDF</button></article>
     <article class="card export-card"><div class="ecosystem-icon">▤</div><h3>Excel & chiffrage</h3><p>Liste détaillée des articles et synthèse financière.</p><button class="btn primary" id="exportsExcelBtn">Exporter Excel</button></article>
-    <article class="card export-card"><div class="ecosystem-icon">▣</div><h3>Moodboard PNG</h3><p>Planche d’inspiration à partager rapidement.</p><button class="btn primary" id="exportsMoodboardBtn">Générer le moodboard</button></article>
   </div>
 </section>
 
