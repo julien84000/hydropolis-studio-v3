@@ -31,7 +31,7 @@ function recorEmbeddedVisual(item){
   if(/pedestal|socle/.test(t))return RECOR_FOOT_VISUALS.PEDESTAL;
   return "";
 }
-const productKey=p=>`${p?.manufacturer||""}|${p?.reference||""}`;
+const productKey=HydroCatalogIndex.key;
 const compareRefs=new Set();
 const favoriteRefs=new Set();
 function favoritesStorageKey(){return `hydropolis-favorites:${cloud.user?.id||"guest"}`}
@@ -53,6 +53,17 @@ let serverSearchRows=[];
 let serverSearchSignature="";
 let serverSearchTimer=0;
 let serverSearchSeq=0;
+let catalogReady=false,catalogPage=0,catalogPageSignature='';
+const CATALOG_PAGE_SIZE=48;
+const catalogIndex=HydroCatalogIndex.create(CATALOG);
+const manufacturerRequests=new Map();
+const brokenCatalogImages=new Set();
+function reconcileProjectRoughIns(){
+  const result=HydroRoughIn.reconcile(state.selected,p=>catalogIndex.get(productKey(p)),createSelectedProductRecord);
+  state.selected=result.records;return result;
+}
+function scheduleCatalogRender(){clearTimeout(scheduleCatalogRender.timer);scheduleCatalogRender.timer=setTimeout(()=>renderCatalog(),100);}
+
 
 
 const cloud={
@@ -537,7 +548,8 @@ async function afterAuthSuccess(payload){
   await startHydropolisWorkspace();
 }
 
-const euro=n=>new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR"}).format(Number(n||0)).replace(",00","");
+const currencyFormatter=new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR"});
+const euro=n=>currencyFormatter.format(Number(n||0)).replace(",00","");
 
 function normalizeImageFile(file,maxW=1600,maxH=1100,quality=.9){
   return new Promise((resolve,reject)=>{
@@ -808,7 +820,14 @@ try{
     localStorage.setItem("hydropolis-nicolazzi-composite-v138","1");
   }
 }catch(e){}
-function manufacturerCacheKey(p){return `${p.manufacturer}|${p.reference}`;}
+try{
+  if(localStorage.getItem('hydropolis-official-media-version')!==HydroOfficialMedia.VERSION){
+    for(const key of Object.keys(manufacturerImageCache))if(/^(Alpi|Sira(?: Concrete)?|Gessi)\|/i.test(key))delete manufacturerImageCache[key];
+    localStorage.setItem('hydropolis-manufacturer-v119',JSON.stringify(manufacturerImageCache));
+    localStorage.setItem('hydropolis-official-media-version',HydroOfficialMedia.VERSION);
+  }
+}catch{}
+function manufacturerCacheKey(p){return HydroOfficialMedia.brand(p)?HydroOfficialMedia.key(p):productKey(p);}
 function manufacturerSharedCacheKey(p){
   const maker=String(p?.manufacturer||"");
   if(!/^(Nicolazzi|Ritmonio)$/i.test(maker))return "";
@@ -819,7 +838,10 @@ function manufacturerSharedCacheKey(p){
   }
   return `${maker}|@base:${base}`;
 }
-function saveManufacturerCache(){
+let manufacturerCacheTimer;
+function saveManufacturerCache(){clearTimeout(manufacturerCacheTimer);manufacturerCacheTimer=setTimeout(flushManufacturerCache,250);}
+window.addEventListener("pagehide",flushManufacturerCache);
+function flushManufacturerCache(){
   try{
     localStorage.setItem("hydropolis-manufacturer-v119",JSON.stringify(manufacturerImageCache));
   }catch(e){
@@ -853,24 +875,28 @@ function nicolazziLocalCatalogImage(p){
 function cachedManufacturerImage(p){
   return manufacturerImageCache[manufacturerCacheKey(p)]||manufacturerImageCache[manufacturerSharedCacheKey(p)]||nicolazziLocalCatalogImage(p)||null;
 }
-function gessiDirectOfficialImage(p){
-  if(!p || !/^Gessi$/i.test(String(p.manufacturer||"")))return "";
-  const raw=String(p.reference||"").toUpperCase().trim();
-  const parts=raw.split("#");
-  const article=String(parts[0]||"").trim();
-  const finish=String(p.finishCode||parts[1]||"").toUpperCase().trim();
-  if(!article||!finish)return "";
-  const remote=`https://gessistorage.blob.core.windows.net/zi4/thumb320/${encodeURIComponent(`${article}#${finish}`)}.webp`;
-  return `/api/image-proxy?url=${encodeURIComponent(remote)}`;
-}
 
 async function fetchManufacturerImage(p,force=false,options={}){
+  const key=manufacturerCacheKey(p)+'|'+(options.imageOnly===true?'image':'full');
+  if(manufacturerRequests.has(key))return manufacturerRequests.get(key);
+  const job=fetchManufacturerImageUncached(p,force,options).finally(()=>manufacturerRequests.delete(key));
+  manufacturerRequests.set(key,job);return job;
+}
+async function fetchManufacturerImageUncached(p,force=false,options={}){
   const key=manufacturerCacheKey(p);
   const sharedKey=manufacturerSharedCacheKey(p);
   const cached=manufacturerImageCache[key]||manufacturerImageCache[sharedKey];
   if(!force && cached?.src)return cached;
 
-  const r=await fetch("/api/manufacturer-image",{
+  if(p.manufacturer==='Sira Concrete'&&!p.siraConfiguration){
+    const models=await HydroSiraConfigurator.models();
+    const model=models.find(x=>x.collection===p.collection);
+    const item={src:model?.image||'',images:model?[model.image]:[],remoteUrl:model?.image||'',remoteImages:model?[model.image]:[],source:'Site officiel Sira Concrete · collection',finishMatch:'collection',mediaVersion:HydroOfficialMedia.VERSION,checkedAt:new Date().toISOString()};
+    manufacturerImageCache[key]=item;saveManufacturerCache();return item;
+  }
+  const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),25000);
+  let r;try{r=await fetch("/api/manufacturer-image",{
+    signal:controller.signal,
     method:"POST",
     headers:{"Content-Type":"application/json"},
     body:JSON.stringify({
@@ -884,9 +910,10 @@ async function fetchManufacturerImage(p,force=false,options={}){
       designation:p.designation,
       originalDescription:p.originalDescription||"",
       collection:p.collection,
-      manufacturer:p.manufacturer
+      manufacturer:p.manufacturer,
+      siraConfiguration:p.siraConfiguration||null
     })
-  });
+  });}finally{clearTimeout(timeout);}
 
   const data=await r.json();
   if(!r.ok)throw new Error(data.detail||data.error||"Recherche fabricant impossible");
@@ -894,18 +921,21 @@ async function fetchManufacturerImage(p,force=false,options={}){
   const toProxy=url=>{
     const value=String(url||"");
     if(!value)return "";
+    if(HydroOfficialMedia.brand(p))return HydroOfficialMedia.allowed(value,p)?value:"";
     if(/^(?:data:|blob:|\/)/i.test(value))return value;
     return `/api/image-proxy?url=${encodeURIComponent(value)}`;
   };
   const src=data.best?.url?toProxy(data.best.url):"";
   const imageSources=(data.images||[]).map(x=>toProxy(x.url)).filter(Boolean);
 
-  const embedded=data.best?.dataUrl||"";
+  const embedded="";
   // Keep every image returned by the manufacturer connector. Some images may be
   // embedded server-side while others remain proxied URLs; never drop the latter
   // just because at least one dataUrl exists.
-  const resolvedImages=(data.images||[]).map(x=>x?.dataUrl||toProxy(x?.url)).filter(Boolean);
+  const resolvedImages=(data.images||[]).map(x=>toProxy(x?.url)).filter(Boolean);
   const result={
+    mediaVersion:data.version||"",
+    matchLevel:data.matchLevel||"",
     remoteUrl:data.best?.url||"",
     remoteImages:(data.images||[]).map(x=>x.url).filter(Boolean),
     resolvedManufacturerUrl:data.manufacturerUrl||p.manufacturerUrl||"",
@@ -1006,7 +1036,7 @@ let autoPhotoObserver=null;
 const AUTO_PHOTO_CONCURRENCY=4;
 function autoPhotoGroupKey(p){return manufacturerSharedCacheKey(p)||manufacturerCacheKey(p);}
 function automaticImageEligible(p){
-  if(!p||!/^(Nicolazzi|Ritmonio|Zucchetti|Gessi)$/i.test(String(p.manufacturer||"")))return false;
+  if(!p||!/^(Alpi|Sira Concrete|Nicolazzi|Ritmonio|Zucchetti|Gessi)$/i.test(String(p.manufacturer||"")))return false;
   if(/^Nicolazzi$/i.test(String(p.manufacturer||""))){
     if(p.image)return false;
     const direct=manufacturerImageCache[manufacturerCacheKey(p)]||manufacturerImageCache[manufacturerSharedCacheKey(p)];
@@ -1015,7 +1045,7 @@ function automaticImageEligible(p){
     // Tapware, then avoid repeated network work for twelve hours even on fallback.
     if(direct?.src&&Date.now()-checked<12*60*60*1000)return false;
   }else if(cachedManufacturerImage(p)?.src||p.image)return false;
-  if(/^Gessi$/i.test(p.manufacturer||"")&&gessiDirectOfficialImage(p))return false;
+
   const failedAt=autoPhotoFailures.get(autoPhotoGroupKey(p))||0;
   return Date.now()-failedAt>5*60*1000;
 }
@@ -1044,7 +1074,7 @@ function nicolazziHandlePreviewHtml(p,img){
 function updateCatalogCardVisual(p,img){
   if(!img?.src)return;
   const sameBase=manufacturerSharedCacheKey(p);
-  const targets=sameBase?CATALOG.filter(x=>manufacturerSharedCacheKey(x)===sameBase):[p];
+  const targets=sameBase?[...document.querySelectorAll("#results .result[data-key]")].map(el=>productFromCompareKey(el.dataset.key)).filter(x=>x&&manufacturerSharedCacheKey(x)===sameBase):[p];
   for(const item of targets){
     const card=catalogCardForProduct(item);if(!card)continue;
     const thumb=card.querySelector(".catalog-thumb");if(!thumb)continue;
@@ -1053,6 +1083,7 @@ function updateCatalogCardVisual(p,img){
     thumb.querySelectorAll(".nicolazzi-handle-preview").forEach(el=>el.remove());
     const old=thumb.querySelector(".product-visual-frame");if(old)old.remove();
     thumb.insertAdjacentHTML("beforeend",productImageFrameHtml(img.src,item,item.reference,"catalog-cached-image"));
+    const photo=thumb.querySelector(".catalog-cached-image");if(photo)photo.onerror=()=>handleCatalogImageError(photo,item);
     thumb.insertAdjacentHTML("beforeend",nicolazziHandlePreviewHtml(item,img));
     const status=card.querySelector(".photo-status");if(status)status.innerHTML=`<b>${esc(imageBadge(img,item))}</b>`;
     const optionSlot=card.querySelector(".nicolazzi-options-slot");if(optionSlot)optionSlot.innerHTML=nicolazziVisualOptionsHtml(item,img);
@@ -1077,14 +1108,15 @@ function pumpAutomaticImages(){
 }
 function setupAutomaticCatalogImages(rows){
   if(autoPhotoObserver){autoPhotoObserver.disconnect();autoPhotoObserver=null;}
-  const list=(rows||[]).slice(0,120);
+  for(const p of autoPhotoQueue)autoPhotoQueued.delete(autoPhotoGroupKey(p));autoPhotoQueue.length=0;
+  const list=rows||[];
   // Prime the first viewport immediately; remaining cards hydrate just before scroll.
   list.slice(0,12).forEach(enqueueAutomaticImage);
   if(!("IntersectionObserver" in window)){list.slice(12,30).forEach(enqueueAutomaticImage);return;}
   autoPhotoObserver=new IntersectionObserver(entries=>{
     for(const entry of entries){
       if(!entry.isIntersecting)continue;
-      const key=entry.target.dataset.key,p=CATALOG.find(x=>productKey(x)===key);
+      const key=entry.target.dataset.key,p=catalogIndex.get(key);
       if(p)enqueueAutomaticImage(p);autoPhotoObserver.unobserve(entry.target);
     }
   },{rootMargin:"900px 0px",threshold:0.01});
@@ -1106,7 +1138,7 @@ function selectedImageNeedsForcedRefresh(p){
     || /^Ritmonio$/i.test(maker);
 }
 function enqueueSelectedImageSearch(p,force=selectedImageNeedsForcedRefresh(p)){
-  if(!p?.id||selectedImageQueued.has(p.id))return;
+  if(!p?.id||p.requiredRoughIn||p.customImage||selectedImageQueued.has(p.id))return;
   selectedImageQueued.add(p.id);
   selectedImageQueue.push({id:p.id,force:force===true,manufacturer:p.manufacturer,reference:p.reference});
   pumpSelectedImageSearches();
@@ -1150,6 +1182,7 @@ function hotbathNeedsFinishFallback(p,img=null){
     !!(p?.finishCode||p?.finish) &&
     (img?.finishMatch||p?.imageFinishMatch)!=="exact";
 }
+
 function finishSimulationUrl(p,remoteUrl){
   if(!remoteUrl)return "";
   return `/api/finish-simulation?url=${encodeURIComponent(remoteUrl)}&finish=${encodeURIComponent(p.finishCode||"")}`;
@@ -1326,8 +1359,8 @@ async function lookupCatalogPhoto(reference,button,key=""){
   const thumb=$(".catalog-thumb",card);
   const info=$(".photo-status",card);
   button.disabled=true;
-  button.textContent="Recherche Sanitairkamer…";
-  if(info)info.textContent="Recherche Sanitairkamer par référence produit…";
+  button.textContent="Recherche fabricant…";
+  if(info)info.textContent="Recherche sur le site officiel du fabricant…";
 
   try{
     let img=await fetchManufacturerImage(p,true,{imageOnly:true});
@@ -1351,7 +1384,7 @@ async function lookupCatalogPhoto(reference,button,key=""){
       if(info)info.innerHTML=`Aucun visuel exploitable trouvé.${img?.note?`<br>${img.note}`:""}${img?.technicalSheetUrl?`<br><b>Fiche technique disponible.</b>`:""}`;
       button.textContent="Réessayer";
     }
-    renderCatalog();
+    if(img?.src)updateCatalogCardVisual(p,img);
   }catch(e){
     if(info)info.textContent="Aucune photo exploitable : "+e.message;
     button.textContent="Réessayer";
@@ -1375,6 +1408,7 @@ async function enrichSelectedPhoto(id,force=false){
       p.images=img.images||[img.src].filter(Boolean);
       p.pdfImage=img.src;
       p.pdfImages=/catalano/i.test(p.manufacturer||"")?p.images.slice():(/recor/i.test(p.manufacturer||"")?p.images.slice(0,4):p.images.slice(0,2));
+      p.mediaVersion=img.mediaVersion||"";
       p.remoteImageUrl=img.remoteUrl||"";
       p.remoteImages=img.remoteImages||[];
       p.imageSource=img.source;
@@ -1507,6 +1541,8 @@ function loadState(override=null){
     if(typeof p.customTechnicalSheet!=="boolean")p.customTechnicalSheet=false;
   });
 
+  HydroOfficialMedia.sanitizeProducts(state.selected);
+  reconcileProjectRoughIns();
   // V11: never delete a free line solely because its label/price resembles a catalogue product.
   manualCleanupPending=false;
 }
@@ -1631,6 +1667,7 @@ function renderBrandRail(){
   host.innerHTML=["",...makers].map(m=>`<button type="button" class="brand-chip ${m===current?"active":""}" data-maker="${esc(m)}">${esc(m||"Toutes les marques")}<small>${(m?CATALOG.filter(p=>p.manufacturer===m).length:CATALOG.length).toLocaleString("fr-FR")}</small></button>`).join("");
   $$(".brand-chip",host).forEach(btn=>btn.onclick=()=>{
     const maker=btn.dataset.maker||"";
+    $("#searchInput").value="";
     $("#manufacturerFilter").value=maker;
     $("#collectionFilter").value="";$("#categoryFilter").value="";$("#finishFilter").value="";
     updateDependentFilters(true,true,true);syncBrandRail();renderCatalog();
@@ -1672,16 +1709,16 @@ function availabilityInfo(p){
   return {label:"Disponibilité à confirmer",cls:"unknown"};
 }
 function productFromCompareKey(key){
-  return CATALOG.find(p=>productKey(p)===key) || serverSearchRows.find(p=>productKey(p)===key) || null;
+  return catalogIndex.get(key) || serverSearchRows.find(p=>productKey(p)===key) || null;
 }
 function productFromCatalogSources(ref,key=""){
   const wantedKey=String(key||"");
   if(wantedKey){
-    const keyed=CATALOG.find(p=>productKey(p)===wantedKey) || serverSearchRows.find(p=>productKey(p)===wantedKey);
+    const keyed=catalogIndex.get(wantedKey) || serverSearchRows.find(p=>productKey(p)===wantedKey);
     if(keyed)return keyed;
   }
   const wantedRef=String(ref||"");
-  return CATALOG.find(p=>p.reference===wantedRef) || serverSearchRows.find(p=>p.reference===wantedRef) || null;
+  return catalogIndex.reference(wantedRef) || serverSearchRows.find(p=>p.reference===wantedRef) || null;
 }
 function dashboardProductImage(p){
   if(!p)return "";
@@ -1821,7 +1858,7 @@ function currentSearchSignature(){
   return JSON.stringify({q:$("#searchInput")?.value||"",manufacturer:$("#manufacturerFilter")?.value||"",collection:$("#collectionFilter")?.value||"",category:$("#categoryFilter")?.value||"",finish:$("#finishFilter")?.value||""});
 }
 function scheduleServerSearch(){
-  if(navigator.onLine===false)return;
+  if(navigator.onLine===false||catalogReady)return;
   const sig=currentSearchSignature();if(sig===serverSearchSignature)return;
   clearTimeout(serverSearchTimer);
   serverSearchTimer=setTimeout(()=>requestServerSearch(sig),180);
@@ -1832,7 +1869,7 @@ async function requestServerSearch(sig){
   try{
     const qs=new URLSearchParams({...filters,limit:"120"});
     const data=await apiFetch(`/api/catalog/search?${qs}`);
-    if(seq!==serverSearchSeq)return;
+    if(seq!==serverSearchSeq||sig!==currentSearchSignature()||catalogReady)return;
     serverSearchRows=Array.isArray(data.items)?data.items:[];serverSearchSignature=sig;
     const note=$("#searchModeNote");if(note)note.textContent=`Recherche fédérée · ${Number(data.total||serverSearchRows.length).toLocaleString("fr-FR")} résultat(s) index serveur`;
     renderCatalog();
@@ -1921,16 +1958,21 @@ function renderCatalog(){
  try{
    const q=$("#searchInput")?.value||"";
    const fs={manufacturer:$("#manufacturerFilter")?.value||"",collection:$("#collectionFilter")?.value||"",category:$("#categoryFilter")?.value||"",finish:$("#finishFilter")?.value||""};
-   const local=CATALOG.filter(p=>matches(p,q)&&Object.entries(fs).every(([k,v])=>!v||p?.[k]===v));
+   const filterEntries=Object.entries(fs);
+   const local=catalogIndex.maker(fs.manufacturer).filter(p=>filterEntries.every(([k,v])=>!v||p?.[k]===v)&&matches(p,q));
    const merged=new Map(local.map(p=>[productKey(p),p]));
    for(const p of serverSearchRows){if(matches(p,q)&&Object.entries(fs).every(([k,v])=>!v||p?.[k]===v))merged.set(productKey(p),p)}
    const rows=[...merged.values()];
    if(count)count.textContent=`${rows.length} résultat${rows.length>1?"s":""}${serverSearchRows.length?" · multi-sources":""}`;
    const room=roomById($("#targetRoom")?.value)||state.rooms[0];
-   results.innerHTML=rows.slice(0,120).map(p=>{
+   const signature=currentSearchSignature();if(signature!==catalogPageSignature){catalogPage=0;catalogPageSignature=signature;}
+   catalogPage=Math.max(0,Math.min(catalogPage,Math.ceil(rows.length/CATALOG_PAGE_SIZE)-1));
+   const visibleRows=rows.slice(catalogPage*CATALOG_PAGE_SIZE,(catalogPage+1)*CATALOG_PAGE_SIZE);
+   results.innerHTML=visibleRows.map(p=>{
      const cached=cachedManufacturerImage(p),finishLabel=exactFinishLabel(p)||"",price=catalogDisplayPrice(p),key=productKey(p),avail=availabilityInfo(p),compared=compareRefs.has(key),favorite=favoriteRefs.has(key);
-     const catalogVisual=cached?.src||p.image||gessiDirectOfficialImage(p)||((Array.isArray(p.images)&&p.images[0])||"");
-     return `<article class="result v11-product-card" data-key="${esc(key)}">${catalogThumbHtml(p,catalogVisual,finishLabel,favorite,cached)}<div><div class="r-top"><span class="ref">${esc(p.reference)}</span><span class="badge">${esc(p.manufacturer)}</span><span class="badge">${esc(p.collection)}</span><span class="badge">${esc(p.category)}</span></div><div class="designation">${esc(p.designation)}</div><div class="meta">${esc(p.finish||"")}</div><div class="availability ${avail.cls}">${esc(avail.label)}</div><div class="manufacturer-tools v11-resource-tools"><button class="tiny lookup-photo" data-ref="${esc(p.reference)}" data-key="${esc(key)}">${cached||p.image?"Actualiser la photo":"Photo fabricant"}</button>${hotbathNeedsFinishFallback(p,cached)?`<button class="tiny hotbath-web-photo" data-ref="${esc(p.reference)}" data-key="${esc(key)}">Finition web</button>`:""}${p.manufacturerUrl?`<a class="source-link" target="_blank" rel="noopener" href="${esc(cached?.resolvedManufacturerUrl||p.manufacturerUrl)}">Fiche ↗</a>`:""}${cached?.technicalSheetUrl?`<a class="source-link" target="_blank" rel="noopener" href="${esc(cached.technicalSheetUrl)}">Technique ↗</a>`:""}</div><div class="photo-status">${cached?`<b>${esc(imageBadge(cached,p))}</b>`:p.image?`<b>${esc(p.imageSource||"Visuel catalogue")}</b>`:`Source tarif : ${esc(p.source||"catalogue fabricant")}`}</div>${/^Nicolazzi$/i.test(String(p.manufacturer||""))?`<div class="nicolazzi-options-slot">${nicolazziVisualOptionsHtml(p,cached)}</div>`:""}<div class="card-action-row"><button class="suggest-toggle" data-key="${esc(key)}">Alternatives</button><button class="compare-toggle ${compared?"active":""}" data-key="${esc(key)}">${compared?"✓ Comparé":"Comparer"}</button></div></div><div class="price-box"><small class="v11-price-label">Prix public</small><div class="price">${euro(price)} HT</div>${p.internalReference?`<div class="internal">Ext. ${euro(p.price)} + ${esc(p.internalReference)} ${euro(p.internalPrice)}</div>`:`<div class="internal">${esc(p.sourceYear?`Tarif ${p.sourceYear}`:"Référence complète")}</div>`}${isRecorBathRequiringFeet(p)?`<div class="internal recor-config-hint"><b>Pieds obligatoires</b> · choix à l’ajout</div>`:""}<button class="btn primary add" data-ref="${esc(p.reference)}" data-key="${esc(key)}" style="margin-top:9px">${isRecorBathRequiringFeet(p)?"Configurer + ajouter":"Ajouter à "+esc(room?.title||"la pièce")}</button></div></article>`;
+     const candidateVisual=cached?.src||p.image||((Array.isArray(p.images)&&p.images[0])||"");
+     const catalogVisual=brokenCatalogImages.has(candidateVisual)?"":candidateVisual;
+     return `<article class="result v11-product-card" data-key="${esc(key)}">${catalogThumbHtml(p,catalogVisual,finishLabel,favorite,cached)}<div><div class="r-top"><span class="ref">${esc(p.reference)}</span><span class="badge">${esc(p.manufacturer)}</span><span class="badge">${esc(p.collection)}</span><span class="badge">${esc(p.category)}</span></div><div class="designation">${esc(p.designation)}</div><div class="meta">${esc(p.finish||"")}</div>${roughInWarningHtml(p)}<div class="availability ${avail.cls}">${esc(avail.label)}</div><div class="manufacturer-tools v11-resource-tools"><button class="tiny lookup-photo" data-ref="${esc(p.reference)}" data-key="${esc(key)}">${cached||p.image?"Actualiser la photo":"Photo fabricant"}</button>${hotbathNeedsFinishFallback(p,cached)?`<button class="tiny hotbath-web-photo" data-ref="${esc(p.reference)}" data-key="${esc(key)}">Finition web</button>`:""}${p.manufacturerUrl?`<a class="source-link" target="_blank" rel="noopener" href="${esc(cached?.resolvedManufacturerUrl||p.manufacturerUrl)}">Fiche ↗</a>`:""}${cached?.technicalSheetUrl?`<a class="source-link" target="_blank" rel="noopener" href="${esc(cached.technicalSheetUrl)}">Technique ↗</a>`:""}</div><div class="photo-status">${cached?`<b>${esc(imageBadge(cached,p))}</b>`:p.image?`<b>${esc(p.imageSource||"Visuel catalogue")}</b>`:`Source tarif : ${esc(p.source||"catalogue fabricant")}`}</div>${/^Nicolazzi$/i.test(String(p.manufacturer||""))?`<div class="nicolazzi-options-slot">${nicolazziVisualOptionsHtml(p,cached)}</div>`:""}<div class="card-action-row"><button class="suggest-toggle" data-key="${esc(key)}">Alternatives</button><button class="compare-toggle ${compared?"active":""}" data-key="${esc(key)}">${compared?"✓ Comparé":"Comparer"}</button></div></div><div class="price-box"><small class="v11-price-label">Prix public</small><div class="price">${euro(price)} HT</div>${p.internalReference?`<div class="internal">Ext. ${euro(p.price)} + ${esc(p.internalReference)} ${euro(p.internalPrice)}</div>`:`<div class="internal">${esc(p.sourceYear?`Tarif ${p.sourceYear}`:"Référence complète")}</div>`}${isRecorBathRequiringFeet(p)?`<div class="internal recor-config-hint"><b>Pieds obligatoires</b> · choix à l’ajout</div>`:""}<button class="btn primary add" data-ref="${esc(p.reference)}" data-key="${esc(key)}" style="margin-top:9px">${isRecorBathRequiringFeet(p)?"Configurer + ajouter":"Ajouter à "+esc(room?.title||"la pièce")}</button></div></article>`;
    }).join("")||`<div class="empty">Aucun résultat.</div>`;
    $$(".add",results).forEach(b=>b.onclick=()=>{try{addCatalogProduct(b.dataset.ref,$("#targetRoom")?.value||state.rooms[0]?.id||"",b.dataset.key||"")}catch(e){alert(`Impossible d’ajouter cet article : ${e.message||"erreur inconnue"}`)}});
    $$(".lookup-photo",results).forEach(b=>b.onclick=()=>lookupCatalogPhoto(b.dataset.ref,b,b.dataset.key||""));
@@ -1938,15 +1980,24 @@ function renderCatalog(){
    $$(".compare-toggle",results).forEach(b=>b.onclick=()=>toggleCompare(b.dataset.key));
    $$(".favorite-toggle",results).forEach(b=>b.onclick=()=>toggleFavorite(b.dataset.key));
    $$(".suggest-toggle",results).forEach(b=>b.onclick=()=>showSuggestionsForKey(b.dataset.key));
-   $$(".catalog-cached-image",results).forEach(img=>img.onerror=()=>{
-     const card=img.closest(".result[data-key]"),p=productFromCompareKey(card?.dataset.key||"");
-     const wrap=img.closest(".catalog-thumb");
-     if(wrap){img.closest(".product-visual-frame")?.remove();if(!wrap.querySelector(".photo-missing"))wrap.insertAdjacentHTML("beforeend",`<div class="photo-missing"><b>Photo indisponible</b><br>${esc(p?.finish||"")}</div>${finishSwatchBadgeHtml(p)}`)}
-     if(p)enqueueAutomaticImage(p);
-   });
-   setupAutomaticCatalogImages(rows);
+   $$(".catalog-cached-image",results).forEach(img=>img.onerror=()=>handleCatalogImageError(img,productFromCompareKey(img.closest('.result')?.dataset.key)));
+   let pagination=document.querySelector('#catalogPagination');
+   if(!pagination){pagination=document.createElement('nav');pagination.id='catalogPagination';pagination.className='catalog-pagination';results.after(pagination);}
+   pagination.innerHTML=rows.length>CATALOG_PAGE_SIZE?`<button class="btn ghost" data-page="previous" ${catalogPage===0?'disabled':''}>Précédent</button><span>Page ${catalogPage+1} / ${Math.ceil(rows.length/CATALOG_PAGE_SIZE)} · ${rows.length.toLocaleString('fr-FR')} articles</span><button class="btn ghost" data-page="next" ${(catalogPage+1)*CATALOG_PAGE_SIZE>=rows.length?'disabled':''}>Suivant</button>`:'';
+   pagination.querySelectorAll('button').forEach(b=>b.onclick=()=>{catalogPage+=b.dataset.page==='next'?1:-1;renderCatalog();results.scrollIntoView({block:'start'});});
+   setupAutomaticCatalogImages(visibleRows);
    renderCompareDock();
  }catch(e){console.error("[renderCatalog]",e);if(count)count.textContent="Erreur d’affichage du catalogue";results.innerHTML=`<div class="empty"><b>Le catalogue n’a pas pu s’afficher.</b><br>${esc(e.message||"")}</div>`}
+}
+function handleCatalogImageError(img,p){
+  if(!p)return;brokenCatalogImages.add(img.getAttribute('src'));
+  const card=img.closest('.result'),wrap=img.closest('.catalog-thumb');
+  img.closest('.product-visual-frame')?.remove();
+  if(wrap&&!wrap.querySelector('.photo-missing'))wrap.insertAdjacentHTML('beforeend',`<div class="photo-missing"><b>Non disponible sur le site fabricant</b><br>${esc(p.finish||'')}</div>`);
+  if(card?.querySelector('.photo-status'))card.querySelector('.photo-status').textContent='Image distante indisponible';
+  delete manufacturerImageCache[manufacturerCacheKey(p)];
+  // Avoid a broken-image/refetch loop. Explicit refresh remains available.
+  autoPhotoFailures.set(autoPhotoGroupKey(p),Date.now());saveManufacturerCache();
 }
 function normalizeText(value){
   return String(value||"")
@@ -2169,7 +2220,7 @@ function createSelectedProductRecord(p,roomId,parentId=""){
   const targetRoomId=normalizedRoomId(roomId);
   const cached=cachedManufacturerImage(p);
   const embeddedRecorVisual=recorEmbeddedVisual(p);
-  const gessiDirect=gessiDirectOfficialImage(p);
+  const gessiDirect="";
   const catalogImages=embeddedRecorVisual?[embeddedRecorVisual]:(Array.isArray(p.images)?p.images.filter(Boolean):[p.image].filter(Boolean));
   if(gessiDirect && !catalogImages.includes(gessiDirect))catalogImages.unshift(gessiDirect);
   const catalogMain=embeddedRecorVisual||p.image||gessiDirect||catalogImages[0]||"";
@@ -2213,6 +2264,7 @@ function commitSelectedRecords(records,{showProject=false}={}){
   const valid=(records||[]).filter(Boolean);
   if(!valid.length)return [];
   state.selected.push(...valid);
+  reconcileProjectRoughIns();
   saveState();
   renderSelection();
   renderRooms();
@@ -2360,6 +2412,7 @@ function addCatalogProduct(ref,roomId,key=""){
     return;
   }
   const targetRoomId=normalizedRoomId(roomId);
+  if(p.manufacturer==='Sira Concrete'){HydroSiraConfigurator.open(p,targetRoomId).catch(e=>alert(e.message));return;}
   if(isRecorBathRequiringFeet(p)){
     console.log("[Recor configurator request]",{reference:p.reference,roomId:targetRoomId,model:recorModelName(p)});
     openRecorBathConfigurator(p,targetRoomId);
@@ -2376,7 +2429,12 @@ async function addProduct(ref,roomId,parentId="",key=""){
   // commitSelectedRecords owns the universal background lookup.
   return record.id;
 }
+function roughInWarningHtml(p){
+  const requirement=p.roughInRequirement;
+  return requirement&&!p.internalReference?`<div class="rough-in-warning">Corps requis : ${esc(requirement.reference)} · prix fournisseur à confirmer, non ajouté au total.</div>`:'';
+}
 function removeProduct(id){
+  if(state.selected.find(p=>p.id===id)?.requiredRoughIn){toast('Ce corps obligatoire est lié au produit principal.');return;}
   state.selected=state.selected.filter(x=>x.id!==id && x.accessoryFor!==id);
   saveState();renderSelection();renderRooms();renderMarginDashboard();
 }
@@ -2421,6 +2479,7 @@ function itemQuantity(p){return normalizedQuantity(p?.quantity);}
 function setProductQuantity(id,value){
   const p=(state.selected||[]).find(x=>x.id===id);
   if(!p)return false;
+  if(p.requiredRoughIn)return false;
   const q=normalizedQuantity(value);
   p.quantity=q;
   for(const child of (state.selected||[])){
@@ -3111,7 +3170,7 @@ function productImageFrameHtml(src,p,alt="",imgClass=""){
   const cls=String(imgClass||"").trim();
   const classAttr=cls?` class="${esc(cls)}"`:"";
   return `<div class="product-visual-frame">
-    <img src="${esc(src)}" alt="${esc(alt||p?.designation||p?.reference||"")}"${classAttr}>
+    <img src="${esc(src)}" alt="${esc(alt||p?.designation||p?.reference||"")}"${classAttr} referrerpolicy="no-referrer" decoding="async"${cls.includes("catalog")?' loading="lazy"':''}>
     ${finishSwatchBadgeHtml(p)}
   </div>`;
 }
@@ -3131,7 +3190,7 @@ function renderRoomsCore(){
    <div class="room-products">${ps.length?ps.map(p=>`
       <div class="room-product">
         <div class="room-prod-img">${roomProductImageHtml(p)}</div>
-        <div><b>${esc(p.designation)}</b><div class="tech">${esc(p.manufacturer)} · ${esc(p.collection)} · ${esc(p.reference)} · <b>${esc(safeExactFinishLabel(p))}</b></div>${p.internalReference?`<div class="tech">Complet avec ${p.internalReference}</div>`:""}
+        <div><b>${esc(p.designation)}</b><div class="tech">${esc(p.manufacturer)} · ${esc(p.collection)} · ${esc(p.reference)} · <b>${esc(safeExactFinishLabel(p))}</b></div>${roughInWarningHtml(p)}${p.internalReference?`<div class="tech">Complet avec ${p.internalReference}</div>`:""}
         <details class="article-editor">
           <summary>Modifier l'article</summary>
           <div class="article-editor-grid">
@@ -4458,11 +4517,11 @@ async function loadSupplierCatalogs(){
   }
 
   let loaded=0, failed=0;
-  const known=new Set(CATALOG.map(p=>`${p.manufacturer||""}|${p.reference||""}`));
+  const known=new Set(CATALOG.map(productKey));
 
   const loadChunk=async(chunk)=>{
     try{
-      const r=await fetch("/"+chunk.file,{cache:"force-cache"});
+      const r=await fetch("/"+chunk.file,{cache:"no-cache"});
       if(!r.ok)throw new Error(`HTTP ${r.status}`);
       let rows;
       if(/\.gz$/i.test(String(chunk.file||""))){
@@ -4474,16 +4533,12 @@ async function loadSupplierCatalogs(){
       }
       if(Array.isArray(rows)){
         for(const p of rows){
-          const key=`${p?.manufacturer||""}|${p?.reference||""}`;
+          const key=productKey(p);
           if(!known.has(key)){
             known.add(key);CATALOG.push(p);loaded++;
           }
         }
       }
-      harmonizeSavedCatalogProducts();
-      refreshCatalogUiAfterChunk();
-      renderSelection();
-      renderRooms();
       return true;
     }catch(e){
       failed++;
@@ -4497,7 +4552,10 @@ async function loadSupplierCatalogs(){
   const zucchetti=chunks.filter(c=>/^Zucchetti/i.test(c.label||""));
 
   if(countEl)countEl.textContent=`${CATALOG.length} références · chargement Coalbrook, Catalano, Hotbath, Lefroy Brooks, Recor, Ritmonio, Nicolazzi et Gessi…`;
-  await Promise.allSettled(priority.map(loadChunk));
+  for(let i=0;i<priority.length;i+=3){
+    await Promise.allSettled(priority.slice(i,i+3).map(loadChunk));
+    refreshCatalogUiAfterChunk();await new Promise(resolve=>setTimeout(resolve,0));
+  }
 
   for(let i=0;i<zucchetti.length;i+=3){
     const batch=zucchetti.slice(i,i+3);
@@ -4506,7 +4564,9 @@ async function loadSupplierCatalogs(){
     await new Promise(resolve=>setTimeout(resolve,0));
   }
 
+  catalogReady=failed===0;serverSearchRows=[];serverSearchSeq++;clearTimeout(serverSearchTimer);
   harmonizeSavedCatalogProducts();
+  if(reconcileProjectRoughIns().changed)saveState();
   refreshCatalogUiAfterChunk();
   renderSelection();
   renderRooms();
@@ -4521,11 +4581,11 @@ async function loadSupplierCatalogs(){
   return loaded;
 }
 function harmonizeSavedCatalogProducts(){
-  const byKey=new Map(CATALOG.map(p=>[`${p.manufacturer||""}|${p.reference||""}`,p]));
-  const byRef=new Map(CATALOG.map(p=>[p.reference,p]));
+  const byKey=new Map(CATALOG.map(p=>[productKey(p),p]));
 
   for(const p of state.selected||[]){
-    const c=byKey.get(`${p.manufacturer||""}|${p.reference||""}`)||byRef.get(p.reference);
+    if(p.requiredRoughIn||p.configuratorType)continue;
+    const c=byKey.get(productKey(p));
     if(!c)continue;
 
     const runtime={
@@ -4626,10 +4686,11 @@ async function bootstrap(){
 /* V11.45_BOOTSTRAP_DEFERRED: bootstrap is called by v1145.js after overrides */
 ["searchInput","finishFilter","targetRoom"].forEach(id=>{
   const el=$("#"+id);if(!el)return;
-  el.addEventListener("input",renderCatalog);
+  if(el.tagName!=="SELECT")el.addEventListener("input",scheduleCatalogRender);
   if(el.tagName==="SELECT")el.addEventListener("change",renderCatalog);
 });
 $("#manufacturerFilter").addEventListener("change",()=>{
+  $("#searchInput").value="";
   // A manufacturer change resets all lower-level filters so no finish from
   // another brand can remain selected or visible.
   $("#collectionFilter").value="";
@@ -4640,12 +4701,14 @@ $("#manufacturerFilter").addEventListener("change",()=>{
   renderCatalog();
 });
 $("#collectionFilter").addEventListener("change",()=>{
+  $("#searchInput").value="";
   $("#categoryFilter").value="";
   $("#finishFilter").value="";
   updateDependentFilters(false,true,true);
   renderCatalog();
 });
 $("#categoryFilter").addEventListener("change",()=>{
+  $("#searchInput").value="";
   $("#finishFilter").value="";
   updateDependentFilters(false,false,true);
   renderCatalog();
@@ -4883,7 +4946,7 @@ $$(".nav").forEach(n=>n.onclick=()=>showView(n.dataset.view));
 
   function postProcessCatalog(){
     document.querySelectorAll("#results .result[data-key]").forEach(card=>{
-      const p=CATALOG.find(x=>productKey(x)===card.dataset.key) || serverSearchRows.find(x=>productKey(x)===card.dataset.key);
+      const p=catalogIndex.get(card.dataset.key) || serverSearchRows.find(x=>productKey(x)===card.dataset.key);
       if(!p)return;
       const price=card.querySelector(".price");
       const button=card.querySelector("button.add");
@@ -5215,7 +5278,7 @@ $$(".nav").forEach(n=>n.onclick=()=>showView(n.dataset.view));
 
   function postProcessCatalog(){
     document.querySelectorAll("#results .result[data-key]").forEach(card=>{
-      const p=CATALOG.find(x=>productKey(x)===card.dataset.key) || serverSearchRows.find(x=>productKey(x)===card.dataset.key);
+      const p=catalogIndex.get(card.dataset.key) || serverSearchRows.find(x=>productKey(x)===card.dataset.key);
       if(!p)return;
       const price=card.querySelector(".price");
       const button=card.querySelector("button.add");
@@ -5379,7 +5442,7 @@ $$(".nav").forEach(n=>n.onclick=()=>showView(n.dataset.view));
 (() => {
   "use strict";
 
-  const RESIGRES_RESOLVER_VERSION="11.49";
+  const RESIGRES_RESOLVER_VERSION=HYDROPOLIS_VERSION;
   const isResigres=p=>/^Resigres$/i.test(String(p?.manufacturer||""));
   const baseFetchManufacturerImage=fetchManufacturerImage;
   const baseAutomaticImageEligible=automaticImageEligible;
@@ -5978,7 +6041,7 @@ $$(".nav").forEach(n=>n.onclick=()=>showView(n.dataset.view));
 /* HYDROPOLIS_STUDIO_V11_52 */
 (() => {
   "use strict";
-  const V52="11.52";
+  const V52=HYDROPOLIS_VERSION;
   const isShowerBrand=p=>/^(Vismaravetro|TDA)$/i.test(String(p?.manufacturer||""));
   const isResigres=p=>/^Resigres$/i.test(String(p?.manufacturer||""));
   const baseFetch52=fetchManufacturerImage;
@@ -6011,7 +6074,7 @@ $$(".nav").forEach(n=>n.onclick=()=>showView(n.dataset.view));
   let resigresDocsBusy=false;
   function resigresModel52(p){return String(p?.resigresModel||p?.configOriginDesignation||p?.designation||p?.collection||"").split(" · ")[0].trim()}
   function resigresKind52(p){if(p?.resigresKind)return p.resigresKind;const c=String(p?.category||"").toLowerCase();if(c.includes("receveur"))return "shower-tray";if(c.includes("plan de vasque pour meuble"))return "furniture-basin-top";if(c.includes("plan de vasque"))return "basin-top";if(c.includes("vasque"))return "basin";if(c.includes("baignoire"))return "bath";if(c.includes("meuble"))return "furniture";if(c.includes("miroir"))return "mirror";return "accessory"}
-  async function fetchResigresDoc52(p){const q=new URLSearchParams({model:resigresModel52(p),kind:resigresKind52(p),productUrl:p.resolvedManufacturerUrl||p.manufacturerUrl||"",v:"11.52"});const r=await fetch(`/api/resigres-assets?${q.toString()}`,{cache:"no-store"});let d={};try{d=await r.json()}catch{};if(!r.ok)throw new Error(d.detail||d.error||`HTTP ${r.status}`);if(!d.technicalSheetUrl)throw new Error("Fiche technique PDF non trouvée sur la page Resigres");p.resolvedManufacturerUrl=d.productUrl||p.resolvedManufacturerUrl||p.manufacturerUrl||"";p.technicalSheetUrl=d.technicalSheetUrl;p.technicalSheetLabel=d.technicalSheetLabel||"Fiche technique Resigres";p.technicalSheetType="pdf";p.technicalSheetPage=1;if(d.installationGuideUrl){p.installationGuideUrl=d.installationGuideUrl;p.installationGuideLabel=d.installationGuideLabel||"Notice installation Resigres"}saveState();return true}
+  async function fetchResigresDoc52(p){const q=new URLSearchParams({model:resigresModel52(p),kind:resigresKind52(p),productUrl:p.resolvedManufacturerUrl||p.manufacturerUrl||"",v:HYDROPOLIS_VERSION});const r=await fetch(`/api/resigres-assets?${q.toString()}`,{cache:"no-store"});let d={};try{d=await r.json()}catch{};if(!r.ok)throw new Error(d.detail||d.error||`HTTP ${r.status}`);if(!d.technicalSheetUrl)throw new Error("Fiche technique PDF non trouvée sur la page Resigres");p.resolvedManufacturerUrl=d.productUrl||p.resolvedManufacturerUrl||p.manufacturerUrl||"";p.technicalSheetUrl=d.technicalSheetUrl;p.technicalSheetLabel=d.technicalSheetLabel||"Fiche technique Resigres";p.technicalSheetType="pdf";p.technicalSheetPage=1;if(d.installationGuideUrl){p.installationGuideUrl=d.installationGuideUrl;p.installationGuideLabel=d.installationGuideLabel||"Notice installation Resigres"}saveState();return true}
   function decorateResigresTech52(){
     (state.selected||[]).filter(isResigres).forEach(p=>{const anchor=document.querySelector(`.enrich-btn[data-id="${CSS.escape(p.id)}"]`);const card=anchor?.closest(".room-product");const actions=card?.querySelector(".image-actions");if(!actions)return;if(p.technicalSheetUrl)return;if(actions.querySelector(`[data-v1152-resigres-tech="${CSS.escape(p.id)}"]`))return;const b=document.createElement("button");b.type="button";b.className="tiny";b.dataset.v1152ResigresTech=p.id;b.textContent="Récupérer la fiche technique Resigres";b.onclick=async()=>{b.disabled=true;b.textContent="Recherche de la fiche…";try{await fetchResigresDoc52(p);renderRooms()}catch(e){b.disabled=false;b.textContent="Réessayer la fiche technique";alert(`Fiche technique Resigres : ${e.message}`)}};actions.appendChild(b)});
   }
@@ -6068,26 +6131,8 @@ $$(".nav").forEach(n=>n.onclick=()=>showView(n.dataset.view));
     Object.assign(record,patch,{originalDesignation:patch.designation||configured.designation});commitSelectedRecords([record],{showProject:true});close53();return record;
   }
 
-  const SIRA_FALLBACK={
-    "Bench Collection":["Glacier","Oasis","Bay","Lagoon","Moon","Isla","Cala","Geyser","Volcano"],
-    "Freestanding Collection":["Cliff","Cenote"],
-    "Bathtub Collection":["Duna","Creek","Fiord","Valley"],
-    "Arctic Countertops":["arctic-encimera-con-lavabo","arctic-encimera-con-faldon-y-lavabo","arctic-encimera-con-faldon-sin-lavabo","arctic-encimera-sin-lavabo"].map(slug=>({url:`https://siraconcrete.com/producto/${slug}/`,label:slug.replace(/^arctic-/,'').replace(/-/g,' ')})),
-    "Wall Collection":["Hill","Palangana","River","Tundra","Aurora","Dome"].map(x=>({url:`https://siraconcrete.com/producto/${x.toLowerCase().replace(/\s+/g,'-')}/`,label:x}))
-  };
-  function siraFallback53(collection){return (SIRA_FALLBACK[collection]||[]).map(x=>typeof x==="string"?{url:`https://siraconcrete.com/producto/${x.toLowerCase().replace(/\s+/g,"-")}/`,label:x}:x)}
-
-  async function fetchSiraCard53(p,force=false){
-    const key=manufacturerCacheKey(p),c=manufacturerImageCache[key];if(!force&&c?.hydroSiraVersion===V53&&c?.src)return c;
-    const q=new URLSearchParams({url:p.siraCategoryUrl||p.manufacturerUrl||""}),d=await json53(`/api/sira-category?${q}`),remote=d.images?.[0]||"";
-    const item={src:proxy53(remote),images:(d.images||[]).map(proxy53),remoteUrl:remote,remoteImages:d.images||[],source:"Site officiel Sira Concrete",finishMatch:"collection",checkedAt:new Date().toISOString(),resolvedManufacturerUrl:p.manufacturerUrl||"",hydroSiraVersion:V53};manufacturerImageCache[key]=item;saveManufacturerCache();return item
-  }
-  fetchManufacturerImage=async function(p,force=false,options={}){if(isSira53(p))return fetchSiraCard53(p,force);return baseFetch53(p,force,options)};
-  automaticImageEligible=function(p){if(isSira53(p)){const c=manufacturerImageCache[manufacturerCacheKey(p)];return !(c?.src&&c?.hydroSiraVersion===V53)}return baseAuto53(p)};
-  imageBadge=function(img,p){if(isSira53(p)&&img?.hydroSiraVersion===V53)return "✓ Visuel officiel Sira Concrete";return baseBadge53(img,p)};
-
   function decorateCards53(){
-    document.querySelectorAll("#results .result[data-key]").forEach(card=>{const p=productFromCompareKey(card.dataset.key||"");if(!p||(!isShower53(p)&&!isSira53(p)))return;const price=card.querySelector(".price-box .price"),internal=card.querySelector(".price-box .internal"),add=card.querySelector("button.add");if(price)price.textContent="Configurer";if(internal)internal.textContent=isSira53(p)?"Tarif public à renseigner · remise achat Sira 50 %":"Configuration fabricant · tarif 2026 à renseigner si non résolu";if(add)add.textContent="Configurer + ajouter";if(isSira53(p)&&automaticImageEligible(p)){try{enqueueAutomaticImage(p)}catch{}}});
+    document.querySelectorAll("#results .result[data-key]").forEach(card=>{const p=productFromCompareKey(card.dataset.key||"");if(!p||(!isShower53(p)&&!isSira53(p)))return;const price=card.querySelector(".price-box .price"),internal=card.querySelector(".price-box .internal"),add=card.querySelector("button.add");if(price)price.textContent="Configurer";if(internal)internal.textContent=isSira53(p)?"Tarif 2024/25 · modèles et pigments · remise achat 50 %":"Configuration fabricant · tarif 2026 à renseigner si non résolu";if(add)add.textContent="Configurer + ajouter";if(isSira53(p)&&automaticImageEligible(p)){try{enqueueAutomaticImage(p)}catch{}}});
   }
   renderCatalog=function(){baseRenderCatalog53();decorateCards53()};
 
@@ -6100,18 +6145,8 @@ $$(".nav").forEach(n=>n.onclick=()=>showView(n.dataset.view));
     o.querySelector(".v1153-confirm").onclick=()=>{try{setError53(o,"");if(!modelData)throw new Error("Choisissez un modèle exact.");const width=Number($("#v53Width").value)||0,height=Number($("#v53Height").value)||0,side2=Number($("#v53Side2").value)||0;if(!(width>0))throw new Error("Indiquez la largeur de la paroi.");if(modelData.minWidth&&width<modelData.minWidth)throw new Error(`Largeur minimale fabricant : ${modelData.minWidth} cm.`);if(modelData.maxWidth&&width>modelData.maxWidth)throw new Error(`Largeur maximale fabricant : ${modelData.maxWidth} cm.`);if(modelData.minHeight&&height&&height<modelData.minHeight)throw new Error(`Hauteur minimale fabricant : ${modelData.minHeight} cm.`);if(modelData.maxHeight&&height>modelData.maxHeight)throw new Error(`Hauteur maximale fabricant : ${modelData.maxHeight} cm.`);const installation=$("#v53Install").value,profile=$("#v53Profile").value,glass=$("#v53Glass").value,extras=[...$("#v53Extras").querySelectorAll("input:checked")].map(x=>x.value),price=Math.max(0,Number($("#v53Price").value)||0),label=modelData.title||modelSel.options[modelSel.selectedIndex]?.text||collection;const dims=[width&&`${fmt53(width)} cm`,side2&&`${fmt53(side2)} cm`,height&&`H ${fmt53(height)} cm`].filter(Boolean).join(" × ");const remote=modelData.images?.[0]||"",designation=[label,installation,dims].filter(Boolean).join(" · ");storeConfigured53(p,roomId,{reference:`${p.reference}-CFG-${Date.now().toString(36).toUpperCase()}`,designation,finish:[profile,glass].filter(Boolean).join(" · "),price,totalPrice:price,catalogPrice:price,catalogTotalPrice:price,pricingStatus:price>0?"manual-2026-verified-by-user":"configured-price-pending",pricingSource:price>0?"Tarif public HT 2026 saisi lors de la configuration":"Prix à compléter",manufacturerUrl:modelData.url,resolvedManufacturerUrl:modelData.url,image:proxy53(remote),pdfImage:proxy53(remote),images:(modelData.images||[]).map(proxy53),pdfImages:(modelData.images||[]).slice(0,4).map(proxy53),remoteImageUrl:remote,remoteImages:modelData.images||[],imageSource:`Site officiel ${maker}`,technicalSheetUrl:modelData.technicalSheetUrl||"",technicalSheetLabel:modelData.technicalSheetLabel||`Fiche technique ${maker}`,technicalSheetType:modelData.technicalSheetUrl?"pdf":"",technicalSheetPage:1,installationGuideUrl:modelData.installationGuideUrl||"",installationGuideLabel:modelData.installationGuideLabel||"Notice installation",showerConfiguration:{manufacturer:maker,collection,model:label,modelUrl:modelData.url,installation,widthCm:width,side2Cm:side2,heightCm:height,profile,glass,extras,source:"site officiel fabricant"},purchaseDiscount:50,configuratorType:"shower-screen-v1153"})}catch(e){setError53(o,e.message)}};
   }
 
-  async function openSira53(p,roomId){
-    const o=shell53(`Sira Concrete · ${p.collection}`,"Produit → couleur Sira → pose / options → tarif public → coût achat automatique -50 %.",`<div class="v1153-flow"><b>1 Produit</b><span>→</span><b>2 Pigment</b><span>→</span><b>3 Pose / options</b><span>→</span><b>4 Tarif</b></div><div class="v1153-grid"><label class="span2">Produit exact<select id="v53SiraProduct"><option value="">Chargement…</option></select></label><label>Couleur / pigment<select id="v53SiraColor"><option value="">Choisir le produit…</option></select></label><label>Pose<select id="v53SiraInstall"><option value="">Selon fiche produit</option></select></label><label class="span2 v53-sira-width hidden">Largeur totale du plan (cm)<input id="v53SiraWidth" type="number" min="60" max="175" step="1" value="60"></label><label class="v53-sira-holes hidden">Trous robinet<select id="v53SiraHoles"><option>0</option><option>1</option><option>2</option><option>3</option></select></label></div><div id="v53SiraInfo" class="v1153-info">Lecture de la collection officielle Sira…</div><details class="v1153-options"><summary>Options / accessoires</summary><div id="v53SiraOptions" class="v1153-checks"><small>Choisissez d'abord un produit.</small></div></details><div class="v1153-price-panel sira"><div><b>Tarif public HT</b><small>Le prix affiché à 1 € sur siraconcrete.com n'est pas utilisé comme tarif. Saisissez le tarif public de votre grille Sira.</small></div><input id="v53SiraPrice" type="number" min="0" step="0.01" placeholder="0,00"></div><div class="v1153-sira-cost"><span>Remise achat Hydropolis</span><b>50 %</b><span>Coût achat calculé</span><strong id="v53SiraCost">—</strong></div>`);
-    const $=s=>o.querySelector(s),sel=$("#v53SiraProduct"),info=$("#v53SiraInfo");let productData=null;
-    try{const d=await json53(`/api/sira-category?${new URLSearchParams({url:p.siraCategoryUrl||p.manufacturerUrl||""})}`);let products=d.products||[];if(!products.length)products=siraFallback53(p.collection);sel.innerHTML=opts53(products,"Choisir le produit Sira…","url","label");info.textContent=`${products.length} produit(s) disponible(s) dans cette collection.`}catch(e){const products=siraFallback53(p.collection);sel.innerHTML=opts53(products,"Choisir le produit Sira…","url","label");info.textContent=products.length?"Liste de secours issue du catalogue Sira officiel.":"Impossible de charger la collection.";if(!products.length)setError53(o,e.message)}
-    function siraInstallOptions(d){const t=(d.options||[]).join(" ").toLowerCase(),rows=[];if(/wall|mural|pared|paret/.test(t))rows.push("Mural");if(/surface|encimera|plan|counter/.test(t))rows.push("À poser");if(p.siraKind==="bath")rows.push("À poser");if(p.siraKind==="countertop")rows.push("Plan vasque / console");return [...new Set(rows.length?rows:["Selon fiche produit"])]}
-    async function loadSiraProduct(){if(!sel.value)return;loading53(info,"Lecture de la fiche Sira officielle…");setError53(o,"");try{productData=await json53(`/api/sira-product-v1154?${new URLSearchParams({url:sel.value})}`);$("#v53SiraColor").innerHTML=opts53(productData.colors||[],"Choisir le pigment…","code","label");$("#v53SiraInstall").innerHTML=opts53(siraInstallOptions(productData),"Choisir la pose…");const isArctic=p.siraKind==="countertop";o.querySelector(".v53-sira-width")?.classList.toggle("hidden",!isArctic);o.querySelector(".v53-sira-holes")?.classList.toggle("hidden",!isArctic);$("#v53SiraOptions").innerHTML=(productData.options||[]).map(x=>`<label><input type="checkbox" value="${esc53(x)}"> <span>${esc53(x)}</span></label>`).join("")||"<small>Aucune option textuelle supplémentaire détectée.</small>";info.innerHTML=`<b>${esc53(productData.title)}</b>${productData.dimensions?`<br>Dimensions : ${esc53(productData.dimensions)}`:""}${productData.weight?` · Poids : ${esc53(productData.weight)}`:""}${productData.capacity?` · Capacité : ${esc53(productData.capacity)}`:""}${productData.technicalSheetUrl?`<br><a target="_blank" href="${esc53(productData.technicalSheetUrl)}">Fiche technique Sira ↗</a>`:""}`;}catch(e){productData=null;info.textContent="Impossible de lire cette fiche Sira.";setError53(o,e.message)}}
-    sel.addEventListener("change",loadSiraProduct);$("#v53SiraPrice").addEventListener("input",()=>{const price=Math.max(0,Number($("#v53SiraPrice").value)||0);$("#v53SiraCost").textContent=price?money53(price*.5):"—"});
-    o.querySelector(".v1153-confirm").onclick=()=>{try{setError53(o,"");if(!productData)throw new Error("Choisissez un produit Sira.");const color=$("#v53SiraColor").value;if(!color)throw new Error("Choisissez le pigment Sira.");const colorLabel=$("#v53SiraColor").options[$("#v53SiraColor").selectedIndex]?.text||color,installation=$("#v53SiraInstall").value,price=Math.max(0,Number($("#v53SiraPrice").value)||0),options=[...$("#v53SiraOptions").querySelectorAll("input:checked")].map(x=>x.value),isArctic=p.siraKind==="countertop",width=isArctic?(Number($("#v53SiraWidth").value)||0):0,holes=isArctic?(Number($("#v53SiraHoles").value)||0):0;if(isArctic&&(width<60||width>175))throw new Error("Les plans Arctic sont configurés entre 60 et 175 cm.");const remote=productData.primaryImage||productData.images?.[0]||"",dims=isArctic?`${fmt53(width,0)} cm · ${holes} trou(x) robinet`:productData.dimensions||"";storeConfigured53(p,roomId,{reference:`SIRA-${String(productData.title||"PROD").toUpperCase().replace(/[^A-Z0-9]+/g,"-")}-CFG`,collection:p.collection,designation:[productData.title,dims,colorLabel].filter(Boolean).join(" · "),finish:colorLabel,price,totalPrice:price,catalogPrice:price,catalogTotalPrice:price,pricingStatus:price>0?"manual-sira-tariff":"configured-price-pending",pricingSource:price>0?"Tarif Sira saisi par Hydropolis":"Tarif Sira à compléter",purchaseDiscount:50,manufacturerUrl:productData.url,resolvedManufacturerUrl:productData.url,image:proxy53(remote),pdfImage:proxy53(remote),images:(productData.images||[]).map(proxy53),pdfImages:(productData.images||[]).slice(0,4).map(proxy53),remoteImageUrl:remote,remoteImages:productData.images||[],imageSource:"Site officiel Sira Concrete",technicalSheetUrl:productData.technicalSheetUrl||"",technicalSheetLabel:productData.technicalSheetLabel||"Fiche technique Sira",technicalSheetType:productData.technicalSheetUrl?"pdf":"",technicalSheetPage:1,siraConfiguration:{product:productData.title,productUrl:productData.url,color,colorLabel,installation,options,widthCm:width,tapHoles:holes,discountPercent:50,source:"siraconcrete.com"},configuratorType:"sira-v1153"})}catch(e){setError53(o,e.message)}};
-  }
-
   addCatalogProduct=function(ref,roomId,key=""){
-    const p=productFromCatalogSources(ref,key);if(isShower53(p)){openShower53(p,roomId).catch(e=>alert(`Configurateur ${p.manufacturer} : ${e.message}`));return}if(isSira53(p)){openSira53(p,roomId).catch(e=>alert(`Configurateur Sira : ${e.message}`));return}return baseAdd53(ref,roomId,key)
+    const p=productFromCatalogSources(ref,key);if(isShower53(p)){openShower53(p,roomId).catch(e=>alert(`Configurateur ${p.manufacturer} : ${e.message}`));return}return baseAdd53(ref,roomId,key)
   };
 
   queueMicrotask(()=>{try{decorateCards53();renderCatalog()}catch(e){console.warn("[V11.53 init]",e)}});
@@ -6323,45 +6358,6 @@ $$(".nav").forEach(n=>n.onclick=()=>showView(n.dataset.view));
  }
  const previous=addCatalogProduct;
  addCatalogProduct=function(ref,roomId,key=''){const p=productFromCatalogSources(ref,key);if(/^TDA$/i.test(p?.manufacturer||'')){openTda(p,roomId).catch(e=>alert(e.message));return;}return previous(ref,roomId,key);};
-})();
-
-;
-/* SOURCE public/sira-configurator.js */
-/* Sira : tarifs publics du PDF 2024/25 T006, supports facturés séparément. */
-(()=>{
- 'use strict';let tariff=null;
- const e=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- const options=rows=>rows.map(([v,l])=>`<option value="${e(v)}">${e(l)}</option>`).join('');
- async function open(p,roomId){
-  if(!tariff){const r=await fetch('/sira_tariff_2024.json');if(!r.ok)throw new Error('Tarif Sira indisponible.');tariff=await r.json();}
-  const isArctic=p.siraKind==='countertop'||/Arctic/i.test(p.collection),products=tariff.products.filter(x=>x.collection===p.collection);
-  const o=document.createElement('div');o.className='v1153-overlay';o.id='siraTariffModal';
-  o.innerHTML=`<div class="v1153-modal" role="dialog" aria-modal="true"><header><div><div class="eyebrow">SIRA CONCRETE · TARIF 2024/25 T006</div><h2>${e(p.collection)}</h2><p>Produit → dimensions → pigment → options</p></div><button class="icon close-sira">×</button></header><div class="v1153-body"><div class="v1153-grid"><label>Produit<select class="sira-product">${options(isArctic?Object.entries(tariff.arcticLabels):products.map(x=>[x.code,x.name]))}</select></label><label>Pigment<select class="sira-color">${options(Object.entries(tariff.colors).map(([k,v])=>[k,v+' · '+k]))}</select></label>${isArctic?`<label>Largeur (cm)<select class="sira-width">${options(Object.keys(tariff.arctic.AR1).map(v=>[v,v+' cm']))}</select></label><label>Position de la vasque<select class="sira-position">${options([['C','Centrée'],['L','Gauche'],['R','Droite'],['0','Sans vasque']])}</select></label>`:''}<label>Trous de robinet<select class="sira-holes">${options([0,1,2,3].map(n=>[n,String(n)]))}</select></label><label class="free-check"><input type="checkbox" class="sira-supports"> Ajouter les supports préconisés</label><label class="free-check"><input type="checkbox" class="sira-waste"> Ajouter la bonde assortie</label></div><div class="sira-details v1153-info"></div><div class="v1153-price-panel"><b>Prix public HT</b><strong class="sira-price"></strong></div><p class="v1153-note">Tarif fourni 2024/25. Les supports sont vendus séparément. Pour une largeur Arctic intermédiaire, utilisez un prix confirmé par le fournisseur.</p></div><footer><button class="btn ghost close-sira">Annuler</button><button class="btn primary sira-add">Ajouter la configuration</button></footer></div>`;
-  document.body.appendChild(o);o.querySelectorAll('.close-sira').forEach(b=>b.onclick=()=>o.remove());const $=s=>o.querySelector(s);let selected=null;
-  function calc(){
-   const code=$('.sira-product').value,color=$('.sira-color').value,width=isArctic?Number($('.sira-width').value):0;
-   selected=isArctic?{code,name:'Arctic · '+tariff.arcticLabels[code],price:tariff.arctic[code][width],page:9,supports:width>=120?2:1}:products.find(x=>x.code===code);if(!selected)return;
-   const holes=$('.sira-holes'),allowed=selected.name==='Tundra'?[0,2,4,6]:isArctic?[0,1,2,3,4,5,6]:[0,1,2,3];const old=holes.value;holes.innerHTML=options(allowed.map(n=>[n,String(n)]));holes.value=allowed.map(String).includes(old)?old:'0';
-   if(isArctic){const pos=$('.sira-position');if(['AR3','AR4'].includes(code)){pos.value='0';pos.disabled=true;}else{pos.disabled=false;if(pos.value==='0')pos.value='C';}}
-   $('.sira-supports').disabled=!selected.supports;if(!selected.supports)$('.sira-supports').checked=false;
-   const supportCost=$('.sira-supports').checked?selected.supports*108:0,wasteCode=selected.collection==='Bathtub Collection'?'VB2':'VL1',wasteCost=$('.sira-waste').checked?tariff.extras[wasteCode].price:0,total=selected.price+supportCost+wasteCost;
-   $('.sira-price').textContent=euro(total)+' HT';$('.sira-details').innerHTML=`${selected.image?`<img src="${selected.image}" style="height:110px;max-width:170px;object-fit:contain;float:right" alt="${e(selected.name)}">`:''}<b>${e(selected.name)}</b><br>Réf. ${e(code)}${isArctic?' · '+width+' cm':''}<br>Prix produit : ${euro(selected.price)} HT${supportCost?`<br>Supports : ${selected.supports} jeu(x) × 108 € HT`:''}${wasteCost?`<br>Bonde : ${euro(wasteCost)} HT`:''}<br>Remise achat : 50 % · coût ${euro(total*.5)} HT`;
-  }
-  o.querySelectorAll('select,input').forEach(x=>x.addEventListener('change',calc));calc();
-  $('.sira-add').onclick=()=>{
-   if(!selected)return;const color=$('.sira-color').value,width=isArctic?$('.sira-width').value:'',position=isArctic?$('.sira-position').value:'',holes=$('.sira-holes').value;
-   const ref=[selected.code,isArctic?String(width).padStart(3,'0'):'',position,color,holes].filter(x=>x!=='').join(' '),price=selected.price;
-   const rec=createSelectedProductRecord({...p,reference:ref,designation:[selected.name,width?width+' cm':'',tariff.colors[color]].filter(Boolean).join(' · '),finish:tariff.colors[color],price,totalPrice:price,purchaseDiscount:50},roomId);
-   Object.assign(rec,{price,totalPrice:price,catalogPrice:price,catalogTotalPrice:price,purchaseDiscount:50,pricingStatus:'verified-sira-2024-25',pricingSource:tariff.source+' · p. '+selected.page,siraConfiguration:{product:selected.name,code:selected.code,color,widthCm:Number(width)||null,sinkPosition:position,tapHoles:Number(holes)},configuratorType:'sira-2024-tariff'});
-   if(selected.image)Object.assign(rec,{image:selected.image,pdfImage:selected.image,images:[selected.image],pdfImages:[selected.image],customImage:true,imageStatus:'Photo produit · catalogue Sira 2024/25',imageSource:'Catalogue Sira 2024/25'});
-   const exactUrl=isArctic?'':`https://siraconcrete.com/producto/${selected.name.toLowerCase()}/`;if(exactUrl){rec.manufacturerUrl=exactUrl;rec.resolvedManufacturerUrl=exactUrl;}
-   const records=[rec];
-   const extra=(code,qty)=>{const x=tariff.extras[code],item=createSelectedProductRecord({manufacturer:'Sira Concrete',reference:code,designation:x.name,collection:'Compléments',price:x.price,totalPrice:x.price,purchaseDiscount:50},roomId,rec.id);Object.assign(item,{quantity:qty,quantityPerParent:qty,purchaseDiscount:50,pricingStatus:'verified-sira-2024-25',pricingSource:tariff.source+' · p. '+x.page});records.push(item);};
-   if($('.sira-supports').checked)extra('SP1',selected.supports);if($('.sira-waste').checked)extra(selected.collection==='Bathtub Collection'?'VB2':'VL1',1);
-   commitSelectedRecords(records,{showProject:true});o.remove();
-  };
- }
- const prev=addCatalogProduct;addCatalogProduct=function(ref,roomId,key=''){const p=productFromCatalogSources(ref,key);if(p?.manufacturer==='Sira Concrete'){open(p,roomId).catch(e=>alert(e.message));return;}return prev(ref,roomId,key);};
 })();
 
 ;

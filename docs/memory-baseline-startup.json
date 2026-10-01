@@ -1,0 +1,11 @@
+{
+  "label": "startup",
+  "ok": true,
+  "rssMB": 66,
+  "heapUsedMB": 16.9,
+  "heapTotalMB": 35.3,
+  "externalMB": 3.9,
+  "arrayBuffersMB": 0.2,
+  "uptimeSeconds": 0,
+  "time": "2026-10-01T09:33:13.715Z"
+}

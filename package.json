@@ -1,24 +1,27 @@
 {
   "name": "hydropolis-studio-v3",
-  "version": "11.56.0",
+  "version": "11.56.1",
   "private": true,
-  "description": "Hydropolis Studio V11.56.0 — architecture mémoire sûre et visuels officiels streamés",
+  "description": "Hydropolis Studio — catalogue, projets et visuels fabricants",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "check": "node --check server.js && node --check assets-server.js && node --check official-assets-server.js && node --check memory-safe-server.js && node --check tariff-server.js && node --check public/app.js && node --check public/sw.js && node --check tests/v11.55.2-repair-static.js && node --check tests/v11.56-memory-static.js",
-    "test": "node verify-release.js && node tests/v11.55.2-repair-static.js && node tests/v11.56-memory-static.js",
-    "build": "npm run check && npm test"
+    "check": "node tests/check-syntax.js",
+    "test": "node verify-release.js && node --test tests/consolidated.test.js",
+    "build": "npm run check && npm test",
+    "test:browser": "node tests/browser-consolidated.js",
+    "test:live": "node tests/live-assets.js"
   },
   "engines": {
     "node": ">=20"
   },
   "dependencies": {
+    "@napi-rs/canvas": "^0.1.80",
     "axios": "^1.7.9",
     "cheerio": "^1.0.0",
     "express": "^4.21.2",
     "pdfjs-dist": "^5.4.149",
-    "@napi-rs/canvas": "^0.1.80",
-    "pg": "^8.13.1"
+    "pg": "^8.13.1",
+    "stream-json": "1.9.1"
   }
 }

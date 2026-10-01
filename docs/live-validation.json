@@ -1,0 +1,2061 @@
+{
+  "version": "11.56.1",
+  "startedAt": "2026-10-01T09:54:10.255Z",
+  "memory": [
+    {
+      "phase": "startup",
+      "ok": true,
+      "version": "11.56.1",
+      "caches": {
+        "official": {
+          "alpi": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "gessi": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "sira": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "requests": {
+            "active": 0,
+            "queued": 0,
+            "limit": 4
+          }
+        },
+        "packs": {
+          "entries": 0,
+          "limit": 1
+        },
+        "tda": {
+          "loaded": false,
+          "rows": 0,
+          "releaseAfterSeconds": 60
+        }
+      },
+      "rssMB": 65.8,
+      "heapUsedMB": 17.2,
+      "heapTotalMB": 35.5,
+      "externalMB": 3.9,
+      "arrayBuffersMB": 0.2,
+      "uptimeSeconds": 0,
+      "time": "2026-10-01T09:54:10.515Z"
+    },
+    {
+      "phase": "catalogues",
+      "ok": true,
+      "version": "11.56.1",
+      "caches": {
+        "official": {
+          "alpi": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "gessi": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "sira": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "requests": {
+            "active": 0,
+            "queued": 0,
+            "limit": 4
+          }
+        },
+        "packs": {
+          "entries": 0,
+          "limit": 1
+        },
+        "tda": {
+          "loaded": false,
+          "rows": 0,
+          "releaseAfterSeconds": 60
+        }
+      },
+      "rssMB": 84.4,
+      "heapUsedMB": 20,
+      "heapTotalMB": 36.5,
+      "externalMB": 21.8,
+      "arrayBuffersMB": 18.1,
+      "uptimeSeconds": 0,
+      "time": "2026-10-01T09:54:10.630Z"
+    },
+    {
+      "phase": "50 recherches",
+      "ok": true,
+      "version": "11.56.1",
+      "caches": {
+        "official": {
+          "alpi": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "gessi": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "sira": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "requests": {
+            "active": 0,
+            "queued": 0,
+            "limit": 4
+          }
+        },
+        "packs": {
+          "entries": 0,
+          "limit": 1
+        },
+        "tda": {
+          "loaded": false,
+          "rows": 0,
+          "releaseAfterSeconds": 60
+        }
+      },
+      "rssMB": 85.8,
+      "heapUsedMB": 24.6,
+      "heapTotalMB": 36.7,
+      "externalMB": 21.8,
+      "arrayBuffersMB": 18.1,
+      "uptimeSeconds": 0,
+      "time": "2026-10-01T09:54:10.707Z"
+    },
+    {
+      "phase": "100 recherches",
+      "ok": true,
+      "version": "11.56.1",
+      "caches": {
+        "official": {
+          "alpi": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "gessi": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "sira": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "requests": {
+            "active": 0,
+            "queued": 0,
+            "limit": 4
+          }
+        },
+        "packs": {
+          "entries": 0,
+          "limit": 1
+        },
+        "tda": {
+          "loaded": false,
+          "rows": 0,
+          "releaseAfterSeconds": 60
+        }
+      },
+      "rssMB": 85.9,
+      "heapUsedMB": 20.2,
+      "heapTotalMB": 36.7,
+      "externalMB": 3.9,
+      "arrayBuffersMB": 0.2,
+      "uptimeSeconds": 0,
+      "time": "2026-10-01T09:54:10.753Z"
+    },
+    {
+      "phase": "TDA chargé",
+      "ok": true,
+      "version": "11.56.1",
+      "caches": {
+        "official": {
+          "alpi": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "gessi": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "sira": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "requests": {
+            "active": 0,
+            "queued": 0,
+            "limit": 4
+          }
+        },
+        "packs": {
+          "entries": 0,
+          "limit": 1
+        },
+        "tda": {
+          "loaded": true,
+          "rows": 308546,
+          "releaseAfterSeconds": 60
+        }
+      },
+      "rssMB": 199.2,
+      "heapUsedMB": 73,
+      "heapTotalMB": 138.3,
+      "externalMB": 22.2,
+      "arrayBuffersMB": 0.4,
+      "uptimeSeconds": 1,
+      "time": "2026-10-01T09:54:11.005Z"
+    },
+    {
+      "phase": "repos 30 s",
+      "ok": true,
+      "version": "11.56.1",
+      "caches": {
+        "official": {
+          "alpi": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "gessi": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "sira": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "requests": {
+            "active": 0,
+            "queued": 0,
+            "limit": 4
+          }
+        },
+        "packs": {
+          "entries": 0,
+          "limit": 1
+        },
+        "tda": {
+          "loaded": true,
+          "rows": 308546,
+          "releaseAfterSeconds": 60
+        }
+      },
+      "rssMB": 199.4,
+      "heapUsedMB": 73.3,
+      "heapTotalMB": 138.3,
+      "externalMB": 22.2,
+      "arrayBuffersMB": 0.4,
+      "uptimeSeconds": 31,
+      "time": "2026-10-01T09:54:41.014Z"
+    },
+    {
+      "phase": "repos 60 s",
+      "ok": true,
+      "version": "11.56.1",
+      "caches": {
+        "official": {
+          "alpi": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "gessi": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "sira": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "requests": {
+            "active": 0,
+            "queued": 0,
+            "limit": 4
+          }
+        },
+        "packs": {
+          "entries": 0,
+          "limit": 1
+        },
+        "tda": {
+          "loaded": false,
+          "rows": 0,
+          "releaseAfterSeconds": 60
+        }
+      },
+      "rssMB": 199.4,
+      "heapUsedMB": 73.3,
+      "heapTotalMB": 138.3,
+      "externalMB": 22.2,
+      "arrayBuffersMB": 0.4,
+      "uptimeSeconds": 61,
+      "time": "2026-10-01T09:55:11.017Z"
+    },
+    {
+      "phase": "repos 90 s",
+      "ok": true,
+      "version": "11.56.1",
+      "caches": {
+        "official": {
+          "alpi": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "gessi": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "sira": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "requests": {
+            "active": 0,
+            "queued": 0,
+            "limit": 4
+          }
+        },
+        "packs": {
+          "entries": 0,
+          "limit": 1
+        },
+        "tda": {
+          "loaded": false,
+          "rows": 0,
+          "releaseAfterSeconds": 60
+        }
+      },
+      "rssMB": 199.4,
+      "heapUsedMB": 73.4,
+      "heapTotalMB": 138.3,
+      "externalMB": 22.2,
+      "arrayBuffersMB": 0.4,
+      "uptimeSeconds": 91,
+      "time": "2026-10-01T09:55:41.022Z"
+    },
+    {
+      "phase": "repos 120 s",
+      "ok": true,
+      "version": "11.56.1",
+      "caches": {
+        "official": {
+          "alpi": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "gessi": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "sira": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "requests": {
+            "active": 0,
+            "queued": 0,
+            "limit": 4
+          }
+        },
+        "packs": {
+          "entries": 0,
+          "limit": 1
+        },
+        "tda": {
+          "loaded": false,
+          "rows": 0,
+          "releaseAfterSeconds": 60
+        }
+      },
+      "rssMB": 83.2,
+      "heapUsedMB": 18.6,
+      "heapTotalMB": 22.9,
+      "externalMB": 4,
+      "arrayBuffersMB": 0.3,
+      "uptimeSeconds": 121,
+      "time": "2026-10-01T09:56:11.035Z"
+    },
+    {
+      "phase": "repos 150 s",
+      "ok": true,
+      "version": "11.56.1",
+      "caches": {
+        "official": {
+          "alpi": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "gessi": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "sira": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "requests": {
+            "active": 0,
+            "queued": 0,
+            "limit": 4
+          }
+        },
+        "packs": {
+          "entries": 0,
+          "limit": 1
+        },
+        "tda": {
+          "loaded": false,
+          "rows": 0,
+          "releaseAfterSeconds": 60
+        }
+      },
+      "rssMB": 83.2,
+      "heapUsedMB": 18.7,
+      "heapTotalMB": 22.9,
+      "externalMB": 4,
+      "arrayBuffersMB": 0.3,
+      "uptimeSeconds": 151,
+      "time": "2026-10-01T09:56:41.043Z"
+    },
+    {
+      "phase": "repos 180 s",
+      "ok": true,
+      "version": "11.56.1",
+      "caches": {
+        "official": {
+          "alpi": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "gessi": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "sira": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "requests": {
+            "active": 0,
+            "queued": 0,
+            "limit": 4
+          }
+        },
+        "packs": {
+          "entries": 0,
+          "limit": 1
+        },
+        "tda": {
+          "loaded": false,
+          "rows": 0,
+          "releaseAfterSeconds": 60
+        }
+      },
+      "rssMB": 83.2,
+      "heapUsedMB": 18.7,
+      "heapTotalMB": 22.9,
+      "externalMB": 4,
+      "arrayBuffersMB": 0.3,
+      "uptimeSeconds": 181,
+      "time": "2026-10-01T09:57:11.047Z"
+    }
+  ],
+  "assets": [
+    {
+      "manufacturer": "Gessi",
+      "reference": "11922#726",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle gessi indisponible"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "11922#707",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle gessi indisponible"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "11922#708",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle gessi indisponible"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "33605#726",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle gessi indisponible"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "33605#299",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle gessi indisponible"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "44838#031",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle gessi indisponible"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "44838#149",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle gessi indisponible"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "54336#726",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle gessi indisponible"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "33605#279",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle gessi indisponible"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "44838#726",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle gessi indisponible"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "54336#239",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle gessi indisponible"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "54336#299",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle gessi indisponible"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "58144#726",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle gessi indisponible"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "58144#710",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle gessi indisponible"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "58144#720",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle gessi indisponible"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "63331#726",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle gessi indisponible"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "63331#299",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle gessi indisponible"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "63331#031",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle gessi indisponible"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "66134#726",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle gessi indisponible"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "66134#706",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle gessi indisponible"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "66134#707",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle gessi indisponible"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "73588#726",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle gessi indisponible"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "73588#299",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle gessi indisponible"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "73588#031",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle gessi indisponible"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "75002#726",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle gessi indisponible"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "75002#299",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle gessi indisponible"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "75002#031",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle gessi indisponible"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "75051#726",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle gessi indisponible"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "75051#299",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle gessi indisponible"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "75051#031",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle gessi indisponible"
+    },
+    {
+      "manufacturer": "Alpi",
+      "reference": "AC126CR",
+      "status": 200,
+      "image": "https://alpirubinetterie.com/wp-content/uploads/2022/08/AC126_F-400x600.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "unavailable",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Alpi",
+      "reference": "AC132CR",
+      "status": 200,
+      "image": "https://alpirubinetterie.com/wp-content/uploads/2022/08/AC132_F-1-400x600.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "unavailable",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Alpi",
+      "reference": "AL98176CR",
+      "status": 200,
+      "image": "https://alpirubinetterie.com/wp-content/uploads/2022/08/AL98176_F-400x600.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "unavailable",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Alpi",
+      "reference": "AUO301",
+      "status": 200,
+      "image": "https://alpirubinetterie.com/wp-content/uploads/2025/02/AUO301_F-400x600.jpg",
+      "finishMatch": "generic",
+      "technicalSheetUrl": "",
+      "documentStatus": "unavailable",
+      "note": "Visuel officiel générique du produit ; finition non garantie.",
+      "error": ""
+    },
+    {
+      "manufacturer": "Alpi",
+      "reference": "BU85106CR",
+      "status": 200,
+      "image": "https://alpirubinetterie.com/wp-content/uploads/2022/08/BU85106_F-400x600.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "unavailable",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Alpi",
+      "reference": "PO020CRMTL",
+      "status": 200,
+      "image": "https://alpirubinetterie.com/wp-content/uploads/2022/09/PO020%E2%80%A6_F-400x600.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "unavailable",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Alpi",
+      "reference": "FA01TP",
+      "status": 200,
+      "image": "https://alpirubinetterie.com/wp-content/uploads/2022/08/FA01TP_F-400x600.jpg",
+      "finishMatch": "generic",
+      "technicalSheetUrl": "",
+      "documentStatus": "unavailable",
+      "note": "Visuel officiel générique du produit ; finition non garantie.",
+      "error": ""
+    },
+    {
+      "manufacturer": "Alpi",
+      "reference": "FDORE10SBI",
+      "status": 200,
+      "image": "https://alpirubinetterie.com/wp-content/uploads/2022/09/FDORE10SBI_F-200x600.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "unavailable",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Alpi",
+      "reference": "FDP04CRBI",
+      "status": 200,
+      "image": "https://alpirubinetterie.com/wp-content/uploads/2022/09/FDP04%E2%80%A6BI_F-400x600.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "unavailable",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Alpi",
+      "reference": "GN99106CR",
+      "status": 200,
+      "image": "https://alpirubinetterie.com/wp-content/uploads/2022/08/GN99106_F-400x600.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "unavailable",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "OA1.PW",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "OA1.OB",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "GL2.PW",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "GL2.OB",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "BA3.PW",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "BA3.OB",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "LA4.PW",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "LA4.OB",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "MO5.PW",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "MO5.OB",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "IS6.PW",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "IS6.OB",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "CA7.PW",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "CA7.OB",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "GE8.PW",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "GE8.OB",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "VO9.PW",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "VO9.OB",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "CE10.PW",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "CE10.OB",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "CL11.PW",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "CL11.OB",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "AU12.PW",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "AU12.OB",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "RI13.PW",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "RI13.OB",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "BR14.PW",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "BR14.OB",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "CY15.PW",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "CY15.OB",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "TU16.PW",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "TU16.OB",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "DO17.PW",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "DO17.OB",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "HI18.PW",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "HI18.OB",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "PS19.PW",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "PS19.OB",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "DU1.PW",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "DU1.OB",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "CR2.PW",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "CR2.OB",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "VA3.PW",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "VA3.OB",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "AR1.PW",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "AR1.OB",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "AR2.PW",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "AR2.OB",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "AR3.PW",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "AR3.OB",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "AR4.PW",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "AR4.OB",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle sira indisponible"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "33605#726",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle gessi indisponible"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "33605#299",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle gessi indisponible"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "11922#708",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle gessi indisponible"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "33605#279",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle gessi indisponible"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "44838#726",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle gessi indisponible"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "44838#031",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle gessi indisponible"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "44838#149",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle gessi indisponible"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "54336#726",
+      "status": 502,
+      "image": "",
+      "finishMatch": "",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": "Source officielle gessi indisponible"
+    }
+  ],
+  "errors": [
+    {
+      "manufacturer": "Gessi",
+      "reference": "11922#726",
+      "error": "Gessi 11922#726 {\"error\":\"Source officielle gessi indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "11922#707",
+      "error": "Gessi 11922#707 {\"error\":\"Source officielle gessi indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "11922#708",
+      "error": "Gessi 11922#708 {\"error\":\"Source officielle gessi indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "33605#726",
+      "error": "Gessi 33605#726 {\"error\":\"Source officielle gessi indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "33605#299",
+      "error": "Gessi 33605#299 {\"error\":\"Source officielle gessi indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "44838#031",
+      "error": "Gessi 44838#031 {\"error\":\"Source officielle gessi indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "44838#149",
+      "error": "Gessi 44838#149 {\"error\":\"Source officielle gessi indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "54336#726",
+      "error": "Gessi 54336#726 {\"error\":\"Source officielle gessi indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "33605#279",
+      "error": "Gessi 33605#279 {\"error\":\"Source officielle gessi indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "44838#726",
+      "error": "Gessi 44838#726 {\"error\":\"Source officielle gessi indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "54336#239",
+      "error": "Gessi 54336#239 {\"error\":\"Source officielle gessi indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "54336#299",
+      "error": "Gessi 54336#299 {\"error\":\"Source officielle gessi indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "58144#726",
+      "error": "Gessi 58144#726 {\"error\":\"Source officielle gessi indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "58144#710",
+      "error": "Gessi 58144#710 {\"error\":\"Source officielle gessi indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "58144#720",
+      "error": "Gessi 58144#720 {\"error\":\"Source officielle gessi indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "63331#726",
+      "error": "Gessi 63331#726 {\"error\":\"Source officielle gessi indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "63331#299",
+      "error": "Gessi 63331#299 {\"error\":\"Source officielle gessi indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "63331#031",
+      "error": "Gessi 63331#031 {\"error\":\"Source officielle gessi indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "66134#726",
+      "error": "Gessi 66134#726 {\"error\":\"Source officielle gessi indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "66134#706",
+      "error": "Gessi 66134#706 {\"error\":\"Source officielle gessi indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "66134#707",
+      "error": "Gessi 66134#707 {\"error\":\"Source officielle gessi indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "73588#726",
+      "error": "Gessi 73588#726 {\"error\":\"Source officielle gessi indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "73588#299",
+      "error": "Gessi 73588#299 {\"error\":\"Source officielle gessi indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "73588#031",
+      "error": "Gessi 73588#031 {\"error\":\"Source officielle gessi indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "75002#726",
+      "error": "Gessi 75002#726 {\"error\":\"Source officielle gessi indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "75002#299",
+      "error": "Gessi 75002#299 {\"error\":\"Source officielle gessi indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "75002#031",
+      "error": "Gessi 75002#031 {\"error\":\"Source officielle gessi indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "75051#726",
+      "error": "Gessi 75051#726 {\"error\":\"Source officielle gessi indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "75051#299",
+      "error": "Gessi 75051#299 {\"error\":\"Source officielle gessi indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "75051#031",
+      "error": "Gessi 75051#031 {\"error\":\"Source officielle gessi indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "OA1.PW",
+      "error": "Sira Concrete OA1.PW {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "OA1.OB",
+      "error": "Sira Concrete OA1.OB {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "GL2.PW",
+      "error": "Sira Concrete GL2.PW {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "GL2.OB",
+      "error": "Sira Concrete GL2.OB {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "BA3.PW",
+      "error": "Sira Concrete BA3.PW {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "BA3.OB",
+      "error": "Sira Concrete BA3.OB {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "LA4.PW",
+      "error": "Sira Concrete LA4.PW {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "LA4.OB",
+      "error": "Sira Concrete LA4.OB {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "MO5.PW",
+      "error": "Sira Concrete MO5.PW {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "MO5.OB",
+      "error": "Sira Concrete MO5.OB {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "IS6.PW",
+      "error": "Sira Concrete IS6.PW {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "IS6.OB",
+      "error": "Sira Concrete IS6.OB {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "CA7.PW",
+      "error": "Sira Concrete CA7.PW {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "CA7.OB",
+      "error": "Sira Concrete CA7.OB {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "GE8.PW",
+      "error": "Sira Concrete GE8.PW {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "GE8.OB",
+      "error": "Sira Concrete GE8.OB {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "VO9.PW",
+      "error": "Sira Concrete VO9.PW {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "VO9.OB",
+      "error": "Sira Concrete VO9.OB {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "CE10.PW",
+      "error": "Sira Concrete CE10.PW {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "CE10.OB",
+      "error": "Sira Concrete CE10.OB {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "CL11.PW",
+      "error": "Sira Concrete CL11.PW {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "CL11.OB",
+      "error": "Sira Concrete CL11.OB {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "AU12.PW",
+      "error": "Sira Concrete AU12.PW {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "AU12.OB",
+      "error": "Sira Concrete AU12.OB {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "RI13.PW",
+      "error": "Sira Concrete RI13.PW {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "RI13.OB",
+      "error": "Sira Concrete RI13.OB {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "BR14.PW",
+      "error": "Sira Concrete BR14.PW {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "BR14.OB",
+      "error": "Sira Concrete BR14.OB {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "CY15.PW",
+      "error": "Sira Concrete CY15.PW {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "CY15.OB",
+      "error": "Sira Concrete CY15.OB {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "TU16.PW",
+      "error": "Sira Concrete TU16.PW {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "TU16.OB",
+      "error": "Sira Concrete TU16.OB {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "DO17.PW",
+      "error": "Sira Concrete DO17.PW {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "DO17.OB",
+      "error": "Sira Concrete DO17.OB {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "HI18.PW",
+      "error": "Sira Concrete HI18.PW {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "HI18.OB",
+      "error": "Sira Concrete HI18.OB {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "PS19.PW",
+      "error": "Sira Concrete PS19.PW {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "PS19.OB",
+      "error": "Sira Concrete PS19.OB {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "DU1.PW",
+      "error": "Sira Concrete DU1.PW {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "DU1.OB",
+      "error": "Sira Concrete DU1.OB {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "CR2.PW",
+      "error": "Sira Concrete CR2.PW {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "CR2.OB",
+      "error": "Sira Concrete CR2.OB {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "VA3.PW",
+      "error": "Sira Concrete VA3.PW {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "VA3.OB",
+      "error": "Sira Concrete VA3.OB {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "AR1.PW",
+      "error": "Sira Concrete AR1.PW {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "AR1.OB",
+      "error": "Sira Concrete AR1.OB {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "AR2.PW",
+      "error": "Sira Concrete AR2.PW {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "AR2.OB",
+      "error": "Sira Concrete AR2.OB {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "AR3.PW",
+      "error": "Sira Concrete AR3.PW {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "AR3.OB",
+      "error": "Sira Concrete AR3.OB {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "AR4.PW",
+      "error": "Sira Concrete AR4.PW {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "AR4.OB",
+      "error": "Sira Concrete AR4.OB {\"error\":\"Source officielle sira indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "33605#726",
+      "error": "Gessi 33605#726 {\"error\":\"Source officielle gessi indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "33605#299",
+      "error": "Gessi 33605#299 {\"error\":\"Source officielle gessi indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "11922#708",
+      "error": "Gessi 11922#708 {\"error\":\"Source officielle gessi indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "33605#279",
+      "error": "Gessi 33605#279 {\"error\":\"Source officielle gessi indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "44838#726",
+      "error": "Gessi 44838#726 {\"error\":\"Source officielle gessi indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "44838#031",
+      "error": "Gessi 44838#031 {\"error\":\"Source officielle gessi indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "44838#149",
+      "error": "Gessi 44838#149 {\"error\":\"Source officielle gessi indisponible\",\"status\":null}"
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "54336#726",
+      "error": "Gessi 54336#726 {\"error\":\"Source officielle gessi indisponible\",\"status\":null}"
+    }
+  ],
+  "tda": {
+    "count": 308546,
+    "gammes": 22
+  },
+  "completedAt": "2026-10-01T09:57:11.048Z",
+  "passed": false
+}

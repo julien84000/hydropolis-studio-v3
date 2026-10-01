@@ -9,11 +9,22 @@ const dns = require("dns").promises;
 const net = require("net");
 const { Pool } = require("pg");
 
+function createApp({assets={}}={}){
 const app = express();
-const PORT = process.env.PORT || 10000;
+const {MetadataCache}=require('./metadata-cache');
+const legacyCaches={};
+function metadataCache(name,max=120){const cache=new MetadataCache({max});legacyCaches[name]=cache;return cache;}
+const cacheSweep=setInterval(()=>Object.values(legacyCaches).forEach(c=>c.prune()),60000);cacheSweep.unref();
+app.locals.legacyCacheStats=()=>Object.fromEntries(Object.entries(legacyCaches).map(([key,c])=>[key,{entries:c.size,limit:c.max}]));
 
 app.use(express.json({limit:"20mb"}));
 require("./assets-server")(app);
+require("./official-assets-server")(app,{...assets,assertPublic:assets.assertPublic||assertPublicHttpUrl,validateRemote:async url=>{assertAllowedHydropolisRemote(url);await assertPublicHttpUrl(url);},legacy:async input=>{
+  if(!input.manufacturerUrl||!input.reference)throw new Error('manufacturerUrl et reference requis');
+  const technicalReference=/hotbath/i.test(input.manufacturer||'')?normalizeHotbathReference(input.lookupReference||input.reference):input.reference;
+  const data=await scrapeManufacturer({...input,reference:technicalReference,catalogBase:input.base||''});
+  return {...data,displayReference:input.reference,lookupReference:technicalReference};
+}});
 app.use(express.static(path.join(__dirname,"public")));
 require("./tariff-server")(app);
 
@@ -798,57 +809,6 @@ app.post("/api/translate-product",requireAuth,async(req,res)=>{
 });
 
 
-let catalogSearchIndexPromise=null;
-async function loadCatalogSearchIndex(){
-  if(catalogSearchIndexPromise)return catalogSearchIndexPromise;
-  catalogSearchIndexPromise=Promise.resolve().then(()=>{
-    const manifest=JSON.parse(fs.readFileSync(path.join(__dirname,"public","catalog_manifest.json"),"utf8"));
-    const files=["amphora_catalog.json",...(manifest.chunks||[]).map(c=>c.file)];
-    const items=[];const seen=new Set();
-    for(const file of files){
-      try{
-        const fullPath=path.join(__dirname,"public",file);
-        const raw=fs.readFileSync(fullPath);
-        const text=/\.gz$/i.test(file)?zlib.gunzipSync(raw).toString("utf8"):raw.toString("utf8");
-        const rows=JSON.parse(text);
-        for(const p of Array.isArray(rows)?rows:[]){
-          const key=`${p.manufacturer||""}|${p.reference||""}`;if(seen.has(key))continue;seen.add(key);items.push(p);
-        }
-      }catch(e){console.warn("[catalog-index]",file,e.message)}
-    }
-    return items;
-  });
-  return catalogSearchIndexPromise;
-}
-function foldSearch(v){return String(v||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase()}
-app.get("/api/catalog/search",requireAuth,async(req,res)=>{
-  try{
-    const items=await loadCatalogSearchIndex();
-    const q=foldSearch(req.query.q).trim().split(/\s+/).filter(Boolean);
-    const manufacturer=String(req.query.manufacturer||"");const collection=String(req.query.collection||"");const category=String(req.query.category||"");const finish=String(req.query.finish||"");
-    const limit=Math.max(1,Math.min(200,Number(req.query.limit)||120));
-    const matched=[];
-    for(const p of items){
-      if(manufacturer&&p.manufacturer!==manufacturer)continue;if(collection&&p.collection!==collection)continue;if(category&&p.category!==category)continue;if(finish&&p.finish!==finish)continue;
-      const hay=foldSearch([p.reference,p.base,p.designation,p.collection,p.manufacturer,p.finish,p.category,p.originalDescription,p.marketingDescription].filter(Boolean).join(" "));
-      if(q.length&&!q.every(w=>hay.includes(w)))continue;
-      matched.push(p);
-    }
-    matched.sort((a,b)=>{
-      const aq=foldSearch(a.reference),bq=foldSearch(b.reference),raw=foldSearch(req.query.q).trim();
-      return Number(bq===raw)-Number(aq===raw)||Number(bq.startsWith(raw))-Number(aq.startsWith(raw))||String(a.manufacturer).localeCompare(String(b.manufacturer),"fr");
-    });
-    res.json({source:"server-catalog-index",total:matched.length,items:matched.slice(0,limit)});
-  }catch(e){res.status(500).json({error:"Recherche catalogue impossible",detail:e.message})}
-});
-
-app.get("/api/health",(req,res)=>res.json({
-  ok:true,
-  service:"Hydropolis Studio V11.47",
-  database:USE_POSTGRES?"postgresql":"local-fallback",
-  time:new Date().toISOString()
-}));
-
 function absoluteUrl(base,value){
   try{return new URL(value,base).href}catch{return null}
 }
@@ -870,22 +830,7 @@ function uniqueBest(arr,key="url"){
   }
   return [...m.values()];
 }
-async function imageExists(url,referer){
-  try{
-    const r=await axios.get(url,{
-      responseType:"arraybuffer",
-      timeout:9000,
-      maxRedirects:4,
-      validateStatus:s=>s>=200&&s<300,
-      headers:{
-        "User-Agent":"Mozilla/5.0",
-        "Referer":referer||new URL(url).origin+"/"
-      }
-    });
-    const ct=String(r.headers["content-type"]||"");
-    return ct.startsWith("image/") && r.data && r.data.byteLength>3000;
-  }catch{return false}
-}
+async function imageExists(url,referer){return (await validateRemoteImage(url,referer)).ok;}
 function decodeHtmlEntities(s){
   return String(s||"")
     .replace(/&quot;/g,'"')
@@ -1196,24 +1141,20 @@ async function resolveCatalanoProductUrl(manufacturerUrl,reference,originalDescr
 }
 
 
-let hotbathSitemapMemo={at:0,locs:[]};
-let lefroySitemapMemo={at:0,html:""};
-const brandPageCache=new Map();
+const sitemapCache=metadataCache("sitemaps",2);
+
 const brandPageInflight=new Map();
-const BRAND_PAGE_TTL=6*60*60*1000;
+
 function boundedMapSet(map,key,value,limit=240){
   if(map.size>=limit && !map.has(key))map.delete(map.keys().next().value);
   map.set(key,value);
 }
 async function fetchBrandPage(url,lang="en-GB,en;q=0.9",force=false){
   const cacheKey=String(url||"");
-  const hit=brandPageCache.get(cacheKey);
-  if(!force && hit && Date.now()-hit.at<BRAND_PAGE_TTL)return hit.html;
   if(!force && brandPageInflight.has(cacheKey))return brandPageInflight.get(cacheKey);
   const job=(async()=>{
     const r=await axios.get(url,{timeout:18000,maxRedirects:5,validateStatus:x=>x>=200&&x<400,headers:{"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/150 Safari/537.36","Accept-Language":lang}});
     const html=String(r.data||"");
-    boundedMapSet(brandPageCache,cacheKey,{at:Date.now(),html});
     return html;
   })();
   brandPageInflight.set(cacheKey,job);
@@ -1262,13 +1203,10 @@ async function resolveHotbathProductUrl(reference){
   const token=normalizeToken(base);
 
   try{
-    if(!hotbathSitemapMemo.locs.length || Date.now()-hotbathSitemapMemo.at>6*60*60*1000){
+    const locs=await sitemapCache.resolve('hotbath',async()=>{
       const xml=await fetchBrandPage("https://www.hotbath.it/sitemap.xml","fr-FR,fr;q=0.9,en;q=0.7");
-      const locs=[...String(xml||"").matchAll(/<loc>([^<]+)<\/loc>/gi)]
-        .map(x=>String(x[1]||"").replace(/&amp;/g,"&"));
-      hotbathSitemapMemo={at:Date.now(),locs};
-    }
-    const locs=hotbathSitemapMemo.locs||[];
+      return [...String(xml||"").matchAll(/<loc>([^<]+)<\/loc>/gi)].map(x=>String(x[1]||"").replace(/&amp;/g,"&"));
+    });
     const frExact=locs.find(u=>exactRxFr.test(u));
     if(frExact)return frExact;
     const enExact=locs.find(u=>exactRxEn.test(u));
@@ -1311,11 +1249,10 @@ async function resolveLefroyProductUrl(reference,designation){
   const m=base.match(/^([A-Z]+)(\d+[A-Z]?)$/);
   const slug=m?`${m[1].toLowerCase()}-${m[2].toLowerCase()}`:base.toLowerCase().replace(/[^a-z0-9]+/g,"-");
   try{
-    if(!lefroySitemapMemo.html || Date.now()-lefroySitemapMemo.at>6*60*60*1000){
-      lefroySitemapMemo={at:Date.now(),html:await fetchBrandPage("https://uk.lefroybrooks.com/sitemap.xml")};
-    }
-    const xml=lefroySitemapMemo.html;
-    const locs=[...xml.matchAll(/<loc>([^<]+)<\/loc>/gi)].map(x=>x[1].replace(/&amp;/g,"&"));
+    const locs=await sitemapCache.resolve('lefroy',async()=>{
+      const xml=await fetchBrandPage("https://uk.lefroybrooks.com/sitemap.xml");
+      return [...xml.matchAll(/<loc>([^<]+)<\/loc>/gi)].map(x=>x[1].replace(/&amp;/g,"&"));
+    });
     const exact=locs.find(u=>new RegExp("/"+slug.replace(/[.*+?^${}()|[\\]\\]/g,"\\$&")+"/?$","i").test(u));
     if(exact)return exact;
     const loose=locs.find(u=>normalizeToken(u).includes(normalizeToken(base)));
@@ -1343,7 +1280,7 @@ function recorModelFromData(reference,designation){
   const hay=normalizeToken((designation||"")+" "+s);
   return known.find(x=>hay.includes(normalizeToken(x)))||"";
 }
-const recorResolvedUrlMemo=new Map();
+const recorResolvedUrlMemo=metadataCache("recorResolvedUrlMemo");
 async function resolveRecorProductUrl(reference,designation){
   const model=recorModelFromData(reference,designation);
   if(!model)return null;
@@ -1379,19 +1316,8 @@ async function resolveRecorProductUrl(reference,designation){
 
 
 const NICOLAZZI_PDF_ASSET_FILE=path.join(__dirname,"public","nicolazzi_pdf_assets.json.gz");
-let nicolazziPdfAssetCache=null;
-function loadNicolazziPdfAssets(){
-  if(nicolazziPdfAssetCache)return nicolazziPdfAssetCache;
-  try{
-    const raw=zlib.gunzipSync(fs.readFileSync(NICOLAZZI_PDF_ASSET_FILE));
-    const parsed=JSON.parse(raw.toString("utf8"));
-    nicolazziPdfAssetCache=parsed&&parsed.models?parsed:{models:{},version:""};
-  }catch(e){
-    console.error("[nicolazzi-pdf-assets]",e.message);
-    nicolazziPdfAssetCache={models:{},version:""};
-  }
-  return nicolazziPdfAssetCache;
-}
+const nicolazziPdfIndex=require('./public/nicolazzi_pdf_index.json');
+function loadNicolazziPdfAssets(){return nicolazziPdfIndex;}
 function nicolazziPdfAssetKey(reference="",catalogBase=""){
   const base=String(catalogBase||nicolazziRefBase(reference)||"").trim();
   const models=loadNicolazziPdfAssets().models||{};
@@ -1450,8 +1376,8 @@ async function resolveOfficialNicolazziVisual({reference="",catalogBase="",colle
 // matched unambiguously.
 const NICOLAZZI_DESIGNER_BASE="https://designertapwareco.com.au";
 const NICOLAZZI_DESIGNER_TTL=12*60*60*1000;
-const nicolazziDesignerProductMemo=new Map();
-const nicolazziDesignerResolveMemo=new Map();
+const nicolazziDesignerProductMemo=metadataCache("nicolazziDesignerProductMemo");
+const nicolazziDesignerResolveMemo=metadataCache("nicolazziDesignerResolveMemo");
 const nicolazziDesignerResolveInflight=new Map();
 function nicolazziDesignerSlug(value=""){
   return String(value||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"")
@@ -1614,7 +1540,7 @@ function officialSiteLinks(html,baseUrl,hostPattern){
   });
   return out;
 }
-const nicolazziResolvedUrlMemo=new Map();
+const nicolazziResolvedUrlMemo=metadataCache("nicolazziResolvedUrlMemo");
 function nicolazziProductLinks(html,baseUrl){
   const $=cheerio.load(html),seen=new Set(),out=[];
   $("li.product,.product.type-product,article.product").each((_,card)=>{
@@ -1821,28 +1747,17 @@ function finishExactInText(text,finishCode,finish,reference){
 
 
 async function validateRemoteImage(url,referer=""){
-  if(!url || !/^https?:\/\//i.test(url))return {ok:false,status:0};
+  if(!url||!/^https?:\/\//i.test(url))return {ok:false,status:0};
+  let r;
   try{
-    const r=await axios.get(url,{
-      responseType:"arraybuffer",
-      timeout:12000,
-      maxRedirects:4,
-      validateStatus:()=>true,
-      headers:{
-        "User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/150 Safari/537.36",
-        "Accept":"image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
-        "Referer":referer||new URL(url).origin+"/"
-      }
-    });
+    r=await safeRemoteGet(url,{responseType:"stream",timeout:12000,headers:{"User-Agent":"HydropolisStudio/"+require('./package.json').version,"Accept":"image/*"}});
     const ct=String(r.headers["content-type"]||"").toLowerCase();
-    const ok=r.status>=200 && r.status<300 && ct.startsWith("image/") && r.data && r.data.length>3500;
-    return {ok,status:r.status,contentType:ct,size:r.data?.length||0,data:ok?Buffer.from(r.data):null};
-  }catch(e){
-    return {ok:false,status:Number(e.response?.status||0),error:e.message};
-  }
+    return {ok:r.status>=200&&r.status<300&&ct.startsWith("image/"),status:r.status,contentType:ct,size:Number(r.headers['content-length']||0)};
+  }catch(e){return {ok:false,status:Number(e.response?.status||0),error:e.message};}
+  finally{r?.data?.destroy();}
 }
 
-const hotbathResultCache=new Map();
+const hotbathResultCache=metadataCache("hotbathResultCache");
 const hotbathResultInflight=new Map();
 async function scrapeManufacturer(options){
   if(!/hotbath\.it/i.test(options.manufacturerUrl||""))return scrapeManufacturerUncached(options);
@@ -1968,7 +1883,7 @@ async function scrapeManufacturerUncached({manufacturerUrl,reference,catalogBase
     if(!verified){try{verified=await verify("png");}catch{}}
     if(verified){
       const {url:direct,check}=verified;
-      const item={url:direct,source:"zucchetti-reference-asset",score:30000,finishMatch:"generic",detectedFinishCode:null,variationId:null,attributes:{official:true,baseMatch:true,reference:base.toUpperCase()},dataUrl:`data:${check.contentType};base64,${check.data.toString("base64")}`};
+      const item={url:direct,source:"zucchetti-reference-asset",score:30000,finishMatch:"generic",detectedFinishCode:null,variationId:null,attributes:{official:true,baseMatch:true,reference:base.toUpperCase()}};
       return {manufacturerUrl,reference,finishCode:requested,finish,base,best:item,images:[item],exactFound:false,drawing:null,cadDrawing:null,technicalSheet:null,installationGuide:null,candidates:[item],note:`Photo officielle Zucchetti vérifiée par la référence ${base.toUpperCase()}.`};
     }
   }
@@ -3134,7 +3049,6 @@ async function scrapeManufacturerUncached({manufacturerUrl,reference,catalogBase
         candidates.push({
           ...item,
           validated:true,
-          dataUrl:`data:${check.contentType};base64,${check.data.toString("base64")}`,
           validatedContentType:check.contentType
         });
         // One live official hero is enough.
@@ -3170,7 +3084,6 @@ async function scrapeManufacturerUncached({manufacturerUrl,reference,catalogBase
 
           candidates.push({
             url:item.image,
-            dataUrl:item.dataUrl||null,
             page:item.page||"",
             title:item.title||"",
             source:resolvedSource,
@@ -3274,62 +3187,27 @@ async function scrapeManufacturerUncached({manufacturerUrl,reference,catalogBase
     }
   }
 
-  // Évite les images cassées : on rapatrie l'image officielle choisie côté serveur
-  // et on la renvoie directement au navigateur sous forme data URL.
-  async function embedOfficialImage(item){
-    if(!item) return item;
-    if(item.dataUrl)return item;
-    try{
-      if(!isAllowedHydropolisRemoteHost(new URL(item.url||manufacturerUrl).hostname))return item;
-    }catch{return item;}
-    try{
-      const ir=await axios.get(item.url,{
-        responseType:"arraybuffer",timeout:18000,maxRedirects:5,
-        headers:{"User-Agent":"Mozilla/5.0","Referer":new URL(manufacturerUrl).origin+"/"}
-      });
-      const ct=String(ir.headers["content-type"]||"image/jpeg");
-      if(ct.startsWith("image/") && ir.data && ir.data.length<9000000){
-        const bytes=Buffer.from(ir.data);
-        let pixelWidth=0,pixelHeight=0;
-        try{
-          const {loadImage}=await import("@napi-rs/canvas");
-          const decoded=await loadImage(bytes);
-          pixelWidth=Number(decoded.width||0);
-          pixelHeight=Number(decoded.height||0);
-        }catch(e){}
-        return {...item,pixelWidth,pixelHeight,dataUrl:`data:${ct};base64,${bytes.toString("base64")}`};
-      }
-    }catch(e){console.warn("[manufacturer-image-embed]",e.message);}
-    return item;
-  }
-  if(best) best=await embedOfficialImage(best);
-
-  if((isRitmonio||isNicolazzi) && best && !best.dataUrl){
+  // Keep remote URLs only; image bytes are streamed separately to the browser.
+  if((isRitmonio||isNicolazzi) && best){
     const check=await validateRemoteImage(best.url,manufacturerUrl);
     if(!check.ok){
       console.warn("[manufacturer-best-image-dead]",JSON.stringify({manufacturer:isRitmonio?"Ritmonio":"Nicolazzi",reference,url:best.url,status:check.status||0}));
       const alternative=sorted.find(x=>x.url!==best.url && x.source!=="ritmonio-official-product-image" && !/logo/i.test(x.url||""))||null;
-      best=alternative?await embedOfficialImage(alternative):null;
-    }else if(check.data){
-      best={...best,dataUrl:`data:${check.contentType};base64,${check.data.toString("base64")}`};
+      best=alternative;
     }
   }
 
-  if(isHotbath && best && /hotbath\.it/i.test(best.url||"") && !best.dataUrl){
-    // A Hotbath official asset without embedded bytes is not trustworthy:
-    // its page may still reference a 404 legacy file.
+  if(isHotbath && best && /hotbath\.it/i.test(best.url||"")){
+    // Validate the official URL: the page may still reference a 404 legacy file.
     const check=await validateRemoteImage(best.url,manufacturerUrl);
     if(!check.ok){
       console.warn("[hotbath-best-image-dead]",JSON.stringify({reference,url:best.url,status:check.status||0}));
       const webAlternative=sorted.find(x=>x.source==="hotbath-web-exact" || x.source==="hotbath-web-generic")||null;
       best=webAlternative;
-    }else if(check.data){
-      best={...best,dataUrl:`data:${check.contentType};base64,${check.data.toString("base64")}`};
     }
   }
 
   if(isCatalano || isRecor){
-    productImages=await Promise.all(productImages.map(embedOfficialImage));
     if(isRecor){
       const measured=productImages.filter(x=>Number(x.pixelWidth||0)>0 && Number(x.pixelHeight||0)>0);
       const hd=productImages.filter(x=>{
@@ -3413,8 +3291,8 @@ async function scrapeManufacturerUncached({manufacturerUrl,reference,catalogBase
 }
 
 
-const hotbathWebImageCache=new Map();
-const finishSimulationCache=new Map();
+const hotbathWebImageCache=metadataCache("hotbathWebImageCache");
+
 
 function hotbathFinishTarget(code){
   const c=String(code||"").toUpperCase();
@@ -3688,7 +3566,7 @@ async function sanitairkamerHotbathImageCandidates(reference,finishCode,finish){
       for(const cand of pageCandidates.slice(0,2)){
         const check=await validateRemoteImage(cand.image,pageUrl);
         if(!check.ok)continue;
-        exact.push({...cand,dataUrl:`data:${check.contentType};base64,${check.data.toString('base64')}`,contentType:check.contentType,source:'sanitairkamer',exactReferenceMatch:true,exactFinish:true});
+        exact.push({...cand,contentType:check.contentType,source:'sanitairkamer',exactReferenceMatch:true,exactFinish:true});
         break;
       }
       if(exact.length)break;
@@ -3779,14 +3657,9 @@ async function bingHotbathImageCandidates(reference,finishCode,finish){
   for(const item of candidates.slice(0,3)){
     if(item.score<1800)continue;
     try{
-      const r=await axios.get(item.image,{
-        responseType:"arraybuffer",timeout:10000,maxRedirects:4,
-        validateStatus:x=>x>=200&&x<300,
-        headers:{"User-Agent":"Mozilla/5.0","Referer":item.page||"https://www.bing.com/"}
-      });
-      const ct=String(r.headers["content-type"]||"");
-      if(!ct.startsWith("image/") || !r.data || r.data.length<5000 || r.data.length>9000000)continue;
-      checked.push({...item,dataUrl:`data:${ct};base64,${Buffer.from(r.data).toString('base64')}`,contentType:ct});
+      const check=await validateRemoteImage(item.image,item.page);
+      if(!check.ok)continue;
+      checked.push({...item,contentType:check.contentType});
       if(item.exactReferenceMatch || checked.length>=2)break;
     }catch{}
   }
@@ -3839,17 +3712,10 @@ app.get("/api/finish-simulation",async(req,res)=>{
   const target=hotbathFinishTarget(finish);
   if(!target)return res.status(400).send("Finition Hotbath non prise en charge");
 
-  const cacheKey=crypto.createHash("sha1").update(url+"|"+finish).digest("hex");
-  if(finishSimulationCache.has(cacheKey)){
-    const cached=finishSimulationCache.get(cacheKey);
-    res.set("Content-Type","image/jpeg");
-    res.set("Cache-Control","public, max-age=604800");
-    return res.send(cached);
-  }
 
   try{
-    const r=await axios.get(url,{
-      responseType:"arraybuffer",timeout:18000,maxRedirects:5,
+    const r=await safeRemoteGet(url,{
+      responseType:"arraybuffer",timeout:18000,maxContentLength:15*1024*1024,maxBodyLength:15*1024*1024,
       headers:{"User-Agent":"Mozilla/5.0","Referer":new URL(url).origin+"/"}
     });
     const ct=String(r.headers["content-type"]||"");
@@ -3912,8 +3778,6 @@ app.get("/api/finish-simulation",async(req,res)=>{
 
     ctx.putImageData(data,0,0);
     const out=await canvas.encode("jpeg",90);
-    if(finishSimulationCache.size>80)finishSimulationCache.clear();
-    finishSimulationCache.set(cacheKey,out);
     res.set("Content-Type","image/jpeg");
     res.set("Cache-Control","public, max-age=604800");
     res.set("X-Hydropolis-Simulation",target.label);
@@ -3935,27 +3799,6 @@ app.post("/api/ritmonio-docs",async(req,res)=>{
     res.status(502).json({error:"Scheda tecnica Ritmonio introuvable",detail:e.message});
   }
 });
-
-app.post("/api/manufacturer-image",async(req,res)=>{
-  const {manufacturerUrl,reference,lookupReference,base:catalogBase,finishCode,finish,designation,originalDescription,collection,manufacturer,imageOnly}=req.body||{};
-  if(!manufacturerUrl||!reference) return res.status(400).json({error:"manufacturerUrl et reference requis"});
-  try{
-    const technicalReference=/hotbath/i.test(manufacturer||"")
-      ?normalizeHotbathReference(lookupReference||reference)
-      :reference;
-    const result=await scrapeManufacturer({manufacturerUrl,reference:technicalReference,catalogBase,finishCode,finish,designation,originalDescription,collection,manufacturer,imageOnly:imageOnly===true});
-    // Preserve the commercial catalogue reference for the browser/UI.
-    result.displayReference=reference;
-    result.lookupReference=technicalReference;
-    res.json(result);
-  }catch(e){
-    res.status(502).json({
-      error:"Impossible d'analyser la fiche fabricant",
-      detail:e.message
-    });
-  }
-});
-
 
 function safeAssetName(v){
   const name=path.basename(String(v||""));
@@ -4057,7 +3900,7 @@ const REMOTE_HOST_SUFFIXES=[
   // image/file CDN hosts, not from coalbrookuk.co.uk itself. Keep the allowlist
   // deliberately narrow to Coalbrook-owned hostnames rather than all svdcdn.com.
   "coalbrook-bathrooms.transforms.svdcdn.com","coalbrook-bathrooms.files.svdcdn.com",
-  "catalano.it","recor.pt","fioranese.it","resigres.com","vismaravetro.it","tda.it","siraconcrete.com","amphoradesign.it","sanitairkamer.nl","ritmonio.it","nicolazzi.it","designertapwareco.com.au","cdn.shopify.com","gessi.com","areapro.gessi.com","gwebassets.gessi.com","gessistorage.blob.core.windows.net",
+  "alpirubinetterie.com","catalano.it","recor.pt","fioranese.it","resigres.com","vismaravetro.it","tda.it","siraconcrete.com","amphoradesign.it","sanitairkamer.nl","ritmonio.it","nicolazzi.it","designertapwareco.com.au","cdn.shopify.com","gessi.com","areapro.gessi.com","gwebassets.gessi.com","gessistorage.blob.core.windows.net",
   // Lefroy Brooks is hosted on Squarespace. Product imagery is served from
   // these dedicated CDN hosts while product pages/downloads stay on lefroybrooks.com.
   "images.squarespace-cdn.com","static1.squarespace.com","file.squarespace-cdn.com"
@@ -4082,8 +3925,10 @@ async function assertPublicHttpUrl(raw){
 async function safeRemoteGet(raw,options={}){
   let current=(await assertPublicHttpUrl(raw)).toString();
   for(let i=0;i<4;i++){
-    const r=await axios.get(current,{...options,maxRedirects:0,validateStatus:s=>s>=200&&s<400});
-    if(r.status>=300&&r.status<400&&r.headers.location){current=(await assertPublicHttpUrl(new URL(r.headers.location,current).toString())).toString();continue}
+    let r;
+    try{r=await axios.get(current,{...options,maxRedirects:0,validateStatus:s=>s>=200&&s<400});}
+    catch(e){e.response?.data?.destroy?.();throw e;}
+    if(r.status>=300&&r.status<400&&r.headers.location){r.data?.destroy?.();current=(await assertPublicHttpUrl(new URL(r.headers.location,current).toString())).toString();continue}
     return r;
   }
   throw new Error("Trop de redirections");
@@ -4256,37 +4101,35 @@ app.get("/api/hotbath-drawing-image",async(req,res)=>{
       {"User-Agent":baseHeaders["User-Agent"],"Accept":"image/avif,image/webp,image/apng,image/*,*/*;q=0.8","Accept-Language":baseHeaders["Accept-Language"],"Referer":productUrl,...(cookies?{"Cookie":cookies}:{})},
       {"User-Agent":baseHeaders["User-Agent"],"Accept":"image/*,*/*;q=0.8","Referer":productUrl}
     ];
-    for(const headers of attempts){
+    const controller=new AbortController();
+    const abort=()=>controller.abort();req.once('aborted',abort);res.once('close',abort);
+    try{for(const headers of attempts){
+      let img;
       try{
-        const img=await safeRemoteGet(liveDrawingUrl,{responseType:"arraybuffer",timeout:18000,maxContentLength:12*1024*1024,maxBodyLength:12*1024*1024,headers});
+        img=await safeRemoteGet(liveDrawingUrl,{responseType:"stream",signal:controller.signal,timeout:18000,headers});
         const type=String(img.headers?.["content-type"]||"");
-        if(img.status>=200&&img.status<300&&type.startsWith("image/")&&img.data?.byteLength>500){res.set("Content-Type",type.split(";")[0]);res.set("Cache-Control","public, max-age=86400");return res.send(img.data)}
-      }catch(e){console.warn("[hotbath-drawing-image-attempt]",e.message)}
-    }
+        if(img.status>=200&&img.status<300&&type.startsWith("image/")){
+          res.set("Content-Type",type.split(";")[0]);res.set("Cache-Control","public, max-age=86400");
+          await require('stream/promises').pipeline(img.data,res);return;
+        }
+      }catch(e){if(res.headersSent||res.destroyed)return;console.warn("[hotbath-drawing-image-attempt]",e.message);}
+      finally{img?.data?.destroy();}
+    }}finally{req.off('aborted',abort);res.off('close',abort);}
     return res.status(502).send("Drawing Hotbath inaccessible");
   }catch(e){console.warn("[hotbath-drawing-image-page]",e.message);return res.status(502).send("Drawing Hotbath inaccessible")}
 });
 
-app.get("/api/nicolazzi-pdf-asset",(req,res)=>{
-  const base=String(req.query?.base||"").trim();
-  const pack=loadNicolazziPdfAssets();
-  const model=pack.models?.[base];
-  if(!model?.image)return res.status(404).send("Visuel Nicolazzi introuvable");
-  try{
-    const bytes=Buffer.from(model.image,"base64");
-    res.set("Cache-Control","public, max-age=31536000, immutable");
-    res.type(model.mime||"image/webp");
-    res.send(bytes);
-  }catch(e){
-    res.status(500).send("Visuel Nicolazzi illisible");
-  }
+app.get("/api/nicolazzi-pdf-asset",async(req,res)=>{
+  const base=String(req.query?.base||"").trim(),model=nicolazziPdfIndex.models?.[base];
+  if(!model)return res.status(404).send("Visuel Nicolazzi introuvable");
+  res.set("Cache-Control","public, max-age=31536000, immutable").type(model.mime||"image/webp");
+  try{await require('stream/promises').pipeline(require('./packed-assets').packedStream(NICOLAZZI_PDF_ASSET_FILE,['models',base],'image'),res);}
+  catch(e){if(!res.headersSent&&!res.destroyed)res.status(500).end();}
 });
 
-/* V11.49_RESIGRES_OFFICIAL_ASSETS */
-/* V11.47_RESIGRES_OFFICIAL_ASSETS compatibility marker */
-const RESIGRES_RESOLVER_VERSION="11.49";
-const RESIGRES_ASSET_CACHE=new Map();
-const RESIGRES_CATEGORY_INDEX_CACHE=new Map();
+const RESIGRES_RESOLVER_VERSION=require('./package.json').version;
+const RESIGRES_ASSET_CACHE=metadataCache("RESIGRES_ASSET_CACHE");
+const RESIGRES_CATEGORY_INDEX_CACHE=metadataCache("RESIGRES_CATEGORY_INDEX_CACHE");
 const RESIGRES_CATEGORY_URLS={
   "shower-tray":"https://resigres.com/productos-platos-ducha.php",
   "basin-top":"https://resigres.com/productos-encimeras-suspendidas.php",
@@ -4440,8 +4283,8 @@ app.get("/api/resigres-assets",async(req,res)=>{
   try{const data=await rgAssets(model,kind,productUrl);res.set("Cache-Control","no-store");res.json(data)}catch(e){console.warn("[resigres-assets-v11.49]",model,kind,e.message);res.status(404).json({error:"Assets Resigres introuvables",detail:e.message})}
 });
 /* V11.52_SHOWER_SCREEN_OFFICIAL_ASSETS */
-const HYDRO_SHOWER_ASSET_VERSION="11.52";
-const HYDRO_SHOWER_ASSET_CACHE=new Map();
+const HYDRO_SHOWER_ASSET_VERSION=require('./package.json').version;
+const HYDRO_SHOWER_ASSET_CACHE=metadataCache("HYDRO_SHOWER_ASSET_CACHE");
 function hsNorm(v){return String(v||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim()}
 function hsBrand(v){const n=hsNorm(v);if(n==="vismaravetro"||n==="vismara")return "Vismaravetro";if(n==="tda")return "TDA";return ""}
 function hsAllowed(brand,url){try{const u=new URL(url);if(!/^https?:$/.test(u.protocol))return false;const h=u.hostname.toLowerCase();return brand==="Vismaravetro"?/(^|\.)vismaravetro\.it$/.test(h):brand==="TDA"?/(^|\.)tda\.it$/.test(h):false}catch{return false}}
@@ -4452,7 +4295,7 @@ function hsExtractDocs($,pageUrl,brand){const pdfs=[],guides=[],models=[];$("a[h
 async function hsAssets(manufacturer,collection,pageUrl){const brand=hsBrand(manufacturer);if(!brand)throw new Error("Fabricant paroi non pris en charge");if(!hsAllowed(brand,pageUrl))throw new Error(`URL officielle ${brand} invalide`);const key=hsNorm(brand+"|"+collection+"|"+pageUrl),hit=HYDRO_SHOWER_ASSET_CACHE.get(key);if(hit&&Date.now()-hit.at<6*60*60*1000)return hit.data;const page=await safeRemoteGet(pageUrl,{timeout:16000,maxContentLength:8*1024*1024,maxBodyLength:8*1024*1024,headers:{"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/150 Safari/537.36","Accept-Language":"fr-FR,fr;q=0.9,it;q=0.8,en;q=0.7","Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8","Cache-Control":"no-cache"}});const html=String(page.data||""),$=cheerio.load(html),images=hsExtractImages($,html,pageUrl,collection,brand),docs=hsExtractDocs($,pageUrl,brand);if(!images.length&&!docs.technical)throw new Error(`Aucun visuel officiel exploitable trouvé pour ${brand} ${collection}`);const data={resolverVersion:HYDRO_SHOWER_ASSET_VERSION,manufacturer:brand,collection,productUrl:pageUrl,image:images[0]||"",images:images.slice(0,16),technicalSheetUrl:docs.technical?.url||"",technicalSheetLabel:docs.technical?.label||"",installationGuideUrl:docs.guide?.url||"",installationGuideLabel:docs.guide?.label||"",model3dUrl:docs.model3d?.url||"",model3dLabel:docs.model3d?.label||""};HYDRO_SHOWER_ASSET_CACHE.set(key,{at:Date.now(),data});return data}
 app.get("/api/shower-screen-assets",async(req,res)=>{const manufacturer=String(req.query.manufacturer||"").trim(),collection=String(req.query.collection||"").trim(),url=String(req.query.url||"").trim();if(!manufacturer||!collection||!url)return res.status(400).json({error:"Fabricant, collection et URL requis"});try{const data=await hsAssets(manufacturer,collection,url);res.set("Cache-Control","no-store");res.json(data)}catch(e){console.warn("[shower-screen-assets-v11.52]",manufacturer,collection,e.message);res.status(404).json({error:"Assets officiels introuvables",detail:e.message})}});
 /* V11.53_CONFIGURATORS_SIRA */
-const V1153_CONFIG_CACHE=new Map();
+const V1153_CONFIG_CACHE=metadataCache("V1153_CONFIG_CACHE");
 function v53Norm(v){return String(v||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g," ").trim()}
 function v53Abs(base,href){try{return new URL(String(href||"").replace(/&amp;/g,"&"),base).href}catch{return ""}}
 function v53Allowed(url,brand=""){
@@ -4552,77 +4395,19 @@ app.get("/api/sira-category",async(req,res)=>{
   const url=String(req.query.url||"").trim();if(!v53Allowed(url,"Sira Concrete"))return res.status(400).json({error:"Catégorie Sira invalide"});const key=`sira-cat|${url}`,hit=V1153_CONFIG_CACHE.get(key);if(hit&&Date.now()-hit.at<6*60*60*1000)return res.json(hit.data);
   try{const page=await v53Get(url),html=String(page.data||""),$=cheerio.load(html),products=v53SiraProducts($,url),images=v53Images($,url,"Sira Concrete"),data={url,title:v53Norm($("h1,h2").first().text()),products,images};V1153_CONFIG_CACHE.set(key,{at:Date.now(),data});res.set("Cache-Control","no-store").json(data)}catch(e){res.status(502).json({error:"Impossible de lire la catégorie Sira",detail:e.message})}
 });
-app.get("/api/sira-product",async(req,res)=>{
-  const url=String(req.query.url||"").trim();if(!v53Allowed(url,"Sira Concrete")||!/\/producto\//i.test(url))return res.status(400).json({error:"Produit Sira invalide"});const key=`sira-product|${url}`,hit=V1153_CONFIG_CACHE.get(key);if(hit&&Date.now()-hit.at<6*60*60*1000)return res.json(hit.data);
+app.get("*",(req,res)=>res.type("html").send(app.locals.versionedIndexHtml()));
+app.locals.initPersistentStore=initPersistentStore;
+return app;
+}
+async function startServer(options){
+  const app=createApp(options),port=process.env.PORT||10000;
   try{
-    const page=await v53Get(url),html=String(page.data||""),$=cheerio.load(html),txt=v53Norm($.root().text()),images=v53Images($,url,"Sira Concrete"),docs=v53Docs($,url,"Sira Concrete"),title=v53Norm($("h1").first().text())||v53Norm($("title").text());
-    const colors=[{code:"CH",label:"Charcoal"},{code:"CG",label:"Concrete Grey"},{code:"DC",label:"Dark Clay"},{code:"FG",label:"Fog Grey"},{code:"LS",label:"Light Sun"},{code:"MI",label:"Mint"},{code:"MG",label:"Moss Green"},{code:"OB",label:"Ocean Blue"},{code:"PW",label:"Pearl White"},{code:"SP",label:"Salt Pink"},{code:"SA",label:"Sand"},{code:"TE",label:"Terracota"}].filter(c=>txt.toLowerCase().includes(c.label.toLowerCase())||txt.includes(`(${c.code})`));
-    const specs=[];$("h4,h5,h6").each((_,el)=>{const k=v53Norm($(el).text());if(!k||k.length>80)return;const n=$(el).next();const v=v53Norm(n.text());if(v&&v.length<160&&!specs.some(x=>x.label===k))specs.push({label:k,value:v})});
-    const optionTexts=[];$("h5,h6,p,strong").each((_,el)=>{const t=v53Norm($(el).text());if(t&&t.length>10&&t.length<240&&/(monta|mount|support|grifo|faucet|trou|hole|personali|custom|inclu|include)/i.test(t)&&!optionTexts.includes(t))optionTexts.push(t)});
-    const technical=docs.pdf.find(x=>/spec|tech|ficha|fiche|sheet/i.test(x.label+x.url))||docs.pdf[0]||null;
-    const dimMatch=txt.match(/(?:MEDIDAS|SIZES|DIMENSIONS?)\s+([Ø0-9][0-9 x×Ø.,\-–]+MM)/i);
-    const weightMatch=txt.match(/(?:PESO|WEIGHT|POIDS)\s+([0-9.,]+\s*KG)/i),capacityMatch=txt.match(/(?:CAPACIDAD|CAPACITY|CAPACITÉ)\s+([0-9.,]+\s*L)/i);
-    const data={url,title,images,colors:colors.length?colors:[{code:"CH",label:"Charcoal"},{code:"CG",label:"Concrete Grey"},{code:"DC",label:"Dark Clay"},{code:"FG",label:"Fog Grey"},{code:"LS",label:"Light Sun"},{code:"MI",label:"Mint"},{code:"MG",label:"Moss Green"},{code:"OB",label:"Ocean Blue"},{code:"PW",label:"Pearl White"},{code:"SP",label:"Salt Pink"},{code:"SA",label:"Sand"},{code:"TE",label:"Terracota"}],specs:specs.slice(0,16),options:optionTexts.slice(0,12),dimensions:dimMatch?.[1]||"",weight:weightMatch?.[1]||"",capacity:capacityMatch?.[1]||"",technicalSheetUrl:technical?.url||"",technicalSheetLabel:technical?.label||"Fiche technique Sira",otherFiles:docs.other};
-    V1153_CONFIG_CACHE.set(key,{at:Date.now(),data});res.set("Cache-Control","no-store").json(data)
-  }catch(e){res.status(502).json({error:"Impossible de lire le produit Sira",detail:e.message})}
-});
-/* V11.54_SIRA_EXACT_IMAGE */
-app.get("/api/sira-product-v54",async(req,res)=>{
-  const url=String(req.query.url||"").trim();
-  if(!v53Allowed(url,"Sira Concrete")||!/\/producto\//i.test(url))return res.status(400).json({error:"Produit Sira invalide"});
-  try{
-    const page=await v53Get(url),html=String(page.data||""),$=cheerio.load(html),images=[],seen=new Set();
-    function add(raw){
-      if(!raw)return;const u=v53Abs(url,String(raw).split(",")[0].trim().split(/\s+/)[0]);
-      if(!u||!v53Allowed(u,"Sira Concrete")||!/\.(?:jpe?g|png|webp|avif)(?:\?|$)/i.test(u)||seen.has(u))return;
-      const low=u.toLowerCase();if(/logo|icon|flag|cookie|spinner|placeholder|avatar/.test(low))return;seen.add(u);images.push(u);
-    }
-    // Strict priority: product gallery / featured image, then OG image. Do not scan
-    // the entire document, because that also contains related products and footer cards.
-    $(".woocommerce-product-gallery img, .product-images img, .product-gallery img, img.wp-post-image, .single-product img.wp-post-image").each((_,el)=>{
-      const e=$(el);for(const a of ["data-large_image","data-src","src","srcset"])add(e.attr(a));
-    });
-    add($("meta[property='og:image']").attr("content"));
-    add($("meta[name='twitter:image']").attr("content"));
-    if(!images.length){
-      $("main .product img, article.product img").each((_,el)=>add($(el).attr("src")||$(el).attr("data-src")));
-    }
-    res.set("Cache-Control","no-store").json({url,title:v53Norm($("h1").first().text()),image:images[0]||"",images:images.slice(0,12)});
-  }catch(e){res.status(502).json({error:"Impossible de récupérer le visuel Sira exact",detail:e.message})}
-});
-app.get("/api/image-proxy",async(req,res)=>{
-  const url=req.query.url;
-  if(!url||!/^https?:\/\//i.test(url)) return res.status(400).send("URL invalide");
-  try{
-    assertAllowedHydropolisRemote(url);
-    const r=await safeRemoteGet(url,{
-      responseType:"arraybuffer",
-      timeout:18000,
-      maxContentLength:15*1024*1024,
-      maxBodyLength:15*1024*1024,
-      headers:{
-        "User-Agent":"Mozilla/5.0",
-        "Referer":new URL(url).origin+"/"
-      }
-    });
-    const ct=String(r.headers["content-type"]||"image/jpeg");
-    if(!ct.startsWith("image/")) return res.status(415).send("Ressource non image");
-    res.set("Content-Type",ct);
-    res.set("Cache-Control","public, max-age=86400");
-    res.send(r.data);
-  }catch(e){
-    res.status(502).send("Image inaccessible");
-  }
-});
-
-app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")));
-async function startServer(){
-  try{
-    await initPersistentStore();
-    app.listen(PORT,"0.0.0.0",()=>console.log(`Hydropolis V11.54 on ${PORT} · ${USE_POSTGRES?"PostgreSQL":"local fallback"}`));
+    await app.locals.initPersistentStore();
+    return app.listen(port,"0.0.0.0",()=>console.log(`Hydropolis V${require('./package.json').version} on ${port}`));
   }catch(e){
     console.error("[Hydropolis] Démarrage impossible :",e);
-    process.exit(1);
+    throw e;
   }
 }
-startServer();
+module.exports={createApp,startServer};
+if(require.main===module)startServer().catch(()=>{process.exitCode=1;});

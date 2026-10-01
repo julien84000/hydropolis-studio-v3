@@ -19,6 +19,8 @@ module.exports=function installMemorySafeServer(app){
     const mb=n=>Math.round((Number(n||0)/1024/1024)*10)/10;
     res.set('Cache-Control','no-store').json({
       ok:true,
+      version:require('./package.json').version,
+      caches:{legacy:app.locals.legacyCacheStats?.()||{},official:app.locals.assetResolver?.stats()||{},packs:app.locals.packCacheStats?.()||{},tda:app.locals.tdaCacheStats?.()||{}},
       rssMB:mb(m.rss),
       heapUsedMB:mb(m.heapUsed),
       heapTotalMB:mb(m.heapTotal),

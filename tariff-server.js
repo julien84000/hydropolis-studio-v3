@@ -2,6 +2,7 @@
 const fs=require('fs'),path=require('path'),zlib=require('zlib');
 module.exports=function(app){
   let data=null,releaseTimer=null;
+  app.locals.tdaCacheStats=()=>({loaded:!!data,rows:data?.rows?.length||0,releaseAfterSeconds:60});
   const scheduleRelease=()=>{
     if(releaseTimer)clearTimeout(releaseTimer);
     releaseTimer=setTimeout(()=>{data=null;releaseTimer=null;},60*1000);

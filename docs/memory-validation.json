@@ -1,0 +1,2230 @@
+{
+  "mode": "official-fixtures",
+  "version": "11.56.1",
+  "startedAt": "2026-10-01T14:47:10.772Z",
+  "memory": [
+    {
+      "phase": "startup",
+      "ok": true,
+      "version": "11.56.1",
+      "caches": {
+        "legacy": {
+          "sitemaps": {
+            "entries": 0,
+            "limit": 2
+          },
+          "recorResolvedUrlMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "nicolazziDesignerProductMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "nicolazziDesignerResolveMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "nicolazziResolvedUrlMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "hotbathResultCache": {
+            "entries": 0,
+            "limit": 120
+          },
+          "hotbathWebImageCache": {
+            "entries": 0,
+            "limit": 120
+          },
+          "RESIGRES_ASSET_CACHE": {
+            "entries": 0,
+            "limit": 120
+          },
+          "RESIGRES_CATEGORY_INDEX_CACHE": {
+            "entries": 0,
+            "limit": 120
+          },
+          "HYDRO_SHOWER_ASSET_CACHE": {
+            "entries": 0,
+            "limit": 120
+          },
+          "V1153_CONFIG_CACHE": {
+            "entries": 0,
+            "limit": 120
+          }
+        },
+        "official": {
+          "alpi": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "gessi": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "sira": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "requests": {
+            "active": 0,
+            "queued": 0,
+            "limit": 4
+          }
+        },
+        "packs": {
+          "entries": 0,
+          "mode": "streamed-values"
+        },
+        "tda": {
+          "loaded": false,
+          "rows": 0,
+          "releaseAfterSeconds": 60
+        }
+      },
+      "rssMB": 66.7,
+      "heapUsedMB": 17.7,
+      "heapTotalMB": 52.3,
+      "externalMB": 3.9,
+      "arrayBuffersMB": 0.2,
+      "uptimeSeconds": 0,
+      "time": "2026-10-01T14:47:11.057Z"
+    },
+    {
+      "phase": "catalogues",
+      "ok": true,
+      "version": "11.56.1",
+      "caches": {
+        "legacy": {
+          "sitemaps": {
+            "entries": 0,
+            "limit": 2
+          },
+          "recorResolvedUrlMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "nicolazziDesignerProductMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "nicolazziDesignerResolveMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "nicolazziResolvedUrlMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "hotbathResultCache": {
+            "entries": 0,
+            "limit": 120
+          },
+          "hotbathWebImageCache": {
+            "entries": 0,
+            "limit": 120
+          },
+          "RESIGRES_ASSET_CACHE": {
+            "entries": 0,
+            "limit": 120
+          },
+          "RESIGRES_CATEGORY_INDEX_CACHE": {
+            "entries": 0,
+            "limit": 120
+          },
+          "HYDRO_SHOWER_ASSET_CACHE": {
+            "entries": 0,
+            "limit": 120
+          },
+          "V1153_CONFIG_CACHE": {
+            "entries": 0,
+            "limit": 120
+          }
+        },
+        "official": {
+          "alpi": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "gessi": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "sira": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "requests": {
+            "active": 0,
+            "queued": 0,
+            "limit": 4
+          }
+        },
+        "packs": {
+          "entries": 0,
+          "mode": "streamed-values"
+        },
+        "tda": {
+          "loaded": false,
+          "rows": 0,
+          "releaseAfterSeconds": 60
+        }
+      },
+      "rssMB": 85.4,
+      "heapUsedMB": 20.5,
+      "heapTotalMB": 52.8,
+      "externalMB": 21.8,
+      "arrayBuffersMB": 18.1,
+      "uptimeSeconds": 0,
+      "time": "2026-10-01T14:47:11.211Z"
+    },
+    {
+      "phase": "assets locaux streamés",
+      "ok": true,
+      "version": "11.56.1",
+      "caches": {
+        "legacy": {
+          "sitemaps": {
+            "entries": 0,
+            "limit": 2
+          },
+          "recorResolvedUrlMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "nicolazziDesignerProductMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "nicolazziDesignerResolveMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "nicolazziResolvedUrlMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "hotbathResultCache": {
+            "entries": 0,
+            "limit": 120
+          },
+          "hotbathWebImageCache": {
+            "entries": 0,
+            "limit": 120
+          },
+          "RESIGRES_ASSET_CACHE": {
+            "entries": 0,
+            "limit": 120
+          },
+          "RESIGRES_CATEGORY_INDEX_CACHE": {
+            "entries": 0,
+            "limit": 120
+          },
+          "HYDRO_SHOWER_ASSET_CACHE": {
+            "entries": 0,
+            "limit": 120
+          },
+          "V1153_CONFIG_CACHE": {
+            "entries": 0,
+            "limit": 120
+          }
+        },
+        "official": {
+          "alpi": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "gessi": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "sira": {
+            "entries": 0,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "requests": {
+            "active": 0,
+            "queued": 0,
+            "limit": 4
+          }
+        },
+        "packs": {
+          "entries": 0,
+          "mode": "streamed-values"
+        },
+        "tda": {
+          "loaded": false,
+          "rows": 0,
+          "releaseAfterSeconds": 60
+        }
+      },
+      "rssMB": 105.2,
+      "heapUsedMB": 28,
+      "heapTotalMB": 54,
+      "externalMB": 6.9,
+      "arrayBuffersMB": 3.2,
+      "uptimeSeconds": 1,
+      "time": "2026-10-01T14:47:11.579Z"
+    },
+    {
+      "phase": "50 recherches",
+      "ok": true,
+      "version": "11.56.1",
+      "caches": {
+        "legacy": {
+          "sitemaps": {
+            "entries": 0,
+            "limit": 2
+          },
+          "recorResolvedUrlMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "nicolazziDesignerProductMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "nicolazziDesignerResolveMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "nicolazziResolvedUrlMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "hotbathResultCache": {
+            "entries": 0,
+            "limit": 120
+          },
+          "hotbathWebImageCache": {
+            "entries": 0,
+            "limit": 120
+          },
+          "RESIGRES_ASSET_CACHE": {
+            "entries": 0,
+            "limit": 120
+          },
+          "RESIGRES_CATEGORY_INDEX_CACHE": {
+            "entries": 0,
+            "limit": 120
+          },
+          "HYDRO_SHOWER_ASSET_CACHE": {
+            "entries": 0,
+            "limit": 120
+          },
+          "V1153_CONFIG_CACHE": {
+            "entries": 0,
+            "limit": 120
+          }
+        },
+        "official": {
+          "alpi": {
+            "entries": 10,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "gessi": {
+            "entries": 10,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "sira": {
+            "entries": 5,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "requests": {
+            "active": 0,
+            "queued": 0,
+            "limit": 4
+          }
+        },
+        "packs": {
+          "entries": 0,
+          "mode": "streamed-values"
+        },
+        "tda": {
+          "loaded": false,
+          "rows": 0,
+          "releaseAfterSeconds": 60
+        }
+      },
+      "rssMB": 107.6,
+      "heapUsedMB": 24.5,
+      "heapTotalMB": 55.3,
+      "externalMB": 4.5,
+      "arrayBuffersMB": 0.8,
+      "uptimeSeconds": 1,
+      "time": "2026-10-01T14:47:11.668Z"
+    },
+    {
+      "phase": "100 recherches",
+      "ok": true,
+      "version": "11.56.1",
+      "caches": {
+        "legacy": {
+          "sitemaps": {
+            "entries": 0,
+            "limit": 2
+          },
+          "recorResolvedUrlMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "nicolazziDesignerProductMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "nicolazziDesignerResolveMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "nicolazziResolvedUrlMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "hotbathResultCache": {
+            "entries": 0,
+            "limit": 120
+          },
+          "hotbathWebImageCache": {
+            "entries": 0,
+            "limit": 120
+          },
+          "RESIGRES_ASSET_CACHE": {
+            "entries": 0,
+            "limit": 120
+          },
+          "RESIGRES_CATEGORY_INDEX_CACHE": {
+            "entries": 0,
+            "limit": 120
+          },
+          "HYDRO_SHOWER_ASSET_CACHE": {
+            "entries": 0,
+            "limit": 120
+          },
+          "V1153_CONFIG_CACHE": {
+            "entries": 0,
+            "limit": 120
+          }
+        },
+        "official": {
+          "alpi": {
+            "entries": 10,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "gessi": {
+            "entries": 10,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "sira": {
+            "entries": 26,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "requests": {
+            "active": 0,
+            "queued": 0,
+            "limit": 4
+          }
+        },
+        "packs": {
+          "entries": 0,
+          "mode": "streamed-values"
+        },
+        "tda": {
+          "loaded": false,
+          "rows": 0,
+          "releaseAfterSeconds": 60
+        }
+      },
+      "rssMB": 109.8,
+      "heapUsedMB": 24.8,
+      "heapTotalMB": 56.3,
+      "externalMB": 4.5,
+      "arrayBuffersMB": 0.8,
+      "uptimeSeconds": 1,
+      "time": "2026-10-01T14:47:11.724Z"
+    },
+    {
+      "phase": "TDA chargé",
+      "ok": true,
+      "version": "11.56.1",
+      "caches": {
+        "legacy": {
+          "sitemaps": {
+            "entries": 0,
+            "limit": 2
+          },
+          "recorResolvedUrlMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "nicolazziDesignerProductMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "nicolazziDesignerResolveMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "nicolazziResolvedUrlMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "hotbathResultCache": {
+            "entries": 0,
+            "limit": 120
+          },
+          "hotbathWebImageCache": {
+            "entries": 0,
+            "limit": 120
+          },
+          "RESIGRES_ASSET_CACHE": {
+            "entries": 0,
+            "limit": 120
+          },
+          "RESIGRES_CATEGORY_INDEX_CACHE": {
+            "entries": 0,
+            "limit": 120
+          },
+          "HYDRO_SHOWER_ASSET_CACHE": {
+            "entries": 0,
+            "limit": 120
+          },
+          "V1153_CONFIG_CACHE": {
+            "entries": 0,
+            "limit": 120
+          }
+        },
+        "official": {
+          "alpi": {
+            "entries": 10,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "gessi": {
+            "entries": 10,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "sira": {
+            "entries": 26,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "requests": {
+            "active": 0,
+            "queued": 0,
+            "limit": 4
+          }
+        },
+        "packs": {
+          "entries": 0,
+          "mode": "streamed-values"
+        },
+        "tda": {
+          "loaded": true,
+          "rows": 308546,
+          "releaseAfterSeconds": 60
+        }
+      },
+      "rssMB": 255.5,
+      "heapUsedMB": 102.4,
+      "heapTotalMB": 205.4,
+      "externalMB": 54.8,
+      "arrayBuffersMB": 18.5,
+      "uptimeSeconds": 1,
+      "time": "2026-10-01T14:47:11.958Z"
+    },
+    {
+      "phase": "repos 30 s",
+      "ok": true,
+      "version": "11.56.1",
+      "caches": {
+        "legacy": {
+          "sitemaps": {
+            "entries": 0,
+            "limit": 2
+          },
+          "recorResolvedUrlMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "nicolazziDesignerProductMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "nicolazziDesignerResolveMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "nicolazziResolvedUrlMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "hotbathResultCache": {
+            "entries": 0,
+            "limit": 120
+          },
+          "hotbathWebImageCache": {
+            "entries": 0,
+            "limit": 120
+          },
+          "RESIGRES_ASSET_CACHE": {
+            "entries": 0,
+            "limit": 120
+          },
+          "RESIGRES_CATEGORY_INDEX_CACHE": {
+            "entries": 0,
+            "limit": 120
+          },
+          "HYDRO_SHOWER_ASSET_CACHE": {
+            "entries": 0,
+            "limit": 120
+          },
+          "V1153_CONFIG_CACHE": {
+            "entries": 0,
+            "limit": 120
+          }
+        },
+        "official": {
+          "alpi": {
+            "entries": 10,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "gessi": {
+            "entries": 10,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "sira": {
+            "entries": 26,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "requests": {
+            "active": 0,
+            "queued": 0,
+            "limit": 4
+          }
+        },
+        "packs": {
+          "entries": 0,
+          "mode": "streamed-values"
+        },
+        "tda": {
+          "loaded": true,
+          "rows": 308546,
+          "releaseAfterSeconds": 60
+        }
+      },
+      "rssMB": 206.1,
+      "heapUsedMB": 75.1,
+      "heapTotalMB": 203.9,
+      "externalMB": 22.2,
+      "arrayBuffersMB": 0.3,
+      "uptimeSeconds": 31,
+      "time": "2026-10-01T14:47:41.968Z"
+    },
+    {
+      "phase": "repos 60 s",
+      "ok": true,
+      "version": "11.56.1",
+      "caches": {
+        "legacy": {
+          "sitemaps": {
+            "entries": 0,
+            "limit": 2
+          },
+          "recorResolvedUrlMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "nicolazziDesignerProductMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "nicolazziDesignerResolveMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "nicolazziResolvedUrlMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "hotbathResultCache": {
+            "entries": 0,
+            "limit": 120
+          },
+          "hotbathWebImageCache": {
+            "entries": 0,
+            "limit": 120
+          },
+          "RESIGRES_ASSET_CACHE": {
+            "entries": 0,
+            "limit": 120
+          },
+          "RESIGRES_CATEGORY_INDEX_CACHE": {
+            "entries": 0,
+            "limit": 120
+          },
+          "HYDRO_SHOWER_ASSET_CACHE": {
+            "entries": 0,
+            "limit": 120
+          },
+          "V1153_CONFIG_CACHE": {
+            "entries": 0,
+            "limit": 120
+          }
+        },
+        "official": {
+          "alpi": {
+            "entries": 10,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "gessi": {
+            "entries": 10,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "sira": {
+            "entries": 26,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "requests": {
+            "active": 0,
+            "queued": 0,
+            "limit": 4
+          }
+        },
+        "packs": {
+          "entries": 0,
+          "mode": "streamed-values"
+        },
+        "tda": {
+          "loaded": false,
+          "rows": 0,
+          "releaseAfterSeconds": 60
+        }
+      },
+      "rssMB": 206.1,
+      "heapUsedMB": 75.4,
+      "heapTotalMB": 203.9,
+      "externalMB": 22.2,
+      "arrayBuffersMB": 0.3,
+      "uptimeSeconds": 61,
+      "time": "2026-10-01T14:48:11.972Z"
+    },
+    {
+      "phase": "repos 90 s",
+      "ok": true,
+      "version": "11.56.1",
+      "caches": {
+        "legacy": {
+          "sitemaps": {
+            "entries": 0,
+            "limit": 2
+          },
+          "recorResolvedUrlMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "nicolazziDesignerProductMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "nicolazziDesignerResolveMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "nicolazziResolvedUrlMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "hotbathResultCache": {
+            "entries": 0,
+            "limit": 120
+          },
+          "hotbathWebImageCache": {
+            "entries": 0,
+            "limit": 120
+          },
+          "RESIGRES_ASSET_CACHE": {
+            "entries": 0,
+            "limit": 120
+          },
+          "RESIGRES_CATEGORY_INDEX_CACHE": {
+            "entries": 0,
+            "limit": 120
+          },
+          "HYDRO_SHOWER_ASSET_CACHE": {
+            "entries": 0,
+            "limit": 120
+          },
+          "V1153_CONFIG_CACHE": {
+            "entries": 0,
+            "limit": 120
+          }
+        },
+        "official": {
+          "alpi": {
+            "entries": 10,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "gessi": {
+            "entries": 10,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "sira": {
+            "entries": 26,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "requests": {
+            "active": 0,
+            "queued": 0,
+            "limit": 4
+          }
+        },
+        "packs": {
+          "entries": 0,
+          "mode": "streamed-values"
+        },
+        "tda": {
+          "loaded": false,
+          "rows": 0,
+          "releaseAfterSeconds": 60
+        }
+      },
+      "rssMB": 206.1,
+      "heapUsedMB": 75.3,
+      "heapTotalMB": 203.9,
+      "externalMB": 22.2,
+      "arrayBuffersMB": 0.3,
+      "uptimeSeconds": 91,
+      "time": "2026-10-01T14:48:41.976Z"
+    },
+    {
+      "phase": "repos 120 s",
+      "ok": true,
+      "version": "11.56.1",
+      "caches": {
+        "legacy": {
+          "sitemaps": {
+            "entries": 0,
+            "limit": 2
+          },
+          "recorResolvedUrlMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "nicolazziDesignerProductMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "nicolazziDesignerResolveMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "nicolazziResolvedUrlMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "hotbathResultCache": {
+            "entries": 0,
+            "limit": 120
+          },
+          "hotbathWebImageCache": {
+            "entries": 0,
+            "limit": 120
+          },
+          "RESIGRES_ASSET_CACHE": {
+            "entries": 0,
+            "limit": 120
+          },
+          "RESIGRES_CATEGORY_INDEX_CACHE": {
+            "entries": 0,
+            "limit": 120
+          },
+          "HYDRO_SHOWER_ASSET_CACHE": {
+            "entries": 0,
+            "limit": 120
+          },
+          "V1153_CONFIG_CACHE": {
+            "entries": 0,
+            "limit": 120
+          }
+        },
+        "official": {
+          "alpi": {
+            "entries": 10,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "gessi": {
+            "entries": 10,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "sira": {
+            "entries": 26,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "requests": {
+            "active": 0,
+            "queued": 0,
+            "limit": 4
+          }
+        },
+        "packs": {
+          "entries": 0,
+          "mode": "streamed-values"
+        },
+        "tda": {
+          "loaded": false,
+          "rows": 0,
+          "releaseAfterSeconds": 60
+        }
+      },
+      "rssMB": 89.3,
+      "heapUsedMB": 20.6,
+      "heapTotalMB": 24.5,
+      "externalMB": 4,
+      "arrayBuffersMB": 0.3,
+      "uptimeSeconds": 121,
+      "time": "2026-10-01T14:49:11.986Z"
+    },
+    {
+      "phase": "repos 150 s",
+      "ok": true,
+      "version": "11.56.1",
+      "caches": {
+        "legacy": {
+          "sitemaps": {
+            "entries": 0,
+            "limit": 2
+          },
+          "recorResolvedUrlMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "nicolazziDesignerProductMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "nicolazziDesignerResolveMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "nicolazziResolvedUrlMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "hotbathResultCache": {
+            "entries": 0,
+            "limit": 120
+          },
+          "hotbathWebImageCache": {
+            "entries": 0,
+            "limit": 120
+          },
+          "RESIGRES_ASSET_CACHE": {
+            "entries": 0,
+            "limit": 120
+          },
+          "RESIGRES_CATEGORY_INDEX_CACHE": {
+            "entries": 0,
+            "limit": 120
+          },
+          "HYDRO_SHOWER_ASSET_CACHE": {
+            "entries": 0,
+            "limit": 120
+          },
+          "V1153_CONFIG_CACHE": {
+            "entries": 0,
+            "limit": 120
+          }
+        },
+        "official": {
+          "alpi": {
+            "entries": 10,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "gessi": {
+            "entries": 10,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "sira": {
+            "entries": 26,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "requests": {
+            "active": 0,
+            "queued": 0,
+            "limit": 4
+          }
+        },
+        "packs": {
+          "entries": 0,
+          "mode": "streamed-values"
+        },
+        "tda": {
+          "loaded": false,
+          "rows": 0,
+          "releaseAfterSeconds": 60
+        }
+      },
+      "rssMB": 89.3,
+      "heapUsedMB": 20.6,
+      "heapTotalMB": 24.5,
+      "externalMB": 4,
+      "arrayBuffersMB": 0.3,
+      "uptimeSeconds": 151,
+      "time": "2026-10-01T14:49:41.994Z"
+    },
+    {
+      "phase": "repos 180 s",
+      "ok": true,
+      "version": "11.56.1",
+      "caches": {
+        "legacy": {
+          "sitemaps": {
+            "entries": 0,
+            "limit": 2
+          },
+          "recorResolvedUrlMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "nicolazziDesignerProductMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "nicolazziDesignerResolveMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "nicolazziResolvedUrlMemo": {
+            "entries": 0,
+            "limit": 120
+          },
+          "hotbathResultCache": {
+            "entries": 0,
+            "limit": 120
+          },
+          "hotbathWebImageCache": {
+            "entries": 0,
+            "limit": 120
+          },
+          "RESIGRES_ASSET_CACHE": {
+            "entries": 0,
+            "limit": 120
+          },
+          "RESIGRES_CATEGORY_INDEX_CACHE": {
+            "entries": 0,
+            "limit": 120
+          },
+          "HYDRO_SHOWER_ASSET_CACHE": {
+            "entries": 0,
+            "limit": 120
+          },
+          "V1153_CONFIG_CACHE": {
+            "entries": 0,
+            "limit": 120
+          }
+        },
+        "official": {
+          "alpi": {
+            "entries": 10,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "gessi": {
+            "entries": 10,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "sira": {
+            "entries": 26,
+            "inFlight": 0,
+            "limit": 120
+          },
+          "requests": {
+            "active": 0,
+            "queued": 0,
+            "limit": 4
+          }
+        },
+        "packs": {
+          "entries": 0,
+          "mode": "streamed-values"
+        },
+        "tda": {
+          "loaded": false,
+          "rows": 0,
+          "releaseAfterSeconds": 60
+        }
+      },
+      "rssMB": 89.3,
+      "heapUsedMB": 20.7,
+      "heapTotalMB": 24.5,
+      "externalMB": 4,
+      "arrayBuffersMB": 0.3,
+      "uptimeSeconds": 181,
+      "time": "2026-10-01T14:50:11.998Z"
+    }
+  ],
+  "assets": [
+    {
+      "manufacturer": "Gessi",
+      "reference": "11922#726",
+      "status": 200,
+      "image": "https://gessistorage.blob.core.windows.net/zi4/11922%23726.png",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "11922#707",
+      "status": 200,
+      "image": "https://gessistorage.blob.core.windows.net/zi4/11922%23707.png",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "11922#708",
+      "status": 200,
+      "image": "https://gessistorage.blob.core.windows.net/zi4/11922%23708.png",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "33605#726",
+      "status": 200,
+      "image": "https://gessistorage.blob.core.windows.net/zi4/33605%23726.png",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "33605#299",
+      "status": 200,
+      "image": "https://gessistorage.blob.core.windows.net/zi4/33605%23299.png",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "33605#279",
+      "status": 200,
+      "image": "https://gessistorage.blob.core.windows.net/zi4/33605%23279.png",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "44838#726",
+      "status": 200,
+      "image": "https://gessistorage.blob.core.windows.net/zi4/44838%23726.png",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "44838#031",
+      "status": 200,
+      "image": "https://gessistorage.blob.core.windows.net/zi4/44838%23031.png",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "44838#149",
+      "status": 200,
+      "image": "https://gessistorage.blob.core.windows.net/zi4/44838%23149.png",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "54336#726",
+      "status": 200,
+      "image": "https://gessistorage.blob.core.windows.net/zi4/54336%23726.png",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "54336#239",
+      "status": 200,
+      "image": "https://gessistorage.blob.core.windows.net/zi4/54336%23239.png",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "54336#299",
+      "status": 200,
+      "image": "https://gessistorage.blob.core.windows.net/zi4/54336%23299.png",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "58144#726",
+      "status": 200,
+      "image": "https://gessistorage.blob.core.windows.net/zi4/58144%23726.png",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "58144#710",
+      "status": 200,
+      "image": "https://gessistorage.blob.core.windows.net/zi4/58144%23710.png",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "58144#720",
+      "status": 200,
+      "image": "https://gessistorage.blob.core.windows.net/zi4/58144%23720.png",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "63331#726",
+      "status": 200,
+      "image": "https://gessistorage.blob.core.windows.net/zi4/63331%23726.png",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "63331#299",
+      "status": 200,
+      "image": "https://gessistorage.blob.core.windows.net/zi4/63331%23299.png",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "63331#031",
+      "status": 200,
+      "image": "https://gessistorage.blob.core.windows.net/zi4/63331%23031.png",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "66134#726",
+      "status": 200,
+      "image": "https://gessistorage.blob.core.windows.net/zi4/66134%23726.png",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "66134#706",
+      "status": 200,
+      "image": "https://gessistorage.blob.core.windows.net/zi4/66134%23706.png",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "66134#707",
+      "status": 200,
+      "image": "https://gessistorage.blob.core.windows.net/zi4/66134%23707.png",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "73588#726",
+      "status": 200,
+      "image": "https://gessistorage.blob.core.windows.net/zi4/73588%23726.png",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "73588#299",
+      "status": 200,
+      "image": "https://gessistorage.blob.core.windows.net/zi4/73588%23299.png",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "73588#031",
+      "status": 200,
+      "image": "https://gessistorage.blob.core.windows.net/zi4/73588%23031.png",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "75002#726",
+      "status": 200,
+      "image": "https://gessistorage.blob.core.windows.net/zi4/75002%23726.png",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "75002#299",
+      "status": 200,
+      "image": "https://gessistorage.blob.core.windows.net/zi4/75002%23299.png",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "75002#031",
+      "status": 200,
+      "image": "https://gessistorage.blob.core.windows.net/zi4/75002%23031.png",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "75051#726",
+      "status": 200,
+      "image": "https://gessistorage.blob.core.windows.net/zi4/75051%23726.png",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "75051#299",
+      "status": 200,
+      "image": "https://gessistorage.blob.core.windows.net/zi4/75051%23299.png",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "75051#031",
+      "status": 200,
+      "image": "https://gessistorage.blob.core.windows.net/zi4/75051%23031.png",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Alpi",
+      "reference": "AC126CR",
+      "status": 200,
+      "image": "https://alpirubinetterie.com/wp-content/uploads/2022/08/AC126_F-800x1200.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://alpirubinetterie.com/wp-content/uploads/PRODOTTI/2D/JPG/AC126_D.jpg",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Alpi",
+      "reference": "AC132CR",
+      "status": 200,
+      "image": "https://alpirubinetterie.com/wp-content/uploads/2022/08/AC132_F-1-800x1200.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://alpirubinetterie.com/wp-content/uploads/PRODOTTI/2D/JPG/AC132_D.jpg",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Alpi",
+      "reference": "AL98176CR",
+      "status": 200,
+      "image": "https://alpirubinetterie.com/wp-content/uploads/2022/08/AL98176_F-800x1200.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://alpirubinetterie.com/wp-content/uploads/PRODOTTI/2D/JPG/AL98176_D.jpg",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Alpi",
+      "reference": "AUO301",
+      "status": 200,
+      "image": "https://alpirubinetterie.com/wp-content/uploads/2025/02/AUO301_F-800x1200.jpg",
+      "finishMatch": "generic",
+      "technicalSheetUrl": "https://alpirubinetterie.com/wp-content/uploads/PRODOTTI/2D/JPG/AUO301_D.jpg",
+      "documentStatus": "",
+      "note": "Visuel officiel générique du produit ; finition non garantie.",
+      "error": ""
+    },
+    {
+      "manufacturer": "Alpi",
+      "reference": "BU85106CR",
+      "status": 200,
+      "image": "https://alpirubinetterie.com/wp-content/uploads/2022/08/BU85106_F-800x1200.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://alpirubinetterie.com/wp-content/uploads/PRODOTTI/2D/JPG/BU85106_D.jpg",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Alpi",
+      "reference": "PO020CRMTL",
+      "status": 200,
+      "image": "https://alpirubinetterie.com/wp-content/uploads/2022/09/PO020%E2%80%A6_F-800x1200.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://alpirubinetterie.com/wp-content/uploads/PRODOTTI/2D/JPG/PO020_D.jpg",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Alpi",
+      "reference": "FA01TP",
+      "status": 200,
+      "image": "https://alpirubinetterie.com/wp-content/uploads/2022/08/FA01TP_F-800x1200.jpg",
+      "finishMatch": "generic",
+      "technicalSheetUrl": "https://alpirubinetterie.com/wp-content/uploads/PRODOTTI/2D/JPG/FA01TP_D.jpg",
+      "documentStatus": "",
+      "note": "Visuel officiel générique du produit ; finition non garantie.",
+      "error": ""
+    },
+    {
+      "manufacturer": "Alpi",
+      "reference": "FDORE10SBI",
+      "status": 200,
+      "image": "https://alpirubinetterie.com/wp-content/uploads/2022/09/FDORE10SBI_F-400x1200.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://alpirubinetterie.com/wp-content/uploads/PRODOTTI/2D/JPG/FDORE10S_D.jpg",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Alpi",
+      "reference": "FDP04CRBI",
+      "status": 200,
+      "image": "https://alpirubinetterie.com/wp-content/uploads/2022/09/FDP04%E2%80%A6BI_F-800x1200.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://alpirubinetterie.com/wp-content/uploads/PRODOTTI/2D/JPG/FDP04_D.jpg",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Alpi",
+      "reference": "GN99106CR",
+      "status": 200,
+      "image": "https://alpirubinetterie.com/wp-content/uploads/2022/08/GN99106_F-800x1200.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://alpirubinetterie.com/wp-content/uploads/PRODOTTI/2D/JPG/GN99106_D.jpg",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "OA1.PW",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/23-OASIS-PW-1200x1499.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/11/Sira-Concrete-Oasis-Spec-Sheet-1.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "OA1.OB",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/23-OASIS-OB-1200x1499.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/11/Sira-Concrete-Oasis-Spec-Sheet-1.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "GL2.PW",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/11/22-GLACIER-PW-1-1200x1499.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/11/Sira-Concrete-Glacier-Spec-Sheet-1.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "GL2.OB",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/11/22-GLACIER-OB-1-1200x1499.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/11/Sira-Concrete-Glacier-Spec-Sheet-1.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "BA3.PW",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/08/01-BAY-PW-1200x1499.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/11/Sira-Concrete-Bay-Spec-Sheet-1.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "BA3.OB",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/08/01-BAY-OB-1200x1499.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/11/Sira-Concrete-Bay-Spec-Sheet-1.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "LA4.PW",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/10-LAGOON-PW-1200x1499.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/11/Sira-Concrete-Lagoon-Spec-Sheet-1.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "LA4.OB",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/10-LAGOON-OB-1200x1499.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/11/Sira-Concrete-Lagoon-Spec-Sheet-1.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "MO5.PW",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/05-MOON-PW-1200x1499.jpeg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/11/Sira-Concrete-Moon-Spec-Sheet-1.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "MO5.OB",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/05-MOON-OB-1200x1499.jpeg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/11/Sira-Concrete-Moon-Spec-Sheet-1.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "IS6.PW",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/20-ISLA-PW-1200x1499.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/11/Sira-Concrete-Isla-Spec-Sheet-1.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "IS6.OB",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/20-ISLA-OB-1200x1499.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/11/Sira-Concrete-Isla-Spec-Sheet-1.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "CA7.PW",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/20-ISLA-PW-1200x1499.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/11/Sira-Concrete-Cala-Spec-Sheet-1.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "CA7.OB",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/18-CALA-OB-1200x1499.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/11/Sira-Concrete-Cala-Spec-Sheet-1.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "GE8.PW",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/13-GEYSER-PW-1200x1498.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/11/Sira-Concrete-Geyser-Spec-Sheet-1.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "GE8.OB",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/13-GEYSER-OB-1200x1498.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/11/Sira-Concrete-Geyser-Spec-Sheet-1.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "VO9.PW",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/06-VOLCANO-PW-1200x1499.jpeg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/11/Sira-Concrete-Volcano-Spec-Sheet-1.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "VO9.OB",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/06-VOLCANO-OB-1200x1499.jpeg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/11/Sira-Concrete-Volcano-Spec-Sheet-1.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "CE10.PW",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/19-CENOTE-PW-1200x1499.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/11/Sira-Concrete-Cenote-Spec-Sheet-1.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "CE10.OB",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/19-CENOTE-OB-1200x1499.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/11/Sira-Concrete-Cenote-Spec-Sheet-1.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "CL11.PW",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/07-CLIFF-PW-1200x1499.jpeg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/11/Sira-Concrete-Cliff-Spec-Sheet-1.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "CL11.OB",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/07-CLIFF-OB-1200x1499.jpeg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/11/Sira-Concrete-Cliff-Spec-Sheet-1.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "AU12.PW",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/02-AURORA-PW-1200x1498.jpeg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/09/Sira-Concrete-Aurora-Spec-Sheet.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "AU12.OB",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/02-AURORA-OB-1200x1498.jpeg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/09/Sira-Concrete-Aurora-Spec-Sheet.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "RI13.PW",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/04-RIVER-PW-1200x1499.jpeg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/09/Sira-Concrete-River-Spec-Sheet.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "RI13.OB",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/04-RIVER-OB-1200x1499.jpeg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/09/Sira-Concrete-River-Spec-Sheet.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "BR14.PW",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/AURORA-100-PW-1200x1498.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/09/Sira-Concrete-Brook-Spec-Sheet.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "BR14.OB",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/AURORA-100-OB-1200x1498.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/09/Sira-Concrete-Brook-Spec-Sheet.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "CY15.PW",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/AURORA-120-PW-1200x1498.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/09/Sira-Concrete-Canyon-Spec-Sheet.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "CY15.OB",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/AURORA-120-OB-1200x1498.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/09/Sira-Concrete-Canyon-Spec-Sheet.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "TU16.PW",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/03-TUNDRA-PW-1200x1499.jpeg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/11/Sira-Concrete-Tundra-Spec-Sheet-1.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "TU16.OB",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/03-TUNDRA-OB-1200x1499.jpeg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/11/Sira-Concrete-Tundra-Spec-Sheet-1.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "DO17.PW",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/24-DOME-PW-1200x1499.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/08/Sira-Concrete-Dome-Spec-Sheet.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "DO17.OB",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/24-DOME-OB-1200x1499.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/08/Sira-Concrete-Dome-Spec-Sheet.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "HI18.PW",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/21-HILL-PW-1200x1499.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/11/Sira-Concrete-Hill-Spec-Sheet-1.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "HI18.OB",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/21-HILL-OB-1200x1499.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/11/Sira-Concrete-Hill-Spec-Sheet-1.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "PS19.PW",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/12-PALANGANA-PW-1200x1499.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/11/Sira-Concrete-Palangana-Sink-Spec-Sheet-1.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "PS19.OB",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/12-PALANGANA-OB-1200x1499.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/11/Sira-Concrete-Palangana-Sink-Spec-Sheet-1.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "DU1.PW",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/09-DUNA-PW-1200x1499.jpeg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/11/Sira-Concrete-Duna-Spec-Sheet-1.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "DU1.OB",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/09-DUNA-OB-1200x1499.jpeg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/11/Sira-Concrete-Duna-Spec-Sheet-1.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "CR2.PW",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/08-CREEK-PW-1200x1498.jpeg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/09/Sira-Concrete-Creek-Spec-Sheet-3.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "CR2.OB",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/08-CREEK-OB-1200x1498.jpeg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/09/Sira-Concrete-Creek-Spec-Sheet-3.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "VA3.PW",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/11-VALLEY-PW-1200x1499.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/09/Sira-Concrete-Valley-Spec-Sheet.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "VA3.OB",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/11-VALLEY-OB-1200x1499.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2024/09/Sira-Concrete-Valley-Spec-Sheet.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "AR1.PW",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/16-ENCIMERA-150-PW-1200x1499.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2025/01/Sira-Concrete-Arctic-Collection-Spec-Sheet.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "AR1.OB",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/16-ENCIMERA-150-OB-1200x1499.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2025/01/Sira-Concrete-Arctic-Collection-Spec-Sheet.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "AR2.PW",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/14-ENCIMERA-120-CUBETA-PW-1200x1499.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2025/01/Sira-Concrete-Arctic-Collection-Spec-Sheet.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "AR2.OB",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/14-ENCIMERA-120-CUBETA-OB-1200x1499.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2025/01/Sira-Concrete-Arctic-Collection-Spec-Sheet.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "AR3.PW",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/17-ENCIMERA-170-PW-1200x1499.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2025/01/Sira-Concrete-Arctic-Collection-Spec-Sheet.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "AR3.OB",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/17-ENCIMERA-170-OB-1200x1499.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2025/01/Sira-Concrete-Arctic-Collection-Spec-Sheet.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "AR4.PW",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/15-ENCIMERA-120-SIN-CUBETA-PW-1200x1499.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2025/01/Sira-Concrete-Arctic-Collection-Spec-Sheet.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Sira Concrete",
+      "reference": "AR4.OB",
+      "status": 200,
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/15-ENCIMERA-120-SIN-CUBETA-OB-1200x1499.jpg",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "https://siraconcrete.com/wp-content/uploads/2025/01/Sira-Concrete-Arctic-Collection-Spec-Sheet.pdf",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "11922#708",
+      "status": 200,
+      "image": "https://gessistorage.blob.core.windows.net/zi4/11922%23708.png",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "33605#726",
+      "status": 200,
+      "image": "https://gessistorage.blob.core.windows.net/zi4/33605%23726.png",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "33605#299",
+      "status": 200,
+      "image": "https://gessistorage.blob.core.windows.net/zi4/33605%23299.png",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "33605#279",
+      "status": 200,
+      "image": "https://gessistorage.blob.core.windows.net/zi4/33605%23279.png",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "44838#726",
+      "status": 200,
+      "image": "https://gessistorage.blob.core.windows.net/zi4/44838%23726.png",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "44838#031",
+      "status": 200,
+      "image": "https://gessistorage.blob.core.windows.net/zi4/44838%23031.png",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "44838#149",
+      "status": 200,
+      "image": "https://gessistorage.blob.core.windows.net/zi4/44838%23149.png",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    },
+    {
+      "manufacturer": "Gessi",
+      "reference": "54336#726",
+      "status": 200,
+      "image": "https://gessistorage.blob.core.windows.net/zi4/54336%23726.png",
+      "finishMatch": "exact",
+      "technicalSheetUrl": "",
+      "documentStatus": "",
+      "note": "",
+      "error": ""
+    }
+  ],
+  "errors": [],
+  "packedAssets": [
+    {
+      "url": "/assets/recor-feet/aster.jpg",
+      "bytes": 11475,
+      "type": "image/jpeg"
+    },
+    {
+      "url": "/assets/vismara/tech-137.pdf",
+      "bytes": 1549270,
+      "type": "application/pdf"
+    },
+    {
+      "url": "/resigres/shapes/xl85.png",
+      "bytes": 19927,
+      "type": "image/png"
+    },
+    {
+      "url": "/api/nicolazzi-pdf-asset?base=1493..15C",
+      "bytes": 12616,
+      "type": "image/webp"
+    }
+  ],
+  "tda": {
+    "count": 308546,
+    "gammes": 22
+  },
+  "completedAt": "2026-10-01T14:50:11.999Z",
+  "passed": true
+}

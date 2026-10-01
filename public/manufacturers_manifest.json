@@ -1,5 +1,4 @@
 {
-  "version": "11.56.0",
   "manufacturers": [
     {"name":"Alpi","catalog":"alpi_catalog_2025.json","purchaseDiscount":55,"capabilities":["catalog","official-site-image","official-technical-sheet","official-only-assets","required-rough-in","purchase-discount-55"]},
     {"name":"Amphora","catalog":"amphora_catalog.json","capabilities":["catalog","manufacturer-image","technical-docs"]},

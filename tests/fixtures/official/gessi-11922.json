@@ -1,0 +1,117 @@
+{
+  "data": {
+    "product": {
+      "productId": "11922",
+      "productsConfigured": [
+        {
+          "finiture": {
+            "pimId": "726",
+            "finitureId": "726",
+            "finitureName": "WARM BRONZE BR. PVD",
+            "finitureImage": "https://gessistorage.azureedge.net/finiturethumb/726.jpg"
+          },
+          "specificFeatureProductImg": "https://gessistorage.blob.core.windows.net/zi4/11922%23726.png"
+        },
+        {
+          "finiture": {
+            "pimId": "707",
+            "finitureId": "707",
+            "finitureName": "BLACK METAL BR. PVD",
+            "finitureImage": "https://gessistorage.azureedge.net/finiturethumb/707.jpg"
+          },
+          "specificFeatureProductImg": "https://gessistorage.blob.core.windows.net/zi4/11922%23707.png"
+        },
+        {
+          "finiture": {
+            "pimId": "708",
+            "finitureId": "708",
+            "finitureName": "COPPER BRUSHED PVD",
+            "finitureImage": "https://gessistorage.azureedge.net/finiturethumb/708.jpg"
+          },
+          "specificFeatureProductImg": "https://gessistorage.blob.core.windows.net/zi4/11922%23708.png"
+        },
+        {
+          "finiture": {
+            "pimId": "710",
+            "finitureId": "710",
+            "finitureName": "BRASS PVD",
+            "finitureImage": "https://gessistorage.azureedge.net/finiturethumb/710.jpg"
+          },
+          "specificFeatureProductImg": "https://gessistorage.blob.core.windows.net/zi4/11922%23710.png"
+        },
+        {
+          "finiture": {
+            "pimId": "720",
+            "finitureId": "720",
+            "finitureName": "NICKEL PVD",
+            "finitureImage": "https://gessistorage.azureedge.net/finiturethumb/720.jpg"
+          },
+          "specificFeatureProductImg": "https://gessistorage.blob.core.windows.net/zi4/11922%23720.png"
+        },
+        {
+          "finiture": {
+            "pimId": "727",
+            "finitureId": "727",
+            "finitureName": "BRASS BRUSHED PVD",
+            "finitureImage": "https://gessistorage.azureedge.net/finiturethumb/727.jpg"
+          },
+          "specificFeatureProductImg": "https://gessistorage.blob.core.windows.net/zi4/11922%23727.png"
+        },
+        {
+          "finiture": {
+            "pimId": "735",
+            "finitureId": "735",
+            "finitureName": "WARM BRONZE PVD",
+            "finitureImage": "https://gessistorage.azureedge.net/finiturethumb/735.jpg"
+          },
+          "specificFeatureProductImg": "https://gessistorage.blob.core.windows.net/zi4/11922%23735.png"
+        },
+        {
+          "finiture": {
+            "pimId": "299",
+            "finitureId": "299",
+            "finitureName": "MATTE BLACK",
+            "finitureImage": "https://gessistorage.azureedge.net/finiturethumb/299.jpg"
+          },
+          "specificFeatureProductImg": "https://gessistorage.blob.core.windows.net/zi4/11922%23299.png"
+        },
+        {
+          "finiture": {
+            "pimId": "031",
+            "finitureId": "031",
+            "finitureName": "CHROME",
+            "finitureImage": "https://gessistorage.azureedge.net/finiturethumb/031.jpg"
+          },
+          "specificFeatureProductImg": "https://gessistorage.blob.core.windows.net/zi4/11922%23031.png"
+        },
+        {
+          "finiture": {
+            "pimId": "149",
+            "finitureId": "149",
+            "finitureName": "FINOX BRUSHED NICKEL",
+            "finitureImage": "https://gessistorage.azureedge.net/finiturethumb/149.jpg"
+          },
+          "specificFeatureProductImg": "https://gessistorage.blob.core.windows.net/zi4/11922%23149.png"
+        },
+        {
+          "finiture": {
+            "pimId": "030",
+            "finitureId": "030",
+            "finitureName": "COPPER PVD",
+            "finitureImage": "https://gessistorage.azureedge.net/finiturethumb/030.jpg"
+          },
+          "specificFeatureProductImg": "https://gessistorage.blob.core.windows.net/zi4/11922%23030.png"
+        },
+        {
+          "finiture": {
+            "pimId": "706",
+            "finitureId": "706",
+            "finitureName": "BLACK METAL PVD",
+            "finitureImage": "https://gessistorage.azureedge.net/finiturethumb/706.jpg"
+          },
+          "specificFeatureProductImg": "https://gessistorage.blob.core.windows.net/zi4/11922%23706.png"
+        }
+      ]
+    }
+  }
+}

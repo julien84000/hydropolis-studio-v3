@@ -1,6 +1,7 @@
-const CACHE="hydropolis-v11-56-0-shell";
-const CATALOG_CACHE="hydropolis-v11-56-0-catalogs";
-const SHELL=["/","/index.html","/styles.css","/app.js","/catalog_manifest.json","/manufacturers_manifest.json","/manifest.webmanifest"];
+const VERSION='__APP_VERSION__';
+const CACHE=`hydropolis-v${VERSION}-shell`;
+const CATALOG_CACHE=`hydropolis-v${VERSION}-catalogs`;
+const SHELL=["/","/index.html","/styles.css","/app.js","/runtime-config.js","/catalog-index.js","/rough-in.js","/official-media.js","/sira-configurator.js","/catalog_manifest.json","/manufacturers_manifest.json","/manifest.webmanifest"];
 
 self.addEventListener("install",event=>event.waitUntil(
   caches.open(CACHE).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting())
@@ -18,15 +19,15 @@ self.addEventListener("fetch",event=>{
 
   if(url.pathname.startsWith("/api/"))return;
 
-  const isCatalog=/\/(?:catalog_.*\.json(?:\.gz)?|(?:amphora|alpi)_catalog(?:_2025)?\.json|catalog_manifest\.json|manufacturers_manifest\.json)$/.test(url.pathname);
+  const isCatalog=/\/(?:catalog_.*\.json(?:\.gz)?|(?:amphora|alpi)_catalog(?:_2025)?\.json|catalog_manifest\.json|manufacturers_manifest\.json|sira_models\.json|[^/]+_tariff_\d+\.json)$/.test(url.pathname);
   if(isCatalog){
     event.respondWith(caches.open(CATALOG_CACHE).then(async cache=>{
       try{
         const fresh=await fetch(req,{cache:"no-store"});
-        if(fresh.ok){cache.put(req,fresh.clone());return fresh;}
+        if(fresh.ok){try{await cache.put(req,fresh.clone());}catch{}return fresh;}
       }catch{}
       const hit=await cache.match(req);
-      return hit||new Response("[]",{headers:{"Content-Type":"application/json"}});
+      return hit||new Response("Catalogue indisponible hors connexion",{status:503});
     }));
     return;
   }

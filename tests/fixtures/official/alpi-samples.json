@@ -1,0 +1,52 @@
+[
+  {
+    "reference": "AC126CR",
+    "collection": "WELLNESS",
+    "finishCode": "CR"
+  },
+  {
+    "reference": "AC132CR",
+    "collection": "HYDROTHERAPIE",
+    "finishCode": "CR"
+  },
+  {
+    "reference": "AL98176CR",
+    "collection": "ALLEN",
+    "finishCode": "CR"
+  },
+  {
+    "reference": "AUO301",
+    "collection": "AURA",
+    "finishCode": ""
+  },
+  {
+    "reference": "BU85106CR",
+    "collection": "BLUE",
+    "finishCode": "CR"
+  },
+  {
+    "reference": "PO020CRMTL",
+    "collection": "PORTOFINO",
+    "finishCode": "CR"
+  },
+  {
+    "reference": "FA01TP",
+    "collection": "FADE",
+    "finishCode": ""
+  },
+  {
+    "reference": "FDORE10SBI",
+    "collection": "FRED OUTDOOR",
+    "finishCode": "BI"
+  },
+  {
+    "reference": "FDP04CRBI",
+    "collection": "FRED",
+    "finishCode": "BI"
+  },
+  {
+    "reference": "GN99106CR",
+    "collection": "GINGER",
+    "finishCode": "CR"
+  }
+]
