@@ -3,8 +3,9 @@ const axios=require('axios');
 const cheerio=require('cheerio');
 
 const CACHE=new Map();
-const TTL=6*60*60*1000;
-const UA='Mozilla/5.0 (compatible; HydropolisStudio/11.55.2; +https://hydropolis-studio-v3.onrender.com)';
+const TTL=2*60*60*1000;
+const MAX_CACHE_ENTRIES=120;
+const UA='Mozilla/5.0 (compatible; HydropolisStudio/11.56.0; +https://hydropolis-studio-v3.onrender.com)';
 const ALPI_HOST='alpirubinetterie.com';
 const SIRA_HOST='siraconcrete.com';
 const GESSI_HOSTS=new Set(['areapro.gessi.com','gessi.com','www.gessi.com','gessistorage.blob.core.windows.net','gwebassets.gessi.com']);
@@ -19,12 +20,22 @@ function hostAllowed(raw,family){
     return false;
   }catch{return false;}
 }
+function officialFamilyForUrl(raw){
+  if(hostAllowed(raw,'alpi'))return 'alpi';
+  if(hostAllowed(raw,'sira'))return 'sira';
+  if(hostAllowed(raw,'gessi'))return 'gessi';
+  return '';
+}
 function abs(raw,base){try{return new URL(String(raw||'').trim(),base).toString();}catch{return '';}}
 function uniq(rows){return [...new Set((rows||[]).filter(Boolean))];}
 function cacheGet(key){const hit=CACHE.get(key);if(hit&&Date.now()-hit.at<TTL)return hit.value;if(hit)CACHE.delete(key);return null;}
-function cacheSet(key,value){CACHE.set(key,{at:Date.now(),value});while(CACHE.size>400)CACHE.delete(CACHE.keys().next().value);return value;}
+function cacheSet(key,value){
+  CACHE.set(key,{at:Date.now(),value});
+  while(CACHE.size>MAX_CACHE_ENTRIES)CACHE.delete(CACHE.keys().next().value);
+  return value;
+}
 async function fetchHtml(url){
-  const r=await axios.get(url,{timeout:18000,maxRedirects:4,maxContentLength:8*1024*1024,maxBodyLength:8*1024*1024,headers:{'User-Agent':UA,'Accept-Language':'fr-FR,fr;q=0.9,it;q=0.8,en;q=0.6','Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}});
+  const r=await axios.get(url,{timeout:15000,maxRedirects:4,maxContentLength:4*1024*1024,maxBodyLength:4*1024*1024,headers:{'User-Agent':UA,'Accept-Language':'fr-FR,fr;q=0.9,it;q=0.8,en;q=0.6','Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}});
   return String(r.data||'');
 }
 function badImage(url){return /(logo|favicon|icon|sprite|placeholder|loader|loading|flag|swatch|campion|texture|cookie|social)/i.test(String(url||''));}
@@ -64,16 +75,6 @@ function nearestReferenceBlock($,reference){
     }
   });
   return best;
-}
-async function embedImage(item,family,referer=''){
-  if(!item?.url||!hostAllowed(item.url,family))return item;
-  try{
-    const r=await axios.get(item.url,{responseType:'arraybuffer',timeout:18000,maxRedirects:4,maxContentLength:12*1024*1024,maxBodyLength:12*1024*1024,headers:{'User-Agent':UA,'Accept':'image/avif,image/webp,image/apng,image/*,*/*;q=0.8',...(referer?{'Referer':referer}:{})}});
-    const ct=String(r.headers?.['content-type']||'').split(';')[0].toLowerCase();
-    const bytes=Buffer.from(r.data||[]);
-    if(!ct.startsWith('image/')||bytes.length<300)return item;
-    return {...item,dataUrl:`data:${ct};base64,${bytes.toString('base64')}`};
-  }catch(e){console.warn(`[official-assets ${family} image]`,e.message);return item;}
 }
 
 const ALPI_COLLECTIONS={
@@ -139,11 +140,10 @@ async function alpiResolve(input){
     }catch(e){console.warn('[ALPI page]',page,e.message);}
   }
   if(!found)return cacheSet(key,{manufacturerUrl:alpiCollectionUrl(input.collection,reference)||'https://alpirubinetterie.com/fr/produits/',reference,finishCode,best:null,images:[],technicalSheet:null,exactFound:false,note:'Aucun visuel officiel ALPI exploitable trouvé pour cette référence.'});
-  const embedded=[];for(const row of found.images.slice(0,4))embedded.push(await embedImage(row,'alpi',found.productUrl));
-  const best=embedded[0]||null;
+  const images=found.images.slice(0,6).map(x=>({...x,finishMatch:finishCode&&norm(x.url).includes(finishCode)?'exact':'generic'}));
+  const best=images[0]||null;
   const technicalSheet=found.docs[0]?{url:found.docs[0],label:'Fiche technique ALPI',type:/\.pdf(?:$|[?#])/i.test(found.docs[0])?'pdf':'link'}:null;
-  const result={manufacturerUrl:found.productUrl||found.page,reference,finishCode,best:best?{...best,finishMatch:finishCode&&norm(`${best.url} ${found.productUrl}`).includes(finishCode)?'exact':'generic'}:null,images:embedded.map(x=>({...x,finishMatch:finishCode&&norm(x.url).includes(finishCode)?'exact':'generic'})),technicalSheet,exactFound:!!best,note:best?'Visuel récupéré exclusivement sur le site officiel ALPI pour la référence demandée.':'Référence ALPI trouvée, mais aucun visuel officiel exploitable n’a été extrait.'};
-  return cacheSet(key,result);
+  return cacheSet(key,{manufacturerUrl:found.productUrl||found.page,reference,finishCode,best,images,technicalSheet,exactFound:!!best,note:best?'Visuel officiel ALPI résolu sans mise en mémoire de l’image.':'Référence ALPI trouvée, mais aucun visuel officiel exploitable n’a été extrait.'});
 }
 
 function scoreGessiImage(url,article,finish){
@@ -165,14 +165,14 @@ async function gessiResolve(input){
   const key=`gessi|${article}|${finish}`;const cached=cacheGet(key);if(cached)return cached;
   const body=await fetchHtml(page),$=cheerio.load(body),candidates=[];
   const add=rawUrl=>{const url=abs(String(rawUrl||'').replace(/\\\//g,'/'),page);if(url&&hostAllowed(url,'gessi')&&!badImage(url))candidates.push(url);};
+  if(finish)add(`https://gessistorage.blob.core.windows.net/zi4/thumb320/${article}%23${finish}.webp`);
   $('img').each((_,el)=>{const e=$(el);for(const a of ['data-large_image','data-src','src'])add(e.attr(a));for(const a of ['srcset','data-srcset'])String(e.attr(a)||'').split(',').forEach(x=>add(x.trim().split(/\s+/)[0]));});
   const rx=/https?:\\?\/\\?\/[^"'<>\s]+\.(?:jpe?g|png|webp)(?:\?[^"'<>\s]*)?/gi;for(const m of body.match(rx)||[])add(m);
-  let images=uniq(candidates).map(url=>({url,source:'gessi-area-pro',score:scoreGessiImage(url,article,finish)})).filter(x=>x.score>0).sort((a,b)=>b.score-a.score).slice(0,8);
+  const images=uniq(candidates).map(url=>({url,source:/gessistorage/i.test(url)?'gessi-official-storage':'gessi-area-pro',score:scoreGessiImage(url,article,finish)})).filter(x=>x.score>0).sort((a,b)=>b.score-a.score).slice(0,8).map(x=>({...x,finishMatch:finish&&norm(x.url).includes(norm(finish))?'exact':'generic'}));
   const docs=documentUrls($,$('body'),page,'gessi');
-  const embedded=[];for(const row of images.slice(0,4))embedded.push(await embedImage(row,'gessi',page));
-  const best=embedded[0]||null;
+  const best=images[0]||null;
   const technicalSheet=docs[0]?{url:docs[0],label:'Fiche technique Gessi',type:/\.pdf(?:$|[?#])/i.test(docs[0])?'pdf':'link'}:null;
-  return cacheSet(key,{manufacturerUrl:page,reference:raw,finishCode:finish,best:best?{...best,finishMatch:finish&&norm(best.url).includes(norm(finish))?'exact':'generic'}:null,images:embedded.map(x=>({...x,finishMatch:finish&&norm(x.url).includes(norm(finish))?'exact':'generic'})),technicalSheet,exactFound:!!best,note:best?'Visuel récupéré sur Gessi Area Pro officiel.':'Aucun visuel Gessi exploitable trouvé sur la fiche Area Pro.'});
+  return cacheSet(key,{manufacturerUrl:page,reference:raw,finishCode:finish,best,images,technicalSheet,exactFound:!!best,note:best?'Visuel officiel Gessi résolu sans mise en mémoire de l’image.':'Aucun visuel Gessi exploitable trouvé sur la fiche Area Pro.'});
 }
 
 function parseWooVariations($,base){
@@ -195,10 +195,36 @@ async function siraResolve(url){
   for(const v of variations){const m=String(v.label||'').match(/\(([A-Z]{2})\)/i);if(m)imagesByColor[m[1].toUpperCase()]=v.src;const code=norm(v.label);if(code)imagesByColor[code]=v.src;}
   const colors=[];$('select option, .variations option').each((_,el)=>{const label=$(el).text().trim(),value=$(el).attr('value')||'';if(!label||/choose|elige|scegli|choisir/i.test(label))return;const m=label.match(/\(([A-Z]{2})\)/);colors.push({code:m?m[1].toUpperCase():value||label,label});});
   const docs=documentUrls($,$('main, body').first(),url,'sira');
-  return cacheSet(key,{url,title,primaryImage:images[0]||'',images,imagesByColor,colors:colors.filter((x,i,a)=>a.findIndex(y=>y.code===x.code)===i),technicalSheetUrl:docs[0]||'',technicalSheetLabel:'Fiche technique Sira',options:[],source:'Sira Concrete officiel'});
+  return cacheSet(key,{url,title,primaryImage:images[0]||'',images:images.slice(0,16),imagesByColor,colors:colors.filter((x,i,a)=>a.findIndex(y=>y.code===x.code)===i),technicalSheetUrl:docs[0]||'',technicalSheetLabel:'Fiche technique Sira',options:[],source:'Sira Concrete officiel'});
+}
+
+async function streamOfficialImage(rawUrl,req,res,next){
+  const family=officialFamilyForUrl(rawUrl);
+  if(!family)return next();
+  try{
+    const upstream=await axios.get(rawUrl,{responseType:'stream',timeout:15000,maxRedirects:4,headers:{'User-Agent':UA,'Accept':'image/avif,image/webp,image/apng,image/*,*/*;q=0.8','Referer':req.get('referer')||undefined}});
+    const ct=String(upstream.headers?.['content-type']||'').split(';')[0].toLowerCase();
+    if(!ct.startsWith('image/')){upstream.data?.destroy?.();return res.status(415).send('Ressource distante non image');}
+    res.type(ct);
+    res.set('Cache-Control','public,max-age=86400,stale-while-revalidate=604800');
+    if(upstream.headers?.['content-length'])res.set('Content-Length',String(upstream.headers['content-length']));
+    upstream.data.on('error',err=>{console.warn(`[official-image-stream ${family}]`,err.message);if(!res.headersSent)res.status(502).end();else res.destroy();});
+    upstream.data.pipe(res);
+  }catch(e){
+    console.warn(`[official-image-stream ${family}]`,e.message);
+    if(!res.headersSent)res.status(e.response?.status===404?404:502).send('Image officielle indisponible');
+  }
 }
 
 module.exports=function installOfficialAssets(app){
+  // Intercepte uniquement les domaines officiels pris en charge et streame l'image :
+  // aucun Buffer/Base64 n'est conservé dans le heap Node.
+  app.get('/api/image-proxy',(req,res,next)=>{
+    const raw=String(req.query.url||'').trim();
+    if(!raw||!/^https?:\/\//i.test(raw))return next();
+    return streamOfficialImage(raw,req,res,next);
+  });
+
   app.post('/api/manufacturer-image',async(req,res,next)=>{
     const maker=String(req.body?.manufacturer||'').trim().toLowerCase();
     if(maker!=='alpi'&&maker!=='gessi')return next();

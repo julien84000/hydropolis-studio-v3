@@ -1,5 +1,5 @@
-const CACHE="hydropolis-v11-55-2-shell";
-const CATALOG_CACHE="hydropolis-v11-55-2-catalogs";
+const CACHE="hydropolis-v11-56-0-shell";
+const CATALOG_CACHE="hydropolis-v11-56-0-catalogs";
 const SHELL=["/","/index.html","/styles.css","/app.js","/catalog_manifest.json","/manufacturers_manifest.json","/manifest.webmanifest"];
 
 self.addEventListener("install",event=>event.waitUntil(
@@ -16,15 +16,11 @@ self.addEventListener("fetch",event=>{
   const url=new URL(req.url);
   if(url.origin!==location.origin)return;
 
-  // Never cache authenticated/private API responses. Offline project data lives in
-  // localStorage under the authenticated browser profile, not in a shared HTTP cache.
   if(url.pathname.startsWith("/api/"))return;
 
   const isCatalog=/\/(?:catalog_.*\.json(?:\.gz)?|(?:amphora|alpi)_catalog(?:_2025)?\.json|catalog_manifest\.json|manufacturers_manifest\.json)$/.test(url.pathname);
   if(isCatalog){
     event.respondWith(caches.open(CATALOG_CACHE).then(async cache=>{
-      // Network-first for supplier data: a deployment must never keep serving an old
-      // manifest/catalog merely because a previous version exists in Cache Storage.
       try{
         const fresh=await fetch(req,{cache:"no-store"});
         if(fresh.ok){cache.put(req,fresh.clone());return fresh;}

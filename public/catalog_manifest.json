@@ -1,5 +1,5 @@
 {
-  "version": "11.55.2",
+  "version": "11.56.0",
   "total": 93963,
   "chunks": [
     {
@@ -108,7 +108,7 @@
       "count": 5
     }
   ],
-  "engineVersion": "11.55.2",
+  "engineVersion": "11.56.0",
   "manufacturersManifest": "manufacturers_manifest.json",
   "storage": "gzip for large supplier catalogs"
 }

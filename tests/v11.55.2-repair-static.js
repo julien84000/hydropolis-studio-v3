@@ -7,7 +7,7 @@ const readJson=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8'));
 const read=p=>fs.readFileSync(path.join(root,p),'utf8');
 
 const pkg=readJson('package.json');
-assert.equal(pkg.version,'11.55.2');
+assert(/^11\.\d+\.\d+$/.test(pkg.version),'Version package invalide');
 
 const catalog=readJson('public/catalog_manifest.json');
 assert.equal(catalog.version,pkg.version);
@@ -40,8 +40,9 @@ assert(assets.includes('Hydropolis Studio V${APP_VERSION}'),'Le nom de service d
 assert(assets.includes('versionedIndexHtml'),'L’interface doit être servie avec la version runtime');
 
 const sw=read('public/sw.js');
-assert(sw.includes('hydropolis-v11-55-2-catalogs'),'Cache catalogue non versionné V11.55.2');
+const cacheVersion=pkg.version.replace(/\./g,'-');
+assert(sw.includes(`hydropolis-v${cacheVersion}-catalogs`),'Cache catalogue non aligné sur package.json');
 assert(sw.includes('alpi)_catalog'),'Le service worker doit reconnaître le catalogue ALPI');
 assert(sw.includes('fetch(req,{cache:"no-store"})'),'Les catalogues doivent être network-first');
 
-console.log('V11.55.2 repair static checks: OK');
+console.log(`Catalog repair static checks ${pkg.version}: OK`);

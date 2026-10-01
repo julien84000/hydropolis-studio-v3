@@ -1,8 +1,17 @@
 'use strict';
 const fs=require('fs'),path=require('path'),zlib=require('zlib');
 module.exports=function(app){
-  let data=null;
-  const load=()=>data||(data=JSON.parse(zlib.gunzipSync(fs.readFileSync(path.join(__dirname,'tda_tariff_2026.json.gz')))));
+  let data=null,releaseTimer=null;
+  const scheduleRelease=()=>{
+    if(releaseTimer)clearTimeout(releaseTimer);
+    releaseTimer=setTimeout(()=>{data=null;releaseTimer=null;},60*1000);
+    releaseTimer.unref?.();
+  };
+  const load=()=>{
+    if(!data)data=JSON.parse(zlib.gunzipSync(fs.readFileSync(path.join(__dirname,'tda_tariff_2026.json.gz'))));
+    scheduleRelease();
+    return data;
+  };
   const value=(d,row,col)=>col===2||col===10?row[col]:d.dicts[col][row[col]];
   app.get('/api/tda-tariff', (req,res)=>{
     try{
