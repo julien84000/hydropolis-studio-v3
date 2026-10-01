@@ -1,0 +1,41 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> hydropolis-studio-v3@11.56.1 build
+> npm run check && npm test
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> hydropolis-studio-v3@11.56.1 check
+> node tests/check-syntax.js
+
+18 fichiers JavaScript : syntaxe valide
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> hydropolis-studio-v3@11.56.1 test
+> node verify-release.js && node --test tests/consolidated.test.js
+
+Release 11.56.1 : données, ressources et modules source valides.
+✔ les fabricants et les parents configurables sont conservés (614.383786ms)
+✔ index local incrémental : fabricant + référence, y compris après chargement (0.284601ms)
+✔ Sira : tous les modèles, toutes les variations officielles et aucun produit voisin (68.188447ms)
+✔ Gessi : dix articles, trois finitions distinctes minimum, aucune URL déduite (2.359337ms)
+✔ ALPI : références exactes, plusieurs collections, documents officiels et finitions génériques explicites (17.568362ms)
+✔ hôtes officiels stricts : pas de tiers, identifiants ou protocoles détournés (0.288847ms)
+✔ cache métadonnées borné, expiration et déduplication en vol (25.711142ms)
+✔ requêtes de finitions : un seul chargement par article et métadonnées sans HTML/Base64 (2.215094ms)
+✔ corps natifs : prix séparé, quantités, marge, idempotence, orphelins et exception Lefroy (1.73944ms)
+✔ proxy : annulation client libère immédiatement le stream distant (82.154556ms)
+✔ proxy : un refus 403 est préservé et le corps distant détruit (0.792562ms)
+✔ verify-release est sans effets de bord et les scripts injectés ont disparu (586.519908ms)
+✔ service worker : catalogues réseau prioritaire et suppression des anciennes versions (5.093627ms)
+✔ packs compressés : octets identiques, données imbriquées, erreurs et annulation (348.084786ms)
+✔ corps Coalbrook, Hotbath et Zucchetti : ajout sans double comptage du tarif (552.378092ms)
+✔ version runtime unique sur interface, API, manifests et service worker (68.841407ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2669.375031

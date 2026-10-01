@@ -1,3 +1,34 @@
+# Hydropolis Studio
+
+La version d’exécution provient de `package.json`. Le rapport de consolidation, les résultats et les limites de validation sont dans [docs/RELEASE-11.56.1.md](docs/RELEASE-11.56.1.md).
+
+```bash
+npm ci
+npm run build
+npm start
+```
+
+Render : `npm ci && npm run build`, puis `npm start`. Ne pas utiliser les anciens scripts `apply-v11.*` pour construire cette version : les corrections sont déjà dans les sources. `verify-release.js` ne modifie aucun fichier.
+
+Tests complémentaires :
+
+```bash
+# Navigateur : nécessite Playwright et Chromium installés dans l’environnement de test.
+npm run test:browser
+# Mémoire avec réponses officielles enregistrées, 100 requêtes puis trois minutes de repos.
+node tests/live-assets.js --fixtures
+# Accès réel aux services fabricants, sans remplacement réseau.
+npm run test:live
+```
+
+`CHROMIUM_PATH` permet de choisir l’exécutable Chromium. `TEST_IMAGE_DIR` peut contenir les images contrôlées, sous le nom SHA-256 de leur URL suivi de `.img`. Les tests navigateur créent une base locale temporaire et ne modifient pas les projets de production.
+
+Les rapports distinguent explicitement les fixtures et les appels réseau réels. Les anciens tests de versions restent des archives ; la suite active est définie par `package.json`.
+
+---
+
+## Historique antérieur
+
 # Hydropolis Studio V11.41
 
 Hydropolis Studio V11.41 est construit sur **V11.40**. Il conserve les projets par pièce, devis/remises/marges, dossier client A4, comptes utilisateurs, PostgreSQL/Supabase et connecteurs fabricants existants.

@@ -1,0 +1,240 @@
+{
+  "source": "https://siraconcrete.com/producto/",
+  "checkedAt": "2026-09-30",
+  "models": [
+    {
+      "code": "OA1",
+      "name": "Oasis",
+      "collection": "Bench Collection",
+      "productUrl": "https://siraconcrete.com/producto/oasis-2/",
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/Sira-Concrete-Bench-Collection-Oasis-1200x1500.jpg",
+      "officialTitle": "Oasis",
+      "variationCount": 12
+    },
+    {
+      "code": "GL2",
+      "name": "Glacier",
+      "collection": "Bench Collection",
+      "productUrl": "https://siraconcrete.com/producto/glacier/",
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/Sira-Concrete-Bench-Collection-Glacier-1200x1500.jpg",
+      "officialTitle": "Glacier",
+      "variationCount": 12
+    },
+    {
+      "code": "BA3",
+      "name": "Bay",
+      "collection": "Bench Collection",
+      "productUrl": "https://siraconcrete.com/producto/bay/",
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/08/Sira-Concrete-Bench-Collection-Bay-1-1200x1500.jpg",
+      "officialTitle": "Bay",
+      "variationCount": 12
+    },
+    {
+      "code": "LA4",
+      "name": "Lagoon",
+      "collection": "Bench Collection",
+      "productUrl": "https://siraconcrete.com/producto/lagoon/",
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/Sira-Concrete-Bench-Collection-Lagoon-1200x1500.jpg",
+      "officialTitle": "Lagoon",
+      "variationCount": 12
+    },
+    {
+      "code": "MO5",
+      "name": "Moon",
+      "collection": "Bench Collection",
+      "productUrl": "https://siraconcrete.com/producto/moon/",
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/Sira-Concrete-Bench-Collection-Moon-1200x1500.jpg",
+      "officialTitle": "Moon",
+      "variationCount": 12
+    },
+    {
+      "code": "IS6",
+      "name": "Isla",
+      "collection": "Bench Collection",
+      "productUrl": "https://siraconcrete.com/producto/isla/",
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/Sira-Concrete-Bench-Collection-Cala-1200x1500.jpg",
+      "officialTitle": "Isla",
+      "variationCount": 12
+    },
+    {
+      "code": "CA7",
+      "name": "Cala",
+      "collection": "Bench Collection",
+      "productUrl": "https://siraconcrete.com/producto/cala/",
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/Sira-Concrete-Bench-Collection-Isla-1200x1500.jpg",
+      "officialTitle": "Cala",
+      "variationCount": 12
+    },
+    {
+      "code": "GE8",
+      "name": "Geyser",
+      "collection": "Bench Collection",
+      "productUrl": "https://siraconcrete.com/producto/geyser/",
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/Sira-Concrete-Bench-Collection-Geyser-1200x1500.jpg",
+      "officialTitle": "Geyser",
+      "variationCount": 12
+    },
+    {
+      "code": "VO9",
+      "name": "Volcano",
+      "collection": "Bench Collection",
+      "productUrl": "https://siraconcrete.com/producto/volcano/",
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/Sira-Concrete-Bench-Collection-Volcano-1200x1500.jpg",
+      "officialTitle": "Volcano",
+      "variationCount": 12
+    },
+    {
+      "code": "CE10",
+      "name": "Cenote",
+      "collection": "Freestanding Collection",
+      "productUrl": "https://siraconcrete.com/producto/cenote/",
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/Sira-Concrete-Freestanding-Collection-Cenote-1200x1500.jpg",
+      "officialTitle": "Cenote",
+      "variationCount": 12
+    },
+    {
+      "code": "CL11",
+      "name": "Cliff",
+      "collection": "Freestanding Collection",
+      "productUrl": "https://siraconcrete.com/producto/cliff/",
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/Sira-Concrete-Freestanding-Collection-Cliff-1200x1500.jpg",
+      "officialTitle": "Cliff",
+      "variationCount": 12
+    },
+    {
+      "code": "AU12",
+      "name": "Aurora",
+      "collection": "Wall Collection",
+      "productUrl": "https://siraconcrete.com/producto/aurora/",
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/Sira-Concrete-Wall-Collection-Aurora-1200x1500.jpg",
+      "officialTitle": "Aurora",
+      "variationCount": 12
+    },
+    {
+      "code": "RI13",
+      "name": "River",
+      "collection": "Wall Collection",
+      "productUrl": "https://siraconcrete.com/producto/river/",
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/Sira-Concrete-Wall-Collection-River-1200x1500.jpg",
+      "officialTitle": "River",
+      "variationCount": 12
+    },
+    {
+      "code": "BR14",
+      "name": "Brook",
+      "collection": "Wall Collection",
+      "productUrl": "https://siraconcrete.com/producto/brook/",
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/AURORA-100-MG-1200x1498.jpg",
+      "officialTitle": "Brook",
+      "variationCount": 12
+    },
+    {
+      "code": "CY15",
+      "name": "Canyon",
+      "collection": "Wall Collection",
+      "productUrl": "https://siraconcrete.com/producto/canyon/",
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/AURORA-120-DC-1200x1498.jpg",
+      "officialTitle": "Canyon",
+      "variationCount": 12
+    },
+    {
+      "code": "TU16",
+      "name": "Tundra",
+      "collection": "Wall Collection",
+      "productUrl": "https://siraconcrete.com/producto/tundra/",
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/Sira-Concrete-Wall-Collection-Tundra-1200x1500.jpg",
+      "officialTitle": "Tundra",
+      "variationCount": 12
+    },
+    {
+      "code": "DO17",
+      "name": "Dome",
+      "collection": "Wall Collection",
+      "productUrl": "https://siraconcrete.com/producto/dome/",
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/Sira-Concrete-Wall-Collection-Dome-1200x1500.jpg",
+      "officialTitle": "Dome",
+      "variationCount": 12
+    },
+    {
+      "code": "HI18",
+      "name": "Hill",
+      "collection": "Wall Collection",
+      "productUrl": "https://siraconcrete.com/producto/hill/",
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/Sira-Concrete-Wall-Collection-Hill-1200x1500.jpg",
+      "officialTitle": "Hill",
+      "variationCount": 12
+    },
+    {
+      "code": "PS19",
+      "name": "Palangana",
+      "collection": "Wall Collection",
+      "productUrl": "https://siraconcrete.com/producto/palangana/",
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/Sira-Concrete-WallCollection-Palangana-Sink-by-A-SPACE-ABOUT-1200x1500.jpg",
+      "officialTitle": "Palangana Sink",
+      "variationCount": 12
+    },
+    {
+      "code": "DU1",
+      "name": "Duna",
+      "collection": "Bathtub Collection",
+      "productUrl": "https://siraconcrete.com/producto/duna/",
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/Sira-Concrete-Bathtub-Collection-Duna-02-1200x1500.jpg",
+      "officialTitle": "Duna",
+      "variationCount": 12
+    },
+    {
+      "code": "CR2",
+      "name": "Creek",
+      "collection": "Bathtub Collection",
+      "productUrl": "https://siraconcrete.com/producto/creek/",
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/Sira-Concrete-Bathtub-Collection-Creek-1200x1500.jpg",
+      "officialTitle": "Creek",
+      "variationCount": 12
+    },
+    {
+      "code": "VA3",
+      "name": "Valley",
+      "collection": "Bathtub Collection",
+      "productUrl": "https://siraconcrete.com/producto/valley/",
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/Sira-Concrete-Bathtub-Collection-Valley-1200x1500.jpg",
+      "officialTitle": "Valley",
+      "variationCount": 12
+    },
+    {
+      "code": "AR1",
+      "name": "Plan avec vasque",
+      "collection": "Arctic Countertops",
+      "productUrl": "https://siraconcrete.com/producto/arctic-encimera-con-lavabo/",
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/Arctic-Countertop-with-Sink-1200x1500.jpg",
+      "officialTitle": "Encimera con lavabo",
+      "variationCount": 12
+    },
+    {
+      "code": "AR2",
+      "name": "Plan avec vasque et retombée",
+      "collection": "Arctic Countertops",
+      "productUrl": "https://siraconcrete.com/producto/arctic-encimera-con-faldon-y-lavabo/",
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/Arctic-Countertop-with-Sink-and-Skirt-1200x1500.jpg",
+      "officialTitle": "Encimera con faldón y lavabo",
+      "variationCount": 12
+    },
+    {
+      "code": "AR3",
+      "name": "Plan sans vasque",
+      "collection": "Arctic Countertops",
+      "productUrl": "https://siraconcrete.com/producto/arctic-encimera-sin-lavabo/",
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/Arctic-Countertop-without-Sink-1200x1500.jpg",
+      "officialTitle": "Encimera sin lavabo",
+      "variationCount": 12
+    },
+    {
+      "code": "AR4",
+      "name": "Plan avec retombée sans vasque",
+      "collection": "Arctic Countertops",
+      "productUrl": "https://siraconcrete.com/producto/arctic-encimera-con-faldon-sin-lavabo/",
+      "image": "https://siraconcrete.com/wp-content/uploads/2024/09/Arctic-Countertop-with-Skirt-1200x1500.jpg",
+      "officialTitle": "Encimera con faldón sin lavabo",
+      "variationCount": 12
+    }
+  ]
+}

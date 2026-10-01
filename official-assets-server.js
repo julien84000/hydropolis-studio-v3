@@ -1,249 +1,203 @@
 'use strict';
 const axios=require('axios');
 const cheerio=require('cheerio');
-
-const CACHE=new Map();
-const TTL=2*60*60*1000;
-const MAX_CACHE_ENTRIES=120;
-const UA='Mozilla/5.0 (compatible; HydropolisStudio/11.56.0; +https://hydropolis-studio-v3.onrender.com)';
-const ALPI_HOST='alpirubinetterie.com';
-const SIRA_HOST='siraconcrete.com';
-const GESSI_HOSTS=new Set(['areapro.gessi.com','gessi.com','www.gessi.com','gessistorage.blob.core.windows.net','gwebassets.gessi.com']);
-
-function norm(v){return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Z0-9]/gi,'').toUpperCase();}
+const {pipeline}=require('stream');
+const {MetadataCache,createPool}=require('./metadata-cache');
+const VERSION=require('./package.json').version;
+const alpiIndex=require('./public/alpi_official_products.json').products;
+const siraModels=require('./public/sira_models.json').models;
+const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/gi,'').toUpperCase();
+const hosts={alpi:['alpirubinetterie.com'],sira:['siraconcrete.com'],gessi:['gessi.com','gessistorage.blob.core.windows.net','g-ecatalogue-be-prod-we.azurewebsites.net']};
+const badImage=url=>/(?:logo|favicon|placeholder|sprite|loading|swatch)/i.test(url);
 function hostAllowed(raw,family){
-  try{
-    const h=new URL(raw).hostname.toLowerCase();
-    if(family==='alpi')return h===ALPI_HOST||h.endsWith('.'+ALPI_HOST);
-    if(family==='sira')return h===SIRA_HOST||h.endsWith('.'+SIRA_HOST);
-    if(family==='gessi')return GESSI_HOSTS.has(h)||h.endsWith('.gessi.com');
-    return false;
-  }catch{return false;}
+  try{const u=new URL(raw);return u.protocol==='https:'&&!u.username&&!u.password&&(!u.port||u.port==='443')&&(hosts[family]||[]).some(h=>u.hostname===h||u.hostname.endsWith('.'+h));}catch{return false;}
 }
-function officialFamilyForUrl(raw){
-  if(hostAllowed(raw,'alpi'))return 'alpi';
-  if(hostAllowed(raw,'sira'))return 'sira';
-  if(hostAllowed(raw,'gessi'))return 'gessi';
-  return '';
+function official(raw,base,family){try{const url=raw&&new URL(raw,base).href;return hostAllowed(url,family)?url:'';}catch{return '';}}
+function imageUrl(raw,base,family){const url=official(raw,base,family);return url&&!badImage(url)?url:'';}
+function empty(family,p={}){
+  return {version:VERSION,productUrl:'',image:'',images:[],imageSource:`Site officiel ${family}`,finishMatch:'unavailable',technicalSheetUrl:'',installationGuideUrl:'',drawingUrl:'',finishCode:p.finishCode||p.color||'',note:'Visuel non disponible pour cette référence et cette finition.'};
 }
-function abs(raw,base){try{return new URL(String(raw||'').trim(),base).toString();}catch{return '';}}
-function uniq(rows){return [...new Set((rows||[]).filter(Boolean))];}
-function cacheGet(key){const hit=CACHE.get(key);if(hit&&Date.now()-hit.at<TTL)return hit.value;if(hit)CACHE.delete(key);return null;}
-function cacheSet(key,value){
-  CACHE.set(key,{at:Date.now(),value});
-  while(CACHE.size>MAX_CACHE_ENTRIES)CACHE.delete(CACHE.keys().next().value);
-  return value;
+function stripFinish(reference,finish){
+  const ref=norm(reference),code=norm(finish);if(!code)return ref;
+  const pos=ref.lastIndexOf(code),after=ref.slice(pos+code.length);
+  return pos>=0&&/^(?:\d*|MBO|MNO|MTL)$/.test(after)?ref.slice(0,pos)+after:ref;
 }
-async function fetchHtml(url){
-  const r=await axios.get(url,{timeout:15000,maxRedirects:4,maxContentLength:4*1024*1024,maxBodyLength:4*1024*1024,headers:{'User-Agent':UA,'Accept-Language':'fr-FR,fr;q=0.9,it;q=0.8,en;q=0.6','Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}});
-  return String(r.data||'');
+function matchAlpi(p){
+  const reference=norm(p.reference),base=stripFinish(reference,p.finishCode);
+  const exact=alpiIndex.filter(x=>norm(x.reference)===reference);
+  const rows=exact.length?exact:alpiIndex.filter(x=>stripFinish(x.reference,'CR')===base||norm(x.reference)===base);
+  if(!rows.length||new Set(rows.map(x=>x.id)).size!==1)return null;
+  return {...rows[0],finishMatch:exact.length&&p.finishCode?'exact':'generic'};
 }
-function badImage(url){return /(logo|favicon|icon|sprite|placeholder|loader|loading|flag|swatch|campion|texture|cookie|social)/i.test(String(url||''));}
-function imageUrls($,node,base){
-  const out=[];
-  $(node).find('img').addBack('img').each((_,el)=>{
-    const e=$(el);
-    for(const a of ['data-large_image','data-original','data-lazy-src','data-src','src']){const v=e.attr(a);if(v)out.push(abs(v,base));}
-    for(const a of ['srcset','data-srcset']){const v=e.attr(a);if(v)String(v).split(',').forEach(x=>out.push(abs(x.trim().split(/\s+/)[0],base)));}
+function parseAlpiPopup(html,item){
+  const $=cheerio.load(html),reference=$('.stock__header .grid-item__codice').text().trim();
+  if(norm(reference)!==norm(item.reference))throw Error('Référence de la fiche ALPI incohérente');
+  const image=imageUrl(($('.stock__cover').attr('style')||'').match(/url\(['"]?([^)'"\s]+)/)?.[1],item.productUrl,'alpi')||imageUrl(item.image,item.productUrl,'alpi');
+  const data={productUrl:item.productUrl,officialProductId:item.id,officialReference:reference,image,images:image?[image]:[],technicalSheetUrl:'',installationGuideUrl:'',drawingUrl:''};
+  $('.product_download_list a[href]').each((_,el)=>{
+    const url=official($(el).attr('href'),item.productUrl,'alpi'),label=norm($(el).text());if(!url)return;
+    if(/DISEGNO|DRAWING|2D/.test(label))data.drawingUrl=url;
+    if(/SCHEDA|TECNIC|TECH|FICHE/.test(label)&&/\.pdf(?:\?|$)/i.test(url))data.technicalSheetUrl=url;
+    if(/INSTALL|ISTRUZ|MONTAG/.test(label))data.installationGuideUrl=url;
   });
-  return uniq(out);
+  if(!data.technicalSheetUrl)data.technicalSheetUrl=data.drawingUrl;
+  return data;
 }
-function documentUrls($,node,base,family){
-  const out=[];
-  $(node).find('a[href]').addBack('a[href]').each((_,el)=>{
-    const e=$(el),href=abs(e.attr('href'),base),label=norm(`${e.text()} ${e.attr('title')||''} ${href}`);
-    if(!hostAllowed(href,family))return;
-    if(/\.pdf(?:$|[?#])/i.test(href)||/(TECH|TECN|SCHEM|DRAW|INSTALL|MONTAG|ISTRUZ|FICHE|DOWNLOAD)/.test(label))out.push(href);
+function parseSiraPage(html,url){
+  const $=cheerio.load(html),title=$('h1.product_title,h1.entry-title').first().text().trim();
+  const model=siraModels.find(x=>x.productUrl===url);
+  if(!model||norm(title)!==norm(model.officialTitle||model.name))throw Error('Modèle de la fiche Sira incohérent');
+  const colors=[];
+  $('select[name*="color"] option[value]').each((_,el)=>{
+    const label=$(el).text().trim(),code=label.match(/\(([A-Z]{2})\)/)?.[1],slug=$(el).attr('value');
+    if(code&&slug)colors.push({code,label,slug});
   });
-  return uniq(out);
-}
-function nearestReferenceBlock($,reference){
-  const wanted=norm(reference);if(!wanted)return null;
-  let best=null,bestScore=-Infinity;
-  $('body *').each((_,el)=>{
-    const text=norm($(el).text());
-    if(!text||!text.includes(wanted))return;
-    let node=el;
-    for(let depth=0;node&&depth<8;depth++,node=$(node).parent()[0]){
-      const textNode=norm($(node).text());
-      const imgs=$(node).find('img').length;
-      const links=$(node).find('a[href]').length;
-      let score=120-depth*10+Math.min(imgs,6)*8+Math.min(links,6)*2-Math.min(textNode.length/1800,25);
-      if(textNode===wanted)score+=35;
-      if(imgs===0)score-=20;
-      if(score>bestScore){bestScore=score;best=node;}
+  const gallery=$('.woocommerce-product-gallery').first(),generic=imageUrl(gallery.find('img').first().attr('data-large_image')||gallery.find('img').first().attr('src'),url,'sira');
+  const variants={};
+  $('form.variations_form').each((_,el)=>{
+    let rows=[];try{rows=JSON.parse($(el).attr('data-product_variations')||'[]');}catch{}
+    if(!Array.isArray(rows))return;
+    for(const v of rows){
+      const color=colors.find(c=>Object.entries(v.attributes||{}).some(([key,value])=>/color/.test(key)&&value===c.slug));
+      if(!color)continue;
+      // WooCommerce attributes bind colour to image. Some official SKUs are duplicated (Bay/Glacier).
+      const sku=String(v.sku||''),image=imageUrl(v.image?.src||v.image?.full_src,url,'sira');
+      const images=[image,...(Array.isArray(v.additional_variation_images)?v.additional_variation_images:[]).map(x=>imageUrl(x.src||x.full_src,url,'sira'))].filter(Boolean);
+      variants[color.code]={sku,variationId:v.variation_id,image,images:[...new Set(images)].slice(0,8),verified:!!image};
     }
   });
-  return best;
-}
-
-const ALPI_COLLECTIONS={
-  allen:'allen',vero:'vero',nu:'nu',portofino:'portofino','le grand':'le-grand',legrand:'le-grand',london:'london',ginger:'ginger',gum:'gum',blue:'blue',steele:'steele',"steel'e":'steele',una18:'una18',aura:'aura',samon:'samon',shower:'shower-set','shower set':'shower-set','wc toilet':'wc-toilet'
-};
-function alpiCollectionUrl(collection,reference){
-  const raw=String(collection||'').trim().toLowerCase();
-  let slug=ALPI_COLLECTIONS[raw]||ALPI_COLLECTIONS[raw.replace(/[^a-z0-9]+/g,' ')]||'';
-  const ref=norm(reference);
-  if(!slug){
-    if(/^AL/.test(ref))slug='allen';else if(/^VR/.test(ref))slug='vero';else if(/^NU/.test(ref))slug='nu';else if(/^PO/.test(ref))slug='portofino';else if(/^LG/.test(ref))slug='le-grand';else if(/^LO/.test(ref))slug='london';else if(/^GN/.test(ref))slug='ginger';else if(/^GUM/.test(ref))slug='gum';else if(/^(BU|BPR)/.test(ref))slug='blue';else if(/^TEE/.test(ref))slug='steele';else if(/^UN/.test(ref))slug='una18';
-  }
-  return slug?`https://alpirubinetterie.com/fr/collezioni/${slug}/`:'';
-}
-function alpiCandidatePages({manufacturerUrl,collection,reference}){
-  const out=[];
-  if(hostAllowed(manufacturerUrl,'alpi'))out.push(manufacturerUrl);
-  out.push(alpiCollectionUrl(collection,reference));
-  out.push('https://alpirubinetterie.com/fr/produits/');
-  out.push('https://alpirubinetterie.com/prodotti/');
-  return uniq(out.filter(x=>hostAllowed(x,'alpi')));
-}
-function scoreAlpiImage(url,context,reference,finishCode){
-  const ref=norm(reference),base=ref.replace(/[A-Z]{2,4}$/,'');
-  const hay=norm(`${url} ${context}`),u=String(url||'');
-  let s=0;
-  if(ref&&hay.includes(ref))s+=120;
-  if(base&&base.length>=4&&hay.includes(base))s+=55;
-  if(finishCode&&hay.includes(norm(finishCode)))s+=30;
-  if(/wp-content\/uploads/i.test(u))s+=12;
-  if(/product|prodot|rubinet|lavab|mixer|basin|shower|vasc|bath/i.test(`${u} ${context}`))s+=8;
-  if(/(?:150x|300x|thumb|thumbnail|small)/i.test(u))s-=12;
-  if(badImage(u))s-=200;
-  return s;
-}
-async function alpiResolve(input){
-  const reference=String(input.reference||'').trim();
-  const ref=norm(reference),finishCode=norm(input.finishCode||input.finish||'');
-  if(!ref)throw new Error('Référence ALPI manquante');
-  const key=`alpi|${ref}|${finishCode}|${norm(input.collection)}`;const cached=cacheGet(key);if(cached)return cached;
-  let found=null;
-  for(const page of alpiCandidatePages(input)){
-    try{
-      const html=await fetchHtml(page),$=cheerio.load(html),node=nearestReferenceBlock($,reference);
-      if(!node)continue;
-      const context=$(node).text();
-      let images=imageUrls($,node,page).filter(u=>hostAllowed(u,'alpi')&&!badImage(u));
-      images=images.map(url=>({url,source:'alpi-official-reference-block',score:scoreAlpiImage(url,context,reference,finishCode)})).filter(x=>x.score>=45).sort((a,b)=>b.score-a.score);
-      const links=[];$(node).find('a[href]').addBack('a[href]').each((_,el)=>{const u=abs($(el).attr('href'),page);if(hostAllowed(u,'alpi'))links.push(u);});
-      const productUrl=uniq(links).find(u=>/specifiche_tecniche|schede|prodot|product/i.test(u))||page;
-      let docs=documentUrls($,node,page,'alpi');
-      if(productUrl!==page){
-        try{
-          const detailHtml=await fetchHtml(productUrl),$d=cheerio.load(detailHtml);
-          const detailNode=nearestReferenceBlock($d,reference)||$d('body');
-          const extraImages=imageUrls($d,detailNode,productUrl).filter(u=>hostAllowed(u,'alpi')&&!badImage(u)).map(url=>({url,source:'alpi-official-detail',score:scoreAlpiImage(url,$d(detailNode).text(),reference,finishCode)+20}));
-          images=[...images,...extraImages].sort((a,b)=>b.score-a.score);
-          docs=uniq([...docs,...documentUrls($d,detailNode,productUrl,'alpi')]);
-        }catch(e){console.warn('[ALPI detail]',reference,e.message);}
-      }
-      const seen=new Set();images=images.filter(x=>x.url&&!seen.has(x.url)&&(seen.add(x.url),true)).slice(0,8);
-      if(images.length||docs.length){found={page,productUrl,images,docs};break;}
-    }catch(e){console.warn('[ALPI page]',page,e.message);}
-  }
-  if(!found)return cacheSet(key,{manufacturerUrl:alpiCollectionUrl(input.collection,reference)||'https://alpirubinetterie.com/fr/produits/',reference,finishCode,best:null,images:[],technicalSheet:null,exactFound:false,note:'Aucun visuel officiel ALPI exploitable trouvé pour cette référence.'});
-  const images=found.images.slice(0,6).map(x=>({...x,finishMatch:finishCode&&norm(x.url).includes(finishCode)?'exact':'generic'}));
-  const best=images[0]||null;
-  const technicalSheet=found.docs[0]?{url:found.docs[0],label:'Fiche technique ALPI',type:/\.pdf(?:$|[?#])/i.test(found.docs[0])?'pdf':'link'}:null;
-  return cacheSet(key,{manufacturerUrl:found.productUrl||found.page,reference,finishCode,best,images,technicalSheet,exactFound:!!best,note:best?'Visuel officiel ALPI résolu sans mise en mémoire de l’image.':'Référence ALPI trouvée, mais aucun visuel officiel exploitable n’a été extrait.'});
-}
-
-function scoreGessiImage(url,article,finish){
-  const hay=norm(url);let s=0;
-  if(article&&hay.includes(norm(article)))s+=120;
-  if(finish&&hay.includes(norm(finish)))s+=50;
-  if(/gessistorage|gwebassets/i.test(url))s+=25;
-  if(/thumb320/i.test(url))s-=5;
-  if(badImage(url))s-=200;
-  return s;
-}
-async function gessiResolve(input){
-  const raw=String(input.reference||input.base||'').trim();
-  const parts=raw.split('#');
-  const article=String(parts[0]||'').replace(/\D/g,'');
-  const finish=String(input.finishCode||parts[1]||'').replace(/\D/g,'');
-  if(!article)throw new Error('Référence Gessi manquante');
-  const page=`https://areapro.gessi.com/fr/product/${article}${finish?`?finId=${encodeURIComponent(finish)}`:''}`;
-  const key=`gessi|${article}|${finish}`;const cached=cacheGet(key);if(cached)return cached;
-  const body=await fetchHtml(page),$=cheerio.load(body),candidates=[];
-  const add=rawUrl=>{const url=abs(String(rawUrl||'').replace(/\\\//g,'/'),page);if(url&&hostAllowed(url,'gessi')&&!badImage(url))candidates.push(url);};
-  if(finish)add(`https://gessistorage.blob.core.windows.net/zi4/thumb320/${article}%23${finish}.webp`);
-  $('img').each((_,el)=>{const e=$(el);for(const a of ['data-large_image','data-src','src'])add(e.attr(a));for(const a of ['srcset','data-srcset'])String(e.attr(a)||'').split(',').forEach(x=>add(x.trim().split(/\s+/)[0]));});
-  const rx=/https?:\\?\/\\?\/[^"'<>\s]+\.(?:jpe?g|png|webp)(?:\?[^"'<>\s]*)?/gi;for(const m of body.match(rx)||[])add(m);
-  const images=uniq(candidates).map(url=>({url,source:/gessistorage/i.test(url)?'gessi-official-storage':'gessi-area-pro',score:scoreGessiImage(url,article,finish)})).filter(x=>x.score>0).sort((a,b)=>b.score-a.score).slice(0,8).map(x=>({...x,finishMatch:finish&&norm(x.url).includes(norm(finish))?'exact':'generic'}));
-  const docs=documentUrls($,$('body'),page,'gessi');
-  const best=images[0]||null;
-  const technicalSheet=docs[0]?{url:docs[0],label:'Fiche technique Gessi',type:/\.pdf(?:$|[?#])/i.test(docs[0])?'pdf':'link'}:null;
-  return cacheSet(key,{manufacturerUrl:page,reference:raw,finishCode:finish,best,images,technicalSheet,exactFound:!!best,note:best?'Visuel officiel Gessi résolu sans mise en mémoire de l’image.':'Aucun visuel Gessi exploitable trouvé sur la fiche Area Pro.'});
-}
-
-function parseWooVariations($,base){
-  const out=[];
-  $('[data-product_variations]').each((_,el)=>{
-    let raw=$(el).attr('data-product_variations');if(!raw)return;
-    raw=raw.replace(/&quot;/g,'"').replace(/&#039;/g,"'").replace(/&amp;/g,'&');
-    try{for(const row of JSON.parse(raw)||[]){const label=Object.values(row.attributes||{}).join(' '),im=row.image||{},src=abs(im.full_src||im.src||'',base);if(src)out.push({label,code:norm(label),src});}}catch{}
+  // A variation must expose its own photograph, not a main image reused for every colour.
+  const distinct=new Set(Object.values(variants).map(v=>v.image).filter(Boolean));
+  for(const v of Object.values(variants))v.verified=v.verified&&distinct.size>1;
+  const data={productUrl:url,title,code:model.code,generic,colors:colors.map(({code,label})=>({code,label})),variants,technicalSheetUrl:'',installationGuideUrl:''};
+  $('a[href]').each((_,el)=>{
+    const link=official($(el).attr('href'),url,'sira');if(!link||!/\.pdf(?:\?|$)/i.test(link))return;
+    // Arctic sheets are shared by the four official Arctic configurations.
+    const token=model.code.startsWith('AR')?'arctic':model.name.toLowerCase();
+    if(!link.toLowerCase().includes(token))return;
+    const label=norm($(el).text()+' '+link);
+    if(/SPEC|TECH|FICHE|FICHA/.test(label))data.technicalSheetUrl=link;
+    if(/INSTALL|MONTA|NOTICE/.test(label))data.installationGuideUrl=link;
   });
-  return out;
+  return data;
 }
-async function siraResolve(url){
-  if(!hostAllowed(url,'sira'))throw new Error('URL Sira non officielle');
-  const key=`sira|${url}`;const cached=cacheGet(key);if(cached)return cached;
-  const body=await fetchHtml(url),$=cheerio.load(body),title=($('h1').first().text()||$('title').text()).trim();
-  const variations=parseWooVariations($,url);
-  const main=$('.woocommerce-product-gallery, .product-images, .product-gallery, main .product, article.product').first();
-  const images=uniq([...variations.map(v=>v.src),...imageUrls($,main.length?main:$('main').first(),url)]).filter(x=>hostAllowed(x,'sira')&&!badImage(x));
-  const imagesByColor={};
-  for(const v of variations){const m=String(v.label||'').match(/\(([A-Z]{2})\)/i);if(m)imagesByColor[m[1].toUpperCase()]=v.src;const code=norm(v.label);if(code)imagesByColor[code]=v.src;}
-  const colors=[];$('select option, .variations option').each((_,el)=>{const label=$(el).text().trim(),value=$(el).attr('value')||'';if(!label||/choose|elige|scegli|choisir/i.test(label))return;const m=label.match(/\(([A-Z]{2})\)/);colors.push({code:m?m[1].toUpperCase():value||label,label});});
-  const docs=documentUrls($,$('main, body').first(),url,'sira');
-  return cacheSet(key,{url,title,primaryImage:images[0]||'',images:images.slice(0,16),imagesByColor,colors:colors.filter((x,i,a)=>a.findIndex(y=>y.code===x.code)===i),technicalSheetUrl:docs[0]||'',technicalSheetLabel:'Fiche technique Sira',options:[],source:'Sira Concrete officiel'});
+function selectSira(data,p){
+  const code=String(p.color||p.finishCode||p.siraConfiguration?.color||'').toUpperCase(),v=data.variants[code];
+  const exact=!!v?.verified,image=exact?v.image:data.generic;
+  return {...empty('Sira Concrete',p),productUrl:data.productUrl,title:data.title,image,images:exact?v.images:(image?[image]:[]),colors:data.colors,officialReference:v?.sku||'',variationId:exact?v.variationId:null,finishCode:code,finishMatch:image?(exact?'exact':'generic'):'unavailable',technicalSheetUrl:data.technicalSheetUrl,installationGuideUrl:data.installationGuideUrl,note:exact?'':image?'Visuel officiel générique ; pigment non garanti.':'Visuel officiel indisponible.'};
+}
+function parseGessiArticle(json,article){
+  const product=json?.data?.product;
+  if(String(product?.productId)!==article)throw Error('Article Gessi incohérent');
+  const variants={};
+  for(const v of product.productsConfigured||[]){
+    const code=String(v.finiture?.finitureId||''),image=imageUrl(v.specificFeatureProductImg,'https://areapro.gessi.com/','gessi');
+    if(code&&image)variants[code]={image,name:v.finiture?.finitureName||''};
+  }
+  return {article,variants};
+}
+function selectGessi(data,p){
+  const finish=String(p.finishCode||String(p.reference||'').split('#')[1]||''),v=data.variants[finish];
+  return {...empty('Gessi',p),productUrl:`https://areapro.gessi.com/fr/product/${data.article}?finId=${encodeURIComponent(finish)}`,image:v?.image||'',images:v?[v.image]:[],finishCode:finish,finish:v?.name||'',finishMatch:v?'exact':'unavailable',note:v?'':'Aucune photo officielle pour cette finition.'};
+}
+function legacyResult(data){
+  const image=url=>({url,source:data.imageSource,finishMatch:data.finishMatch});
+  const document=(url,label)=>url?{url,label,type:/\.pdf(?:\?|$)/i.test(url)?'pdf':'image'}:null;
+  return {...data,source:data.imageSource,manufacturerUrl:data.productUrl,best:data.image?{...data.best,...image(data.image)}:null,images:data.images.map(image),drawing:data.drawing||document(data.drawingUrl,'Dessin coté officiel'),technicalSheet:data.technicalSheet||document(data.technicalSheetUrl,'Fiche technique officielle'),installationGuide:data.installationGuide||document(data.installationGuideUrl,'Notice officielle')};
+}
+class ManufacturerAssetResolver {
+  constructor({request=axios.request,assertPublic=async()=>{},legacy,max=120,ttl}={}){
+    this.legacy=legacy;this.request=request;this.assertPublic=assertPublic;this.pool=createPool();
+    this.caches=Object.fromEntries(['alpi','gessi','sira'].map(name=>[name,new MetadataCache({max,ttl})]));
+    this.adapters={alpi:this.alpi.bind(this),gessi:this.gessi.bind(this),sira:this.sira.bind(this)};
+    this.sweep=setInterval(()=>Object.values(this.caches).forEach(c=>c.prune()),60000);this.sweep.unref?.();
+  }
+  close(){clearInterval(this.sweep);}
+  stats(){return {...Object.fromEntries(Object.entries(this.caches).map(([name,c])=>[name,{entries:c.size,inFlight:c.pending.size,limit:c.max}])),requests:this.pool.stats()};}
+  async read(url,family,body){
+    let current=url;
+    for(let redirects=0;redirects<4;redirects++){
+      if(!hostAllowed(current,family))throw Error('Redirection hors du fabricant officiel');
+      await this.assertPublic(current);
+      const r=await this.request({url:current,method:body?'POST':'GET',data:body,timeout:18000,maxRedirects:0,maxContentLength:5*1024*1024,headers:{'User-Agent':`HydropolisStudio/${VERSION}`,'Accept':'application/json,text/html;q=0.9','Content-Type':body?'application/x-www-form-urlencoded':'text/plain'},validateStatus:s=>s>=200&&s<400});
+      if(r.status>=300&&r.headers.location){current=new URL(r.headers.location,current).href;continue;}
+      return r.data;
+    }
+    throw Error('Trop de redirections fabricant');
+  }
+  async resolve(family,p){
+    if(this.adapters[family])return this.adapters[family](p);
+    if(!this.legacy)throw Error('Fabricant non pris en charge');
+    const data=await this.legacy(p);
+    const clean=x=>{if(!x)return x;const {dataUrl,...metadata}=x;return metadata;};
+    return {...data,version:VERSION,best:clean(data.best),productUrl:data.manufacturerUrl||p.manufacturerUrl,image:data.best?.url||'',images:(data.images||[]).map(x=>x.url).filter(Boolean),imageSource:data.best?.source||'',finishMatch:data.best?.finishMatch||'unavailable',technicalSheetUrl:data.technicalSheet?.url||'',installationGuideUrl:data.installationGuide?.url||'',drawingUrl:data.drawing?.url||''};
+  }
+  async alpi(p){
+    const item=matchAlpi(p);if(!item)return empty('ALPI',p);
+    let data={productUrl:item.productUrl,officialReference:item.reference,officialProductId:item.id,image:imageUrl(item.image,item.productUrl,'alpi')};data.images=data.image?[data.image]:[];
+    if(p.imageOnly!==true){
+      try{data=await this.caches.alpi.resolve(String(item.id),()=>this.pool(async()=>parseAlpiPopup(await this.read('https://alpirubinetterie.com/wp-admin/admin-ajax.php','alpi',new URLSearchParams({action:'webkolm_ajax_product_popup',post_id:item.id}).toString()),item)));}
+      catch(e){data.documentStatus='unavailable';data.documentError=e.response?.status||'network';}
+    }
+    return {...empty('ALPI',p),...data,finishMatch:data.image?item.finishMatch:'unavailable',note:item.finishMatch==='exact'?'':'Visuel officiel générique du produit ; finition non garantie.'};
+  }
+  async sira(p){
+    const url=p.productUrl||p.siraConfiguration?.productUrl||p.manufacturerUrl;
+    const model=siraModels.find(x=>x.productUrl===url||x.code===p.modelCode);
+    if(!model)return empty('Sira Concrete',p);
+    const data=await this.caches.sira.resolve(model.code,()=>this.pool(async()=>parseSiraPage(await this.read(model.productUrl,'sira'),model.productUrl)));
+    return selectSira(data,p);
+  }
+  async gessi(p){
+    const article=String(p.reference||'').split('#')[0];if(!/^\d{4,8}$/.test(article))return empty('Gessi',p);
+    const data=await this.caches.gessi.resolve(article,()=>this.pool(async()=>parseGessiArticle(await this.read(`https://g-ecatalogue-be-prod-we.azurewebsites.net/public/product/GetProductDetails?country=FR&language=fr&productCode=${article}`,'gessi'),article)));
+    return selectGessi(data,p);
+  }
 }
 
-async function streamOfficialImage(rawUrl,req,res,next){
-  const family=officialFamilyForUrl(rawUrl);
-  if(!family)return next();
+// Optional proxy for exports/CORS; the interactive UI uses official URLs directly.
+// Request cancellation and redirects are handled before any bytes are piped.
+async function streamImage(url,req,res,{request=axios.request,validate=async()=>{},family}={}){
+  const controller=new AbortController();let upstream;
+  const abort=()=>{controller.abort();upstream?.data?.destroy();};
+  req.once('aborted',abort);res.once('close',abort);
   try{
-    const upstream=await axios.get(rawUrl,{responseType:'stream',timeout:15000,maxRedirects:4,headers:{'User-Agent':UA,'Accept':'image/avif,image/webp,image/apng,image/*,*/*;q=0.8','Referer':req.get('referer')||undefined}});
-    const ct=String(upstream.headers?.['content-type']||'').split(';')[0].toLowerCase();
-    if(!ct.startsWith('image/')){upstream.data?.destroy?.();return res.status(415).send('Ressource distante non image');}
-    res.type(ct);
-    res.set('Cache-Control','public,max-age=86400,stale-while-revalidate=604800');
-    if(upstream.headers?.['content-length'])res.set('Content-Length',String(upstream.headers['content-length']));
-    upstream.data.on('error',err=>{console.warn(`[official-image-stream ${family}]`,err.message);if(!res.headersSent)res.status(502).end();else res.destroy();});
-    upstream.data.pipe(res);
-  }catch(e){
-    console.warn(`[official-image-stream ${family}]`,e.message);
-    if(!res.headersSent)res.status(e.response?.status===404?404:502).send('Image officielle indisponible');
-  }
+    let current=url;
+    for(let i=0;i<5;i++){
+      if(family&&!hostAllowed(current,family))throw Error('Redirection image hors fabricant');
+      await validate(current);
+      upstream=await request({url:current,responseType:'stream',signal:controller.signal,timeout:18000,maxRedirects:0,validateStatus:()=>true,headers:{'User-Agent':`HydropolisStudio/${VERSION}`,'Accept':'image/*'}});
+      if(upstream.status>=300&&upstream.status<400&&upstream.headers.location){upstream.data.destroy();current=new URL(upstream.headers.location,current).href;continue;}
+      if(upstream.status!==200){upstream.data.destroy();res.status(upstream.status===403?403:upstream.status===404?404:502).end();return;}
+      const type=String(upstream.headers['content-type']||'').split(';')[0];
+      if(!type.startsWith('image/')){upstream.data.destroy();res.status(415).end();return;}
+      res.type(type).set('Cache-Control','public,max-age=86400');
+      await new Promise((resolve,reject)=>pipeline(upstream.data,res,e=>e?reject(e):resolve()));return;
+    }
+    throw Error('Trop de redirections image');
+  }catch(e){upstream?.data?.destroy();if(!res.headersSent&&!res.destroyed)res.status(502).end();}
+  finally{req.off('aborted',abort);res.off('close',abort);upstream?.data?.destroy();}
 }
-
-module.exports=function installOfficialAssets(app){
-  // Intercepte uniquement les domaines officiels pris en charge et streame l'image :
-  // aucun Buffer/Base64 n'est conservé dans le heap Node.
-  app.get('/api/image-proxy',(req,res,next)=>{
-    const raw=String(req.query.url||'').trim();
-    if(!raw||!/^https?:\/\//i.test(raw))return next();
-    return streamOfficialImage(raw,req,res,next);
-  });
-
+function install(app,{assertPublic,validateRemote,legacy,request}={}){
+  const resolver=new ManufacturerAssetResolver({assertPublic,legacy,request});
+  app.locals.assetResolver=resolver;
   app.post('/api/manufacturer-image',async(req,res,next)=>{
-    const maker=String(req.body?.manufacturer||'').trim().toLowerCase();
-    if(maker!=='alpi'&&maker!=='gessi')return next();
-    try{
-      const input={...req.body,reference:req.body?.lookupReference||req.body?.reference};
-      const result=maker==='alpi'?await alpiResolve(input):await gessiResolve(input);
-      result.displayReference=req.body?.reference||input.reference;
-      result.lookupReference=input.reference;
-      res.set('Cache-Control','no-store').json(result);
-    }catch(e){
-      console.error(`[official-assets ${maker}]`,e.message);
-      res.status(502).json({error:`Resolver officiel ${maker} indisponible`,detail:e.message});
-    }
+    const maker=String(req.body?.manufacturer||'').toLowerCase(),family=maker==='sira concrete'?'sira':maker;
+    if(!resolver.adapters[family]&&!legacy)return next();
+    try{res.set('Cache-Control','no-store').json(legacyResult(await resolver.resolve(family,{...req.body,reference:req.body?.lookupReference||req.body?.reference})));}
+    catch(e){res.status(e.status||502).json({error:`Source officielle ${family} indisponible`,status:e.response?.status||null});}
   });
-
-  app.get('/api/sira-product-v1154',async(req,res,next)=>{
-    const url=String(req.query.url||'').trim();
-    if(!url)return next();
-    try{res.set('Cache-Control','no-store').json(await siraResolve(url));}
-    catch(e){console.error('[official-assets sira]',e.message);res.status(502).json({error:'Visuel Sira officiel indisponible',detail:e.message,images:[]});}
+  for(const family of ['alpi','gessi','sira'])app.get(`/api/${family}-assets`,async(req,res)=>{
+    try{res.set('Cache-Control','no-store').json(await resolver.resolve(family,req.query));}
+    catch(e){res.status(e.status||502).json({error:`Source officielle ${family} indisponible`,status:e.response?.status||null});}
   });
-};
+  app.get('/api/image-proxy',async(req,res)=>{
+    const url=String(req.query.url||''),family=Object.keys(hosts).find(f=>hostAllowed(url,f));
+    try{if(!/^https?:\/\//.test(url))return res.status(400).end();if(validateRemote)await validateRemote(url);}
+    catch{return res.status(400).end();}
+    return streamImage(url,req,res,{family,validate:validateRemote});
+  });
+  return resolver;
+}
+module.exports=install;
+Object.assign(module.exports,{ManufacturerAssetResolver,matchAlpi,parseAlpiPopup,parseSiraPage,selectSira,parseGessiArticle,selectGessi,legacyResult,hostAllowed,streamImage});

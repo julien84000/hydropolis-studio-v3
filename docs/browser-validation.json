@@ -1,0 +1,148 @@
+{
+  "version": "11.56.1",
+  "errors": [],
+  "checks": [
+    "auth locale",
+    "pagination 48 cartes maximum",
+    "changement fabricant efface le texte",
+    "Resigres : résultats visibles",
+    "parent plan vasque Resigres",
+    "Resigres : formes de vasques présentes",
+    "Resigres : prix calculé",
+    "Resigres : option comprise sans supplément",
+    "Resigres : option payante",
+    "Resigres : configuration et prix conservés au projet",
+    "Recor : baignoire et pieds compatibles",
+    "miniatures Sira Bench Collection",
+    "pigment Sira Bench Collection",
+    "Sira conserve finition au projet Bench Collection",
+    "miniatures Sira Wall Collection",
+    "pigment Sira Wall Collection",
+    "Sira conserve finition au projet Wall Collection",
+    "miniatures Sira Freestanding Collection",
+    "pigment Sira Freestanding Collection",
+    "Sira conserve finition au projet Freestanding Collection",
+    "miniatures Sira Arctic Countertops",
+    "pigment Sira Arctic Countertops",
+    "Sira conserve finition au projet Arctic Countertops",
+    "miniatures Sira Bathtub Collection",
+    "pigment Sira Bathtub Collection",
+    "Sira conserve finition au projet Bathtub Collection",
+    "corps ALPI natif, quantité, prix, suppression",
+    "aucune erreur JavaScript"
+  ],
+  "loadMs": 3114,
+  "counts": {
+    "Amphora": 171,
+    "Coalbrook": 1483,
+    "Alpi": 3041,
+    "Catalano": 1430,
+    "Nicolazzi": 36303,
+    "Hotbath": 2554,
+    "Lefroy Brooks": 3397,
+    "Gessi": 16211,
+    "Ritmonio": 16082,
+    "Recor": 192,
+    "Fioranese": 1135,
+    "Resigres": 38,
+    "Vismaravetro": 15,
+    "TDA": 20,
+    "Sira Concrete": 5,
+    "Zucchetti": 12053
+  },
+  "renderMs": [
+    18.5,
+    16.3,
+    13.2
+  ],
+  "cards": 48,
+  "resigres": {
+    "basePrice": 570,
+    "withPaidOption": 636,
+    "configuration": {
+      "model": "Selene",
+      "kind": "furniture-basin-top",
+      "shape": "standard",
+      "shapeLabel": "Standard",
+      "material": "solid-surface",
+      "materialLabel": "Solid Surface",
+      "color": "S-Blanco",
+      "colorLabel": "S-Blanco",
+      "ralNcs": "",
+      "basinGroup": "one",
+      "basinGroupLabel": "1 vasque centrée ou déplacée",
+      "basinCount": 1,
+      "widthCm": 50,
+      "lengthCm": 100,
+      "heightCm": 0,
+      "includedOptions": [
+        "cut-straight"
+      ],
+      "paidOptions": {
+        "colored-waste": 1,
+        "overflow": 0,
+        "towel-rail": 0,
+        "backsplash-standard": 0,
+        "backsplash-custom": 0,
+        "backsplash-integrated-straight": 0,
+        "backsplash-integrated-concave": 0,
+        "curved-cut": 0,
+        "special-hole": 0
+      },
+      "basePrice": 570,
+      "baseBreakdown": "1 vasque centrée ou déplacée · Solid Surface · 50 × 100 cm → palier 101 cm",
+      "supplements": [
+        {
+          "id": "colored-waste",
+          "label": "Bonde clic colorée",
+          "amount": 66,
+          "quantity": 1,
+          "unit": "ud"
+        }
+      ],
+      "total": 636,
+      "sourcePage": "26"
+    }
+  },
+  "sira": [
+    {
+      "family": "Bench Collection",
+      "models": 9,
+      "before": "https://siraconcrete.com/wp-content/uploads/2024/09/23-OASIS-PW-1200x1499.jpg",
+      "after": "https://siraconcrete.com/wp-content/uploads/2024/09/23-OASIS-OB-1200x1499.jpg"
+    },
+    {
+      "family": "Wall Collection",
+      "models": 8,
+      "before": "https://siraconcrete.com/wp-content/uploads/2024/09/02-AURORA-PW-1200x1498.jpeg",
+      "after": "https://siraconcrete.com/wp-content/uploads/2024/09/02-AURORA-OB-1200x1498.jpeg"
+    },
+    {
+      "family": "Freestanding Collection",
+      "models": 2,
+      "before": "https://siraconcrete.com/wp-content/uploads/2024/09/19-CENOTE-PW-1200x1499.jpg",
+      "after": "https://siraconcrete.com/wp-content/uploads/2024/09/19-CENOTE-OB-1200x1499.jpg"
+    },
+    {
+      "family": "Arctic Countertops",
+      "models": 4,
+      "before": "https://siraconcrete.com/wp-content/uploads/2024/09/16-ENCIMERA-150-PW-1200x1499.jpg",
+      "after": "https://siraconcrete.com/wp-content/uploads/2024/09/16-ENCIMERA-150-OB-1200x1499.jpg"
+    },
+    {
+      "family": "Bathtub Collection",
+      "models": 3,
+      "before": "https://siraconcrete.com/wp-content/uploads/2024/09/09-DUNA-PW-1200x1499.jpeg",
+      "after": "https://siraconcrete.com/wp-content/uploads/2024/09/09-DUNA-OB-1200x1499.jpeg"
+    }
+  ],
+  "roughIn": {
+    "children": 1,
+    "quantity": 3,
+    "total": 199,
+    "purchase": 89.55,
+    "expected": 199,
+    "idempotent": true,
+    "removed": true
+  }
+}

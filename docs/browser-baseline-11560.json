@@ -1,0 +1,32 @@
+{
+  "version": "11.56.0",
+  "errors": [],
+  "checks": [
+    "auth locale"
+  ],
+  "loadMs": 11637,
+  "counts": {
+    "Amphora": 171,
+    "Lefroy Brooks": 3397,
+    "Nicolazzi": 36303,
+    "Coalbrook": 1483,
+    "Catalano": 1430,
+    "Alpi": 3041,
+    "Hotbath": 2554,
+    "Gessi": 16211,
+    "Ritmonio": 16082,
+    "Recor": 192,
+    "Resigres": 37,
+    "Fioranese": 1135,
+    "Vismaravetro": 15,
+    "TDA": 20,
+    "Sira Concrete": 5,
+    "Zucchetti": 12053
+  },
+  "renderMs": [
+    4829.9,
+    4426.4,
+    5730
+  ],
+  "cards": 120
+}
