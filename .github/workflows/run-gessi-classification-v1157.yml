@@ -1,0 +1,35 @@
+name: run-gessi-classification-v1157
+
+on:
+  push:
+    branches:
+      - "fix/v11.57-sira-pdf-audit"
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/v11.57-sira-pdf-audit
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: python .github/gessi-classification-maintenance.py
+      - run: npm ci
+      - run: npm run build
+      - name: Commit validated Gessi correction
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/catalog_gessi.json.gz public/index.html public/app.js public/styles.css tests/v11.57-regression.test.js
+          git rm .github/gessi-classification-maintenance.py .github/workflows/run-gessi-classification-v1157.yml
+          git rm -f docs/gessi-category-audit.json docs/gessi-mismatch-audit.json
+          git commit -m "fix: restore Gessi functional hierarchy and type filter"
+          git push origin HEAD:fix/v11.57-sira-pdf-audit
