@@ -36,7 +36,7 @@ test('article dossier visibility is independent from quote inclusion',()=>{
   assert.ok(quoteStart>=0,'quoteRows() must exist');
   const quoteEnd=appSource.indexOf('\nfunction ',quoteStart+20);
   const quoteSource=appSource.slice(quoteStart,quoteEnd>quoteStart?quoteEnd:quoteStart+12000);
-  assert.match(quoteSource,/state\.selected\.filter\(isRealSelectedProduct\)/,'quoteRows() must include all real selected products');
+  assert.match(quoteSource,/!isRealSelectedProduct\(p\)/,'quoteRows() must keep every real selected product regardless of dossier visibility');
   assert.doesNotMatch(quoteSource,/hideFromDossier/,'quoteRows() must never filter on dossier visibility');
 });
 
