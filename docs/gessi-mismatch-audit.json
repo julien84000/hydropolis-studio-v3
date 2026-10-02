@@ -1,0 +1,2115 @@
+{
+  "count": 16211,
+  "anelloVariantCount": 531,
+  "anelloBaseCount": 34,
+  "anelloCategoryCounts": [
+    [
+      "Douche",
+      403
+    ],
+    [
+      "Accessoires",
+      128
+    ]
+  ],
+  "anelloBases": [
+    {
+      "base": "63345",
+      "reference": "63345#031",
+      "category": "Douche",
+      "collection": "Anello",
+      "designation": "Partie apparente mitigeur de baignoire mural deux sorties, avec inverseur, prise d’eau et support pour douchette",
+      "originalDescription": "Parte esterna Miscelatore Doccia a parete 2 vie con deviatore, presa acqua e supporto doccetta External parts wall-mounted for shower mixer, two￾way, diverter, water outlet, handshower hook Partie apparente mitigeur de baignoire mural deux sorties, avec inverseur, prise d’eau et support pour douchette Partes externas para mezclador bañera de pared, de 2 vías, desviador, toma de agua y soporte para maneral 031 Chrome 785 735 Warm Bronze PVD 1.162",
+      "finishCount": 16
+    },
+    {
+      "base": "63361",
+      "reference": "63361#031",
+      "category": "Accessoires",
+      "collection": "Anello",
+      "designation": "Partie apparente pour mitigeur mural, 1 sortie.",
+      "originalDescription": "Parte esterna Miscelatore a parete 1 via External parts mixer one-way diverter Partie apparente pour mitigeur mural, 1 sortie. Partes externas para mezclador lavabo de pared, de 1 vìas 031 Chrome 217 735 Warm Bronze PVD 321 149 Finox Br. Nickel 293 726 Warm Bronze Br. PVD 342 299 Matte Black 293 710 Brass PVD 321 720 Nickel PVD 321 727 Brass Br. PVD 342",
+      "finishCount": 16
+    },
+    {
+      "base": "63379",
+      "reference": "63379#031",
+      "category": "Douche",
+      "collection": "Anello",
+      "designation": "Partie apparente mitigeur mural avec inverseur automatique bain-douche deux sorties",
+      "originalDescription": "Parte esterna Miscelatore a parete 2 vie con deviatore bagno/doccia External parts for wall-mounted mixer two￾way, bath/ shower diverter Partie apparente mitigeur mural avec inverseur automatique bain-douche deux sorties Partes externas para mezclador de pared de 2 vías, desviador automático bañera/ducha 031 Chrome 586 735 Warm Bronze PVD 868",
+      "finishCount": 14
+    },
+    {
+      "base": "63380",
+      "reference": "63380#031",
+      "category": "Douche",
+      "collection": "Anello",
+      "designation": "Partie apparente mitigeur mural avec inverseur bain-douche deux sorties",
+      "originalDescription": "Parte esterna Miscelatore a parete 2 vie con deviatore bagno/doccia External parts for wall-mounted mixer two￾way, bath/ shower diverter Partie apparente mitigeur mural avec inverseur bain-douche deux sorties Partes externas para mezclador de pared de 2 vías, desviador bañera/ducha 031 Chrome 496 735 Warm Bronze PVD 733",
+      "finishCount": 16
+    },
+    {
+      "base": "63377",
+      "reference": "63377#031",
+      "category": "Douche",
+      "collection": "Anello",
+      "designation": "Partie apparente mitigeur mural avec inverseur automatique bain-douche deux sorties",
+      "originalDescription": "Parte esterna Miscelatore a parete 2 vie con deviatore automatico bagno/doccia External parts for wall-mounted mixer two￾way, automatic bath/ shower diverter Partie apparente mitigeur mural avec inverseur automatique bain-douche deux sorties Partes externas para mezclador de pared de 2 vías, desviador automático bañera/ducha 031 Chrome 375 735 Warm Bronze PVD 556",
+      "finishCount": 16
+    },
+    {
+      "base": "63331",
+      "reference": "63331#031",
+      "category": "Douche",
+      "collection": "Anello",
+      "designation": "Partie apparente pour mitigeur thermostatique douche mural 1 sortie.",
+      "originalDescription": "Parte esterna Miscelatore Termostatico Doccia a parete 1 via External parts for thermostatic mixer, one-way diverter Partie apparente pour mitigeur thermostatique douche mural 1 sortie. Partes externas para mezclador TERMOSTATICO ducha de pared, de 1 vìas 031 Chrome 632 735 Warm Bronze PVD 935 149 Finox Br. Nickel 852 726 Warm Bronze Br. PVD 997",
+      "finishCount": 16
+    },
+    {
+      "base": "63332",
+      "reference": "63332#031",
+      "category": "Douche",
+      "collection": "Anello",
+      "designation": "Partie apparente pour mitigeur thermostatique douche mural 1 sortie.",
+      "originalDescription": "Parte esterna Miscelatore Termostatico Doccia a parete 1 via External parts for thermostatic mixer, one-way diverter Partie apparente pour mitigeur thermostatique douche mural 1 sortie. Partes externas para mezclador TERMOSTATICO ducha de pared, de 1 vìas 031 Chrome 699 735 Warm Bronze PVD 1.033 149 Finox Br. Nickel 942 726 Warm Bronze Br. PVD 1.103",
+      "finishCount": 16
+    },
+    {
+      "base": "63333",
+      "reference": "63333#031",
+      "category": "Douche",
+      "collection": "Anello",
+      "designation": "Partie apparente pour mitigeur thermostatique douche mural 2 sorties.",
+      "originalDescription": "Parte esterna Miscelatore Termostatico Doccia a parete 2 vie External parts for thermostatic mixer, two-ways diverter Partie apparente pour mitigeur thermostatique douche mural 2 sorties. Partes externas para mezclador TERMOSTATICO ducha de pared, de 2 vìas 031 Chrome 632 735 Warm Bronze PVD 935 149 Finox Br. Nickel 852 726 Warm Bronze Br. PVD 997",
+      "finishCount": 16
+    },
+    {
+      "base": "63334",
+      "reference": "63334#031",
+      "category": "Douche",
+      "collection": "Anello",
+      "designation": "Partie apparente pour mitigeur thermostatique douche mural 2 sorties.",
+      "originalDescription": "Parte esterna Miscelatore Termostatico Doccia a parete 2 vie External parts for thermostatic mixer, two-ways diverter Partie apparente pour mitigeur thermostatique douche mural 2 sorties. Partes externas para mezclador TERMOSTATICO ducha de pared, de 2 vìas 031 Chrome 699 735 Warm Bronze PVD 1.033 149 Finox Br. Nickel 942 726 Warm Bronze Br. PVD 1.103",
+      "finishCount": 16
+    },
+    {
+      "base": "63335",
+      "reference": "63335#031",
+      "category": "Douche",
+      "collection": "Anello",
+      "designation": "Partie apparente pour mitigeur thermostatique douche mural 3 sorties.",
+      "originalDescription": "Parte esterna Miscelatore Termostatico Doccia a parete 3 vie External parts for thermostatic mixer, three-ways diverter Partie apparente pour mitigeur thermostatique douche mural 3 sorties. Partes externas para mezclador TERMOSTATICO ducha de pared, de 3 vìas 031 Chrome 632 735 Warm Bronze PVD 935 149 Finox Br. Nickel 852 726 Warm Bronze Br. PVD 997",
+      "finishCount": 16
+    },
+    {
+      "base": "63336",
+      "reference": "63336#031",
+      "category": "Douche",
+      "collection": "Anello",
+      "designation": "Partie apparente pour mitigeur thermostatique douche mural 3 sorties.",
+      "originalDescription": "Parte esterna Miscelatore Termostatico Doccia a parete 3 vie External parts for thermostatic mixer, three-ways diverter Partie apparente pour mitigeur thermostatique douche mural 3 sorties. Partes externas para mezclador TERMOSTATICO ducha de pared, de 3 vìas 031 Chrome 699 735 Warm Bronze PVD 1.033 149 Finox Br. Nickel 942 726 Warm Bronze Br. PVD 1.103",
+      "finishCount": 16
+    },
+    {
+      "base": "63133",
+      "reference": "63133#031",
+      "category": "Accessoires",
+      "collection": "Anello",
+      "designation": "Partie apparente mitigeur thermostatique 1 voie.",
+      "originalDescription": "Parte esterna miscelatore termostatico 1 via External part for 1-outlet thermostat mixer Partie apparente mitigeur thermostatique 1 voie. Parte externa para mexclador termostático de 1 vía 031 Chrome 722 735 Warm Bronze PVD 1.069 149 Finox Br. Nickel 975 726 Warm Bronze Br. PVD 1.141 299 Matte Black 975 710 Brass PVD 1.069 720 Nickel PVD 1.069 727 Brass Br. PVD 1.141",
+      "finishCount": 16
+    },
+    {
+      "base": "63135",
+      "reference": "63135#031",
+      "category": "Accessoires",
+      "collection": "Anello",
+      "designation": "Partie apparente mitigeur thermostatique 2 voies.",
+      "originalDescription": "Parte esterna miscelatore termostatico 2 vie External part for 2-outlet thermostat mixer Partie apparente mitigeur thermostatique 2 voies. Parte externa para mexclador termostático de 2 vías 031 Chrome 722 735 Warm Bronze PVD 1.069 149 Finox Br. Nickel 975 726 Warm Bronze Br. PVD 1.141 299 Matte Black 975 710 Brass PVD 1.069 720 Nickel PVD 1.069 727 Brass Br. PVD 1.141",
+      "finishCount": 16
+    },
+    {
+      "base": "63137",
+      "reference": "63137#031",
+      "category": "Accessoires",
+      "collection": "Anello",
+      "designation": "Partie apparente mitigeur thermostatique 3 voies.",
+      "originalDescription": "Parte esterna miscelatore termostatico 3 vie External part for 3-outlet thermostat mixer Partie apparente mitigeur thermostatique 3 voies. Parte externa para mexclador termostático de 3 vías 031 Chrome 722 735 Warm Bronze PVD 1.069 149 Finox Br. Nickel 975 726 Warm Bronze Br. PVD 1.141 299 Matte Black 975 710 Brass PVD 1.069 720 Nickel PVD 1.069 727 Brass Br. PVD 1.141",
+      "finishCount": 16
+    },
+    {
+      "base": "63434",
+      "reference": "63434#031",
+      "category": "Accessoires",
+      "collection": "Anello",
+      "designation": "Partie externe mitigeur thermostatique mural à 2 sorties indépendantes. Installation verticale/horizontale.",
+      "originalDescription": "Parte esterna miscelatore termostatico a parete 2 uscite indipendenti. Installazione verticale/orizzontale. External parts for wall-mounted thermostatic mixer. Vertical/horizontal setting up with two separate exits. Partie externe mitigeur thermostatique mural à 2 sorties indépendantes. Installation verticale/horizontale. Mezclador termostático exterior de pared 2 salidas independientes. Instalación vertical/horizontal.",
+      "finishCount": 16
+    },
+    {
+      "base": "63436",
+      "reference": "63436#031",
+      "category": "Accessoires",
+      "collection": "Anello",
+      "designation": "Partie externe mitigeur thermostatique mural à 3 sorties indépendantes. Installation verticale/horizontale.",
+      "originalDescription": "Parte esterna miscelatore termostatico a parete 3 uscite indipendenti. Installazione verticale/orizzontale. External parts for wall-mounted thermostatic mixer. Vertical/ horizontal setting up with three separate exits. Partie externe mitigeur thermostatique mural à 3 sorties indépendantes. Installation verticale/horizontale. Mezclador termostático exterior de pared 3 salidas independientes. Instalación vertical/horizontal.",
+      "finishCount": 16
+    },
+    {
+      "base": "63438",
+      "reference": "63438#031",
+      "category": "Accessoires",
+      "collection": "Anello",
+      "designation": "Partie externe mitigeur thermostatique mural à 4 sorties indépendantes. Installation verticale/horizontale.",
+      "originalDescription": "Parte esterna miscelatore termostatico a parete 4 uscite indipendenti. Installazione verticale/orizzontale. External parts for wall-mounted thermostatic mixer. Vertical/horizontal setting up with four separate exits. Partie externe mitigeur thermostatique mural à 4 sorties indépendantes. Installation verticale/horizontale. Mezclador termostático exterior de pared 4 salidas independientes. Instalación vertical/horizontal.",
+      "finishCount": 16
+    },
+    {
+      "base": "63440",
+      "reference": "63440#031",
+      "category": "Accessoires",
+      "collection": "Anello",
+      "designation": "Partie externe mitigeur thermostatique mural à 5 sorties indépendantes. Installation verticale/horizontale.",
+      "originalDescription": "Parte esterna miscelatore termostatico a parete 5 uscite indipendenti. Installazione verticale/orizzontale. External parts for wall-mounted thermostatic mixer. Vertical/horizontal setting up with five separate exits. Partie externe mitigeur thermostatique mural à 5 sorties indépendantes. Installation verticale/horizontale. Mezclador termostático exterior de pared 5 salidas independientes. Instalación vertical/horizontal.",
+      "finishCount": 16
+    },
+    {
+      "base": "43064",
+      "reference": "43064#031",
+      "category": "Douche",
+      "collection": "Anello",
+      "designation": "Partie apparente mitigeur THERMOSTATIQUE douche haut débit.",
+      "originalDescription": "Parte esterna Miscelatore termostatico alta portata a parete 2 uscite indipendenti . Installazione verticale/orizzontale. External parts for wall-mounted thermostatic high-capacity mixer. Vertical/horizontal setting up with TWO SEPARATE EXITS Partie apparente mitigeur THERMOSTATIQUE douche haut débit. Deux sorties indépendantes. Installation verticale/horizontale. Partes externas para mezclador TERMOSTATICO de pared de gran caudal. instalación vertical/",
+      "finishCount": 16
+    },
+    {
+      "base": "43234",
+      "reference": "43234#031",
+      "category": "Douche",
+      "collection": "Anello",
+      "designation": "Partie apparente mitigeur THERMOSTATIQUE douche haut débit.",
+      "originalDescription": "Parte esterna Miscelatore termostatico alta portata a parete 2 uscite indipendenti . Installazione verticale/orizzontale. External parts for wall-mounted thermostatic high-capacity mixer. Vertical/horizontal setting up with TWO SEPARATE EXITS Partie apparente mitigeur THERMOSTATIQUE douche haut débit. Deux sorties indépendantes. Installation verticale/horizontale. Partes externas para mezclador TERMOSTATICO de pared de gran caudal. instalación vertical/",
+      "finishCount": 16
+    },
+    {
+      "base": "43066",
+      "reference": "43066#031",
+      "category": "Douche",
+      "collection": "Anello",
+      "designation": "Partie apparente mitigeur THERMOSTATIQUE douche haut débit.",
+      "originalDescription": "Parte esterna Miscelatore termostatico alta portata a parete 3 uscite indipendenti . Installazione verticale/orizzontale. External parts for wall-mounted thermostatic high-capacity mixer. Vertical/horizontal setting up with THREE SEPARATE EXITS Partie apparente mitigeur THERMOSTATIQUE douche haut débit. Trois sorties indépendantes. Installation verticale/horizontale. Partes externas para mezclador TERMOSTATICO de pared de gran caudal. instalación vertical/",
+      "finishCount": 16
+    },
+    {
+      "base": "43236",
+      "reference": "43236#031",
+      "category": "Douche",
+      "collection": "Anello",
+      "designation": "Partie apparente mitigeur THERMOSTATIQUE douche haut débit.",
+      "originalDescription": "Parte esterna Miscelatore termostatico alta portata a parete 3 uscite indipendenti . Installazione verticale/orizzontale. External parts for wall-mounted thermostatic high-capacity mixer. Vertical/horizontal setting up with THREE SEPARATE EXITS Partie apparente mitigeur THERMOSTATIQUE douche haut débit. Trois sorties indépendantes. Installation verticale/horizontale. Partes externas para mezclador TERMOSTATICO de pared de gran caudal. instalación vertical/",
+      "finishCount": 16
+    },
+    {
+      "base": "43068",
+      "reference": "43068#031",
+      "category": "Douche",
+      "collection": "Anello",
+      "designation": "Partie apparente mitigeur THERMOSTATIQUE douche haut débit.",
+      "originalDescription": "Parte esterna Miscelatore termostatico alta portata a parete 4 uscite indipendenti . Installazione verticale/orizzontale. External parts for wall-mounted thermostatic high-capacity mixer. Vertical/horizontal setting up with FOUR SEPARATE EXITS Partie apparente mitigeur THERMOSTATIQUE douche haut débit. Quatre sorties indépendantes. Installation verticale/horizontale. Partes externas para mezclador TERMOSTATICO de pared de gran caudal. instalación vertical/horizontal",
+      "finishCount": 16
+    },
+    {
+      "base": "43238",
+      "reference": "43238#031",
+      "category": "Douche",
+      "collection": "Anello",
+      "designation": "Partie apparente mitigeur THERMOSTATIQUE douche haut débit.",
+      "originalDescription": "Parte esterna Miscelatore termostatico alta portata a parete 4 uscite indipendenti . Installazione verticale/orizzontale. External parts for wall-mounted thermostatic high-capacity mixer. Vertical/horizontal setting up with FOUR SEPARATE EXITS Partie apparente mitigeur THERMOSTATIQUE douche haut débit. Quatre sorties indépendantes. Installation verticale/horizontale. Partes externas para mezclador TERMOSTATICO de pared de gran caudal. instalación vertical/horizontal",
+      "finishCount": 16
+    },
+    {
+      "base": "43070",
+      "reference": "43070#031",
+      "category": "Douche",
+      "collection": "Anello",
+      "designation": "Partie apparente mitigeur THERMOSTATIQUE douche haut débit.",
+      "originalDescription": "Parte esterna Miscelatore termostatico alta portata a parete 5 uscite indipendenti . Installazione verticale/orizzontale. External parts for wall-mounted thermostatic high-capacity mixer. Vertical/horizontal setting up with FIVE SEPARATE EXITS Partie apparente mitigeur THERMOSTATIQUE douche haut débit. Cinq sorties indépendantes. Installation verticale/horizontale. Partes externas para mezclador TERMOSTATICO de pared de gran caudal. instalación vertical/horizontal",
+      "finishCount": 16
+    },
+    {
+      "base": "43240",
+      "reference": "43240#031",
+      "category": "Douche",
+      "collection": "Anello",
+      "designation": "Partie apparente mitigeur THERMOSTATIQUE douche haut débit.",
+      "originalDescription": "Parte esterna Miscelatore termostatico alta portata a parete 5 uscite indipendenti . Installazione verticale/orizzontale. External parts for wall-mounted thermostatic high-capacity mixer. Vertical/horizontal setting up with FIVE SEPARATE EXITS Partie apparente mitigeur THERMOSTATIQUE douche haut débit. Cinq sorties indépendantes. Installation verticale/horizontale. Partes externas para mezclador TERMOSTATICO de pared de gran caudal. instalación vertical/horizontal",
+      "finishCount": 16
+    },
+    {
+      "base": "63354",
+      "reference": "63354#031",
+      "category": "Douche",
+      "collection": "Anello",
+      "designation": "Pomme de douche murale, anticalcaire",
+      "originalDescription": "Soffione anticalcare a parete Wall-mounted anti-limestone showerhead Pomme de douche murale, anticalcaire Rociador de ducha antical, de pared 031 Chrome 775 735 Warm Bronze PVD 1.147 149 Finox Br. Nickel 1.047 726 Warm Bronze Br. PVD 1.225 299 Matte Black 1.047 710 Brass PVD 1.147 720 Nickel PVD 1.147 727 Brass Br. PVD 1.225",
+      "finishCount": 11
+    },
+    {
+      "base": "63356",
+      "reference": "63356#031",
+      "category": "Douche",
+      "collection": "Anello",
+      "designation": "Pomme de douche anticalcaire latérale orientable. MULTI-FONCTION Rociador orientable antical, de pared. Multifuncion",
+      "originalDescription": "Soffione anticalcare a parete orientabile. Multifunzione Multifunctional adjustable wall-mounted anti-limescale shower head Pomme de douche anticalcaire latérale orientable. MULTI-FONCTION Rociador orientable antical, de pared. Multifuncion 031 Chrome 775 735 Warm Bronze PVD 1.147 149 Finox Br. Nickel 1.047 726 Warm Bronze Br. PVD 1.225 299 Matte Black 1.047 710 Brass PVD 1.147",
+      "finishCount": 11
+    },
+    {
+      "base": "63348",
+      "reference": "63348#031",
+      "category": "Douche",
+      "collection": "Anello",
+      "designation": "Pomme de douche latérale orientable.",
+      "originalDescription": "Soffione a parete orientabile Wall-mounted adjustable showerhead Pomme de douche latérale orientable. Rociador de ducha de pared, movil 031 Chrome 468 710 Brass PVD 690 149 Finox Br. Nickel 630 727 Brass Br. PVD 738 299 Matte Black 630 246 Gold PVD 786 720 Nickel PVD 690 716 Gold Br. PVD 787",
+      "finishCount": 20
+    },
+    {
+      "base": "63448",
+      "reference": "63448#031",
+      "category": "Douche",
+      "collection": "Anello",
+      "designation": "Pomme de douche latérale orientable. DIAMANTATO",
+      "originalDescription": "Soffione a parete orientabile DIAMANTATO Wall-mounted adjustable showerhead DIAMANTATO Pomme de douche latérale orientable. DIAMANTATO Rociador de ducha de pared, movil DIAMANTATO 031 Chrome 1.070 735 Warm Bronze PVD 1.584 149 Finox Br. Nickel 1.445 726 Warm Bronze Br. PVD 1.690 299 Matte Black 1.445 710 Brass PVD 1.584 720 Nickel PVD 1.584 727 Brass Br. PVD 1.690",
+      "finishCount": 16
+    },
+    {
+      "base": "63450",
+      "reference": "63450#031",
+      "category": "Douche",
+      "collection": "Anello",
+      "designation": "Pomme de douche au plafond avec bras orientable, longueur à la DEMANDE. DIAMANTATO",
+      "originalDescription": "Soffione a soffitto braccio altezza personalizzabile DIAMANTATO Ceiling-mounted showerhead, length on request DIAMANTATO Pomme de douche au plafond avec bras orientable, longueur à la DEMANDE. DIAMANTATO Rociador de ducha de techo, longitud bajo pedido DIAMANTATO 031 Chrome 1.422 735 Warm Bronze PVD 2.104 149 Finox Br. Nickel 1.919 726 Warm Bronze Br. PVD 2.245 299 Matte Black 1.919 710 Brass PVD 2.104",
+      "finishCount": 16
+    },
+    {
+      "base": "63452",
+      "reference": "63452#031",
+      "category": "Douche",
+      "collection": "Anello",
+      "designation": "Pomme de douche au plafond orientable. DIAMANTATO",
+      "originalDescription": "Soffione a soffitto orientabile DIAMANTATO Ceiling-mounted adjustable showerhead DIAMANTATO Pomme de douche au plafond orientable. DIAMANTATO Rociador de ducha de techo, movil DIAMANTATO 031 Chrome 1.015 735 Warm Bronze PVD 1.503 149 Finox Br. Nickel 1.372 726 Warm Bronze Br. PVD 1.605 299 Matte Black 1.372 710 Brass PVD 1.503 720 Nickel PVD 1.503 727 Brass Br. PVD 1.605",
+      "finishCount": 14
+    },
+    {
+      "base": "63645",
+      "reference": "63645#726",
+      "category": "Douche",
+      "collection": "Anello",
+      "designation": "Pomme de douche murale orientable. DIAMANTATO Rociador orientable de pared antical. DIAMANTATO",
+      "originalDescription": "Soffione orientabile a parete. DIAMANTATO Wall-mounted adjustable headshower. DIAMANTATO Pomme de douche murale orientable. DIAMANTATO Rociador orientable de pared antical. DIAMANTATO 031 Chrome 1.299 726 Warm Bronze Br. PVD 2.053 149 Finox Br. Nickel 1.754 720 Nickel PVD 1.923 299 Matte Black 1.754 761 Coffee Bronze Br. PVD 2.183 706 Black Metal PVD 1.923 791 Deep Bronze Br. PVD 2.183",
+      "finishCount": 14
+    },
+    {
+      "base": "63650",
+      "reference": "63650#031",
+      "category": "Douche",
+      "collection": "Anello",
+      "designation": "Pomme de douche au plafond orientable. DIAMANTATO",
+      "originalDescription": "Soffione orientabile a soffitto. DIAMANTATO Ceiling-mounted adjustable headshower. DIAMANTATO Pomme de douche au plafond orientable. DIAMANTATO Rociador de ducha de techo. DIAMANTATO 031 Chrome 1.295 726 Warm Bronze Br. PVD 2.047 149 Finox Br. Nickel 1.749 720 Nickel PVD 1.917 299 Matte Black 1.749 761 Coffee Bronze Br. PVD 2.176 706 Black Metal PVD 1.917 791 Deep Bronze Br. PVD 2.176",
+      "finishCount": 15
+    }
+  ],
+  "reference63302": [],
+  "mismatch": {
+    "Lavabo": {
+      "variantCount": 1351,
+      "baseCount": 122,
+      "currentCategories": [
+        [
+          "Accessoires",
+          1351
+        ]
+      ],
+      "samples": [
+        {
+          "base": "75053",
+          "reference": "75053#031",
+          "category": "Accessoires",
+          "collection": "Incastri",
+          "designation": "waste and connecting flexibles.",
+          "originalDescription": "Miscelatore lavabo alto con scarico Stop&Go e flessibili di collegamento. High version basin mixer with Stop&Go waste and connecting flexibles. Mitigeur lavabo réhaussé, avec bonde “Stop&Go” et flexibles de raccordement. Mezclador de lavabo alto con vaciador Stop&Go y flexibles de acoplamiento.",
+          "finishCount": 15
+        },
+        {
+          "base": "75251",
+          "reference": "75251#031",
+          "category": "Accessoires",
+          "collection": "Incastri",
+          "designation": "waste and connecting flexibles.",
+          "originalDescription": "Miscelatore lavabo Sospeso, con scarico Stop&Go e flessibili di collegamento. Basin mixer Sospeso, with Stop&Go waste and connecting flexibles. Mitigeur lavabo Sospeso avec bonde “Stop&Go” et flexibles de raccordement. Mezclador de lavabo Sospeso, con vaciador Stop&Go y flexibles de acoplamiento.",
+          "finishCount": 15
+        },
+        {
+          "base": "75202",
+          "reference": "75202#726",
+          "category": "Accessoires",
+          "collection": "Incastri",
+          "designation": "waste, with connecting flexibles.",
+          "originalDescription": "Miscelatore lavabo Sospeso, senza scarico, con flessbili di collegamento. Basin mixer Sospeso, without Stop&Go waste, with connecting flexibles. Mitigeur lavabo Sospeso, sans vidage, avec flexibles de raccordement. Mezclador de lavabo Sospeso, sin desagüe, con flexibles de acoplamiento.",
+          "finishCount": 14
+        },
+        {
+          "base": "75253",
+          "reference": "75253#031",
+          "category": "Accessoires",
+          "collection": "Incastri",
+          "designation": "waste and connecting flexibles.",
+          "originalDescription": "Miscelatore lavabo alto Sospeso, con scarico Stop&Go e flessibili di collegamento. High version basin mixer Sospeso, with Stop&Go waste and connecting flexibles. Mitigeur lavabo réhaussé Sospeso, avec bonde “Stop&Go” et flexibles de raccordement. Mezclador de lavabo alto Sospeso, con vaciador Stop&Go y flexibles de acoplamiento.",
+          "finishCount": 15
+        },
+        {
+          "base": "75204",
+          "reference": "75204#031",
+          "category": "Accessoires",
+          "collection": "Incastri",
+          "designation": "Stop&Go waste, with connecting flexibles.",
+          "originalDescription": "Miscelatore lavabo alto Sospeso, senza scarico, con flessibili di collegamento. High version basin mixer Sospeso, without Stop&Go waste, with connecting flexibles. Mitigeur lavabo réhaussé Sospeso, sans vidage, avec flexibles de raccordement. Mezclador de lavabo alto Sospeso, sin desagüe, con flexibles de acoplamiento.",
+          "finishCount": 15
+        },
+        {
+          "base": "63397",
+          "reference": "63397#239",
+          "category": "Accessoires",
+          "collection": "Incastri",
+          "designation": "Built-in part for mixer with spout",
+          "originalDescription": "Parte incasso per miscelatore con bocca Built-in part for mixer with spout Partie encastrée pour mitigeur lavabo mural Parte de empotrar para mezclador con caño 239 Steel Br. 387",
+          "finishCount": 1
+        },
+        {
+          "base": "75088",
+          "reference": "75088#031",
+          "category": "Accessoires",
+          "collection": "Incastri",
+          "designation": "Partie apparente mitigeur mural.",
+          "originalDescription": "Parte esterna miscelatore lavabo a parete. External part for wall-mounted basin mixer. Partie apparente mitigeur mural. Partes externas para mezclador de lavabo de pared. 031 Chrome 690 726 Warm Bronze Br. PVD 1.091 149 Finox Br. Nickel 932 720 Nickel PVD 1.022 299 Matte Black 932 761 Coffee Bronze Br. PVD 1.160 706 Black Metal PVD 1.022 791 Deep Bronze Br. PVD 1.160",
+          "finishCount": 15
+        },
+        {
+          "base": "09280",
+          "reference": "09280#031",
+          "category": "Accessoires",
+          "collection": "Incastri",
+          "designation": "Built-in part for mixer with spout",
+          "originalDescription": "Parte incasso miscelatore lavabo a parete. Built-in part for mixer with spout Partie encastrée pour mitigeur lavabo mural Parte de empotrar para mezclador con caño 031 Chrome 250",
+          "finishCount": 1
+        },
+        {
+          "base": "75288",
+          "reference": "75288#031",
+          "category": "Accessoires",
+          "collection": "Incastri",
+          "designation": "Partie apparente mitigeur mural, Sospeso.",
+          "originalDescription": "Parte esterna miscelatore lavabo Sospeso a parete. External part for wall-mounted basin mixer, Sospeso. Partie apparente mitigeur mural, Sospeso. Partes externas para mezclador de lavabo de pared, Sospeso. 031 Chrome 750 726 Warm Bronze Br. PVD 1.185 149 Finox Br. Nickel 1.013 720 Nickel PVD 1.110 299 Matte Black 1.013 761 Coffee Bronze Br. PVD 1.260 706 Black Metal PVD 1.110 791 Deep Bronze Br. PVD 1.260",
+          "finishCount": 15
+        },
+        {
+          "base": "75102",
+          "reference": "75102#031",
+          "category": "Accessoires",
+          "collection": "Incastri",
+          "designation": "mitigeur à commande séparée.",
+          "originalDescription": "Bocca lavabo da parete. Da completare con comando remoto. Wall-mounted basin spout. To be completed with separate control. Bec lavabo mural. A compléter avec mitigeur à commande séparée. Caño de lavabo de pared. A completar con mando remoto. 031 Chrome 400 726 Warm Bronze Br. PVD 632 149 Finox Br. Nickel 540 720 Nickel PVD 592 299 Matte Black 540 761 Coffee Bronze Br. PVD 672",
+          "finishCount": 15
+        },
+        {
+          "base": "75099",
+          "reference": "75099#031",
+          "category": "Accessoires",
+          "collection": "Incastri",
+          "designation": "Bec au plafond. A compléter avec mitigeur à commande séparée.",
+          "originalDescription": "Bocca lavabo da soffitto. Da completare con comando remoto. Ceiling-mounted basin spout. To be completed with separate control. Bec au plafond. A compléter avec mitigeur à commande séparée. Caño de lavabo de techo. A completar con mando remoto. 031 Chrome 1.200 726 Warm Bronze Br. PVD 1.896 149 Finox Br. Nickel 1.620 720 Nickel PVD 1.776 299 Matte Black 1.620 761 Coffee Bronze Br. PVD 2.016",
+          "finishCount": 15
+        },
+        {
+          "base": "75199",
+          "reference": "75199#031",
+          "category": "Accessoires",
+          "collection": "Incastri",
+          "designation": "Bec au plafond, longeur à la demande. A compléter avec mitigeur à commande séparée.",
+          "originalDescription": "Bocca lavabo da soffitto, lunghezza personalizzabile. Da completare con comando remoto. Ceiling-mounted basin spout, length on request. To be completed with separate control. Bec au plafond, longeur à la demande. A compléter avec mitigeur à commande séparée. Caño de lavabo de techo, longitud bajo pedido. A completar con mando remoto.",
+          "finishCount": 15
+        },
+        {
+          "base": "28767",
+          "reference": "28767#031",
+          "category": "Accessoires",
+          "collection": "Incastri Total Look",
+          "designation": "Tubo prolungato per sifone, lunghezza 40 cm",
+          "originalDescription": "Tubo prolungato per sifone, lunghezza 40 cm Syphon pipe extension, 40 cm length Tubelure prolongée pour siphone, longueur 40 cm Tubo prolongador de sifon, lavabo y bide, longuitud 40 cm 031 Chrome 42 726 Warm Bronze Br. PVD 72 149 Finox Br. Nickel 54 761 Coffee Bronze Br. PVD 75 299 Matte Black 55 791 Deep Bronze Br. PVD 75 147 Chome Br. 54 710 Brass PVD 68",
+          "finishCount": 20
+        },
+        {
+          "base": "73555",
+          "reference": "73555#031",
+          "category": "Accessoires",
+          "collection": "Inverso Rigato",
+          "designation": "and connecting flexibles. RIGATO.",
+          "originalDescription": "Miscelatore lavabo medio con piletta Stop&Go e flessibili di collegamento. RIGATO. Medium version basin mixer with Stop&Go waste and connecting flexibles. RIGATO. Mitigeur lavabo moyen, avec bonde “Stop&Go” et flexibles de raccordement. RIGATO. Mezclador de lavabo mediano con vaciador Stop&Go y flexibles de acoplamiento. RIGATO",
+          "finishCount": 13
+        },
+        {
+          "base": "73506",
+          "reference": "73506#031",
+          "category": "Accessoires",
+          "collection": "Inverso Rigato",
+          "designation": "with connecting flexibles. RIGATO.",
+          "originalDescription": "Miscelatore lavabo medio senza scarico, con flessibili di collegamento. RIGATO. Medium version basin mixer without waste, with connecting flexibles. RIGATO. Mitigeur lavabo moyen, sans vidage, avec flexibles de raccordement. RIGATO. Mezclador de lavabo mediano sin desagüe, con flexibles de acoplamiento. RIGATO",
+          "finishCount": 13
+        },
+        {
+          "base": "73553",
+          "reference": "73553#031",
+          "category": "Accessoires",
+          "collection": "Inverso Rigato",
+          "designation": "and connecting flexibles. RIGATO.",
+          "originalDescription": "Miscelatore lavabo alto con piletta Stop&Go e flessibili di collegamento. RIGATO. High version basin mixer with Stop&Go waste and connecting flexibles. RIGATO. Mitigeur lavabo réhaussé, avec bonde “Stop&Go” et flexibles de raccordement. RIGATO. Mezclador de lavabo alto con vaciador Stop&Go y flexibles de acoplamiento. RIGATO",
+          "finishCount": 11
+        },
+        {
+          "base": "73504",
+          "reference": "73504#031",
+          "category": "Accessoires",
+          "collection": "Inverso Rigato",
+          "designation": "with connecting flexibles. RIGATO.",
+          "originalDescription": "Miscelatore lavabo alto senza scarico, con flessibili di collegamento. RIGATO. High version basin mixer without waste, with connecting flexibles. RIGATO. Mitigeur lavabo réhaussé, sans vidage, avec flexibles de raccordement. RIGATO. Mezclador de lavabo alto sin desagüe, con flexibles de acoplamiento. RIGATO",
+          "finishCount": 13
+        },
+        {
+          "base": "66005",
+          "reference": "66005#031",
+          "category": "Accessoires",
+          "collection": "Origini",
+          "designation": "connecting flexibles. Can be combined with inserts with different finishes: art. 66600and art. 66602.",
+          "originalDescription": "Miscelatore Lavabo Medio con scarico con flessibili di collegamento. Abbinabile a inserti con finiture differenti: art. 66600 eart. 66602. Medium version basin mixer with waste and connecting flexibles. Can be combined with inserts with different finishes: art. 66600and art. 66602. Mitigeur lavabo moyen avec vidage et flexibles de raccordement. Insert en finition inclus. Combiner avec",
+          "finishCount": 15
+        },
+        {
+          "base": "66006",
+          "reference": "66006#031",
+          "category": "Accessoires",
+          "collection": "Origini",
+          "designation": "connecting flexibles. Can be combined with inserts with different finishes: art. 66600 and art. 66602.",
+          "originalDescription": "Miscelatore lavabo medio senza scarico con flessibili di collegamento. Abbinabile a inserti con finiture differenti: art. 66600e art. 66602. Medium version basin mixer without waste and connecting flexibles. Can be combined with inserts with different finishes: art. 66600 and art. 66602. Mitigeur lavabo moyen sans vidage, avec flexibles de raccordement. Insert en finition inclus. Combiner avec",
+          "finishCount": 15
+        },
+        {
+          "base": "66003",
+          "reference": "66003#031",
+          "category": "Accessoires",
+          "collection": "Origini",
+          "designation": "flexibles. Can be combined with inserts with different finishes: art. 66600 and art. 66602.",
+          "originalDescription": "Miscelatore Lavabo alto con scarico con flessibili di collegamento. Abbinabile a inserti con finiture differenti: art. 66600 e art. 66602. High version basin mixer with waste and connecting flexibles. Can be combined with inserts with different finishes: art. 66600 and art. 66602. Mitigeur lavabo réhaussé avec vidage et flexibles de raccordement. Insert en finition inclus. Combiner avec finitions differentes avec insert 66600 ou insert ART 66602",
+          "finishCount": 15
+        },
+        {
+          "base": "66004",
+          "reference": "66004#031",
+          "category": "Accessoires",
+          "collection": "Origini",
+          "designation": "flexibles. Can be combined with inserts with different finishes: art. 66600 and art. 66602.",
+          "originalDescription": "Miscelatore Lavabo alto senza scarico con flessibili di collegamento. Abbinabile a inserti con finiture differenti: art. 66600 eart. 66602. High version basin mixer without waste and connecting flexibles. Can be combined with inserts with different finishes: art. 66600 and art. 66602. Mitigeur lavabo réhaussé sans vidage avec flexibles de raccordement. Insert en finition inclus. Combiner avec",
+          "finishCount": 13
+        },
+        {
+          "base": "66014",
+          "reference": "66014#031",
+          "category": "Accessoires",
+          "collection": "Origini",
+          "designation": "and connecting flexibles. Can be combined with inserts with different finishes: art. 66600 and art. 66602.",
+          "originalDescription": "Gruppo Lavabo 3 fori medio senza scarico con flessibili di collegamento. Abbinabile a inserti con finiture differenti: art. 66600 e art. 66602. Three-holes medium version basin mixer without waste and connecting flexibles. Can be combined with inserts with different finishes: art. 66600 and art. 66602. Mélangeur moyen sans vidage avec flexibles de raccordement. Insert en finition inclus. A combiner avec finitions",
+          "finishCount": 15
+        },
+        {
+          "base": "66016",
+          "reference": "66016#031",
+          "category": "Accessoires",
+          "collection": "Origini",
+          "designation": "and connecting flexibles. Can be combined with inserts with different finishes: art. 66600 and art. 66602.",
+          "originalDescription": "Gruppo Lavabo 3 fori alto senza scarico con flessibili di collegamento. Abbinabile a inserti con finiture differenti: art. 66600e art. 66602. Three-holes high version basin mixer without waste and connecting flexibles. Can be combined with inserts with different finishes: art. 66600 and art. 66602. Group lavabo trois trous réhaussé sans vidage et flexibles de raccordement. Insert en finition inclus. Combiner avec",
+          "finishCount": 15
+        },
+        {
+          "base": "54198",
+          "reference": "54198#239",
+          "category": "Accessoires",
+          "collection": "Origini",
+          "designation": "Built-in part for mixer with spout.",
+          "originalDescription": "Parte incasso per miscelatore con bocca. Built-in part for mixer with spout. Partie encastrée pour mitigeur lavabo mural. Parte de empotrar para mezclador con caño. 239 Steel Br. 366",
+          "finishCount": 1
+        },
+        {
+          "base": "66090",
+          "reference": "66090#031",
+          "category": "Accessoires",
+          "collection": "Origini",
+          "designation": "moyen sans vidage. Insert en finition inclus. Combiner avec finitions differentes avec insert 66600 ou insert ART 66602",
+          "originalDescription": "Parte esterna gruppo lavabo 3 fori senza scarico. Abbinabile a inserti con finiture differenti: art. 66600 e art. 66602. External parts three-holes basin mixer, without waste. Can be combined with inserts with different finishes: art. 66600 and art.66602. Partie apparente mélangeur lavabo mural trois sorties avec bec moyen sans vidage. Insert en finition inclus. Combiner avec finitions differentes avec insert 66600 ou insert ART 66602",
+          "finishCount": 15
+        },
+        {
+          "base": "54009",
+          "reference": "54009#239",
+          "category": "Accessoires",
+          "collection": "Gessi316 Flessa",
+          "designation": "flexible connections, without waste",
+          "originalDescription": "Miscelatore Lavabo alto bocca corta senza scarico con flessibili di collegamento High version basin mixer , short spout, flexible connections, without waste Mitigeur lavabo réhaussé, bec court. Sans vidage, avec flexibles de raccordement. Mezclador alto de lavabo, caño corto, flexibles de acoplamiento, sin desagüe",
+          "finishCount": 8
+        },
+        {
+          "base": "54003",
+          "reference": "54003#239",
+          "category": "Accessoires",
+          "collection": "Gessi316 Flessa",
+          "designation": "flexible connections, with waste",
+          "originalDescription": "Miscelatore Lavabo alto bocca lunga con scarico con flessibili di collegamento High version basin mixer , long spout, flexible connections, with waste Mitigeur lavabo réhaussé, bec long. Avec vidage et flexibles de raccordement. Mezclador alto de lavabo, caño largo, flexibles de acoplamiento, con desagüe",
+          "finishCount": 8
+        },
+        {
+          "base": "54006",
+          "reference": "54006#239",
+          "category": "Accessoires",
+          "collection": "Gessi316 Flessa",
+          "designation": "flexible connections, without waste",
+          "originalDescription": "Miscelatore Lavabo alto bocca lunga senza scarico con flessibili di collegamento High version basin mixer , long spout, flexible connections, without waste Mitigeur lavabo réhaussé, bec long. Sans vidage, avec flexibles de raccordement. Mezclador alto de lavabo, caño largo, flexibles de acoplamiento, sin desagüe",
+          "finishCount": 8
+        },
+        {
+          "base": "54012",
+          "reference": "54012#239",
+          "category": "Accessoires",
+          "collection": "Gessi316 Flessa",
+          "designation": "with flexible hoses. Without waste Mélangeur moyen sans vidage avec flexibles de raccordement.",
+          "originalDescription": "Gruppo Lavabo 3 fori medio senza scarico con flessibili di collegamento Medium version three-hole basin mixer, with flexible hoses. Without waste Mélangeur moyen sans vidage avec flexibles de raccordement. Bateria media de lavabo de 3 orificios , flexibles de acoplamiento, sin desagüe 239 Steel Br. 776 726 Warm Bronze Br. PVD 1.149",
+          "finishCount": 4
+        },
+        {
+          "base": "54084",
+          "reference": "54084#239",
+          "category": "Accessoires",
+          "collection": "Gessi316 Flessa",
+          "designation": "longueur à la demande, sans vidage.",
+          "originalDescription": "Parte esterna Miscelatore Lavabo a parete bocca lunghezza personalizzata senza scarico External parts basin mixer, spout,length on request, without waste Partie apparente pour mitigeur lavabo mural, longueur à la demande, sans vidage. Partes externas Mezclador de lavabo, caño ,longitud bajo pedido, sin desagüe 239 Steel Br. 892 726 Warm Bronze Br. PVD 1.319",
+          "finishCount": 8
+        },
+        {
+          "base": "54089",
+          "reference": "54089#239",
+          "category": "Accessoires",
+          "collection": "Gessi316 Flessa",
+          "designation": "longueur à la demande, sans vidage.",
+          "originalDescription": "Parte esterna Miscelatore Lavabo a parete bocca lunghezza personalizzata senza scarico External parts basin mixer, spout,length on request, without waste Partie apparente pour mitigeur lavabo mural, longueur à la demande, sans vidage. Partes externas Mezclador de lavabo, caño ,longitud bajo pedido, sin desagüe 239 Steel Br. 780 726 Warm Bronze Br. PVD 1.154",
+          "finishCount": 8
+        },
+        {
+          "base": "54094",
+          "reference": "54094#239",
+          "category": "Accessoires",
+          "collection": "Gessi316 Flessa",
+          "designation": "Partie apparente pour mélangeur mural avec bec long sans vidage.",
+          "originalDescription": "Parte esterna Gruppo Lavabo a parete 3 fori bocca lunga senza scarico External parts three-holes basin mixer with long spout, without waste. Partie apparente pour mélangeur mural avec bec long sans vidage. Partes externas bateria de lavabo de 3 orificios con caño largo, sin desagüe 239 Steel Br. 634 726 Warm Bronze Br. PVD 938",
+          "finishCount": 8
+        },
+        {
+          "base": "54099",
+          "reference": "54099#239",
+          "category": "Accessoires",
+          "collection": "Gessi316 Flessa",
+          "designation": "Bec au plafond FLESSA. A compléter avec mitigeur à commande séparée.",
+          "originalDescription": "Bocca Lavabo a soffitto FLESSA Ceiling-mounted spout to be completed with separate control FLESSA Bec au plafond FLESSA. A compléter avec mitigeur à commande séparée. Caño de techo FLESSA 239 Steel Br. 940 726 Warm Bronze Br. PVD 1.393 299 Matte Black 1.270 727 Brass Br. PVD 1.393",
+          "finishCount": 8
+        },
+        {
+          "base": "54096",
+          "reference": "54096#239",
+          "category": "Accessoires",
+          "collection": "Gessi316 Flessa",
+          "designation": "Bec au plafond FLESSA, longueur à la demande. A compléter avec mitigeur à commande séparée.",
+          "originalDescription": "Bocca Lavabo a soffitto bocca lunghezza personalizzata FLESSA Ceiling-mounted spout with length on request FLESSA Bec au plafond FLESSA, longueur à la demande. A compléter avec mitigeur à commande séparée. Caño de techo longitud bajo pedido FLESSA 239 Steel Br. 1.242 726 Warm Bronze Br. PVD 1.837 299 Matte Black 1.675 727 Brass Br. PVD 1.837 707 Black Metal Br. PVD 1.837 761 Coffee Bronze Br. PVD 1.963",
+          "finishCount": 8
+        },
+        {
+          "base": "54309",
+          "reference": "54309#239",
+          "category": "Accessoires",
+          "collection": "Gessi316 Trame",
+          "designation": "flexible connections, without waste",
+          "originalDescription": "Miscelatore Lavabo alto bocca corta senza scarico con flessibili di collegamento High version basin mixer , short spout, flexible connections, without waste Mitigeur lavabo réhaussé, bec court. Sans vidage, avec flexibles de raccordement. Mezclador alto de lavabo, caño corto, flexibles de acoplamiento, sin desagüe",
+          "finishCount": 7
+        },
+        {
+          "base": "54303",
+          "reference": "54303#727",
+          "category": "Accessoires",
+          "collection": "Gessi316 Trame",
+          "designation": "flexible connections, with waste",
+          "originalDescription": "Miscelatore Lavabo alto bocca lunga con scarico con flessibili di collegamento High version basin mixer , long spout, flexible connections, with waste Mitigeur lavabo réhaussé, bec long. Avec vidage et flexibles de raccordement. Mezclador alto de lavabo, caño largo, flexibles de acoplamiento, con desagüe",
+          "finishCount": 6
+        },
+        {
+          "base": "54306",
+          "reference": "54306#239",
+          "category": "Accessoires",
+          "collection": "Gessi316 Trame",
+          "designation": "flexible connections, without waste",
+          "originalDescription": "Miscelatore Lavabo alto bocca lunga senza scarico con flessibili di collegamento High version basin mixer , long spout, flexible connections, without waste Mitigeur lavabo réhaussé, bec long. Sans vidage, avec flexibles de raccordement. Mezclador alto de lavabo, caño largo, flexibles de acoplamiento, sin desagüe",
+          "finishCount": 7
+        },
+        {
+          "base": "54312",
+          "reference": "54312#239",
+          "category": "Accessoires",
+          "collection": "Gessi316 Trame",
+          "designation": "flexible hoses. Without waste Mélangeur moyen sans vidage avec flexibles de raccordement.",
+          "originalDescription": "Gruppo Lavabo 3 fori con bocca senza scarico con flessibili di collegamento Three-holes basin mixer with spout, with flexible hoses. Without waste Mélangeur moyen sans vidage avec flexibles de raccordement. Bateria de lavabo de 3 orificios con caño, flexibles de acoplamiento, sin desagüe 239 Steel Br. 930 727 Brass Br. PVD 1.374",
+          "finishCount": 7
+        },
+        {
+          "base": "54384",
+          "reference": "54384#239",
+          "category": "Accessoires",
+          "collection": "Gessi316 Trame",
+          "designation": "longueur à la demande, sans vidage.",
+          "originalDescription": "Parte esterna Miscelatore Lavabo a parete bocca lunghezza personalizzata senza scarico External parts basin mixer, spout,length on request, without waste Partie apparente pour mitigeur lavabo mural, longueur à la demande, sans vidage. Partes externas Mezclador de lavabo, caño ,longitud bajo pedido, sin desagüe 239 Steel Br. 1.071 727 Brass Br. PVD 1.587",
+          "finishCount": 7
+        },
+        {
+          "base": "54389",
+          "reference": "54389#239",
+          "category": "Accessoires",
+          "collection": "Gessi316 Trame",
+          "designation": "longueur à la demande, sans vidage.",
+          "originalDescription": "Parte esterna Miscelatore Lavabo a parete bocca lunghezza personalizzata senza scarico External parts basin mixer, spout,length on request, without waste Partie apparente pour mitigeur lavabo mural, longueur à la demande, sans vidage. Partes externas Mezclador de lavabo, caño ,longitud bajo pedido, sin desagüe 239 Steel Br. 936 727 Brass Br. PVD 1.384",
+          "finishCount": 7
+        },
+        {
+          "base": "54394",
+          "reference": "54394#239",
+          "category": "Accessoires",
+          "collection": "Gessi316 Trame",
+          "designation": "Partie apparente pour mélangeur mural avec bec long sans vidage.",
+          "originalDescription": "Parte esterna Gruppo Lavabo a parete 3 fori bocca lunga senza scarico External parts three-holes basin mixer with long spout, without waste. Partie apparente pour mélangeur mural avec bec long sans vidage. Partes externas bateria de lavabo de 3 orificios con caño largo, sin desagüe 239 Steel Br. 712 727 Brass Br. PVD 1.054",
+          "finishCount": 7
+        },
+        {
+          "base": "54406",
+          "reference": "54406#239",
+          "category": "Accessoires",
+          "collection": "Gessi316 Cesello",
+          "designation": "flexible connections, without waste",
+          "originalDescription": "Miscelatore Lavabo alto bocca lunga senza scarico con flessibili di collegamento High version basin mixer , long spout, flexible connections, without waste Mitigeur lavabo réhaussé, bec long. Sans vidage, avec flexibles de raccordement. Mezclador alto de lavabo, caño largo, flexibles de acoplamiento, sin desagüe",
+          "finishCount": 8
+        },
+        {
+          "base": "54412",
+          "reference": "54412#239",
+          "category": "Accessoires",
+          "collection": "Gessi316 Cesello",
+          "designation": "flexible hoses. Without waste Mélangeur moyen sans vidage avec flexibles de raccordement.",
+          "originalDescription": "Gruppo Lavabo 3 fori con bocca senza scarico con flessibili di collegamento Three-holes basin mixer with spout, with flexible hoses. Without waste Mélangeur moyen sans vidage avec flexibles de raccordement. Bateria de lavabo de 3 orificios con caño, flexibles de acoplamiento, sin desagüe 239 Steel Br. 930 726 Warm Bronze Br. PVD 1.374",
+          "finishCount": 8
+        },
+        {
+          "base": "54484",
+          "reference": "54484#239",
+          "category": "Accessoires",
+          "collection": "Gessi316 Cesello",
+          "designation": "longueur à la demande, sans vidage.",
+          "originalDescription": "Parte esterna Miscelatore Lavabo a parete bocca lunghezza personalizzata senza scarico External parts basin mixer, spout,length on request, without waste Partie apparente pour mitigeur lavabo mural, longueur à la demande, sans vidage. Partes externas Mezclador de lavabo, caño ,longitud bajo pedido, sin desagüe 239 Steel Br. 1.071 726 Warm Bronze Br. PVD 1.587",
+          "finishCount": 8
+        },
+        {
+          "base": "54489",
+          "reference": "54489#239",
+          "category": "Accessoires",
+          "collection": "Gessi316 Cesello",
+          "designation": "longueur à la demande, sans vidage.",
+          "originalDescription": "Parte esterna Miscelatore Lavabo a parete bocca lunghezza personalizzata senza scarico External parts basin mixer, spout,length on request, without waste Partie apparente pour mitigeur lavabo mural, longueur à la demande, sans vidage. Partes externas Mezclador de lavabo, caño ,longitud bajo pedido, sin desagüe 239 Steel Br. 936 726 Warm Bronze Br. PVD 1.384",
+          "finishCount": 8
+        },
+        {
+          "base": "54494",
+          "reference": "54494#239",
+          "category": "Accessoires",
+          "collection": "Gessi316 Cesello",
+          "designation": "Partie apparente pour mélangeur mural avec bec long sans vidage.",
+          "originalDescription": "Parte esterna Gruppo Lavabo a parete 3 fori bocca lunga senza scarico External parts three-holes basin mixer with long spout, without waste. Partie apparente pour mélangeur mural avec bec long sans vidage. Partes externas bateria de lavabo de 3 orificios con caño largo, sin desagüe 239 Steel Br. 712 726 Warm Bronze Br. PVD 1.054",
+          "finishCount": 8
+        },
+        {
+          "base": "54419",
+          "reference": "54419#239",
+          "category": "Accessoires",
+          "collection": "Gessi316 Cesello",
+          "designation": "Partie apparente pour mitigeur mural, 1 sortie.",
+          "originalDescription": "Parte esterna Miscelatore a parete 1 via External parts mixer one-way diverter Partie apparente pour mitigeur mural, 1 sortie. Partes externas para mezclador lavabo de pared, de 1 vìas 239 Steel Br. 250 726 Warm Bronze Br. PVD 369 299 Matte Black 338 727 Brass Br. PVD 369 707 Black Metal Br. PVD 369 761 Coffee Bronze Br. PVD 395 708 Copper Br. PVD 369 791 Deep Bronze Br. PVD 395",
+          "finishCount": 8
+        },
+        {
+          "base": "54605",
+          "reference": "54605#239",
+          "category": "Accessoires",
+          "collection": "Gessi316 Total Look",
+          "designation": "Vasque à poser 400x400mm en acier Inox sans trop￾plein. La bonde n’est pas incluse. Combinable avec la bonde 54599. Entretoise de 15 mm RI01395 incluse.",
+          "originalDescription": "Lavabo in acciaio d’appoggio senza troppopieno 400x400mm. Piletta non inclusa. Abbinabile a piletta 54599. Distanziale 15mm RI01395 incluso. Counter washbasin 400x400mm in stainless steel, without overflow waste. Without basin waste. It can be combined with waste 54599. 15 mm spacer RI01395 included. Vasque à poser 400x400mm en acier Inox sans trop￾plein. La bonde n’est pas incluse. Combinable avec la bonde 54599. Entretoise de 15 mm RI01395 incluse.",
+          "finishCount": 4
+        },
+        {
+          "base": "54606",
+          "reference": "54606#239",
+          "category": "Accessoires",
+          "collection": "Gessi316 Total Look",
+          "designation": "Vasque à poser 600x350mm en acier Inox sans trop￾plein. La bonde n’est pas incluse. Combinable avec la bonde 54599. Entretoise de 15 mm RI01395 incluse.",
+          "originalDescription": "Lavabo in acciaio d’appoggio senza troppopieno 600x350mm. Piletta non inclusa. Abbinabile a piletta 54599. Distanziale 15mm RI01395 incluso. Counter washbasin 600x350mm in stainless steel, without overflow waste. Without basin waste. It can be combined with waste 54599. 15 mm spacer RI01395 included. Vasque à poser 600x350mm en acier Inox sans trop￾plein. La bonde n’est pas incluse. Combinable avec la bonde 54599. Entretoise de 15 mm RI01395 incluse.",
+          "finishCount": 8
+        },
+        {
+          "base": "54601",
+          "reference": "54601#239",
+          "category": "Accessoires",
+          "collection": "Gessi316 Total Look",
+          "designation": "Vasque à poser Ø400mm en acier Inox sans trop-plein.",
+          "originalDescription": "Lavabo in acciaio d’appoggio senza troppopieno Ø400mm. Piletta non inclusa. Abbinabile a piletta 54599. Distanziale 15mm RI01395incluso. Counter washbasin Ø400mm in stainless steel, without overflow waste. Without basin waste. It can be combined with waste 54599. 15 mm spacer RI01395 included. Vasque à poser Ø400mm en acier Inox sans trop-plein. La bonde n’est pas incluse. Combinable avec la bonde",
+          "finishCount": 8
+        },
+        {
+          "base": "58013",
+          "reference": "58013#031",
+          "category": "Accessoires",
+          "collection": "Inciso -",
+          "designation": "with flexible hoses with waste Mélangeur trois trous hauteur moyenne avec vidage et flexibles de raccordement",
+          "originalDescription": "Gruppo Lavabo 3 fori medio con scarico con flessibili di collegamento Medium version three-holes basin mixer, with flexible hoses with waste Mélangeur trois trous hauteur moyenne avec vidage et flexibles de raccordement Bateria media de lavabo de 3 orificios, flexibles de acoplamiento con desagüe",
+          "finishCount": 18
+        },
+        {
+          "base": "58014",
+          "reference": "58014#031",
+          "category": "Accessoires",
+          "collection": "Inciso -",
+          "designation": "with flexible hoses. Without waste Mélangeur trois trous hauteur moyenne sans vidage avec flexibles de raccordement",
+          "originalDescription": "Gruppo Lavabo 3 fori medio senza scarico con flessibili di collegamento Medium version three-hole basin mixer, with flexible hoses. Without waste Mélangeur trois trous hauteur moyenne sans vidage avec flexibles de raccordement Bateria media de lavabo de 3 orificios , flexibles de acoplamiento, sin desagüe",
+          "finishCount": 19
+        },
+        {
+          "base": "58090",
+          "reference": "58090#031",
+          "category": "Accessoires",
+          "collection": "Inciso -",
+          "designation": "sorties avec bec moyen sans vidage",
+          "originalDescription": "Parte esterna Gruppo Lavabo a parete 3 fori bocca media senza scarico External parts three-holes basin mixer with medium spout, without waste. Partie apparente mélangeur lavabo mural trois sorties avec bec moyen sans vidage Partes externas bateria de lavabo de 3 orificios con caño medio, sin desagüe",
+          "finishCount": 18
+        },
+        {
+          "base": "58092",
+          "reference": "58092#031",
+          "category": "Accessoires",
+          "collection": "Inciso -",
+          "designation": "sorties avec bec long sans vidage",
+          "originalDescription": "Parte esterna Gruppo Lavabo a parete 3 fori bocca lunga senza scarico External parts three-holes basin mixer with long spout, without waste. Partie apparente mélangeur lavabo mural trois sorties avec bec long sans vidage Partes externas bateria de lavabo de 3 orificios con caño largo, sin desagüe",
+          "finishCount": 19
+        },
+        {
+          "base": "58113",
+          "reference": "58113#031",
+          "category": "Accessoires",
+          "collection": "Inciso +",
+          "designation": "with flexible hoses with waste Mélangeur moyen avec vidage et flexibles de raccordement.",
+          "originalDescription": "Gruppo Lavabo 3 fori medio con scarico con flessibili di collegamento Medium version three-holes basin mixer, with flexible hoses with waste Mélangeur moyen avec vidage et flexibles de raccordement. Bateria media de lavabo de 3 orificios, flexibles de acoplamiento con desagüe 031 Chrome 1.003 710 Brass PVD 1.483",
+          "finishCount": 19
+        },
+        {
+          "base": "58114",
+          "reference": "58114#031",
+          "category": "Accessoires",
+          "collection": "Inciso +",
+          "designation": "with flexible hoses. Without waste Mélangeur moyen sans vidage avec flexibles de raccordement.",
+          "originalDescription": "Gruppo Lavabo 3 fori medio senza scarico con flessibili di collegamento Medium version three-hole basin mixer, with flexible hoses. Without waste Mélangeur moyen sans vidage avec flexibles de raccordement. Bateria media de lavabo de 3 orificios , flexibles de acoplamiento, sin desagüe 031 Chrome 984 710 Brass PVD 1.455",
+          "finishCount": 19
+        },
+        {
+          "base": "58190",
+          "reference": "58190#031",
+          "category": "Accessoires",
+          "collection": "Inciso +",
+          "designation": "Partie apparente pour mélangeur mural avec bec moyen sans vidage",
+          "originalDescription": "Parte esterna Gruppo Lavabo a parete 3 fori bocca media senza scarico External parts three-holes basin mixer with medium spout, without waste. Partie apparente pour mélangeur mural avec bec moyen sans vidage Partes externas bateria de lavabo de 3 orificios con caño medio, sin desagüe",
+          "finishCount": 19
+        },
+        {
+          "base": "58192",
+          "reference": "58192#031",
+          "category": "Accessoires",
+          "collection": "Inciso +",
+          "designation": "Partie apparente pour mélangeur mural avec bec long sans vidage",
+          "originalDescription": "Parte esterna Gruppo Lavabo a parete 3 fori bocca lunga senza scarico External parts three-holes basin mixer with long spout, without waste. Partie apparente pour mélangeur mural avec bec long sans vidage Partes externas bateria de lavabo de 3 orificios con caño largo, sin desagüe 031 Chrome 678 710 Brass PVD 1.003",
+          "finishCount": 19
+        },
+        {
+          "base": "63361",
+          "reference": "63361#031",
+          "category": "Accessoires",
+          "collection": "Anello",
+          "designation": "Partie apparente pour mitigeur mural, 1 sortie.",
+          "originalDescription": "Parte esterna Miscelatore a parete 1 via External parts mixer one-way diverter Partie apparente pour mitigeur mural, 1 sortie. Partes externas para mezclador lavabo de pared, de 1 vìas 031 Chrome 217 735 Warm Bronze PVD 321 149 Finox Br. Nickel 293 726 Warm Bronze Br. PVD 342 299 Matte Black 293 710 Brass PVD 321 720 Nickel PVD 321 727 Brass Br. PVD 342",
+          "finishCount": 16
+        },
+        {
+          "base": "63505",
+          "reference": "63505#031",
+          "category": "Accessoires",
+          "collection": "Ingranaggio",
+          "designation": "flexible connections, with waste",
+          "originalDescription": "Miscelatore Lavabo alto bocca lunga con scarico con flessibili di collegamento High version basin mixer , long spout, flexible connections, with waste Mitigeur lavabo réhaussé, bec long, avec vidage et flexibles de raccordement. Mezclador alto de lavabo, caño largo, flexibles de acoplamiento, con desagüe",
+          "finishCount": 16
+        },
+        {
+          "base": "63506",
+          "reference": "63506#031",
+          "category": "Accessoires",
+          "collection": "Ingranaggio",
+          "designation": "flexible connections, without waste",
+          "originalDescription": "Miscelatore Lavabo alto bocca lunga senza scarico con flessibili di collegamento High version basin mixer , long spout, flexible connections, without waste Mitigeur lavabo réhaussé, bec long, sans vidage, avec flexibles de raccordement. Mezclador alto de lavabo, caño largo, flexibles de acoplamiento, sin desagüe",
+          "finishCount": 16
+        },
+        {
+          "base": "63561",
+          "reference": "63561#031",
+          "category": "Accessoires",
+          "collection": "Ingranaggio",
+          "designation": "Partie apparente pour mitigeur mural, 1 sortie.",
+          "originalDescription": "Parte esterna Miscelatore a parete 1 via External parts mixer one-way diverter Partie apparente pour mitigeur mural, 1 sortie. Partes externas para mezclador lavabo de pared, de 1 vìas 031 Chrome 217 735 Warm Bronze PVD 321 149 Finox Br. Nickel 293 726 Warm Bronze Br. PVD 342 299 Matte Black 293 710 Brass PVD 321 720 Nickel PVD 321 727 Brass Br. PVD 342",
+          "finishCount": 16
+        },
+        {
+          "base": "70006",
+          "reference": "70006#031",
+          "category": "Accessoires",
+          "collection": "Habito Unito",
+          "designation": "waste and connecting flexibles.",
+          "originalDescription": "Miscelatore lavabo medio senza scarico con flessibili di collegamento. Medium version basin mixer without waste and connecting flexibles. Mitigeur lavabo moyen sans vidage avec flexibles de raccordement. Mezclador lavabo medio sin desagüe con flexibles de acoplamiento. 031 Chrome 450 726 Warm Bronze Br. PVD 711",
+          "finishCount": 13
+        },
+        {
+          "base": "70505",
+          "reference": "70505#031",
+          "category": "Accessoires",
+          "collection": "Habito Rigato",
+          "designation": "and connecting flexibles. RIGATO",
+          "originalDescription": "Miscelatore lavabo medio con scarico e flessibili di collegamento. RIGATO Medium version basin mixer with waste and connecting flexibles. RIGATO Mitigeur lavabo moyen avec vidage et flexibles de raccordement. RIGATO Mezclador lavabo medio con desagüe y flexibles de acoplamiento.RIAGATO",
+          "finishCount": 10
+        },
+        {
+          "base": "70506",
+          "reference": "70506#031",
+          "category": "Accessoires",
+          "collection": "Habito Rigato",
+          "designation": "and connecting flexibles. RIGATO",
+          "originalDescription": "Miscelatore lavabo medio senza scarico con flessibili di collegamento. RIGATO Medium version basin mixer without waste and connecting flexibles. RIGATO Mitigeur lavabo moyen sans vidage avec flexibles de raccordement. RIGATO Mezclador lavabo medio sin desagüe con flexibles de acoplamiento. RIGATO",
+          "finishCount": 10
+        },
+        {
+          "base": "70503",
+          "reference": "70503#031",
+          "category": "Accessoires",
+          "collection": "Habito Rigato",
+          "designation": "connecting flexibles. RIGATO",
+          "originalDescription": "Miscelatore lavabo alto con scarico e flessibili di collegamento. RIGATO High version basin mixer with waste and connecting flexibles. RIGATO Mitigeur lavabo réhaussé avec vidage et flexibles de raccordement. RIGATO Mezclador lavabo alto con desagüe y flexibles de acoplamiento. RIGATO",
+          "finishCount": 13
+        },
+        {
+          "base": "70504",
+          "reference": "70504#031",
+          "category": "Accessoires",
+          "collection": "Habito Rigato",
+          "designation": "connecting flexibles. RIGATO",
+          "originalDescription": "Miscelatore lavabo alto senza scarico con flessibili di collegamento. RIGATO High version basin mixer without waste and connecting flexibles. RIGATO Mitigeur lavabo réhaussé sans vidage avec flexibles de raccordement. RIGATO Mezclador lavabo alto sin desagüe con flexibles de acoplamiento. RIGATO",
+          "finishCount": 13
+        },
+        {
+          "base": "70605",
+          "reference": "70605#031",
+          "category": "Accessoires",
+          "collection": "Habito Diamantato",
+          "designation": "connecting flexibles. DIAMANTATO",
+          "originalDescription": "Miscelatore lavabo medio con scarico e flessibili di collegamento. DIAMANTATO Medium version basin mixer with waste and connecting flexibles. DIAMANTATO Mitigeur lavabo moyen avec vidage et flexibles de raccordement. DIAMANTATO Mezclador lavabo medio con desagüe y flexibles de acoplamiento. DIAMANTATO",
+          "finishCount": 10
+        },
+        {
+          "base": "70606",
+          "reference": "70606#031",
+          "category": "Accessoires",
+          "collection": "Habito Diamantato",
+          "designation": "connecting flexibles. DIAMANTATO",
+          "originalDescription": "Miscelatore lavabo medio senza scarico con flessibili di collegamento. DIAMANTATO Medium version basin mixer without waste and connecting flexibles. DIAMANTATO Mitigeur lavabo moyen sans vidage avec flexibles de raccordement. DIAMANTATO Mezclador lavabo medio sin desagüe con flexibles de acoplamiento. DIAMANTATO",
+          "finishCount": 10
+        },
+        {
+          "base": "70603",
+          "reference": "70603#031",
+          "category": "Accessoires",
+          "collection": "Habito Diamantato",
+          "designation": "connecting flexibles. DIAMANTATO",
+          "originalDescription": "Miscelatore lavabo alto con scarico e flessibili di collegamento. DIAMANTATO High version basin mixer with waste and connecting flexibles. DIAMANTATO Mitigeur lavabo réhaussé avec vidage et flexibles de raccordement. DIAMANTATO Mezclador lavabo alto con desagüe y flexibles de acoplamiento. DIAMANTATO",
+          "finishCount": 13
+        },
+        {
+          "base": "70604",
+          "reference": "70604#031",
+          "category": "Accessoires",
+          "collection": "Habito Diamantato",
+          "designation": "connecting flexibles. DIAMANTATO",
+          "originalDescription": "Miscelatore lavabo alto senza scarico con flessibili di collegamento. DIAMANTATO High version basin mixer without waste and connecting flexibles. DIAMANTATO Mitigeur lavabo réhaussé sans vidage avec flexibles de raccordement. DIAMANTATO Mezclador lavabo alto sin desagüe con flexibles de acoplamiento. DIAMANTATO",
+          "finishCount": 13
+        },
+        {
+          "base": "70695",
+          "reference": "70695#031",
+          "category": "Accessoires",
+          "collection": "Habito Diamantato",
+          "designation": "sol sans vidage. DIAMANTATO",
+          "originalDescription": "Parte esterna miscelatore lavabo da terra senza scarico. DIAMANTATO External part for freestanding basin mixer without waste. DIAMANTATO Partie apparente mitigeur de lavabo au sol sans vidage. DIAMANTATO Parte externa mezcaldor lavabo de suelo sin desagüe. DIAMANTATO",
+          "finishCount": 13
+        },
+        {
+          "base": "20114",
+          "reference": "20114#031",
+          "category": "Accessoires",
+          "collection": "Rettangolo",
+          "designation": "Bec mural à compléter par un mitigeur à commande séparée.",
+          "originalDescription": "Bocca a parete . Da completare con comando remoto Wall-mounted spout to be completed with separate control Bec mural à compléter par un mitigeur à commande séparée. Caño lavabo de pared con mando remoto 031 Chrome 286 030 Copper PVD 424 149 Finox Br. Nickel 387 708 Copper Br. PVD 452 299 Matte Black 387 735 Warm Bronze PVD 424 720 Nickel PVD 424 726 Warm Bronze Br. PVD 452",
+          "finishCount": 12
+        },
+        {
+          "base": "20118",
+          "reference": "20118#031",
+          "category": "Accessoires",
+          "collection": "Rettangolo",
+          "designation": "Bec mural à compléter par un mitigeur à commande séparée, longueur à la demande.",
+          "originalDescription": "Bocca a parete bocca lunghezza personalizzata . Da completare con comando remoto Wall-mounted spout, length on request, with separate control Bec mural à compléter par un mitigeur à commande séparée, longueur à la demande. Caño lavabo de pared con mando remoto, longitud bajo pedido 031 Chrome 569 030 Copper PVD 842 149 Finox Br. Nickel 768 708 Copper Br. PVD 898",
+          "finishCount": 12
+        },
+        {
+          "base": "20119",
+          "reference": "20119#031",
+          "category": "Accessoires",
+          "collection": "Rettangolo",
+          "designation": "Partie apparente pour mitigeur mural, 1 sortie.",
+          "originalDescription": "Parte esterna Miscelatore a parete 1 via External parts mixer one-way diverter Partie apparente pour mitigeur mural, 1 sortie. Partes externas para mezclador lavabo de pared, de 1 vìas 031 Chrome 250 030 Copper PVD 454 149 Finox Br. Nickel 399 708 Copper Br. PVD 497 299 Matte Black 399 735 Warm Bronze PVD 454 720 Nickel PVD 454 726 Warm Bronze Br. PVD 497",
+          "finishCount": 12
+        },
+        {
+          "base": "44834",
+          "reference": "44834#031",
+          "category": "Accessoires",
+          "collection": "Rettangolo",
+          "designation": "bec longueuer à la demande sans vidage.",
+          "originalDescription": "Parte esterna Miscelatore a parete bocca lunghezza personalizzata senza scarico External parts for built-in mixer spout with length on request, without waste Partie apparente pour mitigeur lavabo mural avec bec longueuer à la demande sans vidage. Partes externas para mezclador monomando de lavabo para empotrar caño bajo pedido, sin desagüe",
+          "finishCount": 12
+        },
+        {
+          "base": "33626",
+          "reference": "33626#031",
+          "category": "Accessoires",
+          "collection": "Goccia",
+          "designation": "Partie apparente pour mitigeur de vasque au sol avec bec court sans vidage.",
+          "originalDescription": "Parte esterna Miscelatore Lavabo da terra bocca corta senza scarico. Bocca girevole. External parts for freestanding basin mixer, short spout without waste. Swivelling spout. Partie apparente pour mitigeur de vasque au sol avec bec court sans vidage. Partes externas para mezclador lavabo sobre pie con parte empotrada a suelo, caño corto, sin desagüe",
+          "finishCount": 14
+        },
+        {
+          "base": "33715",
+          "reference": "33715#031",
+          "category": "Accessoires",
+          "collection": "Goccia",
+          "designation": "un mitigeur à commande séparée.",
+          "originalDescription": "Bocca Lavabo a parete bocca media . Da completare con comando remoto. (non incluso) Wall-mounted spout, medium spout,with separate control (not included). Bec de lavabo mural moyen. À compléter par un mitigeur à commande séparée. Caño de lavabo de pared, caño medio, a completar con mando remoto",
+          "finishCount": 14
+        },
+        {
+          "base": "33719",
+          "reference": "33719#031",
+          "category": "Accessoires",
+          "collection": "Goccia",
+          "designation": "un mitigeur à commande séparée.",
+          "originalDescription": "Bocca Lavabo a parete bocca lunga . Da completare con comando remoto. (non incluso) Wall-mounted spout, short spout,with separate control (not included). Bec de lavabo mural long. À compléter par un mitigeur à commande séparée. Caño de lavabo de pared, caño largo, a completar con mando remoto.",
+          "finishCount": 14
+        },
+        {
+          "base": "33723",
+          "reference": "33723#031",
+          "category": "Accessoires",
+          "collection": "Goccia",
+          "designation": "compléter par un mitigeur à commande séparée.",
+          "originalDescription": "Bocca Lavabo a parete bocca lunghezza personalizzata . Da completare con comando remoto. (non incluso) Wall-mounted spout, spout length on request,with separate control (not included). Bec de lavabo mural longueur à la demande. À compléter par un mitigeur à commande séparée. Caño de lavabo de pared, caño con longitud bajo pedido, a completar con mando remoto",
+          "finishCount": 14
+        }
+      ]
+    },
+    "Bain": {
+      "variantCount": 2227,
+      "baseCount": 164,
+      "currentCategories": [
+        [
+          "Douche",
+          2174
+        ],
+        [
+          "Accessoires",
+          52
+        ],
+        [
+          "Lavabo",
+          1
+        ]
+      ],
+      "samples": [
+        {
+          "base": "46189",
+          "reference": "46189#031",
+          "category": "Lavabo",
+          "collection": "Incastri",
+          "designation": "Parte incasso miscelatori lavabo/vasca da terra con bocca.",
+          "originalDescription": "Parte incasso miscelatori lavabo/vasca da terra con bocca. Built-in part for freestanding basin/bath mixer with spout. Partie encastrée tenue étanche pour mitigeur bain-douche sur pied. Parte de empotrar para columna exterior para bañera. 031 Chrome 374",
+          "finishCount": 1
+        },
+        {
+          "base": "75028",
+          "reference": "75028#031",
+          "category": "Douche",
+          "collection": "Incastri",
+          "designation": "Partie apparente pour mitigeur baignoire sur pied avec inverseur et douchette anticalcaire.",
+          "originalDescription": "Parte esterna piantana esterno vasca con deviatore e doccetta. External part for freestanding bath mixer with automatic diverter and antilimestone handshower. Partie apparente pour mitigeur baignoire sur pied avec inverseur et douchette anticalcaire. Parte externa mexlcador de bañera de suelo con maneral de ducha antical y desviador automático. 031 Chrome 2.390 726 Warm Bronze Br. PVD 3.777",
+          "finishCount": 15
+        },
+        {
+          "base": "73528",
+          "reference": "73528#031",
+          "category": "Douche",
+          "collection": "Inverso Rigato",
+          "designation": "Partie apparente pour mitigeur baignoire sur pied avec inverseur et douchette anticalcaire. RIGATO.",
+          "originalDescription": "Parte esterna piantana esterno vasca con deviatore automatico e doccetta anticalcare. RIGATO. External part freestanding bath mixer with automatic diverter and antilimestone handshower. RIGATO. Partie apparente pour mitigeur baignoire sur pied avec inverseur et douchette anticalcaire. RIGATO. Parte externa mexclador de bañera de suelo con maneral de ducha antical y desviador automático. RIGATO",
+          "finishCount": 13
+        },
+        {
+          "base": "73579",
+          "reference": "73579#031",
+          "category": "Douche",
+          "collection": "Inverso Rigato",
+          "designation": "Partie apparente pour mitigeur murale 2 sorties avec inverseur bain-douche. RIGATO.",
+          "originalDescription": "Parte esterna miscelatore a parete 2 vie con deviatore automatico bagno/doccia. RIGATO. External part wall-mounted two-ways mixer with automatic bath/shower diverter. RIGATO. Partie apparente pour mitigeur murale 2 sorties avec inverseur bain-douche. RIGATO. Parte externa para mexclador de pared de 2 vías con desviador automatico baño/ducha. RIGATO",
+          "finishCount": 9
+        },
+        {
+          "base": "63472",
+          "reference": "63472#031",
+          "category": "Douche",
+          "collection": "Inverso Bath-Shower",
+          "designation": "Pomme de douche au plafond orientable. DIAMANTATO.",
+          "originalDescription": "Soffione a soffitto orientabile. DIAMANTATO. Ceiling-mounted adjustable headshower. DIAMANTATO. Pomme de douche au plafond orientable. DIAMANTATO. Rociador de ducha de techo, movil. DIAMANTATO. 031 Chrome 1.650 726 Warm Bronze Br. PVD 2.607 149 Finox Br. Nickel 2.228 710 Brass PVD 2.442 299 Matte Black 2.228 727 Brass Br. PVD 2.607 720 Nickel PVD 2.442 845 Dark Bronze 2.607",
+          "finishCount": 17
+        },
+        {
+          "base": "63070",
+          "reference": "63070#031",
+          "category": "Douche",
+          "collection": "Inverso Bath-Shower",
+          "designation": "Pomme de douche au plafond orientable, longueur à la demande.",
+          "originalDescription": "Soffione orientabile a soffitto, lunghezza personalizzabile. Ceiling-mounted adjustable headshower, length on request. Pomme de douche au plafond orientable, longueur à la demande. Rociador de ducha de techo, longitud bajo pendido. 031 Chrome 1.715 726 Warm Bronze Br. PVD 2.710 149 Finox Br. Nickel 2.316 720 Nickel PVD 2.539 299 Matte Black 2.316 761 Coffee Bronze Br. PVD 2.882 706 Black Metal PVD 2.539 791 Deep Bronze Br. PVD 2.882",
+          "finishCount": 10
+        },
+        {
+          "base": "63570",
+          "reference": "63570#031",
+          "category": "Douche",
+          "collection": "Inverso Bath-Shower",
+          "designation": "Pomme de douche au plafond avec bras orientable, longueur à la demande. RIGATO.",
+          "originalDescription": "Soffione a soffitto orientabile. Lunghezza braccio personalizzabile. RIGATO. Ceiling-mounted adjustable headshower. Length on request. RIGATO. Pomme de douche au plafond avec bras orientable, longueur à la demande. RIGATO. Rociador de ducha de techo, longitud bajo pedido. RIGATO. 031 Chrome 2.145 726 Warm Bronze Br. PVD 3.390",
+          "finishCount": 17
+        },
+        {
+          "base": "63470",
+          "reference": "63470#031",
+          "category": "Douche",
+          "collection": "Inverso Bath-Shower",
+          "designation": "Pomme de douche au plafond avec bras orientable, longueur à la demande. DIAMANTATO.",
+          "originalDescription": "Soffione a soffitto orientabile. Lunghezza braccio personalizzabile. DIAMANTATO. Ceiling-mounted adjustable headshower. Length on request. DIAMANTATO. Pomme de douche au plafond avec bras orientable, longueur à la demande. DIAMANTATO. Rociador de ducha de techo, longitud bajo pedido. DIAMANTATO. 031 Chrome 2.145 726 Warm Bronze Br. PVD 3.390",
+          "finishCount": 17
+        },
+        {
+          "base": "59158",
+          "reference": "59158#031",
+          "category": "Douche",
+          "collection": "Inverso Bath-Shower",
+          "designation": "Pomme de douche murale orientable.",
+          "originalDescription": "Soffione anticalcare a parete orientabile Wall-fixing antilimestone and adjustable headshower Pomme de douche murale orientable. Rociador ducha para fijación a pared, antical y movil. 031 Chrome 532 710 Brass PVD 787 149 Finox Br. Nickel 718 727 Brass Br. PVD 840 299 Matte Black 718 246 Gold PVD 894 720 Nickel PVD 787 716 Gold Br. PVD 894",
+          "finishCount": 20
+        },
+        {
+          "base": "59155",
+          "reference": "59155#031",
+          "category": "Douche",
+          "collection": "Inverso Bath-Shower",
+          "designation": "Pomme de douche au plafond orientable.",
+          "originalDescription": "Soffione anticalcare Doccia a soffitto orientabile Ceiling-mounted adjustable and antilimestone showerhead Pomme de douche au plafond orientable. Rociador de ducha,antical de techo, movil 031 Chrome 477 710 Brass PVD 705 149 Finox Br. Nickel 644 727 Brass Br. PVD 753 299 Matte Black 644 246 Gold PVD 802 720 Nickel PVD 705 716 Gold Br. PVD 802",
+          "finishCount": 20
+        },
+        {
+          "base": "59159",
+          "reference": "59159#710",
+          "category": "Douche",
+          "collection": "Inverso Bath-Shower",
+          "designation": "Pomme de douche au plafond orientable, longueur à la demande.",
+          "originalDescription": "Soffione anticalcare a soffitto braccio altezza personalizzabile Ceiling-mounted antilimestone showerhead, length on request Pomme de douche au plafond orientable, longueur à la demande. Rociador de ducha,antical de techo, movil, longitud bajo pedido 031 Chrome 716 710 Brass PVD 1.058 149 Finox Br. Nickel 965 727 Brass Br. PVD 1.130 299 Matte Black 965 246 Gold PVD 1.203 720 Nickel PVD 1.058 716 Gold Br. PVD 1.203",
+          "finishCount": 19
+        },
+        {
+          "base": "15185",
+          "reference": "15185#031",
+          "category": "Douche",
+          "collection": "Inverso Bath-Shower",
+          "designation": "Pomme de douche murale orientable.",
+          "originalDescription": "Soffione anticalcare a parete orientabile Wall-fixing antilimestone and adjustable headshower Pomme de douche murale orientable. Rociador ducha para fijación a pared, antical y movil. 031 Chrome 1.364 710 Brass PVD 2.019 149 Finox Br. Nickel 1.842 727 Brass Br. PVD 2.154 299 Matte Black 1.842 246 Gold PVD 2.293 720 Nickel PVD 2.019 716 Gold Br. PVD 2.292",
+          "finishCount": 20
+        },
+        {
+          "base": "15186",
+          "reference": "15186#031",
+          "category": "Douche",
+          "collection": "Inverso Bath-Shower",
+          "designation": "Pomme de douche au plafond orientable.",
+          "originalDescription": "Soffione anticalcare a soffitto orientabile Ceiling-mounted adjustable and antilimestone showerhead Pomme de douche au plafond orientable. Rociador de ducha, anti-cal de pared, movil 031 Chrome 1.297 710 Brass PVD 1.919 149 Finox Br. Nickel 1.752 727 Brass Br. PVD 2.049 299 Matte Black 1.752 246 Gold PVD 2.179 720 Nickel PVD 1.919 716 Gold Br. PVD 2.179",
+          "finishCount": 20
+        },
+        {
+          "base": "15199",
+          "reference": "15199#031",
+          "category": "Douche",
+          "collection": "Inverso Bath-Shower",
+          "designation": "Pomme de douche au plafond orientable, longueur à la demande.",
+          "originalDescription": "Soffione anticalcare a soffitto braccio altezza personalizzabile Ceiling-mounted antilimestone showerhead, length on request Pomme de douche au plafond orientable, longueur à la demande. Rociador de ducha,antical de techo, movil, longitud bajo pedido 031 Chrome 1.722 710 Brass PVD 2.547 149 Finox Br. Nickel 2.325 727 Brass Br. PVD 2.719 299 Matte Black 2.325 246 Gold PVD 2.894 720 Nickel PVD 2.547 716 Gold Br. PVD 2.893",
+          "finishCount": 20
+        },
+        {
+          "base": "32975",
+          "reference": "32975#031",
+          "category": "Douche",
+          "collection": "Inverso Bath-Shower",
+          "designation": "Pomme de douche laterale Rociador lateral",
+          "originalDescription": "Soffione laterale Lateral body jet Pomme de douche laterale Rociador lateral 031 Chrome 533 735 Warm Bronze PVD 788 149 Finox Br. Nickel 720 726 Warm Bronze Br. PVD 843 299 Matte Black 720 710 Brass PVD 788 720 Nickel PVD 788 727 Brass Br. PVD 843",
+          "finishCount": 13
+        },
+        {
+          "base": "32973",
+          "reference": "32973#031",
+          "category": "Douche",
+          "collection": "Inverso Bath-Shower",
+          "designation": "Pomme de douche laterale Rociador lateral",
+          "originalDescription": "Soffione laterale Lateral body jet Pomme de douche laterale Rociador lateral 031 Chrome 245 735 Warm Bronze PVD 362 149 Finox Br. Nickel 331 726 Warm Bronze Br. PVD 388 299 Matte Black 331 710 Brass PVD 362 720 Nickel PVD 362 727 Brass Br. PVD 388",
+          "finishCount": 16
+        },
+        {
+          "base": "32987",
+          "reference": "32987#031",
+          "category": "Douche",
+          "collection": "Inverso Bath-Shower",
+          "designation": "Partie encastrée pour douchette laterale orientable",
+          "originalDescription": "Parte incasso Soffione laterale orientabile Built-in part lateral and adjustable body jet Partie encastrée pour douchette laterale orientable Parte de empotrar rociador lateral y movil 031 Chrome 165",
+          "finishCount": 1
+        },
+        {
+          "base": "32984",
+          "reference": "32984#031",
+          "category": "Douche",
+          "collection": "Inverso Bath-Shower",
+          "designation": "Partie apparente pour pomme de douche laterale orientable Partes externas para rociador lateral orientable",
+          "originalDescription": "Parte esterna Soffione laterale orientabile External parts for adjustable lateral body jet Partie apparente pour pomme de douche laterale orientable Partes externas para rociador lateral orientable 031 Chrome 325 735 Warm Bronze PVD 561 149 Finox Br. Nickel 497 726 Warm Bronze Br. PVD 610 299 Matte Black 497 710 Brass PVD 561 720 Nickel PVD 561 727 Brass Br. PVD 610",
+          "finishCount": 16
+        },
+        {
+          "base": "32979",
+          "reference": "32979#031",
+          "category": "Douche",
+          "collection": "Inverso Bath-Shower",
+          "designation": "Pomme de douche latérale avec jet de brumisation.",
+          "originalDescription": "Nebulizzatore laterale Lateral nebulizer Pomme de douche latérale avec jet de brumisation. nebulizador lateral 031 Chrome 213 735 Warm Bronze PVD 312 149 Finox Br. Nickel 287 726 Warm Bronze Br. PVD 336 299 Matte Black 287 710 Brass PVD 312 720 Nickel PVD 312 727 Brass Br. PVD 336",
+          "finishCount": 16
+        },
+        {
+          "base": "20172",
+          "reference": "20172#031",
+          "category": "Douche",
+          "collection": "Inverso Bath-Shower",
+          "designation": "Pomme de douche latérale orientable.",
+          "originalDescription": "Soffione laterale orientabile adjustable lateral body jet Pomme de douche latérale orientable. rociador lateral orientable 031 Chrome 201 735 Warm Bronze PVD 296 149 Finox Br. Nickel 271 726 Warm Bronze Br. PVD 318 299 Matte Black 271 710 Brass PVD 296 720 Nickel PVD 296 727 Brass Br. PVD 318",
+          "finishCount": 15
+        },
+        {
+          "base": "20295",
+          "reference": "20295#239",
+          "category": "Douche",
+          "collection": "Inverso Bath-Shower",
+          "designation": "Bec cascade mural pour douche ou bagnoire à compléter par un mitigeur à commande séparée.",
+          "originalDescription": "Bocca Doccia a parete a cascata . Da completare con comando remoto Wall-fixing cascade shower spout to be completed with separate control (not included) Bec cascade mural pour douche ou bagnoire à compléter par un mitigeur à commande séparée. Caño en cascada de bañera para completar con mezclador a pedir por separado",
+          "finishCount": 20
+        },
+        {
+          "base": "73523",
+          "reference": "73523#031",
+          "category": "Douche",
+          "collection": "Inverso Bath-Shower",
+          "designation": "handshower and 1,50 m flexible hose.",
+          "originalDescription": "Set doccia con presa acqua, doccetta anticalcare e flessibile 1,50 m. Shower set with water outlet, antilimestone handshower and 1,50 m flexible hose. Ensemble comprenant: sortie coudée murale, douchette anticalcaire et flexible 1,50 m. Set ducha incluye toma de agua, flexible 1,50 m y maneral antical 031 Chrome 364 735 Warm Bronze PVD 539",
+          "finishCount": 13
+        },
+        {
+          "base": "63099",
+          "reference": "63099#031",
+          "category": "Douche",
+          "collection": "Inverso Bath-Shower",
+          "designation": "flexible hose and antilimestone handshower Ensemble magnétique comprenant: sortie coudée murale, douchette anticalcaire et flexibles 1,50 m Cromalux.",
+          "originalDescription": "Set doccia magnetico con presa acqua, doccetta anticalcare e flessibile 1,50 m Cromalux Magnetic shower set with water outlet, 1,50 m Cromalux flexible hose and antilimestone handshower Ensemble magnétique comprenant: sortie coudée murale, douchette anticalcaire et flexibles 1,50 m Cromalux. Set ducha magnético incluye toma de agua, flexible 1,50 m Cromalux y maneral antical",
+          "finishCount": 19
+        },
+        {
+          "base": "73061",
+          "reference": "73061#031",
+          "category": "Douche",
+          "collection": "Inverso Bath-Shower",
+          "designation": "Sortie coudée murale avec support fixe pour douchette.",
+          "originalDescription": "Presa acqua con supporto doccetta. Water outlet with handshower hook. Sortie coudée murale avec support fixe pour douchette. Toma de agua con soporte para maneral de ducha 031 Chrome 205 735 Warm Bronze PVD 304 149 Finox Br. Nickel 278 726 Warm Bronze Br. PVD 325 299 Matte Black 278 710 Brass PVD 304 706 Black Metal PVD 304 727 Brass Br. PVD 325",
+          "finishCount": 11
+        },
+        {
+          "base": "73069",
+          "reference": "73069#735",
+          "category": "Douche",
+          "collection": "Inverso Bath-Shower",
+          "designation": "Sortie coudée murale.",
+          "originalDescription": "Presa acqua. Water outlet. Sortie coudée murale. Toma de agua 031 Chrome 147 735 Warm Bronze PVD 219 149 Finox Br. Nickel 199 726 Warm Bronze Br. PVD 234 299 Matte Black 199 710 Brass PVD 219 706 Black Metal PVD 219 727 Brass Br. PVD 234",
+          "finishCount": 12
+        },
+        {
+          "base": "73057",
+          "reference": "73057#031",
+          "category": "Douche",
+          "collection": "Inverso Bath-Shower",
+          "designation": "Support fixe pour douchette.",
+          "originalDescription": "Supporto fisso per doccetta. Fixing handshower hook. Support fixe pour douchette. Soporte fijo para maneral de ducha 031 Chrome 118 735 Warm Bronze PVD 175 149 Finox Br. Nickel 160 726 Warm Bronze Br. PVD 186 299 Matte Black 160 710 Brass PVD 175 706 Black Metal PVD 175 727 Brass Br. PVD 186",
+          "finishCount": 13
+        },
+        {
+          "base": "73060",
+          "reference": "73060#031",
+          "category": "Douche",
+          "collection": "Inverso Bath-Shower",
+          "designation": "Support orientable pour douchette.",
+          "originalDescription": "Supporto duplex orientabile per doccetta. Adjustable handshower hook. Support orientable pour douchette. Soporte orientable para maneral de ducha 031 Chrome 256 735 Warm Bronze PVD 378 149 Finox Br. Nickel 346 726 Warm Bronze Br. PVD 404 299 Matte Black 346 710 Brass PVD 378 706 Black Metal PVD 378 727 Brass Br. PVD 404",
+          "finishCount": 13
+        },
+        {
+          "base": "32929",
+          "reference": "32929#031",
+          "category": "Douche",
+          "collection": "Inverso Bath-Shower",
+          "designation": "Douchette Kneipp en Palissandre.",
+          "originalDescription": "Doccetta Kneipp in Palissandro. Rosewood Kneipp handshower. Douchette Kneipp en Palissandre. Ducha Kneipp en Palisandro. 031 Chrome 227 726 Warm Bronze Br. PVD 359 149 Finox Br. Nickel 307 710 Brass PVD 336 299 Matte Black 307 727 Brass Br. PVD 359 147 Chome Br. 307 246 Gold PVD 382",
+          "finishCount": 20
+        },
+        {
+          "base": "32930",
+          "reference": "32930#031",
+          "category": "Douche",
+          "collection": "Inverso Bath-Shower",
+          "designation": "Douchette Kneipp noire.",
+          "originalDescription": "Doccetta Kneipp nera. Black Kneipp handshower. Douchette Kneipp noire. Ducha Kneipp negra 031 Chrome 201 726 Warm Bronze Br. PVD 318 149 Finox Br. Nickel 272 710 Brass PVD 298 299 Matte Black 272 727 Brass Br. PVD 318 147 Chome Br. 272 246 Gold PVD 338",
+          "finishCount": 20
+        },
+        {
+          "base": "14372",
+          "reference": "14372#031",
+          "category": "Douche",
+          "collection": "Inverso Bath-Shower",
+          "designation": "Douchette anticalcaire.",
+          "originalDescription": "Doccetta anticalcare. Antilimestone handshower. Douchette anticalcaire. Maneral de ducha antical. 031 Chrome 56 710 Brass PVD 174 149 Finox Br. Nickel 94 727 Brass Br. PVD 192 299 Matte Black 93 246 Gold PVD 212 720 Nickel PVD 174 716 Gold Br. PVD 100",
+          "finishCount": 20
+        },
+        {
+          "base": "14370",
+          "reference": "14370#031",
+          "category": "Douche",
+          "collection": "Inverso Bath-Shower",
+          "designation": "Douchette anticalcaire.",
+          "originalDescription": "Doccetta anticalcare antilimestone handshower Douchette anticalcaire. ducha antical 031 Chrome 79 710 Brass PVD 182 149 Finox Br. Nickel 158 727 Brass Br. PVD 195 299 Matte Black 158 246 Gold PVD 206 147 Chome Br. 158 716 Gold Br. PVD 141",
+          "finishCount": 21
+        },
+        {
+          "base": "14376",
+          "reference": "14376#031",
+          "category": "Douche",
+          "collection": "Inverso Bath-Shower",
+          "designation": "Douchette anticalcaire à 3 jets avec insert blanc",
+          "originalDescription": "Doccetta anticalcare tre getti con inserto bianco Three-setting antilimestone handshower with white insert Douchette anticalcaire à 3 jets avec insert blanc Maneral de ducha antical, de tres chorros con embellecedor en blanco 031 Chrome 168 710 Brass PVD 266 149 Finox Br. Nickel 227 727 Brass Br. PVD 283 299 Matte Black 227 246 Gold PVD 300",
+          "finishCount": 21
+        },
+        {
+          "base": "14378",
+          "reference": "14378#031",
+          "category": "Douche",
+          "collection": "Inverso Bath-Shower",
+          "designation": "Douchette anticalcaire 3 jets avec insert noir",
+          "originalDescription": "Doccetta anticalcare tre-getti con inserto nero. Three-setting antilimestone handshower with black insert. Douchette anticalcaire 3 jets avec insert noir Maneral de ducha antical de tres chorros con embellecedor en negro. 031 Chrome 168 710 Brass PVD 266 149 Finox Br. Nickel 227 727 Brass Br. PVD 283 299 Matte Black 227 246 Gold PVD 300",
+          "finishCount": 21
+        },
+        {
+          "base": "47351",
+          "reference": "47351#031",
+          "category": "Douche",
+          "collection": "Inverso Bath-Shower",
+          "designation": "Douchette anticalcaire trois jets avec sélecteur à bouton",
+          "originalDescription": "Doccetta anticalcare tre getti con selettore a pulsante Three-jets anti-limescale hand shower with push button selector Douchette anticalcaire trois jets avec sélecteur à bouton Maneral de ducha antical, 3 chorros, con pulsador 031 Chrome 131 710 Brass PVD 206 149 Finox Br. Nickel 177 727 Brass Br. PVD 220 299 Matte Black 177 246 Gold PVD 233 147 Chome Br. 177 716 Gold Br. PVD 234",
+          "finishCount": 21
+        },
+        {
+          "base": "47350",
+          "reference": "47350#031",
+          "category": "Douche",
+          "collection": "Inverso Bath-Shower",
+          "designation": "Douchette anticalcaire trois jets avec sélecteur roulant",
+          "originalDescription": "Doccetta anticalcare due funzioni con selettore a rotella con inserto nero. Two function anti-limescale hand shower with wheel selector with black insert. Douchette anticalcaire trois jets avec sélecteur roulant Maneral de ducha antical, 2 chorros 031 Chrome 131 710 Brass PVD 206 149 Finox Br. Nickel 177 727 Brass Br. PVD 220",
+          "finishCount": 21
+        },
+        {
+          "base": "01637",
+          "reference": "01637#031",
+          "category": "Douche",
+          "collection": "Inverso Bath-Shower",
+          "designation": "1,50 m Cromalux flexible hose with conic 1/2” connections Longueur du tuyau Cromalux 1,50 m avec raccord conique 1/2” Flexible cromalux con conexión 1/2” cónico, longitud 1,50 m",
+          "originalDescription": "Flessibile Cromalux lunghezza 1,50 m con attacco da 1/2” conico 1,50 m Cromalux flexible hose with conic 1/2” connections Longueur du tuyau Cromalux 1,50 m avec raccord conique 1/2” Flexible cromalux con conexión 1/2” cónico, longitud 1,50 m 031 Chrome 58 710 Brass PVD 92 149 Finox Br. Nickel 66 727 Brass Br. PVD 98 299 Matte Black 109 246 Gold PVD 108 147 Chome Br. 66 716 Gold Br. PVD 104",
+          "finishCount": 21
+        },
+        {
+          "base": "28746",
+          "reference": "28746#031",
+          "category": "Douche",
+          "collection": "Inverso Bath-Shower",
+          "designation": "2,00 m Cromalux flexible hose with conic 1/2” connections Flexible cromalux avec raccord 1/2” conique, longueur 2,00 m.",
+          "originalDescription": "Flessibile Cromalux lunghezza 2,00 m con attacco da 1/2” conico 2,00 m Cromalux flexible hose with conic 1/2” connections Flexible cromalux avec raccord 1/2” conique, longueur 2,00 m. Flexible cromalux con conexión ½ cónico , longitud 2,00m 031 Chrome 69 710 Brass PVD 109 149 Finox Br. Nickel 83 727 Brass Br. PVD 116 299 Matte Black 122 246 Gold PVD 122 720 Nickel PVD 98 716 Gold Br. PVD 123",
+          "finishCount": 20
+        },
+        {
+          "base": "54137",
+          "reference": "54137#031",
+          "category": "Douche",
+          "collection": "Inverso Bath-Shower",
+          "designation": "1,50 m Darkflex black flexible hose and cap in finish Flexible darkflex 1,50 m Flexible darkflex, longitud 1,50 m",
+          "originalDescription": "Flessibile Darkflex nero e calotta in finitura, lunghezza 1,50 m 1,50 m Darkflex black flexible hose and cap in finish Flexible darkflex 1,50 m Flexible darkflex, longitud 1,50 m 031 Chrome 73 726 Warm Bronze Br. PVD 122 239 Steel Br. 99 710 Brass PVD 116 299 Matte Black 98 727 Brass Br. PVD 122 720 Nickel PVD 99 845 Dark Bronze 99",
+          "finishCount": 17
+        },
+        {
+          "base": "01724",
+          "reference": "01724#031",
+          "category": "Douche",
+          "collection": "Inverso Bath-Shower",
+          "designation": "Double-seam flexible hose, 1,5 m length, 1/2” connector Longueur de tuyau à double agrafage 1,50 m avec raccord conique 1/2",
+          "originalDescription": "Flessibile a doppia aggraffatura lunghezza 1,50 m con attacco da 1/2” conico Double-seam flexible hose, 1,5 m length, 1/2” connector Longueur de tuyau à double agrafage 1,50 m avec raccord conique 1/2 Flexible de doble grapa para maneral de duha con conexión 1/2” cónico, longitud 1,50 m. 031 Chrome 78 710 Brass PVD 124",
+          "finishCount": 21
+        },
+        {
+          "base": "66037",
+          "reference": "66037#031",
+          "category": "Douche",
+          "collection": "Origini",
+          "designation": "flexible hose and antilimestone hand shower. Can be combined withinserts with different finishes: art. 66600 and art. 66602.",
+          "originalDescription": "Gruppo vasca 4 fori con deviatore, bocca vasca, flessibile da 1,50 m e doccetta anticalcare. Abbinabile a inserti con finiture differenti: art. 66600 e art. 66602. Four-holes bath mixer with diverter, tub-filler spout, 1,50 m flexible hose and antilimestone hand shower. Can be combined withinserts with different finishes: art. 66600 and art. 66602. Ensemble de baignoire 4 trous avec inverseur, bec, flexible de 1,50 m et douchette anticalcaire. Il peut être combiné avec des",
+          "finishCount": 10
+        },
+        {
+          "base": "66043",
+          "reference": "66043#031",
+          "category": "Douche",
+          "collection": "Origini",
+          "designation": "flexible hose and antilimestone handshower. Can be combined withinserts with different finishes: art. 66600 and art. 66602.",
+          "originalDescription": "Bordo vasca 3 fori con comando, deviatore, flessibile 1,50 m e doccetta anticalcare. Abbinabile a inserti con finiture differenti: art. 66600 e art. 66602. Three-holes bath mixer with separate control, diverter, 1,50 m flexible hose and antilimestone handshower. Can be combined withinserts with different finishes: art. 66600 and art. 66602. Mitiguer bain-douche trois trous avec commande, inverseur, flexibles 1,50 m et douchette extractible",
+          "finishCount": 10
+        },
+        {
+          "base": "01785",
+          "reference": "01785#031",
+          "category": "Douche",
+          "collection": "Origini",
+          "designation": "Système de récupération d’eau pour douchette flexible de bord de baignoire, installation murale. Ne peut être combiné avec 01669, 01658, 01663 et 01664.",
+          "originalDescription": "Sistema di recupero acqua per flessibile doccetta bordo vasca, installazione su muretto. Non abbinabile a 01669, 01658, 01663 e01664. Pull-out handshower drain kit, tile wall installation. Not fitting items 01669, 01658, 01663 and 01664. Système de récupération d’eau pour douchette flexible de bord de baignoire, installation murale. Ne peut être combiné avec 01669, 01658, 01663 et 01664.",
+          "finishCount": 16
+        },
+        {
+          "base": "01786",
+          "reference": "01786#031",
+          "category": "Douche",
+          "collection": "Origini",
+          "designation": "Système de récupération d’eau pour flexible de douchette, installation sur le bord de la baignoire. Ne peut être combiné avec 01669, 01658, 01663 et 01664.",
+          "originalDescription": "Sistema di recupero acqua per flessibile doccetta, installazione bordo vasca. Non abbinabile a 01669, 01658, 01663 e 01664. Pull-out handshower drain kit, rim installation. Not fitting items 01669, 01658, 01663 and 01664. Système de récupération d’eau pour flexible de douchette, installation sur le bord de la baignoire. Ne peut être combiné avec 01669, 01658, 01663 et 01664. Sistema de recuperación del agua para flexible del",
+          "finishCount": 16
+        },
+        {
+          "base": "66028",
+          "reference": "66028#031",
+          "category": "Accessoires",
+          "collection": "Origini",
+          "designation": "flexible hose. Can be combined with inserts with different finishes: art. 66600 and art. 66602.",
+          "originalDescription": "Parte esterna per piantana esterno vasca con doccetta, deviatore automatico e flessibile in Cromalux. Abbinabile a inserti con finiture differenti: art. 66600 and art. 66602 External part for freestanding external bath mixer with hand shower, automatic diverter and Cromalux flexible hose. Can be combined with inserts with different finishes: art. 66600 and art. 66602. Partie apparente pour mitigeur de baignoire sur plan avec",
+          "finishCount": 10
+        },
+        {
+          "base": "66103",
+          "reference": "66103#031",
+          "category": "Accessoires",
+          "collection": "Origini",
+          "designation": "Bec de bagnoire mural",
+          "originalDescription": "Bocca Vasca a parete Wall-fixing bath spout Bec de bagnoire mural Caño de bañera de pared 031 Chrome 218 708 Copper Br. PVD 345 149 Finox Br. Nickel 294 726 Warm Bronze Br. PVD 345 299 Matte Black 294 727 Brass Br. PVD 345 720 Nickel PVD 323 845 Dark Bronze 345",
+          "finishCount": 12
+        },
+        {
+          "base": "54043",
+          "reference": "54043#239",
+          "category": "Douche",
+          "collection": "Gessi316 Bath-Shower",
+          "designation": "Three-holes bath mixer with diverter, 1,50 m flexible hose and antilimestone handshower. To be used with overflow filler Mélangeur bain-douche avec inverseur, flexibles de",
+          "originalDescription": "Gruppo Bordo Vasca 3 fori con deviatore, flessibile 1,50 m e doccetta anticalcare . Erogazione alla colonna vasca Three-holes bath mixer with diverter, 1,50 m flexible hose and antilimestone handshower. To be used with overflow filler Mélangeur bain-douche avec inverseur, flexibles de raccordement 1,50m et douchette anticalcaire. Grupo borde bañera de 3 orificios para erogación a columna de bañera con desviador, flexible",
+          "finishCount": 8
+        },
+        {
+          "base": "54037",
+          "reference": "54037#239",
+          "category": "Douche",
+          "collection": "Gessi316 Bath-Shower",
+          "designation": "1,50 m flexible hose and antilimestone handshower Mélangeur bain-douche avec bec, inverseur, flexibles de raccordement 1,50m et douchette anticalcaire.",
+          "originalDescription": "Gruppo Bordo Vasca 4 fori con bocca di erogazione, deviatore, flessibile 1,50 m e doccetta anticalcare Four-holes bath mixer with diverter, tub-filler spout and 1,50 m flexible hose and antilimestone handshower Mélangeur bain-douche avec bec, inverseur, flexibles de raccordement 1,50m et douchette anticalcaire. Bateria borde bañera 4 orificios, con caño de erogación, desviador,flexible de 1,50 m y maneral de ducha antical",
+          "finishCount": 8
+        },
+        {
+          "base": "54127",
+          "reference": "54127#239",
+          "category": "Douche",
+          "collection": "Gessi316 Bath-Shower",
+          "designation": "handshower and 1,5 m flexible Support douchette avec douchette anticacaire et flexibles 1,5m",
+          "originalDescription": "Cono porta doccetta con doccetta anticalcare e flessibile 1,50 m Conical shower hook with antilimestone handshower and 1,5 m flexible Support douchette avec douchette anticacaire et flexibles 1,5m Soporte sobre encimera con ducha antical y flexibles de conexion de 1,50 m 239 Steel Br. 318 726 Warm Bronze Br. PVD 471 299 Matte Black 429 727 Brass Br. PVD 471",
+          "finishCount": 8
+        },
+        {
+          "base": "54593",
+          "reference": "54593#239",
+          "category": "Douche",
+          "collection": "Gessi316 Bath-Shower",
+          "designation": "Plaque de finition pour Secu Box robinetterie 3 trous de bagnoire.",
+          "originalDescription": "Piastra di finitura 3 fori per secur box Three-holes finishing plate for mounting box Plaque de finition pour Secu Box robinetterie 3 trous de bagnoire. Placa embellecedora de 3 huecos para Secu Box 239 Steel Br. 402 726 Warm Bronze Br. PVD 593 299 Matte Black 541 727 Brass Br. PVD 593 707 Black Metal Br. PVD 593 761 Coffee Bronze Br. PVD 636 708 Copper Br. PVD 593 791 Deep Bronze Br. PVD 636",
+          "finishCount": 8
+        },
+        {
+          "base": "54595",
+          "reference": "54595#239",
+          "category": "Douche",
+          "collection": "Gessi316 Bath-Shower",
+          "designation": "Plaque de finition pour Secu Box robinetterie 4 trous de bagnoire.",
+          "originalDescription": "Piastra di finitura 4 fori per secur box Four-holes finishing plate for mounting box Plaque de finition pour Secu Box robinetterie 4 trous de bagnoire. Placa embellecedora de 4 orificios para Secu Box 239 Steel Br. 402 726 Warm Bronze Br. PVD 593 299 Matte Black 541 727 Brass Br. PVD 593 707 Black Metal Br. PVD 593 761 Coffee Bronze Br. PVD 636 708 Copper Br. PVD 593 791 Deep Bronze Br. PVD 636",
+          "finishCount": 8
+        },
+        {
+          "base": "54592",
+          "reference": "54592#726",
+          "category": "Douche",
+          "collection": "Gessi316 Bath-Shower",
+          "designation": "Système de récupération eau pour flexible de douchette bain￾douche. Non compatible avec 01669, 01658, 01663 et 01664.",
+          "originalDescription": "Sistema di recupero acqua per flessibile doccetta bordo vasca. Non abbinabile a 01669, 01658, 01663 e 01664. Pull-out handshower drain kit. Not fitting items 01669, 01658, 01663 and 01664. Système de récupération eau pour flexible de douchette bain￾douche. Non compatible avec 01669, 01658, 01663 et 01664. Sistema de recuperación del agua para flexible del maneral de ducha deborde bañera. No se puede combinar con los art. 01669, 01658, 01663 y 01664.",
+          "finishCount": 7
+        },
+        {
+          "base": "54594",
+          "reference": "54594#239",
+          "category": "Douche",
+          "collection": "Gessi316 Bath-Shower",
+          "designation": "Système de récupération eau pour flexible de douchette bain￾douche. Non compatible avec 01669, 01658, 01663 et 01664.",
+          "originalDescription": "Sistema di recupero acqua per flessibile doccetta bordo vasca. Non abbinabile a 01669, 01658, 01663 e 01664. Pull-out handshower drain kit. Not fitting items 01669, 01658, 01663 and 01664. Système de récupération eau pour flexible de douchette bain￾douche. Non compatible avec 01669, 01658, 01663 et 01664. Sistema de recuperación del agua para flexible del maneral de ducha deborde bañera. No se puede combinar con los art. 01669, 01658, 01663 y 01664.",
+          "finishCount": 8
+        },
+        {
+          "base": "54028",
+          "reference": "54028#239",
+          "category": "Douche",
+          "collection": "Gessi316 Bath-Shower",
+          "designation": "Partie apparente pour mitigeur bain-douche sur pied avec douchette et flexible.",
+          "originalDescription": "Parte esterna Miscelatore Vasca da terra con deviatore automatico External parts freestanding bath mixer with automatic diverter Partie apparente pour mitigeur bain-douche sur pied avec douchette et flexible. Partes externas mezclador bañera 239 Steel Br. 1.521 726 Warm Bronze Br. PVD 2.252 299 Matte Black 2.054 727 Brass Br. PVD 2.252 707 Black Metal Br. PVD 2.252 761 Coffee Bronze Br. PVD 2.404",
+          "finishCount": 8
+        },
+        {
+          "base": "54195",
+          "reference": "54195#239",
+          "category": "Douche",
+          "collection": "Gessi316 Bath-Shower",
+          "designation": "Bec de baignoire au sol. À compléter par commande séparée",
+          "originalDescription": "Bocca Vasca da terra. Da completare con comando remoto Freestanding bath spout. To be completed with separate control Bec de baignoire au sol. À compléter par commande séparée Caño de bañera de suelo. Para completar con mezclador a pedir por separado 239 Steel Br. 1.071 726 Warm Bronze Br. PVD 1.585 299 Matte Black 1.446 727 Brass Br. PVD 1.585 707 Black Metal Br. PVD 1.585 761 Coffee Bronze Br. PVD 1.693",
+          "finishCount": 8
+        },
+        {
+          "base": "20293",
+          "reference": "20293#239",
+          "category": "Douche",
+          "collection": "Gessi316 Bath-Shower",
+          "designation": "Bec cascade mural pour douche à compléter par un mitigeur à commande séparée.",
+          "originalDescription": "Bocca Doccia a parete a cascata . Da completare con comando remoto. (non incluso) Wall-fixing cascade shower spout to be completed with separate control (not included) Bec cascade mural pour douche à compléter par un mitigeur à commande séparée. Caño en cascada de ducha para completar con mezclador a pedir por separado",
+          "finishCount": 20
+        },
+        {
+          "base": "54008",
+          "reference": "54008#239",
+          "category": "Douche",
+          "collection": "Gessi316 Bath-Shower",
+          "designation": "Bec de bagnoire mural latéral",
+          "originalDescription": "Bocca Vasca a parete Wall-fixing bath spout Bec de bagnoire mural latéral Caño de bañera de pared 239 Steel Br. 203 726 Warm Bronze Br. PVD 300 299 Matte Black 273 727 Brass Br. PVD 300 707 Black Metal Br. PVD 300 761 Coffee Bronze Br. PVD 321 708 Copper Br. PVD 300 791 Deep Bronze Br. PVD 321",
+          "finishCount": 7
+        },
+        {
+          "base": "54038",
+          "reference": "54038#239",
+          "category": "Douche",
+          "collection": "Gessi316 Bath-Shower",
+          "designation": "Partie apparente mitigeur de baignoire mural deux sorties, avec inverseur, prise d’eau et support pour douchette",
+          "originalDescription": "Parte esterna Miscelatore Doccia a parete 2 vie con deviatore, presa acqua e supporto doccetta External parts wall-mounted for shower mixer, two￾way, diverter, water outlet, handshower hook Partie apparente mitigeur de baignoire mural deux sorties, avec inverseur, prise d’eau et support pour douchette Partes externas para mezclador bañera de pared, de 2 vías, desviador, toma de agua y soporte para maneral 239 Steel Br. 752 726 Warm Bronze Br. PVD 1.112",
+          "finishCount": 8
+        },
+        {
+          "base": "54039",
+          "reference": "54039#239",
+          "category": "Douche",
+          "collection": "Gessi316 Bath-Shower",
+          "designation": "Partie apparente mitigeur de baignoire mural deux sorties, avec inverseur, prise d’eau et support pour douchette",
+          "originalDescription": "Parte esterna Miscelatore Doccia a parete 2 vie con deviatore, presa acqua e supporto doccetta External parts wall-mounted for shower mixer, two￾way, diverter, water outlet, handshower hook Partie apparente mitigeur de baignoire mural deux sorties, avec inverseur, prise d’eau et support pour douchette Partes externas para mezclador bañera de pared, de 2 vías, desviador, toma de agua y soporte para maneral 239 Steel Br. 752 726 Warm Bronze Br. PVD 1.112",
+          "finishCount": 8
+        },
+        {
+          "base": "54079",
+          "reference": "54079#239",
+          "category": "Douche",
+          "collection": "Gessi316 Bath-Shower",
+          "designation": "Partie apparentepour mitigeur douche mura deux sorties",
+          "originalDescription": "Parte esterna Miscelatore Doccia a parete 2 vie con deviatore External parts wall-mounted for shower mixer, two-way diverter Partie apparentepour mitigeur douche mura deux sorties Partes externas para mezclador ducha de pared, de 2 vías 239 Steel Br. 485 726 Warm Bronze Br. PVD 719 299 Matte Black 656 727 Brass Br. PVD 719 707 Black Metal Br. PVD 719 761 Coffee Bronze Br. PVD 767 708 Copper Br. PVD 719 791 Deep Bronze Br. PVD 767",
+          "finishCount": 8
+        },
+        {
+          "base": "54077",
+          "reference": "54077#239",
+          "category": "Douche",
+          "collection": "Gessi316 Bath-Shower",
+          "designation": "Partie apparentepour mitigeur douche mura deux sorties",
+          "originalDescription": "Parte esterna Miscelatore Doccia a parete 2 vie con deviatore External parts wall-mounted for shower mixer, two-way with diverter Partie apparentepour mitigeur douche mura deux sorties Partes externas para mezclador ducha de pared, de 2 vías 239 Steel Br. 485 726 Warm Bronze Br. PVD 719 299 Matte Black 656 727 Brass Br. PVD 719 707 Black Metal Br. PVD 719 761 Coffee Bronze Br. PVD 767",
+          "finishCount": 8
+        },
+        {
+          "base": "54032",
+          "reference": "54032#239",
+          "category": "Douche",
+          "collection": "Gessi316 Bath-Shower",
+          "designation": "Partie apparente pour mitigeur thermostatique douche mural 1 sortie.",
+          "originalDescription": "Parte esterna Miscelatore Termostatico Doccia a parete 1 via External parts for thermostatic mixer, one-way diverter Partie apparente pour mitigeur thermostatique douche mural 1 sortie. Partes externas para mezclador TERMOSTATICO ducha de pared, de 1 vìas 239 Steel Br. 695 726 Warm Bronze Br. PVD 1.028 299 Matte Black 938 727 Brass Br. PVD 1.028",
+          "finishCount": 8
+        },
+        {
+          "base": "54232",
+          "reference": "54232#239",
+          "category": "Douche",
+          "collection": "Gessi316 Bath-Shower",
+          "designation": "Partie apparente pour mitigeur thermostatique douche mural 1 sortie.",
+          "originalDescription": "Parte esterna Miscelatore Termostatico Doccia a parete 1 via External parts for thermostatic mixer, one-way diverter Partie apparente pour mitigeur thermostatique douche mural 1 sortie. Partes externas para mezclador TERMOSTATICO ducha de pared, de 1 vìas 239 Steel Br. 695 726 Warm Bronze Br. PVD 1.028 299 Matte Black 938 727 Brass Br. PVD 1.028",
+          "finishCount": 8
+        },
+        {
+          "base": "54034",
+          "reference": "54034#239",
+          "category": "Douche",
+          "collection": "Gessi316 Bath-Shower",
+          "designation": "Partie apparente pour mitigeur thermostatique douche mural 2 sorties.",
+          "originalDescription": "Parte esterna Miscelatore Termostatico Doccia a parete 2 vie External parts for thermostatic mixer, two-way diverter Partie apparente pour mitigeur thermostatique douche mural 2 sorties. Partes externas para mezclador TERMOSTATICO ducha de pared, de 2 vìas 239 Steel Br. 695 726 Warm Bronze Br. PVD 1.028 299 Matte Black 938 727 Brass Br. PVD 1.028",
+          "finishCount": 8
+        },
+        {
+          "base": "54234",
+          "reference": "54234#239",
+          "category": "Douche",
+          "collection": "Gessi316 Bath-Shower",
+          "designation": "Partie apparente pour mitigeur thermostatique douche mural 2 sorties.",
+          "originalDescription": "Parte esterna Miscelatore Termostatico Doccia a parete 2 vie External parts for thermostatic mixer, two-way diverter Partie apparente pour mitigeur thermostatique douche mural 2 sorties. Partes externas para mezclador TERMOSTATICO ducha de pared, de 2 vìas 239 Steel Br. 695 726 Warm Bronze Br. PVD 1.028 299 Matte Black 938 727 Brass Br. PVD 1.028",
+          "finishCount": 8
+        },
+        {
+          "base": "54036",
+          "reference": "54036#239",
+          "category": "Douche",
+          "collection": "Gessi316 Bath-Shower",
+          "designation": "Partie apparente pour mitigeur thermostatique douche mural 3 sorties.",
+          "originalDescription": "Parte esterna Miscelatore Termostatico Doccia a parete 3 vie External parts for thermostatic mixer, three-way diverter Partie apparente pour mitigeur thermostatique douche mural 3 sorties. Partes externas para mezclador TERMOSTATICO ducha de pared, de 3 vìas 239 Steel Br. 695 726 Warm Bronze Br. PVD 1.028 299 Matte Black 938 727 Brass Br. PVD 1.028",
+          "finishCount": 8
+        },
+        {
+          "base": "54236",
+          "reference": "54236#239",
+          "category": "Douche",
+          "collection": "Gessi316 Bath-Shower",
+          "designation": "Partie apparente pour mitigeur thermostatique douche mural 3 sorties.",
+          "originalDescription": "Parte esterna Miscelatore Termostatico Doccia a parete 3 vie External parts for thermostatic mixer, three-way diverter Partie apparente pour mitigeur thermostatique douche mural 3 sorties. Partes externas para mezclador TERMOSTATICO ducha de pared, de 3 vìas 239 Steel Br. 695 726 Warm Bronze Br. PVD 1.028 299 Matte Black 938 727 Brass Br. PVD 1.028",
+          "finishCount": 8
+        },
+        {
+          "base": "54334",
+          "reference": "54334#726",
+          "category": "Douche",
+          "collection": "Gessi316 Bath-Shower",
+          "designation": "Partie externe mitigeur thermostatique mural à 2 sorties indépendantes. Installation verticale/horizontale.",
+          "originalDescription": "Parte esterna miscelatore termostatico a parete 2 uscite indipendenti. Installazione verticale/orizzontale. External parts for wall-mounted thermostatic mixer. Vertical/horizontal setting up with two separate exits. Partie externe mitigeur thermostatique mural à 2 sorties indépendantes. Installation verticale/horizontale. Mezclador termostático exterior de pared 2 salidas independientes. Instalación vertical/horizontal.",
+          "finishCount": 7
+        },
+        {
+          "base": "54336",
+          "reference": "54336#239",
+          "category": "Douche",
+          "collection": "Gessi316 Bath-Shower",
+          "designation": "Partie externe mitigeur thermostatique mural à 3 sorties indépendantes. Installation verticale/horizontale.",
+          "originalDescription": "Parte esterna miscelatore termostatico a parete 3 uscite indipendenti. Installazione verticale/orizzontale. External parts for wall-mounted thermostatic mixer. Vertical/ horizontal setting up with three separate exits. Partie externe mitigeur thermostatique mural à 3 sorties indépendantes. Installation verticale/horizontale. Mezclador termostático exterior de pared 3 salidas independientes. Instalación vertical/horizontal.",
+          "finishCount": 8
+        },
+        {
+          "base": "54338",
+          "reference": "54338#239",
+          "category": "Douche",
+          "collection": "Gessi316 Bath-Shower",
+          "designation": "Partie externe mitigeur thermostatique mural à 4 sorties indépendantes. Installation verticale/horizontale.",
+          "originalDescription": "Parte esterna miscelatore termostatico a parete 4 uscite indipendenti. Installazione verticale/orizzontale. External parts for wall-mounted thermostatic mixer. Vertical/horizontal setting up with four separate exits. Partie externe mitigeur thermostatique mural à 4 sorties indépendantes. Installation verticale/horizontale. Mezclador termostático exterior de pared 4 salidas independientes. Instalación vertical/horizontal.",
+          "finishCount": 8
+        },
+        {
+          "base": "54340",
+          "reference": "54340#239",
+          "category": "Douche",
+          "collection": "Gessi316 Bath-Shower",
+          "designation": "Partie externe mitigeur thermostatique mural à 5 sorties indépendantes. Installation verticale/horizontale.",
+          "originalDescription": "Parte esterna miscelatore termostatico a parete 5 uscite indipendenti. Installazione verticale/orizzontale. External parts for wall-mounted thermostatic mixer. Vertical/horizontal setting up with five separate exits. Partie externe mitigeur thermostatique mural à 5 sorties indépendantes. Installation verticale/horizontale. Mezclador termostático exterior de pared 5 salidas independientes. Instalación vertical/horizontal.",
+          "finishCount": 8
+        },
+        {
+          "base": "54514",
+          "reference": "54514#726",
+          "category": "Douche",
+          "collection": "Gessi316 Bath-Shower",
+          "designation": "Partie apparente mitigeur THERMOSTATIQUE douche haut débit.",
+          "originalDescription": "Parte esterna Miscelatore termostatico alta portata a parete 2 uscite indipendenti . Installazione verticale/orizzontale. External parts for wall-mounted thermostatic high-capacity mixer. Vertical/horizontal setting up with TWO SEPARATE EXITS Partie apparente mitigeur THERMOSTATIQUE douche haut débit. Deux sorties indépendantes. Installation verticale/horizontale. Partes externas para mezclador TERMOSTATICO de pared de gran caudal. instalación vertical/",
+          "finishCount": 7
+        },
+        {
+          "base": "54504",
+          "reference": "54504#726",
+          "category": "Douche",
+          "collection": "Gessi316 Bath-Shower",
+          "designation": "Partie apparente mitigeur THERMOSTATIQUE douche haut débit.",
+          "originalDescription": "Parte esterna Miscelatore termostatico alta portata a parete 2 uscite indipendenti . Installazione verticale/orizzontale. External parts for wall-mounted thermostatic high-capacity mixer. Vertical/horizontal setting up with TWO SEPARATE EXITS Partie apparente mitigeur THERMOSTATIQUE douche haut débit. Deux sorties indépendantes. Installation verticale/horizontale. Partes externas para mezclador TERMOSTATICO de pared de gran caudal. instalación vertical/",
+          "finishCount": 7
+        },
+        {
+          "base": "54516",
+          "reference": "54516#239",
+          "category": "Douche",
+          "collection": "Gessi316 Bath-Shower",
+          "designation": "Partie apparente mitigeur THERMOSTATIQUE douche haut débit.",
+          "originalDescription": "Parte esterna Miscelatore termostatico alta portata a parete 3 uscite indipendenti . Installazione verticale/orizzontale. External parts for wall-mounted thermostatic high-capacity mixer. Vertical/horizontal setting up with THREE SEPARATE EXITS Partie apparente mitigeur THERMOSTATIQUE douche haut débit. Trois sorties indépendantes. Installation verticale/horizontale. Partes externas para mezclador TERMOSTATICO de pared de gran caudal. instalación vertical/",
+          "finishCount": 8
+        },
+        {
+          "base": "54506",
+          "reference": "54506#239",
+          "category": "Douche",
+          "collection": "Gessi316 Bath-Shower",
+          "designation": "Partie apparente mitigeur THERMOSTATIQUE douche haut débit.",
+          "originalDescription": "Parte esterna Miscelatore termostatico alta portata a parete 3 uscite indipendenti . Installazione verticale/orizzontale. External parts for wall-mounted thermostatic high-capacity mixer. Vertical/horizontal setting up with THREE SEPARATE EXITS Partie apparente mitigeur THERMOSTATIQUE douche haut débit. Trois sorties indépendantes. Installation verticale/horizontale. Partes externas para mezclador TERMOSTATICO de pared de gran caudal. instalación vertical/",
+          "finishCount": 8
+        },
+        {
+          "base": "54518",
+          "reference": "54518#239",
+          "category": "Douche",
+          "collection": "Gessi316 Bath-Shower",
+          "designation": "Partie apparente mitigeur THERMOSTATIQUE douche haut débit.",
+          "originalDescription": "Parte esterna Miscelatore termostatico alta portata a parete 4 uscite indipendenti . Installazione verticale/orizzontale. External parts for wall-mounted thermostatic high-capacity mixer. Vertical/horizontal setting up with FOUR SEPARATE EXITS Partie apparente mitigeur THERMOSTATIQUE douche haut débit. Quatre sorties indépendantes. Installation verticale/horizontale. Partes externas para mezclador TERMOSTATICO de pared de gran caudal. instalación vertical/horizontal",
+          "finishCount": 8
+        },
+        {
+          "base": "54508",
+          "reference": "54508#239",
+          "category": "Douche",
+          "collection": "Gessi316 Bath-Shower",
+          "designation": "Partie apparente mitigeur THERMOSTATIQUE douche haut débit.",
+          "originalDescription": "Parte esterna Miscelatore termostatico alta portata a parete 4 uscite indipendenti . Installazione verticale/orizzontale. External parts for wall-mounted thermostatic high-capacity mixer. Vertical/horizontal setting up with FOUR SEPARATE EXITS Partie apparente mitigeur THERMOSTATIQUE douche haut débit. Quatre sorties indépendantes. Installation verticale/horizontale. Partes externas para mezclador TERMOSTATICO de pared de gran caudal. instalación vertical/horizontal",
+          "finishCount": 8
+        },
+        {
+          "base": "58103",
+          "reference": "58103#031",
+          "category": "Accessoires",
+          "collection": "Inciso -",
+          "designation": "Bec de bagnoire mural latéral",
+          "originalDescription": "Bocca Vasca a parete Wall-fixing bath spout Bec de bagnoire mural latéral Caño de bañera de pared 031 Chrome 249 710 Brass PVD 368 149 Finox Br. Nickel 336 727 Brass Br. PVD 392 299 Matte Black 336 246 Gold PVD 417 720 Nickel PVD 368 716 Gold Br. PVD 419",
+          "finishCount": 19
+        },
+        {
+          "base": "65099",
+          "reference": "65099#031",
+          "category": "Douche",
+          "collection": "Inciso -",
+          "designation": "Partie encastrée pour mitigeur bain-douche sur pied",
+          "originalDescription": "Parte incasso per piantana vasca Built-in part for freestanding bath mixer Partie encastrée pour mitigeur bain-douche sur pied Parte de empotrar para columna exterior para bañera 031 Chrome 681",
+          "finishCount": 1
+        },
+        {
+          "base": "58029",
+          "reference": "58029#710",
+          "category": "Douche",
+          "collection": "Inciso -",
+          "designation": "Partie apparente pour mélangeur bain-douche sur pied avec douchette et flexible.",
+          "originalDescription": "Parte esterna per piantana esterno vasca con doccetta e deviatore automatico External parts for freestanding external bath mixer with automatic diverter. Partie apparente pour mélangeur bain-douche sur pied avec douchette et flexible. Partes externas para columna exterior para bañera para completar con maneral de ducha",
+          "finishCount": 18
+        },
+        {
+          "base": "58040",
+          "reference": "58040#031",
+          "category": "Douche",
+          "collection": "Inciso -",
+          "designation": "1,50 m flexible hose, antilimestone handshower Mélangeur de baignoire avec bec, inverseur, flexibles de raccordement 1,50m et douchette anticalcaire",
+          "originalDescription": "Gruppo Bordo Vasca 5 fori con bocca di erogazione, deviatore, flessibile 1,50 m e doccetta anticalcare Five-holes bath mixer with diverter, tub-filler spout and 1,50 m flexible hose, antilimestone handshower Mélangeur de baignoire avec bec, inverseur, flexibles de raccordement 1,50m et douchette anticalcaire Grupo borde bañera de 5 orificios con desviador, caño de erogación y flexible de 1,50 m y maneral de ducha antical",
+          "finishCount": 19
+        }
+      ]
+    },
+    "Bidet": {
+      "variantCount": 168,
+      "baseCount": 13,
+      "currentCategories": [
+        [
+          "Douche",
+          168
+        ]
+      ],
+      "samples": [
+        {
+          "base": "45126",
+          "reference": "45126#031",
+          "category": "Douche",
+          "collection": "Origini Total Look",
+          "designation": "Wall-mounted push-button Shut-Off douchette with safety valve, stop valve and 1/2” connection.",
+          "originalDescription": "Doccetta Igienica a pulsante Shut-Off a parete con valvola di sicurezza, rubinetto d’arresto e attacco da 1/2”. Wall-mounted push-button Shut-Off douchette with safety valve, stop valve and 1/2” connection. Douchette Hygiénique Shut-Off murale avec vanne de sécurité, robinet d’arrêt et raccord 1/2”. Ducha bidet de pared Shut-Off con pulsador, válvula de cierre, válvula de seguridad y conexión de 1/2”.",
+          "finishCount": 19
+        },
+        {
+          "base": "14431",
+          "reference": "14431#031",
+          "category": "Douche",
+          "collection": "Origini Total Look",
+          "designation": "douchette with 1/2” connection.",
+          "originalDescription": "Doccetta Igienica a pulsante Shut-Off a parete con attacco da 1/2”. Wall-mounted push-button Shut-Off douchette with 1/2” connection. Douchette Hygiénique Shut-Off murale avec raccord 1/2”. Ducha bidet de pared Shut-Off con pulsador y conexión de 1/2” 031 Chrome 587 735 Warm Bronze PVD 869 149 Finox Br. Nickel 793 726 Warm Bronze Br. PVD 928 299 Matte Black 793 761 Coffee Bronze Br. PVD 987",
+          "finishCount": 15
+        },
+        {
+          "base": "14331",
+          "reference": "14331#031",
+          "category": "Douche",
+          "collection": "Origini Total Look",
+          "designation": "douchette with 1/2” connection.",
+          "originalDescription": "Doccetta Igienica a pulsante Shut-Off a parete con attacco da 1/2”. Wall-mounted push-button Shut-Off douchette with 1/2” connection. Douchette Hygiénique Shut-Off murale avec raccord 1/2”. Ducha bidet de pared Shut-Off con pulsador y conexión de 1/2” 031 Chrome 533 726 Warm Bronze Br. PVD 843 149 Finox Br. Nickel 720 710 Brass PVD 789 299 Matte Black 720 727 Brass Br. PVD 843",
+          "finishCount": 16
+        },
+        {
+          "base": "09276",
+          "reference": "09276#031",
+          "category": "Douche",
+          "collection": "Ingranaggio Total Look",
+          "designation": "Built-in part for shut-off douchette with mixer.",
+          "originalDescription": "Parte incasso per doccetta shut-off con miscelatore. Built-in part for shut-off douchette with mixer. Partie encastrée pour douchette shut-off avec mitigeur. Parte empotrada para ducha bidet de pared Shut-Off con mezclador. 031 Chrome 265",
+          "finishCount": 1
+        },
+        {
+          "base": "45227",
+          "reference": "45227#031",
+          "category": "Douche",
+          "collection": "Ingranaggio Total Look",
+          "designation": "Wall-mounted push-button Shut-Off douchette with safety valve, stop valve and 1/2” connection.",
+          "originalDescription": "Doccetta Igienica a pulsante Shut-Off a parete con valvola di sicurezza, rubinetto d’arresto e attacco da 1/2”. Wall-mounted push-button Shut-Off douchette with safety valve, stop valve and 1/2” connection. Douchette Hygiénique Shut-Off murale avec vanne de sécurité, robinet d’arrêt et raccord 1/2”. Ducha bidet de pared Shut-Off con pulsador, válvula de cierre, válvula de seguridad y conexión de 1/2”.",
+          "finishCount": 15
+        },
+        {
+          "base": "45124",
+          "reference": "45124#031",
+          "category": "Douche",
+          "collection": "Ingranaggio Total Look",
+          "designation": "Wall-mounted push-button Shut-Off douchette with safety valve, stop valve and 1/2” connection.",
+          "originalDescription": "Doccetta Igienica a pulsante Shut-Off a parete con valvola di sicurezza, rubinetto d’arresto e attacco da 1/2”. Wall-mounted push-button Shut-Off douchette with safety valve, stop valve and 1/2” connection. Douchette Hygiénique Shut-Off murale avec vanne de sécurité, robinet d’arrêt et raccord 1/2”. Ducha bidet de pared Shut-Off con pulsador, válvula de cierre, válvula de seguridad y conexión de 1/2”.",
+          "finishCount": 19
+        },
+        {
+          "base": "45123",
+          "reference": "45123#031",
+          "category": "Douche",
+          "collection": "Ingranaggio Total Look",
+          "designation": "douchette with 1/2” connection.",
+          "originalDescription": "Doccetta Igienica a pulsante Shut-Off a parete con attacco da 1/2”. Wall-mounted push-button Shut-Off douchette with 1/2” connection. Douchette Hygiénique Shut-Off murale avec raccord 1/2”. Ducha bidet de pared Shut-Off con conexión de 1/2” 031 Chrome 533 710 Brass PVD 788 149 Finox Br. Nickel 720 727 Brass Br. PVD 843 299 Matte Black 720 246 Gold PVD 896",
+          "finishCount": 16
+        },
+        {
+          "base": "45226",
+          "reference": "45226#031",
+          "category": "Douche",
+          "collection": "Ingranaggio Total Look",
+          "designation": "Wall-mounted push-button Shut-Off douchette with safety valve, stop valve and 1/2” connection.",
+          "originalDescription": "Doccetta Igienica a pulsante Shut-Off a parete con valvola di sicurezza, rubinetto d’arresto e attacco da 1/2”. Wall-mounted push-button Shut-Off douchette with safety valve, stop valve and 1/2” connection. Douchette Hygiénique Shut-Off murale avec vanne de sécurité, robinet d’arrêt et raccord 1/2”. Ducha bidet de pared Shut-Off con pulsador, válvula de cierre, válvula de seguridad y conexión de 1/2”.",
+          "finishCount": 15
+        },
+        {
+          "base": "75527",
+          "reference": "75527#031",
+          "category": "Douche",
+          "collection": "Total Look",
+          "designation": "Wall-mounted push-button Shut-Off douchette with safety valve, stop valve and 1/2” connection. INCASTRI Douchette Hygiénique Shut-Off murale avec vanne de",
+          "originalDescription": "Doccetta Igienica a pulsante Shut-Off a parete con valvola di sicurezza, rubinetto d’arresto e attacco da 1/2”. INCASTRI Wall-mounted push-button Shut-Off douchette with safety valve, stop valve and 1/2” connection. INCASTRI Douchette Hygiénique Shut-Off murale avec vanne de sécurité, robinet d’arrêt et raccord 1/2”. INCASTRI Ducha bidet de pared Shut-Off con pulsador, válvula de cierre, válvula de seguridad y conexión de 1/2”. INCASTRI",
+          "finishCount": 15
+        },
+        {
+          "base": "59153",
+          "reference": "59153#031",
+          "category": "Douche",
+          "collection": "Total Look",
+          "designation": "douchette with 1/2” connection.",
+          "originalDescription": "Doccetta Igienica a pulsante Shut-Off a parete con attacco da 1/2”. Wall-mounted push-button Shut-Off douchette with 1/2” connection. Douchette Hygiénique Shut-Off murale avec raccord 1/2”. Ducha bidet de pared Shut-Off con pulsador y conexión de 1/2” 031 Chrome 587 735 Warm Bronze PVD 868 149 Finox Br. Nickel 792 726 Warm Bronze Br. PVD 924 299 Matte Black 792 710 Brass PVD 868",
+          "finishCount": 15
+        },
+        {
+          "base": "58153",
+          "reference": "58153#031",
+          "category": "Douche",
+          "collection": "Total Look",
+          "designation": "douchette with 1/2” connection.",
+          "originalDescription": "Doccetta Igienica a pulsante Shut-Off a parete con attacco da 1/2”. Wall-mounted push-button Shut-Off douchette with 1/2” connection. Douchette Hygiénique Shut-Off murale avec raccord 1/2”. Ducha bidet de pared Shut-Off con pulsador y conexión de 1/2” 031 Chrome 587 710 Brass PVD 868 149 Finox Br. Nickel 793 727 Brass Br. PVD 924 299 Matte Black 793 246 Gold PVD 985",
+          "finishCount": 19
+        },
+        {
+          "base": "20023",
+          "reference": "20023#031",
+          "category": "Douche",
+          "collection": "Total Look",
+          "designation": "douchette with 1/2” connection.",
+          "originalDescription": "Doccetta Igienica a pulsante Shut-Off a parete con attacco da 1/2”. Wall-mounted push-button Shut-Off douchette with 1/2” connection. Douchette Hygiénique Shut-Off murale avec raccord 1/2”. Ducha bidet de pared Shut-Off con pulsador y conexión de 1/2” 031 Chrome 564 149 Finox Br. Nickel 762",
+          "finishCount": 2
+        },
+        {
+          "base": "20021",
+          "reference": "20021#031",
+          "category": "Douche",
+          "collection": "Total Look",
+          "designation": "douchette with 1/2” connection.",
+          "originalDescription": "Doccetta Igienica a pulsante Shut-Off a parete con attacco da 1/2”. Wall-mounted push-button Shut-Off douchette with 1/2” connection. Douchette Hygiénique Shut-Off murale avec raccord 1/2”. Ducha bidet de pared Shut-Off con pulsador y conexión de 1/2” 031 Chrome 533 149 Finox Br. Nickel 720",
+          "finishCount": 1
+        }
+      ]
+    },
+    "Cuisine": {
+      "variantCount": 0,
+      "baseCount": 0,
+      "currentCategories": [],
+      "samples": []
+    },
+    "Douche": {
+      "variantCount": 188,
+      "baseCount": 18,
+      "currentCategories": [
+        [
+          "Accessoires",
+          97
+        ],
+        [
+          "Bain",
+          50
+        ],
+        [
+          "Lavabo",
+          41
+        ]
+      ],
+      "samples": [
+        {
+          "base": "63412",
+          "reference": "63412#239",
+          "category": "Lavabo",
+          "collection": "Incastri",
+          "designation": "Partie encastrée pour mitigeur lavabo/douche mural une sortie",
+          "originalDescription": "Parte incasso miscelatore lavabo a parete 1 via Built-in part for wall-mounted basin mixer, one-way. Partie encastrée pour mitigeur lavabo/douche mural une sortie Parte de empotrar para mezclador bañera/ lavabo de pared, de 1 vía 239 Steel Br. 221",
+          "finishCount": 1
+        },
+        {
+          "base": "46189",
+          "reference": "46189#031",
+          "category": "Lavabo",
+          "collection": "Incastri",
+          "designation": "Parte incasso miscelatori lavabo/vasca da terra con bocca.",
+          "originalDescription": "Parte incasso miscelatori lavabo/vasca da terra con bocca. Built-in part for freestanding basin/bath mixer with spout. Partie encastrée tenue étanche pour mitigeur bain-douche sur pied. Parte de empotrar para columna exterior para bañera. 031 Chrome 374",
+          "finishCount": 1
+        },
+        {
+          "base": "54055",
+          "reference": "54055#239",
+          "category": "Lavabo",
+          "collection": "Incastri",
+          "designation": "Parte incasso miscelatore lavabo/doccia a parete 1 via Built-in part for wall-mounted shower/basin mixer, one way Partie encastrée pour mitigeur lavabo/douche mural une sortie",
+          "originalDescription": "Parte incasso miscelatore lavabo/doccia a parete 1 via Built-in part for wall-mounted shower/basin mixer, one way Partie encastrée pour mitigeur lavabo/douche mural une sortie Parte de empotrar para mezclador bañera/ lavabo de pared, de 1 vía 239 Steel Br. 242",
+          "finishCount": 1
+        },
+        {
+          "base": "63584",
+          "reference": "63584#031",
+          "category": "Accessoires",
+          "collection": "Inverso Rigato",
+          "designation": "1,50 m flexible hose. RIGATO.",
+          "originalDescription": "Asta saliscendi con doccetta anticalcare e flessibile 1,50 m. RIGATO. Sliding rail with antilimestone handshower, 1,50 m flexible hose. RIGATO. Barre de douche complète avec douchette anticalcaire, flexibles 1,50 m. RIGATO. Barra con guia deslizante magnética con maneral antical y flexible de 1,50 m. RIGATO.",
+          "finishCount": 17
+        },
+        {
+          "base": "66109",
+          "reference": "66109#031",
+          "category": "Lavabo",
+          "collection": "Origini",
+          "designation": "Parties apparentes commande séparée lavabo/douche mural, 1 sortie. Insert en finition inclus. Combiner avec finitions differentes avec insert 66600 ou insert ART 66602",
+          "originalDescription": "Parte esterna Miscelatore a parete 1 via. Abbinabile a inserti con finiture differenti: art. 66600 e art. 66602. External parts mixer one-way diverter. Can be combined with inserts with different finishes: art. 66600 and art. 66602. Parties apparentes commande séparée lavabo/douche mural, 1 sortie. Insert en finition inclus. Combiner avec finitions differentes avec insert 66600 ou insert ART 66602 Parte externa , mezclador de lavabo/ducha de 1 vía",
+          "finishCount": 10
+        },
+        {
+          "base": "66028",
+          "reference": "66028#031",
+          "category": "Accessoires",
+          "collection": "Origini",
+          "designation": "flexible hose. Can be combined with inserts with different finishes: art. 66600 and art. 66602.",
+          "originalDescription": "Parte esterna per piantana esterno vasca con doccetta, deviatore automatico e flessibile in Cromalux. Abbinabile a inserti con finiture differenti: art. 66600 and art. 66602 External part for freestanding external bath mixer with hand shower, automatic diverter and Cromalux flexible hose. Can be combined with inserts with different finishes: art. 66600 and art. 66602. Partie apparente pour mitigeur de baignoire sur plan avec",
+          "finishCount": 10
+        },
+        {
+          "base": "54019",
+          "reference": "54019#239",
+          "category": "Lavabo",
+          "collection": "Gessi316 Flessa",
+          "designation": "Partie apparente pour commande séparée lavabo/douche mural une sortie",
+          "originalDescription": "Parte esterna Miscelatore a parete 1 via External parts mixer one-way diverter Partie apparente pour commande séparée lavabo/douche mural une sortie Partes externas mando remoto lavabo/ducha de pared, de 1 vía 239 Steel Br. 208 726 Warm Bronze Br. PVD 308 299 Matte Black 282 727 Brass Br. PVD 308 707 Black Metal Br. PVD 308 761 Coffee Bronze Br. PVD 329",
+          "finishCount": 8
+        },
+        {
+          "base": "58109",
+          "reference": "58109#031",
+          "category": "Lavabo",
+          "collection": "Inciso -",
+          "designation": "Partie apparente pour commande séparée lavabo/douche mural une sortie",
+          "originalDescription": "Parte esterna Miscelatore a parete 1 via External parts mixer one-way diverter Partie apparente pour commande séparée lavabo/douche mural une sortie Partes externas mando remoto lavabo/ducha de pared, de 1 vía 031 Chrome 201 710 Brass PVD 297 149 Finox Br. Nickel 271 727 Brass Br. PVD 315 299 Matte Black 271 246 Gold PVD 335",
+          "finishCount": 19
+        },
+        {
+          "base": "70033",
+          "reference": "70033#031",
+          "category": "Bain",
+          "collection": "Habito Unito",
+          "designation": "Mitigeur thermostatique de baignoire avec prise d’eau et inverseur automatique.",
+          "originalDescription": "Miscelatore termostatico esterno doccia. External Thermostatic shower mixer. Mitigeur thermostatique de baignoire avec prise d’eau et inverseur automatique. Mezclador termostático exterior de ducha 031 Chrome 1.027 726 Warm Bronze Br. PVD 1.624 149 Finox Br. Nickel 1.388 710 Brass PVD 1.521 299 Matte Black 1.388 727 Brass Br. PVD 1.624",
+          "finishCount": 11
+        },
+        {
+          "base": "70079",
+          "reference": "70079#031",
+          "category": "Bain",
+          "collection": "Habito Unito",
+          "designation": "Partie apparente mitigeur de baignoire mural 2 sorties avec inverseur.",
+          "originalDescription": "Parte esterna miscelatore doccia a parete 2 vie con deviatore. External part wall-mounted two-ways shower mixer with diverter. Partie apparente mitigeur de baignoire mural 2 sorties avec inverseur. Parte externa mezclador ducha de pared con 2 salidas con desviador. 031 Chrome 495 726 Warm Bronze Br. PVD 783 149 Finox Br. Nickel 668 710 Brass PVD 733",
+          "finishCount": 13
+        },
+        {
+          "base": "70030",
+          "reference": "70030#031",
+          "category": "Accessoires",
+          "collection": "Habito Unito",
+          "designation": "Partie apparente mitigeur thermostatique 1 voie.",
+          "originalDescription": "Parte esterna miscelatore termostatico a parete 1 via. External part wall-mounted one way shower mixer. UNITO. Partie apparente mitigeur thermostatique 1 voie. Partes externas para mezclador termostático de pared de 1 vía 031 Chrome 722 726 Warm Bronze Br. PVD 1.141 149 Finox Br. Nickel 975 710 Brass PVD 1.069 299 Matte Black 975 727 Brass Br. PVD 1.141 706 Black Metal PVD 1.069 845 Dark Bronze 1.141",
+          "finishCount": 13
+        },
+        {
+          "base": "70031",
+          "reference": "70031#031",
+          "category": "Accessoires",
+          "collection": "Habito Unito",
+          "designation": "Partie apparente mitigeur thermostatique 2 voies.",
+          "originalDescription": "Parte esterna miscelatore termostatico a parete 2 vie. External part wall-mounted two ways shower mixer. UNITO. Partie apparente mitigeur thermostatique 2 voies. Partes externas para mezclador termostático de pared de 2 vías 031 Chrome 722 726 Warm Bronze Br. PVD 1.141 149 Finox Br. Nickel 975 710 Brass PVD 1.069 299 Matte Black 975 727 Brass Br. PVD 1.141 706 Black Metal PVD 1.069 845 Dark Bronze 1.141",
+          "finishCount": 13
+        },
+        {
+          "base": "70039",
+          "reference": "70039#031",
+          "category": "Accessoires",
+          "collection": "Habito Unito",
+          "designation": "Partie apparente mitigeur thermostatique 3 voies.",
+          "originalDescription": "Parte esterna miscelatore termostatico a parete 3 vie. External part wall-mounted three ways shower mixer. UNITO. Partie apparente mitigeur thermostatique 3 voies. Partes externas para mezclador termostático de pared de 3 vías 031 Chrome 722 726 Warm Bronze Br. PVD 1.141 149 Finox Br. Nickel 975 710 Brass PVD 1.069 299 Matte Black 975 727 Brass Br. PVD 1.141 706 Black Metal PVD 1.069 845 Dark Bronze 1.141",
+          "finishCount": 13
+        },
+        {
+          "base": "70579",
+          "reference": "70579#031",
+          "category": "Bain",
+          "collection": "Habito Rigato",
+          "designation": "Partie apparente mitigeur de baignoire mural 2 sorties avec inverseur. RIGATO",
+          "originalDescription": "Parte esterna miscelatore doccia a parete 2 vie con deviatore. RIGATO External part wall-mounted two-ways shower mixer with diverter. RIGATO Partie apparente mitigeur de baignoire mural 2 sorties avec inverseur. RIGATO Parte externa mezclador ducha de pared con 2 salidas con desviador. RIGATO",
+          "finishCount": 13
+        },
+        {
+          "base": "63582",
+          "reference": "63582#031",
+          "category": "Accessoires",
+          "collection": "Habito Rigato",
+          "designation": "m flexible hose and water outlet. RIGATO.",
+          "originalDescription": "Asta saliscendi con presa acqua, doccetta anticalcare e flessibile 1,50 m. RIGATO. Sliding rail with antilimestone handshower, 1,50 m flexible hose and water outlet. RIGATO. Barre de douche complète avec douchette anticalcaire, flexibles 1,50 m et sortie murale coudée. RIGATO. Barra deslizante completa con teleducha antical, flexible de1,50 m y toma de agua. RIGATO.",
+          "finishCount": 17
+        },
+        {
+          "base": "70679",
+          "reference": "70679#031",
+          "category": "Bain",
+          "collection": "Habito Diamantato",
+          "designation": "Partie apparente mitigeur de baignoire mural 2 sorties avec inverseur. DIAMANTATO",
+          "originalDescription": "Parte esterna miscelatore doccia a parete 2 vie con deviatore. DIAMANTATO External part wall-mounted two-ways shower mixer with diverter. DIAMANTATO Partie apparente mitigeur de baignoire mural 2 sorties avec inverseur. DIAMANTATO Parte externa mezclador ducha de pared con 2 salidas con desviador. DIAMANTATO",
+          "finishCount": 13
+        },
+        {
+          "base": "09285",
+          "reference": "09285#031",
+          "category": "Lavabo",
+          "collection": "Goccia",
+          "designation": "Parte incasso miscelatore lavabo/doccia a parete 1 via.",
+          "originalDescription": "Parte incasso miscelatore lavabo/doccia a parete 1 via. Built-in part for wall-mounted shower/basin mixer, one way. Partie encastrée pour mitigeur lavabo/douche mural une sortie. Parte de empotrar para mezclador bañera/ lavabo de pared, de 1 vía. 031 Chrome 282",
+          "finishCount": 1
+        },
+        {
+          "base": "33019",
+          "reference": "33019#031",
+          "category": "Accessoires",
+          "collection": "Goccia",
+          "designation": "Partie apparente mitigeur mural à 1 sortie Parte externa para mexclador de pared de 1 vía",
+          "originalDescription": "Parte esterna miscelatore a parete 1 via. External part wall-mounted one way shower mixer. Partie apparente mitigeur mural à 1 sortie Parte externa para mexclador de pared de 1 vía 031 Chrome 327 735 Warm Bronze PVD 484 149 Finox Br. Nickel 442 726 Warm Bronze Br. PVD 517 299 Matte Black 442 791 Deep Bronze Br. PVD 550 706 Black Metal PVD 484 761 Coffee Bronze Br. PVD 550",
+          "finishCount": 14
+        }
+      ]
+    }
+  }
+}
