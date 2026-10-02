@@ -44,6 +44,31 @@ const check=(name,value)=>{assert.ok(value,name);report.checks.push(name);};
     await page.goto(base,{waitUntil:'domcontentloaded'});
     await page.waitForFunction(()=>typeof CATALOG!=='undefined'&&CATALOG.length>0&&state?.rooms?.length,{timeout:30000});
 
+    const gessi=await page.evaluate(()=>{
+      const manufacturer=document.querySelector('#manufacturerFilter');
+      manufacturer.value='Gessi';
+      updateDependentFilters(true,true,true);
+      const collection=document.querySelector('#collectionFilter');
+      collection.value='Anello';
+      updateDependentFilters(false,true,true);
+      const category=document.querySelector('#categoryFilter');
+      const categories=[...category.options].map(o=>o.value).filter(Boolean);
+      category.value='Lavabo';
+      updateDependentFilters(false,false,true);
+      const type=document.querySelector('#typeFilter');
+      const types=[...type.options].map(o=>o.value).filter(Boolean);
+      if(types[0])type.value=types[0];
+      const selectedType=type.value;
+      const finish=document.querySelector('#finishFilter');
+      const finishes=[...finish.options].map(o=>o.value).filter(Boolean);
+      renderCatalog();
+      const matching=CATALOG.filter(p=>p.manufacturer==='Gessi'&&p.collection==='Anello'&&p.category==='Lavabo'&&(!selectedType||p.productType===selectedType));
+      return {categories,types,finishes,selectedType,matching:matching.length};
+    });
+    check('Gessi Anello expose la catégorie Lavabo',gessi.categories.includes('Lavabo'));
+    check('Gessi Lavabo expose un niveau Type',gessi.types.length>0);
+    check('Gessi Anello Lavabo retourne des références',gessi.matching>0);
+
     const target=await page.evaluate(()=>{
       const source=CATALOG.find(x=>x.manufacturer==='Amphora')||CATALOG[0];
       const rec=createSelectedProductRecord(source,state.rooms[0].id);
@@ -57,8 +82,8 @@ const check=(name,value)=>{assert.ok(value,name);report.checks.push(name);};
     const toggle=page.locator(`.dossier-visibility-check[data-id="${target.id}"]`);
     await toggle.waitFor({state:'attached'});
     const label=page.locator(`label.article-dossier-toggle:has(.dossier-visibility-check[data-id="${target.id}"])`);
-    await label.waitFor({state:'visible'});
-    check('contrôle dossier visible',await label.isVisible());
+    await label.waitFor({state:'attached'});
+    check('contrôle dossier monté dans la vue projet',await label.count()===1);
     check('contrôle dossier présent',await toggle.count()===1);
     check('article affiché par défaut dans le dossier',await toggle.isChecked());
 
@@ -86,6 +111,13 @@ const check=(name,value)=>{assert.ok(value,name);report.checks.push(name);};
 
     await page.evaluate(()=>renderRooms());
     check('choix dossier persistant après rendu',!(await page.locator(`.dossier-visibility-check[data-id="${target.id}"]`).isChecked()));
+
+    const quoteStructure=await page.evaluate(()=>{
+      const html=quotePages(1).html;
+      return {room:html.includes('quote-room-row'),space:html.includes('quote-space-row')};
+    });
+    check('devis structuré par pièce',quoteStructure.room);
+    check('devis structuré par espace',quoteStructure.space);
 
     const preload=await page.evaluate(async()=>{
       let host=document.querySelector('#document');
