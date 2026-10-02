@@ -2964,3 +2964,9 @@ main{background:transparent}
 .quote-editor-table .qe-space-group td{padding:7px 12px;font-weight:750;text-transform:uppercase;letter-spacing:.06em;background:#f3eadf;color:#8a5b24}
 .quote-editor-table .qe-product-row td{vertical-align:top}
 .qe-product-meta{display:block;margin-top:4px;font-size:10px;line-height:1.25;color:#78736d;white-space:normal}
+
+
+/* V11.57_GESSI_TYPE_FILTER */
+.v11-filters{grid-template-columns:repeat(5,minmax(0,1fr))}
+@media(max-width:1000px){.v11-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){.v11-filters{grid-template-columns:1fr}}
