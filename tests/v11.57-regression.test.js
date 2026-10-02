@@ -10,6 +10,7 @@ const siraModels=require('../public/sira_models.json').models;
 
 const appSource=fs.readFileSync(path.join(__dirname,'..','public','app.js'),'utf8');
 const indexSource=fs.readFileSync(path.join(__dirname,'..','public','index.html'),'utf8');
+const serverSource=fs.readFileSync(path.join(__dirname,'..','server.js'),'utf8');
 const gessiCatalog=JSON.parse(zlib.gunzipSync(fs.readFileSync(path.join(__dirname,'..','public','catalog_gessi.json.gz'))));
 
 test('Sira uses an official generic model image when the live product page is unavailable',async t=>{
@@ -50,6 +51,27 @@ test('PDF export waits for decodable visible images and aborts on unresolved fai
   assert.match(appSource,/printStarted/,'PDF cleanup must distinguish pre-print failures from a started print flow');
 });
 
+test('Hotbath preserves the exact official manufacturer asset path',()=>{
+  const start=serverSource.indexOf('function normalizeHotbathAssetUrl(');
+  assert.ok(start>=0,'Hotbath asset normalizer must exist');
+  const end=serverSource.indexOf('\nfunction ',start+20);
+  const source=serverSource.slice(start,end>start?end:start+1400);
+  assert.doesNotMatch(source,/pathname\s*=.*replace/,'Hotbath official asset paths must not collapse manufacturer double slashes');
+  assert.match(source,/return u\.href/,'Hotbath normalizer must return the official absolute URL');
+});
+
+test('quote is structured by room then bathroom space without changing article inclusion',()=>{
+  assert.match(appSource,/const QUOTE_SPACE_ORDER=\{LAVABO:0,DOUCHE:1,BAIN:2,WC:3,AUTRES:4\}/);
+  assert.match(appSource,/quote-room-row/,'printed quote must render room headings');
+  assert.match(appSource,/quote-space-row/,'printed quote must render functional-space headings');
+  assert.match(appSource,/qe-room-group/,'quote editor must render room headings');
+  assert.match(appSource,/qe-space-group/,'quote editor must render functional-space headings');
+  const quoteStart=appSource.indexOf('function quoteRows(');
+  const quoteEnd=appSource.indexOf('function quotePages(',quoteStart);
+  const quoteSource=appSource.slice(quoteStart,quoteEnd);
+  assert.match(quoteSource,/roomRows\.sort/,'quote rows must be ordered inside each room by functional space');
+  assert.doesNotMatch(quoteSource,/hideFromDossier/,'dossier visibility must never remove an article from the quote');
+});
 
 test('Gessi functional hierarchy preserves the 16,211 tariff variants',()=>{
   assert.equal(gessiCatalog.length,16211);
