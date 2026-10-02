@@ -1,0 +1,25 @@
+name: browser-validate-v1157
+
+on:
+  push:
+    branches:
+      - "fix/v11.57-sira-pdf-audit"
+
+permissions:
+  contents: read
+
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/v11.57-sira-pdf-audit
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npm install --no-save --package-lock=false playwright@1.55.0
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:browser
