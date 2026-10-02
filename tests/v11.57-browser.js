@@ -55,7 +55,10 @@ const check=(name,value)=>{assert.ok(value,name);report.checks.push(name);};
     check('article test créé',!!target.id);
 
     const toggle=page.locator(`.dossier-visibility-check[data-id="${target.id}"]`);
-    await toggle.waitFor({state:'visible'});
+    await toggle.waitFor({state:'attached'});
+    const label=page.locator(`label.article-dossier-toggle:has(.dossier-visibility-check[data-id="${target.id}"])`);
+    await label.waitFor({state:'visible'});
+    check('contrôle dossier visible',await label.isVisible());
     check('contrôle dossier présent',await toggle.count()===1);
     check('article affiché par défaut dans le dossier',await toggle.isChecked());
 
@@ -69,7 +72,7 @@ const check=(name,value)=>{assert.ok(value,name);report.checks.push(name);};
     },target.id);
     check('état initial cohérent',!before.hidden&&before.inQuote&&before.inDossier);
 
-    await toggle.uncheck();
+    await toggle.uncheck({force:true});
     const after=await page.evaluate(id=>{
       const p=state.selected.find(x=>x.id===id);
       return {
