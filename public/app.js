@@ -3228,6 +3228,10 @@ function renderRoomsCore(){
           </div>
         </details>
         <div class="image-actions"><button class="tiny enrich-btn" data-id="${p.id}">${p.image?"Actualiser photo + documents":"Chercher photo + documents"}</button>${hotbathNeedsFinishFallback(p)?`<button class="tiny hotbath-web-selected" data-id="${p.id}">Chercher finition web</button>`:""}${hotbathNeedsFinishFallback(p)&&p.remoteImageUrl?`<button class="tiny hotbath-sim-selected" data-id="${p.id}">Simuler ${p.finish||"la finition"}</button>`:""}<a target="_blank" href="${p.resolvedManufacturerUrl||p.manufacturerUrl}">Fiche officielle ↗</a>${technicalSheetHref(p)?`<a target="_blank" class="technical-sheet-link" href="${technicalSheetHref(p)}">${p.customTechnicalSheet?"Fiche personnalisée":(/zucchetti/i.test(p.manufacturer||"")?"Fiche technique complète":"Fiche technique")} ↗</a>${technicalSheetIsPdf(p)&&!/zucchetti/i.test(p.manufacturer||"")?`<label class="drawing-toggle"><input type="checkbox" class="techsheet-check" data-id="${p.id}" ${p.includeTechnicalSheet?"checked":""}> ${/^Ritmonio$/i.test(String(p.manufacturer||""))?"Inclure la Scheda tecnica":"Inclure la fiche technique"}</label>`:""}`:`${/^Ritmonio$/i.test(String(p.manufacturer||""))?`<button class="tiny ritmonio-tech-refresh" data-id="${p.id}">Récupérer la Scheda tecnica</button>`:`<span class="tech">${/lefroy brooks/i.test(p.manufacturer||"")?"Fiche technique Lefroy à récupérer":"Fiche technique à récupérer"}</span>`}`}${installationGuideHref(p)?`<a target="_blank" href="${esc(installationGuideHref(p))}">Notice installation ↗</a><label class="drawing-toggle"><input type="checkbox" class="install-check" data-id="${p.id}" ${p.includeInstallationGuide?"checked":""}> Inclure la notice</label>`:""}${p.drawingUrl?`<a target="_blank" href="${p.drawingUrl}">${/zucchetti/i.test(p.manufacturer||"")?"Dessin technique p.3":"Drawing 2D"} ↗</a>${["pdf","image"].includes(p.drawingType)?`<label class="drawing-toggle"><input type="checkbox" class="drawing-check" data-id="${p.id}" ${p.includeDrawing?"checked":""}> ${/zucchetti/i.test(p.manufacturer||"")?"Inclure le dessin p.3":"Inclure le drawing"}</label>`:`<span class="tech">DWG consultable, non intégrable au PDF</span>`}`:`<span class="tech">Drawing 2D à récupérer</span>`}${p.cadDrawingUrl?`<a target="_blank" href="${p.cadDrawingUrl}">Fichier 2D CAD ↗</a>`:""}${(!p.image && p.fallbackImage)?`<button class="tiny fallback-btn" data-id="${p.id}">Catalogue en secours</button>`:""}</div></div>
+        <div class="article-leadtime-panel article-dossier-panel">
+          <label class="drawing-toggle article-dossier-toggle"><input type="checkbox" class="dossier-visibility-check" data-id="${p.id}" ${p.hideFromDossier?"":"checked"}> Afficher dans le dossier photo client</label>
+          <div class="tech">Sans effet sur le devis : l’article y reste toujours présent.</div>
+        </div>
         <div class="article-leadtime-panel">
           <label>Délai
             <input class="article-leadtime-input" data-id="${p.id}" type="text" placeholder="ex. 3 à 4 semaines" value="${(p.leadTime||"").replace(/"/g,"&quot;")}">
@@ -3296,6 +3300,11 @@ function renderRoomsCore(){
  $$(".drawing-check").forEach(ch=>ch.onchange=()=>{let p=state.selected.find(x=>x.id===ch.dataset.id);if(!p)return;p.includeDrawing=ch.checked;saveState();});
  $$(".techsheet-check").forEach(ch=>ch.onchange=()=>{let p=state.selected.find(x=>x.id===ch.dataset.id);if(!p)return;p.includeTechnicalSheet=ch.checked;saveState();});
  $$(".install-check").forEach(ch=>ch.onchange=()=>{let p=state.selected.find(x=>x.id===ch.dataset.id);if(!p)return;p.includeInstallationGuide=ch.checked;saveState();});
+ $$(".dossier-visibility-check").forEach(ch=>ch.onchange=()=>{
+   const p=state.selected.find(x=>x.id===ch.dataset.id);if(!p)return;
+   p.hideFromDossier=!ch.checked;
+   saveState();
+ });
   $$(".translate-designation-btn").forEach(b=>b.onclick=()=>proposeFrenchDesignation(b));
  $$(".edit-designation").forEach(inp=>inp.oninput=()=>{
    const card=inp.closest(".room-product");
@@ -4428,19 +4437,52 @@ function initPreviewParallax(){
 }
 
 
+// PDF_IMAGE_PRELOAD_V1157
 async function waitForDocumentImages(timeoutMs=5000){
   const imgs=[...document.querySelectorAll("#document img")];
-  if(!imgs.length)return;
-  await Promise.race([
-    Promise.all(imgs.map(img=>{
-      if(img.complete)return Promise.resolve();
-      return new Promise(resolve=>{
-        img.addEventListener("load",resolve,{once:true});
-        img.addEventListener("error",resolve,{once:true});
-      });
-    })),
-    new Promise(resolve=>setTimeout(resolve,timeoutMs))
-  ]);
+  if(!imgs.length)return {failed:[],timedOut:false,total:0};
+
+  const results=await Promise.all(imgs.map(img=>new Promise(resolve=>{
+    let settled=false;
+    let timer=null;
+    const cleanup=()=>{
+      if(timer)clearTimeout(timer);
+      img.removeEventListener("load",onLoad);
+      img.removeEventListener("error",onError);
+    };
+    const finish=async reason=>{
+      if(settled)return;
+      settled=true;
+      cleanup();
+      if(reason==="load" && img.naturalWidth>0 && typeof img.decode==="function"){
+        try{
+          await Promise.race([
+            img.decode(),
+            new Promise((_,reject)=>setTimeout(()=>reject(new Error("decode timeout")),1000))
+          ]);
+        }catch{}
+      }
+      const intentionallyHidden=img.hidden||!!img.closest?.("[hidden]");
+      const ok=img.naturalWidth>0||intentionallyHidden;
+      resolve({img,ok,reason:ok?"ready":reason});
+    };
+    const onLoad=()=>finish("load");
+    const onError=()=>setTimeout(()=>finish("error"),0);
+    if(img.complete){
+      finish(img.naturalWidth>0?"load":"error");
+      return;
+    }
+    img.addEventListener("load",onLoad,{once:true});
+    img.addEventListener("error",onError,{once:true});
+    timer=setTimeout(()=>finish("timeout"),timeoutMs);
+  })));
+
+  const failed=results.filter(r=>!r.ok).map(r=>r.img);
+  return {
+    failed,
+    timedOut:results.some(r=>!r.ok&&r.reason==="timeout"),
+    total:imgs.length
+  };
 }
 async function exportClientPdf(){
   if(!validateRecorFeet(true)){
@@ -4448,8 +4490,6 @@ async function exportClientPdf(){
     return;
   }
 
-  // The document is rebuilt immediately before export so the PDF always
-  // reflects the latest project data.
   showView("preview");
   buildDocument();
 
@@ -4463,25 +4503,45 @@ async function exportClientPdf(){
     .trim();
   document.title=`${safeName} - Hydropolis`;
 
+  let restored=false;
+  let printStarted=false;
+  const restore=()=>{
+    if(restored)return;
+    restored=true;
+    document.body.classList.remove("pdf-exporting");
+    document.title=oldTitle;
+    btns.forEach(b=>{b.disabled=false;b.textContent=b.dataset.oldText||"Exporter PDF";});
+    window.removeEventListener("afterprint",restore);
+  };
+
   try{
     if(document.fonts?.ready)await Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,1500))]);
-    await waitForDocumentImages(6000);
+    const preload=await waitForDocumentImages(6000);
+    if(preload.failed.length){
+      const reason=preload.timedOut
+        ?"certaines images n’ont pas fini de charger"
+        :"certaines images sont indisponibles";
+      throw new Error(`${preload.failed.length} image(s) du dossier ne sont pas prêtes (${reason}). Vérifiez l’aperçu puis réessayez.`);
+    }
 
     document.body.classList.add("pdf-exporting");
     await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
-    window.print();
-  }finally{
-    // afterprint is not consistently synchronous across browsers.
-    const restore=()=>{
-      document.body.classList.remove("pdf-exporting");
-      document.title=oldTitle;
-      btns.forEach(b=>{b.disabled=false;b.textContent=b.dataset.oldText||"Exporter PDF";});
-      window.removeEventListener("afterprint",restore);
-    };
     window.addEventListener("afterprint",restore,{once:true});
-    setTimeout(()=>{
-      if(document.body.classList.contains("pdf-exporting"))restore();
-    },10000);
+    printStarted=true;
+    try{
+      window.print();
+    }catch(e){
+      printStarted=false;
+      throw e;
+    }
+  }finally{
+    if(!printStarted){
+      restore();
+    }else{
+      setTimeout(()=>{
+        if(document.body.classList.contains("pdf-exporting"))restore();
+      },10000);
+    }
   }
 }
 
@@ -4589,7 +4649,7 @@ function harmonizeSavedCatalogProducts(){
     if(!c)continue;
 
     const runtime={
-      id:p.id,roomId:p.roomId,accessoryFor:p.accessoryFor,
+      id:p.id,roomId:p.roomId,accessoryFor:p.accessoryFor,hideFromDossier:p.hideFromDossier,
       image:p.image,images:p.images,pdfImage:p.pdfImage,pdfImages:p.pdfImages,
       remoteImageUrl:p.remoteImageUrl,remoteImages:p.remoteImages,
       imageSource:p.imageSource,imageFinishMatch:p.imageFinishMatch,imageStatus:p.imageStatus,imageNote:p.imageNote,
