@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node server.js",
     "check": "node tests/check-syntax.js",
-    "test": "node verify-release.js && node --test tests/consolidated.test.js",
+    "test": "node verify-release.js && node --test tests/consolidated.test.js tests/v11.57-regression.test.js",
     "build": "npm run check && npm test",
     "test:browser": "node tests/browser-consolidated.js",
     "test:live": "node tests/live-assets.js"
