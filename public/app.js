@@ -2722,13 +2722,25 @@ function commercialManufacturers(){
   return [...new Set(state.selected.map(p=>p.manufacturer).filter(Boolean))].sort((x,y)=>x.localeCompare(y,"fr"));
 }
 
+const QUOTE_SPACE_ORDER={LAVABO:0,DOUCHE:1,BAIN:2,WC:3,AUTRES:4};
+function quoteSpaceForProduct(p){
+  if(!p)return "AUTRES";
+  if(p.requiredRoughIn && p.accessoryFor){
+    const parent=(state.selected||[]).find(x=>x?.id===p.accessoryFor);
+    if(parent)return presentationSpace(parent);
+  }
+  return presentationSpace(p);
+}
+function quoteSpaceLabel(space){return presentationSpaceLabel(space)||"Autres éléments";}
 function quoteEditorRows(){
   const rows=[];
   for(const room of state.rooms||[]){
+    const roomRows=[];
     (state.selected||[]).forEach((p,sourceIndex)=>{
       if(p.roomId!==room.id || !isRealSelectedProduct(p))return;
-      rows.push({
-        kind:"product",sourceIndex,roomId:room.id,room:room.title,
+      const space=quoteSpaceForProduct(p);
+      roomRows.push({
+        kind:"product",sourceIndex,sourceOrder:sourceIndex,roomId:room.id,room:room.title,space,spaceLabel:quoteSpaceLabel(space),
         manufacturer:p.manufacturer||"",finish:p.finish||"",
         reference:quoteLineReference(p),designation:quoteLineDesignation(p),
         leadTime:quoteLineLeadTime(p),qty:itemQuantity(p),
@@ -2737,8 +2749,9 @@ function quoteEditorRows(){
       });
     });
     validManualItemsForRoom(room).forEach((m,manualIndex)=>{
-      rows.push({
-        kind:"manual",manualIndex,roomId:room.id,room:room.title,
+      const space="AUTRES";
+      roomRows.push({
+        kind:"manual",manualIndex,sourceOrder:100000+manualIndex,roomId:room.id,room:room.title,space,spaceLabel:quoteSpaceLabel(space),
         manufacturer:"Élément libre",finish:"",
         reference:manualQuoteReference(m),designation:manualQuoteDesignation(m),
         leadTime:manualQuoteLeadTime(m),qty:manualItemQuantity(m),
@@ -2746,6 +2759,8 @@ function quoteEditorRows(){
         total:manualQuoteNetUnit(m)*manualItemQuantity(m)
       });
     });
+    roomRows.sort((a,b)=>(QUOTE_SPACE_ORDER[a.space]??99)-(QUOTE_SPACE_ORDER[b.space]??99)||a.sourceOrder-b.sourceOrder);
+    rows.push(...roomRows);
   }
   return rows;
 }
@@ -2766,22 +2781,32 @@ function renderQuoteEditor(){
   if(!rows.length){
     host.innerHTML='<div class="margin-empty">Ajoutez des articles au projet pour construire le devis.</div>';
   }else{
+    const bodyRows=[];
+    let lastRoom="",lastSpace="";
+    for(const row of rows){
+      if(row.room!==lastRoom){
+        bodyRows.push('<tr class="qe-room-group"><td colspan="8">'+esc(row.room)+'</td></tr>');
+        lastRoom=row.room;lastSpace="";
+      }
+      if(row.space!==lastSpace){
+        bodyRows.push('<tr class="qe-space-group"><td colspan="8">'+esc(row.spaceLabel)+'</td></tr>');
+        lastSpace=row.space;
+      }
+      const attrs=quoteEditorAttributes(row);
+      bodyRows.push('<tr class="qe-product-row">'+
+        '<td><input class="qe-input qe-ref" '+attrs+' value="'+esc(row.reference)+'"></td>'+
+        '<td><input class="qe-input qe-designation" '+attrs+' value="'+esc(row.designation)+'"><small class="qe-product-meta">'+esc(row.manufacturer)+(row.finish?' · '+esc(row.finish):'')+'</small></td>'+
+        '<td><input class="qe-input qe-lead" '+attrs+' value="'+esc(row.leadTime)+'" placeholder="Délai"></td>'+
+        '<td><input class="qe-input qe-qty" '+attrs+' type="number" min="1" max="999" step="1" value="'+row.qty+'"></td>'+
+        '<td><input class="qe-input qe-unit" '+attrs+' type="number" min="0" step="0.01" value="'+Number(row.unit||0).toFixed(2)+'"></td>'+
+        '<td><div class="qe-percent"><input class="qe-input qe-discount" '+attrs+' type="number" min="0" max="100" step="0.1" value="'+Number(row.discount||0).toFixed(1)+'"><span>%</span></div></td>'+
+        '<td class="qe-total">'+euro(row.total)+'</td>'+
+        '<td><button type="button" class="tiny qe-reset" '+attrs+' title="Réinitialiser cette ligne">↺</button></td>'+
+      '</tr>');
+    }
     host.innerHTML='<div class="quote-editor-wrap"><table class="quote-editor-table">'+
-      '<thead><tr><th>Pièce</th><th>Référence</th><th>Désignation</th><th>Délai</th><th>Qté</th><th>PU HT</th><th>Remise</th><th>Total HT</th><th></th></tr></thead>'+
-      '<tbody>'+rows.map(row=>{
-        const attrs=quoteEditorAttributes(row);
-        return '<tr>'+
-          '<td class="qe-room"><b>'+esc(row.room)+'</b><small>'+esc(row.manufacturer)+(row.finish?' · '+esc(row.finish):'')+'</small></td>'+
-          '<td><input class="qe-input qe-ref" '+attrs+' value="'+esc(row.reference)+'"></td>'+
-          '<td><input class="qe-input qe-designation" '+attrs+' value="'+esc(row.designation)+'"></td>'+
-          '<td><input class="qe-input qe-lead" '+attrs+' value="'+esc(row.leadTime)+'" placeholder="Délai"></td>'+
-          '<td><input class="qe-input qe-qty" '+attrs+' type="number" min="1" max="999" step="1" value="'+row.qty+'"></td>'+
-          '<td><input class="qe-input qe-unit" '+attrs+' type="number" min="0" step="0.01" value="'+Number(row.unit||0).toFixed(2)+'"></td>'+
-          '<td><div class="qe-percent"><input class="qe-input qe-discount" '+attrs+' type="number" min="0" max="100" step="0.1" value="'+Number(row.discount||0).toFixed(1)+'"><span>%</span></div></td>'+
-          '<td class="qe-total">'+euro(row.total)+'</td>'+
-          '<td><button type="button" class="tiny qe-reset" '+attrs+' title="Réinitialiser cette ligne">↺</button></td>'+
-        '</tr>';
-      }).join('')+'</tbody></table></div>';
+      '<thead><tr><th>Référence</th><th>Désignation</th><th>Délai</th><th>Qté</th><th>PU HT</th><th>Remise</th><th>Total HT</th><th></th></tr></thead>'+
+      '<tbody>'+bodyRows.join('')+'</tbody></table></div>';
   }
 
   const commit=(el,key,mode="text")=>{
@@ -2805,12 +2830,10 @@ function renderQuoteEditor(){
   $$(".qe-qty",host).forEach(el=>el.onchange=()=>commit(el,"quantity","qty"));
   $$(".qe-unit",host).forEach(el=>el.onchange=()=>commit(el,"quoteUnitOverride","money"));
   $$(".qe-discount",host).forEach(el=>el.onchange=()=>commit(el,"quoteDiscountOverride","percent"));
-
   $$(".qe-reset",host).forEach(btn=>btn.onclick=()=>{
     const target=quoteEditorTarget(btn);if(!target)return;
     clearQuoteLineOverrides(target);saveState();renderMarginDashboard();
   });
-
   const reset=$("#resetQuoteEditorBtn");
   if(reset)reset.onclick=()=>{
     if(!confirm("Réinitialiser les modifications du devis ? Les quantités du projet seront conservées."))return;
@@ -2909,13 +2932,16 @@ function clientFacingDesignation(p){
 function quoteRows(){
   const rows=[];
   for(const room of state.rooms||[]){
+    const roomRows=[];
     (state.selected||[]).forEach((p,sourceIndex)=>{
       if(p.roomId!==room.id || !isRealSelectedProduct(p))return;
       const qty=itemQuantity(p);
       const unit=quoteLineUnit(p);
       const discount=quoteLineDiscount(p);
-      rows.push({
-        room:room.title,reference:quoteLineReference(p),designation:quoteLineDesignation(p),finish:p.finish||"",
+      const space=quoteSpaceForProduct(p);
+      roomRows.push({
+        room:room.title,roomId:room.id,space,spaceLabel:quoteSpaceLabel(space),sourceOrder:sourceIndex,
+        reference:quoteLineReference(p),designation:quoteLineDesignation(p),finish:p.finish||"",
         manufacturer:p.manufacturer||"",qty,unit,netUnit:unit*(1-discount/100),
         freight:0,leadTime:quoteLineLeadTime(p),manual:false,discount,sourceIndex,sourceId:p.id||""
       });
@@ -2924,35 +2950,52 @@ function quoteRows(){
       const qty=manualItemQuantity(m);
       const unit=manualQuoteUnit(m);
       const discount=manualQuoteDiscount(m);
-      rows.push({
-        room:room.title,reference:manualQuoteReference(m),designation:manualQuoteDesignation(m),finish:"",
+      const space="AUTRES";
+      roomRows.push({
+        room:room.title,roomId:room.id,space,spaceLabel:quoteSpaceLabel(space),sourceOrder:100000+manualIndex,
+        reference:manualQuoteReference(m),designation:manualQuoteDesignation(m),finish:"",
         manufacturer:"Élément libre",qty,unit,netUnit:unit*(1-discount/100),
-        freight:0,leadTime:manualQuoteLeadTime(m),manual:true,discount,roomId:room.id,manualIndex
+        freight:0,leadTime:manualQuoteLeadTime(m),manual:true,discount,manualIndex
       });
     });
+    roomRows.sort((a,b)=>(QUOTE_SPACE_ORDER[a.space]??99)-(QUOTE_SPACE_ORDER[b.space]??99)||a.sourceOrder-b.sourceOrder);
+    rows.push(...roomRows);
   }
   return rows;
 }
 function quotePages(startNo){
   const rows=quoteRows();
   const f=projectFinancials();
-
-  // La colonne "Remise" n'apparaît dans le document client que si
-  // au moins une ligne bénéficie réellement d'une remise commerciale.
   const showDiscountColumn=rows.some(row=>Number(row.discount)>0.0001);
-
-  const perPage=9;
+  const perPage=8;
   const pages=Math.max(1,Math.ceil(rows.length/perPage));
   let html="", no=startNo;
-
-  const emptyColspan=
-    (state.showSupplierReferences!==false?1:0) +
-    6 + // Pièce, Désignation, Délai, Qté, PU HT, Total HT
-    (showDiscountColumn?1:0);
+  const columnCount=(state.showSupplierReferences!==false?1:0)+5+(showDiscountColumn?1:0);
 
   for(let pg=0;pg<pages;pg++){
     const chunk=rows.slice(pg*perPage,(pg+1)*perPage);
     const last=pg===pages-1;
+    let previousRoom="",previousSpace="";
+    const quoteBody=chunk.map(row=>{
+      let prefix="";
+      if(row.room!==previousRoom){
+        prefix+=`<tr class="quote-room-row"><td colspan="${columnCount}">${esc(row.room)}</td></tr>`;
+        previousRoom=row.room;previousSpace="";
+      }
+      if(row.space!==previousSpace){
+        prefix+=`<tr class="quote-space-row"><td colspan="${columnCount}">${esc(row.spaceLabel)}</td></tr>`;
+        previousSpace=row.space;
+      }
+      return prefix+`<tr class="quote-product-row">
+        ${state.showSupplierReferences!==false?`<td>${esc(row.reference||"—")}</td>`:""}
+        <td><b>${esc(row.designation)}</b><small>${esc(row.manufacturer)}${row.finish?` · ${esc(row.finish)}`:""}</small></td>
+        <td>${esc(row.leadTime||"—")}</td>
+        <td>${row.qty}</td>
+        <td>${euro(row.unit)}</td>
+        ${showDiscountColumn?`<td>${row.discount?`${row.discount.toLocaleString("fr-FR",{maximumFractionDigits:1})}%`:"—"}</td>`:""}
+        <td>${euro(row.netUnit*row.qty)}</td>
+      </tr>`;
+    }).join("") || `<tr><td colspan="${columnCount}">Aucun produit sélectionné.</td></tr>`;
 
     html+=`<section class="page quote-page ${showDiscountColumn?"quote-with-discount":"quote-without-discount"}">
       <div class="quote-topline"></div>
@@ -2960,34 +3003,14 @@ function quotePages(startNo){
         <div><div class="section-kicker">DEVIS · ${esc(state.project.name||"PROJET CLIENT")}</div><h2>Récapitulatif de la sélection${pages>1?` · ${pg+1}/${pages}`:""}</h2><p>${esc(state.project.client||"")}${state.project.location?` · ${esc(state.project.location)}`:""}</p></div>
         <div class="quote-brand">Hydropolis${salespersonContactLine()?`<small>${salespersonProfile()?[salespersonProfile().name,salespersonProfile().title,salespersonProfile().phone,salespersonProfile().email].filter(Boolean).map(esc).join("<br>"):""}</small>`:""}</div>
       </div>
-
       <table class="quote-table">
-        <thead>
-          <tr>
-            <th>Pièce</th>
-            ${state.showSupplierReferences!==false?`<th>Référence</th>`:""}
-            <th>Désignation</th>
-            <th>Délai</th>
-            <th>Qté</th>
-            <th>PU HT</th>
-            ${showDiscountColumn?`<th>Remise</th>`:""}
-            <th>Total HT</th>
-          </tr>
-        </thead>
-        <tbody>${chunk.map(row=>`
-          <tr>
-            <td>${esc(row.room)}</td>
-            ${state.showSupplierReferences!==false?`<td>${esc(row.reference||"—")}</td>`:""}
-            <td><b>${esc(row.designation)}</b><small>${esc(row.manufacturer)}${row.finish?` · ${esc(row.finish)}`:""}</small></td>
-            <td>${esc(row.leadTime||"—")}</td>
-            <td>${row.qty}</td>
-            <td>${euro(row.unit)}</td>
-            ${showDiscountColumn?`<td>${row.discount?`${row.discount.toLocaleString("fr-FR",{maximumFractionDigits:1})}%`:"—"}</td>`:""}
-            <td>${euro(row.netUnit*row.qty)}</td>
-          </tr>`).join("") || `<tr><td colspan="${emptyColspan}">Aucun produit sélectionné.</td></tr>`}
-        </tbody>
+        <thead><tr>
+          ${state.showSupplierReferences!==false?`<th>Référence</th>`:""}
+          <th>Désignation</th><th>Délai</th><th>Qté</th><th>PU HT</th>
+          ${showDiscountColumn?`<th>Remise</th>`:""}<th>Total HT</th>
+        </tr></thead>
+        <tbody>${quoteBody}</tbody>
       </table>
-
       ${last?`<div class="quote-totals">
         <div><span>Sous-total tarif HT</span><b>${euro(f.list)}</b></div>
         ${f.discountAmount>0.005?`<div class="quote-discount"><span>Total remises commerciales</span><b>− ${euro(f.discountAmount)}</b></div>`:""}
@@ -2997,12 +3020,10 @@ function quotePages(startNo){
         <div><span>TVA ${f.vatRate.toLocaleString("fr-FR",{maximumFractionDigits:1})}%</span><b>${euro(f.vat)}</b></div>
         <div class="quote-grand-total"><span>GRAND TOTAL TTC</span><b>${euro(f.ttc)}</b></div>
       </div>`:""}
-
       <div class="quote-bottom"><span>${salespersonContactLine()?`Maison Hydropolis · ${salespersonContactLine(" · ")}`:"Maison Hydropolis"}</span><span>Prix exprimés en euros · devis récapitulatif</span></div>
       <div class="page-no">${no++}</div>
     </section>`;
   }
-
   return {html,nextNo:no};
 }
 
