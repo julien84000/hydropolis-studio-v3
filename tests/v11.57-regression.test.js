@@ -84,3 +84,11 @@ test('Gessi functional hierarchy preserves the 16,211 tariff variants',()=>{
   assert.match(appSource,/productType:\$\("#typeFilter"\)/,'renderCatalog must filter on productType');
   assert.match(appSource,/filterValues\("productType"/,'dependent filters must derive types from the selected collection/category');
 });
+
+
+test('Excel export remains defined and uses the structured quote rows',()=>{
+  assert.match(appSource,/function exportExcel\(\)\{/,'Excel export function must exist');
+  assert.match(appSource,/const rows=quoteRows\(\)\.map/,'Excel export must derive from the same quote rows');
+  assert.match(appSource,/"Marge brute ligne HT"/,'Excel costing columns must be preserved');
+  assert.match(appSource,/function downloadBlob\(/,'Excel download helper must exist');
+});
