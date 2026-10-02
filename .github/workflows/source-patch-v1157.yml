@@ -3,14 +3,13 @@ name: source-patch-v1157
 on:
   push:
     branches:
-      - fix/v11.57-sira-pdf-audit
+      - "fix/v11.57-sira-pdf-audit"
 
 permissions:
   contents: write
 
 jobs:
   patch-and-validate:
-    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -19,8 +18,9 @@ jobs:
           fetch-depth: 0
 
       - name: Apply direct source corrections
-        shell: python
+        shell: bash
         run: |
+          python - <<'PY'
           from pathlib import Path
           import re
 
@@ -56,135 +56,131 @@ jobs:
           if '// PDF_IMAGE_PRELOAD_V1157' not in source:
               pattern=r'async function waitForDocumentImages\(timeoutMs=5000\)\{.*?\n\}\nasync function exportClientPdf\(\)\{.*?\n\}\n\nfunction exportJson'
               replacement=r'''// PDF_IMAGE_PRELOAD_V1157
-async function waitForDocumentImages(timeoutMs=5000){
-  const imgs=[...document.querySelectorAll("#document img")];
-  if(!imgs.length)return {failed:[],timedOut:false,total:0};
+          async function waitForDocumentImages(timeoutMs=5000){
+            const imgs=[...document.querySelectorAll("#document img")];
+            if(!imgs.length)return {failed:[],timedOut:false,total:0};
 
-  const results=await Promise.all(imgs.map(img=>new Promise(resolve=>{
-    let settled=false;
-    let timer=null;
-    const cleanup=()=>{
-      if(timer)clearTimeout(timer);
-      img.removeEventListener("load",onLoad);
-      img.removeEventListener("error",onError);
-    };
-    const finish=async reason=>{
-      if(settled)return;
-      settled=true;
-      cleanup();
+            const results=await Promise.all(imgs.map(img=>new Promise(resolve=>{
+              let settled=false;
+              let timer=null;
+              const cleanup=()=>{
+                if(timer)clearTimeout(timer);
+                img.removeEventListener("load",onLoad);
+                img.removeEventListener("error",onError);
+              };
+              const finish=async reason=>{
+                if(settled)return;
+                settled=true;
+                cleanup();
+                if(reason==="load" && img.naturalWidth>0 && typeof img.decode==="function"){
+                  try{
+                    await Promise.race([
+                      img.decode(),
+                      new Promise((_,reject)=>setTimeout(()=>reject(new Error("decode timeout")),1000))
+                    ]);
+                  }catch{}
+                }
+                const intentionallyHidden=img.hidden||!!img.closest?.("[hidden]");
+                const ok=img.naturalWidth>0||intentionallyHidden;
+                resolve({img,ok,reason:ok?"ready":reason});
+              };
+              const onLoad=()=>finish("load");
+              const onError=()=>setTimeout(()=>finish("error"),0);
+              if(img.complete){
+                finish(img.naturalWidth>0?"load":"error");
+                return;
+              }
+              img.addEventListener("load",onLoad,{once:true});
+              img.addEventListener("error",onError,{once:true});
+              timer=setTimeout(()=>finish("timeout"),timeoutMs);
+            })));
 
-      if(reason==="load" && img.naturalWidth>0 && typeof img.decode==="function"){
-        try{
-          await Promise.race([
-            img.decode(),
-            new Promise((_,reject)=>setTimeout(()=>reject(new Error("decode timeout")),1000))
-          ]);
-        }catch{}
-      }
+            const failed=results.filter(r=>!r.ok).map(r=>r.img);
+            return {
+              failed,
+              timedOut:results.some(r=>!r.ok&&r.reason==="timeout"),
+              total:imgs.length
+            };
+          }
+          async function exportClientPdf(){
+            if(!validateRecorFeet(true)){
+              showView("project");
+              return;
+            }
 
-      const intentionallyHidden=img.hidden||!!img.closest?.("[hidden]");
-      const ok=img.naturalWidth>0||intentionallyHidden;
-      resolve({img,ok,reason:ok?"ready":reason});
-    };
-    const onLoad=()=>finish("load");
-    const onError=()=>setTimeout(()=>finish("error"),0);
+            showView("preview");
+            buildDocument();
 
-    if(img.complete){
-      finish(img.naturalWidth>0?"load":"error");
-      return;
-    }
+            const btns=[$("#printBtn"),$("#exportPdfTopBtn")].filter(Boolean);
+            btns.forEach(b=>{b.disabled=true;b.dataset.oldText=b.textContent;b.textContent="Préparation du PDF…";});
 
-    img.addEventListener("load",onLoad,{once:true});
-    img.addEventListener("error",onError,{once:true});
-    timer=setTimeout(()=>finish("timeout"),timeoutMs);
-  })));
+            const oldTitle=document.title;
+            const safeName=String(state.project?.name||"Dossier client Hydropolis")
+              .replace(/[\\/:*?"<>|]+/g," ")
+              .replace(/\s+/g," ")
+              .trim();
+            document.title=`${safeName} - Hydropolis`;
 
-  const failed=results.filter(r=>!r.ok).map(r=>r.img);
-  return {
-    failed,
-    timedOut:results.some(r=>!r.ok&&r.reason==="timeout"),
-    total:imgs.length
-  };
-}
-async function exportClientPdf(){
-  if(!validateRecorFeet(true)){
-    showView("project");
-    return;
-  }
+            let restored=false;
+            let printStarted=false;
+            const restore=()=>{
+              if(restored)return;
+              restored=true;
+              document.body.classList.remove("pdf-exporting");
+              document.title=oldTitle;
+              btns.forEach(b=>{b.disabled=false;b.textContent=b.dataset.oldText||"Exporter PDF";});
+              window.removeEventListener("afterprint",restore);
+            };
 
-  // The document is rebuilt immediately before export so the PDF always
-  // reflects the latest project data.
-  showView("preview");
-  buildDocument();
+            try{
+              if(document.fonts?.ready)await Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,1500))]);
+              const preload=await waitForDocumentImages(6000);
+              if(preload.failed.length){
+                const reason=preload.timedOut
+                  ?"certaines images n’ont pas fini de charger"
+                  :"certaines images sont indisponibles";
+                throw new Error(`${preload.failed.length} image(s) du dossier ne sont pas prêtes (${reason}). Vérifiez l’aperçu puis réessayez.`);
+              }
 
-  const btns=[$("#printBtn"),$("#exportPdfTopBtn")].filter(Boolean);
-  btns.forEach(b=>{b.disabled=true;b.dataset.oldText=b.textContent;b.textContent="Préparation du PDF…";});
+              document.body.classList.add("pdf-exporting");
+              await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+              window.addEventListener("afterprint",restore,{once:true});
+              printStarted=true;
+              try{
+                window.print();
+              }catch(e){
+                printStarted=false;
+                throw e;
+              }
+            }finally{
+              if(!printStarted){
+                restore();
+              }else{
+                setTimeout(()=>{
+                  if(document.body.classList.contains("pdf-exporting"))restore();
+                },10000);
+              }
+            }
+          }
 
-  const oldTitle=document.title;
-  const safeName=String(state.project?.name||"Dossier client Hydropolis")
-    .replace(/[\\/:*?"<>|]+/g," ")
-    .replace(/\s+/g," ")
-    .trim();
-  document.title=`${safeName} - Hydropolis`;
-
-  let restored=false;
-  let printStarted=false;
-  const restore=()=>{
-    if(restored)return;
-    restored=true;
-    document.body.classList.remove("pdf-exporting");
-    document.title=oldTitle;
-    btns.forEach(b=>{b.disabled=false;b.textContent=b.dataset.oldText||"Exporter PDF";});
-    window.removeEventListener("afterprint",restore);
-  };
-
-  try{
-    if(document.fonts?.ready)await Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,1500))]);
-    const preload=await waitForDocumentImages(6000);
-    if(preload.failed.length){
-      const reason=preload.timedOut
-        ?"certaines images n’ont pas fini de charger"
-        :"certaines images sont indisponibles";
-      throw new Error(`${preload.failed.length} image(s) du dossier ne sont pas prêtes (${reason}). Vérifiez l’aperçu puis réessayez.`);
-    }
-
-    document.body.classList.add("pdf-exporting");
-    await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
-    window.addEventListener("afterprint",restore,{once:true});
-    printStarted=true;
-    try{
-      window.print();
-    }catch(e){
-      printStarted=false;
-      throw e;
-    }
-  }finally{
-    if(!printStarted){
-      restore();
-    }else{
-      setTimeout(()=>{
-        if(document.body.classList.contains("pdf-exporting"))restore();
-      },10000);
-    }
-  }
-}
-
-function exportJson'''
+          function exportJson'''
               source,new_count=re.subn(pattern,replacement,source,count=1,flags=re.S)
               if new_count!=1:
                   raise SystemExit(f'PDF source block: expected exactly one match, found {new_count}')
 
           path.write_text(source,encoding='utf-8')
+          PY
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
           cache: npm
 
       - run: npm ci
       - run: npm run build
 
       - name: Commit validated source
+        shell: bash
         run: |
           if git diff --quiet -- public/app.js; then
             echo "No source change required"
