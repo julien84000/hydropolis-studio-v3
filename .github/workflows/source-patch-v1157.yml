@@ -1,0 +1,197 @@
+name: source-patch-v1157
+
+on:
+  push:
+    branches:
+      - fix/v11.57-sira-pdf-audit
+
+permissions:
+  contents: write
+
+jobs:
+  patch-and-validate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/v11.57-sira-pdf-audit
+          fetch-depth: 0
+
+      - name: Apply direct source corrections
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          path=Path('public/app.js')
+          source=path.read_text(encoding='utf-8')
+
+          def replace_once(old,new,label):
+              global source
+              count=source.count(old)
+              if count!=1:
+                  raise SystemExit(f'{label}: expected exactly one source block, found {count}')
+              source=source.replace(old,new,1)
+
+          if 'class="dossier-visibility-check"' not in source:
+              replace_once(
+                  '        <div class="article-leadtime-panel">\n          <label>Délai\n',
+                  '        <div class="article-leadtime-panel article-dossier-panel">\n          <label class="drawing-toggle article-dossier-toggle"><input type="checkbox" class="dossier-visibility-check" data-id="${p.id}" ${p.hideFromDossier?"":"checked"}> Afficher dans le dossier photo client</label>\n          <div class="tech">Sans effet sur le devis : l’article y reste toujours présent.</div>\n        </div>\n        <div class="article-leadtime-panel">\n          <label>Délai\n',
+                  'dossier visibility markup'
+              )
+
+              replace_once(
+                  ' $$(".install-check").forEach(ch=>ch.onchange=()=>{let p=state.selected.find(x=>x.id===ch.dataset.id);if(!p)return;p.includeInstallationGuide=ch.checked;saveState();});\n',
+                  ' $$(".install-check").forEach(ch=>ch.onchange=()=>{let p=state.selected.find(x=>x.id===ch.dataset.id);if(!p)return;p.includeInstallationGuide=ch.checked;saveState();});\n $$(".dossier-visibility-check").forEach(ch=>ch.onchange=()=>{\n   const p=state.selected.find(x=>x.id===ch.dataset.id);if(!p)return;\n   p.hideFromDossier=!ch.checked;\n   saveState();\n });\n',
+                  'dossier visibility binding'
+              )
+
+              replace_once(
+                  '      id:p.id,roomId:p.roomId,accessoryFor:p.accessoryFor,\n      image:p.image,images:p.images,pdfImage:p.pdfImage,pdfImages:p.pdfImages,\n',
+                  '      id:p.id,roomId:p.roomId,accessoryFor:p.accessoryFor,hideFromDossier:p.hideFromDossier,\n      image:p.image,images:p.images,pdfImage:p.pdfImage,pdfImages:p.pdfImages,\n',
+                  'dossier visibility persistence'
+              )
+
+          if '// PDF_IMAGE_PRELOAD_V1157' not in source:
+              pattern=r'async function waitForDocumentImages\(timeoutMs=5000\)\{.*?\n\}\nasync function exportClientPdf\(\)\{.*?\n\}\n\nfunction exportJson'
+              replacement=r'''// PDF_IMAGE_PRELOAD_V1157
+async function waitForDocumentImages(timeoutMs=5000){
+  const imgs=[...document.querySelectorAll("#document img")];
+  if(!imgs.length)return {failed:[],timedOut:false,total:0};
+
+  const results=await Promise.all(imgs.map(img=>new Promise(resolve=>{
+    let settled=false;
+    let timer=null;
+    const cleanup=()=>{
+      if(timer)clearTimeout(timer);
+      img.removeEventListener("load",onLoad);
+      img.removeEventListener("error",onError);
+    };
+    const finish=async reason=>{
+      if(settled)return;
+      settled=true;
+      cleanup();
+
+      if(reason==="load" && img.naturalWidth>0 && typeof img.decode==="function"){
+        try{
+          await Promise.race([
+            img.decode(),
+            new Promise((_,reject)=>setTimeout(()=>reject(new Error("decode timeout")),1000))
+          ]);
+        }catch{}
+      }
+
+      const intentionallyHidden=img.hidden||!!img.closest?.("[hidden]");
+      const ok=img.naturalWidth>0||intentionallyHidden;
+      resolve({img,ok,reason:ok?"ready":reason});
+    };
+    const onLoad=()=>finish("load");
+    const onError=()=>setTimeout(()=>finish("error"),0);
+
+    if(img.complete){
+      finish(img.naturalWidth>0?"load":"error");
+      return;
+    }
+
+    img.addEventListener("load",onLoad,{once:true});
+    img.addEventListener("error",onError,{once:true});
+    timer=setTimeout(()=>finish("timeout"),timeoutMs);
+  })));
+
+  const failed=results.filter(r=>!r.ok).map(r=>r.img);
+  return {
+    failed,
+    timedOut:results.some(r=>!r.ok&&r.reason==="timeout"),
+    total:imgs.length
+  };
+}
+async function exportClientPdf(){
+  if(!validateRecorFeet(true)){
+    showView("project");
+    return;
+  }
+
+  // The document is rebuilt immediately before export so the PDF always
+  // reflects the latest project data.
+  showView("preview");
+  buildDocument();
+
+  const btns=[$("#printBtn"),$("#exportPdfTopBtn")].filter(Boolean);
+  btns.forEach(b=>{b.disabled=true;b.dataset.oldText=b.textContent;b.textContent="Préparation du PDF…";});
+
+  const oldTitle=document.title;
+  const safeName=String(state.project?.name||"Dossier client Hydropolis")
+    .replace(/[\\/:*?"<>|]+/g," ")
+    .replace(/\s+/g," ")
+    .trim();
+  document.title=`${safeName} - Hydropolis`;
+
+  let restored=false;
+  let printStarted=false;
+  const restore=()=>{
+    if(restored)return;
+    restored=true;
+    document.body.classList.remove("pdf-exporting");
+    document.title=oldTitle;
+    btns.forEach(b=>{b.disabled=false;b.textContent=b.dataset.oldText||"Exporter PDF";});
+    window.removeEventListener("afterprint",restore);
+  };
+
+  try{
+    if(document.fonts?.ready)await Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,1500))]);
+    const preload=await waitForDocumentImages(6000);
+    if(preload.failed.length){
+      const reason=preload.timedOut
+        ?"certaines images n’ont pas fini de charger"
+        :"certaines images sont indisponibles";
+      throw new Error(`${preload.failed.length} image(s) du dossier ne sont pas prêtes (${reason}). Vérifiez l’aperçu puis réessayez.`);
+    }
+
+    document.body.classList.add("pdf-exporting");
+    await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+    window.addEventListener("afterprint",restore,{once:true});
+    printStarted=true;
+    try{
+      window.print();
+    }catch(e){
+      printStarted=false;
+      throw e;
+    }
+  }finally{
+    if(!printStarted){
+      restore();
+    }else{
+      setTimeout(()=>{
+        if(document.body.classList.contains("pdf-exporting"))restore();
+      },10000);
+    }
+  }
+}
+
+function exportJson'''
+              source,new_count=re.subn(pattern,replacement,source,count=1,flags=re.S)
+              if new_count!=1:
+                  raise SystemExit(f'PDF source block: expected exactly one match, found {new_count}')
+
+          path.write_text(source,encoding='utf-8')
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
+
+      - name: Commit validated source
+        run: |
+          if git diff --quiet -- public/app.js; then
+            echo "No source change required"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/app.js
+          git commit -m "fix: control client dossier visibility and PDF image readiness"
+          git push origin HEAD:fix/v11.57-sira-pdf-audit
