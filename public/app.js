@@ -1624,6 +1624,288 @@ function updateDependentFilters(resetCollection=false,resetCategory=false,resetF
   const productType=typeEl?.value||"";
   fillSelect("finishFilter",filterValues("finish",{manufacturer,collection,category,productType}),!resetFinish);
 }
+function renderBrandRail(){
+  const host=$("#brandRail");if(!host)return;
+  const current=$("#manufacturerFilter")?.value||"";
+  const makers=[...new Set(CATALOG.map(p=>p.manufacturer).filter(Boolean))]
+    .sort((a,b)=>String(a).localeCompare(String(b),"fr",{sensitivity:"base"}));
+  host.innerHTML=["",...makers].map(m=>`<button type="button" class="brand-chip ${m===current?"active":""}" data-maker="${esc(m)}">${esc(m||"Toutes les marques")}<small>${(m?CATALOG.filter(p=>p.manufacturer===m).length:CATALOG.length).toLocaleString("fr-FR")}</small></button>`).join("");
+  $$(".brand-chip",host).forEach(btn=>btn.onclick=()=>{
+    const maker=btn.dataset.maker||"";
+    $("#searchInput").value="";
+    $("#manufacturerFilter").value=maker;
+    $("#collectionFilter").value="";$("#categoryFilter").value="";$("#finishFilter").value="";
+    updateDependentFilters(true,true,true);syncBrandRail();renderCatalog();
+  });
+}
+
+function syncBrandRail(){
+  const maker=$("#manufacturerFilter")?.value||"";
+  $$(".brand-chip").forEach(b=>b.classList.toggle("active",(b.dataset.maker||"")===maker));
+}
+
+function renderV11Overview(activeView=""){
+  const bar=$("#v11ProjectBar");if(!bar)return;
+  const currentView=activeView || $$(".view").find(v=>v.classList.contains("active"))?.id?.replace("view-","") || "catalog";
+  bar.classList.toggle("hidden",["projects","dashboard","favorites","compare","exports"].includes(currentView));
+  const f=projectFinancials();
+  const name=String(state.project?.name||"Projet sans nom").trim()||"Projet sans nom";
+  const client=String(state.project?.client||"—").trim()||"—";
+  const location=String(state.project?.location||"").trim();
+  const sales=String(cloud.user?.name||"—").trim()||"—";
+  if($("#v11ActiveProject"))$("#v11ActiveProject").textContent=name;
+  if($("#v11ClientKpi"))$("#v11ClientKpi").textContent=client;
+  if($("#v11SalesKpi"))$("#v11SalesKpi").textContent=sales;
+  if($("#v11TotalKpi"))$("#v11TotalKpi").textContent=`${euro(f.net)} HT`;
+  if($("#v11DiscountKpi"))$("#v11DiscountKpi").textContent=f.discountRate?`− ${Number(f.discountRate).toLocaleString("fr-FR",{maximumFractionDigits:1})} %`:`0 %`;
+  if($("#v11MarginKpi"))$("#v11MarginKpi").textContent=f.productsNet?`${Number(f.marginOnSales).toLocaleString("fr-FR",{maximumFractionDigits:1})} % · ${euro(f.margin)}`:"—";
+  if($("#v11ProjectHeroName"))$("#v11ProjectHeroName").textContent=name;
+  if($("#v11ProjectHeroMeta"))$("#v11ProjectHeroMeta").textContent=[client,location].filter(x=>x&&x!=="—").join(" · ")||"Projet Hydropolis";
+}
+
+function updateNetworkStatus(){
+  const online=navigator.onLine!==false;
+  const el=$("#networkStatus");if(el){el.textContent=online?"En ligne":"Hors connexion";el.classList.toggle("offline",!online);el.classList.toggle("online",online)}
+  const note=$("#searchModeNote");if(note)note.textContent=online?"Catalogue local + index serveur · cache actif":"Mode hors connexion · cache local";
+}
+
+function availabilityInfo(p){
+  const lead=String(p?.leadTime||"").trim();
+  if(lead)return {label:`Délai ${lead}`,cls:"order"};
+  const status=String(p?.status||"").trim();
+  if(status && /catalog/i.test(status))return {label:"Au catalogue · stock à confirmer",cls:"available"};
+  if(status)return {label:`${status} · stock à confirmer`,cls:"order"};
+  return {label:"Disponibilité à confirmer",cls:"unknown"};
+}
+
+function productFromCompareKey(key){
+  return catalogIndex.get(key) || serverSearchRows.find(p=>productKey(p)===key) || null;
+}
+
+function productFromCatalogSources(ref,key=""){
+  const wantedKey=String(key||"");
+  if(wantedKey){
+    const keyed=catalogIndex.get(wantedKey) || serverSearchRows.find(p=>productKey(p)===wantedKey);
+    if(keyed)return keyed;
+  }
+  const wantedRef=String(ref||"");
+  return catalogIndex.reference(wantedRef) || serverSearchRows.find(p=>p.reference===wantedRef) || null;
+}
+
+function dashboardProductImage(p){
+  if(!p)return "";
+  const c=cachedManufacturerImage(p);
+  return c?.src||p.image||"";
+}
+
+function findDashboardProduct(predicate){
+  return CATALOG.find(p=>predicate(p)&&dashboardProductImage(p)) || CATALOG.find(predicate) || CATALOG.find(p=>dashboardProductImage(p)) || CATALOG[0] || null;
+}
+
+function renderDashboardEcosystem(){
+  const host=$("#dashboardCategories");
+  if(!host)return;
+  const defs=[
+    ["Robinetterie","robinetterie",p=>/robinetterie/i.test(p.category||"")],
+    ["Baignoires","baignoire",p=>/baignoire/i.test(p.category||"")],
+    ["Douches","douche",p=>/douche/i.test(p.category||"")],
+    ["Accessoires","accessoires",p=>/accessoires/i.test(p.category||"")]
+  ];
+  host.innerHTML=defs.map(([label,query,pred])=>{
+    const rows=CATALOG.filter(pred),p=findDashboardProduct(pred),img=dashboardProductImage(p);
+    return `<button type="button" class="dashboard-category-card" data-dashboard-query="${esc(query)}">${img?`<img src="${esc(img)}" alt="">`:`<div class="dashboard-category-placeholder"></div>`}<span><b>${esc(label)}</b><small>${rows.length.toLocaleString("fr-FR")} produits →</small></span></button>`;
+  }).join("");
+  $$(".dashboard-category-card",host).forEach(btn=>btn.onclick=()=>{
+    const label=btn.dataset.dashboardQuery||"";
+    showView("catalog");
+    const q=$("#searchInput");if(q){q.value=label;renderCatalog()}
+  });
+
+  const inspHost=$("#dashboardInspirations");
+  if(inspHost){
+    const inspirations=[
+      ["Laiton brossé","Laiton brossé",p=>/laiton|gold|brass/i.test(p.finish||"")],
+      ["Minimaliste","Lavabo",p=>/lavabo/i.test(p.category||"")],
+      ["Douche spa","Douche",p=>/douche/i.test(p.category||"")],
+      ["Bain sculptural","Baignoire",p=>/baignoire|bain/i.test(p.category||"")]
+    ];
+    inspHost.innerHTML=inspirations.map(([title,q,pred])=>{const p=findDashboardProduct(pred),img=dashboardProductImage(p);return `<button type="button" class="dashboard-inspiration-card" data-inspiration-query="${esc(q)}">${img?`<img src="${esc(img)}" alt="">`:""}<span><b>${esc(title)}</b><small>${p?esc(`${p.manufacturer} · ${p.collection||p.reference}`):"Explorer le catalogue"}</small></span></button>`}).join("");
+    $$(".dashboard-inspiration-card",inspHost).forEach(btn=>btn.onclick=()=>{showView("catalog");const q=$("#searchInput");if(q){q.value=btn.dataset.inspirationQuery||"";renderCatalog()}});
+  }
+
+  const spot=$("#dashboardSpotlight");
+  if(spot){
+    const p=(state.selected||[]).find(isRealSelectedProduct) || findDashboardProduct(x=>/lavabo|robinetterie/i.test(x.category||""));
+    if(!p){spot.innerHTML='<div class="empty">Le catalogue est en cours de chargement.</div>'}
+    else{
+      const img=dashboardProductImage(p),key=productKey(p),fav=favoriteRefs.has(key);
+      spot.innerHTML=`<div class="dashboard-spotlight-media">${img?`<img src="${esc(img)}" alt="${esc(p.reference)}">`:""}<button class="dashboard-heart ${fav?"active":""}" data-fav-key="${esc(key)}">${fav?"♥":"♡"}</button></div><div class="dashboard-spotlight-copy"><div class="eyebrow">${esc(p.manufacturer)}</div><h3>${esc(p.collection||p.reference)}</h3><p>${esc(p.designation||"")}</p><small>${esc(p.finish||"")}</small><div class="dashboard-spotlight-actions"><strong>${euro(catalogDisplayPrice(p))} HT</strong><button class="btn primary" id="dashboardSpotlightAdd">Ajouter au projet</button></div></div>`;
+      const favBtn=spot.querySelector("[data-fav-key]");if(favBtn)favBtn.onclick=()=>toggleFavorite(key);
+      const add=spot.querySelector("#dashboardSpotlightAdd");if(add)add.onclick=()=>addCatalogProduct(p.reference,$("#targetRoom")?.value||state.rooms[0]?.id||"",key);
+    }
+  }
+  if($("#dashboardProjectName"))$("#dashboardProjectName").textContent=String(state.project?.name||"Projet sans nom").trim()||"Projet sans nom";
+  if($("#dashboardCatalogKpi"))$("#dashboardCatalogKpi").textContent=CATALOG.length.toLocaleString("fr-FR");
+  if($("#dashboardFavoritesKpi"))$("#dashboardFavoritesKpi").textContent=String(favoriteRefs.size);
+}
+
+function favoriteProductRows(){return [...favoriteRefs].map(productFromCompareKey).filter(Boolean)}
+
+function renderFavoritesView(){
+  const host=$("#favoritesGrid");if(!host)return;
+  const rows=favoriteProductRows();
+  host.innerHTML=rows.map(p=>{const img=dashboardProductImage(p),key=productKey(p),avail=availabilityInfo(p);return `<article class="favorite-card"><div class="favorite-media">${img?`<img src="${esc(img)}" alt="">`:""}<button class="dashboard-heart active favorite-remove" data-key="${esc(key)}">♥</button></div><div class="favorite-copy"><div class="eyebrow">${esc(p.manufacturer)}</div><h3>${esc(p.reference)}</h3><p>${esc(p.designation||"")}</p><small>${esc(p.finish||"")}</small><div class="availability ${avail.cls}">${esc(avail.label)}</div><div class="favorite-actions"><strong>${euro(catalogDisplayPrice(p))} HT</strong><button class="btn ghost favorite-compare" data-key="${esc(key)}">Comparer</button><button class="btn primary favorite-add" data-ref="${esc(p.reference)}" data-key="${esc(key)}">Ajouter</button></div></div></article>`}).join("")||'<div class="empty favorites-empty">Aucun favori pour le moment. Ajoutez des produits depuis le catalogue.</div>';
+  $$(".favorite-remove",host).forEach(b=>b.onclick=()=>toggleFavorite(b.dataset.key));
+  $$(".favorite-compare",host).forEach(b=>b.onclick=()=>toggleCompare(b.dataset.key));
+  $$(".favorite-add",host).forEach(b=>b.onclick=()=>addCatalogProduct(b.dataset.ref,$("#targetRoom")?.value||state.rooms[0]?.id||"",b.dataset.key||""));
+}
+
+function renderCompareView(){
+  const host=$("#compareViewGrid");if(!host)return;
+  const items=[...compareRefs].map(productFromCompareKey).filter(Boolean);
+  if(!items.length){host.innerHTML='<div class="empty">Sélectionnez des produits dans le catalogue avec le bouton « Comparer ».</div>';return}
+  const columns=items.length;
+  const row=(label,fn)=>`<div class="compare-view-label">${esc(label)}</div>${items.map(p=>`<div class="compare-view-cell">${fn(p)}</div>`).join("")}`;
+  host.style.setProperty("--compare-columns",columns);
+  host.innerHTML=`<div class="compare-view-table" style="--compare-columns:${columns}">${row("Produit",p=>{const img=dashboardProductImage(p);return `<div class="compare-view-product">${img?`<img src="${esc(img)}" alt="">`:""}<b>${esc(p.manufacturer)}</b><strong>${esc(p.reference)}</strong><small>${esc(p.designation||"")}</small></div>`})}${row("Prix public HT",p=>`<strong class="compare-price">${euro(catalogDisplayPrice(p))}</strong>`)}${row("Collection",p=>esc(p.collection||"—"))}${row("Finition",p=>esc(p.finish||"—"))}${row("Catégorie",p=>esc(p.category||"—"))}${row("Disponibilité",p=>esc(availabilityInfo(p).label))}${row("Action",p=>`<button class="btn primary compare-view-add" data-ref="${esc(p.reference)}" data-key="${esc(productKey(p))}">Ajouter au projet</button>`)}</div>`;
+  $$(".compare-view-add",host).forEach(b=>b.onclick=()=>addCatalogProduct(b.dataset.ref,$("#targetRoom")?.value||state.rooms[0]?.id||"",b.dataset.key||""));
+}
+
+function openDashboardSearch(){
+  const input=$("#dashboardSearchInput"),value=String(input?.value||"").trim();
+  showView("catalog");
+  if($("#searchInput"))$("#searchInput").value=value;
+  renderCatalog();
+}
+
+
+function renderCompareDock(){
+  const dock=$("#compareDock");if(!dock)return;
+  const items=[...compareRefs].map(productFromCompareKey).filter(Boolean);
+  dock.classList.toggle("hidden",!items.length);
+  if(!items.length){dock.innerHTML="";return}
+  dock.innerHTML=`<b>${items.length}/4 à comparer</b><div class="compare-dock-list">${items.map(p=>`<span class="compare-chip">${esc(p.manufacturer)} · ${esc(p.reference)}</span>`).join("")}</div><button class="btn ghost" id="clearCompareBtn">Vider</button><button class="btn primary" id="openCompareBtn" ${items.length<2?"disabled":""}>Comparer</button>`;
+  $("#clearCompareBtn").onclick=()=>{compareRefs.clear();renderCompareDock();renderCompareView();renderCatalog()};
+  $("#openCompareBtn").onclick=()=>showView("compare");
+}
+
+function toggleCompare(key){
+  if(compareRefs.has(key))compareRefs.delete(key);else{
+    if(compareRefs.size>=4){alert("Le comparatif accepte jusqu’à 4 produits.");return}
+    compareRefs.add(key);
+  }
+  renderCompareDock();renderCompareView();renderCatalog();
+}
+
+function openCompareModal(){
+  const items=[...compareRefs].map(productFromCompareKey).filter(Boolean);
+  if(items.length<2)return;
+  const modal=$("#compareModal");if(!modal)return;
+  const prices=items.map(p=>catalogDisplayPrice(p)).filter(Number.isFinite);
+  const min=prices.length?Math.min(...prices):null;
+  const row=(label,fn,opts={})=>`<div class="compare-cell compare-label">${esc(label)}</div>${items.map(p=>{const v=fn(p);const best=opts.bestPrice&&catalogDisplayPrice(p)===min?" compare-best":"";return `<div class="compare-cell${best}">${v}</div>`}).join("")}`;
+  modal.style.setProperty("--compare-count",items.length);
+  modal.innerHTML=`<div class="compare-sheet"><div class="compare-head"><div><div class="eyebrow">Comparatif produits</div><h2>${items.length} références côte à côte</h2></div><button class="btn ghost" id="closeCompareBtn">Fermer</button></div><div class="compare-grid" style="--compare-count:${items.length}">${row("Produit",p=>{const c=cachedManufacturerImage(p),img=c?.src||p.image||"";return `<div class="compare-product">${img?`<img src="${esc(img)}" alt="">`:""}<strong>${esc(p.manufacturer)} · ${esc(p.reference)}</strong><small>${esc(p.designation)}</small></div>`})}${row("Prix public HT",p=>`<span class="compare-price">${euro(catalogDisplayPrice(p))}</span>`,{bestPrice:true})}${row("Collection",p=>esc(p.collection||"—"))}${row("Finition",p=>esc(p.finish||"—"))}${row("Catégorie",p=>esc(p.category||"—"))}${row("Disponibilité",p=>esc(availabilityInfo(p).label))}${row("Source tarif",p=>esc([p.source,p.sourceYear].filter(Boolean).join(" · ")||"—"))}${row("Action",p=>`<button class="btn primary compare-add" data-ref="${esc(p.reference)}" data-key="${esc(productKey(p))}">Ajouter au projet</button>`)}</div></div>`;
+  modal.classList.remove("hidden");modal.setAttribute("aria-hidden","false");
+  $("#closeCompareBtn").onclick=()=>{modal.classList.add("hidden");modal.setAttribute("aria-hidden","true")};
+  modal.onclick=e=>{if(e.target===modal)$("#closeCompareBtn").click()};
+  $$(".compare-add",modal).forEach(b=>b.onclick=()=>addCatalogProduct(b.dataset.ref,$("#targetRoom")?.value||state.rooms[0]?.id,b.dataset.key||""));
+}
+
+function similarityWords(value){return new Set(String(value||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").split(/[^a-z0-9]+/).filter(w=>w.length>3));}
+
+function smartAlternativesFor(p,limit=5){
+  if(!p)return [];
+  const words=similarityWords(p.designation);
+  const basePrice=catalogDisplayPrice(p);
+  return CATALOG.filter(x=>x!==p&&x.reference!==p.reference&&x.category===p.category).map(x=>{
+    let score=5;
+    if(x.collection===p.collection)score+=4;
+    if(x.manufacturer===p.manufacturer)score+=2;else score+=1.4;
+    if(x.finish&&p.finish&&x.finish===p.finish)score+=2.2;
+    const xWords=similarityWords(x.designation);let common=0;words.forEach(w=>{if(xWords.has(w))common++});score+=Math.min(4,common*1.2);
+    const price=catalogDisplayPrice(x);if(basePrice>0&&price>0){const ratio=Math.abs(price-basePrice)/basePrice;score+=Math.max(0,3-ratio*6)}
+    return {x,score};
+  }).sort((a,b)=>b.score-a.score).slice(0,limit).map(o=>o.x);
+}
+
+function showSuggestionsForKey(key){
+  const p=productFromCompareKey(key);const panel=$("#smartSuggestionPanel");if(!p||!panel)return;
+  const alts=smartAlternativesFor(p,5);
+  panel.classList.remove("hidden");
+  panel.innerHTML=`<div class="smart-suggestion-head"><div><div class="eyebrow">Suggestions intelligentes</div><b>Alternatives à ${esc(p.manufacturer)} ${esc(p.reference)}</b></div><button class="tiny" id="closeSuggestions">Fermer</button></div><div class="smart-suggestion-grid">${alts.map(x=>{const c=cachedManufacturerImage(x),img=c?.src||x.image||"";return `<div class="smart-alt">${img?`<img src="${esc(img)}" alt="">`:`<div></div>`}<div><strong>${esc(x.manufacturer)} · ${esc(x.reference)}</strong><small>${esc(x.designation)} · ${euro(catalogDisplayPrice(x))} HT</small><div class="smart-alt-actions"><button class="btn ghost alt-compare" data-key="${esc(productKey(x))}">Comparer</button><button class="btn primary alt-add" data-ref="${esc(x.reference)}" data-key="${esc(productKey(x))}">Ajouter</button></div></div></div>`}).join("")||"<div class=\"empty\">Aucune alternative assez proche dans les catalogues chargés.</div>"}</div>`;
+  $("#closeSuggestions").onclick=()=>panel.classList.add("hidden");
+  $$(".alt-compare",panel).forEach(b=>b.onclick=()=>toggleCompare(b.dataset.key));
+  $$(".alt-add",panel).forEach(b=>b.onclick=()=>addCatalogProduct(b.dataset.ref,$("#targetRoom")?.value||state.rooms[0]?.id,b.dataset.key||""));
+}
+
+function currentSearchSignature(){
+  return JSON.stringify({q:$("#searchInput")?.value||"",manufacturer:$("#manufacturerFilter")?.value||"",collection:$("#collectionFilter")?.value||"",category:$("#categoryFilter")?.value||"",finish:$("#finishFilter")?.value||""});
+}
+
+function scheduleServerSearch(){
+  if(navigator.onLine===false||catalogReady)return;
+  const sig=currentSearchSignature();if(sig===serverSearchSignature)return;
+  clearTimeout(serverSearchTimer);
+  serverSearchTimer=setTimeout(()=>requestServerSearch(sig),180);
+}
+async function requestServerSearch(sig){
+  const filters=JSON.parse(sig);if(!filters.q.trim() && !filters.manufacturer && !filters.collection && !filters.category && !filters.finish){serverSearchRows=[];serverSearchSignature=sig;return}
+  const seq=++serverSearchSeq;
+  try{
+    const qs=new URLSearchParams({...filters,limit:"120"});
+    const data=await apiFetch(`/api/catalog/search?${qs}`);
+    if(seq!==serverSearchSeq||sig!==currentSearchSignature()||catalogReady)return;
+    serverSearchRows=Array.isArray(data.items)?data.items:[];serverSearchSignature=sig;
+    const note=$("#searchModeNote");if(note)note.textContent=`Recherche fédérée · ${Number(data.total||serverSearchRows.length).toLocaleString("fr-FR")} résultat(s) index serveur`;
+    renderCatalog();
+  }catch(e){
+    if(seq!==serverSearchSeq)return;
+    const note=$("#searchModeNote");if(note)note.textContent="Index serveur indisponible · catalogue local/cache utilisés";
+  }
+}
+
+async function requestServerSearch(sig){
+  const filters=JSON.parse(sig);if(!filters.q.trim() && !filters.manufacturer && !filters.collection && !filters.category && !filters.finish){serverSearchRows=[];serverSearchSignature=sig;return}
+  const seq=++serverSearchSeq;
+  try{
+    const qs=new URLSearchParams({...filters,limit:"120"});
+    const data=await apiFetch(`/api/catalog/search?${qs}`);
+    if(seq!==serverSearchSeq||sig!==currentSearchSignature()||catalogReady)return;
+    serverSearchRows=Array.isArray(data.items)?data.items:[];serverSearchSignature=sig;
+    const note=$("#searchModeNote");if(note)note.textContent=`Recherche fédérée · ${Number(data.total||serverSearchRows.length).toLocaleString("fr-FR")} résultat(s) index serveur`;
+    renderCatalog();
+  }catch(e){
+    if(seq!==serverSearchSeq)return;
+    const note=$("#searchModeNote");if(note)note.textContent="Index serveur indisponible · catalogue local/cache utilisés";
+  }
+}
+
+function registerOfflineSupport(){
+  updateNetworkStatus();
+  window.addEventListener("online",()=>{updateNetworkStatus();scheduleServerSearch();if(cloud.currentProjectId&&cloud.dirty)updateCloudStatus("Connexion rétablie · brouillon local à synchroniser")});
+  window.addEventListener("offline",()=>{updateNetworkStatus();if(cloud.currentProjectId)updateCloudStatus("Mode hors connexion · brouillon local")});
+  if("serviceWorker" in navigator)navigator.serviceWorker.register("/sw.js").catch(e=>console.warn("[service worker]",e));
+}
+
+
+function updateCatalogSidebar(){
+  const makers=[...new Set(CATALOG.map(x=>x.manufacturer).filter(Boolean))]
+    .sort((a,b)=>String(a).localeCompare(String(b),"fr",{sensitivity:"base"}));
+  const manufacturerCount=$("#manufacturerCount");
+  const catalogCount=$("#catalogCount");
+  const manufacturerList=$("#manufacturerList");
+  const imageCount=$("#imageCount");
+
+  if(manufacturerCount)manufacturerCount.textContent=`${makers.length} fabricant${makers.length>1?"s":""} actif${makers.length>1?"s":""}`;
+  if(catalogCount)catalogCount.textContent=`${CATALOG.length.toLocaleString("fr-FR")} références`;
+  if(manufacturerList)manufacturerList.textContent=makers.join(" · ");
+  if(imageCount){
+    const photoRefs=CATALOG.filter(x=>x.image).length;
+    imageCount.textContent=photoRefs?`${photoRefs.toLocaleString("fr-FR")} références avec visuel catalogue`:"Photos fabricant recherchées à la demande";
+  }
+}
+
 function initFilters(){
  fillSelect("manufacturerFilter",valuesFor("manufacturer"),false);
  updateDependentFilters(false);

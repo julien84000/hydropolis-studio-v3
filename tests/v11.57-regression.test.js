@@ -92,3 +92,10 @@ test('Excel export remains defined and uses the structured quote rows',()=>{
   assert.match(appSource,/"Marge brute ligne HT"/,'Excel costing columns must be preserved');
   assert.match(appSource,/function downloadBlob\(/,'Excel download helper must exist');
 });
+
+
+test('Core dashboard/catalogue helpers remain present after V11.57 refactor',()=>{
+  for(const name of ['renderBrandRail', 'syncBrandRail', 'renderV11Overview', 'updateNetworkStatus', 'availabilityInfo', 'productFromCompareKey', 'productFromCatalogSources', 'dashboardProductImage', 'findDashboardProduct', 'renderDashboardEcosystem', 'favoriteProductRows', 'renderFavoritesView', 'renderCompareView', 'openDashboardSearch', 'renderCompareDock', 'toggleCompare', 'openCompareModal', 'similarityWords', 'smartAlternativesFor', 'showSuggestionsForKey', 'currentSearchSignature', 'scheduleServerSearch', 'requestServerSearch', 'registerOfflineSupport', 'updateCatalogSidebar']){
+    assert.match(appSource,new RegExp('function\\s+'+name+'\\s*\\('),name+' must remain defined');
+  }
+});
