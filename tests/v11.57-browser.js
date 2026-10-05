@@ -43,6 +43,11 @@ const check=(name,value)=>{assert.ok(value,name);report.checks.push(name);};
     await page.addInitScript(token=>localStorage.setItem('hydropolis-auth-token',token),auth.token);
     await page.goto(base,{waitUntil:'domcontentloaded'});
     await page.waitForFunction(()=>typeof CATALOG!=='undefined'&&CATALOG.length>0&&state?.rooms?.length,{timeout:30000});
+    await page.waitForFunction(()=>{
+      const gessiCount=CATALOG.filter(p=>p.manufacturer==='Gessi').length;
+      const maker=document.querySelector('#manufacturerFilter');
+      return gessiCount===16211 && !!maker && [...maker.options].some(o=>o.value==='Gessi');
+    },{timeout:30000});
 
     const gessi=await page.evaluate(()=>{
       const manufacturer=document.querySelector('#manufacturerFilter');
@@ -67,7 +72,6 @@ const check=(name,value)=>{assert.ok(value,name);report.checks.push(name);};
       const matching=scoped.filter(p=>!selectedType||p.productType===selectedType);
       return {manufacturer:manufacturer.value,collection:collection.value,category:category.value,categories,types,rawTypes,finishes,selectedType,matching:matching.length,scoped:scoped.length};
     });
-    console.log("GESSI_DIAGNOSTIC",JSON.stringify(gessi));
     check('Gessi Anello expose la catégorie Lavabo',gessi.categories.includes('Lavabo'));
     check('Gessi Lavabo expose un niveau Type',gessi.types.length>0);
     check('Gessi Anello Lavabo retourne des références',gessi.matching>0);
