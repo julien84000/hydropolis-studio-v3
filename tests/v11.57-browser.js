@@ -99,7 +99,7 @@ const check=(name,value)=>{assert.ok(value,name);report.checks.push(name);};
       return {
         hidden:!!p?.hideFromDossier,
         inQuote:quoteRows().some(r=>r.sourceId===id),
-        inDossier:selectedProductsForDocument().some(x=>x.id===id)
+        inDossier:selectedProductsForDocument(p?.roomId).some(x=>x.id===id)
       };
     },target.id);
     check('état initial cohérent',!before.hidden&&before.inQuote&&before.inDossier);
