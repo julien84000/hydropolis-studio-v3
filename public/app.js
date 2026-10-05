@@ -1865,21 +1865,7 @@ async function requestServerSearch(sig){
   }
 }
 
-async function requestServerSearch(sig){
-  const filters=JSON.parse(sig);if(!filters.q.trim() && !filters.manufacturer && !filters.collection && !filters.category && !filters.finish){serverSearchRows=[];serverSearchSignature=sig;return}
-  const seq=++serverSearchSeq;
-  try{
-    const qs=new URLSearchParams({...filters,limit:"120"});
-    const data=await apiFetch(`/api/catalog/search?${qs}`);
-    if(seq!==serverSearchSeq||sig!==currentSearchSignature()||catalogReady)return;
-    serverSearchRows=Array.isArray(data.items)?data.items:[];serverSearchSignature=sig;
-    const note=$("#searchModeNote");if(note)note.textContent=`Recherche fédérée · ${Number(data.total||serverSearchRows.length).toLocaleString("fr-FR")} résultat(s) index serveur`;
-    renderCatalog();
-  }catch(e){
-    if(seq!==serverSearchSeq)return;
-    const note=$("#searchModeNote");if(note)note.textContent="Index serveur indisponible · catalogue local/cache utilisés";
-  }
-}
+
 
 function registerOfflineSupport(){
   updateNetworkStatus();
@@ -4430,6 +4416,7 @@ function initPreviewParallax(){
 // PDF_IMAGE_PRELOAD_V1157
 async function waitForDocumentImages(timeoutMs=5000){
   const imgs=[...document.querySelectorAll("#document img")];
+  timeoutMs=Math.max(1,Math.min(30000,Number(timeoutMs)||5000));
   if(!imgs.length)return {failed:[],timedOut:false,total:0};
 
   const results=await Promise.all(imgs.map(img=>new Promise(resolve=>{
@@ -4444,20 +4431,22 @@ async function waitForDocumentImages(timeoutMs=5000){
       if(settled)return;
       settled=true;
       cleanup();
+      let decodeTimer;
       if(reason==="load" && img.naturalWidth>0 && typeof img.decode==="function"){
         try{
           await Promise.race([
             img.decode(),
-            new Promise((_,reject)=>setTimeout(()=>reject(new Error("decode timeout")),1000))
+            new Promise((_,reject)=>{decodeTimer=setTimeout(()=>reject(new Error("decode timeout")),Math.min(timeoutMs,1000));})
           ]);
-        }catch{}
+        }catch{reason="decode-error";}finally{clearTimeout(decodeTimer);}
       }
       const intentionallyHidden=img.hidden||!!img.closest?.("[hidden]");
-      const ok=img.naturalWidth>0||intentionallyHidden;
+      const ok=(reason==="load"&&img.complete&&img.naturalWidth>0)||intentionallyHidden;
       resolve({img,ok,reason:ok?"ready":reason});
     };
     const onLoad=()=>finish("load");
     const onError=()=>setTimeout(()=>finish("error"),0);
+    img.loading="eager";
     if(img.complete){
       finish(img.naturalWidth>0?"load":"error");
       return;

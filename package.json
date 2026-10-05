@@ -1,13 +1,13 @@
 {
   "name": "hydropolis-studio-v3",
-  "version": "11.56.1",
+  "version": "11.57.0",
   "private": true,
   "description": "Hydropolis Studio — catalogue, projets et visuels fabricants",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "check": "node tests/check-syntax.js",
-    "test": "node verify-release.js && node --test tests/consolidated.test.js tests/v11.57-regression.test.js",
+    "test": "node verify-release.js && node --test tests/consolidated.test.js tests/v11.57-regression.test.js tests/pdf-readiness.test.js",
     "build": "npm run check && npm test",
     "test:browser": "node tests/browser-consolidated.js && node tests/v11.57-browser.js",
     "test:live": "node tests/live-assets.js"

@@ -37,7 +37,7 @@ const check=(name,value)=>{assert.ok(value,name);report.checks.push(name);};
     }).then(r=>r.json());
     check('auth locale',!!auth.token);
 
-    browser=await chromium.launch({headless:true});
+    browser=await chromium.launch({headless:true,...(process.env.CHROMIUM_PATH?{executablePath:process.env.CHROMIUM_PATH}:{})});
     const page=await browser.newPage({viewport:{width:1440,height:1000},serviceWorkers:'block'});
     page.on('pageerror',e=>report.errors.push(e.message));
     await page.addInitScript(token=>localStorage.setItem('hydropolis-auth-token',token),auth.token);
@@ -112,7 +112,7 @@ const check=(name,value)=>{assert.ok(value,name);report.checks.push(name);};
       return {
         hidden:!!p?.hideFromDossier,
         inQuote:quoteRows().some(r=>r.sourceId===id),
-        inDossier:selectedProductsForDocument().some(x=>x.id===id)
+        inDossier:selectedProductsForDocument(p?.roomId).some(x=>x.id===id)
       };
     },target.id);
     check('article masqué du dossier',after.hidden&&!after.inDossier);
