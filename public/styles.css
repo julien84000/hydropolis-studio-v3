@@ -19,7 +19,7 @@ button,input,select,textarea{font:inherit}.shell{display:grid;grid-template-colu
 .manual-add{display:grid;grid-template-columns:1fr 140px auto;gap:8px}.manual-list{margin-top:7px}.manual-item{display:grid;grid-template-columns:1fr auto auto;gap:10px;padding:7px 0;border-top:1px solid #e9e3d8;font-size:12px}
 .room-empty{padding:14px;color:var(--muted);font-size:12px;border:1px dashed var(--line);border-radius:10px}
 .mini-room{font-size:10px;color:var(--gold);font-weight:800;margin-top:5px}
-@media(max-width:900px){.room-head,.room-product,.manual-add{grid-template-columns:1fr}.result{grid-template-columns:80px 1fr}.price-box{grid-column:2}.catalog-thumb{width:80px;height:80px}}
+@media(max-width:900px){.room-head,.manual-add{grid-template-columns:1fr}.result{grid-template-columns:80px 1fr}.price-box{grid-column:2}.catalog-thumb{width:80px;height:80px}}
 
 /* V2.2 — A4 paysage + redimensionnement image homogène */
 .page{width:297mm;height:210mm}
@@ -1585,101 +1585,6 @@ button,input,select,textarea{font:inherit}.shell{display:grid;grid-template-colu
 
 
 /* =========================================================
-   V8.1 — correction affichage Projet par pièce (colonnes à droite)
-   ========================================================= */
-.room-product{
-  grid-template-columns:85px minmax(360px,1fr) 175px 175px 150px 38px !important;
-  align-items:start !important;
-}
-.room-product > *{
-  min-width:0;
-}
-.room-product > div:nth-child(2){
-  min-width:0;
-}
-.room-product .price-total{
-  min-width:0;
-  align-self:start;
-  text-align:right;
-  line-height:1.35;
-  word-break:break-word;
-}
-.article-leadtime-panel,
-.article-discount-panel{
-  min-width:0 !important;
-  width:100%;
-  box-sizing:border-box;
-  align-self:start;
-}
-.article-leadtime-panel input,
-.article-discount-line input{
-  width:100%;
-  min-width:0 !important;
-  box-sizing:border-box;
-}
-.article-discount-line{
-  display:grid;
-  grid-template-columns:minmax(0,1fr) auto auto;
-}
-.image-actions{
-  max-width:100%;
-}
-.image-actions a,
-.image-actions .tech,
-.image-actions .drawing-toggle{
-  min-width:0;
-}
-.basin-accessories,
-.recor-bath-options,
-.room-inline-warning{
-  grid-column:2 / -1 !important;
-  width:auto;
-  min-width:0;
-}
-@media (max-width: 1500px){
-  .room-product{
-    grid-template-columns:85px minmax(280px,1fr) 165px 165px 135px 38px !important;
-    gap:10px;
-  }
-}
-@media (max-width: 1260px){
-  .room-product{
-    grid-template-columns:85px minmax(0,1fr) 150px 38px !important;
-  }
-  .article-leadtime-panel,
-  .article-discount-panel,
-  .room-product .price-total{
-    grid-column:2 / 4;
-    justify-self:start;
-    text-align:left;
-    max-width:340px;
-  }
-  .basin-accessories,
-  .recor-bath-options,
-  .room-inline-warning{
-    grid-column:1 / -1 !important;
-  }
-}
-@media (max-width: 900px){
-  .room-product{
-    grid-template-columns:1fr !important;
-  }
-  .room-prod-img{
-    width:100%;
-    max-width:140px;
-  }
-  .room-product .price-total,
-  .article-leadtime-panel,
-  .article-discount-panel,
-  .basin-accessories,
-  .recor-bath-options,
-  .room-inline-warning{
-    grid-column:auto !important;
-    max-width:none;
-  }
-}
-
-/* =========================================================
    V9.0 — multi-utilisateurs & projets serveur
    ========================================================= */
 .hidden{display:none!important}
@@ -2261,16 +2166,29 @@ label{font-size:10px;color:#74716c;font-weight:600}
 .v11-project-hero{margin:2px 0 15px}.v11-back-projects{border:0;background:transparent;padding:0;color:#777;font-size:10px;cursor:pointer;margin-bottom:7px}.v11-project-hero-row{display:flex;justify-content:space-between;align-items:flex-end;gap:20px}.v11-project-hero h2{font-family:Georgia,serif;font-size:28px;font-weight:500;margin:0;letter-spacing:-.03em}.v11-project-hero p{font-size:11px;color:#8b8984;margin:4px 0 0}.v11-status-pill{display:inline-flex;align-items:center;gap:6px;padding:7px 11px;background:#fff;border:1px solid rgba(45,40,32,.08);border-radius:999px;font-size:9px}.v11-status-pill i{width:7px;height:7px;border-radius:50%;background:#2aad64}
 .v11-project-info-grid{grid-template-columns:1fr 1fr;gap:12px;margin-bottom:13px}.v11-project-info-grid .card{margin-bottom:0;min-height:290px}.drop{height:198px;border-color:rgba(45,40,32,.12);background:#f9f8f5}
 .room-titlebar{margin:19px 0 10px}.room-titlebar h2{margin:2px 0 0;font-size:21px}.room-titlebar>div>span{font-size:9px!important}
-.rooms{grid-template-columns:repeat(auto-fit,minmax(520px,1fr));gap:12px;align-items:start}
-.room-card{padding:14px;margin:0!important}
-.room-head{display:grid!important;grid-template-columns:minmax(0,1fr) auto auto auto!important;gap:8px;align-items:center;margin-bottom:11px;padding-bottom:10px;border-bottom:1px solid rgba(45,40,32,.07)}
+.rooms{grid-template-columns:repeat(auto-fit,minmax(min(100%,520px),1fr));gap:12px;align-items:start}
+.room-card{padding:14px;margin:0!important;min-width:0}
+.room-head{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,.7fr) auto auto!important;gap:8px;align-items:center;margin-bottom:11px;padding-bottom:10px;border-bottom:1px solid rgba(45,40,32,.07)}
 .room-title-stack{min-width:0}.room-title-stack .room-title{font-family:Georgia,serif;font-size:17px;border:0!important;padding:2px 0;background:transparent;font-weight:500}.room-title-stack .room-sub{border:0!important;padding:2px 0;background:transparent;color:#92908b;font-size:9px}.room-title-stack>span{display:block;font-size:8px;color:#aaa;margin-top:2px}
 .room-total{text-align:right;white-space:nowrap}.room-total small{display:block;color:#aaa;font-size:7.5px}.room-total b{font-size:11px}
 .room-products{gap:8px}
 .room-product{
-  grid-template-columns:78px minmax(220px,1fr) 122px 122px 112px 32px!important;
+  grid-template-columns:78px minmax(0,1fr) 32px;
   gap:8px!important;align-items:start!important;border:1px solid rgba(45,40,32,.075)!important;border-radius:11px;padding:9px!important;background:#fff;
 }
+.room-head>*{min-width:0;max-width:100%}
+.room-product>*{min-width:0;overflow-wrap:anywhere}
+.room-product>.del-prod{grid-column:3;grid-row:1}
+.room-product-controls{grid-column:1 / -1;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:8px;align-items:start}
+.room-product-controls>*{min-width:0;max-width:100%;box-sizing:border-box}
+.room-product-controls .article-leadtime-panel,.room-product-controls .article-discount-panel{min-width:0;width:100%}
+.room-product-controls input{min-width:0;max-width:100%;box-sizing:border-box}
+.room-product-controls input[type="checkbox"]{width:auto;flex:none}
+.article-discount-line{display:grid;grid-template-columns:minmax(0,1fr) auto auto}
+.article-discount-line input{width:100%}
+.room-product .image-actions>*{min-width:0;max-width:100%}
+.room-product .drawing-toggle{white-space:normal}
+.room-product .editor-file-row input{max-width:100%;min-width:0}
 .room-prod-img{width:78px;height:78px;border-radius:9px;background:#f8f7f4}
 .room-product>div:nth-child(2)>b{font-size:10px;line-height:1.3}.room-product .tech{font-size:7.5px;line-height:1.35;color:#999}
 .article-leadtime-panel,.article-discount-panel{background:#faf9f7;border:1px solid rgba(45,40,32,.06);border-radius:8px;padding:7px;font-size:8px}.article-leadtime-panel label,.article-discount-panel label{font-size:8px}.article-leadtime-panel input,.article-discount-panel input{font-size:9px;padding:6px}
@@ -2278,7 +2196,7 @@ label{font-size:10px;color:#74716c;font-weight:600}
 .article-editor{margin-top:6px;border-radius:8px;border-color:rgba(45,40,32,.07)!important}.article-editor summary{font-size:8px;padding:6px 8px;color:#786648}.article-editor-grid{grid-template-columns:1fr!important}.editor-file-label{grid-column:auto}.article-editor-actions{padding-bottom:7px}
 .image-actions{gap:4px!important;margin-top:6px}.image-actions .tiny,.image-actions a,.image-actions .drawing-toggle,.image-actions .tech{font-size:7.3px!important;line-height:1.2}.image-actions .tiny{padding:4px 5px}
 .basin-accessories,.recor-bath-options,.room-inline-warning{grid-column:2 / -1!important}
-.manual-zone{margin-top:10px;background:#faf9f7;border:1px solid rgba(45,40,32,.06);padding:9px}.manual-zone>b{font-size:9px}.manual-add{grid-template-columns:1fr 105px auto;gap:6px}.manual-add input{font-size:9px;padding:7px}.manual-item{font-size:9px}
+.manual-zone{margin-top:10px;background:#faf9f7;border:1px solid rgba(45,40,32,.06);padding:9px}.manual-zone>b{font-size:9px}.manual-add{grid-template-columns:minmax(0,1fr) minmax(60px,105px) auto;gap:6px}.manual-add>*{min-width:0}.manual-add input{font-size:9px;padding:7px}.manual-item{font-size:9px}
 
 /* Marge */
 .commercial-grid{gap:12px!important}.commercial-settings,.commercial-summary,.margin-detail-card{border-radius:16px!important}.margin-kpis{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}.margin-kpi{border-radius:12px!important;background:#fafafa!important;border-color:rgba(45,40,32,.07)!important}.margin-kpi strong{font-family:Georgia,serif;font-weight:500}
@@ -2301,12 +2219,10 @@ label{font-size:10px;color:#74716c;font-weight:600}
 @media(max-width:1120px){
   .catalog-layout{grid-template-columns:1fr}.basket{position:static}
   .v11-projectbar{grid-template-columns:repeat(3,1fr)}.v11-project-context{grid-column:1/-1}.v11-kpi:nth-child(2){border-left:0}
-  .room-product{grid-template-columns:78px minmax(0,1fr) 120px 32px!important}
-  .article-leadtime-panel,.article-discount-panel,.room-product .price-total{grid-column:2 / 4!important;max-width:none!important;text-align:left!important}
 }
 @media(max-width:850px){
   .shell{grid-template-columns:1fr}.sidebar{position:relative;height:auto}.v11-nav-stack{grid-template-columns:repeat(2,1fr)}
-  .v11-topbar{position:relative}.v11-projectbar{margin:10px 16px}.view{padding:0 16px 30px}.results{grid-template-columns:1fr}.v11-filters{grid-template-columns:1fr 1fr}.v11-project-info-grid{grid-template-columns:1fr}.room-product{grid-template-columns:1fr!important}.room-prod-img{width:120px;height:120px}.room-head{grid-template-columns:1fr auto!important}.room-total{grid-row:2}.go-cat{grid-row:2}.v11-projectbar{grid-template-columns:1fr 1fr}.v11-project-context{grid-column:1/-1}.head-actions{flex-wrap:wrap;justify-content:flex-end}
+  .v11-topbar{position:relative}.v11-projectbar{margin:10px 16px}.view{padding:0 16px 30px}.results{grid-template-columns:1fr}.v11-filters{grid-template-columns:1fr 1fr}.v11-project-info-grid{grid-template-columns:1fr}.room-prod-img{width:78px;height:78px}.room-head{grid-template-columns:1fr auto!important}.room-total{grid-row:2}.go-cat{grid-row:2}.v11-projectbar{grid-template-columns:1fr 1fr}.v11-project-context{grid-column:1/-1}.head-actions{flex-wrap:wrap;justify-content:flex-end}
 }
 
 /* preserve exact A4 export regardless of application redesign */
