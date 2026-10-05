@@ -86,6 +86,11 @@ function selectSira(data,p){
   const exact=!!v?.verified,image=exact?v.image:data.generic;
   return {...empty('Sira Concrete',p),productUrl:data.productUrl,title:data.title,image,images:exact?v.images:(image?[image]:[]),colors:data.colors,officialReference:v?.sku||'',variationId:exact?v.variationId:null,finishCode:code,finishMatch:image?(exact?'exact':'generic'):'unavailable',technicalSheetUrl:data.technicalSheetUrl,installationGuideUrl:data.installationGuideUrl,note:exact?'':image?'Visuel officiel générique ; pigment non garanti.':'Visuel officiel indisponible.'};
 }
+function fallbackSiraModel(model,p){
+  const image=imageUrl(model?.image,model?.productUrl,'sira');
+  const code=String(p.color||p.finishCode||p.siraConfiguration?.color||'').toUpperCase();
+  return {...empty('Sira Concrete',p),productUrl:model?.productUrl||'',title:model?.officialTitle||model?.name||'',image,images:image?[image]:[],finishCode:code,finishMatch:image?'generic':'unavailable',note:image?'Visuel officiel générique ; pigment non garanti.':'Visuel officiel indisponible.'};
+}
 function parseGessiArticle(json,article){
   const product=json?.data?.product;
   if(String(product?.productId)!==article)throw Error('Article Gessi incohérent');
@@ -145,8 +150,14 @@ class ManufacturerAssetResolver {
     const url=p.productUrl||p.siraConfiguration?.productUrl||p.manufacturerUrl;
     const model=siraModels.find(x=>x.productUrl===url||x.code===p.modelCode);
     if(!model)return empty('Sira Concrete',p);
-    const data=await this.caches.sira.resolve(model.code,()=>this.pool(async()=>parseSiraPage(await this.read(model.productUrl,'sira'),model.productUrl)));
-    return selectSira(data,p);
+    try{
+      const data=await this.caches.sira.resolve(model.code,()=>this.pool(async()=>parseSiraPage(await this.read(model.productUrl,'sira'),model.productUrl)));
+      return selectSira(data,p);
+    }catch(e){
+      const fallback=fallbackSiraModel(model,p);
+      if(fallback.image)return fallback;
+      throw e;
+    }
   }
   async gessi(p){
     const article=String(p.reference||'').split('#')[0];if(!/^\d{4,8}$/.test(article))return empty('Gessi',p);
@@ -200,4 +211,4 @@ function install(app,{assertPublic,validateRemote,legacy,request}={}){
   return resolver;
 }
 module.exports=install;
-Object.assign(module.exports,{ManufacturerAssetResolver,matchAlpi,parseAlpiPopup,parseSiraPage,selectSira,parseGessiArticle,selectGessi,legacyResult,hostAllowed,streamImage});
+Object.assign(module.exports,{ManufacturerAssetResolver,matchAlpi,parseAlpiPopup,parseSiraPage,selectSira,fallbackSiraModel,parseGessiArticle,selectGessi,legacyResult,hostAllowed,streamImage});

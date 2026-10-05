@@ -1189,7 +1189,8 @@ function normalizeHotbathAssetUrl(raw,baseUrl){
   if(!href)return null;
   try{
     const u=new URL(href);
-    u.pathname=u.pathname.replace(/\/{2,}/g,"/");
+    // Keep the exact path emitted by Hotbath. Some valid official assets currently
+    // use /documents//ProdCateg/ and return 404 when the double slash is collapsed.
     return u.href;
   }catch{return href}
 }

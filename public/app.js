@@ -1596,12 +1596,13 @@ function fillSelect(id,values,keepValue=true){
 function valuesFor(key,manufacturer=""){
  return [...new Set(CATALOG.filter(p=>!manufacturer||p.manufacturer===manufacturer).map(p=>p[key]).filter(Boolean))];
 }
-function catalogueRowsForFilters({manufacturer="",collection="",category=""}={}){
+function catalogueRowsForFilters({manufacturer="",collection="",category="",productType=""}={}){
   return CATALOG.filter(p=>{
     // This manufacturer test is the non-negotiable first scope for every brand.
     if(manufacturer && p.manufacturer!==manufacturer)return false;
     if(collection && p.collection!==collection)return false;
     if(category && p.category!==category)return false;
+    if(productType && p.productType!==productType)return false;
     return true;
   });
 }
@@ -1612,53 +1613,17 @@ function filterValues(key,scope={}){
 }
 function updateDependentFilters(resetCollection=false,resetCategory=false,resetFinish=false){
   const manufacturer=$("#manufacturerFilter")?.value||"";
-
-  // COLLECTIONS: only those belonging to the selected manufacturer.
-  fillSelect(
-    "collectionFilter",
-    filterValues("collection",{manufacturer}),
-    !resetCollection
-  );
-
+  fillSelect("collectionFilter",filterValues("collection",{manufacturer}),!resetCollection);
   const collection=$("#collectionFilter")?.value||"";
-
-  // CATEGORIES: manufacturer first, then current collection if selected.
-  fillSelect(
-    "categoryFilter",
-    filterValues("category",{manufacturer,collection}),
-    !resetCategory
-  );
-
+  fillSelect("categoryFilter",filterValues("category",{manufacturer,collection}),!resetCategory);
   const category=$("#categoryFilter")?.value||"";
-
-  // FINISHES: always manufacturer-scoped. Collection/category narrow it further,
-  // but a finish from another manufacturer can never appear.
-  fillSelect(
-    "finishFilter",
-    filterValues("finish",{manufacturer,collection,category}),
-    !resetFinish
-  );
-
-  // Guard against a stale browser value after progressive catalogue loading.
-  const validCollection=new Set(filterValues("collection",{manufacturer}));
-  if($("#collectionFilter")?.value && !validCollection.has($("#collectionFilter").value)){
-    $("#collectionFilter").value="";
-  }
-  const currentCollection=$("#collectionFilter")?.value||"";
-  const validCategory=new Set(filterValues("category",{manufacturer,collection:currentCollection}));
-  if($("#categoryFilter")?.value && !validCategory.has($("#categoryFilter").value)){
-    $("#categoryFilter").value="";
-  }
-  const currentCategory=$("#categoryFilter")?.value||"";
-  const validFinish=new Set(filterValues("finish",{manufacturer,collection:currentCollection,category:currentCategory}));
-  if($("#finishFilter")?.value && !validFinish.has($("#finishFilter").value)){
-    $("#finishFilter").value="";
-  }
+  const typeValues=filterValues("productType",{manufacturer,collection,category});
+  fillSelect("typeFilter",typeValues,!resetFinish);
+  const typeEl=$("#typeFilter");
+  if(typeEl)typeEl.disabled=!typeValues.length;
+  const productType=typeEl?.value||"";
+  fillSelect("finishFilter",filterValues("finish",{manufacturer,collection,category,productType}),!resetFinish);
 }
-
-/* =========================================================
-   V11.13 — interface, recherche multi-sources & comparaison
-   ========================================================= */
 function renderBrandRail(){
   const host=$("#brandRail");if(!host)return;
   const current=$("#manufacturerFilter")?.value||"";
@@ -1673,10 +1638,12 @@ function renderBrandRail(){
     updateDependentFilters(true,true,true);syncBrandRail();renderCatalog();
   });
 }
+
 function syncBrandRail(){
   const maker=$("#manufacturerFilter")?.value||"";
   $$(".brand-chip").forEach(b=>b.classList.toggle("active",(b.dataset.maker||"")===maker));
 }
+
 function renderV11Overview(activeView=""){
   const bar=$("#v11ProjectBar");if(!bar)return;
   const currentView=activeView || $$(".view").find(v=>v.classList.contains("active"))?.id?.replace("view-","") || "catalog";
@@ -1695,11 +1662,13 @@ function renderV11Overview(activeView=""){
   if($("#v11ProjectHeroName"))$("#v11ProjectHeroName").textContent=name;
   if($("#v11ProjectHeroMeta"))$("#v11ProjectHeroMeta").textContent=[client,location].filter(x=>x&&x!=="—").join(" · ")||"Projet Hydropolis";
 }
+
 function updateNetworkStatus(){
   const online=navigator.onLine!==false;
   const el=$("#networkStatus");if(el){el.textContent=online?"En ligne":"Hors connexion";el.classList.toggle("offline",!online);el.classList.toggle("online",online)}
   const note=$("#searchModeNote");if(note)note.textContent=online?"Catalogue local + index serveur · cache actif":"Mode hors connexion · cache local";
 }
+
 function availabilityInfo(p){
   const lead=String(p?.leadTime||"").trim();
   if(lead)return {label:`Délai ${lead}`,cls:"order"};
@@ -1708,9 +1677,11 @@ function availabilityInfo(p){
   if(status)return {label:`${status} · stock à confirmer`,cls:"order"};
   return {label:"Disponibilité à confirmer",cls:"unknown"};
 }
+
 function productFromCompareKey(key){
   return catalogIndex.get(key) || serverSearchRows.find(p=>productKey(p)===key) || null;
 }
+
 function productFromCatalogSources(ref,key=""){
   const wantedKey=String(key||"");
   if(wantedKey){
@@ -1720,14 +1691,17 @@ function productFromCatalogSources(ref,key=""){
   const wantedRef=String(ref||"");
   return catalogIndex.reference(wantedRef) || serverSearchRows.find(p=>p.reference===wantedRef) || null;
 }
+
 function dashboardProductImage(p){
   if(!p)return "";
   const c=cachedManufacturerImage(p);
   return c?.src||p.image||"";
 }
+
 function findDashboardProduct(predicate){
   return CATALOG.find(p=>predicate(p)&&dashboardProductImage(p)) || CATALOG.find(predicate) || CATALOG.find(p=>dashboardProductImage(p)) || CATALOG[0] || null;
 }
+
 function renderDashboardEcosystem(){
   const host=$("#dashboardCategories");
   if(!host)return;
@@ -1774,7 +1748,9 @@ function renderDashboardEcosystem(){
   if($("#dashboardCatalogKpi"))$("#dashboardCatalogKpi").textContent=CATALOG.length.toLocaleString("fr-FR");
   if($("#dashboardFavoritesKpi"))$("#dashboardFavoritesKpi").textContent=String(favoriteRefs.size);
 }
+
 function favoriteProductRows(){return [...favoriteRefs].map(productFromCompareKey).filter(Boolean)}
+
 function renderFavoritesView(){
   const host=$("#favoritesGrid");if(!host)return;
   const rows=favoriteProductRows();
@@ -1783,6 +1759,7 @@ function renderFavoritesView(){
   $$(".favorite-compare",host).forEach(b=>b.onclick=()=>toggleCompare(b.dataset.key));
   $$(".favorite-add",host).forEach(b=>b.onclick=()=>addCatalogProduct(b.dataset.ref,$("#targetRoom")?.value||state.rooms[0]?.id||"",b.dataset.key||""));
 }
+
 function renderCompareView(){
   const host=$("#compareViewGrid");if(!host)return;
   const items=[...compareRefs].map(productFromCompareKey).filter(Boolean);
@@ -1793,12 +1770,14 @@ function renderCompareView(){
   host.innerHTML=`<div class="compare-view-table" style="--compare-columns:${columns}">${row("Produit",p=>{const img=dashboardProductImage(p);return `<div class="compare-view-product">${img?`<img src="${esc(img)}" alt="">`:""}<b>${esc(p.manufacturer)}</b><strong>${esc(p.reference)}</strong><small>${esc(p.designation||"")}</small></div>`})}${row("Prix public HT",p=>`<strong class="compare-price">${euro(catalogDisplayPrice(p))}</strong>`)}${row("Collection",p=>esc(p.collection||"—"))}${row("Finition",p=>esc(p.finish||"—"))}${row("Catégorie",p=>esc(p.category||"—"))}${row("Disponibilité",p=>esc(availabilityInfo(p).label))}${row("Action",p=>`<button class="btn primary compare-view-add" data-ref="${esc(p.reference)}" data-key="${esc(productKey(p))}">Ajouter au projet</button>`)}</div>`;
   $$(".compare-view-add",host).forEach(b=>b.onclick=()=>addCatalogProduct(b.dataset.ref,$("#targetRoom")?.value||state.rooms[0]?.id||"",b.dataset.key||""));
 }
+
 function openDashboardSearch(){
   const input=$("#dashboardSearchInput"),value=String(input?.value||"").trim();
   showView("catalog");
   if($("#searchInput"))$("#searchInput").value=value;
   renderCatalog();
 }
+
 
 function renderCompareDock(){
   const dock=$("#compareDock");if(!dock)return;
@@ -1809,6 +1788,7 @@ function renderCompareDock(){
   $("#clearCompareBtn").onclick=()=>{compareRefs.clear();renderCompareDock();renderCompareView();renderCatalog()};
   $("#openCompareBtn").onclick=()=>showView("compare");
 }
+
 function toggleCompare(key){
   if(compareRefs.has(key))compareRefs.delete(key);else{
     if(compareRefs.size>=4){alert("Le comparatif accepte jusqu’à 4 produits.");return}
@@ -1816,6 +1796,7 @@ function toggleCompare(key){
   }
   renderCompareDock();renderCompareView();renderCatalog();
 }
+
 function openCompareModal(){
   const items=[...compareRefs].map(productFromCompareKey).filter(Boolean);
   if(items.length<2)return;
@@ -1830,7 +1811,9 @@ function openCompareModal(){
   modal.onclick=e=>{if(e.target===modal)$("#closeCompareBtn").click()};
   $$(".compare-add",modal).forEach(b=>b.onclick=()=>addCatalogProduct(b.dataset.ref,$("#targetRoom")?.value||state.rooms[0]?.id,b.dataset.key||""));
 }
+
 function similarityWords(value){return new Set(String(value||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").split(/[^a-z0-9]+/).filter(w=>w.length>3));}
+
 function smartAlternativesFor(p,limit=5){
   if(!p)return [];
   const words=similarityWords(p.designation);
@@ -1845,6 +1828,7 @@ function smartAlternativesFor(p,limit=5){
     return {x,score};
   }).sort((a,b)=>b.score-a.score).slice(0,limit).map(o=>o.x);
 }
+
 function showSuggestionsForKey(key){
   const p=productFromCompareKey(key);const panel=$("#smartSuggestionPanel");if(!p||!panel)return;
   const alts=smartAlternativesFor(p,5);
@@ -1854,9 +1838,11 @@ function showSuggestionsForKey(key){
   $$(".alt-compare",panel).forEach(b=>b.onclick=()=>toggleCompare(b.dataset.key));
   $$(".alt-add",panel).forEach(b=>b.onclick=()=>addCatalogProduct(b.dataset.ref,$("#targetRoom")?.value||state.rooms[0]?.id,b.dataset.key||""));
 }
+
 function currentSearchSignature(){
   return JSON.stringify({q:$("#searchInput")?.value||"",manufacturer:$("#manufacturerFilter")?.value||"",collection:$("#collectionFilter")?.value||"",category:$("#categoryFilter")?.value||"",finish:$("#finishFilter")?.value||""});
 }
+
 function scheduleServerSearch(){
   if(navigator.onLine===false||catalogReady)return;
   const sig=currentSearchSignature();if(sig===serverSearchSignature)return;
@@ -1878,48 +1864,16 @@ async function requestServerSearch(sig){
     const note=$("#searchModeNote");if(note)note.textContent="Index serveur indisponible · catalogue local/cache utilisés";
   }
 }
-function toast(msg){const old=$(".export-toast");if(old)old.remove();const el=document.createElement("div");el.className="export-toast";el.textContent=msg;document.body.appendChild(el);setTimeout(()=>el.remove(),2400)}
-function downloadBlob(blob,name){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000)}
-function exportExcel(){
-  const xmlEsc=v=>String(v??"").replace(/[&<>]/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[ch]));
-  const rows=quoteRows().map(row=>{
-    const product=row.manual?null:((Number.isInteger(row.sourceIndex)?(state.selected||[])[row.sourceIndex]:null) || (state.selected||[]).find(p=>p.manufacturer===row.manufacturer&&p.reference===row.reference&&String(p.finish||"")===String(row.finish||"")));
-    const purchaseUnit=product?purchaseCostFor(product):"";
-    const totalNet=Number(row.netUnit||0)*Number(row.qty||1);
-    const totalPurchase=product?Number(purchaseUnit||0)*Number(row.qty||1):"";
-    const margin=product?totalNet-Number(totalPurchase||0):"";
-    const avail=product?availabilityInfo(product).label:"";
-    return [row.room,row.manufacturer,row.reference,row.designation,row.finish,row.qty,Number(row.unit||0),Number(row.discount||0),Number(row.netUnit||0),totalNet,purchaseUnit,totalPurchase,margin,row.leadTime,avail,product?.source||""];
-  });
-  const headers=["Pièce","Fabricant","Référence","Désignation","Finition","Qté","Prix public unitaire HT","Remise client %","Prix net unitaire HT","Total vente HT","Coût achat unitaire HT","Coût achat total HT","Marge brute ligne HT","Délai","Disponibilité","Source"];
-  const numeric=new Set([5,6,7,8,9,10,11,12]);
-  const cell=(v,num=false)=>`<Cell><Data ss:Type="${num&&v!==""?"Number":"String"}">${xmlEsc(v)}</Data></Cell>`;
-  const body=[headers,...rows].map((r,i)=>`<Row>${r.map((v,j)=>cell(v,i>0&&numeric.has(j))).join("")}</Row>`).join("");
-  const f=projectFinancials();
-  const summary=[["Synthèse","Valeur"],["Tarif public produits HT",f.list],["Port fournisseur HT",f.supplierShipping],["dont port Recor automatique HT",f.recorSupplierShipping],["Vente HT",f.net],["Coût achat HT",f.purchase],["Marge brute produits HT",f.margin],["Taux de marque %",f.marginOnSales],["TVA %",f.vatRate],["Total TTC",f.ttc]];
-  const summaryXml=summary.map((r,i)=>`<Row>${r.map((v,j)=>cell(v,i>0&&j===1)).join("")}</Row>`).join("");
-  const xml=`<?xml version="1.0"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"><Worksheet ss:Name="Sélection"><Table>${body}</Table></Worksheet><Worksheet ss:Name="Synthèse"><Table>${summaryXml}</Table></Worksheet></Workbook>`;
-  downloadBlob(new Blob([xml],{type:"application/vnd.ms-excel;charset=utf-8"}),`Hydropolis_${(state.project.name||"Projet").replace(/[^a-z0-9_-]+/gi,"_")}.xls`);toast("Export Excel enrichi généré");
-}
 
-async function loadCanvasImage(src){return new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=reject;im.src=src})}
-async function exportMoodboard(){
-  const items=(state.selected||[]).filter(p=>isRealSelectedProduct(p)&&!p.hideFromDossier).slice(0,12);if(!items.length){alert("Ajoutez des produits avant de générer le moodboard.");return}
-  const canvas=document.createElement("canvas");canvas.width=1800;canvas.height=1200;const ctx=canvas.getContext("2d");ctx.fillStyle="#f5f2ec";ctx.fillRect(0,0,canvas.width,canvas.height);ctx.fillStyle="#1d1d1b";ctx.font="46px Georgia";ctx.fillText(state.project.name||"Hydropolis Studio",70,78);ctx.font="20px Arial";ctx.fillStyle="#777";ctx.fillText([state.project.client,state.project.location].filter(Boolean).join(" · "),72,112);
-  const cols=4, gap=18, top=150, left=70, cardW=(canvas.width-left*2-gap*(cols-1))/cols, cardH=305;
-  for(let i=0;i<items.length;i++){
-    const p=items[i],x=left+(i%cols)*(cardW+gap),y=top+Math.floor(i/cols)*(cardH+gap);ctx.fillStyle="#fff";ctx.fillRect(x,y,cardW,cardH);const c=cachedManufacturerImage(p);const src=p.customImage?p.image:(p.pdfImage||p.image||c?.src||"");
-    if(src){try{const im=await loadCanvasImage(src);const maxW=cardW-32,maxH=205,scale=Math.min(maxW/im.width,maxH/im.height);const w=im.width*scale,h=im.height*scale;ctx.drawImage(im,x+(cardW-w)/2,y+14,w,h)}catch{}}
-    ctx.fillStyle="#222";ctx.font="bold 16px Arial";ctx.fillText(`${p.manufacturer} · ${p.reference}`.slice(0,42),x+16,y+238);ctx.fillStyle="#777";ctx.font="13px Arial";ctx.fillText(String(p.designation||"").slice(0,52),x+16,y+263);ctx.fillText(String(p.finish||"").slice(0,52),x+16,y+286);
-  }
-  canvas.toBlob(blob=>{if(blob){downloadBlob(blob,`Moodboard_${(state.project.name||"Hydropolis").replace(/[^a-z0-9_-]+/gi,"_")}.png`);toast("Moodboard PNG généré")}},"image/png",.94);
-}
+
+
 function registerOfflineSupport(){
   updateNetworkStatus();
   window.addEventListener("online",()=>{updateNetworkStatus();scheduleServerSearch();if(cloud.currentProjectId&&cloud.dirty)updateCloudStatus("Connexion rétablie · brouillon local à synchroniser")});
   window.addEventListener("offline",()=>{updateNetworkStatus();if(cloud.currentProjectId)updateCloudStatus("Mode hors connexion · brouillon local")});
   if("serviceWorker" in navigator)navigator.serviceWorker.register("/sw.js").catch(e=>console.warn("[service worker]",e));
 }
+
 
 function updateCatalogSidebar(){
   const makers=[...new Set(CATALOG.map(x=>x.manufacturer).filter(Boolean))]
@@ -1937,6 +1891,7 @@ function updateCatalogSidebar(){
     imageCount.textContent=photoRefs?`${photoRefs.toLocaleString("fr-FR")} références avec visuel catalogue`:"Photos fabricant recherchées à la demande";
   }
 }
+
 function initFilters(){
  fillSelect("manufacturerFilter",valuesFor("manufacturer"),false);
  updateDependentFilters(false);
@@ -1948,7 +1903,7 @@ function renderRoomSelect(){let cur=$("#targetRoom")?.value||state.rooms[0].id;$
 const productSearchTextCache=new WeakMap();
 function productSearchText(p){
   let text=productSearchTextCache.get(p);
-  if(text===undefined){text=[p.reference,p.base,p.designation,p.collection,p.manufacturer,p.finish,p.category,p.originalDescription,p.marketingDescription].join(" ").toLowerCase();productSearchTextCache.set(p,text)}
+  if(text===undefined){text=[p.reference,p.base,p.designation,p.collection,p.manufacturer,p.finish,p.category,p.productType,p.originalDescription,p.marketingDescription].join(" ").toLowerCase();productSearchTextCache.set(p,text)}
   return text;
 }
 function matches(p,q){const words=String(q||"").toLowerCase().trim().split(/\s+/).filter(Boolean);if(!words.length)return true;const hay=productSearchText(p);return words.every(w=>hay.includes(w));}
@@ -1957,7 +1912,7 @@ function renderCatalog(){
  const results=$("#results"),count=$("#resultCount");if(!results)return;
  try{
    const q=$("#searchInput")?.value||"";
-   const fs={manufacturer:$("#manufacturerFilter")?.value||"",collection:$("#collectionFilter")?.value||"",category:$("#categoryFilter")?.value||"",finish:$("#finishFilter")?.value||""};
+   const fs={manufacturer:$("#manufacturerFilter")?.value||"",collection:$("#collectionFilter")?.value||"",category:$("#categoryFilter")?.value||"",productType:$("#typeFilter")?.value||"",finish:$("#finishFilter")?.value||""};
    const filterEntries=Object.entries(fs);
    const local=catalogIndex.maker(fs.manufacturer).filter(p=>filterEntries.every(([k,v])=>!v||p?.[k]===v)&&matches(p,q));
    const merged=new Map(local.map(p=>[productKey(p),p]));
@@ -2722,13 +2677,25 @@ function commercialManufacturers(){
   return [...new Set(state.selected.map(p=>p.manufacturer).filter(Boolean))].sort((x,y)=>x.localeCompare(y,"fr"));
 }
 
+const QUOTE_SPACE_ORDER={LAVABO:0,DOUCHE:1,BAIN:2,WC:3,AUTRES:4};
+function quoteSpaceForProduct(p){
+  if(!p)return "AUTRES";
+  if(p.requiredRoughIn && p.accessoryFor){
+    const parent=(state.selected||[]).find(x=>x?.id===p.accessoryFor);
+    if(parent)return presentationSpace(parent);
+  }
+  return presentationSpace(p);
+}
+function quoteSpaceLabel(space){return presentationSpaceLabel(space)||"Autres éléments";}
 function quoteEditorRows(){
   const rows=[];
   for(const room of state.rooms||[]){
+    const roomRows=[];
     (state.selected||[]).forEach((p,sourceIndex)=>{
       if(p.roomId!==room.id || !isRealSelectedProduct(p))return;
-      rows.push({
-        kind:"product",sourceIndex,roomId:room.id,room:room.title,
+      const space=quoteSpaceForProduct(p);
+      roomRows.push({
+        kind:"product",sourceIndex,sourceOrder:sourceIndex,roomId:room.id,room:room.title,space,spaceLabel:quoteSpaceLabel(space),
         manufacturer:p.manufacturer||"",finish:p.finish||"",
         reference:quoteLineReference(p),designation:quoteLineDesignation(p),
         leadTime:quoteLineLeadTime(p),qty:itemQuantity(p),
@@ -2737,8 +2704,9 @@ function quoteEditorRows(){
       });
     });
     validManualItemsForRoom(room).forEach((m,manualIndex)=>{
-      rows.push({
-        kind:"manual",manualIndex,roomId:room.id,room:room.title,
+      const space="AUTRES";
+      roomRows.push({
+        kind:"manual",manualIndex,sourceOrder:100000+manualIndex,roomId:room.id,room:room.title,space,spaceLabel:quoteSpaceLabel(space),
         manufacturer:"Élément libre",finish:"",
         reference:manualQuoteReference(m),designation:manualQuoteDesignation(m),
         leadTime:manualQuoteLeadTime(m),qty:manualItemQuantity(m),
@@ -2746,6 +2714,8 @@ function quoteEditorRows(){
         total:manualQuoteNetUnit(m)*manualItemQuantity(m)
       });
     });
+    roomRows.sort((a,b)=>(QUOTE_SPACE_ORDER[a.space]??99)-(QUOTE_SPACE_ORDER[b.space]??99)||a.sourceOrder-b.sourceOrder);
+    rows.push(...roomRows);
   }
   return rows;
 }
@@ -2766,22 +2736,32 @@ function renderQuoteEditor(){
   if(!rows.length){
     host.innerHTML='<div class="margin-empty">Ajoutez des articles au projet pour construire le devis.</div>';
   }else{
+    const bodyRows=[];
+    let lastRoom="",lastSpace="";
+    for(const row of rows){
+      if(row.room!==lastRoom){
+        bodyRows.push('<tr class="qe-room-group"><td colspan="8">'+esc(row.room)+'</td></tr>');
+        lastRoom=row.room;lastSpace="";
+      }
+      if(row.space!==lastSpace){
+        bodyRows.push('<tr class="qe-space-group"><td colspan="8">'+esc(row.spaceLabel)+'</td></tr>');
+        lastSpace=row.space;
+      }
+      const attrs=quoteEditorAttributes(row);
+      bodyRows.push('<tr class="qe-product-row">'+
+        '<td><input class="qe-input qe-ref" '+attrs+' value="'+esc(row.reference)+'"></td>'+
+        '<td><input class="qe-input qe-designation" '+attrs+' value="'+esc(row.designation)+'"><small class="qe-product-meta">'+esc(row.manufacturer)+(row.finish?' · '+esc(row.finish):'')+'</small></td>'+
+        '<td><input class="qe-input qe-lead" '+attrs+' value="'+esc(row.leadTime)+'" placeholder="Délai"></td>'+
+        '<td><input class="qe-input qe-qty" '+attrs+' type="number" min="1" max="999" step="1" value="'+row.qty+'"></td>'+
+        '<td><input class="qe-input qe-unit" '+attrs+' type="number" min="0" step="0.01" value="'+Number(row.unit||0).toFixed(2)+'"></td>'+
+        '<td><div class="qe-percent"><input class="qe-input qe-discount" '+attrs+' type="number" min="0" max="100" step="0.1" value="'+Number(row.discount||0).toFixed(1)+'"><span>%</span></div></td>'+
+        '<td class="qe-total">'+euro(row.total)+'</td>'+
+        '<td><button type="button" class="tiny qe-reset" '+attrs+' title="Réinitialiser cette ligne">↺</button></td>'+
+      '</tr>');
+    }
     host.innerHTML='<div class="quote-editor-wrap"><table class="quote-editor-table">'+
-      '<thead><tr><th>Pièce</th><th>Référence</th><th>Désignation</th><th>Délai</th><th>Qté</th><th>PU HT</th><th>Remise</th><th>Total HT</th><th></th></tr></thead>'+
-      '<tbody>'+rows.map(row=>{
-        const attrs=quoteEditorAttributes(row);
-        return '<tr>'+
-          '<td class="qe-room"><b>'+esc(row.room)+'</b><small>'+esc(row.manufacturer)+(row.finish?' · '+esc(row.finish):'')+'</small></td>'+
-          '<td><input class="qe-input qe-ref" '+attrs+' value="'+esc(row.reference)+'"></td>'+
-          '<td><input class="qe-input qe-designation" '+attrs+' value="'+esc(row.designation)+'"></td>'+
-          '<td><input class="qe-input qe-lead" '+attrs+' value="'+esc(row.leadTime)+'" placeholder="Délai"></td>'+
-          '<td><input class="qe-input qe-qty" '+attrs+' type="number" min="1" max="999" step="1" value="'+row.qty+'"></td>'+
-          '<td><input class="qe-input qe-unit" '+attrs+' type="number" min="0" step="0.01" value="'+Number(row.unit||0).toFixed(2)+'"></td>'+
-          '<td><div class="qe-percent"><input class="qe-input qe-discount" '+attrs+' type="number" min="0" max="100" step="0.1" value="'+Number(row.discount||0).toFixed(1)+'"><span>%</span></div></td>'+
-          '<td class="qe-total">'+euro(row.total)+'</td>'+
-          '<td><button type="button" class="tiny qe-reset" '+attrs+' title="Réinitialiser cette ligne">↺</button></td>'+
-        '</tr>';
-      }).join('')+'</tbody></table></div>';
+      '<thead><tr><th>Référence</th><th>Désignation</th><th>Délai</th><th>Qté</th><th>PU HT</th><th>Remise</th><th>Total HT</th><th></th></tr></thead>'+
+      '<tbody>'+bodyRows.join('')+'</tbody></table></div>';
   }
 
   const commit=(el,key,mode="text")=>{
@@ -2805,12 +2785,10 @@ function renderQuoteEditor(){
   $$(".qe-qty",host).forEach(el=>el.onchange=()=>commit(el,"quantity","qty"));
   $$(".qe-unit",host).forEach(el=>el.onchange=()=>commit(el,"quoteUnitOverride","money"));
   $$(".qe-discount",host).forEach(el=>el.onchange=()=>commit(el,"quoteDiscountOverride","percent"));
-
   $$(".qe-reset",host).forEach(btn=>btn.onclick=()=>{
     const target=quoteEditorTarget(btn);if(!target)return;
     clearQuoteLineOverrides(target);saveState();renderMarginDashboard();
   });
-
   const reset=$("#resetQuoteEditorBtn");
   if(reset)reset.onclick=()=>{
     if(!confirm("Réinitialiser les modifications du devis ? Les quantités du projet seront conservées."))return;
@@ -2909,13 +2887,16 @@ function clientFacingDesignation(p){
 function quoteRows(){
   const rows=[];
   for(const room of state.rooms||[]){
+    const roomRows=[];
     (state.selected||[]).forEach((p,sourceIndex)=>{
       if(p.roomId!==room.id || !isRealSelectedProduct(p))return;
       const qty=itemQuantity(p);
       const unit=quoteLineUnit(p);
       const discount=quoteLineDiscount(p);
-      rows.push({
-        room:room.title,reference:quoteLineReference(p),designation:quoteLineDesignation(p),finish:p.finish||"",
+      const space=quoteSpaceForProduct(p);
+      roomRows.push({
+        room:room.title,roomId:room.id,space,spaceLabel:quoteSpaceLabel(space),sourceOrder:sourceIndex,
+        reference:quoteLineReference(p),designation:quoteLineDesignation(p),finish:p.finish||"",
         manufacturer:p.manufacturer||"",qty,unit,netUnit:unit*(1-discount/100),
         freight:0,leadTime:quoteLineLeadTime(p),manual:false,discount,sourceIndex,sourceId:p.id||""
       });
@@ -2924,35 +2905,52 @@ function quoteRows(){
       const qty=manualItemQuantity(m);
       const unit=manualQuoteUnit(m);
       const discount=manualQuoteDiscount(m);
-      rows.push({
-        room:room.title,reference:manualQuoteReference(m),designation:manualQuoteDesignation(m),finish:"",
+      const space="AUTRES";
+      roomRows.push({
+        room:room.title,roomId:room.id,space,spaceLabel:quoteSpaceLabel(space),sourceOrder:100000+manualIndex,
+        reference:manualQuoteReference(m),designation:manualQuoteDesignation(m),finish:"",
         manufacturer:"Élément libre",qty,unit,netUnit:unit*(1-discount/100),
-        freight:0,leadTime:manualQuoteLeadTime(m),manual:true,discount,roomId:room.id,manualIndex
+        freight:0,leadTime:manualQuoteLeadTime(m),manual:true,discount,manualIndex
       });
     });
+    roomRows.sort((a,b)=>(QUOTE_SPACE_ORDER[a.space]??99)-(QUOTE_SPACE_ORDER[b.space]??99)||a.sourceOrder-b.sourceOrder);
+    rows.push(...roomRows);
   }
   return rows;
 }
 function quotePages(startNo){
   const rows=quoteRows();
   const f=projectFinancials();
-
-  // La colonne "Remise" n'apparaît dans le document client que si
-  // au moins une ligne bénéficie réellement d'une remise commerciale.
   const showDiscountColumn=rows.some(row=>Number(row.discount)>0.0001);
-
-  const perPage=9;
+  const perPage=8;
   const pages=Math.max(1,Math.ceil(rows.length/perPage));
   let html="", no=startNo;
-
-  const emptyColspan=
-    (state.showSupplierReferences!==false?1:0) +
-    6 + // Pièce, Désignation, Délai, Qté, PU HT, Total HT
-    (showDiscountColumn?1:0);
+  const columnCount=(state.showSupplierReferences!==false?1:0)+5+(showDiscountColumn?1:0);
 
   for(let pg=0;pg<pages;pg++){
     const chunk=rows.slice(pg*perPage,(pg+1)*perPage);
     const last=pg===pages-1;
+    let previousRoom="",previousSpace="";
+    const quoteBody=chunk.map(row=>{
+      let prefix="";
+      if(row.room!==previousRoom){
+        prefix+=`<tr class="quote-room-row"><td colspan="${columnCount}">${esc(row.room)}</td></tr>`;
+        previousRoom=row.room;previousSpace="";
+      }
+      if(row.space!==previousSpace){
+        prefix+=`<tr class="quote-space-row"><td colspan="${columnCount}">${esc(row.spaceLabel)}</td></tr>`;
+        previousSpace=row.space;
+      }
+      return prefix+`<tr class="quote-product-row">
+        ${state.showSupplierReferences!==false?`<td>${esc(row.reference||"—")}</td>`:""}
+        <td><b>${esc(row.designation)}</b><small>${esc(row.manufacturer)}${row.finish?` · ${esc(row.finish)}`:""}</small></td>
+        <td>${esc(row.leadTime||"—")}</td>
+        <td>${row.qty}</td>
+        <td>${euro(row.unit)}</td>
+        ${showDiscountColumn?`<td>${row.discount?`${row.discount.toLocaleString("fr-FR",{maximumFractionDigits:1})}%`:"—"}</td>`:""}
+        <td>${euro(row.netUnit*row.qty)}</td>
+      </tr>`;
+    }).join("") || `<tr><td colspan="${columnCount}">Aucun produit sélectionné.</td></tr>`;
 
     html+=`<section class="page quote-page ${showDiscountColumn?"quote-with-discount":"quote-without-discount"}">
       <div class="quote-topline"></div>
@@ -2960,34 +2958,14 @@ function quotePages(startNo){
         <div><div class="section-kicker">DEVIS · ${esc(state.project.name||"PROJET CLIENT")}</div><h2>Récapitulatif de la sélection${pages>1?` · ${pg+1}/${pages}`:""}</h2><p>${esc(state.project.client||"")}${state.project.location?` · ${esc(state.project.location)}`:""}</p></div>
         <div class="quote-brand">Hydropolis${salespersonContactLine()?`<small>${salespersonProfile()?[salespersonProfile().name,salespersonProfile().title,salespersonProfile().phone,salespersonProfile().email].filter(Boolean).map(esc).join("<br>"):""}</small>`:""}</div>
       </div>
-
       <table class="quote-table">
-        <thead>
-          <tr>
-            <th>Pièce</th>
-            ${state.showSupplierReferences!==false?`<th>Référence</th>`:""}
-            <th>Désignation</th>
-            <th>Délai</th>
-            <th>Qté</th>
-            <th>PU HT</th>
-            ${showDiscountColumn?`<th>Remise</th>`:""}
-            <th>Total HT</th>
-          </tr>
-        </thead>
-        <tbody>${chunk.map(row=>`
-          <tr>
-            <td>${esc(row.room)}</td>
-            ${state.showSupplierReferences!==false?`<td>${esc(row.reference||"—")}</td>`:""}
-            <td><b>${esc(row.designation)}</b><small>${esc(row.manufacturer)}${row.finish?` · ${esc(row.finish)}`:""}</small></td>
-            <td>${esc(row.leadTime||"—")}</td>
-            <td>${row.qty}</td>
-            <td>${euro(row.unit)}</td>
-            ${showDiscountColumn?`<td>${row.discount?`${row.discount.toLocaleString("fr-FR",{maximumFractionDigits:1})}%`:"—"}</td>`:""}
-            <td>${euro(row.netUnit*row.qty)}</td>
-          </tr>`).join("") || `<tr><td colspan="${emptyColspan}">Aucun produit sélectionné.</td></tr>`}
-        </tbody>
+        <thead><tr>
+          ${state.showSupplierReferences!==false?`<th>Référence</th>`:""}
+          <th>Désignation</th><th>Délai</th><th>Qté</th><th>PU HT</th>
+          ${showDiscountColumn?`<th>Remise</th>`:""}<th>Total HT</th>
+        </tr></thead>
+        <tbody>${quoteBody}</tbody>
       </table>
-
       ${last?`<div class="quote-totals">
         <div><span>Sous-total tarif HT</span><b>${euro(f.list)}</b></div>
         ${f.discountAmount>0.005?`<div class="quote-discount"><span>Total remises commerciales</span><b>− ${euro(f.discountAmount)}</b></div>`:""}
@@ -2997,12 +2975,10 @@ function quotePages(startNo){
         <div><span>TVA ${f.vatRate.toLocaleString("fr-FR",{maximumFractionDigits:1})}%</span><b>${euro(f.vat)}</b></div>
         <div class="quote-grand-total"><span>GRAND TOTAL TTC</span><b>${euro(f.ttc)}</b></div>
       </div>`:""}
-
       <div class="quote-bottom"><span>${salespersonContactLine()?`Maison Hydropolis · ${salespersonContactLine(" · ")}`:"Maison Hydropolis"}</span><span>Prix exprimés en euros · devis récapitulatif</span></div>
       <div class="page-no">${no++}</div>
     </section>`;
   }
-
   return {html,nextNo:no};
 }
 
@@ -3228,6 +3204,10 @@ function renderRoomsCore(){
           </div>
         </details>
         <div class="image-actions"><button class="tiny enrich-btn" data-id="${p.id}">${p.image?"Actualiser photo + documents":"Chercher photo + documents"}</button>${hotbathNeedsFinishFallback(p)?`<button class="tiny hotbath-web-selected" data-id="${p.id}">Chercher finition web</button>`:""}${hotbathNeedsFinishFallback(p)&&p.remoteImageUrl?`<button class="tiny hotbath-sim-selected" data-id="${p.id}">Simuler ${p.finish||"la finition"}</button>`:""}<a target="_blank" href="${p.resolvedManufacturerUrl||p.manufacturerUrl}">Fiche officielle ↗</a>${technicalSheetHref(p)?`<a target="_blank" class="technical-sheet-link" href="${technicalSheetHref(p)}">${p.customTechnicalSheet?"Fiche personnalisée":(/zucchetti/i.test(p.manufacturer||"")?"Fiche technique complète":"Fiche technique")} ↗</a>${technicalSheetIsPdf(p)&&!/zucchetti/i.test(p.manufacturer||"")?`<label class="drawing-toggle"><input type="checkbox" class="techsheet-check" data-id="${p.id}" ${p.includeTechnicalSheet?"checked":""}> ${/^Ritmonio$/i.test(String(p.manufacturer||""))?"Inclure la Scheda tecnica":"Inclure la fiche technique"}</label>`:""}`:`${/^Ritmonio$/i.test(String(p.manufacturer||""))?`<button class="tiny ritmonio-tech-refresh" data-id="${p.id}">Récupérer la Scheda tecnica</button>`:`<span class="tech">${/lefroy brooks/i.test(p.manufacturer||"")?"Fiche technique Lefroy à récupérer":"Fiche technique à récupérer"}</span>`}`}${installationGuideHref(p)?`<a target="_blank" href="${esc(installationGuideHref(p))}">Notice installation ↗</a><label class="drawing-toggle"><input type="checkbox" class="install-check" data-id="${p.id}" ${p.includeInstallationGuide?"checked":""}> Inclure la notice</label>`:""}${p.drawingUrl?`<a target="_blank" href="${p.drawingUrl}">${/zucchetti/i.test(p.manufacturer||"")?"Dessin technique p.3":"Drawing 2D"} ↗</a>${["pdf","image"].includes(p.drawingType)?`<label class="drawing-toggle"><input type="checkbox" class="drawing-check" data-id="${p.id}" ${p.includeDrawing?"checked":""}> ${/zucchetti/i.test(p.manufacturer||"")?"Inclure le dessin p.3":"Inclure le drawing"}</label>`:`<span class="tech">DWG consultable, non intégrable au PDF</span>`}`:`<span class="tech">Drawing 2D à récupérer</span>`}${p.cadDrawingUrl?`<a target="_blank" href="${p.cadDrawingUrl}">Fichier 2D CAD ↗</a>`:""}${(!p.image && p.fallbackImage)?`<button class="tiny fallback-btn" data-id="${p.id}">Catalogue en secours</button>`:""}</div></div>
+        <div class="article-leadtime-panel article-dossier-panel">
+          <label class="drawing-toggle article-dossier-toggle"><input type="checkbox" class="dossier-visibility-check" data-id="${p.id}" ${p.hideFromDossier?"":"checked"}> Afficher dans le dossier photo client</label>
+          <div class="tech">Sans effet sur le devis : l’article y reste toujours présent.</div>
+        </div>
         <div class="article-leadtime-panel">
           <label>Délai
             <input class="article-leadtime-input" data-id="${p.id}" type="text" placeholder="ex. 3 à 4 semaines" value="${(p.leadTime||"").replace(/"/g,"&quot;")}">
@@ -3296,6 +3276,11 @@ function renderRoomsCore(){
  $$(".drawing-check").forEach(ch=>ch.onchange=()=>{let p=state.selected.find(x=>x.id===ch.dataset.id);if(!p)return;p.includeDrawing=ch.checked;saveState();});
  $$(".techsheet-check").forEach(ch=>ch.onchange=()=>{let p=state.selected.find(x=>x.id===ch.dataset.id);if(!p)return;p.includeTechnicalSheet=ch.checked;saveState();});
  $$(".install-check").forEach(ch=>ch.onchange=()=>{let p=state.selected.find(x=>x.id===ch.dataset.id);if(!p)return;p.includeInstallationGuide=ch.checked;saveState();});
+ $$(".dossier-visibility-check").forEach(ch=>ch.onchange=()=>{
+   const p=state.selected.find(x=>x.id===ch.dataset.id);if(!p)return;
+   p.hideFromDossier=!ch.checked;
+   saveState();
+ });
   $$(".translate-designation-btn").forEach(b=>b.onclick=()=>proposeFrenchDesignation(b));
  $$(".edit-designation").forEach(inp=>inp.oninput=()=>{
    const card=inp.closest(".room-product");
@@ -4428,19 +4413,55 @@ function initPreviewParallax(){
 }
 
 
+// PDF_IMAGE_PRELOAD_V1157
 async function waitForDocumentImages(timeoutMs=5000){
   const imgs=[...document.querySelectorAll("#document img")];
-  if(!imgs.length)return;
-  await Promise.race([
-    Promise.all(imgs.map(img=>{
-      if(img.complete)return Promise.resolve();
-      return new Promise(resolve=>{
-        img.addEventListener("load",resolve,{once:true});
-        img.addEventListener("error",resolve,{once:true});
-      });
-    })),
-    new Promise(resolve=>setTimeout(resolve,timeoutMs))
-  ]);
+  timeoutMs=Math.max(1,Math.min(30000,Number(timeoutMs)||5000));
+  if(!imgs.length)return {failed:[],timedOut:false,total:0};
+
+  const results=await Promise.all(imgs.map(img=>new Promise(resolve=>{
+    let settled=false;
+    let timer=null;
+    const cleanup=()=>{
+      if(timer)clearTimeout(timer);
+      img.removeEventListener("load",onLoad);
+      img.removeEventListener("error",onError);
+    };
+    const finish=async reason=>{
+      if(settled)return;
+      settled=true;
+      cleanup();
+      let decodeTimer;
+      if(reason==="load" && img.naturalWidth>0 && typeof img.decode==="function"){
+        try{
+          await Promise.race([
+            img.decode(),
+            new Promise((_,reject)=>{decodeTimer=setTimeout(()=>reject(new Error("decode timeout")),Math.min(timeoutMs,1000));})
+          ]);
+        }catch{reason="decode-error";}finally{clearTimeout(decodeTimer);}
+      }
+      const intentionallyHidden=img.hidden||!!img.closest?.("[hidden]");
+      const ok=(reason==="load"&&img.complete&&img.naturalWidth>0)||intentionallyHidden;
+      resolve({img,ok,reason:ok?"ready":reason});
+    };
+    const onLoad=()=>finish("load");
+    const onError=()=>setTimeout(()=>finish("error"),0);
+    img.loading="eager";
+    if(img.complete){
+      finish(img.naturalWidth>0?"load":"error");
+      return;
+    }
+    img.addEventListener("load",onLoad,{once:true});
+    img.addEventListener("error",onError,{once:true});
+    timer=setTimeout(()=>finish("timeout"),timeoutMs);
+  })));
+
+  const failed=results.filter(r=>!r.ok).map(r=>r.img);
+  return {
+    failed,
+    timedOut:results.some(r=>!r.ok&&r.reason==="timeout"),
+    total:imgs.length
+  };
 }
 async function exportClientPdf(){
   if(!validateRecorFeet(true)){
@@ -4448,8 +4469,6 @@ async function exportClientPdf(){
     return;
   }
 
-  // The document is rebuilt immediately before export so the PDF always
-  // reflects the latest project data.
   showView("preview");
   buildDocument();
 
@@ -4463,29 +4482,72 @@ async function exportClientPdf(){
     .trim();
   document.title=`${safeName} - Hydropolis`;
 
+  let restored=false;
+  let printStarted=false;
+  const restore=()=>{
+    if(restored)return;
+    restored=true;
+    document.body.classList.remove("pdf-exporting");
+    document.title=oldTitle;
+    btns.forEach(b=>{b.disabled=false;b.textContent=b.dataset.oldText||"Exporter PDF";});
+    window.removeEventListener("afterprint",restore);
+  };
+
   try{
     if(document.fonts?.ready)await Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,1500))]);
-    await waitForDocumentImages(6000);
+    const preload=await waitForDocumentImages(6000);
+    if(preload.failed.length){
+      const reason=preload.timedOut
+        ?"certaines images n’ont pas fini de charger"
+        :"certaines images sont indisponibles";
+      throw new Error(`${preload.failed.length} image(s) du dossier ne sont pas prêtes (${reason}). Vérifiez l’aperçu puis réessayez.`);
+    }
 
     document.body.classList.add("pdf-exporting");
     await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
-    window.print();
-  }finally{
-    // afterprint is not consistently synchronous across browsers.
-    const restore=()=>{
-      document.body.classList.remove("pdf-exporting");
-      document.title=oldTitle;
-      btns.forEach(b=>{b.disabled=false;b.textContent=b.dataset.oldText||"Exporter PDF";});
-      window.removeEventListener("afterprint",restore);
-    };
     window.addEventListener("afterprint",restore,{once:true});
-    setTimeout(()=>{
-      if(document.body.classList.contains("pdf-exporting"))restore();
-    },10000);
+    printStarted=true;
+    try{
+      window.print();
+    }catch(e){
+      printStarted=false;
+      throw e;
+    }
+  }finally{
+    if(!printStarted){
+      restore();
+    }else{
+      setTimeout(()=>{
+        if(document.body.classList.contains("pdf-exporting"))restore();
+      },10000);
+    }
   }
 }
 
 function exportJson(){let blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hydropolis-projet.json";a.click();}
+function toast(msg){const old=$(".export-toast");if(old)old.remove();const el=document.createElement("div");el.className="export-toast";el.textContent=msg;document.body.appendChild(el);setTimeout(()=>el.remove(),2400)}
+function downloadBlob(blob,name){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000)}
+function exportExcel(){
+  const xmlEsc=v=>String(v??"").replace(/[&<>]/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[ch]));
+  const rows=quoteRows().map(row=>{
+    const product=row.manual?null:((Number.isInteger(row.sourceIndex)?(state.selected||[])[row.sourceIndex]:null) || (state.selected||[]).find(p=>p.manufacturer===row.manufacturer&&p.reference===row.reference&&String(p.finish||"")===String(row.finish||"")));
+    const purchaseUnit=product?purchaseCostFor(product):"";
+    const totalNet=Number(row.netUnit||0)*Number(row.qty||1);
+    const totalPurchase=product?Number(purchaseUnit||0)*Number(row.qty||1):"";
+    const margin=product?totalNet-Number(totalPurchase||0):"";
+    const avail=product?availabilityInfo(product).label:"";
+    return [row.room,row.manufacturer,row.reference,row.designation,row.finish,row.qty,Number(row.unit||0),Number(row.discount||0),Number(row.netUnit||0),totalNet,purchaseUnit,totalPurchase,margin,row.leadTime,avail,product?.source||""];
+  });
+  const headers=["Pièce","Fabricant","Référence","Désignation","Finition","Qté","Prix public unitaire HT","Remise client %","Prix net unitaire HT","Total vente HT","Coût achat unitaire HT","Coût achat total HT","Marge brute ligne HT","Délai","Disponibilité","Source"];
+  const numeric=new Set([5,6,7,8,9,10,11,12]);
+  const cell=(v,num=false)=>`<Cell><Data ss:Type="${num&&v!==""?"Number":"String"}">${xmlEsc(v)}</Data></Cell>`;
+  const body=[headers,...rows].map((r,i)=>`<Row>${r.map((v,j)=>cell(v,i>0&&numeric.has(j))).join("")}</Row>`).join("");
+  const f=projectFinancials();
+  const summary=[["Synthèse","Valeur"],["Tarif public produits HT",f.list],["Port fournisseur HT",f.supplierShipping],["dont port Recor automatique HT",f.recorSupplierShipping],["Vente HT",f.net],["Coût achat HT",f.purchase],["Marge brute produits HT",f.margin],["Taux de marque %",f.marginOnSales],["TVA %",f.vatRate],["Total TTC",f.ttc]];
+  const summaryXml=summary.map((r,i)=>`<Row>${r.map((v,j)=>cell(v,i>0&&j===1)).join("")}</Row>`).join("");
+  const xml=`<?xml version="1.0"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"><Worksheet ss:Name="Sélection"><Table>${body}</Table></Worksheet><Worksheet ss:Name="Synthèse"><Table>${summaryXml}</Table></Worksheet></Workbook>`;
+  downloadBlob(new Blob([xml],{type:"application/vnd.ms-excel;charset=utf-8"}),`Hydropolis_${(state.project.name||"Projet").replace(/[^a-z0-9_-]+/gi,"_")}.xls`);toast("Export Excel enrichi généré");
+}
 function refreshCatalogUiAfterChunk(){
   const manufacturer=$("#manufacturerFilter");
   const previousManufacturer=manufacturer?.value||"";
@@ -4589,7 +4651,7 @@ function harmonizeSavedCatalogProducts(){
     if(!c)continue;
 
     const runtime={
-      id:p.id,roomId:p.roomId,accessoryFor:p.accessoryFor,
+      id:p.id,roomId:p.roomId,accessoryFor:p.accessoryFor,hideFromDossier:p.hideFromDossier,
       image:p.image,images:p.images,pdfImage:p.pdfImage,pdfImages:p.pdfImages,
       remoteImageUrl:p.remoteImageUrl,remoteImages:p.remoteImages,
       imageSource:p.imageSource,imageFinishMatch:p.imageFinishMatch,imageStatus:p.imageStatus,imageNote:p.imageNote,
@@ -4713,9 +4775,19 @@ $("#categoryFilter").addEventListener("change",()=>{
   updateDependentFilters(false,false,true);
   renderCatalog();
 });
+$("#typeFilter").addEventListener("change",()=>{
+  $("#searchInput").value="";
+  $("#finishFilter").value="";
+  const manufacturer=$("#manufacturerFilter")?.value||"";
+  const collection=$("#collectionFilter")?.value||"";
+  const category=$("#categoryFilter")?.value||"";
+  const productType=$("#typeFilter")?.value||"";
+  fillSelect("finishFilter",filterValues("finish",{manufacturer,collection,category,productType}),false);
+  renderCatalog();
+});
 $("#clearSearch").onclick=()=>{
   $("#searchInput").value="";
-  ["manufacturerFilter","collectionFilter","categoryFilter","finishFilter"].forEach(id=>$("#"+id).value="");
+  ["manufacturerFilter","collectionFilter","categoryFilter","typeFilter","finishFilter"].forEach(id=>$("#"+id).value="");
   updateDependentFilters(true,true,true);
   renderCatalog();
 };
@@ -4727,7 +4799,7 @@ $("#previewTopBtn").onclick=()=>showView("preview");
 $("#printBtn").onclick=()=>exportClientPdf().catch(e=>alert("Export PDF impossible : "+e.message));
 $("#exportPdfTopBtn").onclick=()=>exportClientPdf().catch(e=>alert("Export PDF impossible : "+e.message));
 $("#exportExcelTopBtn").onclick=exportExcel;
-$("#exportMoodboardTopBtn").onclick=()=>exportMoodboard().catch(e=>alert("Moodboard impossible : "+e.message));
+if($("#exportMoodboardTopBtn") && typeof exportMoodboard==="function")$("#exportMoodboardTopBtn").onclick=()=>exportMoodboard().catch(e=>alert("Moodboard impossible : "+e.message));
 $("#saveBtn").onclick=()=>saveCloudProject().catch(e=>alert(e.message));
 
 $("#setupForm").onsubmit=async e=>{
@@ -4787,7 +4859,7 @@ $$(".ecosystem-action").forEach(b=>b.onclick=()=>{showView(b.dataset.goView||"da
 if($("#compareClearViewBtn"))$("#compareClearViewBtn").onclick=()=>{compareRefs.clear();renderCompareDock();renderCompareView();renderCatalog()};
 if($("#exportsPdfBtn"))$("#exportsPdfBtn").onclick=()=>exportClientPdf().catch(e=>alert("Export PDF impossible : "+e.message));
 if($("#exportsExcelBtn"))$("#exportsExcelBtn").onclick=exportExcel;
-if($("#exportsMoodboardBtn"))$("#exportsMoodboardBtn").onclick=()=>exportMoodboard().catch(e=>alert("Moodboard impossible : "+e.message));
+if($("#exportsMoodboardBtn") && typeof exportMoodboard==="function")$("#exportsMoodboardBtn").onclick=()=>exportMoodboard().catch(e=>alert("Moodboard impossible : "+e.message));
 
 $$(".nav").forEach(n=>n.onclick=()=>showView(n.dataset.view));
 
