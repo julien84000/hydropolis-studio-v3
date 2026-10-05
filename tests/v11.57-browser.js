@@ -104,7 +104,9 @@ const check=(name,value)=>{assert.ok(value,name);report.checks.push(name);};
     },target.id);
     check('état initial cohérent',!before.hidden&&before.inQuote&&before.inDossier);
 
-    await toggle.uncheck({force:true});
+    await page.evaluate(()=>showView("project"));
+    await toggle.waitFor({state:"visible"});
+    await toggle.uncheck();
     const after=await page.evaluate(id=>{
       const p=state.selected.find(x=>x.id===id);
       return {
