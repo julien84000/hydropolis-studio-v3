@@ -2678,15 +2678,43 @@ function commercialManufacturers(){
 }
 
 const QUOTE_SPACE_ORDER={LAVABO:0,DOUCHE:1,BAIN:2,WC:3,AUTRES:4};
-function quoteSpaceForProduct(p){
-  if(!p)return "AUTRES";
-  if(p.requiredRoughIn && p.accessoryFor){
-    const parent=(state.selected||[]).find(x=>x?.id===p.accessoryFor);
-    if(parent)return presentationSpace(parent);
+function quoteSpaceForProduct(p,seen=new Set()){
+  if(!p || seen.has(p))return "AUTRES";
+  seen.add(p);
+  if(p.accessoryFor){
+    const parent=(state.selected||[]).find(x=>x?.id===p.accessoryFor && x.roomId===p.roomId);
+    if(parent){
+      const space=quoteSpaceForProduct(parent,seen);
+      if(space!=="AUTRES")return space;
+    }
   }
+  const text=[p.quoteDesignationOverride,p.designation,p.category,p.marketingDescription,p.originalDescription]
+    .filter(Boolean).join(" ").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+  if(/\bwc\b|toilet|cuvette|abattant|bidet|paper\s*holder|porte[- ]?(?:papier|rouleau)|plaque de (?:commande|chasse)|flush\s*(?:plate|button)|bati[- ]?support|cistern|douchette hygienique/.test(text))return "WC";
+  if(/receveur|paroi de douche|barre de douche|shower/.test(text))return "DOUCHE";
   return presentationSpace(p);
 }
-function quoteSpaceLabel(space){return presentationSpaceLabel(space)||"Autres éléments";}
+function quoteSpaceLabel(space){return space==="AUTRES"?"":presentationSpaceLabel(space);}
+function quoteRoomKey(room){return String(room||"").trim().replace(/\s+/g," ").toLocaleUpperCase("fr-FR");}
+function groupQuoteRows(rows){
+  // Presentation only: retain roomId/sourceIndex/manualIndex for edits and Excel costs.
+  const rooms=new Map();
+  for(const row of rows){
+    const key=quoteRoomKey(row.room);
+    if(!rooms.has(key))rooms.set(key,[]);
+    rooms.get(key).push(row);
+  }
+  return [...rooms.values()].flatMap(roomRows=>{
+    const title=String(roomRows[0].room||"").trim().replace(/\s+/g," ");
+    for(const row of roomRows)row.room=title;
+    const spaces=[...new Set(roomRows.map(row=>row.space).filter(space=>space!=="AUTRES"))];
+    // A single identified space gives otherwise generic accessories an unambiguous context.
+    if(spaces.length===1)for(const row of roomRows){
+      if(row.space==="AUTRES"){row.space=spaces[0];row.spaceLabel=quoteSpaceLabel(row.space);}
+    }
+    return roomRows.sort((a,b)=>(QUOTE_SPACE_ORDER[a.space]??99)-(QUOTE_SPACE_ORDER[b.space]??99));
+  });
+}
 function quoteEditorRows(){
   const rows=[];
   for(const room of state.rooms||[]){
@@ -2704,7 +2732,7 @@ function quoteEditorRows(){
       });
     });
     validManualItemsForRoom(room).forEach((m,manualIndex)=>{
-      const space="AUTRES";
+      const space=quoteSpaceForProduct({designation:manualQuoteDesignation(m)});
       roomRows.push({
         kind:"manual",manualIndex,sourceOrder:100000+manualIndex,roomId:room.id,room:room.title,space,spaceLabel:quoteSpaceLabel(space),
         manufacturer:"Élément libre",finish:"",
@@ -2717,7 +2745,7 @@ function quoteEditorRows(){
     roomRows.sort((a,b)=>(QUOTE_SPACE_ORDER[a.space]??99)-(QUOTE_SPACE_ORDER[b.space]??99)||a.sourceOrder-b.sourceOrder);
     rows.push(...roomRows);
   }
-  return rows;
+  return groupQuoteRows(rows);
 }
 function quoteEditorTarget(el){
   if(el.dataset.kind==="product")return (state.selected||[])[Number(el.dataset.index)];
@@ -2739,11 +2767,11 @@ function renderQuoteEditor(){
     const bodyRows=[];
     let lastRoom="",lastSpace="";
     for(const row of rows){
-      if(row.room!==lastRoom){
+      if(quoteRoomKey(row.room)!==lastRoom){
         bodyRows.push('<tr class="qe-room-group"><td colspan="8">'+esc(row.room)+'</td></tr>');
-        lastRoom=row.room;lastSpace="";
+        lastRoom=quoteRoomKey(row.room);lastSpace="";
       }
-      if(row.space!==lastSpace){
+      if(row.spaceLabel && row.space!==lastSpace){
         bodyRows.push('<tr class="qe-space-group"><td colspan="8">'+esc(row.spaceLabel)+'</td></tr>');
         lastSpace=row.space;
       }
@@ -2905,7 +2933,7 @@ function quoteRows(){
       const qty=manualItemQuantity(m);
       const unit=manualQuoteUnit(m);
       const discount=manualQuoteDiscount(m);
-      const space="AUTRES";
+      const space=quoteSpaceForProduct({designation:manualQuoteDesignation(m)});
       roomRows.push({
         room:room.title,roomId:room.id,space,spaceLabel:quoteSpaceLabel(space),sourceOrder:100000+manualIndex,
         reference:manualQuoteReference(m),designation:manualQuoteDesignation(m),finish:"",
@@ -2916,7 +2944,7 @@ function quoteRows(){
     roomRows.sort((a,b)=>(QUOTE_SPACE_ORDER[a.space]??99)-(QUOTE_SPACE_ORDER[b.space]??99)||a.sourceOrder-b.sourceOrder);
     rows.push(...roomRows);
   }
-  return rows;
+  return groupQuoteRows(rows);
 }
 function quotePages(startNo){
   const rows=quoteRows();
@@ -2925,19 +2953,20 @@ function quotePages(startNo){
   const perPage=8;
   const pages=Math.max(1,Math.ceil(rows.length/perPage));
   let html="", no=startNo;
+  let previousRoom=null;
   const columnCount=(state.showSupplierReferences!==false?1:0)+5+(showDiscountColumn?1:0);
 
   for(let pg=0;pg<pages;pg++){
     const chunk=rows.slice(pg*perPage,(pg+1)*perPage);
     const last=pg===pages-1;
-    let previousRoom="",previousSpace="";
+    let previousSpace="";
     const quoteBody=chunk.map(row=>{
       let prefix="";
-      if(row.room!==previousRoom){
+      if(quoteRoomKey(row.room)!==previousRoom){
         prefix+=`<tr class="quote-room-row"><td colspan="${columnCount}">${esc(row.room)}</td></tr>`;
-        previousRoom=row.room;previousSpace="";
+        previousRoom=quoteRoomKey(row.room);previousSpace="";
       }
-      if(row.space!==previousSpace){
+      if(row.spaceLabel && row.space!==previousSpace){
         prefix+=`<tr class="quote-space-row"><td colspan="${columnCount}">${esc(row.spaceLabel)}</td></tr>`;
         previousSpace=row.space;
       }
