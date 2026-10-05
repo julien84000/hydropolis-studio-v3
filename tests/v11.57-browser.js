@@ -131,7 +131,7 @@ const check=(name,value)=>{assert.ok(value,name);report.checks.push(name);};
     const layout=await page.evaluate(()=>{
       state.rooms=[{id:'wc',title:'SDB 01',manual:[{label:'Bâti support ALCA',price:250,quantity:1}]},
         {id:'shower',title:' SDB  01 ',manual:[]},{id:'basin',title:'SDB 02',manual:[]}];
-      const article=(id,roomId,designation,extra={})=>({id,roomId,designation,reference:id,manufacturer:'Sélection libre',quantity:1,price:100,quoteUnitOverride:100,quoteDiscountOverride:10,...extra});
+      const article=(id,roomId,designation,extra={})=>({id,roomId,designation,reference:id,manufacturer:'Sélection libre',quantity:1,totalPrice:100,quoteUnitOverride:100,quoteDiscountOverride:10,...extra});
       state.selected=[
         article('brush','wc','Wall mtd toilet brush & holder'),
         article('hygiene','wc','Douchette hygiénique'),
@@ -167,7 +167,8 @@ const check=(name,value)=>{assert.ok(value,name);report.checks.push(name);};
         roughSpace:rows.find(row=>row.sourceId==='rough').space,
         implicitSpace:rows.find(row=>row.sourceId==='generic').space,
         pages:host.querySelectorAll('.quote-page').length,
-        continuation:!!host.querySelectorAll('.quote-page')[1]?.querySelector('.quote-space-row')};
+        continuation:host.querySelectorAll('.quote-page')[1]?.querySelector('tbody')?.firstElementChild?.classList.contains('quote-product-row'),
+        spaceTitles:[...host.querySelectorAll('.quote-space-row')].map(el=>el.textContent.trim())};
       // Editing must still target the original room/product after display regrouping.
       result.targets=editorRows.every(row=>quoteEditorTarget({dataset:row.kind==='product'?{kind:'product',index:String(row.sourceIndex)}:{kind:'manual',room:row.roomId,manual:String(row.manualIndex)}})===(row.kind==='product'?state.selected[row.sourceIndex]:state.rooms.find(r=>r.id===row.roomId).manual[row.manualIndex]));
       return result;
@@ -180,7 +181,51 @@ const check=(name,value)=>{assert.ok(value,name);report.checks.push(name);};
     check('aucun sous-titre Autres éléments, toutes les lignes conservées',layout.noOther&&layout.count===14);
     check('totaux, quantités et données sources préservés',layout.totals===1510&&layout.unchanged);
     check('éditeur et export cohérents, cibles des modifications préservées',layout.sameRows&&layout.targets);
-    check('espace conservé en tête de la page de continuation',layout.pages===2&&layout.continuation);
+    check('sous-espace affiché une seule fois malgré le saut de page',layout.pages===2&&layout.continuation&&layout.spaceTitles.length===3);
+    // Existing free-article migration renders the manual line as the 14th product card.
+    await page.evaluate(()=>{renderRooms();showView('project');});
+    report.roomLayouts=[];
+    for(const width of [2048,1440,1024,760,390]){
+      await page.setViewportSize({width,height:1000});
+      const geometry=await page.evaluate(()=>{
+        const issues=[];
+        const rect=el=>el.getBoundingClientRect();
+        const visible=el=>{const r=rect(el);return r.width>0&&r.height>0;};
+        const host=document.querySelector('#roomsEditor');
+        if(host.scrollWidth>host.clientWidth+1)issues.push('débordement de la grille des pièces');
+        for(const card of document.querySelectorAll('#roomsEditor .room-card')){
+          const bounds=rect(card);
+          for(const el of card.querySelectorAll('input,button,label,.room-product,.room-product-controls,.article-leadtime-panel,.article-discount-panel,.price-total')){
+            if(!visible(el))continue;
+            const r=rect(el);
+            if(r.left<bounds.left-1||r.right>bounds.right+1)issues.push('débordement '+el.className);
+          }
+          for(const product of card.querySelectorAll('.room-product')){
+            const groups=[[...product.children].filter(visible),[...product.querySelector('.room-product-controls').children].filter(visible)];
+            for(const group of groups)for(let i=0;i<group.length;i++)for(let j=i+1;j<group.length;j++){
+              const a=rect(group[i]),b=rect(group[j]);
+              if(Math.min(a.right,b.right)-Math.max(a.left,b.left)>1&&Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top)>1)issues.push('chevauchement '+group[i].className+' / '+group[j].className);
+            }
+          }
+        }
+        return {issues,firstHeight:rect(document.querySelector('.room-product')).height,count:document.querySelectorAll('#roomsEditor .room-product').length};
+      });
+      report.roomLayouts.push({width,...geometry});
+      check('Projet par pièce sans débordement ni chevauchement à '+width+' px',geometry.issues.length===0&&geometry.count===14);
+    }
+    await page.setViewportSize({width:2048,height:1100});
+    await page.locator('.room-product .article-editor').first().evaluate(el=>el.open=true);
+    const editorFits=await page.locator('.room-product').first().evaluate(el=>{
+      const bounds=el.getBoundingClientRect();
+      return [...el.querySelectorAll('input,button')].filter(x=>x.getBoundingClientRect().width>0).every(x=>{const r=x.getBoundingClientRect();return r.left>=bounds.left&&r.right<=bounds.right;});
+    });
+    check('éditeur article ouvert contenu dans sa carte',editorFits);
+    await page.locator('.room-product .article-editor').first().evaluate(el=>el.open=false);
+    const quantity=page.locator('.room-product').filter({has:page.locator('.del-prod[data-id="thermo"]')}).locator('.article-quantity-input');
+    await quantity.fill('3');await quantity.dispatchEvent('change');
+    check('quantité et corps associé synchronisés après réorganisation',await page.evaluate(()=>state.selected.find(p=>p.id==='thermo').quantity===3&&state.selected.find(p=>p.id==='rough').quantity===3));
+    if(process.env.ROOM_SCREENSHOT)await page.locator('#roomsEditor').screenshot({path:process.env.ROOM_SCREENSHOT});
+
     if(process.env.QUOTE_SCREENSHOT){
       await page.evaluate(()=>{document.querySelectorAll('body > *').forEach(el=>{if(!el.contains(document.querySelector('#document')))el.style.display='none';});let el=document.querySelector('#document');while(el){el.style.display='block';el=el.parentElement;}});
       await page.locator('#document .quote-page').first().screenshot({path:process.env.QUOTE_SCREENSHOT});

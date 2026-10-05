@@ -2953,13 +2953,12 @@ function quotePages(startNo){
   const perPage=8;
   const pages=Math.max(1,Math.ceil(rows.length/perPage));
   let html="", no=startNo;
-  let previousRoom=null;
+  let previousRoom=null,previousSpace="";
   const columnCount=(state.showSupplierReferences!==false?1:0)+5+(showDiscountColumn?1:0);
 
   for(let pg=0;pg<pages;pg++){
     const chunk=rows.slice(pg*perPage,(pg+1)*perPage);
     const last=pg===pages-1;
-    let previousSpace="";
     const quoteBody=chunk.map(row=>{
       let prefix="";
       if(quoteRoomKey(row.room)!==previousRoom){
@@ -3233,6 +3232,7 @@ function renderRoomsCore(){
           </div>
         </details>
         <div class="image-actions"><button class="tiny enrich-btn" data-id="${p.id}">${p.image?"Actualiser photo + documents":"Chercher photo + documents"}</button>${hotbathNeedsFinishFallback(p)?`<button class="tiny hotbath-web-selected" data-id="${p.id}">Chercher finition web</button>`:""}${hotbathNeedsFinishFallback(p)&&p.remoteImageUrl?`<button class="tiny hotbath-sim-selected" data-id="${p.id}">Simuler ${p.finish||"la finition"}</button>`:""}<a target="_blank" href="${p.resolvedManufacturerUrl||p.manufacturerUrl}">Fiche officielle ↗</a>${technicalSheetHref(p)?`<a target="_blank" class="technical-sheet-link" href="${technicalSheetHref(p)}">${p.customTechnicalSheet?"Fiche personnalisée":(/zucchetti/i.test(p.manufacturer||"")?"Fiche technique complète":"Fiche technique")} ↗</a>${technicalSheetIsPdf(p)&&!/zucchetti/i.test(p.manufacturer||"")?`<label class="drawing-toggle"><input type="checkbox" class="techsheet-check" data-id="${p.id}" ${p.includeTechnicalSheet?"checked":""}> ${/^Ritmonio$/i.test(String(p.manufacturer||""))?"Inclure la Scheda tecnica":"Inclure la fiche technique"}</label>`:""}`:`${/^Ritmonio$/i.test(String(p.manufacturer||""))?`<button class="tiny ritmonio-tech-refresh" data-id="${p.id}">Récupérer la Scheda tecnica</button>`:`<span class="tech">${/lefroy brooks/i.test(p.manufacturer||"")?"Fiche technique Lefroy à récupérer":"Fiche technique à récupérer"}</span>`}`}${installationGuideHref(p)?`<a target="_blank" href="${esc(installationGuideHref(p))}">Notice installation ↗</a><label class="drawing-toggle"><input type="checkbox" class="install-check" data-id="${p.id}" ${p.includeInstallationGuide?"checked":""}> Inclure la notice</label>`:""}${p.drawingUrl?`<a target="_blank" href="${p.drawingUrl}">${/zucchetti/i.test(p.manufacturer||"")?"Dessin technique p.3":"Drawing 2D"} ↗</a>${["pdf","image"].includes(p.drawingType)?`<label class="drawing-toggle"><input type="checkbox" class="drawing-check" data-id="${p.id}" ${p.includeDrawing?"checked":""}> ${/zucchetti/i.test(p.manufacturer||"")?"Inclure le dessin p.3":"Inclure le drawing"}</label>`:`<span class="tech">DWG consultable, non intégrable au PDF</span>`}`:`<span class="tech">Drawing 2D à récupérer</span>`}${p.cadDrawingUrl?`<a target="_blank" href="${p.cadDrawingUrl}">Fichier 2D CAD ↗</a>`:""}${(!p.image && p.fallbackImage)?`<button class="tiny fallback-btn" data-id="${p.id}">Catalogue en secours</button>`:""}</div></div>
+        <div class="room-product-controls">
         <div class="article-leadtime-panel article-dossier-panel">
           <label class="drawing-toggle article-dossier-toggle"><input type="checkbox" class="dossier-visibility-check" data-id="${p.id}" ${p.hideFromDossier?"":"checked"}> Afficher dans le dossier photo client</label>
           <div class="tech">Sans effet sur le devis : l’article y reste toujours présent.</div>
@@ -3255,6 +3255,7 @@ function renderRoomsCore(){
           <b>${euro(safeEffectiveSaleValue(p))} HT net</b>
         </div>
         <div class="price-total">${euro(articleListTotal(p))} HT<div class="tech">${p.imageStatus||p.imageSource||"Photo fabricant à rechercher"}</div>${p.imageNote?`<div class="tech">${p.imageNote}</div>`:""}</div>
+        </div>
         <button class="icon del-prod" data-id="${p.id}">×</button>
         ${safeBasinAccessorySuggestions(p,r.id)}${safeRecorBathOptions(p,r.id)}
       </div>`).join(""):`<div class="room-empty">Aucun produit catalogue dans cette pièce.</div>`}</div>
