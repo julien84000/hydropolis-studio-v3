@@ -19,6 +19,9 @@ def extract_function(src,name):
     start=src.find(token)
     if start<0:
         raise SystemExit(f"{name} missing in main")
+    # Preserve an async prefix when the source declaration is async function.
+    if start>=6 and src[start-6:start]=="async ":
+        start-=6
     # These are top-level declarations in the V11.56.1 source; the next top-level
     # function declaration is the exact end boundary needed for restoration.
     nxt=src.find("\nfunction ",start+len(token))
