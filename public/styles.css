@@ -2957,11 +2957,11 @@ main{background:transparent}
 
 
 /* V11.57_QUOTE_STRUCTURE */
-.quote-table .quote-room-row td{font-weight:800;font-size:9pt;letter-spacing:.04em;text-transform:uppercase;padding:7px 8px;border-top:1.5px solid #222;border-bottom:1px solid #222;background:#222;color:#fff}
-.quote-table .quote-space-row td{font-weight:750;font-size:7.5pt;letter-spacing:.08em;text-transform:uppercase;padding:5px 8px;background:#f3eadf;color:#8a5b24;border-bottom:1px solid #d9c7af}
+#document .quote-table .quote-room-row td{text-align:left;font-weight:800;font-size:9pt;letter-spacing:.04em;text-transform:uppercase;padding:7px 8px;border-top:1.5px solid #222;border-bottom:1px solid #222;background:#222;color:#fff}
+#document .quote-table .quote-space-row td{text-align:left;font-weight:750;font-size:7.5pt;letter-spacing:.08em;text-transform:uppercase;padding:5px 8px;background:#f3eadf;color:#8a5b24;border-bottom:1px solid #d9c7af}
 .quote-table .quote-product-row td{vertical-align:top}
-.quote-editor-table .qe-room-group td{padding:10px 12px 7px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;background:#222;color:#fff;border-top:8px solid #fff}
-.quote-editor-table .qe-space-group td{padding:7px 12px;font-weight:750;text-transform:uppercase;letter-spacing:.06em;background:#f3eadf;color:#8a5b24}
+.quote-editor-table .qe-room-group td{text-align:left;padding:10px 12px 7px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;background:#222;color:#fff;border-top:8px solid #fff}
+.quote-editor-table .qe-space-group td{text-align:left;padding:7px 12px;font-weight:750;text-transform:uppercase;letter-spacing:.06em;background:#f3eadf;color:#8a5b24}
 .quote-editor-table .qe-product-row td{vertical-align:top}
 .qe-product-meta{display:block;margin-top:4px;font-size:10px;line-height:1.25;color:#78736d;white-space:normal}
 
