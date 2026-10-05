@@ -29,3 +29,5 @@ Cette version consolide les correctifs issus de l’audit V11.56.1 sans modifier
 - fusion puis contrôle Render (`/api/version`, `/api/health`, `/api/health/memory`, Sira)
 
 Aucun déploiement production n’est déclaré tant que ces étapes ne sont pas terminées.
+
+- Restauration des fonctions dashboard/catalogue de V11.56.1 validée par `npm run build` avant la passe navigateur finale.
