@@ -736,6 +736,13 @@ try{
 }catch(e){}
 let manufacturerImageCache={};
 try{manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v119")||"{}")||{};}catch(e){manufacturerImageCache={};}
+try{
+  if(localStorage.getItem("hydropolis-sbordoni-local-v11593")!=="1"){
+    for(const key of Object.keys(manufacturerImageCache))if(/^Sbordoni\|/i.test(key))delete manufacturerImageCache[key];
+    localStorage.setItem("hydropolis-manufacturer-v119",JSON.stringify(manufacturerImageCache));
+    localStorage.setItem("hydropolis-sbordoni-local-v11593","1");
+  }
+}catch(e){}
 // V11.26: invalidate only stale Gessi imagery from the former corporate-site resolver.
 // Preserve all other manufacturer cache entries to avoid unnecessary refetches.
 try{
@@ -877,6 +884,7 @@ function nicolazziLocalCatalogImage(p){
   };
 }
 function cachedManufacturerImage(p){
+  if(/^Sbordoni$/i.test(String(p?.manufacturer||"")))return null;
   return manufacturerImageCache[manufacturerCacheKey(p)]||manufacturerImageCache[manufacturerSharedCacheKey(p)]||nicolazziLocalCatalogImage(p)||null;
 }
 
@@ -889,6 +897,16 @@ async function fetchManufacturerImage(p,force=false,options={}){
 async function fetchManufacturerImageUncached(p,force=false,options={}){
   const key=manufacturerCacheKey(p);
   const sharedKey=manufacturerSharedCacheKey(p);
+  if(/^Sbordoni$/i.test(String(p?.manufacturer||"")) && p?.image){
+    return {
+      src:p.image,
+      images:[p.image],
+      source:p.imageSource||"Catalogue Sbordoni 2023",
+      finishMatch:"catalogue",
+      note:"Visuel isolé depuis le catalogue Sbordoni 2023.",
+      checkedAt:new Date().toISOString()
+    };
+  }
   const cached=manufacturerImageCache[key]||manufacturerImageCache[sharedKey];
   if(!force && cached?.src)return cached;
 
@@ -1929,7 +1947,7 @@ function renderCatalog(){
    const visibleRows=rows.slice(catalogPage*CATALOG_PAGE_SIZE,(catalogPage+1)*CATALOG_PAGE_SIZE);
    results.innerHTML=visibleRows.map(p=>{
      const cached=cachedManufacturerImage(p),finishLabel=exactFinishLabel(p)||"",price=catalogDisplayPrice(p),key=productKey(p),avail=availabilityInfo(p),compared=compareRefs.has(key),favorite=favoriteRefs.has(key);
-     const candidateVisual=cached?.src||p.image||((Array.isArray(p.images)&&p.images[0])||"");
+     const candidateVisual=/^Sbordoni$/i.test(String(p.manufacturer||""))?(p.image||((Array.isArray(p.images)&&p.images[0])||"")):(cached?.src||p.image||((Array.isArray(p.images)&&p.images[0])||""));
      const catalogVisual=brokenCatalogImages.has(candidateVisual)?"":candidateVisual;
      return `<article class="result v11-product-card" data-key="${esc(key)}">${catalogThumbHtml(p,catalogVisual,finishLabel,favorite,cached)}<div><div class="r-top"><span class="ref">${esc(p.reference)}</span><span class="badge">${esc(p.manufacturer)}</span><span class="badge">${esc(p.collection)}</span><span class="badge">${esc(p.category)}</span></div><div class="designation">${esc(p.designation)}</div><div class="meta">${esc(p.finish||"")}</div>${roughInWarningHtml(p)}<div class="availability ${avail.cls}">${esc(avail.label)}</div><div class="manufacturer-tools v11-resource-tools"><button class="tiny lookup-photo" data-ref="${esc(p.reference)}" data-key="${esc(key)}">${cached||p.image?"Actualiser la photo":"Photo fabricant"}</button>${hotbathNeedsFinishFallback(p,cached)?`<button class="tiny hotbath-web-photo" data-ref="${esc(p.reference)}" data-key="${esc(key)}">Finition web</button>`:""}${p.manufacturerUrl?`<a class="source-link" target="_blank" rel="noopener" href="${esc(cached?.resolvedManufacturerUrl||p.manufacturerUrl)}">Fiche ↗</a>`:""}${cached?.technicalSheetUrl?`<a class="source-link" target="_blank" rel="noopener" href="${esc(cached.technicalSheetUrl)}">Technique ↗</a>`:""}</div><div class="photo-status">${cached?`<b>${esc(imageBadge(cached,p))}</b>`:p.image?`<b>${esc(p.imageSource||"Visuel catalogue")}</b>`:`Source tarif : ${esc(p.source||"catalogue fabricant")}`}</div>${/^Nicolazzi$/i.test(String(p.manufacturer||""))?`<div class="nicolazzi-options-slot">${nicolazziVisualOptionsHtml(p,cached)}</div>`:""}<div class="card-action-row"><button class="suggest-toggle" data-key="${esc(key)}">Alternatives</button><button class="compare-toggle ${compared?"active":""}" data-key="${esc(key)}">${compared?"✓ Comparé":"Comparer"}</button></div></div><div class="price-box"><small class="v11-price-label">Prix public</small><div class="price">${euro(price)} HT</div>${p.internalReference?`<div class="internal">Ext. ${euro(p.price)} + ${esc(p.internalReference)} ${euro(p.internalPrice)}</div>`:`<div class="internal">${esc(p.sourceYear?`Tarif ${p.sourceYear}`:"Référence complète")}</div>`}${isRecorBathRequiringFeet(p)?`<div class="internal recor-config-hint"><b>Pieds obligatoires</b> · choix à l’ajout</div>`:""}<button class="btn primary add" data-ref="${esc(p.reference)}" data-key="${esc(key)}" style="margin-top:9px">${isRecorBathRequiringFeet(p)?"Configurer + ajouter":"Ajouter à "+esc(room?.title||"la pièce")}</button></div></article>`;
    }).join("")||`<div class="empty">Aucun résultat.</div>`;
@@ -4629,8 +4647,8 @@ async function loadSupplierCatalogs(){
       }
       if(Array.isArray(rows)){
         for(const p of rows){
-          if(/^Sbordoni$/i.test(String(p?.manufacturer||"")) && /^\/api\/sbordoni-image\?/.test(String(p?.image||"")) && !/[?&]v=11592(?:&|$)/.test(p.image)){
-            p.image += (p.image.includes("?")?"&":"?")+"v=11592";
+          if(/^Sbordoni$/i.test(String(p?.manufacturer||"")) && /^\/api\/sbordoni-image\?/.test(String(p?.image||"")) && !/[?&]v=11593(?:&|$)/.test(p.image)){
+            p.image += (p.image.includes("?")?"&":"?")+"v=11593";
           }
           const key=productKey(p);
           if(!known.has(key)){
