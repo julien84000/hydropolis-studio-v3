@@ -3982,7 +3982,8 @@ function boardItemHtml(p,idx){
    :boardVisualWithRecorOptions(p);
  const priceValue=Math.max(0,Number(p.totalPrice??p.price)||0);
  const layoutId=esc(String(p.id||((p.roomId||"room")+"-"+idx)));
- return `<article class="board-item board-item-${idx+1}" data-layout-block="item:${layoutId}">
+ const makerClass=/^Dornbracht$/i.test(String(p.manufacturer||""))?" dornbracht-client-item":"";
+ return `<article class="board-item board-item-${idx+1}${makerClass}" data-layout-block="item:${layoutId}">
    <div class="board-visual">${visual}</div>
    <div class="board-copy">
      <div class="board-brand">${esc(isManual?"Sélection libre":(p.manufacturer||"Sélection"))}${!isManual&&p.collection?` · ${esc(p.collection)}`:""}</div>
