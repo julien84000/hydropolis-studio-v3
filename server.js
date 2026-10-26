@@ -8,6 +8,7 @@ const crypto = require("crypto");
 const dns = require("dns").promises;
 const net = require("net");
 const { Pool } = require("pg");
+const { createCanvas, loadImage } = require("@napi-rs/canvas");
 
 function createApp({assets={}}={}){
 const app = express();
