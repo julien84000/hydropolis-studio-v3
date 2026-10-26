@@ -52,3 +52,50 @@ test('app routes configurable Sbordoni basins through the configurator',()=>{
   assert.match(app,/HydroSbordoniConfigurator\.open/);
   assert.match(app,/HydroSbordoniConfigurator\?\.catalogImage/);
 });
+
+
+test('Sbordoni basin configurator is limited to the four requested collections',()=>{
+  const CATALOG=loadCatalog();
+  const context={window:{},CATALOG,console,esc:v=>String(v??''),euro:v=>String(v??0),document:{}};
+  vm.createContext(context);
+  vm.runInContext(fs.readFileSync(path.join(__dirname,'..','public','sbordoni-configurator.js'),'utf8'),context);
+  assert.deepEqual(Array.from(context.window.HydroSbordoniConfigurator.supportedCollections),['Romana','Palladio','Neoclassica','Masaccio']);
+});
+
+test('Sbordoni WC configurator exposes the catalogue combinations for all four collections',()=>{
+  const CATALOG=loadCatalog();
+  const context={window:{},CATALOG,console,esc:v=>String(v??''),euro:v=>String(v??0),document:{}};
+  vm.createContext(context);
+  vm.runInContext(fs.readFileSync(path.join(__dirname,'..','public','sbordoni-wc-configurator.js'),'utf8'),context,{filename:'sbordoni-wc-configurator.js'});
+  const cfg=context.window.HydroSbordoniWCConfigurator;
+  assert.ok(cfg,'WC configurator exported');
+  assert.deepEqual(Array.from(cfg.collections()),['Romana','Palladio','Neoclassica','Masaccio']);
+
+  const cases=[
+    ['Romana','9020','9028','S920'],
+    ['Palladio','7020','7028','S020'],
+    ['Neoclassica','5107','5128','S107'],
+    ['Masaccio','5520',null,'S520']
+  ];
+  for(const [collection,ref,tank,seat] of cases){
+    const p=CATALOG.find(x=>x.manufacturer==='Sbordoni'&&x.collection===collection&&x.reference===ref);
+    assert.ok(p,`missing ${collection} ${ref}`);
+    assert.equal(cfg.eligible(p),true,`${collection} ${ref} should open WC configurator`);
+    const system=cfg.config[collection].find(s=>s.bowls.some(([r])=>r===ref));
+    assert.ok(system,`missing WC system for ${collection} ${ref}`);
+    if(tank)assert.ok(system.flush.some(f=>f.tank===tank),`missing tank ${tank}`);
+    assert.ok(system.seats.includes(seat),`missing seat family ${seat}`);
+  }
+
+  const palladio=cfg.config.Palladio.find(s=>s.id==='floor');
+  assert.ok(palladio.flush.some(f=>f.tank==='7029L'&&f.mechanisms.includes('MC06L')));
+  const neoclassica=cfg.config.Neoclassica.find(s=>s.id==='wall');
+  assert.ok(neoclassica.bowls.some(([r])=>r==='5309'));
+  assert.ok(neoclassica.seats.includes('S127'));
+});
+
+test('app routes Sbordoni WC products through the WC configurator',()=>{
+  const app=fs.readFileSync(path.join(__dirname,'..','public','app.js'),'utf8');
+  assert.match(app,/HydroSbordoniWCConfigurator\?\.eligible/);
+  assert.match(app,/HydroSbordoniWCConfigurator\.open/);
+});
