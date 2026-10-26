@@ -126,3 +126,12 @@ test('V11.60.1 stores a configured Sbordoni basin as one grouped visible product
   assert.match(app,/Configurer ce produit/);
   assert.match(app,/p\.sbordoniConfiguration\?"":safeBasinAccessorySuggestions/);
 });
+
+test('V11.60.3 repairs the saved Romana 9065 + 9001 image in existing projects',()=>{
+  const app=fs.readFileSync(path.join(__dirname,'..','public','app.js'),'utf8');
+  assert.ok(app.includes('SBORDONI_CURATED_RESULT_IMAGES'));
+  assert.ok(app.includes('"Romana|9065|9001"'));
+  assert.ok(app.includes('if(parent.sbordoniGrouped){'));
+  assert.ok(app.includes('parent.sbordoniConfiguration={...parent.sbordoniConfiguration,resultImage:curated};'));
+  assert.ok(app.includes('curatedSbordoniResultImage(parent.sbordoniConfiguration,support&&support.reference)'));
+});

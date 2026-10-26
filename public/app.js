@@ -3207,12 +3207,36 @@ function roomProductImageHtml(p){
   return `<label data-id="${p.id}">${p.image?productImageFrameHtml(p.image,p,p.designation,"room-live-image"):"＋ Photo"}${nicolazziHandlePreviewHtml(p,{selectedHandle:p.nicolazziSelectedHandle})}<input class="prod-file" type="file" accept="image/*" hidden></label>`;
 }
 
+const SBORDONI_CURATED_RESULT_IMAGES={
+  "Romana|9065|9001":"https://data.bobool.it/imgprodotto/colonna-classica-per-lavabo-in-ceramica-bianca-romana-sbordoni_17587_zoom.jpg"
+};
+function curatedSbordoniResultImage(configuration,supportRef=""){
+  const c=configuration||{};
+  const componentSupport=Array.isArray(c.components)?c.components.find(function(x){return x&&x.role==="pietement";}):null;
+  const ref=String(supportRef||c.supportRef||(componentSupport&&componentSupport.reference)||"");
+  const key=String(c.collection||"")+"|"+String(c.family||"")+"|"+ref;
+  return SBORDONI_CURATED_RESULT_IMAGES[key]||"";
+}
 function migrateLegacySbordoniGroupedConfigurations(){
   const selected=Array.isArray(state.selected)?state.selected:[];
   const removeIds=new Set();
   let changed=false;
   for(const parent of selected){
-    if(!parent?.sbordoniConfiguration || parent.sbordoniGrouped)continue;
+    if(!parent?.sbordoniConfiguration)continue;
+    if(parent.sbordoniGrouped){
+      const curated=curatedSbordoniResultImage(parent.sbordoniConfiguration);
+      if(curated && (parent.image!==curated || parent.pdfImage!==curated || parent.sbordoniConfiguration.resultImage!==curated)){
+        parent.image=curated;
+        parent.images=[curated];
+        parent.pdfImage=curated;
+        parent.pdfImages=[curated];
+        parent.imageSource="Catalogue Sbordoni 2023 — composition lavabo + piètement";
+        parent.imageStatus="Visuel final configuré Sbordoni";
+        parent.sbordoniConfiguration={...parent.sbordoniConfiguration,resultImage:curated};
+        changed=true;
+      }
+      continue;
+    }
     const children=selected.filter(x=>x?.accessoryFor===parent.id && x?.sbordoniConfigurationAccessory);
     const components=[{
       role:"lavabo",
@@ -3232,6 +3256,8 @@ function migrateLegacySbordoniGroupedConfigurations(){
       if(child.image||child.pdfImage)finalImage=child.image||child.pdfImage;
       removeIds.add(child.id);
     }
+    const curatedFinalImage=curatedSbordoniResultImage(parent.sbordoniConfiguration,support&&support.reference);
+    if(curatedFinalImage)finalImage=curatedFinalImage;
     if(support){
       const label=String(support.designation||"Piètement")
         .replace(/\s+pour\s+(?:console\s+)?lavabo.*$/i,"")
