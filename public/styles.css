@@ -2900,3 +2900,14 @@ main{background:transparent}
   background:transparent!important;
   mix-blend-mode:normal!important;
 }
+
+/* V11.60.4 — Sbordoni configurator first */
+.sbordoni-catalog-launcher{
+  grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:18px;
+  padding:18px 20px;border:1px solid rgba(180,138,78,.34);border-radius:16px;
+  background:linear-gradient(135deg,#fffaf1 0%,#fff 70%);box-shadow:0 12px 30px rgba(70,50,20,.06);
+}
+.sbordoni-catalog-launcher h3{margin:4px 0 5px;font-family:Georgia,serif;font-size:20px;font-weight:500}
+.sbordoni-catalog-launcher p{margin:0;color:#777;font-size:10px;max-width:680px;line-height:1.45}
+.sbordoni-launch-actions{display:flex;gap:8px;flex:0 0 auto}
+@media(max-width:900px){.sbordoni-catalog-launcher{align-items:flex-start;flex-direction:column}.sbordoni-launch-actions{width:100%}.sbordoni-launch-actions .btn{flex:1}}

@@ -12,13 +12,39 @@
   const NE0CLASSICA_SHARED_PEDESTAL=new Set(["5775","5770","5765","5758"]);
   const FINISH_ORDER=["CR","NI","OL","BR","ON","RA","NN"];
 
+  const PALLADIO_SUPPORT_MATRIX={
+    "7200":["P7200","G720"],
+    "7100":["P7100","7001","G720","7100M"],
+    "7070":["P7070","7001","7070M"],
+    "7064":["P7064","7001"],
+    "7050":[]
+  };
+
+  const CURATED_BASIN_IMAGES={
+    "Palladio|7200":"https://img.archiexpo.fr/images_ae/photo-m2/52045-15167263.jpg",
+    "Palladio|7100":"https://img.archiexpo.fr/images_ae/photo-m2/52045-15167309.jpg",
+    "Palladio|7070":"https://img.archiexpo.fr/images_ae/photo-m2/52045-15167365.jpg",
+    "Palladio|7064":"https://img.archiexpo.fr/images_ae/photo-m2/52045-15167421.jpg"
+  };
+
   const CURATED_RESULT_IMAGES={
-    "Romana|9065|9001":"https://data.bobool.it/imgprodotto/colonna-classica-per-lavabo-in-ceramica-bianca-romana-sbordoni_17587_zoom.jpg"
+    "Romana|9065|9001":"https://data.bobool.it/imgprodotto/colonna-classica-per-lavabo-in-ceramica-bianca-romana-sbordoni_17587_zoom.jpg",
+    "Palladio|7200|P7200":"https://img.archiexpo.fr/images_ae/photo-m2/52045-15167301.jpg",
+    "Palladio|7200|G720":"https://img.archiexpo.fr/images_ae/photo-m2/52045-15167295.jpg",
+    "Palladio|7100|P7100":"https://img.archiexpo.fr/images_ae/photo-m2/52045-15167359.jpg",
+    "Palladio|7100|7001":"https://img.archiexpo.fr/images_ae/photo-m2/52045-15167341.jpg",
+    "Palladio|7100|G720":"https://img.archiexpo.fr/images_ae/photo-m2/52045-15167329.jpg",
+    "Palladio|7100|7100M":"https://img.archiexpo.fr/images_ae/photo-mg/52045-15167347.jpg",
+    "Palladio|7070|P7070":"https://img.archiexpo.fr/images_ae/photo-m2/52045-15167407.jpg",
+    "Palladio|7070|7001":"https://img.archiexpo.fr/images_ae/photo-m2/52045-15167377.jpg",
+    "Palladio|7070|7070M":"https://img.archiexpo.fr/images_ae/photo-m2/52045-15167385.jpg",
+    "Palladio|7064|P7064":"https://img.archiexpo.fr/images_ae/photo-m2/52045-15167463.jpg",
+    "Palladio|7064|7001":"https://img.archiexpo.fr/images_ae/photo-m2/52045-15167449.jpg"
   };
 
   function resultImage(collection,family,support){
-    const supportRef=String(support?.reference||"");
-    const curated=CURATED_RESULT_IMAGES[`${collection}|${family}|${supportRef}`];
+    const supportKey=supportGroupKey(support);
+    const curated=CURATED_RESULT_IMAGES[`${collection}|${family}|${supportKey}`];
     return curated || support?.image || canonicalImage(collection,family) || "";
   }
 
@@ -74,11 +100,16 @@
 
   function supportCandidates(collection,family){
     const seen=new Set();
-    return [...directSupportCandidates(collection,family),...specialSupportCandidates(collection,family)].filter(x=>{
+    let items=[...directSupportCandidates(collection,family),...specialSupportCandidates(collection,family)].filter(x=>{
       const key=String(x.reference||"");
       if(!key||seen.has(key))return false;
       seen.add(key);return true;
     });
+    if(collection==="Palladio" && Object.prototype.hasOwnProperty.call(PALLADIO_SUPPORT_MATRIX,String(family))){
+      const allowed=new Set(PALLADIO_SUPPORT_MATRIX[String(family)]);
+      items=items.filter(x=>allowed.has(supportGroupKey(x)));
+    }
+    return items;
   }
 
   function familyIsBasin(collection,family){
@@ -119,6 +150,8 @@
   }
 
   function canonicalImage(collection,family){
+    const curated=CURATED_BASIN_IMAGES[`${collection}|${family}`];
+    if(curated)return curated;
     const rows=familyRows(collection,family);
     const preferred=rows.find(x=>String(x.reference||"")===`${family}/3` && x.image) || rows.find(x=>x.image);
     return preferred?.image||"";

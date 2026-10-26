@@ -135,3 +135,28 @@ test('V11.60.3 repairs the saved Romana 9065 + 9001 image in existing projects',
   assert.ok(app.includes('parent.sbordoniConfiguration={...parent.sbordoniConfiguration,resultImage:curated};'));
   assert.ok(app.includes('curatedSbordoniResultImage(parent.sbordoniConfiguration,support&&support.reference)'));
 });
+
+
+test('V11.60.4 Palladio compatibility matrix follows the catalogue contact sheet',()=>{
+  const CATALOG=loadCatalog();
+  const context={window:{},CATALOG,console,esc:v=>String(v??''),euro:v=>String(v??0),document:{}};
+  vm.createContext(context);
+  vm.runInContext(fs.readFileSync(path.join(__dirname,'..','public','sbordoni-configurator.js'),'utf8'),context);
+  const cfg=context.window.HydroSbordoniConfigurator;
+  const keys=f=>Array.from(cfg.supportGroups('Palladio',f),g=>g.key);
+  assert.deepEqual(keys('7200').sort(),['G720','P7200'].sort());
+  assert.deepEqual(keys('7100').sort(),['7001','7100M','G720','P7100'].sort());
+  assert.deepEqual(keys('7070').sort(),['7001','7070M','P7070'].sort());
+  assert.deepEqual(keys('7064').sort(),['7001','P7064'].sort());
+  const support7100=cfg.supportGroups('Palladio','7100').flatMap(g=>Array.from(g.items)).find(x=>x.reference==='7100M');
+  assert.equal(cfg.resultImage('Palladio','7100',support7100),'https://img.archiexpo.fr/images_ae/photo-mg/52045-15167347.jpg');
+  assert.equal(cfg.catalogImage(CATALOG.find(x=>x.manufacturer==='Sbordoni'&&x.collection==='Palladio'&&x.reference==='7100/3')),'https://img.archiexpo.fr/images_ae/photo-m2/52045-15167309.jpg');
+});
+
+test('V11.60.4 puts the Sbordoni configurator before product cards',()=>{
+  const app=fs.readFileSync(path.join(__dirname,'..','public','app.js'),'utf8');
+  assert.match(app,/sbordoni-catalog-launcher/);
+  assert.match(app,/sbordoni-launch-basin/);
+  assert.match(app,/HydroSbordoniConfigurator\?\.open\?\.\(null/);
+  assert.match(app,/sbordoni-launch-wc/);
+});

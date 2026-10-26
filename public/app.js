@@ -1942,16 +1942,24 @@ function renderCatalog(){
    const rows=[...merged.values()];
    if(count)count.textContent=`${rows.length} résultat${rows.length>1?"s":""}${serverSearchRows.length?" · multi-sources":""}`;
    const room=roomById($("#targetRoom")?.value)||state.rooms[0];
+   const sbordoniActive=/^Sbordoni$/i.test(fs.manufacturer) || (!fs.manufacturer && /^sbordoni\b/i.test(String(q).trim()));
+   const sbordoniLauncher=sbordoniActive?`<section class="sbordoni-catalog-launcher">
+     <div><span class="eyebrow">SBORDONI · CONFIGURATION GUIDÉE</span><h3>Composer directement le produit final</h3><p>Choisissez d’abord la collection et la dimension, puis uniquement les piètements compatibles montrés dans le catalogue.</p></div>
+     <div class="sbordoni-launch-actions"><button type="button" class="btn primary sbordoni-launch-basin">Configurer un lavabo</button><button type="button" class="btn ghost sbordoni-launch-wc">Configurer un WC</button></div>
+   </section>`:"";
    const signature=currentSearchSignature();if(signature!==catalogPageSignature){catalogPage=0;catalogPageSignature=signature;}
    catalogPage=Math.max(0,Math.min(catalogPage,Math.ceil(rows.length/CATALOG_PAGE_SIZE)-1));
    const visibleRows=rows.slice(catalogPage*CATALOG_PAGE_SIZE,(catalogPage+1)*CATALOG_PAGE_SIZE);
-   results.innerHTML=visibleRows.map(p=>{
+   const productCards=visibleRows.map(p=>{
      const cached=cachedManufacturerImage(p),finishLabel=exactFinishLabel(p)||"",price=catalogDisplayPrice(p),key=productKey(p),avail=availabilityInfo(p),compared=compareRefs.has(key),favorite=favoriteRefs.has(key);
      const candidateVisual=/^Sbordoni$/i.test(String(p.manufacturer||""))?((window.HydroSbordoniConfigurator?.catalogImage?.(p))||p.image||((Array.isArray(p.images)&&p.images[0])||"")):(cached?.src||p.image||((Array.isArray(p.images)&&p.images[0])||""));
      const catalogVisual=brokenCatalogImages.has(candidateVisual)?"":candidateVisual;
      return `<article class="result v11-product-card" data-key="${esc(key)}">${catalogThumbHtml(p,catalogVisual,finishLabel,favorite,cached)}<div><div class="r-top"><span class="ref">${esc(p.reference)}</span><span class="badge">${esc(p.manufacturer)}</span><span class="badge">${esc(p.collection)}</span><span class="badge">${esc(p.category)}</span></div><div class="designation">${esc(p.designation)}</div><div class="meta">${esc(p.finish||"")}</div>${roughInWarningHtml(p)}<div class="availability ${avail.cls}">${esc(avail.label)}</div><div class="manufacturer-tools v11-resource-tools"><button class="tiny lookup-photo" data-ref="${esc(p.reference)}" data-key="${esc(key)}">${cached||p.image?"Actualiser la photo":"Photo fabricant"}</button>${hotbathNeedsFinishFallback(p,cached)?`<button class="tiny hotbath-web-photo" data-ref="${esc(p.reference)}" data-key="${esc(key)}">Finition web</button>`:""}${p.manufacturerUrl?`<a class="source-link" target="_blank" rel="noopener" href="${esc(cached?.resolvedManufacturerUrl||p.manufacturerUrl)}">Fiche ↗</a>`:""}${cached?.technicalSheetUrl?`<a class="source-link" target="_blank" rel="noopener" href="${esc(cached.technicalSheetUrl)}">Technique ↗</a>`:""}</div><div class="photo-status">${cached?`<b>${esc(imageBadge(cached,p))}</b>`:p.image?`<b>${esc(p.imageSource||"Visuel catalogue")}</b>`:`Source tarif : ${esc(p.source||"catalogue fabricant")}`}</div>${/^Nicolazzi$/i.test(String(p.manufacturer||""))?`<div class="nicolazzi-options-slot">${nicolazziVisualOptionsHtml(p,cached)}</div>`:""}<div class="card-action-row"><button class="suggest-toggle" data-key="${esc(key)}">Alternatives</button><button class="compare-toggle ${compared?"active":""}" data-key="${esc(key)}">${compared?"✓ Comparé":"Comparer"}</button></div></div><div class="price-box"><small class="v11-price-label">Prix public</small><div class="price">${euro(price)} HT</div>${p.internalReference?`<div class="internal">Ext. ${euro(p.price)} + ${esc(p.internalReference)} ${euro(p.internalPrice)}</div>`:`<div class="internal">${esc(p.sourceYear?`Tarif ${p.sourceYear}`:"Référence complète")}</div>`}${(window.HydroSbordoniConfigurator?.eligible?.(p)||window.HydroSbordoniWCConfigurator?.eligible?.(p))?`<div class="internal recor-config-hint"><b>Configuration guidée</b> · choisissez la composition finale</div>`:isRecorBathRequiringFeet(p)?`<div class="internal recor-config-hint"><b>Pieds obligatoires</b> · choix à l’ajout</div>`:""}<button class="btn primary add" data-ref="${esc(p.reference)}" data-key="${esc(key)}" style="margin-top:9px">${(window.HydroSbordoniConfigurator?.eligible?.(p)||window.HydroSbordoniWCConfigurator?.eligible?.(p))?"Configurer ce produit":isRecorBathRequiringFeet(p)?"Configurer + ajouter":"Ajouter à "+esc(room?.title||"la pièce")}</button></div></article>`;
-   }).join("")||`<div class="empty">Aucun résultat.</div>`;
-   $$(".add",results).forEach(b=>b.onclick=()=>{try{addCatalogProduct(b.dataset.ref,$("#targetRoom")?.value||state.rooms[0]?.id||"",b.dataset.key||"")}catch(e){alert(`Impossible d’ajouter cet article : ${e.message||"erreur inconnue"}`)}});
+   }).join("");
+   results.innerHTML=sbordoniLauncher+(productCards||`<div class="empty">Aucun résultat.</div>`);
+   results.querySelector(".sbordoni-launch-basin")?.addEventListener("click",()=>window.HydroSbordoniConfigurator?.open?.(null,$("#targetRoom")?.value||state.rooms[0]?.id||""));
+   results.querySelector(".sbordoni-launch-wc")?.addEventListener("click",()=>window.HydroSbordoniWCConfigurator?.open?.(null,$("#targetRoom")?.value||state.rooms[0]?.id||""));
+   $(".add",results).forEach(b=>b.onclick=()=>{try{addCatalogProduct(b.dataset.ref,$("#targetRoom")?.value||state.rooms[0]?.id||"",b.dataset.key||"")}catch(e){alert(`Impossible d’ajouter cet article : ${e.message||"erreur inconnue"}`)}});
    $$(".lookup-photo",results).forEach(b=>b.onclick=()=>lookupCatalogPhoto(b.dataset.ref,b,b.dataset.key||""));
    $$(".hotbath-web-photo",results).forEach(b=>b.onclick=()=>useHotbathWebImageForCatalog(b.dataset.ref,b,b.dataset.key||""));
    $$(".compare-toggle",results).forEach(b=>b.onclick=()=>toggleCompare(b.dataset.key));
@@ -3214,6 +3222,11 @@ function curatedSbordoniResultImage(configuration,supportRef=""){
   const c=configuration||{};
   const componentSupport=Array.isArray(c.components)?c.components.find(function(x){return x&&x.role==="pietement";}):null;
   const ref=String(supportRef||c.supportRef||(componentSupport&&componentSupport.reference)||"");
+  const support=(state.selected||[]).find(x=>/^Sbordoni$/i.test(String(x?.manufacturer||""))&&String(x?.reference||"")===ref)
+    || CATALOG.find(x=>/^Sbordoni$/i.test(String(x?.manufacturer||""))&&String(x?.reference||"")===ref)
+    || (ref?{reference:ref,base:ref} : null);
+  const configured=window.HydroSbordoniConfigurator?.resultImage?.(String(c.collection||""),String(c.family||""),support);
+  if(configured)return configured;
   const key=String(c.collection||"")+"|"+String(c.family||"")+"|"+ref;
   return SBORDONI_CURATED_RESULT_IMAGES[key]||"";
 }
