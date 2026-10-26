@@ -44,6 +44,10 @@ test('Sbordoni configurator groups 1/3-hole basin variants and keeps a shared ba
 
   const supports5775=cfg.supportGroups('Neoclassica','5775');
   assert.ok(supports5775.some(x=>x.items.some(i=>i.reference==='5771')),'shared pedestal 5771 offered for 5775');
+
+  assert.ok(cfg.supportGroups('Masaccio','5359').some(x=>x.items.some(i=>i.reference==='5771')),'Masaccio 5359 offers pedestal 5771');
+  assert.ok(cfg.supportGroups('Palladio','7064').some(x=>x.items.some(i=>i.reference==='7001')),'Palladio 7064 offers pedestal 7001');
+  assert.ok(cfg.supportGroups('Romana','9065').some(x=>x.items.some(i=>i.reference==='9001')),'Romana 9065 offers pedestal 9001');
 });
 
 test('app routes configurable Sbordoni basins through the configurator',()=>{
