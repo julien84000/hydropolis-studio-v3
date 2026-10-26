@@ -103,3 +103,17 @@ test('app routes Sbordoni WC products through the WC configurator',()=>{
   assert.match(app,/HydroSbordoniWCConfigurator\?\.eligible/);
   assert.match(app,/HydroSbordoniWCConfigurator\.open/);
 });
+
+
+test('V11.60.1 stores a configured Sbordoni basin as one grouped visible product',()=>{
+  const configurator=fs.readFileSync(path.join(__dirname,'..','public','sbordoni-configurator.js'),'utf8');
+  const app=fs.readFileSync(path.join(__dirname,'..','public','app.js'),'utf8');
+  assert.match(configurator,/sbordoniGrouped=true/);
+  assert.match(configurator,/commitSelectedRecords\(\[groupedRecord\]/);
+  assert.doesNotMatch(configurator,/supportRecord=createSelectedProductRecord/);
+  assert.match(configurator,/resultImage:resultImg/);
+  assert.match(app,/migrateLegacySbordoniGroupedConfigurations/);
+  assert.match(app,/sbordoni-edit-config/);
+  assert.match(app,/Configurer ce produit/);
+  assert.match(app,/p\.sbordoniConfiguration\?"":safeBasinAccessorySuggestions/);
+});
