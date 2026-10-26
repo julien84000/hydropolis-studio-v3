@@ -1,11 +1,12 @@
 (function(root){
   "use strict";
 
+  const SUPPORTED_COLLECTIONS=["Romana","Palladio","Neoclassica","Masaccio"];
   const DIMENSIONS={
-    Neoclassica:{5700:1050,5775:730,5770:690,5765:650,5758:580},
-    Palladio:{7200:1500,7100:1000,7070:715,7064:645},
     Romana:{9200:1350,9090:900,9065:650},
-    Masaccio:{5369:680,5365:640,5352:525,5304:650,5305:580}
+    Palladio:{7200:1500,7100:1000,7070:715,7064:645,7050:0},
+    Neoclassica:{5700:1050,5775:730,5770:690,5765:650,5758:580},
+    Masaccio:{5369:680,5365:640,5359:0,5352:525,5304:650,5305:580}
   };
 
   const NE0CLASSICA_SHARED_PEDESTAL=new Set(["5775","5770","5765","5758"]);
@@ -83,13 +84,7 @@
   }
 
   function collections(){
-    const set=new Set();
-    try{
-      for(const p of CATALOG){
-        if(/^Sbordoni$/i.test(String(p.manufacturer||"")) && p.collection)set.add(p.collection);
-      }
-    }catch{}
-    return [...set].filter(c=>familiesForCollection(c).length).sort((a,b)=>a.localeCompare(b,"fr"));
+    return SUPPORTED_COLLECTIONS.filter(c=>familiesForCollection(c).length);
   }
 
   function dimensionFor(collection,family){
@@ -121,7 +116,7 @@
 
   function eligible(p){
     const family=familyFrom(p);
-    return !!family && familyIsBasin(p.collection,family);
+    return !!family && SUPPORTED_COLLECTIONS.includes(String(p?.collection||"")) && familyIsBasin(p.collection,family);
   }
 
   function supportGroupKey(p){
@@ -409,6 +404,8 @@
     catalogImage,
     familyFrom,
     familiesForCollection,
-    supportGroups
+    supportGroups,
+    collections,
+    supportedCollections:[...SUPPORTED_COLLECTIONS]
   };
 })(window);
