@@ -2886,3 +2886,17 @@ main{background:transparent}
 .v11-filters{grid-template-columns:repeat(5,minmax(0,1fr))}
 @media(max-width:1000px){.v11-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:620px){.v11-filters{grid-template-columns:1fr}}
+
+
+/* V11.60.1 — Dornbracht PNGs need a neutral background in client presentation */
+#document .dornbracht-client-item .board-visual,
+#document .dornbracht-client-item .board-single-image,
+#document .dornbracht-client-item .product-visual-frame,
+#document .dornbracht-client-item .board-gallery,
+#document .dornbracht-client-item .board-gallery figure{
+  background:#fff!important;
+}
+#document .dornbracht-client-item .board-visual img{
+  background:transparent!important;
+  mix-blend-mode:normal!important;
+}
