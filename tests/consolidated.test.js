@@ -15,8 +15,8 @@ const rawCatalog=()=>{
 };
 test('les fabricants et les parents configurables sont conservés',()=>{
   const rows=rawCatalog(),counts={};for(const p of rows)counts[p.manufacturer]=(counts[p.manufacturer]||0)+1;
-  assert.deepEqual(counts,{Amphora:171,Coalbrook:1483,Alpi:3041,Catalano:1430,Nicolazzi:36303,Hotbath:2554,'Lefroy Brooks':3397,Gessi:16211,Ritmonio:16082,Recor:192,Fioranese:1135,Resigres:38,Vismaravetro:15,TDA:20,'Sira Concrete':5,Zucchetti:12053});
-  assert.equal(rows.length,94130);
+  assert.deepEqual(counts,{Amphora:171,Coalbrook:1483,Alpi:3041,Catalano:1430,Nicolazzi:36303,Hotbath:2554,'Lefroy Brooks':3397,Gessi:16211,Ritmonio:16082,Recor:192,Fioranese:1135,Resigres:38,Vismaravetro:15,TDA:20,'Sira Concrete':5,Zucchetti:12053,Dornbracht:8996});
+  assert.equal(rows.length,103126);
   const tariff=require('../public/sira_tariff_2024.json');assert.equal(models.length,26);assert.equal(tariff.products.length,22);assert.equal(Object.keys(tariff.arctic).length,4);
   assert.equal(new Set(models.map(x=>x.collection)).size,5);
 });
