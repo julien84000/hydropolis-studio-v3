@@ -737,10 +737,10 @@ try{
 let manufacturerImageCache={};
 try{manufacturerImageCache=JSON.parse(localStorage.getItem("hydropolis-manufacturer-v119")||"{}")||{};}catch(e){manufacturerImageCache={};}
 try{
-  if(localStorage.getItem("hydropolis-sbordoni-local-v11593")!=="1"){
+  if(localStorage.getItem("hydropolis-sbordoni-local-v11594")!=="1"){
     for(const key of Object.keys(manufacturerImageCache))if(/^Sbordoni\|/i.test(key))delete manufacturerImageCache[key];
     localStorage.setItem("hydropolis-manufacturer-v119",JSON.stringify(manufacturerImageCache));
-    localStorage.setItem("hydropolis-sbordoni-local-v11593","1");
+    localStorage.setItem("hydropolis-sbordoni-local-v11594","1");
   }
 }catch(e){}
 // V11.26: invalidate only stale Gessi imagery from the former corporate-site resolver.
@@ -4647,8 +4647,8 @@ async function loadSupplierCatalogs(){
       }
       if(Array.isArray(rows)){
         for(const p of rows){
-          if(/^Sbordoni$/i.test(String(p?.manufacturer||"")) && /^\/api\/sbordoni-image\?/.test(String(p?.image||"")) && !/[?&]v=11593(?:&|$)/.test(p.image)){
-            p.image += (p.image.includes("?")?"&":"?")+"v=11593";
+          if(/^Sbordoni$/i.test(String(p?.manufacturer||"")) && /^\/api\/sbordoni-image\?/.test(String(p?.image||"")) && !/[?&]v=11594(?:&|$)/.test(p.image)){
+            p.image += (p.image.includes("?")?"&":"?")+"v=11594";
           }
           const key=productKey(p);
           if(!known.has(key)){
