@@ -160,3 +160,6 @@ test('V11.60.4 puts the Sbordoni configurator before product cards',()=>{
   assert.match(app,/HydroSbordoniConfigurator\?\.open\?\.\(null/);
   assert.match(app,/sbordoni-launch-wc/);
 });
+
+
+test("catalog add handlers use the multi-selector",()=>{\n  const app=fs.readFileSync(path.join(__dirname,"..","public","app.js"),"utf8");\n  assert.ok(app.includes('$$(\".add\",results).forEach'));\n  assert.equal(app.includes('$(\".add\",results).forEach'),false);\n});\n
