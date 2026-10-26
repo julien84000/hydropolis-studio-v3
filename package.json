@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node server.js",
     "check": "node tests/check-syntax.js",
-    "test": "node verify-release.js && node --test tests/consolidated.test.js tests/v11.57-regression.test.js tests/v11.58-dornbracht.test.js tests/pdf-readiness.test.js",
+    "test": "node verify-release.js && node --test tests/consolidated.test.js tests/v11.57-regression.test.js tests/v11.58-dornbracht.test.js tests/v11.60-sbordoni-configurator.test.js tests/pdf-readiness.test.js",
     "build": "npm run check && npm test",
     "test:browser": "node tests/browser-consolidated.js && node tests/v11.57-browser.js",
     "test:live": "node tests/live-assets.js"
