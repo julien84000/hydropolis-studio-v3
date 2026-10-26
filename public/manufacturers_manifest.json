@@ -219,6 +219,18 @@
         "automatic-image-hydration",
         "fabdis-2026-pricing"
       ]
+    },
+    {
+      "name": "Sbordoni",
+      "catalog": "catalog_sbordoni_1.json",
+      "catalogChunks": 6,
+      "capabilities": [
+        "catalog",
+        "pdf-price-list-2023",
+        "pdf-contact-sheet-images",
+        "isolated-product-images",
+        "collection-navigation"
+      ]
     }
   ]
 }
