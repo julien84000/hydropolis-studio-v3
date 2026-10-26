@@ -45,7 +45,7 @@ app.get("/api/sbordoni-image",(req,res)=>{
     const item=index.items?.[ref];
     if(!item)return res.status(404).send("Visuel Sbordoni indisponible");
     if(SBORDONI_SVG_CACHE.has(ref)){
-      res.set("Cache-Control","public, max-age=86400, immutable");
+      res.set("Cache-Control","public, max-age=300, must-revalidate");
       res.type("image/svg+xml").send(SBORDONI_SVG_CACHE.get(ref));return;
     }
     const [sheetNo,x,y,w,h]=item.map(Number);
@@ -58,7 +58,7 @@ app.get("/api/sbordoni-image",(req,res)=>{
     const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><rect width="100%" height="100%" fill="white"/><image href="data:image/jpeg;base64,${encoded}" x="${-x}" y="${-y}" width="${sheetW}" height="${sheetH}" preserveAspectRatio="none"/></svg>`;
     SBORDONI_SVG_CACHE.set(ref,svg);
     if(SBORDONI_SVG_CACHE.size>600)SBORDONI_SVG_CACHE.delete(SBORDONI_SVG_CACHE.keys().next().value);
-    res.set("Cache-Control","public, max-age=86400, immutable");
+    res.set("Cache-Control","public, max-age=300, must-revalidate");
     res.type("image/svg+xml").send(svg);
   }catch(error){
     console.error("[sbordoni-image]",error);
