@@ -32,7 +32,7 @@ function sbordoniMediaIndex(){
 function sbordoniSheetBase64(sheetNo){
   const key=String(sheetNo);
   if(!SBORDONI_SHEET_B64_CACHE.has(key)){
-    const encoded=fs.readFileSync(path.join(SBORDONI_MEDIA_ROOT,`sbordoni-sheet-${key}.b64`),"utf8").replace(/\\s+/g,"");
+    const encoded=fs.readFileSync(path.join(SBORDONI_MEDIA_ROOT,`sbordoni-sheet-${key}.b64`),"utf8").replace(/\s+/g,"");
     SBORDONI_SHEET_B64_CACHE.set(key,encoded);
   }
   return SBORDONI_SHEET_B64_CACHE.get(key);
