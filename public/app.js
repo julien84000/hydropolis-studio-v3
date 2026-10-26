@@ -4647,8 +4647,8 @@ async function loadSupplierCatalogs(){
       }
       if(Array.isArray(rows)){
         for(const p of rows){
-          if(/^Sbordoni$/i.test(String(p?.manufacturer||"")) && /^\/api\/sbordoni-image\?/.test(String(p?.image||"")) && !/[?&]v=11592(?:&|$)/.test(p.image)){
-            p.image += (p.image.includes("?")?"&":"?")+"v=11592";
+          if(/^Sbordoni$/i.test(String(p?.manufacturer||"")) && /^\/api\/sbordoni-image\?/.test(String(p?.image||"")) && !/[?&]v=11593(?:&|$)/.test(p.image)){
+            p.image += (p.image.includes("?")?"&":"?")+"v=11593";
           }
           const key=productKey(p);
           if(!known.has(key)){
