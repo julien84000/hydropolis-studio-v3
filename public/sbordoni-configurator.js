@@ -6,7 +6,7 @@
     Romana:{9200:1350,9090:900,9065:650},
     Palladio:{7200:1500,7100:1000,7070:715,7064:645,7050:0},
     Neoclassica:{5700:1050,5775:730,5770:690,5765:650,5758:580},
-    Masaccio:{5369:680,5365:640,5359:0,5352:525,5304:650,5305:580}
+    Masaccio:{5369:680,5365:640,5359:595,5352:525,5304:650,5305:580}
   };
 
   const NE0CLASSICA_SHARED_PEDESTAL=new Set(["5775","5770","5765","5758"]);
@@ -49,10 +49,16 @@
 
   function specialSupportCandidates(collection,family){
     const out=[];
-    if(collection==="Neoclassica" && NE0CLASSICA_SHARED_PEDESTAL.has(String(family))){
-      const p=collectionRows(collection).find(x=>String(x.reference||"")==="5771");
+    const ref=String(family);
+    const add=(reference)=>{
+      const p=collectionRows(collection).find(x=>String(x.reference||"")===reference) ||
+        CATALOG.find(x=>/^Sbordoni$/i.test(String(x.manufacturer||"")) && String(x.reference||"")===reference);
       if(p)out.push(p);
-    }
+    };
+    if(collection==="Neoclassica" && NE0CLASSICA_SHARED_PEDESTAL.has(ref))add("5771");
+    if(collection==="Masaccio" && ["5369","5365","5359"].includes(ref))add("5771");
+    if(collection==="Palladio" && ["7100","7070","7064"].includes(ref))add("7001");
+    if(collection==="Romana" && ref==="9065")add("9001");
     return out;
   }
 
