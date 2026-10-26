@@ -175,6 +175,16 @@
     const kind=/double/.test(d)?"Console double":/console/.test(d)?"Console lavabo":/angulaire/.test(d)?"Lavabo angulaire":"Lavabo";
     return `${kind} ${collection}${dim?` ${dim} mm`:""} — ${holes} trou${holes==="1"?"":"s"} robinetterie`;
   }
+  function configuredDesignation(collection,family,holes,support){
+    const base=basinDesignation(collection,family,holes);
+    if(!support)return base;
+    const label=supportLabel(support)
+      .replace(/\s+pour\s+(?:console\s+)?lavabo.*$/i,"")
+      .replace(/\s+pour\s+console.*$/i,"")
+      .trim();
+    const finish=String(support.finish||"").trim();
+    return [base,label,finish].filter(Boolean).join(" · ");
+  }
 
   function imageHtml(src,alt){
     if(!src)return `<span class="recor-choice-thumb recor-choice-thumb-empty">Visuel</span>`;
@@ -186,14 +196,18 @@
   }
 
   function open(p,roomId){
-    const initialCollection=p?.collection && familiesForCollection(p.collection).length?p.collection:collections()[0];
-    const initialFamily=familyFrom(p) || familiesForCollection(initialCollection)[0];
+    const editing=!!(p?.id && p?.sbordoniConfiguration);
+    const saved=p?.sbordoniConfiguration||{};
+    const initialCollection=(saved.collection&&familiesForCollection(saved.collection).length)?saved.collection:(p?.collection&&familiesForCollection(p.collection).length?p.collection:collections()[0]);
+    const initialFamily=String(saved.family||familyFrom(p)||familiesForCollection(initialCollection)[0]||"");
+    const savedSupportRef=String(saved.supportRef||"");
+    const initialGroup=supportGroups(initialCollection,initialFamily).find(g=>g.items.some(x=>String(x.reference||"")===savedSupportRef));
     const state={
       collection:initialCollection,
       family:initialFamily,
-      holes:holesFrom(p)||"1",
-      supportKey:"",
-      supportRef:""
+      holes:String(saved.holes||holesFrom(p)||"1"),
+      supportKey:initialGroup?.key||"",
+      supportRef:savedSupportRef
     };
     const overlay=document.createElement("div");
     overlay.id="sbordoniConfigurator";
@@ -236,7 +250,7 @@
       overlay.innerHTML=`<div class="recor-configurator" role="dialog" aria-modal="true" aria-labelledby="sbordoniConfigTitle">
         <div class="recor-config-head">
           <div>
-            <div class="eyebrow">Sbordoni · configurateur de collection</div>
+            <div class="eyebrow">Sbordoni · ${editing?"modifier la configuration":"configurateur de collection"}</div>
             <h2 id="sbordoniConfigTitle">${esc(state.collection||"Sbordoni")}</h2>
             <p>Choisissez le lavabo, le perçage puis, si souhaité, son piètement. Le perçage 1 ou 3 trous conserve le même visuel de vasque.</p>
           </div>
@@ -315,7 +329,7 @@
         <div class="recor-config-error" aria-live="polite"></div>
         <div class="recor-config-actions">
           <button type="button" class="btn ghost sbordoni-config-cancel">Annuler</button>
-          <button type="button" class="btn primary sbordoni-config-confirm" ${basin?"":"disabled"}>Ajouter la configuration</button>
+          <button type="button" class="btn primary sbordoni-config-confirm" ${basin?"":"disabled"}>${editing?"Mettre à jour la configuration":"Ajouter la configuration"}</button>
         </div>
       </div>`;
 
@@ -351,45 +365,90 @@
         try{
           const selectedBasin=basinVariant(state.collection,state.family,state.holes);
           if(!selectedBasin)throw new Error("La variante de lavabo sélectionnée est introuvable.");
+          const targetRoomId=normalizedRoomId(roomId);
           const baseImg=canonicalImage(state.collection,state.family);
+          const resultImg=selectedSupport?.image||baseImg||selectedBasin.image||"";
+          const basinPrice=Number(selectedBasin.totalPrice??selectedBasin.price??0);
+          const supportPrice=Number(selectedSupport?.totalPrice??selectedSupport?.price??0);
+          const total=basinPrice+supportPrice;
+          const components=[
+            {
+              role:"lavabo",
+              reference:selectedBasin.reference,
+              designation:selectedBasin.designation,
+              finish:selectedBasin.finish||"",
+              price:basinPrice
+            },
+            ...(selectedSupport?[{
+              role:"pietement",
+              reference:selectedSupport.reference,
+              designation:selectedSupport.designation,
+              finish:selectedSupport.finish||"",
+              price:supportPrice
+            }]:[])
+          ];
           const normalized={
             ...selectedBasin,
             category:"Lavabo",
-            designation:basinDesignation(state.collection,state.family,state.holes),
-            image:baseImg||selectedBasin.image||"",
-            images:[baseImg||selectedBasin.image||""].filter(Boolean),
-            imageSource:"Catalogue Sbordoni 2023 — visuel lavabo de la famille"
+            designation:configuredDesignation(state.collection,state.family,state.holes,selectedSupport),
+            price:total,
+            totalPrice:total,
+            image:resultImg,
+            images:[resultImg].filter(Boolean),
+            imageSource:selectedSupport?"Catalogue Sbordoni 2023 — composition lavabo + piètement":"Catalogue Sbordoni 2023 — visuel lavabo",
+            finish:selectedSupport?.finish||selectedBasin.finish||""
           };
-          const targetRoomId=normalizedRoomId(roomId);
-          const basinRecord=createSelectedProductRecord(normalized,targetRoomId,"");
-          if(!basinRecord)throw new Error("Le lavabo n’a pas pu être préparé.");
-          basinRecord.sbordoniConfiguration={
+          const groupedRecord=createSelectedProductRecord(normalized,targetRoomId,"");
+          if(!groupedRecord)throw new Error("La configuration Sbordoni n’a pas pu être préparée.");
+          groupedRecord.catalogPrice=total;
+          groupedRecord.catalogTotalPrice=total;
+          groupedRecord.totalPrice=total;
+          groupedRecord.price=total;
+          groupedRecord.sbordoniGrouped=true;
+          groupedRecord.sbordoniConfiguration={
             collection:state.collection,
             family:state.family,
             holes:Number(state.holes||0),
-            supportRef:selectedSupport?.reference||""
+            supportRef:selectedSupport?.reference||"",
+            componentReferences:components.map(x=>x.reference),
+            components,
+            resultImage:resultImg,
+            totalPrice:total,
+            grouped:true
           };
+          groupedRecord.image=resultImg;
+          groupedRecord.images=[resultImg].filter(Boolean);
+          groupedRecord.pdfImage=resultImg;
+          groupedRecord.pdfImages=[resultImg].filter(Boolean);
+          groupedRecord.imageStatus="Visuel final configuré Sbordoni";
+          groupedRecord.imageSource=normalized.imageSource;
 
-          const records=[basinRecord];
-          if(selectedSupport){
-            const supportRecord=createSelectedProductRecord(selectedSupport,targetRoomId,basinRecord.id);
-            if(!supportRecord)throw new Error("Le piètement n’a pas pu être préparé.");
-            supportRecord.hideFromDossier=true;
-            supportRecord.sbordoniConfigurationAccessory=true;
-            records.push(supportRecord);
-
-            if(selectedSupport.image){
-              basinRecord.image=selectedSupport.image;
-              basinRecord.images=[selectedSupport.image];
-              basinRecord.pdfImage=selectedSupport.image;
-              basinRecord.pdfImages=[selectedSupport.image];
-              basinRecord.imageSource="Catalogue Sbordoni 2023 — lavabo + piètement";
-              basinRecord.imageStatus="Visuel configuré Sbordoni";
-            }
+          if(editing){
+            const current=state.selected.find(x=>x.id===p.id);
+            if(!current)throw new Error("La configuration à modifier est introuvable.");
+            const preserved={
+              id:current.id,
+              roomId:current.roomId,
+              quantity:current.quantity,
+              leadTime:current.leadTime,
+              clientDiscountOverride:current.clientDiscountOverride,
+              priceOverride:current.priceOverride,
+              includeDrawing:current.includeDrawing,
+              includeTechnicalSheet:current.includeTechnicalSheet,
+              includeInstallationGuide:current.includeInstallationGuide
+            };
+            Object.assign(groupedRecord,preserved);
+            state.selected=state.selected.filter(x=>x.id!==current.id && !(x.accessoryFor===current.id && x.sbordoniConfigurationAccessory));
+            state.selected.push(groupedRecord);
+            reconcileProjectRoughIns();
+            saveState();
+            renderSelection();
+            renderRooms();
+            renderMarginDashboard();
+          }else{
+            const ids=commitSelectedRecords([groupedRecord],{showProject:false});
+            if(!ids.length)throw new Error("La configuration n’a pas pu être ajoutée.");
           }
-
-          const ids=commitSelectedRecords(records,{showProject:false});
-          if(!ids.length)throw new Error("La configuration n’a pas pu être ajoutée.");
           close();
           showView("project");
         }catch(e){
