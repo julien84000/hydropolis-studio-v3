@@ -8,7 +8,6 @@ const crypto = require("crypto");
 const dns = require("dns").promises;
 const net = require("net");
 const { Pool } = require("pg");
-const { createCanvas, loadImage } = require("@napi-rs/canvas");
 
 function createApp({assets={}}={}){
 const app = express();
@@ -22,44 +21,45 @@ app.use(express.json({limit:"20mb"}));
 
 const SBORDONI_MEDIA_ROOT=path.join(__dirname,"public","sbordoni");
 let SBORDONI_MEDIA_INDEX=null;
-const SBORDONI_SHEET_CACHE=new Map();
-const SBORDONI_CROP_CACHE=new Map();
+const SBORDONI_SHEET_B64_CACHE=new Map();
+const SBORDONI_SVG_CACHE=new Map();
 function sbordoniMediaIndex(){
   if(!SBORDONI_MEDIA_INDEX){
     SBORDONI_MEDIA_INDEX=JSON.parse(fs.readFileSync(path.join(SBORDONI_MEDIA_ROOT,"sbordoni-image-index.json"),"utf8"));
   }
   return SBORDONI_MEDIA_INDEX;
 }
-function sbordoniSheet(sheetNo){
+function sbordoniSheetBase64(sheetNo){
   const key=String(sheetNo);
-  if(!SBORDONI_SHEET_CACHE.has(key)){
-    const encoded=fs.readFileSync(path.join(SBORDONI_MEDIA_ROOT,`sbordoni-sheet-${key}.b64`),"utf8").trim();
-    SBORDONI_SHEET_CACHE.set(key,loadImage(Buffer.from(encoded,"base64")));
+  if(!SBORDONI_SHEET_B64_CACHE.has(key)){
+    const encoded=fs.readFileSync(path.join(SBORDONI_MEDIA_ROOT,`sbordoni-sheet-${key}.b64`),"utf8").replace(/\\s+/g,"");
+    SBORDONI_SHEET_B64_CACHE.set(key,encoded);
   }
-  return SBORDONI_SHEET_CACHE.get(key);
+  return SBORDONI_SHEET_B64_CACHE.get(key);
 }
-app.get("/api/sbordoni-image",async(req,res)=>{
+app.get("/api/sbordoni-image",(req,res)=>{
   const ref=String(req.query.ref||"").trim();
   if(!ref||ref.length>100)return res.status(400).send("Référence Sbordoni invalide");
   try{
     const index=sbordoniMediaIndex();
     const item=index.items?.[ref];
     if(!item)return res.status(404).send("Visuel Sbordoni indisponible");
-    if(SBORDONI_CROP_CACHE.has(ref)){
+    if(SBORDONI_SVG_CACHE.has(ref)){
       res.set("Cache-Control","public, max-age=86400, immutable");
-      res.type("image/jpeg").send(SBORDONI_CROP_CACHE.get(ref));return;
+      res.type("image/svg+xml").send(SBORDONI_SVG_CACHE.get(ref));return;
     }
-    const [sheetNo,x,y,w,h]=item;
-    const sheet=await sbordoniSheet(sheetNo);
-    const canvas=createCanvas(Math.max(1,w),Math.max(1,h));
-    const ctx=canvas.getContext("2d");
-    ctx.fillStyle="#fff";ctx.fillRect(0,0,canvas.width,canvas.height);
-    ctx.drawImage(sheet,x,y,w,h,0,0,w,h);
-    const output=canvas.toBuffer("image/jpeg");
-    SBORDONI_CROP_CACHE.set(ref,output);
-    if(SBORDONI_CROP_CACHE.size>600)SBORDONI_CROP_CACHE.delete(SBORDONI_CROP_CACHE.keys().next().value);
+    const [sheetNo,x,y,w,h]=item.map(Number);
+    const dims=index.sheets?.[String(sheetNo)]||[];
+    const sheetW=Number(dims[0]||0),sheetH=Number(dims[1]||0);
+    if(!Number.isFinite(x)||!Number.isFinite(y)||!Number.isFinite(w)||!Number.isFinite(h)||w<=0||h<=0||sheetW<=0||sheetH<=0){
+      return res.status(500).send("Découpe Sbordoni invalide");
+    }
+    const encoded=sbordoniSheetBase64(sheetNo);
+    const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><rect width="100%" height="100%" fill="white"/><image href="data:image/jpeg;base64,${encoded}" x="${-x}" y="${-y}" width="${sheetW}" height="${sheetH}" preserveAspectRatio="none"/></svg>`;
+    SBORDONI_SVG_CACHE.set(ref,svg);
+    if(SBORDONI_SVG_CACHE.size>600)SBORDONI_SVG_CACHE.delete(SBORDONI_SVG_CACHE.keys().next().value);
     res.set("Cache-Control","public, max-age=86400, immutable");
-    res.type("image/jpeg").send(output);
+    res.type("image/svg+xml").send(svg);
   }catch(error){
     console.error("[sbordoni-image]",error);
     res.status(500).send("Erreur visuel Sbordoni");
