@@ -53,7 +53,7 @@
     const add=(reference)=>{
       const p=collectionRows(collection).find(x=>String(x.reference||"")===reference) ||
         CATALOG.find(x=>/^Sbordoni$/i.test(String(x.manufacturer||"")) && String(x.reference||"")===reference);
-      if(p)out.push(p);
+      if(p)out.push(p.collection===collection?p:{...p,collection});
     };
     if(collection==="Neoclassica" && NE0CLASSICA_SHARED_PEDESTAL.has(ref))add("5771");
     if(collection==="Masaccio" && ["5369","5365","5359"].includes(ref))add("5771");
