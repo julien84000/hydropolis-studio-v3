@@ -1,5 +1,5 @@
 {
-  "total": 102959,
+  "total": 108175,
   "chunks": [
     {
       "file": "alpi_catalog_2025.json",
@@ -150,6 +150,36 @@
       "file": "catalog_dornbracht_9.json",
       "label": "Dornbracht 2026 9/9",
       "count": 996
+    },
+    {
+      "file": "catalog_sbordoni_1.json",
+      "label": "Sbordoni 2023 1/6",
+      "count": 900
+    },
+    {
+      "file": "catalog_sbordoni_2.json",
+      "label": "Sbordoni 2023 2/6",
+      "count": 900
+    },
+    {
+      "file": "catalog_sbordoni_3.json",
+      "label": "Sbordoni 2023 3/6",
+      "count": 900
+    },
+    {
+      "file": "catalog_sbordoni_4.json",
+      "label": "Sbordoni 2023 4/6",
+      "count": 900
+    },
+    {
+      "file": "catalog_sbordoni_5.json",
+      "label": "Sbordoni 2023 5/6",
+      "count": 900
+    },
+    {
+      "file": "catalog_sbordoni_6.json",
+      "label": "Sbordoni 2023 6/6",
+      "count": 716
     }
   ],
   "manufacturersManifest": "manufacturers_manifest.json",

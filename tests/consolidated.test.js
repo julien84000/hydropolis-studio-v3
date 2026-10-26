@@ -15,11 +15,27 @@ const rawCatalog=()=>{
 };
 test('les fabricants et les parents configurables sont conservés',()=>{
   const rows=rawCatalog(),counts={};for(const p of rows)counts[p.manufacturer]=(counts[p.manufacturer]||0)+1;
-  assert.deepEqual(counts,{Amphora:171,Coalbrook:1483,Alpi:3041,Catalano:1430,Nicolazzi:36303,Hotbath:2554,'Lefroy Brooks':3397,Gessi:16211,Ritmonio:16082,Recor:192,Fioranese:1135,Resigres:38,Vismaravetro:15,TDA:20,'Sira Concrete':5,Zucchetti:12053,Dornbracht:8996});
-  assert.equal(rows.length,103126);
+  assert.deepEqual(counts,{Amphora:171,Coalbrook:1483,Alpi:3041,Catalano:1430,Nicolazzi:36303,Hotbath:2554,'Lefroy Brooks':3397,Gessi:16211,Ritmonio:16082,Recor:192,Fioranese:1135,Resigres:38,Vismaravetro:15,TDA:20,'Sira Concrete':5,Zucchetti:12053,Dornbracht:8996,Sbordoni:5216});
+  assert.equal(rows.length,108342);
   const tariff=require('../public/sira_tariff_2024.json');assert.equal(models.length,26);assert.equal(tariff.products.length,22);assert.equal(Object.keys(tariff.arctic).length,4);
   assert.equal(new Set(models.map(x=>x.collection)).size,5);
 });
+test('Sbordoni : tarif 2023, six chunks et visuels PDF isolés',()=>{
+  const manifest=require('../public/catalog_manifest.json');
+  const chunks=manifest.chunks.filter(x=>/^Sbordoni 2023 /.test(x.label||''));
+  assert.equal(chunks.length,6);
+  assert.equal(chunks.reduce((n,x)=>n+Number(x.count||0),0),5216);
+  const makers=require('../public/manufacturers_manifest.json');
+  const maker=makers.manufacturers.find(x=>x.name==='Sbordoni');assert(maker);assert.equal(maker.catalogChunks,6);
+  const idx=require('../public/sbordoni/sbordoni-image-index.json');
+  assert(Object.keys(idx.items).length>=4500);
+  const rows=chunks.flatMap(c=>JSON.parse(fs.readFileSync(path.join(root,'public',c.file),'utf8')));
+  assert.equal(rows.length,5216);
+  assert(rows.every(x=>x.manufacturer==='Sbordoni'&&x.reference&&Number.isFinite(Number(x.price))));
+  assert(rows.filter(x=>x.image).length>=4500);
+  assert(rows.filter(x=>x.image).every(x=>/^\/api\/sbordoni-image\?ref=/.test(x.image)));
+});
+
 test('index local incrémental : fabricant + référence, y compris après chargement',()=>{
   const rows=[{manufacturer:'A',reference:'1'},{manufacturer:'B',reference:'1'}],i=index.create(rows);
   assert.equal(i.get('B|1').manufacturer,'B');rows.push({manufacturer:'B',reference:'2'});assert.equal(i.maker('B').length,2);assert.equal(i.get('B|2'),rows[2]);
