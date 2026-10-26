@@ -1920,7 +1920,7 @@ function renderCatalog(){
    const filterEntries=Object.entries(fs);
    const local=catalogIndex.maker(fs.manufacturer).filter(p=>filterEntries.every(([k,v])=>!v||p?.[k]===v)&&matches(p,q));
    const merged=new Map(local.map(p=>[productKey(p),p]));
-   for(const p of serverSearchRows){if(matches(p,q)&&Object.entries(fs).every(([k,v])=>!v||p?.[k]===v))merged.set(productKey(p),p)}
+   for(const p of serverSearchRows){if(matches(p,q)&&Object.entries(fs).every(([k,v])=>!v||p?.[k]===v)){const key=productKey(p);if(!merged.has(key))merged.set(key,p)}}
    const rows=[...merged.values()];
    if(count)count.textContent=`${rows.length} résultat${rows.length>1?"s":""}${serverSearchRows.length?" · multi-sources":""}`;
    const room=roomById($("#targetRoom")?.value)||state.rooms[0];
