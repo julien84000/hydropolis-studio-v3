@@ -3360,15 +3360,15 @@ function renderRoomsCore(){
      state.selected=state.selected.filter(x=>!(x.accessoryFor===b.dataset.parent && x.manufacturer==="Recor" && x.collection==="Pieds Recor"));
    }
    await addProduct(b.dataset.ref,b.dataset.room,b.dataset.parent||"");
- }); $(".edit-recor-config").forEach(b=>b.onclick=()=>{
+ }); $$(".edit-recor-config").forEach(b=>b.onclick=()=>{
    const bath=state.selected.find(x=>x.id===b.dataset.id);
    if(!bath)return;
    openRecorBathConfigurator(bath,b.dataset.room||bath.roomId);
- }); $(".sbordoni-edit-config").forEach(b=>b.onclick=()=>{
+ }); $$(".sbordoni-edit-config").forEach(b=>b.onclick=()=>{
    const product=state.selected.find(x=>x.id===b.dataset.id);
    if(!product||!window.HydroSbordoniConfigurator)return;
    HydroSbordoniConfigurator.open(product,b.dataset.room||product.roomId);
- });$(".fallback-btn").forEach(b=>b.onclick=()=>useCatalogueFallback(b.dataset.id));$$(".enrich-btn").forEach(b=>b.onclick=()=>enrichSelectedPhoto(b.dataset.id,true));$$(".ritmonio-tech-refresh").forEach(b=>b.onclick=async()=>{
+ });$$(".fallback-btn").forEach(b=>b.onclick=()=>useCatalogueFallback(b.dataset.id));$$(".enrich-btn").forEach(b=>b.onclick=()=>enrichSelectedPhoto(b.dataset.id,true));$$(".ritmonio-tech-refresh").forEach(b=>b.onclick=async()=>{
    const p=state.selected.find(x=>x.id===b.dataset.id);if(!p)return;
    b.disabled=true;b.textContent="Récupération…";
    try{
