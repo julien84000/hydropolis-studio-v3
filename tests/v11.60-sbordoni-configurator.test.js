@@ -48,6 +48,15 @@ test('Sbordoni configurator groups 1/3-hole basin variants and keeps a shared ba
   assert.ok(cfg.supportGroups('Masaccio','5359').some(x=>x.items.some(i=>i.reference==='5771')),'Masaccio 5359 offers pedestal 5771');
   assert.ok(cfg.supportGroups('Palladio','7064').some(x=>x.items.some(i=>i.reference==='7001')),'Palladio 7064 offers pedestal 7001');
   assert.ok(cfg.supportGroups('Romana','9065').some(x=>x.items.some(i=>i.reference==='9001')),'Romana 9065 offers pedestal 9001');
+
+  const romanaPedestal=cfg.supportGroups('Romana','9065').flatMap(g=>Array.from(g.items)).find(i=>i.reference==='9001');
+  assert.ok(romanaPedestal,'Romana 9065 pedestal 9001 exists');
+  const romanaResultImage=cfg.resultImage('Romana','9065',romanaPedestal);
+  assert.equal(
+    romanaResultImage,
+    'https://data.bobool.it/imgprodotto/colonna-classica-per-lavabo-in-ceramica-bianca-romana-sbordoni_17587_zoom.jpg'
+  );
+  assert.notEqual(romanaResultImage,romanaPedestal.image,'configured result must not reuse the isolated 9001 visual');
 });
 
 test('app routes configurable Sbordoni basins through the configurator',()=>{

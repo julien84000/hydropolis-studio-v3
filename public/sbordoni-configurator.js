@@ -12,6 +12,16 @@
   const NE0CLASSICA_SHARED_PEDESTAL=new Set(["5775","5770","5765","5758"]);
   const FINISH_ORDER=["CR","NI","OL","BR","ON","RA","NN"];
 
+  const CURATED_RESULT_IMAGES={
+    "Romana|9065|9001":"https://data.bobool.it/imgprodotto/colonna-classica-per-lavabo-in-ceramica-bianca-romana-sbordoni_17587_zoom.jpg"
+  };
+
+  function resultImage(collection,family,support){
+    const supportRef=String(support?.reference||"");
+    const curated=CURATED_RESULT_IMAGES[`${collection}|${family}|${supportRef}`];
+    return curated || support?.image || canonicalImage(collection,family) || "";
+  }
+
   function norm(value){
     return String(value||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
   }
@@ -243,7 +253,7 @@
       const selectedGroup=groups.find(g=>g.key===state.supportKey)||null;
       const selectedSupport=selectedGroup?.items.find(x=>x.reference===state.supportRef) || selectedGroup?.representative || null;
       const basinImg=canonicalImage(state.collection,state.family);
-      const finalImg=selectedSupport?.image || basinImg;
+      const finalImg=resultImage(state.collection,state.family,selectedSupport) || basinImg;
       const total=Number(basin?.totalPrice??basin?.price??0)+Number(selectedSupport?.totalPrice??selectedSupport?.price??0);
       const dim=dimensionFor(state.collection,state.family);
 
@@ -367,7 +377,7 @@
           if(!selectedBasin)throw new Error("La variante de lavabo sélectionnée est introuvable.");
           const targetRoomId=normalizedRoomId(roomId);
           const baseImg=canonicalImage(state.collection,state.family);
-          const resultImg=selectedSupport?.image||baseImg||selectedBasin.image||"";
+          const resultImg=resultImage(state.collection,state.family,selectedSupport)||baseImg||selectedBasin.image||"";
           const basinPrice=Number(selectedBasin.totalPrice??selectedBasin.price??0);
           const supportPrice=Number(selectedSupport?.totalPrice??selectedSupport?.price??0);
           const total=basinPrice+supportPrice;
@@ -470,6 +480,7 @@
     familyFrom,
     familiesForCollection,
     supportGroups,
+    resultImage,
     collections,
     supportedCollections:[...SUPPORTED_COLLECTIONS]
   };
