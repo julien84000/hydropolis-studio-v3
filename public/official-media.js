@@ -3,13 +3,13 @@
   else root.HydroOfficialMedia=factory();
 })(typeof globalThis!=='undefined'?globalThis:this,()=>{
   'use strict';const VERSION=globalThis.HYDROPOLIS_VERSION||(typeof module==='object'?require('../package.json').version:'');
-  const brand=p=>/^alpi$/i.test(p?.manufacturer||'')?'alpi':/^sira(?: concrete)?$/i.test(p?.manufacturer||'')?'sira':/^gessi$/i.test(p?.manufacturer||'')?'gessi':'';
+  const brand=p=>/^alpi$/i.test(p?.manufacturer||'')?'alpi':/^sira(?: concrete)?$/i.test(p?.manufacturer||'')?'sira':/^gessi$/i.test(p?.manufacturer||'')?'gessi':/^dornbracht$/i.test(p?.manufacturer||'')?'dornbracht':'';
   function allowed(value,p,depth=0){
     if(!value||depth>2)return false;
     try{
       const u=new URL(value,'https://hydropolis.local');
       if(u.pathname==='/api/image-proxy')return allowed(u.searchParams.get('url'),p,depth+1);
-      const hosts={alpi:['alpirubinetterie.com'],sira:['siraconcrete.com'],gessi:['gessi.com','gessistorage.blob.core.windows.net']};
+      const hosts={alpi:['alpirubinetterie.com'],sira:['siraconcrete.com'],gessi:['gessi.com','gessistorage.blob.core.windows.net'],dornbracht:['dornbracht.com']};
       return u.protocol==='https:'&&!u.username&&!u.password&&(hosts[brand(p)]||[]).some(h=>u.hostname===h||u.hostname.endsWith('.'+h));
     }catch{return false;}
   }

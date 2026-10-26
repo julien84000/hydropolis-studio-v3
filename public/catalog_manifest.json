@@ -1,5 +1,5 @@
 {
-  "total": 93963,
+  "total": 102959,
   "chunks": [
     {
       "file": "alpi_catalog_2025.json",
@@ -105,6 +105,51 @@
       "file": "catalog_sira_web.json",
       "label": "Sira Concrete · vasques, plans et baignoires",
       "count": 5
+    },
+    {
+      "file": "catalog_dornbracht_1.json",
+      "label": "Dornbracht 2026 1/9",
+      "count": 1000
+    },
+    {
+      "file": "catalog_dornbracht_2.json",
+      "label": "Dornbracht 2026 2/9",
+      "count": 1000
+    },
+    {
+      "file": "catalog_dornbracht_3.json",
+      "label": "Dornbracht 2026 3/9",
+      "count": 1000
+    },
+    {
+      "file": "catalog_dornbracht_4.json",
+      "label": "Dornbracht 2026 4/9",
+      "count": 1000
+    },
+    {
+      "file": "catalog_dornbracht_5.json",
+      "label": "Dornbracht 2026 5/9",
+      "count": 1000
+    },
+    {
+      "file": "catalog_dornbracht_6.json",
+      "label": "Dornbracht 2026 6/9",
+      "count": 1000
+    },
+    {
+      "file": "catalog_dornbracht_7.json",
+      "label": "Dornbracht 2026 7/9",
+      "count": 1000
+    },
+    {
+      "file": "catalog_dornbracht_8.json",
+      "label": "Dornbracht 2026 8/9",
+      "count": 1000
+    },
+    {
+      "file": "catalog_dornbracht_9.json",
+      "label": "Dornbracht 2026 9/9",
+      "count": 996
     }
   ],
   "manufacturersManifest": "manufacturers_manifest.json",

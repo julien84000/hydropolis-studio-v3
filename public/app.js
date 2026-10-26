@@ -586,6 +586,10 @@ function normalizeSupplierReferenceForLookup(ref,manufacturer=""){
 }
 function finishCodeFromReference(ref,manufacturer=""){
   const s=normalizeSupplierReferenceForLookup(ref,manufacturer);
+  if(/^Dornbracht$/i.test(String(manufacturer||""))){
+    const dm=s.match(/-([A-Z0-9]{2})$/i);
+    if(dm)return dm[1].toUpperCase();
+  }
   const m=s.match(/\.([A-Z0-9]{2,4})$/i);
   return m?m[1].toUpperCase():"";
 }
@@ -822,7 +826,7 @@ try{
 }catch(e){}
 try{
   if(localStorage.getItem('hydropolis-official-media-version')!==HydroOfficialMedia.VERSION){
-    for(const key of Object.keys(manufacturerImageCache))if(/^(Alpi|Sira(?: Concrete)?|Gessi)\|/i.test(key))delete manufacturerImageCache[key];
+    for(const key of Object.keys(manufacturerImageCache))if(/^(Alpi|Sira(?: Concrete)?|Gessi|Dornbracht)\|/i.test(key))delete manufacturerImageCache[key];
     localStorage.setItem('hydropolis-manufacturer-v119',JSON.stringify(manufacturerImageCache));
     localStorage.setItem('hydropolis-official-media-version',HydroOfficialMedia.VERSION);
   }
@@ -1036,7 +1040,7 @@ let autoPhotoObserver=null;
 const AUTO_PHOTO_CONCURRENCY=4;
 function autoPhotoGroupKey(p){return manufacturerSharedCacheKey(p)||manufacturerCacheKey(p);}
 function automaticImageEligible(p){
-  if(!p||!/^(Alpi|Sira Concrete|Nicolazzi|Ritmonio|Zucchetti|Gessi)$/i.test(String(p.manufacturer||"")))return false;
+  if(!p||!/^(Alpi|Sira Concrete|Nicolazzi|Ritmonio|Zucchetti|Gessi|Dornbracht)$/i.test(String(p.manufacturer||"")))return false;
   if(/^Nicolazzi$/i.test(String(p.manufacturer||""))){
     if(p.image)return false;
     const direct=manufacturerImageCache[manufacturerCacheKey(p)]||manufacturerImageCache[manufacturerSharedCacheKey(p)];

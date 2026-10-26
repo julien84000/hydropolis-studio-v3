@@ -1612,6 +1612,14 @@ async function resolveGessiProductUrl(reference,designation="",collection=""){
   return gessiAreaProProductUrl(reference);
 }
 
+function dornbrachtReference(reference=""){
+  return String(reference||"").toUpperCase().trim().replace(/\s+/g,"");
+}
+async function resolveDornbrachtProductUrl(reference){
+  const ref=dornbrachtReference(reference);
+  return ref?`https://www.dornbracht.com/fr-fr/produits/${encodeURIComponent(ref)}`:"https://www.dornbracht.com/fr-fr";
+}
+
 async function resolveManufacturerProductUrl(manufacturerUrl,reference,originalDescription,designation,collection,catalogBase=""){
   if(/zucchettidesign\.it/i.test(manufacturerUrl)){
     try{
@@ -1643,6 +1651,7 @@ async function resolveManufacturerProductUrl(manufacturerUrl,reference,originalD
   if(/ritmonio\.it/i.test(manufacturerUrl)) return resolveRitmonioProductUrl(reference,originalDescription||designation,collection);
   if(/nicolazzi\.it/i.test(manufacturerUrl)) return resolveNicolazziProductUrl(reference,originalDescription||designation,collection,catalogBase);
   if(/gessi\.com/i.test(manufacturerUrl)) return resolveGessiProductUrl(reference,originalDescription||designation,collection);
+  if(/dornbracht\.com/i.test(manufacturerUrl)) return resolveDornbrachtProductUrl(reference);
   if(/lefroybrooks\.com/i.test(manufacturerUrl)) return resolveLefroyProductUrl(reference,originalDescription||designation);
   if(/recor\.pt/i.test(manufacturerUrl)) return resolveRecorProductUrl(reference,originalDescription||designation);
   if(!/coalbrookuk\.co\.uk/i.test(manufacturerUrl)) return manufacturerUrl;
@@ -1890,6 +1899,7 @@ async function scrapeManufacturerUncached({manufacturerUrl,reference,catalogBase
   }
 
   const isGessi=/gessi\.com/i.test(manufacturerUrl);
+  const isDornbracht=/dornbracht\.com/i.test(manufacturerUrl);
   let page={data:""};
   try{
     page.data=await fetchBrandPage(manufacturerUrl,"en-US,en;q=0.9,it;q=0.8,fr;q=0.7");
@@ -1942,6 +1952,52 @@ async function scrapeManufacturerUncached({manufacturerUrl,reference,catalogBase
         attributes:{official:true,article:gp.article,finish:gp.finish,provider:"gessi-area-pro"}
       });
     }
+  }
+
+  if(isDornbracht){
+    const wanted=dornbrachtReference(reference);
+    const wantedCompact=normalizeToken(wanted).replace(/\s+/g,"");
+    const bodyCompact=normalizeToken($("body").text()).replace(/\s+/g,"");
+    const pageMatches=!!wantedCompact && bodyCompact.includes(wantedCompact);
+    const seenDornbracht=new Set();
+    function addDornbrachtImage(raw,context="",bonus=0){
+      const href=absoluteUrl(manufacturerUrl,raw);
+      if(!href||seenDornbracht.has(href))return;
+      let host="";try{host=new URL(href).hostname.toLowerCase()}catch{return}
+      const officialHost=host==="dornbracht.com"||host.endsWith(".dornbracht.com");
+      if(!officialHost)return;
+      if(!isImageUrl(href) && !/media\.cdn\.dornbracht\.com$/i.test(host))return;
+      const text=[href,context].filter(Boolean).join(" ");
+      if(/logo|favicon|icon|sprite|placeholder|loading|flag|social/i.test(text))return;
+      const exact=pageMatches && (!!requested ? finishExactInText(text+" "+$("body").text(),requested,finish,reference) : true);
+      seenDornbracht.add(href);
+      candidates.push({
+        url:href,
+        page:manufacturerUrl,
+        source:"dornbracht-official-product-image",
+        score:40000+bonus+(exact?5000:0),
+        finishMatch:exact?"exact":"generic",
+        detectedFinishCode:exact?(requested||null):null,
+        variationId:null,
+        attributes:{official:true,reference:wanted,pageMatch:pageMatches,provider:"dornbracht.com"}
+      });
+    }
+    $("meta[property='og:image'],meta[property='og:image:secure_url'],meta[name='twitter:image'],link[rel='image_src']").each((_,el)=>{
+      addDornbrachtImage($(el).attr("content")||$(el).attr("href"),"metadata",3000);
+    });
+    $("img").each((_,el)=>{
+      const im=$(el),ctx=[im.attr("alt"),im.attr("title"),im.attr("aria-label")].filter(Boolean).join(" ");
+      for(const attr of ["data-large_image","data-original","data-lazy-src","data-src","src"]){
+        addDornbrachtImage(im.attr(attr),ctx,1200);
+      }
+      const srcset=String(im.attr("srcset")||"");
+      if(srcset){
+        const parts=srcset.split(",").map(x=>x.trim()).filter(Boolean);
+        if(parts.length)addDornbrachtImage(parts[parts.length-1].split(/\s+/)[0],ctx,1600);
+      }
+    });
+    const urlRx=/https?:\\?\/\\?\/[a-z0-9.-]*dornbracht\.com\\?\/[^"'\s<>]+/gi;
+    for(const m of html.match(urlRx)||[])addDornbrachtImage(String(m).replace(/\\\//g,"/"),"inline official asset",800);
   }
 
   if(/nicolazzi\.it/i.test(manufacturerUrl)){
@@ -3143,6 +3199,13 @@ async function scrapeManufacturerUncached({manufacturerUrl,reference,catalogBase
     const nicolazziOfficial=sorted.find(x=>x.source==="nicolazzi-official-product-gallery")||null;
     if(nicolazziOfficial){exact=null;fallback=nicolazziOfficial;best=nicolazziOfficial;}
   }
+  if(isDornbracht){
+    const official=sorted.filter(x=>x.source==="dornbracht-official-product-image");
+    const exactOfficial=official.find(x=>x.finishMatch==="exact")||null;
+    exact=exactOfficial;
+    fallback=official.find(x=>x.finishMatch!=="exact")||null;
+    best=exactOfficial||fallback||null;
+  }
 
   if(isHotbath){
     const officialExact=sorted.find(x=>x.source==="hotbath-main-product-image" && x.finishMatch==="exact")||null;
@@ -3175,6 +3238,11 @@ async function scrapeManufacturerUncached({manufacturerUrl,reference,catalogBase
     best=productImages[0]||best;
   }
 
+  if(isDornbracht){
+    productImages=sorted.filter(x=>x.source==="dornbracht-official-product-image").slice(0,4);
+    if(productImages.length)best=productImages[0];
+  }
+
   if(isCatalano){
     // V11.19: Catalano's official product page is authoritative. Keep every distinct
     // image from that product page for the client dossier. The exact code/finish preview,
@@ -3195,6 +3263,16 @@ async function scrapeManufacturerUncached({manufacturerUrl,reference,catalogBase
       console.warn("[manufacturer-best-image-dead]",JSON.stringify({manufacturer:isRitmonio?"Ritmonio":"Nicolazzi",reference,url:best.url,status:check.status||0}));
       const alternative=sorted.find(x=>x.url!==best.url && x.source!=="ritmonio-official-product-image" && !/logo/i.test(x.url||""))||null;
       best=alternative;
+    }
+  }
+
+  if(isDornbracht && best){
+    const check=await validateRemoteImage(best.url,manufacturerUrl);
+    if(!check.ok){
+      console.warn("[dornbracht-image-dead]",JSON.stringify({reference,url:best.url,status:check.status||0}));
+      const alternative=sorted.find(x=>x.source==="dornbracht-official-product-image"&&x.url!==best.url)||null;
+      best=alternative;
+      productImages=alternative?[alternative]:[];
     }
   }
 
@@ -3255,8 +3333,8 @@ async function scrapeManufacturerUncached({manufacturerUrl,reference,catalogBase
     manufacturerUrl,reference,finishCode:requested,finish,base,
     best,
     images:productImages,
-    galleryComplete:isCatalano?true:undefined,
-    gallerySource:isCatalano?"catalano-official-product-page":undefined,
+    galleryComplete:(isCatalano||isDornbracht)?true:undefined,
+    gallerySource:isCatalano?"catalano-official-product-page":(isDornbracht?"dornbracht-official-product-page":undefined),
     exactFound:!!exact,
     drawing,
     cadDrawing,
@@ -3275,6 +3353,10 @@ async function scrapeManufacturerUncached({manufacturerUrl,reference,catalogBase
               :best
                 ?`Visuel web du bon produit utilisé en dernier recours ; finition à vérifier.`
               :`Aucune image Hotbath exploitable trouvée : les liens image de la fiche officielle peuvent être obsolètes (404).`)
+      :isDornbracht
+        ?(best
+          ?`Photo officielle Dornbracht récupérée directement sur la fiche produit exacte ${reference}. ${exact?"La finition demandée est confirmée par la fiche fabricant.":"La fiche produit est exacte ; la finition du visuel reste à contrôler si le média ne l'explicite pas."}`
+          :`Aucune photo exploitable n'a été trouvée sur la fiche produit officielle Dornbracht ${reference}.`)
       :isCatalano
         ?(best
           ?`Galerie récupérée en priorité sur la fiche produit officielle Catalano : ${productImages.length} image(s) distincte(s) disponible(s) pour ce produit. L'image de la référence/finition exacte est placée en premier lorsqu'elle est fournie par Catalano.`
@@ -3901,7 +3983,7 @@ const REMOTE_HOST_SUFFIXES=[
   // image/file CDN hosts, not from coalbrookuk.co.uk itself. Keep the allowlist
   // deliberately narrow to Coalbrook-owned hostnames rather than all svdcdn.com.
   "coalbrook-bathrooms.transforms.svdcdn.com","coalbrook-bathrooms.files.svdcdn.com",
-  "alpirubinetterie.com","catalano.it","recor.pt","fioranese.it","resigres.com","vismaravetro.it","tda.it","siraconcrete.com","amphoradesign.it","sanitairkamer.nl","ritmonio.it","nicolazzi.it","designertapwareco.com.au","cdn.shopify.com","gessi.com","areapro.gessi.com","gwebassets.gessi.com","gessistorage.blob.core.windows.net",
+  "alpirubinetterie.com","catalano.it","dornbracht.com","recor.pt","fioranese.it","resigres.com","vismaravetro.it","tda.it","siraconcrete.com","amphoradesign.it","sanitairkamer.nl","ritmonio.it","nicolazzi.it","designertapwareco.com.au","cdn.shopify.com","gessi.com","areapro.gessi.com","gwebassets.gessi.com","gessistorage.blob.core.windows.net",
   // Lefroy Brooks is hosted on Squarespace. Product imagery is served from
   // these dedicated CDN hosts while product pages/downloads stay on lefroybrooks.com.
   "images.squarespace-cdn.com","static1.squarespace.com","file.squarespace-cdn.com"
