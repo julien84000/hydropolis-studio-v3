@@ -100,16 +100,23 @@
 
   function supportCandidates(collection,family){
     const seen=new Set();
-    let items=[...directSupportCandidates(collection,family),...specialSupportCandidates(collection,family)].filter(x=>{
-      const key=String(x.reference||"");
-      if(!key||seen.has(key))return false;
-      seen.add(key);return true;
-    });
     if(collection==="Palladio" && Object.prototype.hasOwnProperty.call(PALLADIO_SUPPORT_MATRIX,String(family))){
       const allowed=new Set(PALLADIO_SUPPORT_MATRIX[String(family)]);
-      items=items.filter(x=>allowed.has(supportGroupKey(x)));
+      return collectionRows(collection).filter(x=>{
+        const groupKey=supportGroupKey(x);
+        if(!allowed.has(groupKey))return false;
+        const ref=String(x.reference||"");
+        if(!ref||seen.has(ref))return false;
+        seen.add(ref);
+        return true;
+      });
     }
-    return items;
+    return [...directSupportCandidates(collection,family),...specialSupportCandidates(collection,family)].filter(x=>{
+      const key=String(x.reference||"");
+      if(!key||seen.has(key))return false;
+      seen.add(key);
+      return true;
+    });
   }
 
   function familyIsBasin(collection,family){
