@@ -21,10 +21,11 @@
     return /^(https:\/\/|\/(?!\/)|images\/)/i.test(url)?url:'';
   }
   function mediaFor(brand,p,g,v){
-    const manufacturerUrl=official(brand,v?.manufacturerUrl)||official(brand,g?.manufacturerUrl)||official(brand,p?.manufacturerUrl)||OFFICIAL_HOME[brand];
+    const model=brand==='Carrodrain'?carrodrainVisual(g):null;
+    const manufacturerUrl=model?.url||official(brand,v?.manufacturerUrl)||official(brand,g?.manufacturerUrl)||official(brand,p?.manufacturerUrl)||OFFICIAL_HOME[brand];
     const technicalSheetUrl=official(brand,v?.technicalSheetUrl)||official(brand,g?.technicalSheetUrl)||official(brand,p?.technicalSheetUrl)||'';
     const image=trustedImage(v?.image);
-    const representativeImage=!image?trustedImage(g?.image||p?.image):'';
+    const representativeImage=!image?trustedImage(model?.image||g?.image||p?.image):'';
     return {manufacturerUrl,technicalSheetUrl,image,representativeImage};
   }
   function mediaPreview(brand,p,g,v){
@@ -35,6 +36,56 @@
     const note=m.image?'Visuel de la référence sélectionnée':m.representativeImage?'Visuel de collection · finition non garantie':'La photo fabricant sera recherchée après ajout';
     const tech=m.technicalSheetUrl?' · <a href="'+esc(m.technicalSheetUrl)+'" target="_blank" rel="noopener noreferrer">Fiche technique</a>':'';
     return '<div class="brand-config-media" style="display:flex;flex-direction:column;align-items:center;gap:6px">'+photo+'<small style="font-size:11px;text-align:center">'+esc(note)+'<br><a href="'+esc(m.manufacturerUrl)+'" target="_blank" rel="noopener noreferrer">Voir le produit chez '+esc(brand)+'</a>'+tech+'</small></div>';
+  }
+
+  // Official Carrodrain storefront model images (collection illustrations).
+  // Source: https://carrodrain.com/en/products/<model>, Open Graph image.
+  // These are not asserted to be photographs of every chosen colour/size.
+  const CARRODRAIN_MODELS=[
+    {id:'cayman',name:'Cayman',family:'Essentials',subtitle:'Caniveau linéaire discret',image:'https://carrodrain.com/cdn/shop/files/DouchegootCayman_1200x1200.jpg?v=1717584240',url:'https://carrodrain.com/en/products/cayman'},
+    {id:'caymanmono',name:'Cayman Mono',family:'Essentials',subtitle:'Grille MONO en inox massif',image:'https://carrodrain.com/cdn/shop/files/DouchegootCayman-Monowebsite_1200x1200.jpg?v=1714061905',url:'https://carrodrain.com/en/products/cayman-mono'},
+    {id:'twiggi',name:'Twiggi',family:'Essentials',subtitle:'Caniveau mural à prolonger',image:'https://carrodrain.com/cdn/shop/files/Douchegoot_Carrodrain_Twiggi_1200x1200.jpg?v=1717585302',url:'https://carrodrain.com/en/products/twiggi'},
+    {id:'quattro',name:'Quattro',family:'Essentials',subtitle:'Évacuation carrée',image:'https://carrodrain.com/cdn/shop/files/Carrodrain_Quattro_doucheput_2_1200x1200.jpg?v=1759420000',url:'https://carrodrain.com/en/products/quattro'},
+    {id:'disco',name:'Disco',family:'Essentials',subtitle:'Évacuation ronde',image:'https://carrodrain.com/cdn/shop/files/Carrodrain_Disco_Ginger_doucheput_1200x1200.jpg?v=1759412640',url:'https://carrodrain.com/en/products/disco'},
+    {id:'invisible',name:'Invisible',family:'Invisibles',subtitle:'Caniveau linéaire à carreler',image:'https://carrodrain.com/cdn/shop/files/Betegelbare_douchegoot_Carrodrain_Invisible_1200x1200.jpg?v=1717585624',url:'https://carrodrain.com/en/products/invisible'},
+    {id:'invisiblequattro',name:'Invisible Quattro',family:'Invisibles',subtitle:'Carré à carreler',image:'https://carrodrain.com/cdn/shop/files/CD_Invisible_quattro_3_1200x1200.jpg?v=1759486059',url:'https://carrodrain.com/en/products/invisible-quattro'},
+    {id:'invisibledisco',name:'Invisible Disco',family:'Invisibles',subtitle:'Rond à carreler',image:'https://carrodrain.com/cdn/shop/files/Carrodrain_Invisible_Disco_doucheput_1200x1200.jpg?v=1759417235',url:'https://carrodrain.com/en/products/invisible-disco'},
+    {id:'liquid',name:'Liquid',family:'Liquids',subtitle:'Linéaire pour sols coulés',image:'https://carrodrain.com/cdn/shop/files/Douchegoot_voor_gietvloer_Liquid_White_bis_1200x1200.jpg?v=1740569015',url:'https://carrodrain.com/en/products/liquid'},
+    {id:'liquidmono',name:'Liquid Mono',family:'Liquids',subtitle:'MONO pour sols coulés',image:'https://carrodrain.com/cdn/shop/files/DouchegootLiquid_Mono_Inox_1200x1200.jpg?v=1756030841',url:'https://carrodrain.com/en/products/liquid-mono'},
+    {id:'liquidquattro',name:'Liquid Quattro',family:'Liquids',subtitle:'Carré pour sols coulés',image:'https://carrodrain.com/cdn/shop/files/DSC_8070_CMYK_GCR_1200x1200.jpg?v=1758709575',url:'https://carrodrain.com/en/products/liquid-quattro'},
+    {id:'liquiddisco',name:'Liquid Disco',family:'Liquids',subtitle:'Rond pour sols coulés',image:'https://carrodrain.com/cdn/shop/files/Carrodrain_Liquid_Disco_doucheput_voor_gietvloer_1200x1200.jpg?v=1759417333',url:'https://carrodrain.com/en/products/liquid-disco'},
+    {id:'liquidsnake',name:'Liquid Snake',family:'Liquids',subtitle:'Ligne organique pour sols coulés',image:'https://carrodrain.com/cdn/shop/files/CarrodraindesigndouchegootInox_1200x1200.jpg?v=1748873206',url:'https://carrodrain.com/en/products/liquid-snake'},
+    {id:'kerlox',name:'Kerlox',family:'Accessoires',subtitle:'Membrane d’étanchéité',image:'https://carrodrain.com/cdn/shop/products/kerloxsaniperfo_3_1200x1200.jpg?v=1594892994',url:'https://carrodrain.com/en/products/waterproof-membrane-kerlox'}
+  ];
+  const CARRODRAIN_BY_ID=new Map(CARRODRAIN_MODELS.map(m=>[m.id,m]));
+  const caroClean=x=>String(x||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');
+  const CARRODRAIN_ALIASES={
+    invisibleline:'invisible',liquidline:'liquid',quattro100:'quattro',disco125:'disco',
+    invisiblequattro100:'invisiblequattro',invisibledisco125:'invisibledisco',
+    liquidquattro100:'liquidquattro',liquiddisco125:'liquiddisco',
+    caymanmono:'caymanmono',liquidsnake:'liquidsnake'
+  };
+  function carrodrainVisual(group){
+    for(const raw of [group?.id,group?.model,group?.collection]){
+      const key=caroClean(raw).replace(/(?:low|pro)$/,'');
+      if(CARRODRAIN_BY_ID.has(key))return CARRODRAIN_BY_ID.get(key);
+      if(CARRODRAIN_BY_ID.has(CARRODRAIN_ALIASES[key]))return CARRODRAIN_BY_ID.get(CARRODRAIN_ALIASES[key]);
+    }
+    return null;
+  }
+  function carrodrainGallery(groups,chosenGroup){
+    const cards=CARRODRAIN_MODELS.map(m=>{
+      const g=(groups||[]).find(g=>carrodrainVisual(g)?.id===m.id);
+      const common='<img src="'+esc(m.image)+'" alt="Carrodrain '+esc(m.name)+'" loading="lazy" decoding="async" onerror="this.style.display=\'none\'"><span class="carrodrain-gallery-caption"><b>'+esc(m.name)+'</b><small>'+esc(m.subtitle)+'</small></span>';
+      const active=g&&g.id===chosenGroup?' is-active':'';
+      const item=g
+        ?'<button type="button" class="carrodrain-gallery-card'+active+'" data-carrodrain-group="'+esc(g.id)+'" aria-label="Configurer '+esc(m.name)+'">'+common+'</button>'
+        :'<a class="carrodrain-gallery-card" href="'+esc(m.url)+'" target="_blank" rel="noopener noreferrer" aria-label="Voir '+esc(m.name)+' sur Carrodrain">'+common+'<em>Voir chez Carrodrain</em></a>';
+      return {family:m.family,markup:item};
+    });
+    const families=['Essentials','Invisibles','Liquids','Accessoires'];
+    return '<div class="carrodrain-gallery-intro">Sélectionnez une collection, puis configurez la version, la longueur et la finition. Visuels officiels de gamme, non contractuels pour la finition choisie.</div>'
+      +families.map(f=>'<section class="carrodrain-gallery-section"><h3>'+esc(f)+'</h3><div class="carrodrain-gallery-grid">'+cards.filter(x=>x.family===f).map(x=>x.markup).join('')+'</div></section>').join('');
   }
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
   const money=v=>`${Number(v||0).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})} €`;
@@ -117,27 +168,44 @@
   async function openCarrodrain(p,roomId){
     const data=await loadJson(BRAND_META.Carrodrain);const groups=data.groups||[];if(!groups.length)throw new Error('Catalogue Carrodrain vide.');
     const draft={group:p?.configGroup||'',version:'',length:'',finish:'',reference:''};if(!groups.some(g=>g.id===draft.group))draft.group=groups.find(g=>g.model===p?.collection)?.id||groups[0].id;
-    let overlay;
+    let overlay,mode='gallery';
+    const gallery=()=>{
+      const body=carrodrainGallery(groups,draft.group);
+      overlay=overlay||mount(shell('Carrodrain',body));
+      overlay.innerHTML=shell('Carrodrain',body);
+      overlay.querySelector('.recor-configurator').classList.add('carrodrain-gallery-modal');
+      overlay.querySelector('.brand-config-close').onclick=close;
+      overlay.querySelector('.brand-config-cancel').onclick=close;
+      overlay.querySelector('.brand-config-confirm').style.display='none';
+      overlay.querySelectorAll('[data-carrodrain-group]').forEach(el=>el.onclick=()=>{
+        draft.group=el.dataset.carrodrainGroup;
+        draft.version=draft.length=draft.finish=draft.reference='';
+        mode='configure';render();
+      });
+    };
     const render=()=>{
+      if(mode==='gallery'){gallery();return;}
       const g=groups.find(x=>x.id===draft.group)||groups[0],all=g.variants||[];
       const versions=uniq(all.map(v=>v.version));draft.version=chosen(draft.version,versions);let rows=all.filter(v=>v.version===draft.version);
       const lengths=uniq(rows.map(v=>v.length));draft.length=chosen(draft.length,lengths);rows=rows.filter(v=>v.length===draft.length);
       const finishes=uniq(rows.map(v=>v.finish||'À carreler'));draft.finish=chosen(draft.finish,finishes);rows=rows.filter(v=>(v.finish||'À carreler')===draft.finish);
       const refs=rows.map(v=>v.reference);draft.reference=chosen(draft.reference,refs);const exact=rows.find(v=>v.reference===draft.reference)||rows[0];
-      const body=`<div class="recor-config-section"><div class="recor-config-title"><b>1. Collection</b><span>Caniveau Carrodrain</span></div><div class="v1146-field-grid">${field('ccGroup','Collection',groups.map(x=>x.id),g.id,id=>groups.find(x=>x.id===id)?.model||id)}${field('ccVersion','Version',versions,draft.version)}${field('ccLength','Longueur / format',lengths,draft.length,v=>/^\d+$/.test(v)?`${Number(v)/10} cm`:v)}${field('ccFinish','Finition',finishes,draft.finish)}${field('ccRef','Référence finale',refs,draft.reference)}</div></div>
+      const body=`<button type="button" class="carrodrain-back-to-gallery">← Toutes les collections</button><div class="recor-config-section"><div class="recor-config-title"><b>1. Collection</b><span>Caniveau Carrodrain</span></div><div class="v1146-field-grid">${field('ccGroup','Collection',groups.map(x=>x.id),g.id,id=>groups.find(x=>x.id===id)?.model||id)}${field('ccVersion','Version',versions,draft.version)}${field('ccLength','Longueur / format',lengths,draft.length,v=>/^\d+$/.test(v)?`${Number(v)/10} cm`:v)}${field('ccFinish','Finition',finishes,draft.finish)}${field('ccRef','Référence finale',refs,draft.reference)}</div></div>
       <div class="recor-config-summary">${mediaPreview('Carrodrain',p,g,exact)}<div><b>${money(exact?.price)} HT</b><span>${esc([g.model,draft.version,draft.length,draft.finish].filter(Boolean).join(' · '))}</span><small>Réf. ${esc(exact?.reference||'—')} · tarif Carrodrain 2027</small></div></div>`;
       overlay=overlay||mount(shell('Carrodrain',body));if(overlay.innerHTML!==shell('Carrodrain',body))overlay.innerHTML=shell('Carrodrain',body);
       overlay.querySelector('.brand-config-close').onclick=close;overlay.querySelector('.brand-config-cancel').onclick=close;
+      overlay.querySelector('.recor-configurator').classList.remove('carrodrain-gallery-modal');
+      overlay.querySelector('.carrodrain-back-to-gallery').onclick=()=>{mode='gallery';gallery()};
       const map={ccGroup:'group',ccVersion:'version',ccLength:'length',ccFinish:'finish',ccRef:'reference'};
       Object.entries(map).forEach(([id,key])=>{const el=overlay.querySelector('#'+id);if(el)el.onchange=()=>{draft[key]=el.value;if(key==='group'){draft.version=draft.length=draft.finish=draft.reference=''}else if(key==='version'){draft.length=draft.finish=draft.reference=''}else if(key==='length'){draft.finish=draft.reference=''}else if(key==='finish'){draft.reference=''}render()}});
       overlay.querySelector('.brand-config-confirm').onclick=()=>{try{
         const selected=rows.find(v=>v.reference===draft.reference)||exact;if(!selected)throw new Error('Référence Carrodrain introuvable.');
         const media=mediaFor('Carrodrain',p,g,selected);
-        const configured={manufacturer:'Carrodrain',collection:g.model,reference:selected.reference,base:selected.reference,designation:[g.model,selected.version,selected.length,selected.finish].filter(Boolean).join(' · '),category:'Caniveau de douche',finish:selected.finish||'',price:selected.price,totalPrice:selected.price,currency:'€',vat:'HT',source:'CD.L2027.pdf',sourceYear:2027,manufacturerUrl:media.manufacturerUrl,image:media.image,technicalSheetUrl:media.technicalSheetUrl,purchaseDiscount:50,configuratorType:'carrodrain-configured'};
+        const configured={manufacturer:'Carrodrain',collection:g.model,reference:selected.reference,base:selected.reference,designation:[g.model,selected.version,selected.length,selected.finish].filter(Boolean).join(' · '),category:'Caniveau de douche',finish:selected.finish||'',price:selected.price,totalPrice:selected.price,currency:'€',vat:'HT',source:'CD.L2027.pdf',sourceYear:2027,manufacturerUrl:media.manufacturerUrl,image:media.image||media.representativeImage,imageSource:media.image?'Visuel exact fabricant':'Visuel de collection Carrodrain · finition illustrative',imageFinishMatch:media.image?'exact':'collection',technicalSheetUrl:media.technicalSheetUrl,purchaseDiscount:50,configuratorType:'carrodrain-configured'};
         commitConfigured(configured,roomId,'carrodrainConfiguration',{group:g.id,model:g.model,version:selected.version,length:selected.length,finish:selected.finish,reference:selected.reference});
       }catch(e){overlay.querySelector('.recor-config-error').textContent=e.message||String(e)}};
     };
-    render();
+    gallery();
   }
 
   async function openHidrobox(p,roomId){
@@ -184,6 +252,6 @@
   function eligibleBrand(brand,p){return !!p&&String(p.manufacturer||'').toLowerCase()===brand.toLowerCase()&&String(p.configuratorType||'').toLowerCase()===brand.toLowerCase();}
   root.HydroBrandCatalogs={load:loadCatalogs};
   root.HydroBetteConfigurator={eligible:p=>eligibleBrand('Bette',p),open:openBette,close};
-  root.HydroCarrodrainConfigurator={eligible:p=>eligibleBrand('Carrodrain',p),open:openCarrodrain,close};
-  root.HydroHidroboxConfigurator={eligible:p=>eligibleBrand('Hidrobox',p),open:openHidrobox,close};
+  root.HydroCarrodrainConfigurator={eligible:p=>eligibleBrand('Carrodrain',p),open:openCarrodrain,close,models:CARRODRAIN_MODELS};
+  root.HydroHidroboxConfigurator={eligible:p=>eligibleBrand('Hidrobox',p),open:openHidrobox,close,groups:async()=>((await loadJson(BRAND_META.Hidrobox)).groups||[])};
 })(window);
