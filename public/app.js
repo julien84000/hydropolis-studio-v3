@@ -4097,10 +4097,7 @@ function syncPresentationBlockMedia(el){
   const visual=$(".board-visual",el),copy=$(".board-copy",el);
   if(!visual||!copy)return;
 
-  const scale=Math.max(.68,Math.min(1.18,Math.min(rect.width/260,rect.height/190)));
-  el.style.setProperty("--layout-title-size",(8.2*scale).toFixed(2)+"pt");
-  el.style.setProperty("--layout-maker-size",(5.2*scale).toFixed(2)+"pt");
-  el.style.setProperty("--layout-meta-size",(5.5*scale).toFixed(2)+"pt");
+  // Typography is defined by the dossier stylesheet, independently of image size.
 
   copy.style.height="auto";
   copy.style.minHeight="0";

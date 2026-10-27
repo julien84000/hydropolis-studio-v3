@@ -2780,9 +2780,6 @@ main{background:transparent}
 .presentation-layout-dragging,.presentation-layout-dragging *{user-select:none!important}
 #document .board-item[data-layout-custom="1"] .board-visual{overflow:hidden}
 #document .board-item[data-layout-custom="1"] .board-visual img{width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;object-fit:contain!important}
-#document .board-item[data-layout-custom="1"] .board-copy .board-brand,#document .board-item[data-layout-custom="1"] .board-copy .maker{font-size:var(--layout-maker-size,5.2pt)!important}
-#document .board-item[data-layout-custom="1"] .board-copy h3,#document .board-item[data-layout-custom="1"] .board-copy .title{font-size:var(--layout-title-size,8.2pt)!important}
-#document .board-item[data-layout-custom="1"] .board-copy .board-finish,#document .board-item[data-layout-custom="1"] .board-copy .board-ref,#document .board-item[data-layout-custom="1"] .board-copy .price,#document .board-item[data-layout-custom="1"] .board-copy .finish,#document .board-item[data-layout-custom="1"] .board-copy .refsmall{font-size:var(--layout-meta-size,5.5pt)!important}
 .pdf-exporting #document .layout-controls{display:none!important}
 .pdf-exporting #document .layout-editable-block{outline:none!important}
 @media print{#document .layout-controls{display:none!important}#document .layout-editable-block{outline:none!important}.presentation-layout-editing #document .visual-board-page[data-layout-page]{background-image:none!important}}

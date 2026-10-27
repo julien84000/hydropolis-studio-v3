@@ -231,6 +231,24 @@ const check=(name,value)=>{assert.ok(value,name);report.checks.push(name);};
       await page.locator('#document .quote-page').first().screenshot({path:process.env.QUOTE_SCREENSHOT});
     }
 
+    const typography=await page.evaluate(()=>{
+      showView('preview');
+      const host=document.querySelector('#document');
+      host.innerHTML='<div class="visual-board"><div class="board-item" style="width:260px;height:190px"><div class="board-visual"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="></div><div class="board-copy"><div class="board-brand">Fabricant</div><h3>Lavabo</h3><div class="board-ref">Réf. 7100</div></div></div></div>';
+      const block=host.querySelector('.board-item');
+      const sizes=()=>[...block.querySelector('.board-copy').children].map(el=>getComputedStyle(el).fontSize);
+      const before=sizes();
+      const results=[];
+      for(const [width,height] of [[160,140],[420,330]]){
+        presentationLayoutApplyBox(block,0,0,width,height);
+        syncPresentationBlockMedia(block);
+        results.push({fonts:sizes(),imageWidth:block.querySelector('img').getBoundingClientRect().width});
+      }
+      return {before,results};
+    });
+    check('dossier : police inchangée quand le visuel est réduit ou agrandi',typography.results.every(r=>JSON.stringify(r.fonts)===JSON.stringify(typography.before)));
+    check('dossier : image redimensionnée indépendamment du texte',typography.results[1].imageWidth>typography.results[0].imageWidth);
+
     const preload=await page.evaluate(async()=>{
       let host=document.querySelector('#document');
       if(!host){host=document.createElement('div');host.id='document';document.body.appendChild(host);}
