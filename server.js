@@ -4041,7 +4041,7 @@ const REMOTE_HOST_SUFFIXES=[
   // image/file CDN hosts, not from coalbrookuk.co.uk itself. Keep the allowlist
   // deliberately narrow to Coalbrook-owned hostnames rather than all svdcdn.com.
   "coalbrook-bathrooms.transforms.svdcdn.com","coalbrook-bathrooms.files.svdcdn.com",
-  "alpirubinetterie.com","catalano.it","dornbracht.com","recor.pt","fioranese.it","resigres.com","vismaravetro.it","tda.it","siraconcrete.com","amphoradesign.it","sanitairkamer.nl","ritmonio.it","nicolazzi.it","designertapwareco.com.au","cdn.shopify.com","gessi.com","areapro.gessi.com","gwebassets.gessi.com","gessistorage.blob.core.windows.net",
+  "alpirubinetterie.com","catalano.it","dornbracht.com","recor.pt","fioranese.it","resigres.com","vismaravetro.it","tda.it","siraconcrete.com","hidrobox.com","my-bette.com","carrodrain.com","amphoradesign.it","sanitairkamer.nl","ritmonio.it","nicolazzi.it","designertapwareco.com.au","cdn.shopify.com","gessi.com","areapro.gessi.com","gwebassets.gessi.com","gessistorage.blob.core.windows.net",
   // Lefroy Brooks is hosted on Squarespace. Product imagery is served from
   // these dedicated CDN hosts while product pages/downloads stay on lefroybrooks.com.
   "images.squarespace-cdn.com","static1.squarespace.com","file.squarespace-cdn.com"

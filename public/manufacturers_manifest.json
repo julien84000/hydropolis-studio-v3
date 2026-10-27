@@ -231,6 +231,54 @@
         "isolated-product-images",
         "collection-navigation"
       ]
+    },
+    {
+      "name": "Hidrobox",
+      "catalog": "brand-data/hidrobox-catalog-01.b64",
+      "capabilities": [
+        "catalog",
+        "integrated-configurator",
+        "official-site-image",
+        "official-technical-sheet",
+        "official-configurator-matrix",
+        "price-list-2026",
+        "list-price-uplift-4",
+        "purchase-discount-50"
+      ],
+      "purchaseDiscount": 50,
+      "listPriceUpliftPct": 4,
+      "manufacturerUrl": "https://hidrobox.com/fr/"
+    },
+    {
+      "name": "Bette",
+      "catalog": "brand-data/bette-catalog-01.b64",
+      "capabilities": [
+        "catalog",
+        "integrated-configurator",
+        "official-site-image",
+        "official-technical-sheet",
+        "official-cad-bim",
+        "exact-csv-variant-pricing",
+        "purchase-discount-50"
+      ],
+      "purchaseDiscount": 50,
+      "manufacturerUrl": "https://www.my-bette.com/fr/"
+    },
+    {
+      "name": "Carrodrain",
+      "catalog": "brand-data/carrodrain-catalog-01.b64",
+      "capabilities": [
+        "catalog",
+        "integrated-configurator",
+        "official-site-image",
+        "official-technical-sheet",
+        "official-bim",
+        "low-pro-selection",
+        "length-finish-matrix",
+        "purchase-discount-50"
+      ],
+      "purchaseDiscount": 50,
+      "manufacturerUrl": "https://carrodrain.com/en/"
     }
   ]
 }

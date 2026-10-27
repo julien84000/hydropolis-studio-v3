@@ -32,7 +32,9 @@ test('Dornbracht photos are resolved only from the official Dornbracht domain',(
   assert.match(serverSource,/"dornbracht\.com"/);
   assert.match(mediaSource,/dornbracht:\['dornbracht\.com'\]/);
   assert.match(appSource,/Gessi\|Dornbracht/);
-  assert.match(appSource,/Gessi\|Dornbracht\)\$\/i/);
+  const eligibility=appSource.match(/function automaticImageEligible\(p\)\{[\s\S]{0,500}/)?.[0]||'';
+  assert.match(eligibility,/\|Dornbracht(?:\||\))/);
+  assert.match(eligibility,/\$\/i\.test\(String\(p\.manufacturer/);
 });
 
 test('Dornbracht is exposed as a first-class manufacturer',()=>{
