@@ -25,7 +25,11 @@ test('V11.62.3 official photographic collections have grounded source URLs',()=>
  const h=hot();
  assert.equal(Object.keys(h.collections).length,12);
  assert.ok(Object.keys(h.models).length>=300);
- assert.match(h.models.AR003,/^https:\/\/hotbath\.it\/documents\//);
+ assert.match(h.byCollection.Archie.AR088,/^https:\/\/hotbath\.com\/images\/compano\/AR088\//);
+ assert.match(h.byCollection.Archie.AR110,/^https:\/\/hotbath\.com\/images\/compano\/AR110\//);
+ assert.equal(h.byCollection.Guy.AR088,undefined);
+ assert.ok(Object.keys(h.byCollection.Archie).length>=45);
+ assert.ok(!Object.values(h.byCollection.Archie).some(url=>url.includes('hotbath.it/documents')));
  assert.equal(Object.keys(images.collections['Lefroy Brooks']).length,8);
  assert.equal(Object.keys(images.collections.Zucchetti).length>=13,true);
  assert.match(images.collections.Zucchetti['Octo X'].image,/assets\.zucchettidesign\.it/);
@@ -57,17 +61,31 @@ test('V11.62.3 groups references without replacing tariff rows or required bodie
 test('V11.62.3 official model images override generic catalogue pictures with correct collection scope',()=>{
  const g=api(),hotbath=hot(),collections=brand();
  const media={hotbath,collections};
- const archie={manufacturer:'Hotbath',collection:'Archie',reference:'AR003.BS',base:'AR003',finishCode:'BS',image:'/images/generic-bathroom.jpg',imageSource:'Photo générique'};
- const image=g.findModelVisual('Hotbath',archie,'AR003',media);
- assert.match(image.image,/hotbath\.it\/documents\/+(?:ProdCateg)/);
- assert.match(image.image,/AR003/i);
+ const archie={manufacturer:'Hotbath',collection:'Archie',reference:'AR088.IX',base:'AR088',finishCode:'IX',image:'/images/generic-bathroom.jpg',imageSource:'Photo générique'};
+ const image=g.findModelVisual('Hotbath',archie,'AR088',media);
+ assert.match(image.image,/hotbath\.com\/images\/compano\/AR088\//);
+ assert.match(image.image,/AR088/i);
  assert.equal(image.match,'model');
  const gt={manufacturer:'Hotbath',collection:'Gent',reference:'GT004.BS',base:'GT004',image:'/images/generic.jpg'};
  assert.match(g.findModelVisual('Hotbath',gt,'GT004',media).image,/GT004/);
- const missing={manufacturer:'Hotbath',collection:'Guy',reference:'AR003.BS',base:'AR003',image:'',imageSource:''};
- assert.equal(g.findModelVisual('Hotbath',missing,'AR003',media).match,'missing');
+ const missing={manufacturer:'Hotbath',collection:'Guy',reference:'AR088.IX',base:'AR088',image:'',imageSource:''};
+ assert.equal(g.findModelVisual('Hotbath',missing,'AR088',media).match,'missing');
  const z={manufacturer:'Zucchetti',collection:'Octo',reference:'ZOC564.C50',base:'ZOC564',image:'/images/no-finish.jpg'};
  assert.match(g.findModelVisual('Zucchetti',z,'ZOC564',media).image,/ZOC564/i);
  const lefroy={manufacturer:'Lefroy Brooks',collection:'1920 Ten Ten',reference:'TH-1233-NK',base:'TH1233',image:''};
  assert.match(g.findModelVisual('Lefroy Brooks',lefroy,'TH1233',media).image,/TH-1233/i);
+});
+
+
+test('V11.62.4 references appear on photo overlay; broken URL preserves photo area',()=>{
+ const js=fs.readFileSync(path.join(dir,'manufacturer-guide.js'),'utf8');
+ const css=fs.readFileSync(path.join(dir,'styles.css'),'utf8');
+ assert.match(js,/mg-official-gallery/);
+ assert.match(js,/mg-tile-photo/);
+ assert.match(js,/mg-image-broken/);
+ assert.match(css,/mg-official-gallery \.mg-tile-meta/);
+ assert.match(css,/background:rgba\(52,48,45,\.76\)/);
+ assert.match(css,/grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
+ const d=hot();
+ assert.ok(Object.values(d.byCollection.Archie).every(v=>v.startsWith('https://hotbath.com/images/compano/')));
 });
