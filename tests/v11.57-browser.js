@@ -231,6 +231,25 @@ const check=(name,value)=>{assert.ok(value,name);report.checks.push(name);};
       await page.locator('#document .quote-page').first().screenshot({path:process.env.QUOTE_SCREENSHOT});
     }
 
+    const purchaseTerms=await page.evaluate(()=>{
+      const saved=compactStateForCloud();
+      delete saved.commercial.supplierDiscountMigrationV11614;
+      saved.commercial.supplierDiscounts.Sbordoni=0;
+      saved.commercial.supplierDiscounts.Dornbracht=0;
+      applyProjectState(saved);
+      const sample=manufacturer=>({manufacturer,price:1000,totalPrice:1000,catalogPrice:1000,catalogTotalPrice:1000,purchaseDiscount:0});
+      const costs=['Sbordoni','Dornbracht'].map(m=>purchaseCostFor(sample(m)));
+      const migrated=compactStateForCloud();
+      applyProjectState(migrated);
+      const rates=['Sbordoni','Dornbracht'].map(supplierDiscountRate);
+      const clientDiscount=state.commercial.clientDiscount;
+      const price=quoteLineUnit(sample('Sbordoni'));
+      return {costs,rates,clientDiscount,originalClientDiscount:saved.commercial.clientDiscount,price};
+    });
+    check('remises achat Sbordoni 55 % et Dornbracht 50 % migrées et conservées',JSON.stringify(purchaseTerms.rates)==='[55,50]');
+    check('coûts achat Sbordoni et Dornbracht corrigés malgré ancienne remise article',Math.abs(purchaseTerms.costs[0]-450)<0.001&&purchaseTerms.costs[1]===500);
+    check('remises fournisseur sans effet sur les prix et remises client',purchaseTerms.price===1000&&purchaseTerms.clientDiscount===purchaseTerms.originalClientDiscount);
+
     const subtotals=await page.evaluate(()=>{
       const roomId=state.rooms[0].id;
       state.rooms=[{...state.rooms[0],manual:[]}];
@@ -253,6 +272,26 @@ const check=(name,value)=>{assert.ok(value,name);report.checks.push(name);};
     check('sous-total espace : quantité, remise et accessoire masqué inclus',subtotals.shown.length===1&&subtotals.shown[0].includes(subtotals.expected));
     check('sous-total espace : une fois sur la dernière page',subtotals.pages===2&&subtotals.lastPageHasTotal);
     check('sous-total espace : indépendant des prix et masquable',subtotals.individualPrices===0&&subtotals.hidden===0);
+
+    const dossierOriginal=await page.evaluate(()=>{
+      const p=state.selected[0];p.image='/sbordoni/compositions/7100-alone.jpg';p.images=[p.image];p.pdfImage=p.image;p.customImage=true;
+      showView('preview');buildDocument();presentationLayoutEditing=true;initPresentationLayoutEditor();
+      return {id:p.id,image:p.image,pdfImage:p.pdfImage};
+    });
+    const dossierSelector=`.board-item[data-dossier-item="${dossierOriginal.id}"]`;
+    await page.locator(dossierSelector+' .layout-photo-file').setInputFiles({name:'dossier-only.png',mimeType:'image/png',buffer:require('@napi-rs/canvas').createCanvas(12,12).toBuffer('image/png')});
+    await page.waitForFunction(id=>!!state.selected.find(p=>p.id===id)?.dossierImage,dossierOriginal.id);
+    const dossierChange=await page.evaluate(id=>{
+      const p=state.selected.find(p=>p.id===id),saved=compactStateForCloud();
+      const changed={image:p.image,pdfImage:p.pdfImage,override:p.dossierImage};
+      applyProjectState(saved);buildDocument();
+      return {...changed,persisted:state.selected.find(p=>p.id===id).dossierImage,src:document.querySelector(`[data-dossier-item="${id}"] .board-visual img`).getAttribute('src')};
+    },dossierOriginal.id);
+    check('photo dossier : visuel projet et image source conservés',dossierChange.image===dossierOriginal.image&&dossierChange.pdfImage===dossierOriginal.pdfImage);
+    check('photo dossier : remplacement affiché et sauvegardé séparément',dossierChange.override.startsWith('data:image/')&&dossierChange.override===dossierChange.persisted&&dossierChange.src===dossierChange.override);
+    await page.locator(dossierSelector+' .layout-photo-reset').click();
+    check('photo dossier : retour au visuel du projet',await page.evaluate(id=>!state.selected.find(p=>p.id===id).dossierImage&&document.querySelector(`[data-dossier-item="${id}"] .board-visual img`).getAttribute('src')===state.selected.find(p=>p.id===id).image,dossierOriginal.id));
+    await page.evaluate(()=>{presentationLayoutEditing=false;initPresentationLayoutEditor();});
 
     const typography=await page.evaluate(()=>{
       showView('preview');
