@@ -20,6 +20,8 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     // Deterministic API responses exercise UI logic with snapshots of official data.
     const assets=require('../official-assets-server'),fixture=path.join(__dirname,'fixtures/official');
     const modelData=require('../public/sira_models.json');
+    // UI tests use a synthetic image payload; live source availability is tested separately.
+    if(!process.env.TEST_IMAGE_DIR)await page.route(/^https:\/\/(?:siraconcrete\.com|alpirubinetterie\.com|gessistorage\.blob\.core\.windows\.net)\//,route=>route.fulfill({body:require('@napi-rs/canvas').createCanvas(8,8).toBuffer('image/png'),contentType:'image/png'}));
     if(process.env.TEST_IMAGE_DIR)await page.route(/^https:\/\/(?:siraconcrete\.com|alpirubinetterie\.com|gessistorage\.blob\.core\.windows\.net)\//,async route=>{
       const url=route.request().url(),file=path.join(process.env.TEST_IMAGE_DIR,require('crypto').createHash('sha256').update(url).digest('hex')+'.img');
       if(fs.existsSync(file))return route.fulfill({body:fs.readFileSync(file),contentType:/\.png(?:$|\?)/.test(url)?'image/png':'image/jpeg'});

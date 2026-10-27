@@ -2259,7 +2259,7 @@ function commitSelectedRecords(records,{showProject=false}={}){
     const isRitmonio=/^Ritmonio$/i.test(item.manufacturer||"");
     // A grouped Sbordoni result already owns its exact catalogue composition image.
     // Do not replace it with a generic manufacturer lookup.
-    if(!item.sbordoniGrouped && !item.sbordoniWCConfiguration && !item.sbordoniWCConfigurationAccessory)enqueueSelectedImageSearch(item);
+    if(!item.sbordoniGrouped && !item.sbordoniWCConfiguration && !item.sbordoniWCConfigurationAccessory && !(item.siraConfiguration && item.image))enqueueSelectedImageSearch(item);
     if(isRitmonio && !item.technicalSheetUrl){
       fetchRitmonioDocuments(item).then(docs=>{
         if(docs?.technicalSheet?.url){saveState();renderRooms();}

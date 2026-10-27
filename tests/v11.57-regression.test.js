@@ -99,3 +99,49 @@ test('Core dashboard/catalogue helpers remain present after V11.57 refactor',()=
     assert.match(appSource,new RegExp('function\\s+'+name+'\\s*\\('),name+' must remain defined');
   }
 });
+
+test('Sira retains the selected pigment and official URL after preview failure',async()=>{
+  const vm=require('node:vm');
+  const tariff=require('../public/sira_tariff_2024.json');
+  const product=tariff.products.find(p=>p.collection==='Bench Collection');
+  const controls=new Map();
+  const element=key=>{
+    if(!controls.has(key))controls.set(key,{value:'',checked:false,disabled:false,innerHTML:'',textContent:'',addEventListener(type,fn){this[type]=fn;}});
+    return controls.get(key);
+  };
+  element('.sira-product').value=product.code;
+  element('.sira-color').value='OB';
+  element('.sira-holes').value='0';
+  const overlay={isConnected:true,querySelector:element,querySelectorAll:s=>s==='select,input'?['.sira-product','.sira-color','.sira-holes'].map(element):[],remove(){this.isConnected=false;}};
+  let resolvePhoto,records;
+  const photo=new Promise(resolve=>{resolvePhoto=resolve;});
+  const url='https://siraconcrete.com/wp-content/uploads/2024/09/23-OASIS-OB-1200x1499.jpg';
+  const context=vm.createContext({URLSearchParams,AbortSignal,document:{createElement:()=>overlay,body:{appendChild(){}}},esc:String,euro:String,
+    fetch:async url=>({ok:true,json:()=>url.includes('sira_tariff')?tariff:url.includes('sira_models')?{models:siraModels}:photo}),
+    HydroOfficialMedia:{VERSION:1,allowed:()=>true},createSelectedProductRecord:p=>({...p}),commitSelectedRecords:r=>{records=r;}});
+  vm.runInContext(fs.readFileSync(path.join(__dirname,'../public/sira-configurator.js'),'utf8')+'\nglobalThis.configurator=HydroSiraConfigurator;',context);
+  await context.configurator.open({manufacturer:'Sira Concrete',collection:product.collection},'room');
+  assert.equal(element('.sira-add').disabled,true,'cannot add before the selected image lookup completes');
+  element('.sira-add').onclick();assert.equal(records,undefined);
+  resolvePhoto({image:url,images:[url],finishMatch:'exact'});
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(element('.sira-add').disabled,false);
+  element('.sira-preview img').onerror();
+  element('.sira-add').onclick();
+  assert.equal(records[0].finishCode,'OB');
+  assert.equal(records[0].siraConfiguration.color,'OB');
+  assert.equal(records[0].remoteImageUrl,url);
+  assert.equal(records[0].pdfImage,url);
+});
+
+test('adding a configured Sira item keeps its selected photo without a second lookup',()=>{
+  const vm=require('node:vm'),queued=[];
+  const source=appSource.slice(appSource.indexOf('function commitSelectedRecords('),appSource.indexOf('\nfunction openRecorBathConfigurator('));
+  const context=vm.createContext({state:{selected:[]},reconcileProjectRoughIns(){},saveState(){},renderSelection(){},renderRooms(){},renderMarginDashboard(){},showView(){},enqueueSelectedImageSearch:p=>queued.push(p)});
+  vm.runInContext(source,context);
+  const configured={id:'sira',manufacturer:'Sira Concrete',siraConfiguration:{color:'OB'},image:'https://siraconcrete.com/OB.jpg'};
+  const missing={id:'missing',manufacturer:'Sira Concrete',siraConfiguration:{color:'OB'},image:''};
+  context.commitSelectedRecords([configured,missing]);
+  assert.deepEqual(queued,[missing]);
+  assert.equal(context.state.selected[0].image,configured.image);
+});

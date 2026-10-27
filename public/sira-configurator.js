@@ -16,16 +16,17 @@ const HydroSiraConfigurator=(()=>{
     o.querySelectorAll('.sira-model img').forEach(im=>im.onerror=()=>{im.replaceWith(Object.assign(document.createElement('span'),{textContent:'Visuel indisponible'}));});
     async function updatePhoto(){
       const key=selected.code+'|'+$('.sira-color').value;if(key===mediaKey)return;mediaKey=key;media=null;
-      const seq=++sequence;$('.sira-preview').textContent='Recherche du visuel officiel…';
+      const seq=++sequence;$('.sira-add').disabled=true;$('.sira-preview').textContent='Recherche du visuel officiel…';
       const params=new URLSearchParams({modelCode:selected.code,color:$('.sira-color').value});
       try{
-        const r=await fetch('/api/sira-assets?'+params),data=await r.json();if(seq!==sequence||!o.isConnected)return;
+        const r=await fetch('/api/sira-assets?'+params,{signal:AbortSignal.timeout(15000)}),data=await r.json();if(seq!==sequence||!o.isConnected)return;
         if(!r.ok)throw Error('Non disponible sur le site fabricant');
         media=data;
         const src=data.image&&HydroOfficialMedia.allowed(data.image,{manufacturer:'Sira Concrete'})?data.image:'';
         $('.sira-preview').innerHTML=`${src?`<img referrerpolicy="no-referrer" src="${escape(src)}" alt="${escape(selected.name+' · '+tariff.colors[$('.sira-color').value])}">`:''}<div>${src?(data.finishMatch==='exact'?'Photo officielle · '+escape(tariff.colors[$('.sira-color').value]):'Visuel officiel générique · pigment non garanti'):'Non disponible sur le site fabricant'}${data.technicalSheetUrl?`<br><a target="_blank" rel="noopener" href="${escape(data.technicalSheetUrl)}">Fiche technique Sira ↗</a>`:''}</div>`;
-        const im=$('.sira-preview img');if(im)im.onerror=()=>{media=null;$('.sira-preview').textContent='Non disponible sur le site fabricant';};
+        const im=$('.sira-preview img');if(im)im.onerror=()=>{if(seq!==sequence||!o.isConnected)return;$('.sira-preview').textContent='Aperçu indisponible · référence du visuel conservée';};
       }catch{if(seq===sequence&&o.isConnected)$('.sira-preview').textContent='Non disponible sur le site fabricant';}
+      finally{if(seq===sequence&&o.isConnected)$('.sira-add').disabled=false;}
     }
     function calc(){
       const code=$('.sira-product').value,width=isArctic?Number($('.sira-width').value):0;
@@ -41,13 +42,13 @@ const HydroSiraConfigurator=(()=>{
     }
     o.querySelectorAll('select,input').forEach(x=>x.addEventListener('change',calc));calc();
     $('.sira-add').onclick=()=>{
-      if(!selected)return;
+      if(!selected||$('.sira-add').disabled)return;
       const color=$('.sira-color').value,width=isArctic?$('.sira-width').value:'',position=isArctic?$('.sira-position').value:'',holes=$('.sira-holes').value;
       const ref=[selected.code,isArctic?String(width).padStart(3,'0'):'',position,color,holes].filter(x=>x!=='').join(' '),price=selected.price,url=productUrl();
       const rec=createSelectedProductRecord({...p,image:'',images:[],reference:ref,designation:[selected.name,width?width+' cm':'',tariff.colors[color]].filter(Boolean).join(' · '),finish:tariff.colors[color],finishCode:color,price,totalPrice:price,purchaseDiscount:50,manufacturerUrl:url},roomId);
       Object.assign(rec,{price,totalPrice:price,catalogPrice:price,catalogTotalPrice:price,purchaseDiscount:50,pricingStatus:'verified-sira-2024-25',pricingSource:tariff.source+' · p. '+selected.page,siraConfiguration:{product:isArctic?'':selected.name,productUrl:url,code:selected.code,color,widthCm:Number(width)||null,sinkPosition:position,tapHoles:Number(holes)},configuratorType:'sira-2024-tariff',customImage:false,image:'',images:[],pdfImage:'',pdfImages:[],mediaVersion:HydroOfficialMedia.VERSION});
       if(media?.image&&HydroOfficialMedia.allowed(media.image,rec)){
-        const src=media.image,images=media.images.filter(u=>HydroOfficialMedia.allowed(u,rec));
+        const src=media.image,images=(media.images||[media.image]).filter(u=>HydroOfficialMedia.allowed(u,rec));
         Object.assign(rec,{image:src,pdfImage:src,images,pdfImages:images.slice(0,2),remoteImageUrl:media.image,remoteImages:media.images,imageSource:media.imageSource,imageFinishMatch:media.finishMatch,imageStatus:media.finishMatch==='exact'?'Photo officielle · '+rec.finish:'Photo officielle générique · pigment non garanti',technicalSheetUrl:media.technicalSheetUrl,technicalSheetType:media.technicalSheetUrl?'pdf':'',resolvedManufacturerUrl:url});
       }
       const records=[rec],extra=(code,qty)=>{const x=tariff.extras[code],item=createSelectedProductRecord({manufacturer:'Sira Concrete',reference:code,designation:x.name,collection:'Compléments',price:x.price,totalPrice:x.price,purchaseDiscount:50},roomId,rec.id);Object.assign(item,{quantity:qty,quantityPerParent:qty,purchaseDiscount:50,pricingStatus:'verified-sira-2024-25',pricingSource:tariff.source+' · p. '+x.page});records.push(item);};
