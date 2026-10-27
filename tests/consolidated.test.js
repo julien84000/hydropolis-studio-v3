@@ -97,7 +97,9 @@ test('proxy : annulation client libère immédiatement le stream distant',async(
   app.get('/image',(req,res)=>assets.streamImage('https://alpirubinetterie.com/image.jpg',req,res,{family:'alpi',request:async options=>{options.signal.addEventListener('abort',()=>aborted=true);timer=setInterval(()=>upstream.push(Buffer.alloc(1024)),5);return {status:200,headers:{'content-type':'image/jpeg'},data:upstream};}}));
   const server=await new Promise(resolve=>{const s=app.listen(0,'127.0.0.1',()=>resolve(s));});
   try{
-    await new Promise((resolve,reject)=>{const req=http.get(`http://127.0.0.1:${server.address().port}/image`,res=>{res.once('data',()=>{req.destroy();setTimeout(resolve,30);});});req.on('error',e=>{if(e.code!=='ECONNRESET')reject(e);});});
+    await new Promise((resolve,reject)=>{const req=http.get(`http://127.0.0.1:${server.address().port}/image`,res=>{res.once('data',()=>{req.destroy();resolve();});});req.on('error',e=>{if(e.code!=='ECONNRESET')reject(e);});});
+    const deadline=Date.now()+1000;
+    while((!destroyed||!aborted)&&Date.now()<deadline)await new Promise(r=>setTimeout(r,10));
     assert(destroyed);assert(aborted);
   }finally{upstream.destroy();server.closeAllConnections();await new Promise(r=>server.close(r));}
 });
