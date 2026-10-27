@@ -3,6 +3,7 @@ const test=require('node:test');
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path=require('node:path');
+const vm=require('node:vm');
 const zlib=require('node:zlib');
 
 const root=path.join(__dirname,'..','public');
@@ -52,4 +53,24 @@ test('V11.62 app routes new brands to configurators and uses 50 percent supplier
   assert.match(app,/HydroCarrodrainConfigurator/);
   assert.match(app,/Hidrobox:50,Bette:50,Carrodrain:50/);
   assert.match(app,/Hidrobox\|Bette\|Carrodrain/);
+});
+
+
+test('V11.62.1 uses the filtered variant and preserves exact manufacturer media',()=>{
+  const code=fs.readFileSync(path.join(root,'brand-configurators.js'),'utf8');
+  assert.doesNotMatch(code,/const selected=\(g\.variants\|\|\[\]\)\.find/);
+  assert.equal((code.match(/const selected=rows\.find\(v=>v\.reference===draft\.reference\)/g)||[]).length,3);
+  assert.equal((code.match(/mediaPreview\('(Bette|Carrodrain|Hidrobox)',p,g,exact\)/g)||[]).length,3);
+  assert.equal((code.match(/technicalSheetUrl:media\.technicalSheetUrl/g)||[]).length,3);
+  assert.equal((code.match(/image:media\.image/g)||[]).length,3);
+  assert.doesNotMatch(code,/image:'',purchaseDiscount:50/);
+  assert.match(code,/cfgCache\.delete\(key\)/);
+  const win={};
+  vm.runInNewContext(code,{window:win,Map,Uint8Array});
+  for(const brand of ['Bette','Carrodrain','Hidrobox']){
+    const api=win['Hydro'+brand+'Configurator'];
+    assert.equal(typeof api?.open,'function');
+    assert.equal(api.eligible({manufacturer:brand,configuratorType:brand.toLowerCase()}),true);
+    assert.equal(api.eligible({manufacturer:'Different',configuratorType:brand.toLowerCase()}),false);
+  }
 });
