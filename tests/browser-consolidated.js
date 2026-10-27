@@ -116,6 +116,7 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     check('PDF fabricant conservé à ajout',guideDocs.sheet.endsWith('/specs.pdf')&&guideDocs.installation.endsWith('/installation.pdf')&&guideDocs.drawing.endsWith('/drawing.pdf'));
     await page.waitForFunction(()=>CATALOG.some(p=>p.manufacturer==='Hotbath'&&p.collection==='Archie'),{timeout:20000});
     await page.evaluate(()=>{
+      showView('catalog');
       const select=document.querySelector('#manufacturerFilter');
       select.value='Hotbath';select.dispatchEvent(new Event('change',{bubbles:true}));
     });
