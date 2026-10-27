@@ -1968,7 +1968,20 @@ function renderCatalog(){
      const catalogVisual=brokenCatalogImages.has(candidateVisual)?"":candidateVisual;
      return `<article class="result v11-product-card" data-key="${esc(key)}">${catalogThumbHtml(p,catalogVisual,finishLabel,favorite,cached)}<div><div class="r-top"><span class="ref">${esc(p.reference)}</span><span class="badge">${esc(p.manufacturer)}</span><span class="badge">${esc(p.collection)}</span><span class="badge">${esc(p.category)}</span></div><div class="designation">${esc(p.designation)}</div><div class="meta">${esc(p.finish||"")}</div>${roughInWarningHtml(p)}<div class="availability ${avail.cls}">${esc(avail.label)}</div><div class="manufacturer-tools v11-resource-tools"><button class="tiny lookup-photo" data-ref="${esc(p.reference)}" data-key="${esc(key)}">${cached||p.image?"Actualiser la photo":"Photo fabricant"}</button>${hotbathNeedsFinishFallback(p,cached)?`<button class="tiny hotbath-web-photo" data-ref="${esc(p.reference)}" data-key="${esc(key)}">Finition web</button>`:""}${p.manufacturerUrl?`<a class="source-link" target="_blank" rel="noopener" href="${esc(cached?.resolvedManufacturerUrl||p.manufacturerUrl)}">Fiche ↗</a>`:""}${cached?.technicalSheetUrl?`<a class="source-link" target="_blank" rel="noopener" href="${esc(cached.technicalSheetUrl)}">Technique ↗</a>`:""}</div><div class="photo-status">${cached?`<b>${esc(imageBadge(cached,p))}</b>`:p.image?`<b>${esc(p.imageSource||"Visuel catalogue")}</b>`:`Source tarif : ${esc(p.source||"catalogue fabricant")}`}</div>${/^Nicolazzi$/i.test(String(p.manufacturer||""))?`<div class="nicolazzi-options-slot">${nicolazziVisualOptionsHtml(p,cached)}</div>`:""}<div class="card-action-row"><button class="suggest-toggle" data-key="${esc(key)}">Alternatives</button><button class="compare-toggle ${compared?"active":""}" data-key="${esc(key)}">${compared?"✓ Comparé":"Comparer"}</button></div></div><div class="price-box"><small class="v11-price-label">Prix public</small><div class="price">${euro(price)} HT</div>${p.internalReference?`<div class="internal">Ext. ${euro(p.price)} + ${esc(p.internalReference)} ${euro(p.internalPrice)}</div>`:`<div class="internal">${esc(p.sourceYear?`Tarif ${p.sourceYear}`:"Référence complète")}</div>`}${(window.HydroSbordoniConfigurator?.eligible?.(p)||window.HydroSbordoniWCConfigurator?.eligible?.(p)||window.HydroHidroboxConfigurator?.eligible?.(p)||window.HydroBetteConfigurator?.eligible?.(p)||window.HydroCarrodrainConfigurator?.eligible?.(p))?`<div class="internal recor-config-hint"><b>Configuration guidée</b> · choisissez la composition finale</div>`:isRecorBathRequiringFeet(p)?`<div class="internal recor-config-hint"><b>Pieds obligatoires</b> · choix à l’ajout</div>`:""}<button class="btn primary add" data-ref="${esc(p.reference)}" data-key="${esc(key)}" style="margin-top:9px">${(window.HydroSbordoniConfigurator?.eligible?.(p)||window.HydroSbordoniWCConfigurator?.eligible?.(p)||window.HydroHidroboxConfigurator?.eligible?.(p)||window.HydroBetteConfigurator?.eligible?.(p)||window.HydroCarrodrainConfigurator?.eligible?.(p))?"Configurer ce produit":isRecorBathRequiringFeet(p)?"Configurer + ajouter":"Ajouter à "+esc(room?.title||"la pièce")}</button></div></article>`;
    }).join("");
-   results.innerHTML=sbordoniLauncher+(productCards||`<div class="empty">Aucun résultat.</div>`);
+   const manufacturerGuideActive=window.HydroManufacturerGuide?.isSupported?.(fs.manufacturer);
+   const manufacturerGuideLauncher=manufacturerGuideActive?`<section class="manufacturer-guide-launcher">
+     <div><span class="eyebrow">${esc(fs.manufacturer)} · CATALOGUE VISUEL</span><h3>Parcourir les collections du fabricant</h3><p>Collection → espace → modèle → finition. Références et prix du catalogue existant.</p></div>
+     <button class="btn primary manufacturer-guide-open" type="button">Explorer les collections</button>
+   </section>`:"";
+   results.innerHTML=sbordoniLauncher+manufacturerGuideLauncher+(productCards||`<div class="empty">Aucun résultat.</div>`);
+   results.querySelector(".manufacturer-guide-open")?.addEventListener("click",()=>{
+     const brand=fs.manufacturer;
+     const rows=[...catalogIndex.maker(brand)];
+     const keys=new Set(rows.map(productKey));
+     for(const p of serverSearchRows)if(p.manufacturer===brand&&!keys.has(productKey(p))){rows.push(p);keys.add(productKey(p));}
+     window.HydroManufacturerGuide?.open?.(brand,rows,$("#targetRoom")?.value||state.rooms[0]?.id||"",
+       p=>addCatalogProduct(p.reference,$("#targetRoom")?.value||state.rooms[0]?.id||"",productKey(p)));
+   });
    results.querySelector(".sbordoni-launch-basin")?.addEventListener("click",()=>window.HydroSbordoniConfigurator?.open?.({collection:fs.collection},$("#targetRoom")?.value||state.rooms[0]?.id||""));
    results.querySelector(".sbordoni-launch-wc")?.addEventListener("click",()=>window.HydroSbordoniWCConfigurator?.open?.({collection:fs.collection},$("#targetRoom")?.value||state.rooms[0]?.id||""));
    results.querySelectorAll(".add").forEach(b=>b.onclick=()=>{try{addCatalogProduct(b.dataset.ref,$("#targetRoom")?.value||state.rooms[0]?.id||"",b.dataset.key||"")}catch(e){alert(`Impossible d’ajouter cet article : ${e.message||"erreur inconnue"}`)}});
@@ -2239,15 +2252,15 @@ function createSelectedProductRecord(p,roomId,parentId=""){
     imageFinishMatch:cached?.finishMatch||"",
     imageStatus:cached?imageBadge(cached,p):(catalogMain?(p.imageSource||"Visuel catalogue"):"Recherche fabricant…"),
     resolvedManufacturerUrl:cached?.resolvedManufacturerUrl||p.manufacturerUrl||"",
-    drawingUrl:cached?.drawingUrl||"",
-    drawingType:cached?.drawingType||"",
-    drawingLabel:cached?.drawingLabel||"",
-    technicalSheetUrl:cached?.technicalSheetUrl||"",
-    technicalSheetLabel:cached?.technicalSheetLabel||"Fiche technique",
-    technicalSheetType:cached?.technicalSheetType||"",
+    drawingUrl:cached?.drawingUrl||p.drawingUrl||"",
+    drawingType:cached?.drawingType||p.drawingType||"",
+    drawingLabel:cached?.drawingLabel||p.drawingLabel||"",
+    technicalSheetUrl:cached?.technicalSheetUrl||p.technicalSheetUrl||"",
+    technicalSheetLabel:cached?.technicalSheetLabel||p.technicalSheetLabel||"Fiche technique",
+    technicalSheetType:cached?.technicalSheetType||p.technicalSheetType||"",
     technicalSheetPage:Number(cached?.technicalSheetPage||1),
-    installationGuideUrl:cached?.installationGuideUrl||"",
-    installationGuideLabel:cached?.installationGuideLabel||"Notice d'installation",
+    installationGuideUrl:cached?.installationGuideUrl||p.installationGuideUrl||"",
+    installationGuideLabel:cached?.installationGuideLabel||p.installationGuideLabel||"Notice d'installation",
     nicolazziSelectedHandle:/nicolazzi/i.test(p.manufacturer||"")?(cached?.selectedHandle||null):null,
     nicolazziHandleOptions:/nicolazzi/i.test(p.manufacturer||"")?(cached?.handleOptions||[]):[],
     nicolazziFinishOptions:/nicolazzi/i.test(p.manufacturer||"")?(cached?.finishOptions||[]):[],
