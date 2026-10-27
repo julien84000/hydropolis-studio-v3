@@ -99,13 +99,23 @@ function findCollectionVisual(brand,name,media){
  return {image:safeUrl(img),url:typeof data==='string'?OFFICIAL[brand]:safeUrl(data?.url)||OFFICIAL[brand]};
 }
 function findModelVisual(brand,p,base,media){
- const own=safeUrl(p?.image)||(Array.isArray(p?.images)?safeUrl(p.images[0]):'');
- if(own)return {image:own,caption:p?.imageSource||'Illustration catalogue · finition à vérifier'};
- const dict=brand==='Hotbath'?media.hotbath.models:media.collections.models?.[brand]||{};
- const key=String(base||'').toUpperCase().replace(/\s+/g,'').replace(/_/g,'-');
- const image=safeUrl(dict?.[key]);
- if(image)return {image,caption:'Image officielle du modèle · finition illustrative'};
- return {image:'',caption:'Visuel précis indisponible'};
+ const rawBase=String(base||'').trim(), upper=rawBase.toUpperCase().replace(/\s+/g,'').replace(/_/g,'-');
+ const reduced=upper.replace(/[^A-Z0-9]/g,'');
+ const dict=brand==='Hotbath'
+   ?(media.hotbath.byCollection?.[displayCollection('Hotbath',p?.collection)]||{})
+   :(media.collections.models?.[brand]||{});
+ const lookup=key=>safeUrl(dict?.[key]);
+ // Supplier catalogues often share a generic base photo across finishes.
+ // Prefer a verified official model photo, scoped to the current collection.
+ const official=lookup(upper)||lookup(reduced)||lookup(reduced.replace(/^([A-Z]{2})(\d{4})$/,'$1-$2'));
+ const owned=safeUrl(p?.image)||(Array.isArray(p?.images)?safeUrl(p.images[0]):'');
+ const exactFlag=String(p?.imageSource||'').toLowerCase();
+ const exactImage=owned&&(/\b(exact|référence précise|finish-specific)\b/i.test(exactFlag)
+   ||(p.finishCode&&owned.toLowerCase().includes(String(p.finishCode).toLowerCase())&&owned.toUpperCase().includes(reduced)));
+ if(exactImage)return {image:owned,caption:'Visuel catalogue de la finition sélectionnée',match:'exact'};
+ if(official)return {image:official,caption:'Photographie officielle du modèle · finition illustrative',match:'model'};
+ if(owned)return {image:owned,caption:'Illustration catalogue · finition à vérifier',match:'catalogue'};
+ return {image:'',caption:'Visuel du modèle non disponible',match:'missing'};
 }
 function isSupported(brand){return BRANDS.includes(brand)}
 function open(brand,rows,roomId,onAdd){
