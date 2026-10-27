@@ -77,7 +77,7 @@ function openHotbath(rows,roomId,onAdd){
  const image=(url,name)=>url?'<span class="mg-tile-photo"><img src="'+esc(url)+'" alt="'+esc(name)+'" loading="lazy" decoding="async" onerror="this.parentNode.classList.add(\'mg-image-broken\')"><span class="mg-photo-unavailable">Photographie indisponible</span></span>'
    :'<span class="mg-tile-photo mg-image-broken"><span class="mg-photo-unavailable">Photographie indisponible</span></span>';
  const cards=(items,css)=>'<div class="mg-grid '+css+'">'+items.map(x=>
-   '<button class="mg-tile" type="button" data-choose="'+esc(x.action)+'" data-value="'+esc(x.id)+'" title="'+esc(x.note||'')+'">'+
+   '<button class="mg-tile" type="button" data-choose="'+esc(x.action)+'" data-value="'+esc(x.id)+'"'+(x.priced?' data-priced="true"':'')+' title="'+esc(x.note||'')+'">'+
    image(x.image,x.name)+'<span class="mg-tile-meta"><strong>'+esc(x.name)+'</strong><small>'+esc(x.note||'')+'</small></span></button>'
  ).join('')+'</div>';
  const list=()=>categories(collection,taxonomy,prices);
@@ -126,7 +126,7 @@ function openHotbath(rows,roomId,onAdd){
      const filtered=all.filter(x=>!term||clean(x.base+' '+String(repr(x)?.designation||'')).includes(term));
      const paged=filtered.slice(offset*ALL,(offset+1)*ALL);
      body='<div class="mg-search"><label>Rechercher une référence<input id="hb-ref-search" type="search" placeholder="Référence ou désignation…" value="'+esc(search)+'"></label><span>'+filtered.length+' références fabricant</span></div>'+
-        cards(paged.map(m=>({name:m.base,id:m.base,action:'model',image:photo(m,collection,photos),note:m.variants.length
+        cards(paged.map(m=>({name:m.base,id:m.base,action:'model',image:photo(m,collection,photos),priced:m.variants.some(v=>price(v)>0),note:m.variants.some(v=>price(v)>0)
           ?'Prix disponible · '+String(repr(m)?.designation||'').slice(0,100)
           :'Tarif non importé'})),'mg-products mg-official-gallery')+
         (filtered.length>ALL?'<div class="mg-pagination"><button type="button" id="hb-prev" '+(offset===0?'disabled':'')+'>Précédent</button><span>Page '+(offset+1)+' / '+Math.ceil(filtered.length/ALL)+'</span><button type="button" id="hb-next" '+((offset+1)*ALL>=filtered.length?'disabled':'')+'>Suivant</button></div>':'')+
