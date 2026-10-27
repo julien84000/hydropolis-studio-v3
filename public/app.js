@@ -2589,7 +2589,10 @@ function clearQuoteLineOverrides(obj){
 }
 
 function supplierDiscountRate(manufacturer){
-  return clampPercent(state.commercial?.supplierDiscounts?.[manufacturer]||0);
+  const configured=state.commercial?.supplierDiscounts?.[manufacturer];
+  if(configured!==undefined&&configured!==null&&configured!=="")return clampPercent(configured);
+  const defaults={Hidrobox:50,Bette:50,Carrodrain:50};
+  return clampPercent(defaults[manufacturer]||0);
 }
 function selectedCatalogTotal(){
   return (state.selected||[]).filter(isRealSelectedProduct).reduce((sum,p)=>sum+quoteLineUnit(p)*itemQuantity(p),0);
@@ -2660,7 +2663,7 @@ function purchaseDiscountFor(p){
   const maker=String(p?.manufacturer||"");
   const raw=p?.purchaseDiscount;
   const explicit=(raw===null||raw===undefined||raw==="")?NaN:Number(raw);
-  if(/^(Lefroy Brooks|Ritmonio|Nicolazzi|Gessi|Sbordoni|Dornbracht)$/i.test(maker)) return supplierDiscountRate(maker);
+  if(/^(Lefroy Brooks|Ritmonio|Nicolazzi|Gessi|Sbordoni|Dornbracht|Hidrobox|Bette|Carrodrain)$/i.test(maker)) return supplierDiscountRate(maker);
   if(Number.isFinite(explicit) && explicit>=0) return clampPercent(explicit);
   if(p?.manufacturer==="Hotbath" && /(?:^|\/)\s*archie\s*(?:\/|$)/i.test(String(p.collection||""))) return 55;
   return supplierDiscountRate(p?.manufacturer);
