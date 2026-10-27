@@ -95,7 +95,7 @@ function findCollectionVisual(brand,name,media){
  const normal=nrm(name);
  let entry=Object.entries(dict||{}).find(([label])=>nrm(label)===normal);
  if(!entry)return {image:'',url:OFFICIAL[brand]};
- const data=entry[1],img=typeof data==='string'?data:data?.image;
+ const data=entry[1],img=brand==='Hotbath'?(media.hotbath.collectionImages?.[entry[0]]||''):(typeof data==='string'?data:data?.image);
  return {image:safeUrl(img),url:typeof data==='string'?OFFICIAL[brand]:safeUrl(data?.url)||OFFICIAL[brand]};
 }
 function findModelVisual(brand,p,base,media){
@@ -129,11 +129,13 @@ function open(brand,rows,roomId,onAdd){
  const groups=groupProducts(source,brand);
  const shown=()=>collection?.products||[];
  const filtered=()=>shown().filter(p=>(!category||String(p.category||'Autres')===category)&&(!subcategory||subtypeLabel(p)===subcategory));
- const tiles=(items,cls)=>'<div class="mg-grid '+cls+'">'+items.map(x=>
-   '<button class="mg-tile '+(x.selected?'selected':'')+'" type="button" data-go="'+esc(x.action)+'" data-value="'+esc(x.key)+'">'+
-   (x.image?'<img loading="lazy" decoding="async" src="'+esc(x.image)+'" alt="" onerror="this.style.display=\'none\'">':'<span class="mg-noimage">Visuel non disponible</span>')+
-   '<span class="mg-tile-meta"><strong>'+esc(x.name)+'</strong><small>'+esc(x.note||'')+'</small></span></button>'
- ).join('')+'</div>';
+ const tiles=(items,cls)=>'<div class="mg-grid '+cls+'">'+items.map(x=>{
+   const name=esc(x.name),description=esc(x.note||'');
+   const photo=x.image?'<span class="mg-tile-photo"><img loading="lazy" decoding="async" src="'+esc(x.image)+'" alt="'+name+'" onerror="this.parentNode.classList.add(\'mg-image-broken\')"><span class="mg-photo-unavailable" aria-hidden="true">Photographie indisponible</span></span>'
+     :'<span class="mg-tile-photo mg-image-broken"><span class="mg-photo-unavailable">Photographie indisponible</span></span>';
+   return '<button class="mg-tile '+(x.selected?'selected':'')+'" type="button" data-go="'+esc(x.action)+'" data-value="'+esc(x.key)+'" title="'+description+'" aria-label="'+name+(description?' · '+description:'')+'">'+
+     photo+'<span class="mg-tile-meta"><strong>'+name+'</strong><small>'+description+'</small></span></button>';
+ }).join('')+'</div>';
  const breadcrumb=()=>'<nav class="mg-breadcrumb" aria-label="Parcours du configurateur">'+[
   {name:brand,step:'collections'},...(collection?[{name:collection.name,step:'categories'}]:[]),
   ...(category?[{name:category,step:'subcategories'}]:[]),...(model?[{name:model.base,step:'models'}]:[])
@@ -173,7 +175,7 @@ function open(brand,rows,roomId,onAdd){
      content='<div class="mg-search"><label>Rechercher un modèle <input type="search" id="mgSearch" placeholder="Référence, désignation…" value="'+esc(modelSearch)+'"></label><span>'+choices.length+' modèles</span></div>'+
       tiles(visible.map(g=>{const p=g.variants.find(x=>safeUrl(x.image))||g.variants[0],v=findModelVisual(brand,p,g.base,media);
        return {name:g.base,key:g.base,action:'model',image:v.image,note:String(p?.designation||'').slice(0,100)};
-      }),'mg-products')+(choices.length>PAGE?'<div class="mg-pagination"><button type="button" id="mgPrev" '+(modelPage===0?'disabled':'')+'>Précédent</button> Page '+(modelPage+1)+' / '+Math.ceil(choices.length/PAGE)+' <button type="button" id="mgNext" '+((modelPage+1)*PAGE>=choices.length?'disabled':'')+'>Suivant</button></div>':'');
+      }),'mg-products mg-official-gallery')+(choices.length>PAGE?'<div class="mg-pagination"><button type="button" id="mgPrev" '+(modelPage===0?'disabled':'')+'>Précédent</button> Page '+(modelPage+1)+' / '+Math.ceil(choices.length/PAGE)+' <button type="button" id="mgNext" '+((modelPage+1)*PAGE>=choices.length?'disabled':'')+'>Suivant</button></div>':'');
      if(!choices.length)content='<div class="mg-empty">Aucun modèle ne correspond à cette recherche.</div>';
    }else if(stage==='finish'){
      header=collection.name+' · '+model.base;
