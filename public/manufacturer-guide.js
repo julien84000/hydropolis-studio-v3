@@ -110,8 +110,11 @@ function findModelVisual(brand,p,base,media){
  const official=lookup(upper)||lookup(reduced)||lookup(reduced.replace(/^([A-Z]{2})(\d{4})$/,'$1-$2'));
  const owned=safeUrl(p?.image)||(Array.isArray(p?.images)?safeUrl(p.images[0]):'');
  const exactFlag=String(p?.imageSource||'').toLowerCase();
+ const finishCode=String(p?.finishCode||'').replace(/[^a-z0-9]/gi,'');
+ const finishPattern=finishCode?new RegExp('(?:[._-])'+finishCode+'(?:[._-]|$)','i'):null;
+ const filename=owned.split('?')[0].split('/').pop()||'';
  const exactImage=owned&&(/\b(exact|référence précise|finish-specific)\b/i.test(exactFlag)
-   ||(p.finishCode&&owned.toLowerCase().includes(String(p.finishCode).toLowerCase())&&owned.toUpperCase().includes(reduced)));
+   ||(finishCode&&finishPattern.test(filename)&&filename.toUpperCase().includes(reduced)));
  if(exactImage)return {image:owned,caption:'Visuel catalogue de la finition sélectionnée',match:'exact'};
  if(official)return {image:official,caption:'Photographie officielle du modèle · finition illustrative',match:'model'};
  if(owned)return {image:owned,caption:'Illustration catalogue · finition à vérifier',match:'catalogue'};
