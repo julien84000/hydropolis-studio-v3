@@ -87,6 +87,7 @@ function blankProjectState(){
       supplierDiscounts:{"Amphora":50,"Catalano":64,"Coalbrook":50,"Zucchetti":55,"Lefroy Brooks":55,"Hotbath":50,"Recor":61.5385,"Ritmonio":55,"Nicolazzi":50,"Gessi":50}
     },
     showClientPrices:true,
+    showSpaceSubtotals:false,
     showSupplierReferences:true,
     presentationLayout:{blocks:{}}
   };
@@ -112,6 +113,7 @@ function compactStateForCloud(){
     commercial:JSON.parse(JSON.stringify(state.commercial||{})),
     presentationLayout:JSON.parse(JSON.stringify(state.presentationLayout||{blocks:{}})),
     showClientPrices:state.showClientPrices!==false,
+    showSpaceSubtotals:state.showSpaceSubtotals===true,
     showSupplierReferences:state.showSupplierReferences!==false
   };
   return raw;
@@ -123,6 +125,7 @@ function applyProjectState(data){
   state.rooms=Array.isArray(src.rooms)&&src.rooms.length?JSON.parse(JSON.stringify(src.rooms)):fresh.rooms;
   state.selected=Array.isArray(src.selected)?JSON.parse(JSON.stringify(src.selected)):[];
   state.commercial={...fresh.commercial,...(src.commercial||{})};
+  state.showSpaceSubtotals=src.showSpaceSubtotals===true;
   state.showClientPrices=typeof src.showClientPrices==="boolean"?src.showClientPrices:true;
   state.showSupplierReferences=typeof src.showSupplierReferences==="boolean"?src.showSupplierReferences:true;
   loadState(src);
@@ -1488,6 +1491,7 @@ function loadState(override=null){
   state.selected=[];
   state.commercial=JSON.parse(JSON.stringify(fresh.commercial));
   state.showClientPrices=true;
+  state.showSpaceSubtotals=false;
   state.showSupplierReferences=true;
   state.presentationLayout={blocks:{}};
 
@@ -1502,6 +1506,7 @@ function loadState(override=null){
       state.rooms=Array.isArray(s.rooms)&&s.rooms.length?JSON.parse(JSON.stringify(s.rooms)):fresh.rooms;
       state.selected=Array.isArray(s.selected)?JSON.parse(JSON.stringify(s.selected)):[];
       state.commercial={...fresh.commercial,...(s.commercial||{})};
+      state.showSpaceSubtotals=s.showSpaceSubtotals===true;
       state.showClientPrices=typeof s.showClientPrices==="boolean"?s.showClientPrices:true;
       state.showSupplierReferences=typeof s.showSupplierReferences==="boolean"?s.showSupplierReferences:true;
       state.presentationLayout=(s.presentationLayout&&typeof s.presentationLayout==="object")
@@ -3562,6 +3567,11 @@ function bindProject(){
   };
   const priceToggle=$("#showClientPrices");
   const refToggle=$("#showSupplierReferences");
+  const subtotalToggle=$("#showSpaceSubtotals");
+  if(subtotalToggle){
+    subtotalToggle.checked=state.showSpaceSubtotals===true;
+    subtotalToggle.onchange=()=>{state.showSpaceSubtotals=subtotalToggle.checked;saveState();};
+  }
   if(priceToggle){
     priceToggle.checked=state.showClientPrices!==false;
     priceToggle.onchange=()=>{state.showClientPrices=priceToggle.checked;saveState();};
@@ -3812,7 +3822,7 @@ function orderedPresentationGroups(items){
     if(p.manual)return !!String(p.designation||p.label||"").trim();
     return isRealSelectedProduct(p);
   }).forEach(p=>{
-    const key=p.manual?"AUTRES":presentationSpace(p);
+    const key=p.manual?"AUTRES":(p.accessoryFor?quoteSpaceForProduct(p):presentationSpace(p));
     (buckets[key]||buckets.AUTRES).push(p);
   });
   const groups=[];
@@ -3826,6 +3836,23 @@ function orderedPresentationGroups(items){
   if(buckets.WC.length) groups.push({space:"WC",label:"Espace toilette",intro:presentationSpaceIntro("WC"),items:buckets.WC});
   if(buckets.AUTRES.length) groups.push({space:"AUTRES",label:"Accessoires & éléments complémentaires",intro:presentationSpaceIntro("AUTRES"),items:buckets.AUTRES});
   return groups;
+}
+// Sum the pictured selection and its linked components using the quote's net amounts.
+function presentationGroupSubtotal(roomId,group,rows=quoteRows()){
+  const ids=new Set(group.items.filter(p=>!p.manual||p.isFreeArticle).map(p=>p.id));
+  let changed=true;
+  while(changed){
+    changed=false;
+    for(const p of state.selected||[]){
+      if(p.roomId===roomId && p.accessoryFor && ids.has(p.accessoryFor) && !ids.has(p.id)){
+        ids.add(p.id);changed=true;
+      }
+    }
+  }
+  const manualIds=new Set(group.items.filter(p=>p.manual&&!p.isFreeArticle).map(p=>p.id));
+  return rows.filter(row=>row.roomId===roomId && (row.manual
+    ?manualIds.has(`manual-${roomId}-${row.manualIndex}`):ids.has(row.sourceId)))
+    .reduce((sum,row)=>sum+row.netUnit*row.qty,0);
 }
 function canonicalImageKey(src){
   if(!src || typeof src!=="string") return "";
@@ -4371,13 +4398,14 @@ function buildDocument(){
      </section>`;
    }
 
+   const subtotalRows=state.showSpaceSubtotals===true?quoteRows():[];
    groups.forEach(group=>{
      for(let i=0;i<Math.ceil(group.items.length/5);i++){
        const ch=group.items.slice(i*5,i*5+5);
        const continuation=i>0?" · suite":"";
        html+=`<section class="page editorial-page room-page visual-board-page board-${group.space.toLowerCase()}" data-parallax-page data-layout-page="${esc(String(r.id)+":"+group.space+":"+i)}">
          <div class="page-ambient page-ambient-a" data-parallax-layer="0.05"></div>
-         <div class="board-head" data-layout-block="head"><div><div class="section-kicker">${esc(r.title)}${continuation}</div><h2>${group.label}</h2></div><div class="editorial-brand">Hydropolis</div></div>
+         <div class="board-head" data-layout-block="head"><div><div class="section-kicker">${esc(r.title)}${continuation}</div><h2>${group.label}</h2></div><div class="board-heading-summary"><div class="editorial-brand">Hydropolis</div>${state.showSpaceSubtotals===true && i===Math.ceil(group.items.length/5)-1?`<div class="board-space-subtotal" data-space="${esc(group.space)}">Sous-total de l’espace <strong>${euro(presentationGroupSubtotal(r.id,group,subtotalRows))} HT</strong><small>Sélection présentée et accessoires liés · après remises</small></div>`:""}</div></div>
          <div class="board-intro" data-layout-block="intro">${group.intro}</div>
          <div class="visual-board count-${Math.max(1,ch.length)}">${ch.map((p,idx)=>boardItemHtml(p,idx)).join("")}</div>
          <div class="page-no">${no++}</div><div class="editorial-footer"><span>Maison Hydropolis</span><span>${esc(r.title)} · ${esc(group.label)}</span></div>

@@ -231,6 +231,29 @@ const check=(name,value)=>{assert.ok(value,name);report.checks.push(name);};
       await page.locator('#document .quote-page').first().screenshot({path:process.env.QUOTE_SCREENSHOT});
     }
 
+    const subtotals=await page.evaluate(()=>{
+      const roomId=state.rooms[0].id;
+      state.rooms=[{...state.rooms[0],manual:[]}];
+      state.selected=Array.from({length:6},(_,i)=>({id:'subtotal-'+i,roomId,manufacturer:'Test',designation:'Lavabo '+i,category:'Lavabo',reference:'L'+i,price:100,totalPrice:100,quantity:1}));
+      state.selected.push({id:'subtotal-child',roomId,accessoryFor:'subtotal-0',manufacturer:'Test',designation:'Support',reference:'S',price:50,totalPrice:50,quantity:2,hideFromDossier:true});
+      state.commercial.clientDiscount=10;
+      state.showClientPrices=false;
+      state.showSpaceSubtotals=true;
+      const persisted=compactStateForCloud();
+      applyProjectState(persisted);
+      buildDocument();
+      const shown=[...document.querySelectorAll('.board-space-subtotal')].map(x=>x.textContent);
+      const pages=document.querySelectorAll('.visual-board-page').length;
+      const lastPageHasTotal=!![...document.querySelectorAll('.visual-board-page')].at(-1)?.querySelector('.board-space-subtotal');
+      const individualPrices=document.querySelectorAll('.board-copy .price').length;
+      state.showSpaceSubtotals=false;buildDocument();
+      return {persisted:persisted.showSpaceSubtotals,shown,pages,lastPageHasTotal,individualPrices,hidden:document.querySelectorAll('.board-space-subtotal').length,expected:euro(630)};
+    });
+    check('sous-total espace : option conservée dans le projet',subtotals.persisted===true);
+    check('sous-total espace : quantité, remise et accessoire masqué inclus',subtotals.shown.length===1&&subtotals.shown[0].includes(subtotals.expected));
+    check('sous-total espace : une fois sur la dernière page',subtotals.pages===2&&subtotals.lastPageHasTotal);
+    check('sous-total espace : indépendant des prix et masquable',subtotals.individualPrices===0&&subtotals.hidden===0);
+
     const typography=await page.evaluate(()=>{
       showView('preview');
       const host=document.querySelector('#document');
