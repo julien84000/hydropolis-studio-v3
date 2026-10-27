@@ -253,5 +253,5 @@
   root.HydroBrandCatalogs={load:loadCatalogs};
   root.HydroBetteConfigurator={eligible:p=>eligibleBrand('Bette',p),open:openBette,close};
   root.HydroCarrodrainConfigurator={eligible:p=>eligibleBrand('Carrodrain',p),open:openCarrodrain,close,models:CARRODRAIN_MODELS};
-  root.HydroHidroboxConfigurator={eligible:p=>eligibleBrand('Hidrobox',p),open:openHidrobox,close};
+  root.HydroHidroboxConfigurator={eligible:p=>eligibleBrand('Hidrobox',p),open:openHidrobox,close,groups:async()=>((await loadJson(BRAND_META.Hidrobox)).groups||[])};
 })(window);
