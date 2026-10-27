@@ -26,9 +26,33 @@ const CATEGORY=[
   {key:'toutes',name:'Toutes les collections tarifées',img:'',url:HOUSE}
 ];
 const SHOWER_MODELS=['neo plus','line','twins','quadro','one','pure','arq','loovers','unique','iconik','falcon'];
+
+/* Official Hidrobox 2026 categories, verified from the brand's own category pages. */
+const HIDROBOX_ALL_OFFICIAL=[
+ ...['neo-plus','line','twins','quadro','one','pure','arq','loovers','unique','iconik','falcon'].map(slug=>({key:slug,name:slug.split('-').map(v=>v[0].toUpperCase()+v.slice(1)).join(' '),category:'receveurs',url:HOUSE+'collections/'+slug+'/'})),
+ {key:'paneles',name:'Panneaux muraux',category:'panneaux'},
+ {key:'estantes',name:'Étagères',category:'accessoires'},
+ {key:'hornacinas',name:'Niches',category:'accessoires'},
+ {key:'totems',name:'Totems',category:'accessoires'},
+ ...['program','program-colour','lom','guest','swap','titan','soul','civit','intim'].map(slug=>({key:slug,name:slug.split('-').map(v=>v[0].toUpperCase()+v.slice(1)).join(' '),category:'vasques-suspendues'})),
+ {key:'spot',name:'Spot',category:'vasques-a-poser'},
+ {key:'fs',name:'FS',category:'vasques-sur-pied'},
+ {key:'artop',name:'Artop',category:'plans'},
+ {key:'space',name:'Space',category:'bains-ilot'},
+ {key:'beta-essential',name:'Beta Essential',category:'bains-ilot'},
+ {key:'beta-evoque',name:'Beta Evoque',category:'bains-ilot'},
+ {key:'beta-fusion',name:'Beta Fusion',category:'bains-encastres'}
+].map(x=>({...x,url:x.url||HOUSE+'collections/'+x.key+'/'}));
+const HIDROBOX_OFFICIAL_BY_NAME=new Map(HIDROBOX_ALL_OFFICIAL.map(x=>[x.name.toLowerCase(),x]));
+
 const norm=x=>String(x||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
 function groupCategory(g){
  const name=norm(g.collection||g.family||g.model||g.id),category=norm(g.category);
+ const official=HIDROBOX_ALL_OFFICIAL.find(x=>norm(x.name)===name||norm(x.key)===name);
+ if(official){
+   if(official.key==='beta-evoque'&&/encastr/.test(category))return 'bains-encastres';
+   return official.category;
+ }
  if(SHOWER_MODELS.some(n=>name===n||name.startsWith(n+' '))||/receveur|douche|shower tray/.test(category))return 'receveurs';
  if(/panneau|panel/.test(name+' '+category))return 'panneaux';
  if(/accessoire|etager|niche/.test(name+' '+category))return 'accessoires';
@@ -66,12 +90,14 @@ function collections(){
  stage='collections';const family=CATEGORY.find(x=>x.key===cat);
  const priced=cat==='toutes'?groups:groups.filter(x=>groupCategory(x)===cat);
  const cards=priced.map(g=>({key:g.id,name:g.collection||g.family||g.model||g.id,img:CATEGORY.find(c=>c.key===groupCategory(g))?.img||family?.img,note:(g.variants?.length||0)+' déclinaisons · tarif source'}));
- if(cat==='receveurs'){
-   const have=new Set(cards.map(x=>norm(x.name)));
-   for(const model of SHOWER_CATALOG){if(have.has(norm(model)))continue;
-     cards.push({key:model==='Neo Plus'?'neo-plus-official':'official-'+norm(model).replace(/\s+/g,'-'),name:model,img:family?.img,note:model==='Neo Plus'?'Configurateur et tarif Neo Plus 2026':'Voir modèle officiel'});
-   }
+
+ const have=new Set(cards.map(x=>norm(x.name)));
+ const officialEntries=HIDROBOX_ALL_OFFICIAL.filter(x=>x.category===cat||cat==='toutes');
+ for(const entry of officialEntries){
+   if(have.has(norm(entry.name)))continue;
+   cards.push({key:'official-'+entry.key,name:entry.name,img:CATEGORY.find(c=>c.key===entry.category)?.img,note:'Collection officielle · tarif non importé'});
  }
+
  shell(family?.name||'Collections','<button class="hidrobox-back" type="button">← Familles</button>'+tiles(cards,'collection')+
  '<p class="hidrobox-guide-note">Illustrations de familles provenant du site Hidrobox. Les visuels exacts de chaque collection restent à associer.</p>'+
  '<a class="hidrobox-official-link" href="'+escape(family?.url||HOUSE)+'" target="_blank" rel="noopener noreferrer">Voir toutes les collections sur le site officiel</a>',true);
@@ -80,9 +106,11 @@ function collections(){
    const key=b.dataset.choice;
    const group=groups.find(x=>x.id===key);
    if(norm(group?.collection||group?.id||key)==='neo plus'||key==='neo-plus-official'||norm(group?.collection)==='neo plus'){neoPage();return;}
-   if(!group){const model=b.querySelector('.hidrobox-guide-tile-name')?.textContent?.trim()||'';
-      const url=HOUSE+'produit/receveurs-de-douche/';
-      root.open(url,'_blank','noopener');return;}
+   if(!group){
+     const entry=HIDROBOX_ALL_OFFICIAL.find(x=>'official-'+x.key===key);
+     if(entry)root.open(entry.url,'_blank','noopener');
+     return;
+   }
    universalPage(group);
  });
 }
@@ -112,8 +140,8 @@ const officialPdf=url=>/^https:\/\/hidrobox\.com\/wp-content\/uploads\/[^#?]+\.p
 const officialImage=url=>/^https:\/\/(?:www\.)?hidrobox\.com\/[^"'<>]+/i.test(String(url||''))?url:'';
 function officialCollection(g){
   const raw=norm(g.collection||g.family||g.model||g.id);
-  const mapped=SHOWER_CATALOG.find(x=>norm(x)===raw);
-  return mapped?HOUSE+'collections/'+mapped.toLowerCase().replace(/\s+/g,'-')+'/':CATEGORY.find(c=>c.key===groupCategory(g))?.url||HOUSE;
+  const found=HIDROBOX_ALL_OFFICIAL.find(x=>norm(x.name)===raw||norm(x.key)===raw);
+  return found?.url||CATEGORY.find(c=>c.key===groupCategory(g))?.url||HOUSE;
 }
 function universalSelection(g){
   let rows=g.variants||[],fields=[];
