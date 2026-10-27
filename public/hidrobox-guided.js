@@ -22,7 +22,8 @@ const CATEGORY=[
   {key:'bains-ilot',name:'Baignoires îlot',img:'https://hidrobox.com/wp-content/uploads/2025/03/08_Baneras-exentas_Hidrobox.png',url:HOUSE+'produit/baignoires-ilot/'},
   {key:'bains-encastres',name:'Baignoires encastrées',img:'https://hidrobox.com/wp-content/uploads/2025/05/09_Baneras-encastradas_Hidrobox.png',url:HOUSE+'produit/baignoires-encastrees/'},
   {key:'accessoires',name:'Accessoires',img:'https://hidrobox.com/wp-content/uploads/2025/03/ACCESORIOS-HIDROBOX-1.png',url:HOUSE+'produit/accessoires/'},
-  {key:'autres',name:'Autres références tarifées',img:'',url:HOUSE}
+  {key:'autres',name:'Autres références tarifées',img:'',url:HOUSE},
+  {key:'toutes',name:'Toutes les collections tarifées',img:'',url:HOUSE}
 ];
 const SHOWER_MODELS=['neo plus','line','twins','quadro','one','pure','arq','loovers','unique','iconik','falcon'];
 const norm=x=>String(x||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
@@ -63,8 +64,8 @@ function families(){
 }
 function collections(){
  stage='collections';const family=CATEGORY.find(x=>x.key===cat);
- const priced=groups.filter(x=>groupCategory(x)===cat);
- const cards=priced.map(g=>({key:g.id,name:g.collection||g.family||g.model||g.id,img:family?.img,note:'Matrice tarifaire importée'}));
+ const priced=cat==='toutes'?groups:groups.filter(x=>groupCategory(x)===cat);
+ const cards=priced.map(g=>({key:g.id,name:g.collection||g.family||g.model||g.id,img:CATEGORY.find(c=>c.key===groupCategory(g))?.img||family?.img,note:(g.variants?.length||0)+' déclinaisons · tarif source'}));
  if(cat==='receveurs'){
    const have=new Set(cards.map(x=>norm(x.name)));
    for(const model of SHOWER_CATALOG){if(have.has(norm(model)))continue;
@@ -82,9 +83,149 @@ function collections(){
    if(!group){const model=b.querySelector('.hidrobox-guide-tile-name')?.textContent?.trim()||'';
       const url=HOUSE+'produit/receveurs-de-douche/';
       root.open(url,'_blank','noopener');return;}
-   close();base.open({...original,manufacturer:'Hidrobox',collection:group.collection,configGroup:group.id},room).catch(e=>alert(e.message));
+   universalPage(group);
  });
 }
+
+/* Manufacturer-direct technical sheets, only where their URLs were verified. */
+const HIDROBOX_DOCUMENTS={
+  'neo plus':{technical:'https://hidrobox.com/wp-content/uploads/2025/01/ES_NeoPlus_FactSheet.pdf',manual:'https://hidrobox.com/wp-content/uploads/2025/07/mus_247_NeoPlus_Shower_Tray_0223-03.pdf'},
+  line:{technical:'https://hidrobox.com/wp-content/uploads/2025/05/ES_Line_FactSheet.pdf',manual:'https://hidrobox.com/wp-content/uploads/2025/07/mus_220_Line_Shower_Tray_0223-07.pdf'},
+  twins:{technical:'https://hidrobox.com/wp-content/uploads/ES_Twins_Showertray_Factsheet_2026-1.pdf',manual:'https://hidrobox.com/wp-content/uploads/2025/07/mus_240_Twin_Shower_Tray_0624-07.pdf'},
+  quadro:{technical:'https://hidrobox.com/wp-content/uploads/ES_Quadro_Showertray_Factsheet_2026.pdf',manual:'https://hidrobox.com/wp-content/uploads/2025/07/mus_221_Quadro_Shower_Tray_0223-07.pdf'},
+  one:{technical:'https://hidrobox.com/wp-content/uploads/ES_One_Showertray_Factsheet_2026.pdf',manual:'https://hidrobox.com/wp-content/uploads/2025/07/mus_213_One_Shower_Tray_0223-12.pdf'},
+  pure:{technical:'https://hidrobox.com/wp-content/uploads/ES_Pure_Showertray_Factsheet_2026.pdf',manual:'https://hidrobox.com/wp-content/uploads/2025/07/mus_270_Pure_Shower_Tray_0223-01.pdf'},
+  loovers:{technical:'https://hidrobox.com/wp-content/uploads/ES_Loovers_Showertray_Factsheet_2026.pdf',manual:'https://hidrobox.com/wp-content/uploads/2025/07/mus_297_Loovers_Shower_Tray_0325-01.pdf'},
+  unique:{technical:'https://hidrobox.com/wp-content/uploads/ES_Unique_Showertray_Factsheet_2026.pdf',manual:'https://hidrobox.com/wp-content/uploads/2025/07/mus_218_Unique_Shower_Tray_0223-06.pdf'},
+  iconik:{technical:'https://hidrobox.com/wp-content/uploads/ES_Iconik_Showertray_Factsheet_2026.pdf',manual:'https://hidrobox.com/wp-content/uploads/2025/07/mus_269_Iconik_Shower_Tray_0323-03.pdf'}
+};
+const FACE_KEYS=[
+ ['model','Modèle'],['type','Type'],['shape','Forme'],['form','Forme'],
+ ['material','Matière'],['width','Largeur / tranche tarifaire'],['length','Longueur / tranche tarifaire'],
+ ['height','Hauteur'],['diameter','Diamètre'],['finish','Finition / texture'],
+ ['colorGroup','Groupe de couleur'],['color','Couleur'],['option','Option'],['installation','Pose']
+];
+const universalDraft={};
+const cleanVal=v=>String(v??'');
+const onlyValues=(rows,key)=>[...new Set(rows.map(v=>cleanVal(v[key])))].filter(Boolean);
+const officialPdf=url=>/^https:\/\/hidrobox\.com\/wp-content\/uploads\/[^#?]+\.pdf$/i.test(String(url||''))?url:'';
+const officialImage=url=>/^https:\/\/(?:www\.)?hidrobox\.com\/[^"'<>]+/i.test(String(url||''))?url:'';
+function officialCollection(g){
+  const raw=norm(g.collection||g.family||g.model||g.id);
+  const mapped=SHOWER_CATALOG.find(x=>norm(x)===raw);
+  return mapped?HOUSE+'collections/'+mapped.toLowerCase().replace(/\s+/g,'-')+'/':CATEGORY.find(c=>c.key===groupCategory(g))?.url||HOUSE;
+}
+function universalSelection(g){
+  let rows=g.variants||[],fields=[];
+  for(const [key,label] of FACE_KEYS){
+    const options=onlyValues(rows,key);
+    if(options.length<2){if(options.length===1)fields.push({key,label,options,chosen:options[0],static:true});continue}
+    if(!options.includes(universalDraft[key]))universalDraft[key]=options[0];
+    const chosen=universalDraft[key];rows=rows.filter(v=>cleanVal(v[key])===chosen);
+    fields.push({key,label,options,chosen});
+  }
+  const refs=[...new Set(rows.map(x=>String(x.reference||'')).filter(Boolean))];
+  if(!refs.includes(universalDraft.reference))universalDraft.reference=refs[0]||'';
+  const selected=rows.find(x=>String(x.reference)===universalDraft.reference)||null;
+  return {selected,fields,refs,rows};
+}
+function centimeterRange(str){
+  const m=String(str||'').trim().replace(/[–—]/g,'-').match(/^(\d{2,3})(?:\s*-\s*(\d{2,3}))?$/);
+  if(!m)return null;
+  const first=Number(m[1]),last=Number(m[2]||m[1]);
+  return first>=40&&last<=230&&first<=last?{first,last}:null;
+}
+function dimensionFields(selected){
+  const vals={width:centimeterRange(selected?.width),length:centimeterRange(selected?.length)};
+  const inputs=[];
+  for(const key of ['width','length']){
+    if(!vals[key])continue;
+    if(!Number.isInteger(Number(universalDraft['exact'+key]))||
+       Number(universalDraft['exact'+key])<vals[key].first||Number(universalDraft['exact'+key])>vals[key].last)
+       universalDraft['exact'+key]=vals[key].first;
+    inputs.push('<label>'+ (key==='width'?'Largeur réelle (cm)':'Longueur réelle (cm)')+
+      '<input type="number" id="huExact'+key+'" min="'+vals[key].first+'" max="'+vals[key].last+
+      '" step="1" value="'+Number(universalDraft['exact'+key])+'"></label>');
+  }
+  return inputs.length?'<h4 class="hidrobox-universal-subtitle">Dimensions réelles de fabrication</h4><p class="hidrobox-guide-note">Les tranches servent au tarif ; les dimensions réelles sont conservées pour la commande.</p><div class="hidrobox-fields">'+inputs.join('')+'</div>':'';
+}
+function universalPage(g){
+ stage='group';chosenGroup=g;
+ const name=g.collection||g.family||g.model||g.id;
+ const {selected,fields,refs}=universalSelection(g);
+ const family=CATEGORY.find(c=>c.key===groupCategory(g));
+ const n=norm(name),assets=HIDROBOX_DOCUMENTS[n]||{};
+ const url=officialCollection(g);
+ const mainImage=officialImage(selected?.image)||officialImage(g.image)||family?.img||'';
+ const opts=fields.filter(x=>!x.static).map(f=>'<label>'+escape(f.label)+
+    '<select data-facet="'+escape(f.key)+'">'+choices(f.options,f.chosen)+'</select></label>').join('');
+ const flat=fields.filter(x=>x.static).map(f=>escape(f.label)+': '+escape(f.chosen)).join(' · ');
+ const refsControl=refs.length>1?'<label>Référence finale<select id="huReference">'+choices(refs,universalDraft.reference)+'</select></label>':'';
+ const price=Number(selected?.price),raw=Number(selected?.rawPrice);
+ const canAdd=selected&&Number.isFinite(price)&&price>0&&selected.reference;
+ const tech=officialPdf(selected?.technicalSheetUrl||g.technicalSheetUrl||assets.technical);
+ const manual=officialPdf(selected?.installationGuideUrl||g.installationGuideUrl||assets.manual);
+ const docs='<div class="hidrobox-downloads"><a href="'+escape(url)+'" target="_blank" rel="noopener noreferrer">Voir la collection</a>'+
+   (tech?'<a href="'+escape(tech)+'" target="_blank" rel="noopener noreferrer">Fiche technique</a>':'')+
+   (manual?'<a href="'+escape(manual)+'" target="_blank" rel="noopener noreferrer">Notice de pose</a>':'')+'</div>';
+ const markup='<button type="button" class="hidrobox-back">← Collections</button>'+
+   '<div class="hidrobox-neo-hero">'+(mainImage?'<img src="'+escape(mainImage)+'" alt="'+escape(name)+'" loading="lazy" onerror="this.style.display=\'none\'">':'')+
+   '<div><div class="eyebrow">'+escape(family?.name||'Hidrobox')+'</div><h3>'+escape(name)+'</h3>'+
+   '<p>'+escape((g.variants||[]).length)+' variantes issues du tarif 2026. Configurez progressivement les caractéristiques, sans masquer les références restantes.</p>'+
+   docs+'<small>'+escape(mainImage?(selected?.image||g.image?'Visuel fabricant, variante à vérifier':'Visuel officiel de famille · variante non contractuelle'):'Visuel non disponible')+'</small></div></div>'+
+   '<h4 class="hidrobox-universal-subtitle">Caractéristiques tarifaires</h4>'+
+   (flat?'<p class="hidrobox-guide-note">'+flat+'</p>':'')+
+   '<div class="hidrobox-fields">'+opts+refsControl+'</div>'+dimensionFields(selected)+
+   '<div class="hidrobox-result"><div><b>'+(canAdd?eu(price)+' HT':'Tarif indisponible')+'</b>'+
+   '<span>Réf. '+escape(selected?.reference||'—')+' · '+escape(selected?.designation||'')+'</span>'+
+   '<small>'+(canAdd?(Number.isFinite(raw)&&raw>0?'Prix source '+eu(raw)+' HT +4 %. ':'')+'Remise achat 50 % en calcul de marge.':'Aucun prix extrapolé sans référence tarifaire.')+'</small></div>'+
+   '<button class="btn primary" id="huAdd" type="button"'+(canAdd?'':' disabled')+'>Ajouter au projet</button></div>';
+ shell(String(name)+' · configuration',markup,true);
+ overlay.querySelector('.hidrobox-back').onclick=collections;
+ overlay.querySelectorAll('[data-facet]').forEach(e=>e.addEventListener('change',()=>{
+   universalDraft[e.dataset.facet]=e.value;universalDraft.reference='';
+   for(const key of ['exactwidth','exactlength'])delete universalDraft[key];
+   universalPage(g);
+ }));
+ overlay.querySelector('#huReference')?.addEventListener('change',e=>{universalDraft.reference=e.target.value;universalPage(g)});
+ overlay.querySelector('#huExactwidth')?.addEventListener('change',e=>{universalDraft.exactwidth=Number(e.target.value);universalPage(g)});
+ overlay.querySelector('#huExactlength')?.addEventListener('change',e=>{universalDraft.exactlength=Number(e.target.value);universalPage(g)});
+ overlay.querySelector('#huAdd')?.addEventListener('click',()=>{
+   const {selected:row}=universalSelection(g);
+   if(!row||!Number.isFinite(Number(row.price))||Number(row.price)<=0)return;
+   const dimInfo={};
+   for(const key of ['width','length']){
+     const range=centimeterRange(row[key]);
+     if(range){
+       const exact=Number(universalDraft['exact'+key]);
+       if(!Number.isInteger(exact)||exact<range.first||exact>range.last){alert('Dimension '+key+' invalide.');return;}
+       dimInfo[key+'Cm']=exact;
+     }
+   }
+   const dimLabels=[dimInfo.widthCm?'Larg. '+dimInfo.widthCm+' cm':'',dimInfo.lengthCm?'Long. '+dimInfo.lengthCm+' cm':''].filter(Boolean);
+   const designation=[row.designation||name,...dimLabels].join(' · ');
+   const exactImage=officialImage(row.image),representative=officialImage(g.image)||family?.img||'';
+   const item={manufacturer:'Hidrobox',collection:name,reference:row.reference,base:row.reference,designation,
+      category:row.category||original?.category||family?.name||'Sanitaire',material:row.material||'',
+      finish:row.finish||row.colorGroup||'',price:Number(row.price),totalPrice:Number(row.price),
+      rawTariffPrice:Number(row.rawPrice)||0,listPriceUpliftPct:4,purchaseDiscount:50,currency:'€',vat:'HT',
+      source:'HIDROBOX_TARIF_FR_V0226_19-02-2026.pdf',sourceYear:2026,manufacturerUrl:url,
+      image:exactImage||representative,imageSource:exactImage?'Visuel fabricant de la référence':'Illustration officielle de famille · finition non contractuelle',
+      technicalSheetUrl:tech,technicalSheetLabel:'Fiche technique Hidrobox',installationGuideUrl:manual,
+      installationGuideLabel:'Notice de pose Hidrobox',configuratorType:'hidrobox-configured'};
+   try{
+     const record=createSelectedProductRecord(item,room,'');
+     if(!record)throw Error('Création du produit impossible');
+     Object.assign(record,item,{hidroboxConfiguration:{group:g.id,collection:name,reference:row.reference,
+       widthTier:row.width||'',lengthTier:row.length||'',...dimInfo,material:row.material||'',
+       finish:row.finish||'',colorGroup:row.colorGroup||'',shape:row.shape||row.form||''}});
+     const ids=commitSelectedRecords([record],{showProject:false});
+     if(!ids?.length)throw Error('Enregistrement impossible');
+     close();showView('project');
+   }catch(e){alert('Ajout impossible : '+e.message)}
+ });
+}
+
 function values(arr){return arr.map(n=>String(n))}
 function choices(vals,selected){return vals.map(v=>'<option value="'+escape(v)+'"'+(String(v)===String(selected)?' selected':'')+'>'+escape(v)+'</option>').join('')}
 const NUMS=(a,b)=>Array.from({length:b-a+1},(_,i)=>a+i);
@@ -165,6 +306,7 @@ function neoPage(){
 async function open(p,roomId){
  room=roomId;original=p||{};
  groups=await base.groups();
+ for(const key of Object.keys(universalDraft))delete universalDraft[key];
  cat='receveurs';stage='families';chosenGroup=null;
  families();
 }
