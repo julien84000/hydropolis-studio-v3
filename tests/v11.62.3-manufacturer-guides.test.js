@@ -52,3 +52,22 @@ test('V11.62.3 groups references without replacing tariff rows or required bodie
  assert.equal(guide.displayCollection('Lefroy Brooks','TEN TEN'),'1920 Ten Ten');
  assert.equal(guide.modelBase({reference:'ZOC564.C50',finishCode:'C50'}),'ZOC564');
 });
+
+
+test('V11.62.3 official model images override generic catalogue pictures with correct collection scope',()=>{
+ const g=api(),hotbath=hot(),collections=brand();
+ const media={hotbath,collections};
+ const archie={manufacturer:'Hotbath',collection:'Archie',reference:'AR003.BS',base:'AR003',finishCode:'BS',image:'/images/generic-bathroom.jpg',imageSource:'Photo générique'};
+ const image=g.findModelVisual('Hotbath',archie,'AR003',media);
+ assert.match(image.image,/hotbath\.it\/documents\/ProdCateg/);
+ assert.match(image.image,/AR003/i);
+ assert.equal(image.match,'model');
+ const gt={manufacturer:'Hotbath',collection:'Gent',reference:'GT004.BS',base:'GT004',image:'/images/generic.jpg'};
+ assert.match(g.findModelVisual('Hotbath',gt,'GT004',media).image,/GT004/);
+ const missing={manufacturer:'Hotbath',collection:'Guy',reference:'AR003.BS',base:'AR003',image:'',imageSource:''};
+ assert.equal(g.findModelVisual('Hotbath',missing,'AR003',media).match,'missing');
+ const z={manufacturer:'Zucchetti',collection:'Octo',reference:'ZOC564.C50',base:'ZOC564',image:'/images/no-finish.jpg'};
+ assert.match(g.findModelVisual('Zucchetti',z,'ZOC564',media).image,/ZOC564/i);
+ const lefroy={manufacturer:'Lefroy Brooks',collection:'1920 Ten Ten',reference:'TH-1233-NK',base:'TH1233',image:''};
+ assert.match(g.findModelVisual('Lefroy Brooks',lefroy,'TH1233',media).image,/TH-1233/i);
+});
