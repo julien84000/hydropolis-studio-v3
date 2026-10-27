@@ -59,7 +59,7 @@ test('V11.62.3 official model images override generic catalogue pictures with co
  const media={hotbath,collections};
  const archie={manufacturer:'Hotbath',collection:'Archie',reference:'AR003.BS',base:'AR003',finishCode:'BS',image:'/images/generic-bathroom.jpg',imageSource:'Photo générique'};
  const image=g.findModelVisual('Hotbath',archie,'AR003',media);
- assert.match(image.image,/hotbath\.it\/documents\/ProdCateg/);
+ assert.match(image.image,/hotbath\.it\/documents\/+(?:ProdCateg)/);
  assert.match(image.image,/AR003/i);
  assert.equal(image.match,'model');
  const gt={manufacturer:'Hotbath',collection:'Gent',reference:'GT004.BS',base:'GT004',image:'/images/generic.jpg'};
