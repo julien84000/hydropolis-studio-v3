@@ -74,3 +74,37 @@ test('V11.62.1 uses the filtered variant and preserves exact manufacturer media'
     assert.equal(api.eligible({manufacturer:'Different',configuratorType:brand.toLowerCase()}),false);
   }
 });
+
+
+test('V11.62.2 guided Hidrobox supports every priced supplier group',()=>{
+ const groups=loadB64Gzip(['hidrobox-config-01.b64']).groups;
+ const guide=fs.readFileSync(path.join(root,'hidrobox-guided.js'),'utf8');
+ const neoCode=fs.readFileSync(path.join(root,'hidrobox-neo-plus-2026.js'),'utf8');
+ const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+ const carro=fs.readFileSync(path.join(root,'brand-configurators.js'),'utf8');
+ assert.match(html,/hidrobox-guided\.js/);
+ assert.match(html,/hidrobox-neo-plus-2026\.js/);
+ assert.match(guide,/cat==='toutes'\?groups/);
+ assert.match(guide,/universalPage\(group\)/);
+ assert.match(guide,/source:'HIDROBOX_TARIF_FR_V0226_19-02-2026\.pdf'/);
+ assert.match(guide,/technicalSheetUrl:tech/);
+ assert.match(carro,/CARRODRAIN_MODELS/);
+ const win={HydroHidroboxConfigurator:{groups:async()=>groups}};
+ vm.runInNewContext(neoCode,{window:win});
+ vm.runInNewContext(guide,{window:win});
+ const neo=win.HydroNeoPlus2026;
+ const x={form:'rectangle',width:90,length:120,material:'Kromat',texture:'Lisse',group:'BAS',color:'Beige',grille:'Point Inox',bonde:'Horizontale standard'};
+ const p=neo.lookup(x);
+ assert.equal(p.ok,true);
+ assert.equal(p.reference,'SNEC0043');
+ assert.equal(p.rawPrice,720);
+ assert.equal(p.price,748.8);
+ assert.equal(neo.lookup({...x,width:140,length:210}).ok,false);
+ assert.ok(groups.every(g=>Array.isArray(g.variants)&&g.variants.length));
+ assert.equal(typeof win.HydroHidroboxConfigurator.open,'function');
+ console.log('HIDROBOX_TARIFF_GROUPS',JSON.stringify(groups.map(g=>({
+   id:g.id,collection:g.collection,category:g.category,rows:g.variants.length,
+   fields:Object.keys(g.variants[0]||{}),
+   first:g.variants[0]
+ }))));
+});

@@ -1,7 +1,7 @@
 const VERSION='__APP_VERSION__';
 const CACHE=`hydropolis-v${VERSION}-shell`;
 const CATALOG_CACHE=`hydropolis-v${VERSION}-catalogs`;
-const SHELL=["/","/index.html","/styles.css","/app.js","/runtime-config.js","/catalog-index.js","/rough-in.js","/official-media.js","/sbordoni-model.js","/sbordoni-configurator.js","/sbordoni-wc-configurator.js","/brand-configurators.js","/sira-configurator.js","/catalog_manifest.json","/manufacturers_manifest.json","/manifest.webmanifest"];
+const SHELL=["/","/index.html","/styles.css","/app.js","/runtime-config.js","/catalog-index.js","/rough-in.js","/official-media.js","/sbordoni-model.js","/sbordoni-configurator.js","/sbordoni-wc-configurator.js","/brand-configurators.js","/hidrobox-neo-plus-2026.js","/hidrobox-guided.js","/manufacturer-guide.js","/brand-guide-hotbath-media.json","/brand-guide-collections.json","/sira-configurator.js","/catalog_manifest.json","/manufacturers_manifest.json","/manifest.webmanifest"];
 
 self.addEventListener("install",event=>event.waitUntil(
   caches.open(CACHE).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting())
