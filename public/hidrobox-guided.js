@@ -42,7 +42,7 @@ const HIDROBOX_ALL_OFFICIAL=[
  {key:'beta-essential',name:'Beta Essential',category:'bains-ilot'},
  {key:'beta-evoque',name:'Beta Evoque',category:'bains-ilot'},
  {key:'beta-fusion',name:'Beta Fusion',category:'bains-encastres'}
-].map(x=>({...x,url:x.url||HOUSE+'collections/'+x.key+'/'}));
+].map(x=>({...x,url:x.url||(x.key==='intim'||x.key==='falcon'?HOUSE+'produit/'+(x.key==='falcon'?'receveurs-de-douche/':'vasques-suspendus/'):HOUSE+'collections/'+x.key+'/')}));
 const HIDROBOX_OFFICIAL_BY_NAME=new Map(HIDROBOX_ALL_OFFICIAL.map(x=>[x.name.toLowerCase(),x]));
 
 const norm=x=>String(x||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
@@ -125,7 +125,30 @@ const HIDROBOX_DOCUMENTS={
   pure:{technical:'https://hidrobox.com/wp-content/uploads/ES_Pure_Showertray_Factsheet_2026.pdf',manual:'https://hidrobox.com/wp-content/uploads/2025/07/mus_270_Pure_Shower_Tray_0223-01.pdf'},
   loovers:{technical:'https://hidrobox.com/wp-content/uploads/ES_Loovers_Showertray_Factsheet_2026.pdf',manual:'https://hidrobox.com/wp-content/uploads/2025/07/mus_297_Loovers_Shower_Tray_0325-01.pdf'},
   unique:{technical:'https://hidrobox.com/wp-content/uploads/ES_Unique_Showertray_Factsheet_2026.pdf',manual:'https://hidrobox.com/wp-content/uploads/2025/07/mus_218_Unique_Shower_Tray_0223-06.pdf'},
-  iconik:{technical:'https://hidrobox.com/wp-content/uploads/ES_Iconik_Showertray_Factsheet_2026.pdf',manual:'https://hidrobox.com/wp-content/uploads/2025/07/mus_269_Iconik_Shower_Tray_0323-03.pdf'}
+  iconik:{technical:'https://hidrobox.com/wp-content/uploads/ES_Iconik_Showertray_Factsheet_2026.pdf',manual:'https://hidrobox.com/wp-content/uploads/2025/07/mus_269_Iconik_Shower_Tray_0323-03.pdf'},
+  program:{technical:'https://hidrobox.com/wp-content/uploads/2025/05/ES_Program_FactSheet.pdf',manual:'https://hidrobox.com/wp-content/uploads/2025/07/mus_226_Program_Washbasin_0125-9.pdf'},
+  'program colour':{technical:'https://hidrobox.com/wp-content/uploads/2025/05/ES_ProgramColour_FactSheet.pdf',manual:'https://hidrobox.com/wp-content/uploads/2025/07/mus_243_Program_Colour_Washbasin_0323-3.pdf'},
+  lom:{technical:'https://hidrobox.com/wp-content/uploads/ES_Lom_Washbasin_Factsheet_2026.pdf',manual:'https://hidrobox.com/wp-content/uploads/2025/07/mus_278_Lom_Washbasin_0323-1.pdf'},
+  guest:{technical:'https://hidrobox.com/wp-content/uploads/ES_Guest_Washbasin_Factsheet_2026.pdf',manual:'https://hidrobox.com/wp-content/uploads/2025/07/mus_262_Guest_Washbasin_0324-4.pdf'},
+  swap:{technical:'https://hidrobox.com/wp-content/uploads/ES_Swap_Washbasin_Factsheet_2026.pdf',manual:'https://hidrobox.com/wp-content/uploads/2025/07/Mus_272_Swap_Washbasin_0425-2.pdf'},
+  titan:{technical:'https://hidrobox.com/wp-content/uploads/ES_Titan_Washbasin_Factsheet_2026.pdf',manual:'https://hidrobox.com/wp-content/uploads/2025/07/mus_283_Titan_Washbasin_0524-3.pdf'},
+  soul:{technical:'https://hidrobox.com/wp-content/uploads/ES_Soul_Washbasin_Factsheet_2026.pdf',manual:'https://hidrobox.com/wp-content/uploads/2025/07/mus_296_Soul_Washbasin_0725-2.pdf'},
+  civit:{technical:'https://hidrobox.com/wp-content/uploads/ES_Civit_Washbasin_Factsheet_2026.pdf',manual:'https://hidrobox.com/wp-content/uploads/2025/07/mus_280_Civit_Washbasin_0424-2.pdf'},
+  spot:{technical:'https://hidrobox.com/wp-content/uploads/ES_Spot_Washbasin_Factsheet_2026.pdf'},
+  fs:{technical:'https://hidrobox.com/wp-content/uploads/ES_FS_Washbasin_Factsheet_2026.pdf',manual:'https://hidrobox.com/wp-content/uploads/2025/07/mus_228_FS_Washbasin_0125-6.pdf'},
+  artop:{technical:'https://hidrobox.com/wp-content/uploads/ES_Artop_Washbasin_Factsheet_2026.pdf',manual:'https://hidrobox.com/wp-content/uploads/2025/07/mus_242_Artop_0323-3.pdf'},
+  space:{technical:'https://hidrobox.com/wp-content/uploads/ES_Space_Bathtubs_Factsheet_2026.pdf',manual:'https://hidrobox.com/wp-content/uploads/2025/07/Mus_142_Space_Bathtubs_0623-8.pdf'},
+  'beta essential':{technical:'https://hidrobox.com/wp-content/uploads/ES_Beta-Essential_Bathtubs_Factsheet_2026.pdf',manual:'https://hidrobox.com/wp-content/uploads/2025/07/Mus_144_Beta_Essential_Bathtubs_0723-10.pdf'},
+  'beta evoque':{technical:'https://hidrobox.com/wp-content/uploads/ES_Beta-Evoque_Bathtubs_Factsheet_2026.pdf',manual:'https://hidrobox.com/wp-content/uploads/2025/07/Mus_294_Beta_Evoque_Bathtubs_1224-1.pdf'},
+  'beta fusion':{technical:'https://hidrobox.com/wp-content/uploads/ES_Beta-Fusion_Bathtubs_Factsheet_2026.pdf',manual:'https://hidrobox.com/wp-content/uploads/2025/07/Mus_145_Beta_Fusion_Bathtubs_0723-7.pdf'},
+  'panneaux muraux':{technical:'https://hidrobox.com/wp-content/uploads/ES_Paneles_Accessories_Factsheet_2026.pdf',manual:'https://hidrobox.com/wp-content/uploads/2025/07/mus_179_Paneles_0323-07.pdf'},
+  'paneles':{technical:'https://hidrobox.com/wp-content/uploads/ES_Paneles_Accessories_Factsheet_2026.pdf',manual:'https://hidrobox.com/wp-content/uploads/2025/07/mus_179_Paneles_0323-07.pdf'},
+  etageres:{technical:'https://hidrobox.com/wp-content/uploads/ES_Estantes-para-ducha_Accessories_Factsheet_2026.pdf'},
+  estantes:{technical:'https://hidrobox.com/wp-content/uploads/ES_Estantes-para-ducha_Accessories_Factsheet_2026.pdf'},
+  niches:{technical:'https://hidrobox.com/wp-content/uploads/ES_Hornacinas-independientes_Accessories_Factsheet_2026.pdf'},
+  hornacinas:{technical:'https://hidrobox.com/wp-content/uploads/ES_Hornacinas-independientes_Accessories_Factsheet_2026.pdf'},
+  totems:{technical:'https://hidrobox.com/wp-content/uploads/ES_Totems_Accessories_Factsheet_2026.pdf',manual:'https://hidrobox.com/wp-content/uploads/2025/07/mus_181_Totem_Auxiliar_Exento_0624-05.pdf'}
+
 };
 const FACE_KEYS=[
  ['model','Modèle'],['type','Type'],['shape','Forme'],['form','Forme'],
