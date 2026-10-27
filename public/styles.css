@@ -2969,7 +2969,7 @@ main{background:transparent}
 
 
 /* V11.62.3 — visual official manufacturer navigation */
-.manufacturer-guide-launcher{display:flex;align-items:center;justify-content:space-between;gap:22px;padding:22px 25px;margin-bottom:18px;border:1px solid #ded7ce;border-radius:15px;background:linear-gradient(100deg,#f9f8f6,#eee9e1);}
+.manufacturer-guide-launcher{grid-column:1/-1;min-width:0;scroll-margin-top:170px;position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:22px;padding:22px 25px;margin-bottom:0;border:1px solid #ded7ce;border-radius:15px;background:linear-gradient(100deg,#f9f8f6,#eee9e1);}
 .manufacturer-guide-launcher h3{font-size:20px;font-weight:600;margin:5px 0 4px;color:#312d28;}
 .manufacturer-guide-launcher p{font-size:13px;margin:0;color:#6c665f;line-height:1.5;}
 .manufacturer-guide-launcher button{white-space:nowrap;}
