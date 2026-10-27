@@ -103,6 +103,45 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     const roughIn=await page.evaluate(()=>{
       const p=CATALOG.find(p=>p.manufacturer==='Alpi'&&p.internalReference);const rec=createSelectedProductRecord(p,state.rooms[0]?.id);commitSelectedRecords([rec]);setProductQuantity(rec.id,3);const children=state.selected.filter(x=>x.accessoryFor===rec.id);const purchase=children.reduce((sum,x)=>sum+purchaseCostFor(x),purchaseCostFor(rec));const total=children.reduce((sum,x)=>sum+Number(x.price),Number(rec.price));const before=state.selected.length;reconcileProjectRoughIns();const idempotent=state.selected.length===before;removeProduct(rec.id);return {children:children.length,quantity:children[0]?.quantity,total,purchase,expected:Number(p.price)+Number(p.internalPrice),idempotent,removed:!state.selected.some(x=>x.id===rec.id||x.accessoryFor===rec.id)};
     });report.roughIn=roughIn;check('corps ALPI natif, quantité, prix, suppression',roughIn.children===1&&roughIn.quantity===3&&roughIn.total===roughIn.expected&&roughIn.idempotent&&roughIn.removed);
+
+    // V11.62.3: exercise actual browser route, beyond static unit checks.
+    const guideDocs=await page.evaluate(()=>{
+      const synthetic={manufacturer:'Hotbath',reference:'TEST-DOCUMENTS',base:'TEST-DOCUMENTS',
+        designation:'Test conservation fichiers fabricant',category:'Lavabo',price:555,totalPrice:555,
+        technicalSheetUrl:'https://hotbath.it/tests/specs.pdf',installationGuideUrl:'https://hotbath.it/tests/installation.pdf',
+        drawingUrl:'https://hotbath.it/tests/drawing.pdf'};
+      const rec=createSelectedProductRecord(synthetic,state.rooms[0]?.id||'');
+      return {sheet:rec.technicalSheetUrl,installation:rec.installationGuideUrl,drawing:rec.drawingUrl};
+    });
+    check('PDF fabricant conservé à ajout',guideDocs.sheet.endsWith('/specs.pdf')&&guideDocs.installation.endsWith('/installation.pdf')&&guideDocs.drawing.endsWith('/drawing.pdf'));
+    await page.waitForFunction(()=>CATALOG.some(p=>p.manufacturer==='Hotbath'&&p.collection==='Archie'),{timeout:20000});
+    await page.evaluate(()=>{
+      showView('catalog');
+      const select=document.querySelector('#manufacturerFilter');
+      select.value='Hotbath';select.dispatchEvent(new Event('change',{bubbles:true}));
+    });
+    await page.waitForSelector('.manufacturer-guide-open');
+    await page.locator('.manufacturer-guide-open').click();
+    await page.waitForSelector('#manufacturerGuidedSelector');
+    const collectionTiles=await page.locator('#manufacturerGuidedSelector [data-go="collection"]').count();
+    check('galerie Hotbath disponible',collectionTiles>=10);
+    await page.locator('#manufacturerGuidedSelector [data-go="collection"][data-value="Archie"]').click();
+    await page.waitForSelector('#manufacturerGuidedSelector [data-go="category"]');
+    const categories=await page.locator('#manufacturerGuidedSelector [data-go="category"]').count();
+    check('catégories Archie visibles',categories>0);
+    await page.locator('#manufacturerGuidedSelector [data-go="category"]').first().click();
+    if(await page.locator('#manufacturerGuidedSelector [data-go="subcategory"]').count()){
+      await page.locator('#manufacturerGuidedSelector [data-go="subcategory"]').first().click();
+    }
+    await page.waitForSelector('#manufacturerGuidedSelector [data-go="model"]');
+    check('modèles Archie groupés',await page.locator('#manufacturerGuidedSelector [data-go="model"]').count()>0);
+    await page.locator('#manufacturerGuidedSelector [data-go="model"]').first().click();
+    await page.waitForSelector('#manufacturerGuidedSelector #mgFinish');
+    const ref=await page.locator('#manufacturerGuidedSelector #mgFinish').inputValue();
+    const detail=await page.locator('#manufacturerGuidedSelector .mg-finalref').innerText();
+    check('finition Hotbath conserve référence exacte',ref&&detail.includes(ref));
+    await page.locator('#manufacturerGuidedSelector .mg-close').click();
+
     check('aucune erreur JavaScript',report.errors.length===0);
     await page.evaluate(()=>{document.querySelector('#manufacturerFilter').value='Sira Concrete';document.querySelector('#manufacturerFilter').dispatchEvent(new Event('change'));});
     await page.evaluate(()=>{const p=CATALOG.find(x=>x.manufacturer==='Sira Concrete'&&x.collection==='Wall Collection');addCatalogProduct(p.reference,state.rooms[0]?.id,productKey(p));});
