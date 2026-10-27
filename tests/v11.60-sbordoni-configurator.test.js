@@ -1,169 +1,93 @@
 'use strict';
-const test=require('node:test');
-const assert=require('node:assert/strict');
-const fs=require('node:fs');
-const path=require('node:path');
-const vm=require('node:vm');
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
+const model=require('../public/sbordoni-model');
+const root=path.join(__dirname,'..');
+const catalog=fs.readdirSync(path.join(root,'public')).filter(x=>/^catalog_sbordoni_\d+\.json$/.test(x)).flatMap(f=>JSON.parse(fs.readFileSync(path.join(root,'public',f))));
+const expected={
+ Romana:{9200:['P9200','N9200','R9200'],9090:['P9090','N9090','R9090'],9065:['P9065','N9065','R9065','9001'],9050:[]},
+ Palladio:{7200:['P7200','G720'],7100:['P7100','7001','G720','7100M'],7070:['P7070','7001','7070M'],7064:['P7064','7001'],7050:[]},
+ Neoclassica:{5700:['P5700','N5700','Y5700','G571'],5775:['P5775','N5775','Y5775','5771'],5770:['P5770','N5770','Y5770','5771'],5765:['P5765','N5765','Y5765','5771'],5758:['P5758','N5758','Y5758','5771']},
+ Masaccio:{5369:['5369M','5771','M5369','M5369G'],5365:['5365M','5771','M5365','M5365G'],5359:['5359M','5771','M5359','M5359G'],5352:[],5304:[],5305:[]}
+};
+function loadConfigurator(name){const c={window:{HydroSbordoniModel:model},CATALOG:catalog,console};vm.createContext(c);vm.runInContext(fs.readFileSync(path.join(root,'public',name),'utf8'),c);return c.window;}
 
-function loadCatalog(){
-  const files=fs.readdirSync(path.join(__dirname,'..','public')).filter(x=>/^catalog_sbordoni_\d+\.json$/.test(x));
-  return files.flatMap(file=>JSON.parse(fs.readFileSync(path.join(__dirname,'..','public',file),'utf8')));
-}
-
-test('Sbordoni configurator groups 1/3-hole basin variants and keeps a shared basin visual',()=>{
-  const CATALOG=loadCatalog();
-  const context={
-    window:{},
-    CATALOG,
-    console,
-    esc:v=>String(v??''),
-    euro:v=>String(v??0),
-    document:{}
-  };
-  vm.createContext(context);
-  const code=fs.readFileSync(path.join(__dirname,'..','public','sbordoni-configurator.js'),'utf8');
-  vm.runInContext(code,context,{filename:'sbordoni-configurator.js'});
-
-  const cfg=context.window.HydroSbordoniConfigurator;
-  assert.ok(cfg,'configurator exported');
-
-  const one=CATALOG.find(x=>x.manufacturer==='Sbordoni'&&x.collection==='Neoclassica'&&x.reference==='5700/1');
-  const three=CATALOG.find(x=>x.manufacturer==='Sbordoni'&&x.collection==='Neoclassica'&&x.reference==='5700/3');
-  assert.ok(one&&three,'Neoclassica 5700 variants exist');
-  assert.equal(cfg.eligible(one),true);
-  assert.equal(cfg.eligible(three),true);
-  assert.equal(cfg.catalogImage(one),three.image);
-  assert.equal(cfg.catalogImage(three),three.image);
-
-  const families=cfg.familiesForCollection('Neoclassica');
-  for(const ref of ['5700','5775','5770','5765','5758'])assert.ok(families.includes(ref),`missing family ${ref}`);
-
-  const supports5700=cfg.supportGroups('Neoclassica','5700');
-  const keys5700=new Set(supports5700.map(x=>x.key));
-  for(const key of ['P5700','N5700','Y5700','G571'])assert.ok(keys5700.has(key),`missing support ${key}`);
-
-  const supports5775=cfg.supportGroups('Neoclassica','5775');
-  assert.ok(supports5775.some(x=>x.items.some(i=>i.reference==='5771')),'shared pedestal 5771 offered for 5775');
-
-  assert.ok(cfg.supportGroups('Masaccio','5359').some(x=>x.items.some(i=>i.reference==='5771')),'Masaccio 5359 offers pedestal 5771');
-  assert.ok(cfg.supportGroups('Palladio','7064').some(x=>x.items.some(i=>i.reference==='7001')),'Palladio 7064 offers pedestal 7001');
-  assert.ok(cfg.supportGroups('Romana','9065').some(x=>x.items.some(i=>i.reference==='9001')),'Romana 9065 offers pedestal 9001');
-
-  const romanaPedestal=cfg.supportGroups('Romana','9065').flatMap(g=>Array.from(g.items)).find(i=>i.reference==='9001');
-  assert.ok(romanaPedestal,'Romana 9065 pedestal 9001 exists');
-  const romanaResultImage=cfg.resultImage('Romana','9065',romanaPedestal);
-  assert.equal(
-    romanaResultImage,
-    'https://data.bobool.it/imgprodotto/colonna-classica-per-lavabo-in-ceramica-bianca-romana-sbordoni_17587_zoom.jpg'
-  );
-  assert.notEqual(romanaResultImage,romanaPedestal.image,'configured result must not reuse the isolated 9001 visual');
+test('all four basin matrices match the labelled manufacturer composition plates, independently of OCR',()=>{
+ const poisoned=catalog.map(p=>({...p,designation:'incorrect OCR 7200 supports céramiques',category:'Accessoires'}));
+ for(const [collection,families] of Object.entries(expected)){
+  assert.deepEqual(model.families(poisoned,collection).sort(),Object.keys(families).sort());
+  for(const [family,supports] of Object.entries(families))assert.deepEqual(model.supportGroups(poisoned,collection,family).map(g=>g.key),supports,collection+' '+family);
+ }
+ assert.equal(model.familyFrom({manufacturer:'Other',collection:'Palladio',reference:'7200/3'}),'');
+ assert.equal(model.familyFrom(catalog.find(p=>p.reference==='5903/1')),'');
 });
-
-test('app routes configurable Sbordoni basins through the configurator',()=>{
-  const app=fs.readFileSync(path.join(__dirname,'..','public','app.js'),'utf8');
-  assert.match(app,/HydroSbordoniConfigurator\?\.eligible/);
-  assert.match(app,/HydroSbordoniConfigurator\.open/);
-  assert.match(app,/HydroSbordoniConfigurator\?\.catalogImage/);
-});
-
-
-test('Sbordoni basin configurator is limited to the four requested collections',()=>{
-  const CATALOG=loadCatalog();
-  const context={window:{},CATALOG,console,esc:v=>String(v??''),euro:v=>String(v??0),document:{}};
-  vm.createContext(context);
-  vm.runInContext(fs.readFileSync(path.join(__dirname,'..','public','sbordoni-configurator.js'),'utf8'),context);
-  assert.deepEqual(Array.from(context.window.HydroSbordoniConfigurator.supportedCollections),['Romana','Palladio','Neoclassica','Masaccio']);
-});
-
-test('Sbordoni WC configurator exposes the catalogue combinations for all four collections',()=>{
-  const CATALOG=loadCatalog();
-  const context={window:{},CATALOG,console,esc:v=>String(v??''),euro:v=>String(v??0),document:{}};
-  vm.createContext(context);
-  vm.runInContext(fs.readFileSync(path.join(__dirname,'..','public','sbordoni-wc-configurator.js'),'utf8'),context,{filename:'sbordoni-wc-configurator.js'});
-  const cfg=context.window.HydroSbordoniWCConfigurator;
-  assert.ok(cfg,'WC configurator exported');
-  assert.deepEqual(Array.from(cfg.collections()),['Romana','Palladio','Neoclassica','Masaccio']);
-
-  const cases=[
-    ['Romana','9020','9028','S920'],
-    ['Palladio','7020','7028','S020'],
-    ['Neoclassica','5107','5128','S107'],
-    ['Masaccio','5520',null,'S520']
-  ];
-  for(const [collection,ref,tank,seat] of cases){
-    const p=CATALOG.find(x=>x.manufacturer==='Sbordoni'&&x.collection===collection&&x.reference===ref);
-    assert.ok(p,`missing ${collection} ${ref}`);
-    assert.equal(cfg.eligible(p),true,`${collection} ${ref} should open WC configurator`);
-    const system=cfg.config[collection].find(s=>s.bowls.some(([r])=>r===ref));
-    assert.ok(system,`missing WC system for ${collection} ${ref}`);
-    if(tank)assert.ok(system.flush.some(f=>f.tank===tank),`missing tank ${tank}`);
-    assert.ok(system.seats.includes(seat),`missing seat family ${seat}`);
+test('metal stands cannot resolve to the bare-reference glass shelf',()=>{
+ for(const collection of ['Romana','Palladio'])for(const family of model.families(catalog,collection))
+  for(const group of model.supportGroups(catalog,collection,family).filter(g=>g.key.startsWith('P'))){
+   assert(group.items.every(p=>p.reference!==group.key&&p.finishCode),group.key);
+   assert(group.representative.price>1000,group.key+' must be a complete stand');
   }
-
-  const palladio=cfg.config.Palladio.find(s=>s.id==='floor');
-  assert.ok(palladio.flush.some(f=>f.tank==='7029L'&&f.mechanisms.includes('MC06L')));
-  const neoclassica=cfg.config.Neoclassica.find(s=>s.id==='wall');
-  assert.ok(neoclassica.bowls.some(([r])=>r==='5309'));
-  assert.ok(neoclassica.seats.includes('S127'));
 });
-
-test('app routes Sbordoni WC products through the WC configurator',()=>{
-  const app=fs.readFileSync(path.join(__dirname,'..','public','app.js'),'utf8');
-  assert.match(app,/HydroSbordoniWCConfigurator\?\.eligible/);
-  assert.match(app,/HydroSbordoniWCConfigurator\.open/);
+test('every allowed basin configuration has a local exact composition image and sums the selected components',async()=>{
+ const {loadImage}=require('@napi-rs/canvas');let count=0;const decoded=new Set();
+ const provenance=require('../public/sbordoni/compositions/provenance.json');
+ for(const [collection,families] of Object.entries(expected))for(const [family,supports] of Object.entries(families)){
+  const variants=model.familyRows(catalog,collection,family);
+  const options=[null,...model.supportGroups(catalog,collection,family).flatMap(g=>g.items)];
+  for(const basin of variants)for(const support of options){
+   const result=model.buildBasin(catalog,{collection,family,holes:model.holesFrom(basin),supportRef:support?.reference||''});
+   assert.equal(result.price,basin.price+(support?.price||0));
+   assert.equal(result.image,result.pdfImage);assert.equal(result.images.length,1);
+   assert.equal(result.sbordoniConfiguration.componentReferences.length,support?2:1);
+   assert(!/^https?:/.test(result.image));
+   const key=path.basename(result.image,'.jpg');assert(provenance.images[key],key+' provenance');
+   if(!decoded.has(key)){const image=await loadImage(path.join(root,'public',result.image));assert(image.width>70&&image.height>25,key);decoded.add(key);}
+   count++;
+  }
+ }
+ assert(count>300);assert.equal(decoded.size,73);
 });
-
-
-test('V11.60.1 stores a configured Sbordoni basin as one grouped visible product',()=>{
-  const configurator=fs.readFileSync(path.join(__dirname,'..','public','sbordoni-configurator.js'),'utf8');
-  const app=fs.readFileSync(path.join(__dirname,'..','public','app.js'),'utf8');
-  assert.match(configurator,/sbordoniGrouped=true/);
-  assert.match(configurator,/commitSelectedRecords\(\[groupedRecord\]/);
-  assert.doesNotMatch(configurator,/supportRecord=createSelectedProductRecord/);
-  assert.match(configurator,/resultImage:resultImg/);
-  assert.match(app,/migrateLegacySbordoniGroupedConfigurations/);
-  assert.match(app,/sbordoni-edit-config/);
-  assert.match(app,/Configurer ce produit/);
-  assert.match(app,/p\.sbordoniConfiguration\?"":safeBasinAccessorySuggestions/);
+test('Palladio invalid supports and glass shelves are rejected, not silently replaced',()=>{
+ for(const ref of ['7100M','7001','P7200','G571'])assert.throws(()=>model.buildBasin(catalog,{collection:'Palladio',family:'7200',holes:3,supportRef:ref}),/incompatible/);
+ assert.equal(model.image('Palladio','7200','7100M'),'');
+ assert.equal(model.image('Palladio','9999'),'');
 });
-
-test('V11.60.3 repairs the saved Romana 9065 + 9001 image in existing projects',()=>{
-  const app=fs.readFileSync(path.join(__dirname,'..','public','app.js'),'utf8');
-  assert.ok(app.includes('SBORDONI_CURATED_RESULT_IMAGES'));
-  assert.ok(app.includes('"Romana|9065|9001"'));
-  assert.ok(app.includes('if(parent.sbordoniGrouped){'));
-  assert.ok(app.includes('parent.sbordoniConfiguration={...parent.sbordoniConfiguration,resultImage:curated};'));
-  assert.ok(app.includes('curatedSbordoniResultImage(parent.sbordoniConfiguration,support&&support.reference)'));
+test('1 and 3 hole variants use the same 5700 basin photograph',()=>{
+ const cfg=loadConfigurator('sbordoni-configurator.js').HydroSbordoniConfigurator;
+ assert.equal(cfg.catalogImage(catalog.find(p=>p.reference==='5700/1')),cfg.catalogImage(catalog.find(p=>p.reference==='5700/3')));
+ assert.equal(cfg.resultImage('Romana','9065',{reference:'9001'}),'/sbordoni/compositions/9065-9001.jpg');
 });
-
-
-test('V11.60.4 Palladio compatibility matrix follows the catalogue contact sheet',()=>{
-  const CATALOG=loadCatalog();
-  const context={window:{},CATALOG,console,esc:v=>String(v??''),euro:v=>String(v??0),document:{}};
-  vm.createContext(context);
-  vm.runInContext(fs.readFileSync(path.join(__dirname,'..','public','sbordoni-configurator.js'),'utf8'),context);
-  const cfg=context.window.HydroSbordoniConfigurator;
-  const keys=f=>Array.from(cfg.supportGroups('Palladio',f),g=>g.key);
-  assert.deepEqual(keys('7200').sort(),['G720','P7200'].sort());
-  assert.deepEqual(keys('7100').sort(),['7001','7100M','G720','P7100'].sort());
-  assert.deepEqual(keys('7070').sort(),['7001','7070M','P7070'].sort());
-  assert.deepEqual(keys('7064').sort(),['7001','P7064'].sort());
-  const support7100=cfg.supportGroups('Palladio','7100').flatMap(g=>Array.from(g.items)).find(x=>x.reference==='7100M');
-  assert.equal(cfg.resultImage('Palladio','7100',support7100),'https://img.archiexpo.fr/images_ae/photo-mg/52045-15167347.jpg');
-  assert.equal(cfg.catalogImage(CATALOG.find(x=>x.manufacturer==='Sbordoni'&&x.collection==='Palladio'&&x.reference==='7100/3')),'https://img.archiexpo.fr/images_ae/photo-m2/52045-15167309.jpg');
+test('saved grouped compositions recover their total and local picture without losing user commercial choices',()=>{
+ const p=model.buildBasin(catalog,{collection:'Palladio',family:'7100',holes:1,supportRef:'P7100CR'});
+ const saved={...p,id:'item',roomId:'room',quantity:3,priceOverride:1234,clientDiscountOverride:12,quoteDesignationOverride:'Custom',price:999,image:'https://old.example/wrong.jpg'};
+ const {selected,changed}=model.migrate([saved]);assert(changed);
+ assert.equal(selected[0].price,p.price);assert.equal(selected[0].quantity,3);assert.equal(selected[0].priceOverride,1234);
+ assert.equal(selected[0].quoteDesignationOverride,'Custom');assert.equal(selected[0].image,p.image);
+ assert.equal(saved.image,'https://old.example/wrong.jpg','migration does not mutate input');
+ assert.equal(model.migrate(selected).changed,false,'migration is idempotent');
 });
-
-test('V11.60.4 puts the Sbordoni configurator before product cards',()=>{
-  const app=fs.readFileSync(path.join(__dirname,'..','public','app.js'),'utf8');
-  assert.match(app,/sbordoni-catalog-launcher/);
-  assert.match(app,/sbordoni-launch-basin/);
-  assert.match(app,/HydroSbordoniConfigurator\?\.open\?\.\(null/);
-  assert.match(app,/sbordoni-launch-wc/);
+test('legacy separate basin/support items become one result and unrelated project items survive',()=>{
+ const parent={id:'p',manufacturer:'Sbordoni',reference:'9065/1',roomId:'r',price:401,quantity:2,sbordoniConfiguration:{collection:'Romana',family:'9065',holes:1,supportRef:'9001'}};
+ const child={id:'c',reference:'9001',price:260,accessoryFor:'p',sbordoniConfigurationAccessory:true};
+ const other={id:'unrelated',price:99};const result=model.migrate([parent,child,other]);
+ assert.equal(result.selected.length,2);assert.equal(result.selected[0].price,661);assert.equal(result.selected[0].quantity,2);
+ assert.deepEqual(result.selected[0].sbordoniConfiguration.componentReferences,['9065/1','9001']);assert.deepEqual(result.selected[1],other);
+ assert.equal(model.migrate(result.selected).changed,false);
 });
-
-
-test("catalog add handlers use the multi-selector",()=>{
-  const app=fs.readFileSync(path.join(__dirname,"..","public","app.js"),"utf8");
-  assert.ok(app.includes('$(\".add\",results).forEach'));
-  assert.equal(app.includes('$(\".add\",results).forEach'),false);
+test('invalid saved configurations retain their references and prices, with an actionable issue',()=>{
+ const p={id:'p',reference:'7200/3',price:100,sbordoniGrouped:true,sbordoniConfiguration:{collection:'Palladio',family:'7200',holes:3,supportRef:'7100M',components:[{role:'lavabo',reference:'7200/3',price:100},{role:'pietement',reference:'7100M',price:25}]}};
+ const result=model.migrate([p]).selected[0];assert.equal(result.price,125);assert.equal(result.sbordoniConfiguration.supportRef,'7100M');assert(result.sbordoniConfigurationIssue);assert.equal(result.image,'');
+});
+test('editing a saved composition preserves quantity, room, quote and attached documents',()=>{
+ const current={id:'p',roomId:'r2',quantity:4,space:'Douche',priceOverride:90,quoteReferenceOverride:'Custom',technicalSheetUrl:'data:application/pdf;base64,abc',includeTechnicalSheet:true,hideFromDossier:true,leadTime:'6 semaines'};
+ const next=model.applyEditedRecord(current,{id:'new',roomId:'wrong',quantity:1,price:99,technicalSheetUrl:'',includeTechnicalSheet:false,hideFromDossier:false});
+ for(const k of Object.keys(current))assert.equal(next[k],current[k],k);assert.equal(next.price,99);
+});
+test('WC mandatory components and all seat families resolve to existing catalogue references',()=>{
+ const cfg=loadConfigurator('sbordoni-wc-configurator.js').HydroSbordoniWCConfigurator;
+ for(const [collection,systems] of Object.entries(cfg.config))for(const system of systems){
+  for(const [ref] of system.bowls){assert(model.byRef(catalog,collection,ref),ref);for(const flush of system.flush.length?system.flush:[{id:''}])assert(fs.existsSync(path.join(root,'public',model.wcImage({bowlRef:ref,flush:flush.id}))),ref);}
+  for(const f of system.flush){assert(model.byRef(catalog,collection,f.tank),f.tank);for(const base of [...f.mechanisms,...(f.pipe?[f.pipe]:[])])assert(model.byRef(catalog,collection,base+'CR'),base);}
+  for(const seat of system.seats)assert(model.byRef(catalog,collection,seat+'CR'),seat);
+ }
+ assert(cfg.config.Palladio.find(s=>s.id==='floor').flush.some(f=>f.tank==='7029'&&f.mechanisms.includes('MC06')));
 });

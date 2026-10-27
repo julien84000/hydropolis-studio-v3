@@ -1,0 +1,1281 @@
+{
+  "source": "https://www.sbordoniceramica.com/download/Cat_SBORDONI.pdf",
+  "sha256": "d0eb7aac8feb11888f3c50d78d580d3508dbd3d9f1dcbefc795d31c71d95645f",
+  "images": {
+    "9200-alone": {
+      "page": 28,
+      "printedPage": 26,
+      "box": [
+        42,
+        80,
+        245,
+        147
+      ],
+      "file": "/sbordoni/compositions/9200-alone.jpg",
+      "xref": 3669,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "9200-P9200": {
+      "page": 28,
+      "printedPage": 26,
+      "box": [
+        42,
+        180,
+        245,
+        324
+      ],
+      "file": "/sbordoni/compositions/9200-P9200.jpg",
+      "xref": 3670,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "9200-N9200": {
+      "page": 28,
+      "printedPage": 26,
+      "box": [
+        42,
+        340,
+        245,
+        478
+      ],
+      "file": "/sbordoni/compositions/9200-N9200.jpg",
+      "xref": 3675,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "9200-R9200": {
+      "page": 28,
+      "printedPage": 26,
+      "box": [
+        42,
+        495,
+        245,
+        637
+      ],
+      "file": "/sbordoni/compositions/9200-R9200.jpg",
+      "xref": 3672,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "9090-alone": {
+      "page": 28,
+      "printedPage": 26,
+      "box": [
+        305,
+        80,
+        446,
+        147
+      ],
+      "file": "/sbordoni/compositions/9090-alone.jpg",
+      "xref": 3677,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "9090-P9090": {
+      "page": 28,
+      "printedPage": 26,
+      "box": [
+        305,
+        180,
+        446,
+        324
+      ],
+      "file": "/sbordoni/compositions/9090-P9090.jpg",
+      "xref": 3676,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "9090-N9090": {
+      "page": 28,
+      "printedPage": 26,
+      "box": [
+        305,
+        340,
+        446,
+        478
+      ],
+      "file": "/sbordoni/compositions/9090-N9090.jpg",
+      "xref": 3678,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "9090-R9090": {
+      "page": 28,
+      "printedPage": 26,
+      "box": [
+        305,
+        495,
+        446,
+        637
+      ],
+      "file": "/sbordoni/compositions/9090-R9090.jpg",
+      "xref": 3673,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "9065-alone": {
+      "page": 28,
+      "printedPage": 26,
+      "box": [
+        510,
+        80,
+        640,
+        147
+      ],
+      "file": "/sbordoni/compositions/9065-alone.jpg",
+      "xref": 3679,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "9065-P9065": {
+      "page": 28,
+      "printedPage": 26,
+      "box": [
+        510,
+        180,
+        640,
+        324
+      ],
+      "file": "/sbordoni/compositions/9065-P9065.jpg",
+      "xref": 3680,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "9065-N9065": {
+      "page": 28,
+      "printedPage": 26,
+      "box": [
+        510,
+        340,
+        640,
+        478
+      ],
+      "file": "/sbordoni/compositions/9065-N9065.jpg",
+      "xref": 3682,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "9065-R9065": {
+      "page": 28,
+      "printedPage": 26,
+      "box": [
+        510,
+        495,
+        640,
+        637
+      ],
+      "file": "/sbordoni/compositions/9065-R9065.jpg",
+      "xref": 3674,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "9065-9001": {
+      "page": 28,
+      "printedPage": 26,
+      "box": [
+        510,
+        654,
+        640,
+        780
+      ],
+      "file": "/sbordoni/compositions/9065-9001.jpg",
+      "xref": 3681,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "9050-alone": {
+      "page": 28,
+      "printedPage": 26,
+      "box": [
+        315,
+        706,
+        438,
+        775
+      ],
+      "file": "/sbordoni/compositions/9050-alone.jpg",
+      "xref": 3671,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "7200-alone": {
+      "page": 56,
+      "printedPage": 54,
+      "box": [
+        42,
+        82,
+        245,
+        147
+      ],
+      "file": "/sbordoni/compositions/7200-alone.jpg",
+      "xref": 3510,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "7200-P7200": {
+      "page": 56,
+      "printedPage": 54,
+      "box": [
+        42,
+        182,
+        245,
+        322
+      ],
+      "file": "/sbordoni/compositions/7200-P7200.jpg",
+      "xref": 3511,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "7100-alone": {
+      "page": 56,
+      "printedPage": 54,
+      "box": [
+        300,
+        82,
+        445,
+        147
+      ],
+      "file": "/sbordoni/compositions/7100-alone.jpg",
+      "xref": 3516,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "7100-P7100": {
+      "page": 56,
+      "printedPage": 54,
+      "box": [
+        300,
+        182,
+        445,
+        322
+      ],
+      "file": "/sbordoni/compositions/7100-P7100.jpg",
+      "xref": 3515,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "7070-alone": {
+      "page": 56,
+      "printedPage": 54,
+      "box": [
+        530,
+        82,
+        637,
+        147
+      ],
+      "file": "/sbordoni/compositions/7070-alone.jpg",
+      "xref": 3520,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "7070-P7070": {
+      "page": 56,
+      "printedPage": 54,
+      "box": [
+        530,
+        182,
+        637,
+        322
+      ],
+      "file": "/sbordoni/compositions/7070-P7070.jpg",
+      "xref": 3521,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "7200-G720": {
+      "page": 56,
+      "printedPage": 54,
+      "box": [
+        42,
+        498,
+        245,
+        637
+      ],
+      "file": "/sbordoni/compositions/7200-G720.jpg",
+      "xref": 3514,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "7100-G720": {
+      "page": 56,
+      "printedPage": 54,
+      "box": [
+        300,
+        500,
+        445,
+        636
+      ],
+      "file": "/sbordoni/compositions/7100-G720.jpg",
+      "xref": 3517,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "7100-7001": {
+      "page": 56,
+      "printedPage": 54,
+      "box": [
+        300,
+        345,
+        445,
+        471
+      ],
+      "file": "/sbordoni/compositions/7100-7001.jpg",
+      "xref": 3518,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "7100-7100M": {
+      "page": 56,
+      "printedPage": 54,
+      "box": [
+        300,
+        669,
+        445,
+        762
+      ],
+      "file": "/sbordoni/compositions/7100-7100M.jpg",
+      "xref": 3519,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "7070-7001": {
+      "page": 56,
+      "printedPage": 54,
+      "box": [
+        530,
+        345,
+        637,
+        471
+      ],
+      "file": "/sbordoni/compositions/7070-7001.jpg",
+      "xref": 3513,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "7070-7070M": {
+      "page": 56,
+      "printedPage": 54,
+      "box": [
+        530,
+        669,
+        637,
+        762
+      ],
+      "file": "/sbordoni/compositions/7070-7070M.jpg",
+      "xref": 3512,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "7064-alone": {
+      "page": 57,
+      "printedPage": 55,
+      "box": [
+        52,
+        82,
+        149,
+        146
+      ],
+      "file": "/sbordoni/compositions/7064-alone.jpg",
+      "xref": 3474,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "7064-P7064": {
+      "page": 57,
+      "printedPage": 55,
+      "box": [
+        52,
+        183,
+        149,
+        300
+      ],
+      "file": "/sbordoni/compositions/7064-P7064.jpg",
+      "xref": 3475,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "7064-7001": {
+      "page": 57,
+      "printedPage": 55,
+      "box": [
+        52,
+        342,
+        149,
+        461
+      ],
+      "file": "/sbordoni/compositions/7064-7001.jpg",
+      "xref": 3481,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "7050-alone": {
+      "page": 57,
+      "printedPage": 55,
+      "box": [
+        52,
+        555,
+        153,
+        612
+      ],
+      "file": "/sbordoni/compositions/7050-alone.jpg",
+      "xref": 3482,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5700-alone": {
+      "page": 92,
+      "printedPage": 90,
+      "box": [
+        41,
+        87,
+        204,
+        139
+      ],
+      "file": "/sbordoni/compositions/5700-alone.jpg",
+      "xref": 3276,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5700-P5700": {
+      "page": 92,
+      "printedPage": 90,
+      "box": [
+        41,
+        164,
+        204,
+        300
+      ],
+      "file": "/sbordoni/compositions/5700-P5700.jpg",
+      "xref": 3287,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5700-N5700": {
+      "page": 92,
+      "printedPage": 90,
+      "box": [
+        41,
+        318,
+        204,
+        455
+      ],
+      "file": "/sbordoni/compositions/5700-N5700.jpg",
+      "xref": 3288,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5700-Y5700": {
+      "page": 92,
+      "printedPage": 90,
+      "box": [
+        41,
+        475,
+        204,
+        617
+      ],
+      "file": "/sbordoni/compositions/5700-Y5700.jpg",
+      "xref": 3289,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5700-G571": {
+      "page": 92,
+      "printedPage": 90,
+      "box": [
+        41,
+        637,
+        204,
+        780
+      ],
+      "file": "/sbordoni/compositions/5700-G571.jpg",
+      "xref": 3275,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5775-alone": {
+      "page": 92,
+      "printedPage": 90,
+      "box": [
+        225,
+        87,
+        365,
+        139
+      ],
+      "file": "/sbordoni/compositions/5775-alone.jpg",
+      "xref": 3291,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5775-P5775": {
+      "page": 92,
+      "printedPage": 90,
+      "box": [
+        225,
+        164,
+        365,
+        300
+      ],
+      "file": "/sbordoni/compositions/5775-P5775.jpg",
+      "xref": 3290,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5775-N5775": {
+      "page": 92,
+      "printedPage": 90,
+      "box": [
+        225,
+        318,
+        365,
+        455
+      ],
+      "file": "/sbordoni/compositions/5775-N5775.jpg",
+      "xref": 3293,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5775-Y5775": {
+      "page": 92,
+      "printedPage": 90,
+      "box": [
+        225,
+        475,
+        365,
+        617
+      ],
+      "file": "/sbordoni/compositions/5775-Y5775.jpg",
+      "xref": 3294,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5775-5771": {
+      "page": 92,
+      "printedPage": 90,
+      "box": [
+        225,
+        637,
+        365,
+        780
+      ],
+      "file": "/sbordoni/compositions/5775-5771.jpg",
+      "xref": 3292,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5770-alone": {
+      "page": 92,
+      "printedPage": 90,
+      "box": [
+        378,
+        87,
+        519,
+        139
+      ],
+      "file": "/sbordoni/compositions/5770-alone.jpg",
+      "xref": 3277,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5770-P5770": {
+      "page": 92,
+      "printedPage": 90,
+      "box": [
+        378,
+        164,
+        519,
+        300
+      ],
+      "file": "/sbordoni/compositions/5770-P5770.jpg",
+      "xref": 3278,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5770-N5770": {
+      "page": 92,
+      "printedPage": 90,
+      "box": [
+        378,
+        318,
+        519,
+        455
+      ],
+      "file": "/sbordoni/compositions/5770-N5770.jpg",
+      "xref": 3280,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5770-Y5770": {
+      "page": 92,
+      "printedPage": 90,
+      "box": [
+        378,
+        475,
+        519,
+        617
+      ],
+      "file": "/sbordoni/compositions/5770-Y5770.jpg",
+      "xref": 3281,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5770-5771": {
+      "page": 92,
+      "printedPage": 90,
+      "box": [
+        378,
+        637,
+        519,
+        780
+      ],
+      "file": "/sbordoni/compositions/5770-5771.jpg",
+      "xref": 3279,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5765-alone": {
+      "page": 92,
+      "printedPage": 90,
+      "box": [
+        528,
+        87,
+        647,
+        139
+      ],
+      "file": "/sbordoni/compositions/5765-alone.jpg",
+      "xref": 3283,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5765-P5765": {
+      "page": 92,
+      "printedPage": 90,
+      "box": [
+        528,
+        164,
+        647,
+        300
+      ],
+      "file": "/sbordoni/compositions/5765-P5765.jpg",
+      "xref": 3284,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5765-N5765": {
+      "page": 92,
+      "printedPage": 90,
+      "box": [
+        528,
+        318,
+        647,
+        455
+      ],
+      "file": "/sbordoni/compositions/5765-N5765.jpg",
+      "xref": 3285,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5765-Y5765": {
+      "page": 92,
+      "printedPage": 90,
+      "box": [
+        528,
+        475,
+        647,
+        617
+      ],
+      "file": "/sbordoni/compositions/5765-Y5765.jpg",
+      "xref": 3286,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5765-5771": {
+      "page": 92,
+      "printedPage": 90,
+      "box": [
+        528,
+        637,
+        647,
+        780
+      ],
+      "file": "/sbordoni/compositions/5765-5771.jpg",
+      "xref": 3282,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5758-alone": {
+      "page": 93,
+      "printedPage": 91,
+      "box": [
+        47,
+        88,
+        151,
+        136
+      ],
+      "file": "/sbordoni/compositions/5758-alone.jpg",
+      "xref": 3236,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5758-P5758": {
+      "page": 93,
+      "printedPage": 91,
+      "box": [
+        47,
+        163,
+        151,
+        296
+      ],
+      "file": "/sbordoni/compositions/5758-P5758.jpg",
+      "xref": 3237,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5758-N5758": {
+      "page": 93,
+      "printedPage": 91,
+      "box": [
+        47,
+        319,
+        151,
+        452
+      ],
+      "file": "/sbordoni/compositions/5758-N5758.jpg",
+      "xref": 3235,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5758-Y5758": {
+      "page": 93,
+      "printedPage": 91,
+      "box": [
+        47,
+        475,
+        151,
+        614
+      ],
+      "file": "/sbordoni/compositions/5758-Y5758.jpg",
+      "xref": 3239,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5758-5771": {
+      "page": 93,
+      "printedPage": 91,
+      "box": [
+        47,
+        637,
+        151,
+        773
+      ],
+      "file": "/sbordoni/compositions/5758-5771.jpg",
+      "xref": 3238,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5369-alone": {
+      "page": 108,
+      "printedPage": 106,
+      "box": [
+        54,
+        82,
+        201,
+        135
+      ],
+      "file": "/sbordoni/compositions/5369-alone.jpg",
+      "xref": 3129,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5369-5369M": {
+      "page": 108,
+      "printedPage": 106,
+      "box": [
+        54,
+        179,
+        201,
+        247
+      ],
+      "file": "/sbordoni/compositions/5369-5369M.jpg",
+      "xref": 3143,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5369-5771": {
+      "page": 108,
+      "printedPage": 106,
+      "box": [
+        54,
+        277,
+        201,
+        425
+      ],
+      "file": "/sbordoni/compositions/5369-5771.jpg",
+      "xref": 3133,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5369-M5369": {
+      "page": 108,
+      "printedPage": 106,
+      "box": [
+        54,
+        450,
+        201,
+        597
+      ],
+      "file": "/sbordoni/compositions/5369-M5369.jpg",
+      "xref": 3130,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5369-M5369G": {
+      "page": 108,
+      "printedPage": 106,
+      "box": [
+        54,
+        617,
+        201,
+        766
+      ],
+      "file": "/sbordoni/compositions/5369-M5369G.jpg",
+      "xref": 3140,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5365-alone": {
+      "page": 108,
+      "printedPage": 106,
+      "box": [
+        300,
+        82,
+        422,
+        135
+      ],
+      "file": "/sbordoni/compositions/5365-alone.jpg",
+      "xref": 3137,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5365-5365M": {
+      "page": 108,
+      "printedPage": 106,
+      "box": [
+        300,
+        179,
+        422,
+        247
+      ],
+      "file": "/sbordoni/compositions/5365-5365M.jpg",
+      "xref": 3131,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5365-5771": {
+      "page": 108,
+      "printedPage": 106,
+      "box": [
+        300,
+        277,
+        422,
+        425
+      ],
+      "file": "/sbordoni/compositions/5365-5771.jpg",
+      "xref": 3134,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5365-M5365": {
+      "page": 108,
+      "printedPage": 106,
+      "box": [
+        300,
+        450,
+        422,
+        597
+      ],
+      "file": "/sbordoni/compositions/5365-M5365.jpg",
+      "xref": 3136,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5365-M5365G": {
+      "page": 108,
+      "printedPage": 106,
+      "box": [
+        300,
+        617,
+        422,
+        766
+      ],
+      "file": "/sbordoni/compositions/5365-M5365G.jpg",
+      "xref": 3141,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5359-alone": {
+      "page": 108,
+      "printedPage": 106,
+      "box": [
+        529,
+        82,
+        639,
+        135
+      ],
+      "file": "/sbordoni/compositions/5359-alone.jpg",
+      "xref": 3138,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5359-5359M": {
+      "page": 108,
+      "printedPage": 106,
+      "box": [
+        529,
+        179,
+        639,
+        247
+      ],
+      "file": "/sbordoni/compositions/5359-5359M.jpg",
+      "xref": 3132,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5359-5771": {
+      "page": 108,
+      "printedPage": 106,
+      "box": [
+        529,
+        277,
+        639,
+        425
+      ],
+      "file": "/sbordoni/compositions/5359-5771.jpg",
+      "xref": 3135,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5359-M5359": {
+      "page": 108,
+      "printedPage": 106,
+      "box": [
+        529,
+        450,
+        639,
+        597
+      ],
+      "file": "/sbordoni/compositions/5359-M5359.jpg",
+      "xref": 3139,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5359-M5359G": {
+      "page": 108,
+      "printedPage": 106,
+      "box": [
+        529,
+        617,
+        639,
+        766
+      ],
+      "file": "/sbordoni/compositions/5359-M5359G.jpg",
+      "xref": 3142,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5352-alone": {
+      "page": 109,
+      "printedPage": 107,
+      "box": [
+        48,
+        85,
+        145,
+        133
+      ],
+      "file": "/sbordoni/compositions/5352-alone.jpg",
+      "xref": 3110,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5304-alone": {
+      "page": 109,
+      "printedPage": 107,
+      "box": [
+        197,
+        81,
+        310,
+        141
+      ],
+      "file": "/sbordoni/compositions/5304-alone.jpg",
+      "xref": 3113,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5305-alone": {
+      "page": 109,
+      "printedPage": 107,
+      "box": [
+        197,
+        228,
+        309,
+        287
+      ],
+      "file": "/sbordoni/compositions/5305-alone.jpg",
+      "xref": 3114,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "9020-high": {
+      "page": 29,
+      "printedPage": 27,
+      "box": [
+        67,
+        84,
+        176,
+        310
+      ],
+      "file": "/sbordoni/compositions/9020-high.jpg"
+    },
+    "9020-low": {
+      "page": 29,
+      "printedPage": 27,
+      "box": [
+        67,
+        350,
+        180,
+        499
+      ],
+      "file": "/sbordoni/compositions/9020-low.jpg",
+      "xref": 3656,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "9021-high": {
+      "page": 29,
+      "printedPage": 27,
+      "box": [
+        282,
+        84,
+        389,
+        310
+      ],
+      "file": "/sbordoni/compositions/9021-high.jpg"
+    },
+    "9021-low": {
+      "page": 29,
+      "printedPage": 27,
+      "box": [
+        282,
+        350,
+        393,
+        499
+      ],
+      "file": "/sbordoni/compositions/9021-low.jpg",
+      "xref": 3648,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "9024-default": {
+      "page": 29,
+      "printedPage": 27,
+      "box": [
+        60,
+        539,
+        163,
+        659
+      ],
+      "file": "/sbordoni/compositions/9024-default.jpg",
+      "xref": 3655,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "9025-default": {
+      "page": 29,
+      "printedPage": 27,
+      "box": [
+        272,
+        539,
+        374,
+        659
+      ],
+      "file": "/sbordoni/compositions/9025-default.jpg",
+      "xref": 3647,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "9026-default": {
+      "page": 29,
+      "printedPage": 27,
+      "box": [
+        299,
+        690,
+        385,
+        775
+      ],
+      "file": "/sbordoni/compositions/9026-default.jpg",
+      "xref": 3650,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "7020-high": {
+      "page": 57,
+      "printedPage": 55,
+      "box": [
+        210,
+        85,
+        312,
+        298
+      ],
+      "file": "/sbordoni/compositions/7020-high.jpg"
+    },
+    "7020-low": {
+      "page": 57,
+      "printedPage": 55,
+      "box": [
+        210,
+        342,
+        312,
+        477
+      ],
+      "file": "/sbordoni/compositions/7020-low.jpg",
+      "xref": 3484,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "7021-high": {
+      "page": 57,
+      "printedPage": 55,
+      "box": [
+        386,
+        85,
+        484,
+        298
+      ],
+      "file": "/sbordoni/compositions/7021-high.jpg"
+    },
+    "7021-low": {
+      "page": 57,
+      "printedPage": 55,
+      "box": [
+        386,
+        342,
+        484,
+        477
+      ],
+      "file": "/sbordoni/compositions/7021-low.jpg",
+      "xref": 3479,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "7032-default": {
+      "page": 57,
+      "printedPage": 55,
+      "box": [
+        212,
+        520,
+        311,
+        633
+      ],
+      "file": "/sbordoni/compositions/7032-default.jpg",
+      "xref": 3483,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "7034-default": {
+      "page": 57,
+      "printedPage": 55,
+      "box": [
+        383,
+        521,
+        484,
+        632
+      ],
+      "file": "/sbordoni/compositions/7034-default.jpg",
+      "xref": 3480,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "7024-default": {
+      "page": 57,
+      "printedPage": 55,
+      "box": [
+        218,
+        686,
+        308,
+        750
+      ],
+      "file": "/sbordoni/compositions/7024-default.jpg",
+      "xref": 3486,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5107-high": {
+      "page": 93,
+      "printedPage": 91,
+      "box": [
+        215,
+        66,
+        328,
+        287
+      ],
+      "file": "/sbordoni/compositions/5107-high.jpg"
+    },
+    "5107-low": {
+      "page": 93,
+      "printedPage": 91,
+      "box": [
+        215,
+        338,
+        328,
+        478
+      ],
+      "file": "/sbordoni/compositions/5107-low.jpg",
+      "xref": 3233,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5109-high": {
+      "page": 93,
+      "printedPage": 91,
+      "box": [
+        373,
+        66,
+        483,
+        287
+      ],
+      "file": "/sbordoni/compositions/5109-high.jpg"
+    },
+    "5109-low": {
+      "page": 93,
+      "printedPage": 91,
+      "box": [
+        373,
+        338,
+        483,
+        478
+      ],
+      "file": "/sbordoni/compositions/5109-low.jpg",
+      "xref": 3228,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5177-default": {
+      "page": 93,
+      "printedPage": 91,
+      "box": [
+        222,
+        521,
+        324,
+        635
+      ],
+      "file": "/sbordoni/compositions/5177-default.jpg",
+      "xref": 3222,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5179-default": {
+      "page": 93,
+      "printedPage": 91,
+      "box": [
+        378,
+        522,
+        480,
+        636
+      ],
+      "file": "/sbordoni/compositions/5179-default.jpg",
+      "xref": 3229,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5022-default": {
+      "page": 93,
+      "printedPage": 91,
+      "box": [
+        239,
+        687,
+        313,
+        758
+      ],
+      "file": "/sbordoni/compositions/5022-default.jpg",
+      "xref": 3221,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5033-default": {
+      "page": 93,
+      "printedPage": 91,
+      "box": [
+        395,
+        686,
+        466,
+        759
+      ],
+      "file": "/sbordoni/compositions/5033-default.jpg",
+      "xref": 3230,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5309-default": {
+      "page": 93,
+      "printedPage": 91,
+      "box": [
+        543,
+        697,
+        623,
+        769
+      ],
+      "file": "/sbordoni/compositions/5309-default.jpg",
+      "xref": 3231,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5520-default": {
+      "page": 109,
+      "printedPage": 107,
+      "box": [
+        377,
+        65,
+        459,
+        149
+      ],
+      "file": "/sbordoni/compositions/5520-default.jpg",
+      "xref": 3108,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5521-default": {
+      "page": 109,
+      "printedPage": 107,
+      "box": [
+        372,
+        213,
+        454,
+        297
+      ],
+      "file": "/sbordoni/compositions/5521-default.jpg",
+      "xref": 3109,
+      "extraction": "embedded image; blank margins trimmed"
+    },
+    "5324-default": {
+      "page": 109,
+      "printedPage": 107,
+      "box": [
+        377,
+        347,
+        457,
+        426
+      ],
+      "file": "/sbordoni/compositions/5324-default.jpg",
+      "xref": 3115,
+      "extraction": "embedded image; blank margins trimmed"
+    }
+  }
+}

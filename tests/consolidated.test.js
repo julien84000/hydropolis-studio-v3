@@ -33,7 +33,7 @@ test('Sbordoni : tarif 2023, six chunks et visuels PDF isolés',()=>{
   assert.equal(rows.length,5216);
   assert(rows.every(x=>x.manufacturer==='Sbordoni'&&x.reference&&Number.isFinite(Number(x.price))));
   assert(rows.filter(x=>x.image).length>=4500);
-  assert(rows.filter(x=>x.image).every(x=>/^\/api\/sbordoni-image\?ref=/.test(x.image)));
+  assert(rows.filter(x=>x.image).every(x=>/^(?:\/api\/sbordoni-image\?ref=|\/sbordoni\/compositions\/[a-zA-Z0-9-]+\.jpg$)/.test(x.image)));
 });
 
 test('index local incrémental : fabricant + référence, y compris après chargement',()=>{

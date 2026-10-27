@@ -1,6 +1,7 @@
 (function(root){
   "use strict";
 
+  const model=root.HydroSbordoniModel;
   const COLLECTIONS=["Romana","Palladio","Neoclassica","Masaccio"];
   const FINISH_ORDER=["CR","ON","NI","OL","BR","RA","NN"];
 
@@ -8,6 +9,7 @@
     Romana:[
       {id:"floor",label:"WC au sol",bowls:[["9020","Sortie verticale"],["9021","Sortie horizontale"]],flush:[
         {id:"high",label:"Réservoir haut",tank:"9028",mechanisms:["MC01","MC01n"],pipe:"TB01",optional:["ST01"]},
+        {id:"low-top",label:"Réservoir bas · bouton supérieur",tank:"9029",mechanisms:["MC06"]},
         {id:"low",label:"Réservoir bas",tank:"9029L",mechanisms:["MC06L","MC06Ln"]}
       ],seats:["S920","S920cs","S930","S930cs","S936","S936cs","S939","S939cs","S944","S944cs","S949","S949cs"]},
       {id:"close",label:"WC monobloc",bowls:[["9024","Sortie verticale"],["9025","Sortie horizontale"]],flush:[
@@ -18,7 +20,8 @@
     ],
     Palladio:[
       {id:"floor",label:"WC au sol",bowls:[["7020","Sortie verticale"],["7021","Sortie horizontale"]],flush:[
-        {id:"high",label:"Réservoir haut",tank:"7028",mechanisms:["MC01","MC01n"],pipe:"TB01"},
+        {id:"high",label:"Réservoir haut",tank:"7028",mechanisms:["MC01","MC01n"],pipe:"TB01",optional:["ST01"]},
+        {id:"low-top",label:"Réservoir bas · bouton supérieur",tank:"7029",mechanisms:["MC06"]},
         {id:"low",label:"Réservoir bas",tank:"7029L",mechanisms:["MC06L","MC06Ln"]}
       ],seats:["S020","S020cs","S030","S030cs","S036","S036cs","S039","S039cs","S044","S044cs","S049","S049cs"]},
       {id:"close",label:"WC monobloc",bowls:[["7032","Sortie verticale"],["7034","Sortie horizontale"]],flush:[
@@ -30,7 +33,8 @@
     ],
     Neoclassica:[
       {id:"floor",label:"WC au sol",bowls:[["5107","Sortie verticale"],["5109","Sortie horizontale"]],flush:[
-        {id:"high",label:"Réservoir haut",tank:"5128",mechanisms:["MC01","MC01n"],pipe:"TB01"},
+        {id:"high",label:"Réservoir haut",tank:"5128",mechanisms:["MC01","MC01n"],pipe:"TB01",optional:["ST01"]},
+        {id:"low-top",label:"Réservoir bas · bouton supérieur",tank:"5129",mechanisms:["MC06"]},
         {id:"low",label:"Réservoir bas",tank:"5129L",mechanisms:["MC06L","MC06Ln"]}
       ],seats:["S107","S107cs","S117","S117cs","S120","S120cs","S123","S123cs","S114","S114cs","S141","S141cs"]},
       {id:"close",label:"WC monobloc",bowls:[["5177","Sortie verticale"],["5179","Sortie horizontale"]],flush:[
@@ -39,7 +43,7 @@
         {id:"side",label:"Commande latérale",tank:"5130LL",mechanisms:["MC08LL","MC08LLn"]}
       ],seats:["S107","S107cs","S117","S117cs","S120","S120cs","S123","S123cs","S114","S114cs","S141","S141cs"]},
       {id:"back-en",label:"WC back-to-wall anglais",bowls:[["5022","Sortie horizontale"]],flush:[],seats:["S107","S107cs","S117","S117cs","S120","S120cs","S123","S123cs","S114","S114cs","S141","S141cs"]},
-      {id:"back",label:"WC back-to-wall unifié",bowls:[["5033","Sortie sol / mur"]],flush:[],seats:["S060","S060cs","S061","S061cs","S062","S062cs"]},
+      {id:"back",label:"WC back-to-wall unifié",bowls:[["5033","Sortie sol / mur"]],flush:[],seats:["S060","S060cs","S061","S061cs","S062","S062cs","S063","S063cs","S064","S064cs","S065","S065cs"]},
       {id:"wall",label:"WC suspendu",bowls:[["5309","Suspendu"]],flush:[],seats:["S127","S127cs","S127L","S127Lcs","S130","S130cs","S138","S138cs","S136","S136cs","S152","S152cs"]}
     ],
     Masaccio:[
@@ -173,6 +177,7 @@
       const sg=groups(state.collection,s?.seats||[]);
       const selectedSg=sg.find(g=>g.base===state.seatBase)||null;
       const seat=state.seatRef?byRef(state.collection,state.seatRef):null;
+      const resultImg=model.wcImage({bowlRef:state.bowlRef,flush:state.flushId});
       const total=[bowl,tank,mechanism,pipe,seat,...optionals].filter(Boolean).reduce((sum,x)=>sum+itemPrice(x),0);
 
       overlay.innerHTML=`<div class="recor-configurator" role="dialog" aria-modal="true" aria-labelledby="sbWcTitle">
@@ -224,10 +229,10 @@
         </div>
 
         <div class="recor-config-summary">
-          ${bowl?.image?`<img src="${esc(bowl.image)}" alt="${esc(bowl.reference)}" style="width:110px;height:90px;object-fit:contain;background:#fff;border-radius:12px;margin-right:12px">`:""}
+          ${resultImg?`<img src="${esc(resultImg)}" alt="${esc(bowl.reference)}" style="width:110px;height:90px;object-fit:contain;background:#fff;border-radius:12px;margin-right:12px">`:""}
           <div><b>${euro(total)} HT</b><span>${esc(s?.label||"WC")} · ${esc(bowl?.reference||"")}${tank?` + ${esc(tank.reference)}`:""}${mechanism?` + ${esc(mechanism.reference)}`:""}${seat?` + ${esc(seat.reference)}`:""}</span></div>
         </div>
-        <div class="recor-config-error" aria-live="polite"></div>
+        <p class="sbordoni-image-note">Composition de référence du catalogue. Le coloris d’abattant et la commande suivent les références sélectionnées.</p><div class="recor-config-error" aria-live="polite"></div>
         <div class="recor-config-actions"><button type="button" class="btn ghost sb-wc-cancel">Annuler</button><button type="button" class="btn primary sb-wc-confirm">Ajouter le WC configuré</button></div>
       </div>`;
 
@@ -266,11 +271,15 @@
             ...[...state.optionalRefs].map(ref=>byRef(state.collection,ref)),
             state.seatRef?byRef(state.collection,state.seatRef):null
           ].filter(Boolean);
-          if(!selected.length)throw new Error("Aucun article WC sélectionné.");
+          if(!byRef(state.collection,state.bowlRef) || !byRef(state.collection,state.seatRef) ||
+            (currentFlush && (!byRef(state.collection,currentFlush.tank)||!byRef(state.collection,state.mechRef))) ||
+            (currentFlush?.pipe && !byRef(state.collection,state.pipeRef)))throw new Error("La composition WC est incomplète : référence obligatoire indisponible.");
           const targetRoomId=normalizedRoomId(roomId);
           const main=createSelectedProductRecord(selected[0],targetRoomId,"");
           if(!main)throw new Error("La cuvette n’a pas pu être préparée.");
-          main.sbordoniWCConfiguration={collection:state.collection,system:currentSystem?.id||"",flush:currentFlush?.id||"",references:selected.map(x=>x.reference)};
+          main.sbordoniWCConfiguration={schemaVersion:1,collection:state.collection,bowlRef:state.bowlRef,system:currentSystem?.id||"",flush:currentFlush?.id||"",references:selected.map(x=>x.reference)};
+          Object.assign(main,model.imageFields(model.wcImage(main.sbordoniWCConfiguration)));
+          main.imageNote="Composition de référence du catalogue ; abattant et commande selon sélection.";
           const records=[main];
           for(const item of selected.slice(1)){
             const child=createSelectedProductRecord(item,targetRoomId,main.id);
