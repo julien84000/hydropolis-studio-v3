@@ -2938,3 +2938,31 @@ main{background:transparent}
 .carrodrain-back-to-gallery,.hidrobox-back{background:transparent;border:0;color:#a0753d;cursor:pointer;padding:12px 0;font-size:13px;text-align:left;}
 @media(max-width:950px){.carrodrain-gallery-grid{grid-template-columns:repeat(3,minmax(0,1fr));}}
 @media(max-width:600px){.carrodrain-gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;}.carrodrain-gallery-caption b{font-size:12px;}.carrodrain-gallery-caption small{font-size:10px;}.carrodrain-gallery-modal{padding:14px;}}
+
+
+/* V11.62.2 — Hidrobox guided manufacturer taxonomy + Neo Plus */
+.hidrobox-guide{width:min(880px,calc(100vw - 30px));}
+.hidrobox-guide-wide{width:min(1180px,calc(100vw - 30px));}
+.hidrobox-guide-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin-top:18px;}
+.hidrobox-guide-tile{border:1px solid #e7e2da;border-radius:12px;background:#faf8f5;overflow:hidden;cursor:pointer;text-align:left;padding:0;display:flex;flex-direction:column;min-height:160px;color:#26231e;transition:transform .16s,border-color .16s;}
+.hidrobox-guide-tile:hover,.hidrobox-guide-tile:focus-visible{transform:translateY(-2px);border-color:#b18446;outline-offset:2px;}
+.hidrobox-guide-tile img{width:100%;height:146px;object-fit:cover;display:block;background:#eeeae4;}
+.hidrobox-guide-tile-name{font-weight:600;padding:10px 12px 0;font-size:14px;}
+.hidrobox-guide-tile small{padding:4px 12px 11px;color:#716b60;font-size:11px;}
+.hidrobox-guide-no-image{background:#e8e4de;color:#8b7658;min-height:136px;display:flex;align-items:center;justify-content:center;letter-spacing:.3em;}
+.hidrobox-guide-note{font-size:12px;color:#776b5d;line-height:1.55;margin:15px 0;}
+.hidrobox-official-link,.hidrobox-downloads a{display:inline-block;font-size:12px;color:#966e35;margin-right:15px;}
+.hidrobox-neo-hero{display:grid;grid-template-columns:minmax(180px,32%) 1fr;gap:22px;padding:10px 0 20px;border-bottom:1px solid #e9e2d9;}
+.hidrobox-neo-hero img{width:100%;height:250px;object-fit:cover;border-radius:11px;background:#ebe8e4;}
+.hidrobox-neo-hero h3{font-family:Georgia,serif;font-size:24px;margin:9px 0;}
+.hidrobox-neo-hero p{line-height:1.5;font-size:13px;}
+.hidrobox-neo-hero a{color:#916c38;font-size:12px;}.hidrobox-neo-hero small{display:block;font-size:11px;margin-top:13px;color:#68605a;}
+.hidrobox-downloads{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;}
+.hidrobox-downloads a{border-bottom:1px solid #ad936d;text-decoration:none;padding-bottom:3px;}
+.hidrobox-fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:20px 0;}
+.hidrobox-fields label{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:#534c43;}
+.hidrobox-fields select{min-width:0;width:100%;padding:11px 8px;background:white;border-radius:8px;border:1px solid #d9d5cd;color:#2b2823;}
+.hidrobox-result{border-top:1px solid #e2dbd1;margin-top:12px;padding-top:18px;display:flex;align-items:center;justify-content:space-between;gap:18px;}
+.hidrobox-result > div{display:grid;gap:5px;}.hidrobox-result b{font-family:Georgia,serif;font-size:24px;font-weight:400;}
+.hidrobox-result span{font-size:13px;}.hidrobox-result small{color:#786f64;font-size:11px;}
+@media(max-width:700px){.hidrobox-guide-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}.hidrobox-guide-tile img{height:104px;}.hidrobox-fields{grid-template-columns:repeat(2,minmax(0,1fr));}.hidrobox-neo-hero{grid-template-columns:1fr;}.hidrobox-neo-hero img{height:170px;}.hidrobox-result{flex-direction:column;align-items:stretch;}}
