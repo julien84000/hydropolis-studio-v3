@@ -129,6 +129,29 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     await page.waitForSelector('#manufacturerGuidedSelector [data-go="category"]');
     const categories=await page.locator('#manufacturerGuidedSelector [data-go="category"]').count();
     check('catégories Archie visibles',categories>0);
+    // V11.62.4: verify that a product picture is not only present in JSON
+    // but actually rendered and decoded in a real Chromium session.
+    await page.locator('#manufacturerGuidedSelector [data-go="category"][data-value="Douche"]').click();
+    if(await page.locator('#manufacturerGuidedSelector [data-go="subcategory"]').count()){
+      await page.locator('#manufacturerGuidedSelector [data-go="subcategory"]').first().click();
+    }
+    await page.waitForSelector('#manufacturerGuidedSelector .mg-official-gallery [data-go="model"][data-value="AR088"] img',{timeout:15000});
+    const arPhoto=page.locator('#manufacturerGuidedSelector .mg-official-gallery [data-go="model"][data-value="AR088"] img');
+    const arSrc=await arPhoto.getAttribute('src');
+    check('Hotbath AR088 lie à une photographie officielle non 404',arSrc?.includes('hotbath.com/images/compano/AR088/'));
+    const decoded=await arPhoto.evaluate(async img=>{
+      if(!img.complete)await Promise.race([
+        new Promise(resolve=>{img.addEventListener('load',resolve,{once:true});img.addEventListener('error',resolve,{once:true});}),
+        new Promise(resolve=>setTimeout(resolve,10000))
+      ]);
+      return img.complete&&img.naturalWidth>0;
+    });
+    check('Hotbath AR088 : photo réellement chargée dans Chromium',decoded);
+    const layout=await page.locator('#manufacturerGuidedSelector .mg-official-gallery [data-value="AR088"] .mg-tile-meta').evaluate(el=>({
+      position:getComputedStyle(el).position,background:getComputedStyle(el).backgroundColor
+    }));
+    check('Bandeau sombre sur photo Hotbath',layout.position==='absolute'&&layout.background.includes('0.76'));
+    await page.locator('#manufacturerGuidedSelector [data-step="categories"]').click();
     await page.locator('#manufacturerGuidedSelector [data-go="category"]').first().click();
     if(await page.locator('#manufacturerGuidedSelector [data-go="subcategory"]').count()){
       await page.locator('#manufacturerGuidedSelector [data-go="subcategory"]').first().click();
