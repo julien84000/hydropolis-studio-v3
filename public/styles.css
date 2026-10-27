@@ -2919,3 +2919,22 @@ main{background:transparent}
 #document .layout-controls .layout-photo-reset:disabled{opacity:.45;cursor:default}
 
 #document .layout-controls{max-width:calc(100% - 4px);flex-wrap:wrap;justify-content:flex-end}
+
+
+/* V11.62.2 — Carrodrain official model selector */
+.carrodrain-gallery-modal{width:min(1190px,calc(100vw - 32px));}
+.carrodrain-gallery-intro{padding:15px 2px 6px;color:#55514b;line-height:1.5;font-size:13px;}
+.carrodrain-gallery-section{margin:18px 0 24px;}
+.carrodrain-gallery-section h3{font-size:12px;letter-spacing:.13em;text-transform:uppercase;font-weight:600;color:#a5763a;margin:0 0 12px;}
+.carrodrain-gallery-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;}
+.carrodrain-gallery-card{position:relative;display:block;width:100%;min-width:0;aspect-ratio:1.55;overflow:hidden;border:1px solid #ece8e4;padding:0;border-radius:10px;background:#e2dfdc;text-decoration:none;cursor:pointer;text-align:left;color:#fff;box-shadow:none;transition:transform .18s,border-color .18s;}
+.carrodrain-gallery-card:hover,.carrodrain-gallery-card:focus-visible{transform:translateY(-2px);border-color:#b18446;outline-offset:3px;}
+.carrodrain-gallery-card.is-active{border:2px solid #b18446;}
+.carrodrain-gallery-card img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .2s;}
+.carrodrain-gallery-card:hover img{transform:scale(1.04);}
+.carrodrain-gallery-caption{position:absolute;bottom:0;left:0;right:0;display:grid;gap:3px;padding:28px 13px 11px;color:white;background:linear-gradient(0deg,rgba(20,20,20,.72),rgba(20,20,20,0));text-shadow:0 1px 3px rgba(0,0,0,.6);}
+.carrodrain-gallery-caption b{font-size:14px;color:#fff;}.carrodrain-gallery-caption small{color:#fafafa;font-size:11px;}
+.carrodrain-gallery-card em{position:absolute;top:8px;right:8px;padding:4px 8px;font-style:normal;font-size:10px;background:rgba(22,22,22,.7);border-radius:8px;color:#fff;}
+.carrodrain-back-to-gallery,.hidrobox-back{background:transparent;border:0;color:#a0753d;cursor:pointer;padding:12px 0;font-size:13px;text-align:left;}
+@media(max-width:950px){.carrodrain-gallery-grid{grid-template-columns:repeat(3,minmax(0,1fr));}}
+@media(max-width:600px){.carrodrain-gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;}.carrodrain-gallery-caption b{font-size:12px;}.carrodrain-gallery-caption small{font-size:10px;}.carrodrain-gallery-modal{padding:14px;}}
