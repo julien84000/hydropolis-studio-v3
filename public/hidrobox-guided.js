@@ -82,6 +82,24 @@ function tiles(rows,kind){
   return '<button type="button" class="hidrobox-guide-tile" data-kind="'+escape(kind)+'" data-choice="'+escape(x.key)+'">'+picture+'<span class="hidrobox-guide-tile-name">'+escape(x.name)+'</span>'+(x.note?'<small>'+escape(x.note)+'</small>':'')+'</button>';
  }).join('')+'</div>';
 }
+/* V11.64.4 — category tiles reuse the existing select and pricing logic. */
+const VISUAL_OPTIONS=new Set(['model','type','shape','form','material','finish','colorGroup','color','option','installation','hnForm','hnMaterial','hnTexture','hnGroup','hnColor','hnBonde']);
+function visualFacet(id,label,options,selected,attributes=''){
+ const visual=VISUAL_OPTIONS.has(id)||VISUAL_OPTIONS.has(String(id).replace(/^huFacet/,''));
+ const native='<select id="'+escape(id)+'" '+attributes+(visual&&options.length>=2&&options.length<=18?' hidden':'')+'>'+choices(options,selected)+'</select>';
+ if(!visual||options.length<2||options.length>18)return '<label>'+escape(label)+native+'</label>';
+ return '<div class="hidrobox-visual-field"><strong>'+escape(label)+'</strong>'+native+
+  '<div class="hidrobox-visual-options" role="group" aria-label="'+escape(label)+'">'+options.map(v=>
+   '<button type="button" class="hidrobox-visual-option" data-hidrobox-target="'+escape(id)+'" data-hidrobox-value="'+escape(v)+'" aria-pressed="'+(String(v)===String(selected))+'">'+escape(v)+'</button>').join('')+'</div></div>';
+}
+function wireVisualFacets(){
+ overlay.querySelectorAll('[data-hidrobox-target]').forEach(button=>button.onclick=()=>{
+  const select=overlay.querySelector('#'+button.dataset.hidroboxTarget);
+  if(!select||select.disabled)return;
+  select.value=button.dataset.hidroboxValue;
+  select.dispatchEvent(new Event('change',{bubbles:true}));
+ });
+}
 function families(){
  stage='families';
  shell('Choisir un type de produit',tiles(CATEGORY.filter(c=>c.key!=='autres'||groups.some(g=>groupCategory(g)==='autres')),'family')+
@@ -211,8 +229,7 @@ function universalPage(g){
  const n=norm(name),assets=HIDROBOX_DOCUMENTS[n]||{};
  const url=officialCollection(g);
  const mainImage=officialImage(selected?.image)||officialImage(g.image)||family?.img||'';
- const opts=fields.filter(x=>!x.static).map(f=>'<label>'+escape(f.label)+
-    '<select data-facet="'+escape(f.key)+'">'+choices(f.options,f.chosen)+'</select></label>').join('');
+ const opts=fields.filter(x=>!x.static).map(f=>visualFacet('huFacet'+f.key,f.label,f.options,f.chosen,'data-facet="'+escape(f.key)+'"')).join('');
  const flat=fields.filter(x=>x.static).map(f=>escape(f.label)+': '+escape(f.chosen)).join(' · ');
  const refsControl=refs.length>1?'<label>Référence finale<select id="huReference">'+choices(refs,universalDraft.reference)+'</select></label>':'';
  const price=Number(selected?.price),raw=Number(selected?.rawPrice);
@@ -244,7 +261,8 @@ function universalPage(g){
    for(const key of ['exactwidth','exactlength'])delete universalDraft[key];
    universalPage(g);
  }));
- overlay.querySelector('#huReference')?.addEventListener('change',e=>{universalDraft.reference=e.target.value;universalPage(g)});
+ wireVisualFacets();
+  overlay.querySelector('#huReference')?.addEventListener('change',e=>{universalDraft.reference=e.target.value;universalPage(g)});
  overlay.querySelector('#huExactwidth')?.addEventListener('change',e=>{universalDraft.exactwidth=Number(e.target.value);universalPage(g)});
  overlay.querySelector('#huExactlength')?.addEventListener('change',e=>{universalDraft.exactlength=Number(e.target.value);universalPage(g)});
  overlay.querySelector('#huAdd')?.addEventListener('click',()=>{
@@ -309,7 +327,7 @@ function neoPage(){
  const ranges=sizeRanges();
  const line=catalogue.lookup(neo);
  const colorGroups=neo.material==='Scene'?['BLA']:['BAS','TRE','SPE'];
- const opts=(id,label,list,current,disabled=false)=>'<label>'+escape(label)+'<select id="'+id+'"'+(disabled?' disabled':'')+'>'+choices(list,current)+'</select></label>';
+ const opts=(id,label,list,current,disabled=false)=>visualFacet(id,label,list,current,disabled?'disabled':'');
  const pict=CATEGORY[0].img;
  const config='<button class="hidrobox-back" type="button">← Collections</button>'+
  '<div class="hidrobox-neo-hero"><img src="'+escape(pict)+'" alt="Illustration receveurs de douche Hidrobox" loading="lazy">'+
@@ -343,7 +361,8 @@ function neoPage(){
    if(key==='group')neo.color='';
    neoPage();
  }));
- overlay.querySelector('#hnAdd')?.addEventListener('click',()=>{
+ wireVisualFacets();
+  overlay.querySelector('#hnAdd')?.addEventListener('click',()=>{
    const chosen=catalogue.lookup(neo);if(!chosen.ok)return;
    const image=CATEGORY[0].img;
    const item={manufacturer:'Hidrobox',collection:'Neo Plus',reference:chosen.reference,base:chosen.reference,designation:'Neo Plus · '+catalogue.FORMATS.find(x=>x.key===neo.form).label+' · '+chosen.referenceDimensions+' · '+neo.material+' · '+neo.texture+' · '+neo.color+' · Grille '+neo.grille+' · Bonde '+neo.bonde,
