@@ -21,6 +21,7 @@ test('Hidrobox / Bette / Carrodrain : all supplier price matrices are read and a
  assert.equal(by.Hidrobox.rawCount,4479);
  assert.equal(by.Hidrobox.incorrectUplift,0,'Hidrobox public HT must be source HT * 1.04 exactly once');
  console.log('BRAND_PRICE_MATRIX_AUDIT',JSON.stringify(data.map(({_data,issueExamples,...x})=>x)));
+ console.log('BRAND_GROUP_COVERAGE',JSON.stringify(data.filter(x=>x.brand!=='Bette').map(x=>({brand:x.brand,groups:x._data.groups.map(g=>({id:g.id,collection:g.collection||g.model||g.family||'',rows:g.variants.length}))}))));
 });
 
 test('Buying conditions are stored separately from public list prices',()=>{
