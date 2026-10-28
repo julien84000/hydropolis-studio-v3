@@ -53,3 +53,15 @@ test('Hotbath: product-grid styling matches supplier approach and does not impac
  assert.match(css,/object-fit:contain/);
  assert.doesNotMatch(css,/\.mg-official-gallery \.mg-tile\{[^}]*background:#fff/);
 });
+
+test('Hotbath official image selector accepts double slash from manufacturer and refuses unrelated models',()=>{
+ const vm=require('node:vm'),win={HydroManufacturerGuide:{open:()=>{}}};
+ const file=fs.readFileSync(path.join(root,'hotbath-official-guide.js'),'utf8');
+ vm.runInNewContext(file,{window:win});
+ const finder=win.HydroHotbathOfficialGuide.photo;
+ const a=finder({base:'AR003'},'Archie',images);
+ assert.match(a,/^https:\/\/hotbath\.it\/documents\/\/ProdCateg\/3522\/AR003_1_2023\.jpg/);
+ assert.equal(finder({base:'AR003M'},'Archie',images),images.byCollection.Archie.AR003M);
+ assert.equal(finder({base:'AR003'},'Cobber',images),'');
+ assert.equal(finder({base:'AR031'},'Archie',images),'');
+});
