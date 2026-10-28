@@ -588,6 +588,13 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
       await page.locator('#brandConfigurator .brand-note').first().innerText().then(x=>x.includes('sans prétendre à un filtrage exact')));
     await page.locator('#brandConfigurator [data-bette-back="sections"]').click();
     await page.locator('#brandConfigurator [data-bette-back="families"]').click();
+    await page.locator('#brandConfigurator [data-bette-family="design"]').click();
+    check('Bette : six gammes design officielles',await page.locator('#brandConfigurator [data-bette-facet-group="Gammes officielles"]').count()===6);
+    await page.locator('#brandConfigurator [data-bette-facet="bettelux"]').click();
+    check('Bette : BetteLux donne accès aux vraies familles tarifées de la gamme',
+      await page.locator('#brandConfigurator [data-bette-group]').count()>0);
+    await page.locator('#brandConfigurator [data-bette-back="sections"]').click();
+    await page.locator('#brandConfigurator [data-bette-back="families"]').click();
     await page.locator('#brandConfigurator [data-bette-family="showers"]').click();
     await page.locator('#brandConfigurator [data-bette-unclassified]').click();
     check('Bette : les familles sans classement restent accessibles',await page.locator('#brandConfigurator [data-bette-back="sections"]').count()===1);
