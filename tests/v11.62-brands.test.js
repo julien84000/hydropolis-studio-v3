@@ -84,7 +84,7 @@ test('V11.62.2 guided Hidrobox supports every priced supplier group',()=>{
  const carro=fs.readFileSync(path.join(root,'brand-configurators.js'),'utf8');
  assert.match(html,/hidrobox-guided\.js/);
  assert.match(html,/hidrobox-neo-plus-2026\.js/);
- assert.match(guide,/cat==='toutes'\?groups/);
+ assert.match(guide,/HIDROBOX_PRODUCT_TREE/);
  assert.match(guide,/universalPage\(group\)/);
  assert.match(guide,/source:'HIDROBOX_TARIF_FR_V0226_19-02-2026\.pdf'/);
  assert.match(guide,/technicalSheetUrl:tech/);
