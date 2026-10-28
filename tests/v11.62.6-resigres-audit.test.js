@@ -17,8 +17,8 @@ function engine(name){
 }
 const V49=engine('v1149-pricing'),V50=engine('v1150-pricing');
 const categoryCounts={'Receveur':7,'Plan de vasque':6,'Plan de vasque pour meuble':6,'Vasque':6,'Baignoire':4,'Meuble':4,'Miroir':3,'Complément':2};
-const knownAuto=new Set(['Extraplano Contract|shower-tray','Vento / Vento Contract|shower-tray','Cosmo / Cosmo Contract|shower-tray','Urban|shower-tray','Nix / Nix Contract|shower-tray','Vento CF|basin-top','Urban CF|basin-top','Contract CF|basin-top','Selene|furniture-basin-top','Vento SF|furniture-basin-top','Urban SF|furniture-basin-top','Contract SF|furniture-basin-top','Tiroirs sur mesure|furniture','Nalu|bath','Delia|bath','RD / SQ|mirror','FS / FL|mirror']);
-const pendingMatrix=new Set(['Extraplano Latéral|shower-tray','Extraplano Central / 1/4 rond|shower-tray','Atenea|basin-top','Cosmo CF|basin-top','Gea CF|basin-top','Cosmo SF|furniture-basin-top','Gea SF|furniture-basin-top','Portes, vides et colonnes|furniture','Frame|furniture','Gesto|furniture']);
+const knownAuto=new Set(['Extraplano Contract|shower-tray','Vento / Vento Contract|shower-tray','Cosmo / Cosmo Contract|shower-tray','Urban|shower-tray','Nix / Nix Contract|shower-tray','Vento CF|basin-top','Gea CF|basin-top','Urban CF|basin-top','Contract CF|basin-top','Selene|furniture-basin-top','Vento SF|furniture-basin-top','Gea SF|furniture-basin-top','Urban SF|furniture-basin-top','Contract SF|furniture-basin-top','Tiroirs sur mesure|furniture','Nalu|bath','Delia|bath','RD / SQ|mirror','FS / FL|mirror']);
+const pendingMatrix=new Set(['Extraplano Latéral|shower-tray','Extraplano Central / 1/4 rond|shower-tray','Atenea|basin-top','Cosmo CF|basin-top','Cosmo SF|furniture-basin-top','Portes, vides et colonnes|furniture','Frame|furniture','Gesto|furniture']);
 const key=m=>m.name+'|'+m.kind;
 test('Resigres: 38 model configurations match every imported catalogue article and all 8 categories',()=>{
  assert.equal(cfg.models.length,38);
@@ -28,13 +28,13 @@ test('Resigres: 38 model configurations match every imported catalogue article a
  assert.deepEqual([...productNames].sort(),[...configNames].sort());
  const counts={};for(const m of cfg.models)counts[m.category]=(counts[m.category]||0)+1;
  assert.deepEqual(counts,categoryCounts);
- assert.equal(cfg.version,'2026-FR-v6');
+ assert.equal(cfg.version,'2026-FR-v7');
  assert.ok(cfg.models.every(m=>/^\d{1,2}(?:-\d{1,2})?$/.test(String(m.sourcePage||''))));
 });
 test('Resigres: classify all 38 models by pricing evidence, never assume missing matrices are priced',()=>{
  const uncoded=cfg.models.filter(m=>!knownAuto.has(key(m))&&!pendingMatrix.has(key(m)));
- assert.equal(knownAuto.size,17);
- assert.equal(pendingMatrix.size,10);
+ assert.equal(knownAuto.size,19);
+ assert.equal(pendingMatrix.size,8);
  assert.equal(uncoded.length,11);
  for(const model of cfg.models){
    const name=key(model);
@@ -143,4 +143,38 @@ test('V11.62.7 warns on stale running frontend without silent reload of unsaved 
  const css=fs.readFileSync(path.join(pub,'styles.css'),'utf8');
  assert.match(css,/\.rg50-swap-hint/);
  assert.match(css,/#hydroVersionUpdate/);
+});
+
+
+test('V11.62.8: Gea CF wood Nogal US 140 × 45 × 5 cm automatically prices at 986 EUR HT, tier 141 cm (supplier p.22)',()=>{
+ const selection={model:'Gea CF',kind:'basin-top',shape:'gea',material:'wood',color:'Nogal US',
+   basinGroup:'slab',lengthCm:140,widthCm:45,heightCm:5,paidOptions:{}};
+ const q=V50.basinQuote(cfg,selection);
+ assert.equal(q.status,'automatic');assert.equal(q.pricingStatus,'automatic-verified');
+ assert.equal(q.total,986);assert.equal(q.pricedLength,141);assert.equal(q.rule.sourcePage,'22');
+ assert.equal(V50.basinQuote(cfg,{...selection,lengthCm:141}).total,986);
+ assert.equal(V50.basinQuote(cfg,{...selection,lengthCm:142}).total,1094);
+ assert.equal(V50.basinQuote(cfg,{...selection,paidOptions:{'towel-rail':1}}).total,1106);
+ assert.equal(V50.basinQuote(cfg,{...selection,material:'lisa',color:'Ártico'}).total,796);
+ assert.equal(V50.basinQuote(cfg,{...selection,material:'solid-surface',color:'S-Blanco'}).total,859);
+ assert.equal(V50.basinQuote(cfg,{...selection,material:'gpc',color:'Onix'}).total,1645);
+ assert.equal(V50.basinQuote(cfg,{...selection,material:'lisa',color:'RAL/NCS'}).total,891);
+ assert.equal(V50.basinQuote(cfg,{...selection,widthCm:29}).status,'pending');
+ assert.equal(V50.basinQuote(cfg,{...selection,widthCm:52}).status,'pending');
+ assert.equal(V50.basinQuote(cfg,{...selection,heightCm:4}).status,'pending');
+ assert.equal(V50.basinQuote(cfg,{...selection,heightCm:15}).status,'pending');
+ assert.equal(V50.basinQuote(cfg,{...selection,lengthCm:49}).status,'pending');
+ assert.equal(V50.basinQuote(cfg,{...selection,material:'wood',color:'S-Blanco'}).status,'pending');
+});
+test('V11.62.8: Gea SF source p.34, distinct material tariffs and fixed thickness, no GPC',()=>{
+ const selection={model:'Gea SF',kind:'furniture-basin-top',shape:'gea',material:'wood',
+  color:'Nogal US',basinGroup:'slab',lengthCm:140,widthCm:45,heightCm:1.5,paidOptions:{}};
+ const q=V50.basinQuote(cfg,selection);
+ assert.equal(q.status,'automatic');assert.equal(q.total,627);assert.equal(q.pricedLength,141);
+ assert.equal(q.rule.sourcePage,'34');
+ assert.equal(V50.basinQuote(cfg,{...selection,lengthCm:142}).total,681);
+ assert.equal(V50.basinQuote(cfg,{...selection,material:'lisa',color:'Arena'}).total,480);
+ assert.equal(V50.basinQuote(cfg,{...selection,material:'solid-surface',color:'S-Blanco'}).total,572);
+ assert.equal(V50.basinQuote(cfg,{...selection,heightCm:5}).status,'pending');
+ assert.equal(V50.basinQuote(cfg,{...selection,material:'gpc',color:'Onix'}).status,'pending');
 });
