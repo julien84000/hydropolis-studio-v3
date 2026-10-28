@@ -112,3 +112,13 @@ La présence d'une grille chiffrée importée ne suffit pas à certifier que tou
 **Point essentiel** : « 31 groupes avec règles automatiques » ne signifie PAS 31 groupes intégralement tarifés. En particulier les vasques et accessoires cités ne couvrent que leurs variantes clairement retrouvées dans le document. Le fichier de statut par groupe est `docs/RESIGRES_2026_38_GROUP_STATUS.json`. Toute cellule non prouvée reste non tarifée automatiquement ; un prix n'est jamais dérivé arbitrairement d'une autre matière, dimension ou finition.
 
 **Tests prévus dans cette branche** : cas Atenea sur la capture, paliers, prix Cosmo CF et SF, exclusion GPC incompatible, bonde +66 €, calcul de neuf exemples dans des catégories distinctes et tests Chromium de sept nouveaux parcours vers le projet. Noter les résultats CI avant toute fusion et ne déclarer la version en production qu'après contrôle Render.
+
+### Vérification post-fusion V11.62.9 — 28 octobre 2026
+
+- PR fusionnée : https://github.com/julien84000/hydropolis-studio-v3/pull/30
+- Commit de livraison `main` : `2ec4a12320d0bfbe71d0ab07a440eb4de7f57dab`.
+- Workflow `Release validation` : https://github.com/julien84000/hydropolis-studio-v3/actions/runs/40693438133 — **success** (check, tests unitaires, build et `npm run test:browser` sous Chromium).
+- Contrôle externe Render : `GET /api/version` → `{"version":"11.62.9"}` ; `GET /api/health` → `ok:true`, version `11.62.9` et PostgreSQL.
+- Vérification du JSON rendu en production : `public/resigres_2026_config.json` sert `2026-FR-v9` avec le prix Atenea 1 098 € HT (une vasque standard, 140 × 51 cm, Solid Surface S-Blanco), cellule source p.14.
+- Les tests navigateur utilisent une session locale de CI : ils ne constituent pas un test d'une connexion utilisateur réelle en production. Aucun projet commercial existant n'a été modifié par ces contrôles.
+- Reste à traiter selon `docs/RESIGRES_2026_38_GROUP_STATUS.json` : Extraplano Latéral/Central, Axis, trois familles de meubles (Portes/vides/colonnes, Frame, Gesto), miroirs Frame/Gesto, panneaux/socles et les cellules tarifaires marquées `null`. Ne pas afficher des prix non vérifiés comme certifiés.
