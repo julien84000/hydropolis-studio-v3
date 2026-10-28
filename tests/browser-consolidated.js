@@ -137,7 +137,7 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     const ateneaQuote=await page.evaluate(()=>document.querySelector('#resigresConfigurator')._q);
     check('Atenea 140 × 51 Standard S-Blanco = 1098 EUR HT / palier 141',ateneaQuote.total===1098&&ateneaQuote.pricedLength===141);
     check('Atenea : prix HT 1098 visible sans saisie manuelle',
-      (await page.locator('#rg50Price').innerText()).replace(/\\D/g,'').startsWith('1098')&&
+      (await page.locator('#rg50Price').innerText()).replace(/\D/g,'').startsWith('1098')&&
       await page.locator('#rg50ManualWrap').evaluate(el=>el.classList.contains('hidden')));
     await page.locator('#rg50Length').fill('142');
     check('Atenea : palier 161 => 1228 EUR HT',(await page.evaluate(()=>document.querySelector('#resigresConfigurator')._q)).total===1228);
