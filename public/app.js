@@ -1995,7 +1995,7 @@ function renderCatalog(){
    }).join("");
    const manufacturerGuideActive=window.HydroManufacturerGuide?.isSupported?.(fs.manufacturer);
    const manufacturerGuideLauncher=manufacturerGuideActive?`<section class="manufacturer-guide-launcher">
-     <div><span class="eyebrow">${esc(fs.manufacturer)} · CATALOGUE VISUEL</span><h3>Parcourir les collections du fabricant</h3><p>Collection → espace → modèle → finition. Références et prix du catalogue existant.</p></div>
+     <div><span class="eyebrow">${esc(fs.manufacturer)} · CATALOGUE VISUEL</span><h3>Parcourir les collections du fabricant</h3><p>${fs.manufacturer==="Gessi"?"Univers → collection → famille → produit → finition. Navigation inspirée de Gessi Area Pro.":"Collection → espace → modèle → finition. Références et prix du catalogue existant."}</p></div>
      <button class="btn primary manufacturer-guide-open" type="button">Explorer les collections</button>
    </section>`:"";
    results.innerHTML=sbordoniLauncher+manufacturerGuideLauncher+(productCards||`<div class="empty">Aucun résultat.</div>`);

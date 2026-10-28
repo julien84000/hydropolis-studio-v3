@@ -1,0 +1,271 @@
+{
+  "source": "https://areapro.gessi.com/fr",
+  "notes": "Univers/collections du menu public Gessi Area Pro. Les images de modèles correspondent exclusivement aux couples produit/finition présents dans les fixtures officielles versionnées ; aucune autre image de finition n'est extrapolée.",
+  "areas": [
+    {
+      "id": "haute-culture",
+      "name": "Haute Culture",
+      "note": "Collections d'exception",
+      "collections": [
+        "Perle",
+        "Jacqueline",
+        "Pelle",
+        "Ludovica",
+        "Sensazioni",
+        "Immersiva",
+        "Glass Connection"
+      ]
+    },
+    {
+      "id": "bathroom",
+      "name": "Bathroom",
+      "note": "Robinetterie et salle de bain",
+      "collections": [
+        "Incastri",
+        "Inverso",
+        "Ventaglio",
+        "Origini",
+        "Gessi316",
+        "Inciso",
+        "Venti20",
+        "Anello",
+        "Ingranaggio",
+        "Habito",
+        "Rettangolo K",
+        "Rettangolo",
+        "Goccia",
+        "Rilievo",
+        "Minimalistic Shower"
+      ]
+    },
+    {
+      "id": "private-wellness",
+      "name": "Private Wellness",
+      "note": "Douche, spa et bien-être",
+      "collections": [
+        "HI-FI",
+        "Afilo",
+        "Minimali",
+        "Colour",
+        "Tremillimetri",
+        "Tondo Shower",
+        "Spotwater",
+        "Cascata"
+      ]
+    },
+    {
+      "id": "total-look",
+      "name": "Total Look",
+      "note": "Accessoires et plaques",
+      "collections": [
+        "Flush Plates",
+        "Total Look"
+      ]
+    },
+    {
+      "id": "sensor-taps",
+      "name": "Sensor Taps",
+      "note": "Robinetterie électronique",
+      "collections": [
+        "Inciso",
+        "Gessi316",
+        "Rilievo",
+        "Rettangolo",
+        "Tondo"
+      ]
+    },
+    {
+      "id": "home-decor",
+      "name": "Home Decor",
+      "note": "Objets et décoration",
+      "collections": [
+        "Home Vases"
+      ]
+    },
+    {
+      "id": "emporio",
+      "name": "Emporio",
+      "note": "Les collections Emporio",
+      "collections": [
+        "Via Manzoni",
+        "Via Tortona",
+        "Via Meravigli"
+      ]
+    },
+    {
+      "id": "kitchen",
+      "name": "Kitchen",
+      "note": "Équipements de cuisine",
+      "collections": [
+        "Venti20",
+        "Gessi316",
+        "Habito",
+        "Su&giu'",
+        "Inciso",
+        "Inedito",
+        "Soap Dispenser"
+      ]
+    },
+    {
+      "id": "technical-parts",
+      "name": "Technical Parts",
+      "note": "Pièces techniques",
+      "collections": [
+        "Technical Accessories",
+        "Built-In Parts"
+      ]
+    }
+  ],
+  "exactFinishImages": {
+    "11922": {
+      "149": "https://gessistorage.blob.core.windows.net/zi4/11922%23149.png",
+      "299": "https://gessistorage.blob.core.windows.net/zi4/11922%23299.png",
+      "706": "https://gessistorage.blob.core.windows.net/zi4/11922%23706.png",
+      "707": "https://gessistorage.blob.core.windows.net/zi4/11922%23707.png",
+      "708": "https://gessistorage.blob.core.windows.net/zi4/11922%23708.png",
+      "710": "https://gessistorage.blob.core.windows.net/zi4/11922%23710.png",
+      "720": "https://gessistorage.blob.core.windows.net/zi4/11922%23720.png",
+      "726": "https://gessistorage.blob.core.windows.net/zi4/11922%23726.png",
+      "727": "https://gessistorage.blob.core.windows.net/zi4/11922%23727.png",
+      "735": "https://gessistorage.blob.core.windows.net/zi4/11922%23735.png",
+      "031": "https://gessistorage.blob.core.windows.net/zi4/11922%23031.png",
+      "030": "https://gessistorage.blob.core.windows.net/zi4/11922%23030.png"
+    },
+    "33605": {
+      "147": "https://gessistorage.blob.core.windows.net/zi4/33605%23147.png",
+      "149": "https://gessistorage.blob.core.windows.net/zi4/33605%23149.png",
+      "279": "https://gessistorage.blob.core.windows.net/zi4/33605%23279.png",
+      "299": "https://gessistorage.blob.core.windows.net/zi4/33605%23299.png",
+      "706": "https://gessistorage.blob.core.windows.net/zi4/33605%23706.png",
+      "707": "https://gessistorage.blob.core.windows.net/zi4/33605%23707.png",
+      "708": "https://gessistorage.blob.core.windows.net/zi4/33605%23708.png",
+      "713": "https://gessistorage.blob.core.windows.net/zi4/33605%23713.png",
+      "726": "https://gessistorage.blob.core.windows.net/zi4/33605%23726.png",
+      "735": "https://gessistorage.blob.core.windows.net/zi4/33605%23735.png",
+      "761": "https://gessistorage.blob.core.windows.net/zi4/33605%23761.png",
+      "845": "https://gessistorage.blob.core.windows.net/zi4/33605%23845.png",
+      "031": "https://gessistorage.blob.core.windows.net/zi4/33605%23031.png",
+      "030": "https://gessistorage.blob.core.windows.net/zi4/33605%23030.png"
+    },
+    "44838": {
+      "149": "https://gessistorage.blob.core.windows.net/zi4/44838%23149.png",
+      "299": "https://gessistorage.blob.core.windows.net/zi4/44838%23299.png",
+      "706": "https://gessistorage.blob.core.windows.net/zi4/44838%23706.png",
+      "707": "https://gessistorage.blob.core.windows.net/zi4/44838%23707.png",
+      "708": "https://gessistorage.blob.core.windows.net/zi4/44838%23708.png",
+      "710": "https://gessistorage.blob.core.windows.net/zi4/44838%23710.png",
+      "720": "https://gessistorage.blob.core.windows.net/zi4/44838%23720.png",
+      "726": "https://gessistorage.blob.core.windows.net/zi4/44838%23726.png",
+      "727": "https://gessistorage.blob.core.windows.net/zi4/44838%23727.png",
+      "735": "https://gessistorage.blob.core.windows.net/zi4/44838%23735.png",
+      "031": "https://gessistorage.blob.core.windows.net/zi4/44838%23031.png",
+      "030": "https://gessistorage.blob.core.windows.net/zi4/44838%23030.png"
+    },
+    "54336": {
+      "239": "https://gessistorage.blob.core.windows.net/zi4/54336%23239.png",
+      "299": "https://gessistorage.blob.core.windows.net/zi4/54336%23299.png",
+      "707": "https://gessistorage.blob.core.windows.net/zi4/54336%23707.png",
+      "708": "https://gessistorage.blob.core.windows.net/zi4/54336%23708.png",
+      "726": "https://gessistorage.blob.core.windows.net/zi4/54336%23726.png",
+      "727": "https://gessistorage.blob.core.windows.net/zi4/54336%23727.png",
+      "761": "https://gessistorage.blob.core.windows.net/zi4/54336%23761.png"
+    },
+    "58144": {
+      "149": "https://gessistorage.blob.core.windows.net/zi4/58144%23149.png",
+      "187": "https://gessistorage.blob.core.windows.net/zi4/58144%23187.png",
+      "246": "https://gessistorage.blob.core.windows.net/zi4/58144%23246.png",
+      "299": "https://gessistorage.blob.core.windows.net/zi4/58144%23299.png",
+      "706": "https://gessistorage.blob.core.windows.net/zi4/58144%23706.png",
+      "707": "https://gessistorage.blob.core.windows.net/zi4/58144%23707.png",
+      "708": "https://gessistorage.blob.core.windows.net/zi4/58144%23708.png",
+      "710": "https://gessistorage.blob.core.windows.net/zi4/58144%23710.png",
+      "713": "https://gessistorage.blob.core.windows.net/zi4/58144%23713.png",
+      "716": "https://gessistorage.blob.core.windows.net/zi4/58144%23716.png",
+      "720": "https://gessistorage.blob.core.windows.net/zi4/58144%23720.png",
+      "726": "https://gessistorage.blob.core.windows.net/zi4/58144%23726.png",
+      "727": "https://gessistorage.blob.core.windows.net/zi4/58144%23727.png",
+      "735": "https://gessistorage.blob.core.windows.net/zi4/58144%23735.png",
+      "761": "https://gessistorage.blob.core.windows.net/zi4/58144%23761.png",
+      "845": "https://gessistorage.blob.core.windows.net/zi4/58144%23845.png",
+      "031": "https://gessistorage.blob.core.windows.net/zi4/58144%23031.png",
+      "030": "https://gessistorage.blob.core.windows.net/zi4/58144%23030.png"
+    },
+    "63331": {
+      "149": "https://gessistorage.blob.core.windows.net/zi4/63331%23149.png",
+      "187": "https://gessistorage.blob.core.windows.net/zi4/63331%23187.png",
+      "299": "https://gessistorage.blob.core.windows.net/zi4/63331%23299.png",
+      "706": "https://gessistorage.blob.core.windows.net/zi4/63331%23706.png",
+      "707": "https://gessistorage.blob.core.windows.net/zi4/63331%23707.png",
+      "708": "https://gessistorage.blob.core.windows.net/zi4/63331%23708.png",
+      "710": "https://gessistorage.blob.core.windows.net/zi4/63331%23710.png",
+      "713": "https://gessistorage.blob.core.windows.net/zi4/63331%23713.png",
+      "720": "https://gessistorage.blob.core.windows.net/zi4/63331%23720.png",
+      "726": "https://gessistorage.blob.core.windows.net/zi4/63331%23726.png",
+      "727": "https://gessistorage.blob.core.windows.net/zi4/63331%23727.png",
+      "735": "https://gessistorage.blob.core.windows.net/zi4/63331%23735.png",
+      "761": "https://gessistorage.blob.core.windows.net/zi4/63331%23761.png",
+      "845": "https://gessistorage.blob.core.windows.net/zi4/63331%23845.png",
+      "031": "https://gessistorage.blob.core.windows.net/zi4/63331%23031.png",
+      "030": "https://gessistorage.blob.core.windows.net/zi4/63331%23030.png"
+    },
+    "66134": {
+      "149": "https://gessistorage.blob.core.windows.net/zi4/66134%23149.png",
+      "299": "https://gessistorage.blob.core.windows.net/zi4/66134%23299.png",
+      "706": "https://gessistorage.blob.core.windows.net/zi4/66134%23706.png",
+      "707": "https://gessistorage.blob.core.windows.net/zi4/66134%23707.png",
+      "708": "https://gessistorage.blob.core.windows.net/zi4/66134%23708.png",
+      "720": "https://gessistorage.blob.core.windows.net/zi4/66134%23720.png",
+      "726": "https://gessistorage.blob.core.windows.net/zi4/66134%23726.png",
+      "727": "https://gessistorage.blob.core.windows.net/zi4/66134%23727.png",
+      "845": "https://gessistorage.blob.core.windows.net/zi4/66134%23845.png",
+      "031": "https://gessistorage.blob.core.windows.net/zi4/66134%23031.png"
+    },
+    "73588": {
+      "149": "https://gessistorage.blob.core.windows.net/zi4/73588%23149.png",
+      "299": "https://gessistorage.blob.core.windows.net/zi4/73588%23299.png",
+      "706": "https://gessistorage.blob.core.windows.net/zi4/73588%23706.png",
+      "707": "https://gessistorage.blob.core.windows.net/zi4/73588%23707.png",
+      "708": "https://gessistorage.blob.core.windows.net/zi4/73588%23708.png",
+      "710": "https://gessistorage.blob.core.windows.net/zi4/73588%23710.png",
+      "726": "https://gessistorage.blob.core.windows.net/zi4/73588%23726.png",
+      "727": "https://gessistorage.blob.core.windows.net/zi4/73588%23727.png",
+      "735": "https://gessistorage.blob.core.windows.net/zi4/73588%23735.png",
+      "761": "https://gessistorage.blob.core.windows.net/zi4/73588%23761.png",
+      "845": "https://gessistorage.blob.core.windows.net/zi4/73588%23845.png",
+      "031": "https://gessistorage.blob.core.windows.net/zi4/73588%23031.png",
+      "030": "https://gessistorage.blob.core.windows.net/zi4/73588%23030.png"
+    },
+    "75002": {
+      "149": "https://gessistorage.blob.core.windows.net/zi4/75002%23149.png",
+      "299": "https://gessistorage.blob.core.windows.net/zi4/75002%23299.png",
+      "706": "https://gessistorage.blob.core.windows.net/zi4/75002%23706.png",
+      "707": "https://gessistorage.blob.core.windows.net/zi4/75002%23707.png",
+      "708": "https://gessistorage.blob.core.windows.net/zi4/75002%23708.png",
+      "710": "https://gessistorage.blob.core.windows.net/zi4/75002%23710.png",
+      "720": "https://gessistorage.blob.core.windows.net/zi4/75002%23720.png",
+      "726": "https://gessistorage.blob.core.windows.net/zi4/75002%23726.png",
+      "727": "https://gessistorage.blob.core.windows.net/zi4/75002%23727.png",
+      "735": "https://gessistorage.blob.core.windows.net/zi4/75002%23735.png",
+      "761": "https://gessistorage.blob.core.windows.net/zi4/75002%23761.png",
+      "845": "https://gessistorage.blob.core.windows.net/zi4/75002%23845.png",
+      "031": "https://gessistorage.blob.core.windows.net/zi4/75002%23031.png",
+      "030": "https://gessistorage.blob.core.windows.net/zi4/75002%23030.png"
+    },
+    "75051": {
+      "149": "https://gessistorage.blob.core.windows.net/zi4/75051%23149.png",
+      "299": "https://gessistorage.blob.core.windows.net/zi4/75051%23299.png",
+      "706": "https://gessistorage.blob.core.windows.net/zi4/75051%23706.png",
+      "707": "https://gessistorage.blob.core.windows.net/zi4/75051%23707.png",
+      "708": "https://gessistorage.blob.core.windows.net/zi4/75051%23708.png",
+      "710": "https://gessistorage.blob.core.windows.net/zi4/75051%23710.png",
+      "720": "https://gessistorage.blob.core.windows.net/zi4/75051%23720.png",
+      "726": "https://gessistorage.blob.core.windows.net/zi4/75051%23726.png",
+      "727": "https://gessistorage.blob.core.windows.net/zi4/75051%23727.png",
+      "735": "https://gessistorage.blob.core.windows.net/zi4/75051%23735.png",
+      "761": "https://gessistorage.blob.core.windows.net/zi4/75051%23761.png",
+      "845": "https://gessistorage.blob.core.windows.net/zi4/75051%23845.png",
+      "031": "https://gessistorage.blob.core.windows.net/zi4/75051%23031.png",
+      "030": "https://gessistorage.blob.core.windows.net/zi4/75051%23030.png"
+    }
+  }
+}
