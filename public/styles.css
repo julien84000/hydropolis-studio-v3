@@ -3293,6 +3293,10 @@ main{background:transparent}
 #brandConfigurator .brand-official-links{display:flex;flex-wrap:wrap;gap:8px}
 #brandConfigurator .brand-official-links a{border:1px solid #dce4db;padding:11px 13px;background:#fff;color:#344d37;border-radius:6px;text-decoration:none;font-size:12px}
 #brandConfigurator .brand-official-links a:hover{border-color:#5c765c}
+#brandConfigurator .brand-official-links button{border:1px solid #dce4db;padding:11px 13px;background:#fff;color:#344d37;border-radius:6px;cursor:pointer;font-size:12px;text-align:left}
+#brandConfigurator .brand-official-links button:hover,#brandConfigurator .brand-official-links button:focus-visible{border-color:#557354;outline-offset:2px}
+#brandConfigurator .brand-restore-sku{display:block;border:1px solid #4b684d;background:#eef6ed;color:#314d32;padding:12px;border-radius:8px;cursor:pointer;margin:16px 0}
+
 #brandConfigurator .brand-site-link{display:inline-block;margin:14px 0 12px;color:#405d43;font-size:12px}
 #brandConfigurator .brand-note{font-size:12px;color:#707870;line-height:1.6}
 #brandConfigurator .brand-visual-choice{grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}
