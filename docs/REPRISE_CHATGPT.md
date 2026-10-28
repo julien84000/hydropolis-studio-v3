@@ -1,3 +1,17 @@
+## Checkpoint migration Gessi — Hidrobox et Sbordoni, V11.64.4 (28/10/2026)
+
+- Branche : `feat/visual-hidrobox-sbordoni-11644` construite sur `main` `4823e664cd852e90a61f4bc2f43888aaf1c6f3ec` (version 11.64.2). Ne pas écraser la PR #48 (audit des images fabricants, **encore en brouillon**) ni la PR #43 Bette.
+- `public/hidrobox-guided.js` : choix des facettes de forme, matière, texture, groupes de couleurs et options par **cartes visuelles accessibles**, pilotant le select d'origine par événement `change`. Toutes les références, matrices, +4 % de tarif et remise 50 % restent calculées par le moteur existant. Les options à nombreuses valeurs restent en liste native ; aucune photo de couleur ou de variante inventée.
+- `public/sbordoni-configurator.js` : quatre collections photographiques avec sélection par carte, source d'image de la vraie famille du catalogue ; grand visuel unique de composition lavabo + support, rappel des références et du prix calculé par `model.buildBasin`. WC Sbordoni : moteur distinct inchangé.
+- `public/styles.css` : présentation sombre, grille de cartes photographiques, cartes de finition et responsive desktop/mobile, limitée aux deux configurateurs concernés.
+- `tests/browser-consolidated.js` : nouveaux contrôles Chromium Neo Plus Scene/Kromat et Sbordoni Romana/Palladio, sans modifier le projet. Tests d'origine Hidrobox/Carrodrain/Resigres/Gessi/Sbordoni conservés.
+- `package.json` + `package-lock.json` : version préparatoire 11.64.4 (11.64.3 potentiellement utilisée par la PR #48). **CI, fusion et Render à vérifier** ; ne pas annoncer de déploiement avant `/api/version` et `/api/health`.
+- Sbordoni/WC, Bette et Carrodrain : poursuite de la migration visuelle encore nécessaire. Les tarifs, PDF et produits clients ne sont pas retouchés.
+
+**Reprise** : contrôler la PR de cette branche et sa CI ; corriger les échecs en particulier l'interface browser Neo Plus et les 4 cartes Sbordoni ; revérifier `main`, PR #48 et #43 ; réconcilier avant toute fusion si `main` avance. Si CI complète verte et pas de conflit, fusionner, puis confirmer Render 11.64.4/PostgreSQL. Poursuivre ensuite Carrodrain et Sbordoni WC sans modifier les règles de sélection et les tableaux tarifaires.
+
+---
+
 ## Validation du modèle visuel partagé — 28 octobre 2026 — V11.64.2 (PR #47)
 
 - Dernier `main` intégré : `d33a83c0bbc3e3a7e3ab548d8f28d48865b675fa` (V11.64.1, Gessi sous-séries et fiches techniques préservées). Branche `feat/shared-gessi-visual-pattern-v1164` : merge de reprise avec parents explicites (branche + `main`), aucun ancien fichier Gessi remplacé.

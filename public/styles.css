@@ -3160,3 +3160,82 @@ main{background:transparent}
  .mg-overlay .mg-config h3{font-size:19px}
  .mg-visual-finishes{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+
+
+/* V11.64.4 — shared Gessi-inspired presentation, Hidrobox and Sbordoni.
+ * Strictly scoped: manufacturer data, pictures and price engines are unchanged. */
+#hidroboxGuided .recor-configurator,
+#sbordoniConfigurator .recor-configurator{
+ background:#f8f8f6;color:#242824;border-radius:14px;
+ width:min(1220px,calc(100vw - 28px));max-height:94vh;
+}
+#hidroboxGuided .recor-config-head,
+#sbordoniConfigurator .recor-config-head{
+ background:#212420;color:#fff;margin:-24px -24px 22px;
+ padding:19px 24px;align-items:center;border:0;
+}
+#hidroboxGuided .recor-config-head h2,
+#sbordoniConfigurator .recor-config-head h2{font-family:Inter,Arial,sans-serif;font-size:clamp(22px,2.7vw,32px);font-weight:500;letter-spacing:-.035em;color:#fff}
+#hidroboxGuided .recor-config-head p,
+#sbordoniConfigurator .recor-config-head p{color:#dddcd6}
+#hidroboxGuided .recor-config-head .eyebrow,
+#sbordoniConfigurator .recor-config-head .eyebrow{color:#c5ccbd}
+#hidroboxGuided .recor-config-head .icon,
+#sbordoniConfigurator .recor-config-head .icon{color:#fff;border-radius:50%;flex-shrink:0}
+#hidroboxGuided .hidrobox-guide-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+#hidroboxGuided .hidrobox-guide-tile{background:#fff;border:1px solid #e3e6df;border-radius:8px;min-width:0;box-shadow:none}
+#hidroboxGuided .hidrobox-guide-tile:hover,
+#hidroboxGuided .hidrobox-guide-tile:focus-visible{border-color:#526b54;box-shadow:0 7px 19px #1721161c}
+#hidroboxGuided .hidrobox-guide-tile img{height:170px;object-fit:contain;background:#fff}
+#hidroboxGuided .hidrobox-guide-tile-name{color:#2e342d}
+#hidroboxGuided .hidrobox-neo-hero{grid-template-columns:minmax(250px,43%) 1fr;gap:26px}
+#hidroboxGuided .hidrobox-neo-hero img{height:320px;object-fit:contain;background:#fff;border:1px solid #e2e5df}
+#hidroboxGuided .hidrobox-neo-hero h3{font-family:Inter,Arial,sans-serif;font-size:28px;letter-spacing:-.03em}
+#hidroboxGuided .hidrobox-visual-field{grid-column:1/-1;min-width:0;display:grid;gap:9px}
+#hidroboxGuided .hidrobox-visual-field>strong{font-size:13px;font-weight:650;color:#41493d}
+#hidroboxGuided .hidrobox-visual-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}
+#hidroboxGuided .hidrobox-visual-option{min-width:0;min-height:52px;border:1px solid #dadeD6;border-radius:6px;background:#fff;cursor:pointer;color:#343a34;padding:11px 9px;overflow-wrap:anywhere;text-align:center}
+#hidroboxGuided .hidrobox-visual-option[aria-pressed="true"]{background:#eef2ea;border:2px solid #3b5940;padding:10px 8px;font-weight:650}
+#hidroboxGuided .hidrobox-visual-option:focus-visible{outline:2px solid #3b5940;outline-offset:3px}
+#hidroboxGuided .hidrobox-result{background:#fff;border:1px solid #e1e4dc;border-radius:7px;padding:20px;margin-top:24px}
+#hidroboxGuided .hidrobox-result b{font-family:Inter,Arial,sans-serif;font-size:24px;font-weight:550}
+#sbordoniConfigurator .sbordoni-collection-fallback{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+#sbordoniConfigurator .sbordoni-collection-gallery{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+#sbordoniConfigurator .sbordoni-collection-card{display:flex;flex-direction:column;gap:8px;align-items:center;background:#fff;border:1px solid #e1e4dc;border-radius:7px;padding:10px;cursor:pointer;min-width:0;text-align:center;color:#303a2e}
+#sbordoniConfigurator .sbordoni-collection-card .recor-choice-thumb{width:100%;height:124px;background:#fff;border:0}
+#sbordoniConfigurator .sbordoni-collection-card .recor-choice-thumb img{object-fit:contain}
+#sbordoniConfigurator .sbordoni-collection-card[aria-pressed="true"]{border:2px solid #3b5940;background:#eef2e9;padding:9px}
+#sbordoniConfigurator .sbordoni-collection-card:focus-visible{outline:2px solid #3b5940;outline-offset:3px}
+#sbordoniConfigurator .recor-choice-list{grid-template-columns:repeat(3,minmax(0,1fr));}
+#sbordoniConfigurator .recor-choice-visual{grid-template-columns:auto minmax(72px,100px) minmax(0,1fr);grid-auto-flow:row;gap:8px;min-height:110px}
+#sbordoniConfigurator .recor-choice-visual .recor-choice-thumb{width:100%;height:95px}
+#sbordoniConfigurator .recor-choice-visual strong{grid-column:2/-1;justify-self:end}
+#sbordoniConfigurator .recor-choice:has(input:checked){border:2px solid #3b5940;background:#eef2e9;padding:10px 11px}
+#sbordoniConfigurator .sbordoni-visual-result{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.8fr);align-items:center;gap:25px;padding:24px;border:1px solid #e0e4dc;border-radius:8px;background:#fff;margin-top:22px}
+#sbordoniConfigurator .sbordoni-result-photo{display:grid;place-items:center;min-height:260px;max-height:400px;background:#fff}
+#sbordoniConfigurator .sbordoni-result-photo img{width:100%;height:clamp(220px,31vw,390px);object-fit:contain}
+#sbordoniConfigurator .sbordoni-result-photo span{font-size:12px;color:#81877e}
+#sbordoniConfigurator .sbordoni-result-description{display:grid;gap:14px}
+#sbordoniConfigurator .sbordoni-result-description small{color:#7a8277;font-size:11px}
+#sbordoniConfigurator .sbordoni-result-description b{font-family:Inter,Arial,sans-serif;font-weight:550;font-size:clamp(23px,3vw,34px);color:#263326}
+#sbordoniConfigurator .sbordoni-result-description span{font-size:13px;line-height:1.5}
+#sbordoniConfigurator .sbordoni-result-description strong{font-size:12px;color:#586052}
+@media(max-width:940px){
+ #hidroboxGuided .hidrobox-guide-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+ #sbordoniConfigurator .recor-choice-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:700px){
+ #hidroboxGuided .recor-configurator,#sbordoniConfigurator .recor-configurator{width:100%;max-height:100dvh;border-radius:0}
+ #hidroboxGuided .recor-config-head,#sbordoniConfigurator .recor-config-head{margin:-20px -20px 18px;padding:17px 18px}
+ #hidroboxGuided .hidrobox-guide-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #hidroboxGuided .hidrobox-guide-tile img{height:132px}
+ #hidroboxGuided .hidrobox-neo-hero{grid-template-columns:1fr;gap:12px}
+ #hidroboxGuided .hidrobox-neo-hero img{height:230px}
+ #hidroboxGuided .hidrobox-visual-options{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #sbordoniConfigurator .sbordoni-collection-gallery{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #sbordoniConfigurator .sbordoni-collection-card .recor-choice-thumb{height:90px}
+ #sbordoniConfigurator .recor-choice-list{grid-template-columns:1fr}
+ #sbordoniConfigurator .sbordoni-visual-result{grid-template-columns:1fr;padding:14px;gap:7px}
+ #sbordoniConfigurator .sbordoni-result-photo{min-height:190px}
+ #sbordoniConfigurator .sbordoni-result-photo img{height:235px}
+}

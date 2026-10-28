@@ -31,3 +31,14 @@ Reprends Hydropolis Studio sur `julien84000/hydropolis-studio-v3` en vérifiant 
 ## Checkpoint B — préparation validation de production
 
 La base `main` V11.64.1 (`d33a83c0bbc3e3a7e3ab548d8f28d48865b675fa`) est intégrée par merge sans perte des évolutions Gessi. Version préparée 11.64.2 ; deux fabricants testés sous Chromium (desktop/mobile) dans `tests/browser-consolidated.js`. CI finale à confirmer sur la nouvelle tête de PR #47 ; ne pas fusionner si rouge.
+
+## Checkpoint C — Hidrobox et Sbordoni, V11.64.4 (28/10/2026)
+
+Branche : `feat/visual-hidrobox-sbordoni-11644` depuis `main` `4823e664cd852e90a61f4bc2f43888aaf1c6f3ec`. Reprend la mise en page Gessi, sans modifier les objets ni les matrices tarifaires.
+
+- **Hidrobox** : dans toutes les collections tarifées, les facettes catégorielles limitées (forme, matière, finition, coloris, type, etc.) deviennent des cartes de sélection ; les dimensions et listes longues restent des sélecteurs classiques. Les cartes envoient un événement `change` au contrôle natif existant pour réutiliser le moteur de tarification et sa dépendance aux champs. Neo Plus : nouvelles cartes de matière/forme/texture/couleur et options. Les images de catégories/collections ne sont pas représentées comme des photos garanties de chaque finition.
+- **Sbordoni** : quatre cartes de collections avec vraies photos existantes de familles, cliquables ; visualisation grand format et unique de la configuration lavabo/piètement ; choix des trous et du support, prix et références exactement calculés comme avant. WC Sbordoni encore à harmoniser séparément.
+- **Tests** : scénarios Chromium ciblés sur les sélections et changements de modèle ; contrôles métier historiques inclus. Attendre une CI finale verte avant fusion.
+- **Conflits à éviter** : PR #48 audit photographie touche aussi le configurateur générique `brand-configurators.js` ; cette branche ne touche pas ce fichier. PR #43 Bette laissée intacte. Si `main` est modifié, réconcilier avec une version nouvelle, sans perdre des photos ou de la tarification.
+
+Prompt : vérifier `main`, les PR #48 et #43, et la CI de `feat/visual-hidrobox-sbordoni-11644`. Lire les deux journaux. Corriger les écarts de navigation Chromium Hidrobox/Sbordoni, contrôler l'absence de régression prix et préserver les projets utilisateurs. Fusionner uniquement si vert et vérifier Render `/api/version` et `/api/health`. Continuer ensuite Carrodrain, Bette et Sbordoni WC.

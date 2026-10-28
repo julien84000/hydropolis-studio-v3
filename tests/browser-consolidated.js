@@ -489,13 +489,45 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
       await page.locator('#hidroboxGuided a[href$="BIMobject-Shower-tray-Neo-Plus.zip"]').getAttribute('target')==='_blank');
     check('Hidrobox Neo Plus : exemple 3D de la bonne taille identifié',
       await page.locator('#hidroboxGuided a[href$="Neo-Plus-80x140x3-1.zip"]').innerText().then(s=>s.includes('80 × 140 × 3 cm')));
+    // V11.64.4 visual choice controls: real DOM and existing Neo Plus tariff engine.
+    const neoMaterial=page.locator('#hidroboxGuided [data-hidrobox-target="hnMaterial"]');
+    check('Hidrobox Neo Plus : matière par cartes visuelles',await neoMaterial.count()===2);
+    const neoScene=page.locator('#hidroboxGuided [data-hidrobox-target="hnMaterial"][data-hidrobox-value="Scene"]');
+    await neoScene.click();
+    check('Hidrobox Neo Plus : carte met à jour le select tarifaire et le groupe de couleur',
+      (await page.locator('#hidroboxGuided #hnMaterial').inputValue())==='Scene'&&
+      (await page.locator('#hidroboxGuided #hnGroup').inputValue())==='BLA'&&
+      (await page.locator('#hidroboxGuided [data-hidrobox-target="hnMaterial"][aria-pressed="true"]').count())===1);
+    await page.locator('#hidroboxGuided [data-hidrobox-target="hnMaterial"][data-hidrobox-value="Kromat"]').click();
+    check('Hidrobox Neo Plus : retour à Kromat rétablit sa matrice de couleurs',
+      (await page.locator('#hidroboxGuided #hnMaterial').inputValue())==='Kromat'&&
+      (await page.locator('#hidroboxGuided #hnGroup').inputValue())==='BAS');
     await page.locator('#hidroboxGuided .hidrobox-back').click();
     await page.locator('#hidroboxGuided [data-kind="collection"]').filter({hasText:'Line'}).first().click();
     await page.waitForSelector('#hidroboxGuided a[href$="STL-Line-Hidrobox.zip"]');
     check('Hidrobox Line : BIM et modèle 3D de famille affichés',
       await page.locator('#hidroboxGuided a[href$="BIMobject-Shower-tray-Line-X-Scene-Smooth.zip"]').count()===1 &&
       await page.locator('#hidroboxGuided a[href$="STL-Line-Hidrobox.zip"]').count()===1);
+    check('Hidrobox Line : options de dimensions et de matière conservées',
+      await page.locator('#hidroboxGuided [data-facet]').count()>0&&
+      await page.locator('#hidroboxGuided .hidrobox-neo-hero img').count()<=1);
     await page.locator('#hidroboxGuided .hidrobox-close').click();
+
+    // V11.64.4 — Sbordoni photographic collection selection without touching composition prices.
+    await page.waitForFunction(()=>CATALOG.some(p=>p.manufacturer==='Sbordoni'&&p.reference==='9065/1'),{timeout:20000});
+    await page.evaluate(()=>{
+      const p=CATALOG.find(p=>p.manufacturer==='Sbordoni'&&p.reference==='9065/1');
+      HydroSbordoniConfigurator.open(p,state.rooms[0]?.id||'');
+    });
+    await page.locator('#sbordoniConfigurator [data-sbordoni-collection="Palladio"]').waitFor();
+    check('Sbordoni : 4 collections photographiques',await page.locator('#sbordoniConfigurator .sbordoni-collection-card').count()===4);
+    check('Sbordoni : une seule photo du résultat',await page.locator('#sbordoniConfigurator .sbordoni-result-photo img').count()<=1);
+    await page.locator('#sbordoniConfigurator [data-sbordoni-collection="Palladio"]').click();
+    check('Sbordoni : clic collection actualise la configuration',
+      (await page.locator('#sbordoniConfigurator .sbordoni-collection-select').inputValue())==='Palladio'&&
+      (await page.locator('#sbordoniConfigurator [data-sbordoni-collection="Palladio"]').getAttribute('aria-pressed'))==='true'&&
+      await page.locator('#sbordoniConfigurator .sbordoni-config-summary').count()===0);
+    await page.locator('#sbordoniConfigurator .sbordoni-config-close').click();
 
     // V11.63.4 — Carrodrain: choose real LOW/PRO variants and check
     // manufacturer-page PDF mapping without substituting neighbouring versions.

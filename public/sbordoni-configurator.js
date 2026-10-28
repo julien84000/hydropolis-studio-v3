@@ -91,7 +91,10 @@
 
         <div class="recor-config-section">
           <div class="recor-config-title"><b>1. Collection</b><span>Choix de la collection Sbordoni</span></div>
-          <label>Collection
+          <div class="sbordoni-collection-gallery" role="group" aria-label="Choisir une collection Sbordoni">
+            ${cols.map(c=>{const f=familiesForCollection(c)[0];const img=f?canonicalImage(c,f):"";return `<button type="button" class="sbordoni-collection-card" data-sbordoni-collection="${esc(c)}" aria-pressed="${c===draft.collection}">${imageHtml(img,c)}<b>${esc(c)}</b></button>`}).join("")}
+          </div>
+          <label class="sbordoni-collection-fallback">Collection
             <select class="sbordoni-collection-select">${cols.map(c=>`<option value="${esc(c)}" ${c===draft.collection?"selected":""}>${esc(c)}</option>`).join("")}</select>
           </label>
         </div>
@@ -153,9 +156,13 @@
           </div>
         </div>`:""}
 
-        <div class="recor-config-summary">
-          <div>${finalImg?`<img src="${esc(finalImg)}" alt="${esc(draft.family)}" style="width:110px;height:90px;object-fit:contain;background:#fff;border-radius:12px;margin-right:12px">`:""}</div>
-          <div><b>${euro(total)} HT</b><span>${esc(basinDesignation(draft.collection,draft.family,draft.holes))}${selectedSupport?` + ${esc(supportLabel(selectedSupport))}`:""}</span></div>
+        <div class="recor-config-summary sbordoni-visual-result">
+          <div class="sbordoni-result-photo">${finalImg?`<img src="${esc(finalImg)}" alt="Composition ${esc(draft.collection)} ${esc(draft.family)}" loading="lazy">`:"<span>Visuel de composition indisponible</span>"}</div>
+          <div class="sbordoni-result-description"><small>Configuration sélectionnée · image de catalogue</small>
+            <b>${euro(total)} HT</b>
+            <span>${esc(basinDesignation(draft.collection,draft.family,draft.holes))}${selectedSupport?` + ${esc(supportLabel(selectedSupport))}`:""}</span>
+            <strong>Réf. ${esc(basin?.reference||"—")}${selectedSupport?` + ${esc(selectedSupport.reference)}`:""}</strong>
+          </div>
         </div>
 
         <p class="sbordoni-image-note">Visuel de la composition du catalogue ; le perçage et la finition suivent votre sélection.${selectedSupport && /^M\d/.test(model.supportKey(selectedSupport))?" Porte-serviettes 1P illustrés vendus séparément.":""}</p><div class="recor-config-error" aria-live="polite"></div>
@@ -167,6 +174,11 @@
 
       overlay.querySelector(".sbordoni-config-close").onclick=close;
       overlay.querySelector(".sbordoni-config-cancel").onclick=close;
+      overlay.querySelectorAll('[data-sbordoni-collection]').forEach(button=>button.onclick=()=>{
+        const select=overlay.querySelector(".sbordoni-collection-select");
+        select.value=button.dataset.sbordoniCollection;
+        select.dispatchEvent(new Event("change",{bubbles:true}));
+      });
       overlay.querySelector(".sbordoni-collection-select").onchange=e=>{
         draft.collection=e.target.value;
         draft.family=familiesForCollection(draft.collection)[0]||"";
