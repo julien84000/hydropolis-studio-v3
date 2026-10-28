@@ -4,7 +4,7 @@
  */
 (function(root){
 'use strict';
-const BRANDS=['Zucchetti','Hotbath','Lefroy Brooks'];
+const BRANDS=['Zucchetti','Hotbath','Lefroy Brooks','Gessi'];
 const OFFICIAL={
   Zucchetti:'https://www.zucchettidesign.it/en/products',
   Hotbath:'https://hotbath.it/fr/home',
@@ -141,6 +141,7 @@ function findModelVisual(brand,p,base,media){
 function isSupported(brand){return BRANDS.includes(brand)}
 function open(brand,rows,roomId,onAdd){
  if(!isSupported(brand))return;
+ if(brand==='Gessi')return root.HydroGessiAreaPro?.open?.(rows,roomId,onAdd);
  const source=Array.isArray(rows)?rows.filter(p=>p?.manufacturer===brand):[];
  let stage='collections',collection=null,category='',subcategory='',model=null,finishRef='',modelSearch='',modelPage=0,media={collections:{collections:{},models:{}},hotbath:{models:{},collections:{}}},overlay;
  const state={brand,rows:source,roomId,media};
