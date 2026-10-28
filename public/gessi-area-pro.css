@@ -94,3 +94,9 @@
 .gessi-tech-list dt{color:#737b70}.gessi-tech-list dd{margin:0;font-weight:600;color:#333a33}
 .gessi-tech-source,.gessi-tech-empty{font-size:11px;line-height:1.5;color:#777e74;margin:11px 0 0}
 @media(max-width:700px){.gessi-tech-list{max-height:250px}}
+
+/* Official subseries gallery: the menu imagery is not a SKU-finish photograph. */
+.gessi-aux-button{display:inline-block;margin:12px 8px 12px 0;padding:12px 17px;border:1px solid #8e9a8c;border-radius:5px;background:#f7f8f4;color:#304330;cursor:pointer;font:inherit;font-size:13px}
+.gessi-aux-button:hover,.gessi-aux-button:focus-visible{background:#e8eee7}
+#gessi-official-results{min-height:170px}
+#gessi-official-results .gessi-tech-source{margin-bottom:18px;font-size:12px}

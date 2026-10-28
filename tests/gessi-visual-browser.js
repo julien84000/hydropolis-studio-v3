@@ -10,6 +10,11 @@ const {chromium}=require('playwright');
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.route('https://hydropolis.test/**',route=>{
    const pathName=new URL(route.request().url()).pathname;
+   if(pathName==='/api/gessi/official-products'){
+    const url=new URL(route.request().url());
+    const products=[{code:'73651',name:'Mitigeur lavabo',description:'Produit officiel Gessi',image:'https://gessistorage.blob.core.windows.net/zil/PF73651.jpg',page:'https://areapro.gessi.com/fr/product/73651',finishes:[]}];
+    return route.fulfill({contentType:'application/json',body:JSON.stringify({products,total:1,returned:1,incomplete:false,series:url.searchParams.get('serie'),pricing:'hydropolis-only'})});
+   }
    if(pathName.startsWith('/api/gessi/technical/')){
     const code=pathName.split('/').pop();
     return route.fulfill({contentType:'application/json',body:JSON.stringify({code,source:'https://areapro.gessi.com/fr/product/'+code,technical:[{name:'Hauteur',value:'297 mm'},{name:'Largeur',value:'50 mm'}],documentPdf:null})});
@@ -50,7 +55,16 @@ const {chromium}=require('playwright');
   await page.waitForSelector('.gessi-univers .gessi-card');
   await page.locator('[data-area="haute-culture"]').click();
   await page.locator('[data-action="collection"]').first().click();
-  assert.match(await page.locator('.gessi-empty').textContent(),/pas encore intégrés/);
+  await page.locator('[data-action="official-model"]').first().waitFor();
+  assert.equal(await page.locator('#gessi-official-results .gessi-card').count(),1);
+  assert.equal(await page.locator('#gessi-add').count(),0);
+  // Official series have their own image and product feed, never inherit a tariff price.
+  await page.locator('[data-stage="collections"]').first().click();
+  await page.locator('[data-action="collection"][data-key="PELLE"]').click();
+  assert.ok(await page.locator('[data-action="series"]').count()>=2);
+  await page.locator('[data-action="series"]').first().click();
+  await page.locator('[data-action="official-model"]').first().waitFor();
+  assert.match(await page.locator('.gessi-heading h2').textContent(),/TRESSÉ|LACCETTO/);
   assert.equal(await page.locator('#gessi-add').count(),0);
   await page.locator('.gessi-close').focus();await page.keyboard.press('Shift+Tab');
   assert.equal(await page.evaluate(()=>document.activeElement.classList.contains('gessi-site-link')),true);
