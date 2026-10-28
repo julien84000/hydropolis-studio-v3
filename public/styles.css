@@ -3109,3 +3109,54 @@ main{background:transparent}
 .mg-hotbath-official .hb-finish-option[aria-pressed="true"]{border:2px solid #8e6534;background:#fff8ed;padding:10px 11px;}
 .mg-hotbath-official .hb-finish-option:focus-visible{outline:2px solid #8e6534;outline-offset:3px;}
 @media(max-width:620px){.mg-hotbath-official .hb-finish-options{grid-template-columns:repeat(2,minmax(0,1fr));max-height:220px;}}
+
+
+/* V11.64 visual consistency — reuse the Gessi photographic design language in
+ * existing maker guides without replacing tariff/configuration algorithms. */
+.mg-overlay{background:rgba(17,17,18,.77);backdrop-filter:blur(4px);padding:14px}
+.mg-overlay .mg-dialog{width:min(1440px,100%);max-height:94vh;background:#f8f8f6;border-radius:14px;color:#242824;box-shadow:0 30px 90px #0007}
+.mg-overlay .mg-header{background:#212420;color:#fff;padding:17px 24px;min-height:70px;border:0}
+.mg-overlay .mg-brand{color:#fff;font-weight:600;font-size:23px;letter-spacing:-.035em}
+.mg-overlay .mg-close{color:#fff;border-radius:50%;width:42px;height:42px;padding:0}
+.mg-overlay .mg-close:hover{background:#ffffff21}
+.mg-overlay .mg-content{padding:25px clamp(16px,3vw,38px) 48px}
+.mg-overlay .mg-section-head h2{font-size:clamp(26px,2.8vw,38px);letter-spacing:-.04em;color:#272923;font-weight:450}
+.mg-overlay .mg-breadcrumb{gap:9px;margin:0 0 25px}
+.mg-overlay .mg-breadcrumb button{color:#69736a;font-size:12px}
+.mg-overlay .mg-tile{border-radius:8px;border-color:#e5e5de;background:#fff;box-shadow:none}
+.mg-overlay .mg-tile:hover,.mg-overlay .mg-tile:focus-visible{border-color:#a1a69a;box-shadow:0 7px 18px #17211617}
+.mg-overlay .mg-collections .mg-tile-photo img{object-fit:cover}
+.mg-overlay .mg-tile-meta strong{font-weight:550;color:#343832}
+.mg-overlay .mg-tile-meta small{color:#898b82}
+.mg-overlay .mg-detail{grid-template-columns:minmax(0,1fr) minmax(0,.9fr);gap:clamp(20px,4vw,56px)}
+.mg-overlay .mg-photo{background:#fff;border:1px solid #e1e3de;border-radius:5px;padding-bottom:0}
+.mg-overlay .mg-photo img{background:#fff;height:min(48vh,480px)}
+.mg-overlay .mg-photo small{padding:14px 18px;border-top:1px solid #eeeee9;color:#757a71}
+.mg-overlay .mg-config{gap:16px}
+.mg-overlay .mg-ref{font-size:10px;letter-spacing:.13em;font-weight:650;color:#777d72}
+.mg-overlay .mg-config h3{font-size:22px;letter-spacing:-.025em;font-weight:480;color:#272923}
+.mg-overlay .mg-finalref{display:flex;justify-content:space-between;gap:12px;padding:16px 0;border-color:#dedfd8}
+.mg-overlay .mg-price{color:#242c22}
+.mg-overlay .mg-roughin{border-radius:5px;background:#f2ece0}
+.mg-overlay .mg-config .btn.primary{background:#252f27;border-color:#252f27;padding:13px 21px;border-radius:5px;color:#fff}
+.mg-overlay .mg-config .btn.primary:hover{background:#405240}
+.mg-finish-caption{font-size:13px;font-weight:600;color:#51584d}
+.mg-visual-finishes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;max-height:390px;overflow-y:auto;padding:3px}
+.mg-visual-finish{min-width:0;display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 7px;min-height:83px;background:white;border:1px solid #d8dcd4;border-radius:6px;color:#343832;cursor:pointer;text-align:center}
+.mg-visual-finish img{height:74px;width:100%;object-fit:contain}
+.mg-finish-image-missing{display:flex;align-items:center;justify-content:center;text-align:center;min-height:34px;padding:4px 5px;color:#8d908a;font-size:10px;line-height:1.3}
+.mg-visual-finish>span:not(.mg-finish-image-missing){font-size:11px;overflow-wrap:anywhere;line-height:1.4}
+.mg-visual-finish small{font-size:10px;color:#777;overflow-wrap:anywhere}
+.mg-visual-finish[aria-pressed="true"]{border:2px solid #3b5940;background:#eef2e9;padding:9px 6px}
+.mg-visual-finish:focus-visible{outline:2px solid #3b5940;outline-offset:2px}
+@media(max-width:720px){
+ .mg-overlay{padding:0}
+ .mg-overlay .mg-dialog{height:100dvh;max-height:none;border-radius:0}
+ .mg-overlay .mg-header{padding:12px 17px;min-height:61px}
+ .mg-overlay .mg-content{padding:18px 13px 40px}
+ .mg-overlay .mg-detail{grid-template-columns:1fr;gap:19px}
+ .mg-overlay .mg-photo img{height:260px}
+ .mg-overlay .mg-config{padding:0 4px}
+ .mg-overlay .mg-config h3{font-size:19px}
+ .mg-visual-finishes{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
