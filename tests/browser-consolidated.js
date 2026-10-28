@@ -171,6 +171,31 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     check('Référence tarifaire Hotbath conservée',ref&&detail.includes(ref));
     await page.locator('#manufacturerGuidedSelector .mg-close').click();
 
+    // V11.62.6 — browser regression on actual Resigres Selene: verify
+    // price on the visible product configuration and invalid dimension protection.
+    await page.waitForFunction(()=>CATALOG.some(p=>p.manufacturer==='Resigres'&&p.resigresModel==='Selene'),{timeout:25000});
+    await page.evaluate(()=>{
+      showView('catalog');
+      const p=CATALOG.find(x=>x.manufacturer==='Resigres'&&x.resigresModel==='Selene');
+      addCatalogProduct(p.reference,state.rooms[0]?.id,productKey(p));
+    });
+    await page.waitForSelector('#resigresConfigurator .rg50-shape[data-shape="standard"]',{timeout:15000});
+    await page.locator('#resigresConfigurator .rg50-shape[data-shape="standard"]').click();
+    await page.locator('#rg50Mat').selectOption('solid-surface');
+    await page.locator('#rg50Color').selectOption('S-Blanco');
+    await page.locator('#rg50Group').selectOption('one');
+    const orientation=await page.locator('#resigresConfigurator .v1146-field-grid').innerText();
+    check('Selene : longueur puis profondeur correctement libellées',orientation.includes('Longueur du plan')&&orientation.includes('Profondeur du plan')&&orientation.indexOf('Longueur du plan')<orientation.indexOf('Profondeur du plan'));
+    await page.locator('#rg50Length').fill('51');
+    await page.locator('#rg50Width').fill('150');
+    check('Selene : dimensions inversées ne sont pas tarifées',await page.locator('#rg50Price').innerText()==='—');
+    check('Selene : saisie de prix manuel cachée sur dimension hors limite',await page.locator('#rg50ManualWrap').evaluate(x=>x.classList.contains('hidden')));
+    await page.locator('#rg50Width').fill('51');
+    await page.locator('#rg50Length').fill('150');
+    const validPrice=await page.locator('#rg50Price').innerText();
+    check('Selene : prix automatique 907 € HT en 51 × 150 cm',validPrice.includes('907'));
+    check('Selene : aucun prix manuel demandé sur matrice certifiée',await page.locator('#rg50ManualWrap').evaluate(x=>x.classList.contains('hidden')));
+    await page.locator('#resigresConfigurator .rg50-close').click();
     check('aucune erreur JavaScript',report.errors.length===0);
     await page.evaluate(()=>{document.querySelector('#manufacturerFilter').value='Sira Concrete';document.querySelector('#manufacturerFilter').dispatchEvent(new Event('change'));});
     await page.evaluate(()=>{const p=CATALOG.find(x=>x.manufacturer==='Sira Concrete'&&x.collection==='Wall Collection');addCatalogProduct(p.reference,state.rooms[0]?.id,productKey(p));});
