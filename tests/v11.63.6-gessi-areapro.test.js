@@ -86,9 +86,9 @@ test('V11.63.8: same supplier collection in three Area Pro universes never dupli
  const unknown=variant('Inciso','56124','031',260,'Accessoire');
  const idx=g.buildIndex([bathroom,kitchen,sensor,unknown],site);
  const at=id=>g.listAreaCollections(idx,site.areas.find(a=>a.id===id)).find(c=>c.name==='Inciso').rows;
- assert.deepEqual(at('bathroom').map(p=>p.reference),[bathroom.reference,unknown.reference]);
- assert.deepEqual(at('kitchen').map(p=>p.reference),[kitchen.reference]);
- assert.deepEqual(at('sensor-taps').map(p=>p.reference),[sensor.reference]);
+ assert.equal(Array.from(at('bathroom'),p=>p.reference).join(','),[bathroom.reference,unknown.reference].join(','));
+ assert.equal(Array.from(at('kitchen'),p=>p.reference).join(','),[kitchen.reference].join(','));
+ assert.equal(Array.from(at('sensor-taps'),p=>p.reference).join(','),[sensor.reference].join(','));
  assert.equal(at('bathroom').length+at('kitchen').length+at('sensor-taps').length,4);
  assert.equal(idx.total,4);
  assert.equal(g.selectArea({...unknown,universe:'Kitchen'},'Inciso',site.areas).id,'kitchen');
