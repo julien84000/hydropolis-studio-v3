@@ -221,7 +221,14 @@ test('V11.62.9: classify every source price slot on three imported models, recor
 });
 
 test('V11.62.9: cross-category supplier variant tariffs and commercial options, without invented cells',()=>{
- const V48=engine('v1148-pricing');
+ const linked={module:{exports:{}},window:{}};
+ for(const part of ['v1146-pricing','v1148-pricing']){
+  const begin=app.indexOf('/* SOURCE public/'+part+'.js */'),end=app.indexOf('/* SOURCE public/',begin+12);
+  assert(begin>=0&&end>begin);
+  linked.module={exports:{}};
+  vm.runInNewContext(app.slice(begin,end),linked);
+ }
+ const V48=linked.module.exports;
  const cases=[
   ['Ares','basin','se','resin','Ártico',299],
   ['Crono','basin','mini','resin','Ártico',199],
