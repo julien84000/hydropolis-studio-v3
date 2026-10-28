@@ -9,7 +9,17 @@ const {chromium}=require('playwright');
   const rows=JSON.parse(zlib.gunzipSync(fs.readFileSync(path.join(root,'catalog_gessi.json.gz'))));
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.route('https://hydropolis.test/**',route=>{
-   const name=new URL(route.request().url()).pathname.slice(1);
+   const pathName=new URL(route.request().url()).pathname;
+   if(pathName==='/api/gessi/official-products'){
+    const url=new URL(route.request().url());
+    const products=[{code:'73651',name:'Mitigeur lavabo',description:'Produit officiel Gessi',image:'https://gessistorage.blob.core.windows.net/zil/PF73651.jpg',page:'https://areapro.gessi.com/fr/product/73651',finishes:[]}];
+    return route.fulfill({contentType:'application/json',body:JSON.stringify({products,total:1,returned:1,incomplete:false,series:url.searchParams.get('serie'),pricing:'hydropolis-only'})});
+   }
+   if(pathName.startsWith('/api/gessi/technical/')){
+    const code=pathName.split('/').pop();
+    return route.fulfill({contentType:'application/json',body:JSON.stringify({code,source:'https://areapro.gessi.com/fr/product/'+code,technical:[{name:'Hauteur',value:'297 mm'},{name:'Largeur',value:'50 mm'}],documentPdf:null})});
+   }
+   const name=pathName.slice(1);
    if(!name)return route.fulfill({contentType:'text/html; charset=utf-8',body:'<html><head><meta charset="utf-8"><link rel="stylesheet" href="/gessi-area-pro.css"></head><body><button id="opener">Gessi</button><script src="/gessi-area-pro.js"></script></body></html>'});
    return route.fulfill({path:path.join(root,name)});
   });
@@ -31,6 +41,9 @@ const {chromium}=require('playwright');
    assert.equal(await page.locator('[data-finish][aria-pressed="true"]').count(),1);
    assert.equal(await page.locator('.gessi-selection b').textContent(),ref);
    assert.ok(await page.locator('.gessi-large-photo img').count()<=1);
+   await page.locator('.gessi-tech-list dt').first().waitFor();
+   assert.equal(await page.locator('.gessi-tech-list dd').first().textContent(),'297 mm');
+   assert.equal(await page.locator('.gessi-tech-list').count(),1);
    assert.equal(await page.locator('.gessi-dialog').evaluate(el=>el.scrollWidth<=el.clientWidth),true);
    await page.locator('#gessi-add').click();
    assert.equal(await page.evaluate(()=>window.sameObject),true);
@@ -42,7 +55,16 @@ const {chromium}=require('playwright');
   await page.waitForSelector('.gessi-univers .gessi-card');
   await page.locator('[data-area="haute-culture"]').click();
   await page.locator('[data-action="collection"]').first().click();
-  assert.match(await page.locator('.gessi-empty').textContent(),/pas encore intégrés/);
+  await page.locator('[data-action="official-model"]').first().waitFor();
+  assert.equal(await page.locator('#gessi-official-results .gessi-card').count(),1);
+  assert.equal(await page.locator('#gessi-add').count(),0);
+  // Official series have their own image and product feed, never inherit a tariff price.
+  await page.locator('[data-stage="collections"]').first().click();
+  await page.locator('[data-action="collection"][data-key="PELLE"]').click();
+  assert.ok(await page.locator('[data-action="series"]').count()>=2);
+  await page.locator('[data-action="series"]').first().click();
+  await page.locator('[data-action="official-model"]').first().waitFor();
+  assert.match(await page.locator('.gessi-heading h2').textContent(),/TRESSÉ|LACCETTO/);
   assert.equal(await page.locator('#gessi-add').count(),0);
   await page.locator('.gessi-close').focus();await page.keyboard.press('Shift+Tab');
   assert.equal(await page.evaluate(()=>document.activeElement.classList.contains('gessi-site-link')),true);

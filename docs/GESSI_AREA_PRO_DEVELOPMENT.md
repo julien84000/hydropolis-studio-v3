@@ -1,3 +1,24 @@
+## Checkpoint Gessi V11.64.1 — 28 octobre 2026, branche isolée
+
+**État de départ vérifié** : main `deb83ee86cca5b37ad30b3df8eb95346f78b8cf6`, Render `/api/version=11.63.9` et `/api/health={ok:true,database:postgresql,version:11.63.9}`. PR #45 Gessi V11.64.0 toujours en brouillon au point de départ, CI `40778154441` réussie (Node et Chromium) ; PR #43 Bette séparée et préservée.
+
+Branche indépendante : `feat/gessi-official-series-11641`, construite sur la tête `a61f0efbc19219e9ac5a7ec8dc4b29e6f0e7104d` de la PR #45, **sans modifier la branche de l'autre agent**.
+
+Développé :
+- `gessi-official-series-server.js` : endpoint `GET /api/gessi/official-products?area=<slug>&collection=<officialID>&serie=<officialID>` ; la combinaison des IDs doit exister dans le menu constructeur vérifié, upstream à domaine fixe, timeout et taille bornés, cache limité.
+- Normalisation restrictive des références modèles à cinq chiffres, des photographies et finitions officielles ; **aucun prix ni PDF fictif**, pas de correspondance arbitraire entre sous-série et lignes du tarif.
+- `public/gessi-area-pro.js` et `public/gessi-area-pro.css` : navigation par sous-séries illustrées, découverte à la demande des modèles officiels avec vignettes et pagination, accès au détail constructeur ou au configurateur des lignes tarifées exactes quand le modèle de la même collection existe. Les listes incomplètes sont signalées.
+- `server.js`, `package.json`, `package-lock.json` et tests Node + Chromium correspondants.
+- Exemple source publique vérifié : menu Bathroom/INVERSO/INVERSO DIAMANTATO ; API officielle `GetProductList` retourne 181 modèles, avec `productId`, `productMainImage`, `productsConfigured` et `priceInfo:null`. Ne jamais utiliser les prix fournisseur null comme les prix Hydropolis.
+
+**Non terminé** : les PDF techniques Gessi exacts ne sont toujours pas associés : le site les affiche, mais l'API de pièces jointes inspectée ne les fournit pas ; identification et vérification de chaque URL PDF encore nécessaires. Pagination amont par jeton à compléter lorsqu'elle est réellement rencontrée. Données client et matrices tarifaires intactes.
+
+**Validation** : le code est sauvegardé en commits distants sur la branche ; attendre les résultats de la CI du dernier SHA avant toute fusion. Production reste V11.63.9 tant qu'aucun contrôle de livraison n'atteste le contraire.
+
+**Reprise autonome** : vérifier `main`, PR #45 et #43, puis reprendre `feat/gessi-official-series-11641` et sa PR. Lire `docs/GESSI_AREA_PRO_DEVELOPMENT.md` et ce journal. Vérifier la CI complète de ce SHA et les scénarios sous-séries desktop/mobile, corriger les éventuels échecs, préparer l'intégration après la PR #45 sans écraser sa version. Faire fusionner uniquement les PR testées, puis vérifier Render `/api/version` et `/api/health`. Poursuivre ensuite les véritables PDF Gessi par référence, pas BIM/CAO.
+
+---
+
 ## État actuel — 28 octobre 2026 — 11.63.9
 
 **Consigne actuelle de Julien : fiches techniques uniquement. Ne pas développer d’intégration BIM ni CAO.** Les mentions BIM/CAO ci-dessous décrivent les recherches historiques et ne sont plus le périmètre demandé.
@@ -66,3 +87,14 @@ CI run 40776014311 : tests métier et navigateur existants réussis ; le nouveau
 ## Préparation du déploiement 11.63.9 — PR #44
 
 CI complète réussie sur e2237f0 (run 40776321617), y compris parcours navigateur Gessi desktop/mobile et régressions existantes. Version portée à 11.63.9 pour renouveler les caches ; menu officiel ajouté au shell hors connexion. Nouvelle CI requise sur ce commit de version avant fusion. Déploiement demandé explicitement par Julien ; pas encore vérifié en production à ce stade. Les sous-séries et documents/BIM dynamiques restent à développer.
+
+
+## Checkpoint — Gessi V11.64.0 (travail repris après quota Work)
+
+- Base : main deb83ee86cca5b37ad30b3df8eb95346f78b8cf6 / version 11.63.9, PR #44 fusionnée ; Render 11.63.9 et PostgreSQL OK vérifiés le 28/10/2026.
+- Branche : feat/gessi-technical-sheets-11640. Nouvelle route serveur GET /api/gessi/technical/:code pour récupérer les **caractéristiques techniques officielles du produit** avec un code Gessi exactement à cinq chiffres ; URL fournisseur fixe, validation de l'identité, timeout, limite de taille, cache mémoire limité, erreurs explicites.
+- Explorateur : panneau « Fiche technique du produit » directement dans l'étape finale de configuration, après la sélection modèle/finition. Lecture à la demande ; une panne du fabricant ne bloque ni les prix, ni l'ajout au projet. Les dimensions affichées proviennent du champ product.technical, jamais des dimensions d'emballage.
+- IMPORTANT **pas de BIM/CAO**. L'API publique GetProductAttachments observée pour 59003 et 66134 ne donne que des objets BIM ; elle ne permet pas d'établir un lien PDF technique fiable. Le panneau ne prétend donc pas offrir un PDF et ne lie pas une mauvaise fiche à un SKU. Lien vers la fiche officielle Gessi où le fabricant propose, selon l'article, un téléchargement PDF.
+- Version package + lock 11.64.0 et tests Node + navigateur Gessi. Aucun changement aux 16 211 articles tarifés Gessi ni aux autres marques, tarifs, remises ou projets.
+- **Validation CI, PR et Render en attente** tant que GitHub Actions n'a pas terminé. Ne jamais annoncer 11.64.0 en production sans vérifier /api/version et /api/health.
+- **Suite** : accéder aux vrais PDF techniques via une source officielle vérifiable référence par référence (ne pas confondre notices de pose et fiches), puis rattacher les sous-séries à une liste de vrais produits officiels sans affectation arbitraire de références tarifées. Préserver PR #43 Bette (brouillon).

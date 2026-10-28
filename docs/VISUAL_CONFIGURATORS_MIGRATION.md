@@ -27,3 +27,7 @@ Branche : `feat/shared-gessi-visual-pattern-v1164`, partie de `main` `deb83ee86c
 
 ## Prompt de reprise autonome
 Reprends Hydropolis Studio sur `julien84000/hydropolis-studio-v3` en vérifiant d'abord le dernier `main`, les PR #45 et #43 et toute PR plus récente. Lis `docs/REPRISE_CHATGPT.md` et `docs/VISUAL_CONFIGURATORS_MIGRATION.md` sur `feat/shared-gessi-visual-pattern-v1164`. La migration vers la présentation photographique de Gessi a commencé dans `public/manufacturer-guide.js` pour Zucchetti et Lefroy Brooks, avec CSS commun des guides et tests de non-confusion photo modèle/photo finition. Contrôle la CI et les rendus navigateur, puis poursuis fabricant par fabricant (Hotbath, Sbordoni, Hidrobox, Bette, Carrodrain...) sans toucher aux règles de prix, aux pièces de projet ni aux associations de fiches techniques. Committe et documente souvent. Ne fusionne et ne déploie qu'après validation ; confirmer `/api/version` et `/api/health` de Render.
+
+## Checkpoint B — préparation validation de production
+
+La base `main` V11.64.1 (`d33a83c0bbc3e3a7e3ab548d8f28d48865b675fa`) est intégrée par merge sans perte des évolutions Gessi. Version préparée 11.64.2 ; deux fabricants testés sous Chromium (desktop/mobile) dans `tests/browser-consolidated.js`. CI finale à confirmer sur la nouvelle tête de PR #47 ; ne pas fusionner si rouge.
