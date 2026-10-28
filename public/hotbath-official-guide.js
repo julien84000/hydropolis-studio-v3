@@ -23,14 +23,21 @@ function tariffIndex(rows){
  const index=new Map();
  for(const p of rows||[]){
    if(p?.manufacturer!=='Hotbath')continue;
-   const col=String(p.collection||'');
    const key=modelKey(p);
-   if(!col||!key)continue;
-   const collection=index.get(col)||new Map();
-   if(!index.has(col))index.set(col,collection);
-   const records=collection.get(key)||[];
-   if(!records.some(v=>v.reference===p.reference))records.push(p);
-   collection.set(key,records);
+   if(!key)continue;
+   // The 2026 price list contains shared collections (e.g. "Ace / Fellow")
+   // and spells Cobber X as "Cobber-X". Match against the 12 verified
+   // collections only, without changing the original supplier row or price.
+   const collections=new Set(String(p.collection||'').split('/').map(label=>
+     ORDER.find(official=>clean(official)===clean(label))||''
+   ).filter(Boolean));
+   for(const col of collections){
+     const collection=index.get(col)||new Map();
+     if(!index.has(col))index.set(col,collection);
+     const records=collection.get(key)||[];
+     if(!records.some(v=>v.reference===p.reference))records.push(p);
+     collection.set(key,records);
+   }
  }
  return index;
 }
