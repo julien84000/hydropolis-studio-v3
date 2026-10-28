@@ -127,3 +127,19 @@ Branche de travail : `feat/v11.63.1-brands-pricing-integrity`. PR : https://gith
 - Le contrôle HTTP et décodage raster ultérieur a examiné les **367 archives historiques**, récupéré **158 URL CDN modernes** et constaté **209 URL sans variante CDN prouvée**. L'application affiche maintenant **422 modèles sur 647 avec une URL photographique compatible et vérifiée par ce processus**, et **225 sans photographie fiable**. Source durable : `docs/HOTBATH_CDN_AUDIT.json` et `public/brand-guide-hotbath-media.json`.
 - Le fait qu'une fiche existe sur `hotbath.it` ne prouve pas que son JPEG `/documents/ProdCateg/...` existe encore (AR003 a répondu 404). La preuve photographique de la finition reste distincte du modèle et du prix exact.
 - **Validation nécessaire** : dernière exécution complète de GitHub Actions, images réelles et navigation Chromium avant fusion ; la couverture 422/647 ne doit pas être présentée comme 97,5 %.
+
+
+## Checkpoint V11.63.3 — continuité Hidrobox et guides Zucchetti / Lefroy Brooks (28 octobre 2026)
+
+**Base vérifiée** : `main` commit `860504041b1e957d0008e509781883dbedc952fb`, PR #35 Hotbath fusionnée, validation `main` https://github.com/julien84000/hydropolis-studio-v3/actions/runs/40769382483 **réussie**. Les endpoints Render `/api/version` et `/api/health` indiquaient **11.63.2**, `ok:true`, PostgreSQL au moment de reprendre. Ne pas confondre cette preuve avec le déploiement futur V11.63.3.
+
+**Branche de reprise** : `fix/v11.63.3-hidrobox-reopen-supplier-guides`. Modifications réalisées et sauvegardées :
+- `public/brand-configurators.js` : en ouvrant à nouveau un article Hidrobox, rechercher sa **référence exacte** dans les groupes tarifaires, même si `configGroup` est obsolète, et restaurer matière, largeur, longueur, texture, couleur et référence d'origine. Jusqu'alors, Hidrobox repartait de la première déclinaison malgré une référence sauvegardée. Les prix et la règle `prix HT = arrondi(prix source × 1,04)`, la remise d'achat 50 % et les 4 479 lignes importées ne sont pas modifiés.
+- `public/manufacturer-guide.js` : si l'index Hotbath échoue à charger, ne plus jeter les photos Zucchetti / Lefroy Brooks chargées indépendamment, et réciproquement. Une requête défaillante peut être retentée lors de l'ouverture suivante. Le libellé générique `Zucchetti` du tarif n'est plus présenté comme une collection officielle, mais comme « Références sans collection attribuée » ; **aucun article n'est supprimé ou déplacé entre collections réelles**.
+- `tests/v11.63.3-brand-guides-continuity.test.js` : régression de la réouverture Hidrobox sur une variante réelle non initiale, survivance des restaurations exactes Bette/Carrodrain, et scénarios de panne isolée des index de visuels. Test inclus dans `npm test`. `package.json` version 11.63.3.
+
+**Statut à ce checkpoint** : modifications **commitées**, CI V11.63.3 **à examiner**, fusion et déploiement V11.63.3 **non confirmés**. Aucune manipulation de vrais projets utilisateur sur la base de production. Les tests sur fixtures et GitHub ne prouvent pas une migration de projets réels.
+
+**Travaux encore ouverts du prompt initial** : vérifier la disponibilité HTTP et le rendu des photos officielles modèle par modèle, associer davantage de fiches techniques exactes, comparer les 67 378 variantes Bette/Hidrobox/Carrodrain avec leurs fichiers tarifaires source (au-delà du contrôle interne), enrichir les parcours Zucchetti / Lefroy Brooks, compléter les photos Hotbath manquantes sans inventer d'association, maintenir la qualité des 99 images Sbordoni et préserver tous les correctifs Resigres V11.62.11+.
+
+**Reprise** : contrôler la dernière tête de branche, la PR et sa CI (tests, build, Chromium), corriger avant fusion ; vérifier à nouveau la version Render après fusion. Ne jamais déclarer « déployé » sur la seule foi d'une PR fusionnée.
