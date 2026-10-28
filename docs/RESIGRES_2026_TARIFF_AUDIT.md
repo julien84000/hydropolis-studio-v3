@@ -122,3 +122,12 @@ La présence d'une grille chiffrée importée ne suffit pas à certifier que tou
 - Vérification du JSON rendu en production : `public/resigres_2026_config.json` sert `2026-FR-v9` avec le prix Atenea 1 098 € HT (une vasque standard, 140 × 51 cm, Solid Surface S-Blanco), cellule source p.14.
 - Les tests navigateur utilisent une session locale de CI : ils ne constituent pas un test d'une connexion utilisateur réelle en production. Aucun projet commercial existant n'a été modifié par ces contrôles.
 - Reste à traiter selon `docs/RESIGRES_2026_38_GROUP_STATUS.json` : Extraplano Latéral/Central, Axis, trois familles de meubles (Portes/vides/colonnes, Frame, Gesto), miroirs Frame/Gesto, panneaux/socles et les cellules tarifaires marquées `null`. Ne pas afficher des prix non vérifiés comme certifiés.
+
+## V11.62.10 — livraison vérifiée le 28 octobre 2026
+
+- **PR #31 fusionnée** : https://github.com/julien84000/hydropolis-studio-v3/pull/31 — commit `47c1b5803285ff48a18f98757e569d88348c3a95`.
+- **CI de branche réussie** : https://github.com/julien84000/hydropolis-studio-v3/actions/runs/40696562578 — `npm run check`, `npm test`, `npm run build`, `npm run test:browser` (Chromium / Playwright), avec parcours Axis, panneau au m², Frame H45, Gesto H30 et conservation des prix dans le projet.
+- **Render** : `GET /api/version` répond `11.62.10`, `GET /api/health` répond `ok:true` et `database:postgresql`. Le JSON public Resigres sert bien `2026-FR-v10`, les tableaux `priceTablesByType`, les nouvelles variantes Axis et la saisie dimensionnelle `dynamicArea`.
+- **Automatisation supplémentaire** : Axis (variantes exactes p.38), Extraplano ¼ rond 80/90/100 cm (p.4), compositions Frame H45 et Gesto H30/H60/H75 (p.60/62), panneaux et socles au m² avec minimum de facturation 0,3 m² (p.71). Sécurités additionnelles pour dimensions/épaisseurs incompatibles et prix manuels sur configurations incomplètes.
+- **Bilan** : 35/38 groupes ont au moins une règle de tarification automatique, **sans garantie d'exhaustivité des déclinaisons**. Extraplano Latéral et Portes/vides/colonnes sont encore sans matrice automatique exploitable ; Miroirs Frame/Gesto n'ont pas de règle. D'autres modèles ont des cellules ou variantes incomplètes. Les prix illisibles du PDF ne sont pas inventés.
+- **Limites** : tests Chromium exécutés en CI sur une base éphémère, pas de connexion sur un projet utilisateur réel en production. Vérifier les barèmes du fabricant en lisant les pages PDF visuellement avant validation commerciale définitive.
