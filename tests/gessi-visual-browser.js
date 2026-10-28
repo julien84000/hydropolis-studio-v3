@@ -9,7 +9,12 @@ const {chromium}=require('playwright');
   const rows=JSON.parse(zlib.gunzipSync(fs.readFileSync(path.join(root,'catalog_gessi.json.gz'))));
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.route('https://hydropolis.test/**',route=>{
-   const name=new URL(route.request().url()).pathname.slice(1);
+   const pathName=new URL(route.request().url()).pathname;
+   if(pathName.startsWith('/api/gessi/technical/')){
+    const code=pathName.split('/').pop();
+    return route.fulfill({contentType:'application/json',body:JSON.stringify({code,source:'https://areapro.gessi.com/fr/product/'+code,technical:[{name:'Hauteur',value:'297 mm'},{name:'Largeur',value:'50 mm'}],documentPdf:null})});
+   }
+   const name=pathName.slice(1);
    if(!name)return route.fulfill({contentType:'text/html; charset=utf-8',body:'<html><head><meta charset="utf-8"><link rel="stylesheet" href="/gessi-area-pro.css"></head><body><button id="opener">Gessi</button><script src="/gessi-area-pro.js"></script></body></html>'});
    return route.fulfill({path:path.join(root,name)});
   });
@@ -31,6 +36,9 @@ const {chromium}=require('playwright');
    assert.equal(await page.locator('[data-finish][aria-pressed="true"]').count(),1);
    assert.equal(await page.locator('.gessi-selection b').textContent(),ref);
    assert.ok(await page.locator('.gessi-large-photo img').count()<=1);
+   await page.locator('.gessi-tech-list dt').first().waitFor();
+   assert.equal(await page.locator('.gessi-tech-list dd').first().textContent(),'297 mm');
+   assert.equal(await page.locator('.gessi-tech-list').count(),1);
    assert.equal(await page.locator('.gessi-dialog').evaluate(el=>el.scrollWidth<=el.clientWidth),true);
    await page.locator('#gessi-add').click();
    assert.equal(await page.evaluate(()=>window.sameObject),true);
