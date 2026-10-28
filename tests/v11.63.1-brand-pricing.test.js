@@ -89,3 +89,26 @@ test('Carrodrain catalog identifies unpriced visual collections without inventin
  assert.equal(ids.has('kerlox'),false);
  assert.equal(ids.has('liquid-snake'),true);
 });
+
+test('Real Bette and Carrodrain source references reopen with the original version',()=>{
+ const vm=require('node:vm'),fs=require('node:fs'),path=require('node:path');
+ const win={};
+ vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../public/brand-configurators.js'),'utf8'),{window:win,Map,Uint8Array});
+ const find=win.HydroBrandCatalogs.initialExactVariant;
+ const bette=loadReal('Bette');
+ const b=find(bette.groups,{configGroup:'obsolete-group',reference:'7350-000T2'});
+ assert.equal(b.group.id,'betteair');
+ assert.equal(b.variant.reference,'7350-000T2');
+ assert.equal(b.variant.lengthMm,900);
+ assert.equal(b.variant.widthMm,900);
+ const carro=loadReal('Carrodrain');
+ const c=find(carro.groups,{configGroup:'obsolete-group',reference:'100403'});
+ assert.equal(c.group.id,'cayman');
+ assert.equal(c.variant.reference,'100403');
+ assert.equal(c.variant.version,'LOW');
+ assert.equal(c.variant.length,'600');
+ assert.equal(c.variant.finish,'INOX stainless steel');
+});
+function loadReal(brand){
+ return require('../scripts/audit-brand-pricing').load(brand);
+}
