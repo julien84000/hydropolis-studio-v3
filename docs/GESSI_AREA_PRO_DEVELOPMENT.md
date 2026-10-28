@@ -1,3 +1,17 @@
+## État actuel — 28 octobre 2026 — 11.63.9
+
+**Consigne actuelle de Julien : fiches techniques uniquement. Ne pas développer d’intégration BIM ni CAO.** Les mentions BIM/CAO ci-dessous décrivent les recherches historiques et ne sont plus le périmètre demandé.
+
+PR #44 fusionnée dans main : db9df190f28c2806dcc7e2be88cc4b27182ca4bb. Commit de release : 592712208eccbc096bc689a5caae3542a52bc4ce. CI complète réussie : run 40776763802 (124 tests, syntaxe et parcours navigateur desktop/mobile, régressions existantes). Version applicative 11.63.9. Déploiement Render déclenché par la fusion ; sa version servie doit encore être confirmée, le dernier contrôle à 22:04 UTC renvoyant 11.63.8 / PostgreSQL OK.
+
+Livré dans le code fusionné : menu officiel FR (9 univers, 79 entrées), photographies de collections, grille visuelle des finitions, objets/prix des 16 211 références conservés, consultation fabricant des collections non tarifées, navigation clavier et cache du menu.
+
+Reste : fiches techniques exactes par article, navigation des sous-séries, import vérifié des articles non tarifés. L’API GetProductAttachments interrogée sur les dix modèles des fixtures ne renvoie que BIM ou aucune pièce jointe : aucun de ces liens ne doit être présenté comme une fiche technique PDF. Rechercher la source officielle PDF et vérifier la référence dans le document avant association.
+
+**Prompt de reprise :** Reprends Hydropolis Studio depuis le dernier main, après PR #44 / release 11.63.9. Vérifie PR/CI récentes et Render /api/version + /api/health ; lis ce journal et docs/GESSI_AREA_PRO_DEVELOPMENT.md. Poursuis uniquement les fiches techniques Gessi (pas BIM/CAO), puis les sous-séries et articles officiels non tarifés. Préserve les tarifs, les autres marques et la PR Bette #43. Sauvegarde fréquemment sur GitHub et fournis un prompt à chaque checkpoint.
+
+---
+
 # Gessi Area Pro — reprise V11.64.0
 
 ## Sauvegarde 1 — sources officielles (28 octobre 2026)
