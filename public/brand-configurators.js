@@ -36,6 +36,9 @@
   // Every unverified family remains unpictured rather than borrowing a neighbour.
   const verifiedModelPhotos={
     Bette:{
+      'BetteArt':'https://content.my-bette.com/produkt_bilder/BetteArt-134583/13719/image-thumb__13719__ProductEntryThumbImage/Produktdetail_BetteArt_Buehne_01.d57bd45d.png',
+      'BetteLux':'https://content.my-bette.com/produkt_bilder/BetteLux-134554/13445/image-thumb__13445__ProductEntryThumbImage/Produktdetail_Buehne_Lux_2.93371e1d.png',
+      'BetteStarlet':'https://content.my-bette.com/produkt_bilder/BetteStarlet-133350/9714/image-thumb__9714__ProductEntryThumbImage/Produktdetail_Buehne_Starlet_1.eb042cd4.png',
       'BetteOcean':'https://content.my-bette.com/produkt_bilder/BetteOcean-133427/185639/image-thumb__185639__ProductEntryThumbImage/BEMI_Ocean_8856_000_UB_Persp1_Website_content.0f5a05ff.png',
       'BetteStarlet I':'https://content.my-bette.com/produkt_bilder/BetteStarlet-I-134599/186084/image-thumb__186084__ProductEntryThumbImage/BEMI_Starlet_I_8310_790_EB_Website_content.784ee395.png'
     }
