@@ -52,6 +52,18 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     await page.keyboard.press('Escape');
     await page.locator('.sbordoni-documents').waitFor({state:'detached'});
     check('fermeture clavier fiches Sbordoni',await page.locator('.sbordoni-documents').count()===0);
+    // Real HTTP and image decode regression, not just source-file presence.
+    const hdImageResponse=await page.request.get(base+'/sbordoni/compositions/5700-G571.jpg');
+    check('Composition Sbordoni HD consultable',hdImageResponse.ok()&&String(hdImageResponse.headers()['content-type']||'').includes('image/jpeg'));
+    const hdDimensions=await page.evaluate(()=>new Promise((resolve,reject)=>{
+      const img=new Image();img.onload=()=>resolve([img.naturalWidth,img.naturalHeight]);
+      img.onerror=()=>reject(new Error('Impossible de charger image 5700-G571'));
+      img.src='/sbordoni/compositions/5700-G571.jpg';
+    }));
+    check('Composition 5700-G571 : dimensions du PDF haute résolution',hdDimensions[0]>=400&&hdDimensions[1]>=390);
+    const hdManifestResponse=await page.request.get(base+'/sbordoni/compositions/hd-manifest.json');
+    check('Audit HD Sbordoni accessible',hdManifestResponse.ok()&&(await hdManifestResponse.json()).count===99);
+
 
     report.loadMs=Date.now()-started;
     report.counts=await page.evaluate(()=>{let counts={};for(const p of CATALOG)counts[p.manufacturer]=(counts[p.manufacturer]||0)+1;return counts;});
