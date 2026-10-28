@@ -1,12 +1,12 @@
 {
-  "version": "2026-FR-v9",
+  "version": "2026-FR-v10",
   "supplierSource": "Tarif_FR_2026.pdf",
   "scope": "Every one of the 38 models and 8 product categories",
-  "warning": "automatic_rules_present is not proof that all combinations or commercial options are covered; partial slots must remain pending",
+  "warning": "35 groups have some automatic rules; NOT 35 fully priced groups. Verify every variant and source cell. Unverified prices remain pending.",
   "summary": {
-    "automaticRules": 31,
-    "withPartialConfigurator": 5,
-    "withoutAutomatic": 2
+    "automaticRules": 35,
+    "withPartialConfigurator": 2,
+    "withoutAutomatic": 1
   },
   "groups": [
     {
@@ -24,10 +24,10 @@
       "model": "Extraplano Central / 1/4 rond",
       "kind": "shower-tray",
       "sourcePage": "4",
-      "classification": "partial_configurator_without_verified_price_matrix",
+      "classification": "automatic_partial_cells",
       "verifiedCellsLoaded": 0,
       "unverifiedCells": 0,
-      "notes": null
+      "notes": "Automatic only on explicitly verified variants, other options still pending; no interpolation."
     },
     {
       "category": "Receveur",
@@ -204,10 +204,10 @@
       "model": "Axis",
       "kind": "basin",
       "sourcePage": "38",
-      "classification": "no_automatic_tariff",
+      "classification": "automatic_partial_cells",
       "verifiedCellsLoaded": 0,
       "unverifiedCells": 0,
-      "notes": null
+      "notes": "Automatic only on explicitly verified variants, other options still pending; no interpolation."
     },
     {
       "category": "Vasque",
@@ -217,7 +217,7 @@
       "classification": "automatic_partial_cells",
       "verifiedCellsLoaded": 0,
       "unverifiedCells": 0,
-      "notes": "Only explicitly sourced cells or variants are automatic. Other variations remain pending; no interpolation."
+      "notes": "Automatic only on explicitly verified variants, other options still pending; no interpolation."
     },
     {
       "category": "Vasque",
@@ -227,7 +227,7 @@
       "classification": "automatic_partial_cells",
       "verifiedCellsLoaded": 0,
       "unverifiedCells": 0,
-      "notes": "Only explicitly sourced cells or variants are automatic. Other variations remain pending; no interpolation."
+      "notes": "Automatic only on explicitly verified variants, other options still pending; no interpolation."
     },
     {
       "category": "Vasque",
@@ -237,7 +237,7 @@
       "classification": "automatic_partial_cells",
       "verifiedCellsLoaded": 0,
       "unverifiedCells": 0,
-      "notes": "Only explicitly sourced cells or variants are automatic. Other variations remain pending; no interpolation."
+      "notes": "Automatic only on explicitly verified variants, other options still pending; no interpolation."
     },
     {
       "category": "Vasque",
@@ -247,7 +247,7 @@
       "classification": "automatic_partial_cells",
       "verifiedCellsLoaded": 0,
       "unverifiedCells": 0,
-      "notes": "Only explicitly sourced cells or variants are automatic. Other variations remain pending; no interpolation."
+      "notes": "Automatic only on explicitly verified variants, other options still pending; no interpolation."
     },
     {
       "category": "Vasque",
@@ -257,7 +257,7 @@
       "classification": "automatic_partial_cells",
       "verifiedCellsLoaded": 0,
       "unverifiedCells": 0,
-      "notes": "Only explicitly sourced cells or variants are automatic. Other variations remain pending; no interpolation."
+      "notes": "Automatic only on explicitly verified variants, other options still pending; no interpolation."
     },
     {
       "category": "Baignoire",
@@ -324,20 +324,20 @@
       "model": "Frame",
       "kind": "furniture",
       "sourcePage": "60",
-      "classification": "partial_configurator_without_verified_price_matrix",
+      "classification": "automatic_partial_cells",
       "verifiedCellsLoaded": 0,
       "unverifiedCells": 0,
-      "notes": null
+      "notes": "Automatic only on explicitly verified variants, other options still pending; no interpolation."
     },
     {
       "category": "Meuble",
       "model": "Gesto",
       "kind": "furniture",
       "sourcePage": "62",
-      "classification": "partial_configurator_without_verified_price_matrix",
+      "classification": "automatic_partial_cells",
       "verifiedCellsLoaded": 0,
       "unverifiedCells": 0,
-      "notes": null
+      "notes": "Automatic only on explicitly verified variants, other options still pending; no interpolation."
     },
     {
       "category": "Miroir",
@@ -377,7 +377,7 @@
       "classification": "automatic_partial_cells",
       "verifiedCellsLoaded": 0,
       "unverifiedCells": 0,
-      "notes": "Only explicitly sourced cells or variants are automatic. Other variations remain pending; no interpolation."
+      "notes": "Automatic only on explicitly verified variants, other options still pending; no interpolation."
     },
     {
       "category": "Complément",
@@ -387,7 +387,7 @@
       "classification": "automatic_partial_cells",
       "verifiedCellsLoaded": 0,
       "unverifiedCells": 0,
-      "notes": "Only explicitly sourced cells or variants are automatic. Other variations remain pending; no interpolation."
+      "notes": "Automatic only on explicitly verified variants, other options still pending; no interpolation."
     }
   ]
 }
