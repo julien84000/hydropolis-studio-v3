@@ -91,3 +91,29 @@ test('V11.62.4 references appear on photo overlay; broken URL preserves photo ar
  assert.ok(Object.values(d.byCollection.Archie).every(v=>v.startsWith('https://hotbath.com/images/compano/')));
  assert.match(d.byCollection.Archie.AR003,/AR003IX_02\.png/);
 });
+
+
+test('Gessi-style manufacturer finish cards preserve exact SKU and never dress generic model photos as exact finishes',()=>{
+ const guide=api();
+ const media={collections:{finishModels:{'Lefroy Brooks':{BL1185:{CP:'https://uk.lefroybrooks.com/BL1185-CP.jpg'}}},models:{'Lefroy Brooks':{BL1185:'https://uk.lefroybrooks.com/BL1185-generic.jpg'}}},hotbath:{}};
+ const variants=[
+  {manufacturer:'Lefroy Brooks',collection:'1900 Classic',base:'BL1185',reference:'BL1185-CP',finishCode:'CP',finish:'Chrome',price:400},
+  {manufacturer:'Lefroy Brooks',collection:'1900 Classic',base:'BL1185',reference:'BL1185-NK',finishCode:'NK',finish:'Nickel',price:450}
+ ];
+ const html=guide.finishTiles('Lefroy Brooks',variants,'BL1185-NK','BL1185',media);
+ assert.match(html,/role="group"/);
+ assert.match(html,/data-mg-finish="BL1185-CP"/);
+ assert.match(html,/data-mg-finish="BL1185-NK" aria-pressed="true"/);
+ assert.match(html,/BL1185-CP\.jpg/);
+ assert.doesNotMatch(html,/BL1185-generic\.jpg/);
+ assert.match(html,/Finition à confirmer sur photo/);
+ assert.equal(variants[0].price,400);
+ assert.equal(variants[1].price,450);
+ const misleading=[{...variants[1],image:'https://images.example.test/BL1185-NK.jpg',imageSource:'exact'}];
+ const safe=guide.finishTiles('Lefroy Brooks',misleading,misleading[0].reference,'BL1185',media);
+ assert.equal(safe.includes('images.example.test'),false);
+ assert.match(safe,/Finition à confirmer sur photo/);
+ const css=fs.readFileSync(path.join(dir,'styles.css'),'utf8');
+ assert.match(css,/\.mg-visual-finishes\{/);
+ assert.match(css,/\.mg-visual-finish\[aria-pressed="true"\]/);
+});

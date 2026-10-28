@@ -1,3 +1,17 @@
+## Validation du modèle visuel partagé — 28 octobre 2026 — V11.64.2 (PR #47)
+
+- Dernier `main` intégré : `d33a83c0bbc3e3a7e3ab548d8f28d48865b675fa` (V11.64.1, Gessi sous-séries et fiches techniques préservées). Branche `feat/shared-gessi-visual-pattern-v1164` : merge de reprise avec parents explicites (branche + `main`), aucun ancien fichier Gessi remplacé.
+- Configurateurs Zucchetti et Lefroy Brooks : choix de finition par cartes, photos strictement associées au code de finition de l'index officiel, tarif / référence de l'objet original conservés. Hotbath : habillage harmonisé.
+- Test Node ajouté aux guides fabricant ; test navigateur Chromium ajouté à `tests/browser-consolidated.js` pour desktop 1440 et mobile 390, les deux marques, prix/référence exacts, absence de débordement, une seule image principale et callback d'ajout.
+- Validation antérieure PR #47 : CI réussie sur `c49b755`, run 40780181293. Les tests supplémentaires et ce merge V11.64.2 nécessitent une **nouvelle CI finale verte** avant toute fusion.
+- `package.json` et `package-lock.json` alignés sur 11.64.2 afin de renouveler les caches. Projet utilisateurs, tarifs, catalogues, PDF et règles de remise inchangés.
+- PR Bette #43 reste séparée. **Non déployé tant que la PR #47 n'est pas fusionnée et Render contrôlé.**
+
+### Prompt de reprise autonome
+Lire cette section, `docs/VISUAL_CONFIGURATORS_MIGRATION.md`, la PR #47 et ses derniers checks GitHub. Vérifier que `main` n'a pas avancé. Si CI finale verte, vérifier le parcours visuel de Zucchetti/Lefroy (1440 et 390), prix et images. Fusionner seulement la PR valide, vérifier les endpoints Render `/api/version` et `/api/health` (attendu : V11.64.2) ; puis poursuivre la migration spécifique Bette, Hidrobox, Carrodrain et Sbordoni sur une branche isolée.
+
+---
+
 ## Validation Gessi sous-séries — 28 octobre 2026
 
 - PR #45 fusionnée dans `main` : commit `b891e41488594ee40622e6494b0b5aff05773bf5`, CI de branche `40778154441` réussie.
