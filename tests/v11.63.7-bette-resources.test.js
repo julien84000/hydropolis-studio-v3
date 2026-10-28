@@ -24,8 +24,9 @@ test('Bette: official product family links are strict and never inferred from ne
  assert.equal(bette.resolve('BetteFlat Pro').productPage,'','no silent product variant substitution');
  assert.equal(bette.resolve('Unknown').technicalSheetUrl,'','no guessed technical document');
  const sheet=bette.resolve('LaBette');
- assert.equal(sheet.technicalScope,'family');
- assert.match(sheet.technicalSheetUrl,/^https:\/\/content\.my-bette\.com\/.+DS-LaBette-BW_0069-FR\.pdf$/);
+ assert.equal(sheet.technicalScope,'missing','no direct PDF URL should be asserted without byte-level verification');
+ assert.equal(sheet.technicalSheetUrl,'');
+ assert.equal(sheet.productPage,'https://www.my-bette.com/fr/produit/baignoires/labette');
 });
 test('Bette: official resources loaded before configuration; visuals not asserted exact without finish proof',()=>{
  assert.ok(html.indexOf('bette-official-resources.js')<html.indexOf('brand-configurators.js'));
