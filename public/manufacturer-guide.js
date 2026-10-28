@@ -34,6 +34,10 @@ function displayCollection(brand,value){
    if(normal==='belleaire')return '1950 Belle Aire';
  }
  if(brand==='Zucchetti'){
+   // The imported tariff uses "Zucchetti" as an umbrella label for parts and
+   // uncategorised SKUs. It is not a manufacturer collection; keep these rows
+   // available without incorrectly presenting them as a named collection.
+   if(normal==='zucchetti')return 'Références sans collection attribuée';
    for(const label of ORDER[brand])if(nrm(label)===normal)return label;
  }
  if(brand==='Hotbath'){
@@ -82,12 +86,21 @@ function subtypeLabel(p){
 const validPrice=p=>Number.isFinite(Number(p?.totalPrice??p?.price))&&Number(p?.totalPrice??p?.price)>0;
 let mediaPromise=null;
 async function getMedia(){
- if(!mediaPromise)mediaPromise=Promise.all([
-   fetch('/brand-guide-collections.json',{cache:'force-cache'}).then(r=>{if(!r.ok)throw Error('Collection '+r.status);return r.json()}),
-   fetch('/brand-guide-hotbath-media.json',{cache:'force-cache'}).then(r=>{if(!r.ok)throw Error('Hotbath '+r.status);return r.json()})
- ]).then(([collections,hotbath])=>({collections,hotbath})).catch(e=>{
-   mediaPromise=null;console.warn('[ManufacturerGuide] images index unavailable',e);return {collections:{collections:{},models:{}},hotbath:{models:{},collections:{}}};
- });
+ if(!mediaPromise){
+   let failed=false;
+   // Zucchetti/Lefroy Brooks must retain their own photos if Hotbath media
+   // is temporarily unavailable (and vice versa). Retry failed indexes next time.
+   const request=(url,label,fallback)=>fetch(url,{cache:'force-cache'})
+     .then(r=>{if(!r.ok)throw Error(label+' '+r.status);return r.json()})
+     .catch(e=>{failed=true;console.warn('[ManufacturerGuide] '+label+' index unavailable',e);return fallback});
+   mediaPromise=Promise.all([
+     request('/brand-guide-collections.json','Collections',{collections:{},models:{}}),
+     request('/brand-guide-hotbath-media.json','Hotbath',{models:{},collections:{}})
+   ]).then(([collections,hotbath])=>{
+     if(failed)mediaPromise=null;
+     return {collections,hotbath};
+   });
+ }
  return mediaPromise;
 }
 function findCollectionVisual(brand,name,media){
@@ -235,5 +248,5 @@ function open(brand,rows,roomId,onAdd){
  getMedia().then(m=>{if(!overlay.isConnected)return;media=m;state.media=m;render()});
  return state;
 }
-root.HydroManufacturerGuide={isSupported,open,displayCollection,modelBase,groupProducts,groupModels,findCollectionVisual,findModelVisual};
+root.HydroManufacturerGuide={isSupported,open,displayCollection,modelBase,groupProducts,groupModels,findCollectionVisual,findModelVisual,getMedia};
 })(window);
