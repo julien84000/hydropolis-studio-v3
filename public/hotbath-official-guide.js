@@ -49,6 +49,13 @@ function photo(model,collection,photos){
  const dict=photos?.byCollection?.[collection]||{};
  const key=clean(model?.base);
  if(!key)return '';
+ // Prefer newer manufacturer photos when the exact model appears on its current
+ // collection page, rather than an historical hotbath.it URL that may return 404.
+ for(const [ref,source] of Object.entries(photos?.modernImageOverrides?.[collection]||{})){
+  if(clean(ref)!==key)continue;
+  const current=String(source?.url||'').match(/^https:\/\/hotbath\.com\/images\/compano\/([^/?#]+)\//i);
+  if(current&&clean(current[1])===key)return source.url;
+ }
  for(const [ref,url] of Object.entries(dict)){
   if(clean(ref)!==key||typeof url!=='string')continue;
   const current=url.match(/^https:\/\/hotbath\.com\/images\/compano\/([^/?#]+)\//i);
@@ -121,7 +128,7 @@ function openHotbath(rows,roomId,onAdd){
        const cats=categories(name,taxonomy,prices);
        const entry=photos?.collectionImages?.[name];
        const first=Object.values(photos?.byCollection?.[name]||{}).find(Boolean);
-       return {name,id:name,action:'collection',image:validURL(entry)||first||'',
+       return {name,id:name,action:'collection',image:validURL(photos?.modernCollectionImages?.[name])||validURL(entry)||first||'',
          note:cats.filter(x=>!x.extra).length+' catégories · '+new Set(cats.filter(x=>!x.extra).flatMap(x=>x.refs)).size+' articles'};
      }),'mg-collections');
    }else if(phase==='categories'){
