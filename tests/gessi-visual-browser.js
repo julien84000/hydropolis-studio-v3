@@ -10,7 +10,7 @@ const {chromium}=require('playwright');
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.route('https://hydropolis.test/**',route=>{
    const name=new URL(route.request().url()).pathname.slice(1);
-   if(!name)return route.fulfill({contentType:'text/html',body:'<html><head><link rel="stylesheet" href="/gessi-area-pro.css"></head><body><button id="opener">Gessi</button><script src="/gessi-area-pro.js"></script></body></html>'});
+   if(!name)return route.fulfill({contentType:'text/html; charset=utf-8',body:'<html><head><meta charset="utf-8"><link rel="stylesheet" href="/gessi-area-pro.css"></head><body><button id="opener">Gessi</button><script src="/gessi-area-pro.js"></script></body></html>'});
    return route.fulfill({path:path.join(root,name)});
   });
   const png=require('@napi-rs/canvas').createCanvas(8,8).toBuffer('image/png');

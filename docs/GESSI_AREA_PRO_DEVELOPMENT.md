@@ -32,3 +32,19 @@ Réalisé :
 Partiel : les sous-séries sont conservées dans les données mais pas encore navigables. Les listes d'articles officiels non tarifés, les nouvelles photos par finition et les documents techniques/BIM dynamiques ne sont pas encore intégrés. Les captures 66134 sont disponibles pour ces développements.
 
 Reprise courte : reprendre feat/gessi-official-resources-1164 ; lire ce document et docs/REPRISE_CHATGPT.md ; vérifier la PR de cette branche et la CI, puis le dernier main et PR Bette #43. Terminer/valider le test navigateur avant fusion. Continuer le chargement des articles et sous-séries officiels ainsi que leurs documents, sans modifier les tarifs existants. Faire des commits fréquents. Ne pas annoncer de déploiement sans vérification /api/version et /api/health.
+
+## Repères techniques pour la suite (sources publiques observées)
+
+PR de sauvegarde : https://github.com/julien84000/hydropolis-studio-v3/pull/44 ; interface sauvegardée dans e7b5235aef663789f93957886fd2c15c3c82be3b.
+
+Le bundle officiel Area Pro `main.f95a8e91457564e7.js` utilise la base `https://g-ecatalogue-be-prod-we.azurewebsites.net` :
+- `/public/menu/get?country=FR&language=fr` : capture complète dans tests/fixtures/gessi-areapro/menu-fr.json.
+- `/public/product/GetProductList?country=FR&language=fr&collection=<collectionId>&ambient=<ambientId>&page=1`, avec `serie=<serieId>` pour une sous-série. Les ID exacts sont dans public/gessi-area-pro-menu.json. Réponse : data.products, data.nextPageToken, data.totCount. Le site transmet le jeton suivant par l'en-tête `X-Continuation-Token-Cosmos` ; ne pas tronquer silencieusement les résultats.
+- `/public/product/GetProductDetails?country=FR&language=fr&productCode=66134` : capture dans product-66134.json. data.product.productsConfigured contient finitureId, configuredCode, version et specificFeatureProductImg. Ne pas confondre un code commercial modèle/finition avec configuredCode, ni sélectionner arbitrairement entre plusieurs versions partageant une finition.
+- `/public/product/GetProductAttachments?country=FR&language=fr&productCode=66134` : capture attachments-66134.json. Pour cet article, lien BIMObject officiel présent ; ne pas inventer un PDF technique absent.
+
+Dimensions : lire product.technical, jamais packageHeight/Width/Length (emballage). Images officielles de collections sur gwebassets.gessi.com ; photographies produit/finition sur gessistorage.blob.core.windows.net ; nuanciers sur gessistorage.azureedge.net. Les tarifs priceInfo des captures sont null : préserver le tarif Hydropolis comme seule autorité de prix.
+
+Intégration recommandée : route serveur à URL fabricant fixe, validation des ID contre le menu, timeout, taille et cache bornés ; chargement à la demande pour éviter de ralentir les autres marques. L'ajout existant passe volontairement l'objet tarifaire original à onAdd(p). Vérifier aussi le lanceur manufacturer-guide/app.js avant de vouloir propager de nouveaux documents au projet : son callback résout aujourd'hui la référence dans le catalogue.
+
+CI run 40776014311 : tests métier et navigateur existants réussis ; le nouveau parcours Gessi passe desktop/mobile jusqu'à l'assertion du texte français non tarifé. Échec identifié dans la page de test synthétique sans charset UTF-8 (texte interprété en Latin-1), pas dans l'application réelle. Page de test corrigée avec content-type UTF-8 et meta charset ; relancer la CI. Aucun test supprimé ou assoupli.
