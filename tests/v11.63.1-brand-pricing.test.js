@@ -38,3 +38,21 @@ test('Buying conditions are stored separately from public list prices',()=>{
   }
  }
 });
+
+test('Supplier quote at commit never re-applies Hidrobox uplift or stores invalid prices',()=>{
+ const vm=require('node:vm');
+ const fs=require('node:fs');
+ const path=require('node:path');
+ const win={};
+ const code=fs.readFileSync(path.join(__dirname,'../public/brand-configurators.js'),'utf8');
+ vm.runInNewContext(code,{window:win,Map,Uint8Array});
+ const verified=win.HydroBrandCatalogs.verifiedPublicPrice;
+ assert.equal(verified('Hidrobox',{reference:'SARC0361',rawPrice:571,price:593.84}),593.84);
+ assert.equal(verified('Bette',{reference:'TEST',price:728}),728);
+ assert.equal(verified('Carrodrain',{reference:'TEST',price:195}),195);
+ assert.throws(()=>verified('Hidrobox',{rawPrice:571,price:617.59}),/4 %/);
+ assert.throws(()=>verified('Hidrobox',{price:593.84}),/Tarif source/);
+ assert.throws(()=>verified('Bette',{price:0}),/Prix public HT/);
+ assert.throws(()=>verified('Carrodrain',{price:'non tarifé'}),/Prix public HT/);
+ assert.match(code,/image:media.image\|\|media.representativeImage,imageSource:media.image/);
+});
