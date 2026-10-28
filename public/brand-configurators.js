@@ -91,11 +91,12 @@
       const active=g&&g.id===chosenGroup?' is-active':'';
       const item=g
         ?'<button type="button" class="carrodrain-gallery-card'+active+'" data-carrodrain-group="'+esc(g.id)+'" aria-label="Configurer '+esc(m.name)+'">'+common+'</button>'
-        :'<a class="carrodrain-gallery-card" href="'+esc(m.url)+'" target="_blank" rel="noopener noreferrer" aria-label="Voir '+esc(m.name)+' sur Carrodrain">'+common+'<em>Voir chez Carrodrain</em></a>';
+        :'<a class="carrodrain-gallery-card" href="'+esc(m.url)+'" target="_blank" rel="noopener noreferrer" aria-label="Voir '+esc(m.name)+' sur Carrodrain">'+common+'<em>Hors tarif importé · Voir chez Carrodrain</em></a>';
       return {family:m.family,markup:item};
     });
     const families=['Essentials','Invisibles','Liquids','Accessoires'];
-    return '<div class="carrodrain-gallery-intro">Sélectionnez une collection, puis configurez la version, la longueur et la finition. Visuels officiels de gamme, non contractuels pour la finition choisie.</div>'
+    const priced=CARRODRAIN_MODELS.filter(m=>(groups||[]).some(g=>carrodrainVisual(g)?.id===m.id)).length;
+    return '<div class="carrodrain-gallery-intro">'+priced+' collections tarifées sur '+CARRODRAIN_MODELS.length+' présentées. Les collections sans grille ne peuvent pas être ajoutées automatiquement. Visuels officiels de gamme, non contractuels pour la finition choisie.</div>'
       +families.map(f=>'<section class="carrodrain-gallery-section"><h3>'+esc(f)+'</h3><div class="carrodrain-gallery-grid">'+cards.filter(x=>x.family===f).map(x=>x.markup).join('')+'</div></section>').join('');
   }
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
