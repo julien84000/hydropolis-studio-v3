@@ -163,8 +163,11 @@ function openHotbath(rows,roomId,onAdd){
        '<small>'+(photo(current,collection,photos)?'Photo fabricant du modèle · finition illustrative':'Image non vérifiée pour la finition')+'</small></div>'+
        '<div class="mg-config"><div class="mg-ref">Référence : '+esc(current.base)+'</div>'+
        '<h3>'+esc(p?.designation||current.base)+'</h3>'+
-       (variants.length?'<label class="mg-finishes">Référence et finition<select id="hb-finish">'+variants.map(v=>
-         '<option value="'+esc(v.reference)+'" '+(chosen===v.reference?'selected':'')+'>'+esc(v.finish||v.finishCode||'Standard')+' · '+esc(v.reference)+'</option>').join('')+'</select></label>':'')+
+       (variants.length?'<div class="hb-variant-select"><label class="mg-finishes">Référence et finition<select id="hb-finish">'+variants.map(v=>
+         '<option value="'+esc(v.reference)+'" '+(chosen===v.reference?'selected':'')+'>'+esc(v.finish||v.finishCode||'Standard')+' · '+esc(v.reference)+'</option>').join('')+'</select></label>'+
+         '<div class="hb-finish-options" role="group" aria-label="Choisir une finition Hotbath">'+variants.map(v=>
+         '<button class="hb-finish-option'+(chosen===v.reference?' is-current':'')+'" type="button" data-hb-finish-ref="'+esc(v.reference)+'" aria-pressed="'+(chosen===v.reference)+'">'+
+         '<span>'+esc(v.finish||v.finishCode||'Standard')+'</span><small>'+esc(v.reference)+'</small></button>').join('')+'</div></div>':'')+
        (hasPrice?'<div class="mg-finalref">Référence tarif : <b>'+esc(p.reference)+'</b></div><strong class="mg-price">'+euro(price(p))+' HT</strong>':
         '<strong class="mg-price">Tarif à importer</strong><p class="mg-guide-note">Cette référence figure dans le catalogue officiel Hotbath, mais aucune correspondance tarifaire sûre n’est disponible dans Hydropolis. Aucun montant n’a été inventé.</p>')+
        (p?.internalReference?'<p class="mg-roughin">Corps technique : '+esc(p.internalReference)+' · '+euro(p.internalPrice||0)+' HT</p>':'')+
@@ -195,6 +198,10 @@ function openHotbath(rows,roomId,onAdd){
    if(next)next.onclick=()=>{offset+=1;render()};
    const finish=target.querySelector('#hb-finish');
    if(finish)finish.onchange=()=>{chosen=finish.value;render()};
+   target.querySelectorAll('[data-hb-finish-ref]').forEach(button=>button.onclick=()=>{
+     chosen=button.dataset.hbFinishRef;
+     render();
+   });
    const add=target.querySelector('#hb-add');
    if(add)add.onclick=()=>{const rec=(current.variants||[]).find(p=>p.reference===chosen);if(!rec||!(price(rec)>0))return;try{onAdd(rec);close()}catch(e){alert('Impossible d’ajouter : '+e.message)}};
  }
