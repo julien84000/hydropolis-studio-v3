@@ -83,3 +83,17 @@ Branche de travail : `feat/v11.63.1-brands-pricing-integrity`. PR : https://gith
 - **Carrodrain** : galerie 14 familles, **12 réellement tarifées** dans la matrice importée ; Invisible Disco et Kerlox sont proposés comme liens fournisseur, non tarifés automatiquement.
 - **À poursuivre** : comparer ces données importées directement aux tarifs source sur toutes les références (cohérence interne ≠ exhaustivité), compléter les documents et visuels exacts Bette/Hidrobox/Carrodrain, puis Zucchetti et Lefroy Brooks. Préserver Resigres, Sbordoni et Hotbath.
 - Rapport durable : `docs/BRAND_PRICING_AUDIT_V11.63.1.md`. Aucun projet utilisateur ancien n'a été manipulé en production lors de ces tests.
+
+## V11.63.2 — Hotbath : photographies constructeur et grille par collection
+
+**Point de départ** : `main` V11.63.1, commit `b788977875fb8c6fa1aaad87dce9cb18c34b18e0` ; préserve les audits Bette/Hidrobox/Carrodrain, Resigres V11.62.11, Sbordoni V11.63.0 et Hotbath prix d'origine.
+
+- Audit initial des 53 catégories et de leurs 647 associations référence/catégorie : seules **264** avaient une photographie liée à une référence exacte dans l'ancienne taxonomie (les nombres sont comptés par catégorie, y compris références répétées entre catégories).
+- Sources officielles consultées : grilles produits de `hotbath.com/en-gb/collections/` pour Gent, Archie, Chap, Cobber, Cobber X, Gal, Ace, Mate, Fellow, Tron ; la plupart des visuels déjà indexés proviennent de ces pages actuelles. Une nouvelle correspondance Archie AR096-20 a été ajoutée.
+- **367 photos supplémentaires** trouvées dans les **53 grilles historiques officielles `hotbath.it/fr/prods/`**, uniquement lorsque le nom du fichier image photographique comporte **exactement** la référence modèle attendue pour la même collection et catégorie (après normalisation des points, tirets et accents). Aucune image approchante ou d'une autre collection n'est attribuée automatiquement.
+- **Couverture : 631/647 associations (97,5 %)** d'après les métadonnées ; 16 restent sans photographie certifiée. Ne pas inventer d'image pour AR131/AR129 et les autres références manquantes ; ne pas remplacer le prix ou la finition par ceux d'un modèle voisin.
+- Les URLs et leurs pages d'origine sont enregistrées sous `officialHistoricalSources` et `official2026Sources` dans `public/brand-guide-hotbath-media.json`. La grille affiche des photos de produit sur carré clair avec la référence sous l'image (style Hotbath) et un compteur photos/références. CSS strictement limité à `.mg-hotbath-official`.
+- Les finitions continuent d'être sélectionnées uniquement sur les références tarifaires existantes, avec le prix du catalogue et les corps techniques éventuels. Les visuels de modèle ne sont **pas** présentés comme exacts pour toutes les finitions.
+- Tests unitaires : audit de la couverture 631/647 et contrôle des 367 associations nom de fichier = modèle. Test Chromium : naviguer jusqu'à Archie AR003, vérifier que le JPEG fournisseur est réellement chargé et que la référence figure sous l'image. Les autres fabricants ne sont pas modifiés.
+
+**Livraison** : PR à vérifier et CI complète à faire passer avant toute fusion ou contrôle de production. Aucun prix ni référence article n'a été inventé.
