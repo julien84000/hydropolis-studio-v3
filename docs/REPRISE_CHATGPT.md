@@ -48,3 +48,15 @@ Reprends Hydropolis Studio sur https://github.com/julien84000/hydropolis-studio-
 
 ### Suite prévue
 Reprendre les audits Hidrobox/Bette/Carrodrain puis Zucchetti et Lefroy Brooks, sans supprimer les prix ou les visuels officiels Hotbath. Les remises, grilles tarifaires et configurations enregistrées doivent être comparées aux sources. Mettre ce journal à jour après chaque validation.
+
+## Livraison V11.63.0 confirmée — 28 octobre 2026
+
+- **PR #33 fusionnée** : https://github.com/julien84000/hydropolis-studio-v3/pull/33, commit de fusion `a33170f25787e258838184db41e5039b54786a88`. La branche conserve tous les changements de `main` jusqu'aux correctifs Resigres V11.62.11.
+- **CI de branche sur dernier commit** : https://github.com/julien84000/hydropolis-studio-v3/actions/runs/40712272924 — `npm ci`, `npm run check`, `npm test` (y compris les nouveaux tests des 99 JPEG), `npm run build`, et `npm run test:browser` sous Chromium : **success**.
+- **CI du commit fusionné sur main** : https://github.com/julien84000/hydropolis-studio-v3/actions/runs/40712643910 — **success**, y compris Chromium.
+- **Render vérifié en ligne** : `GET /api/version` → `11.63.0` ; `GET /api/health` → `ok: true`, `version: 11.63.0`, `database: postgresql`.
+- **Actifs publics** : `GET /sbordoni/compositions/hd-manifest.json` sert `count: 99` et le SHA source vérifié du catalogue. La lecture directe du JPEG 5700-G571 par un extracteur de contenu web renvoie `empty_content` (binaire image, pas du texte) ; son vrai chargement, son format et ses dimensions ont été vérifiés en test navigateur CI. Ne pas présenter la réponse `empty_content` comme une panne d'image.
+- **Visuels de contrôle** : contact sheet HD de 99 compositions sauvegardée comme artefact du workflow GitHub Sbordoni : https://github.com/julien84000/hydropolis-studio-v3/actions/runs/40711445496. 21 légendes vectorielles supprimées, dont la référence 5700+G571 ; positions et empreintes dans `hd-manifest.json`.
+- **Terminé** : 98 PDF techniques, associations strictes, recherche et migration non destructrice, 99 compositions visuelles haute résolution reconstruite et auditée, nouvelle version 11.63.0 et déploiement vérifié.
+- **Non terminé / à poursuivre** : qualification commerciale de toutes les variantes Sbordoni (notamment photos réellement natives 4K inexistantes si le PDF ne les fournit pas), audits Hidrobox, Bette, Carrodrain, Zucchetti, Lefroy Brooks ; préserver les 12 collections / 53 catégories Hotbath et les tarifs Resigres.
+- Les tests navigateur ont été réalisés sur la base CI isolée, pas sur des projets personnels déjà enregistrés en production. Aucune migration de projets utilisateurs existants n'a été réalisée ou déclarée comme testée en production.
