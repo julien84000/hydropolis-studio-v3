@@ -117,3 +117,30 @@ test('Manual price cannot be entered for inverted dimensions, out-of-grid length
  assert.equal(quote.status,'pending');
  assert.match(quote.reason,/Longueur maximale|Longueur hors grille tarifaire/);
 });
+
+
+test('V11.62.7: Selene offers a one-click recovery for swapped length/depth while retaining source prices',()=>{
+ assert.match(app,/id="rg50SwapHint"/);
+ assert.match(app,/id="rg50SwapButton"/);
+ assert.match(app,/s\.widthCm>maxDepth&&s\.lengthCm>=minDepth&&s\.lengthCm<=maxDepth/);
+ assert.match(app,/previousLength=length\.value/);
+ assert.match(app,/length\.value=depth\.value;depth\.value=previousLength;update\(\)/);
+ assert.match(app,/Exemple Selene : <strong>150 × 51 cm<\/strong>/);
+ const swapped={model:'Selene',kind:'furniture-basin-top',shape:'standard',material:'solid-surface',
+   color:'S-Blanco',basinGroup:'one',widthCm:150,lengthCm:51,paidOptions:{}};
+ assert.equal(V50.basinQuote(cfg,swapped).status,'pending');
+ const repaired=V50.basinQuote(cfg,{...swapped,widthCm:51,lengthCm:150});
+ assert.equal(repaired.status,'automatic');
+ assert.equal(repaired.total,907);
+});
+test('V11.62.7 warns on stale running frontend without silent reload of unsaved projects',()=>{
+ assert.match(app,/function checkForNewVersion\(/);
+ assert.match(app,/fetch\("\/api\/version",\{cache:"no-store"/);
+ assert.match(app,/hydroVersionUpdate/);
+ assert.match(app,/hydroVersionReload/);
+ assert.match(app,/location\.reload\(\)/);
+ assert.match(app,/serviceWorker\.register\("\/sw\.js",\{updateViaCache:"none"\}\)/);
+ const css=fs.readFileSync(path.join(pub,'styles.css'),'utf8');
+ assert.match(css,/\.rg50-swap-hint/);
+ assert.match(css,/#hydroVersionUpdate/);
+});
