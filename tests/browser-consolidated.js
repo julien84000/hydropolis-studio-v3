@@ -575,6 +575,10 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     await page.evaluate(()=>HydroBetteConfigurator.open({manufacturer:'Bette'},state.rooms[0]?.id||''));
     await page.waitForSelector('#brandConfigurator [data-bette-family="showers"]');
     check('Bette : 6 rubriques fabricant',await page.locator('#brandConfigurator [data-bette-family]').count()===6);
+    await page.setViewportSize({width:390,height:844});
+    check('Bette : arborescence sans débordement mobile 390',
+      await page.locator('#brandConfigurator .recor-configurator').evaluate(x=>x.scrollWidth<=x.clientWidth));
+    await page.setViewportSize({width:1440,height:1000});
     await page.locator('#brandConfigurator [data-bette-family="baths"]').click();
     check('Bette : filtres officiels Type, Forme et Fonction disponibles',
       await page.locator('#brandConfigurator .brand-official-facets h3').allTextContents().then(a=>['Type','Forme','Fonction'].every(x=>a.includes(x))));
@@ -605,6 +609,10 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     await page.evaluate(()=>HydroCarrodrainConfigurator.open({manufacturer:'Carrodrain'},state.rooms[0]?.id||''));
     await page.waitForSelector('#brandConfigurator [data-carrodrain-family="Essentials"]',{timeout:20000});
     check('Carrodrain : Essentials, Invisibles, Liquids et accessoires distincts',await page.locator('#brandConfigurator [data-carrodrain-family]').count()===4);
+    await page.setViewportSize({width:390,height:844});
+    check('Carrodrain : familles sans débordement mobile 390',
+      await page.locator('#brandConfigurator .recor-configurator').evaluate(x=>x.scrollWidth<=x.clientWidth));
+    await page.setViewportSize({width:1440,height:1000});
     await page.locator('#brandConfigurator [data-carrodrain-family="Essentials"]').click();
     await page.waitForSelector('#brandConfigurator [data-carrodrain-group="quattro-100"]');
     await page.locator('#brandConfigurator [data-carrodrain-group="quattro-100"]').click();
