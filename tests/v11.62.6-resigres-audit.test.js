@@ -328,6 +328,13 @@ test('Resigres 2026 p52 : eight drawer cabinet pictograms and four distinct fini
  const png=Buffer.from(uri.split(',')[1],'base64');
  assert.equal(png.readUInt32BE(16),352);assert.equal(png.readUInt32BE(20),380);
  assert.equal(png.subarray(-8,-4).toString(),'IEND');
+ const zlib=require('node:zlib');const data=[];let offset=8;
+ while(offset+12<=png.length){const n=png.readUInt32BE(offset),kind=png.toString('ascii',offset+4,offset+8);
+  if(kind==='IDAT')data.push(png.subarray(offset+8,offset+8+n));
+  offset+=12+n;if(kind==='IEND')break;
+ }
+ assert.ok(data.length>0);
+ assert.ok(zlib.inflateSync(Buffer.concat(data)).length>1000,'The actual supplier icon sprite must decode correctly');
  assert.match(app,/function openDrawers\(/);
  assert.match(app,/data-rgdraw-variant/);
 });
