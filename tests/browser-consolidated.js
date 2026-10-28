@@ -177,6 +177,75 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
       const saved=await page.evaluate(item=>state.selected.filter(x=>x.manufacturer==='Resigres'&&x.resigresModel===item.name&&x.resigresKind===item.kind).at(-1),row);
       check('Ajout au projet et prix conservé '+row.name,saved?.price===row.expected+(row.extra||0));
     }
+
+    // V11.62.10: browser regression across newly priced families (not just isolated calculator).
+    const resProduct=async (model,kind)=>{
+      const p=await page.evaluate(({model,kind})=>{
+        const item=CATALOG.find(x=>x.manufacturer==='Resigres'&&x.resigresModel===model&&x.resigresKind===kind);
+        return item?{reference:item.reference,key:productKey(item)}:null;
+      },{model,kind});
+      check('Resigres catalogue '+model+' '+kind,!!p);
+      await page.evaluate(x=>addCatalogProduct(x.reference,state.rooms[0]?.id,x.key),p);
+      await page.waitForSelector('#resigresConfigurator');
+    };
+
+    await resProduct('Axis','basin');
+    await page.locator('#rg48Size').selectOption('axis-free');
+    await page.locator('#rg48Material').selectOption('lisa');
+    await page.locator('#rg48Color').selectOption('Ártico');
+    await page.waitForFunction(()=>document.querySelector('#resigresConfigurator')?._rg48Quote?.total===390);
+    check('Axis : vasque seule Lisa standard 390 EUR HT',await page.locator('#rg48Price').innerText()!=='—');
+    await page.locator('.rg-confirm').click();
+    const axisSaved=await page.evaluate(()=>state.selected.filter(x=>x.manufacturer==='Resigres'&&x.resigresModel==='Axis').at(-1));
+    check('Axis : tarif enregistré dans le projet',axisSaved?.price===390);
+
+    await resProduct('Panneaux / étagères','accessory');
+    await page.locator('#rg48Size').selectOption('panel-area');
+    check('Panneau : dimensions spécifiques affichées',await page.locator('#rg48AreaWidth').isVisible()&&await page.locator('#rg48AreaLength').isVisible());
+    await page.locator('#rg48Material').selectOption('resin');
+    await page.locator('#rg48Color').selectOption('Ártico');
+    await page.locator('#rg48AreaWidth').fill('120');
+    await page.locator('#rg48AreaLength').fill('200');
+    await page.waitForFunction(()=>document.querySelector('#resigresConfigurator')?._rg48Quote?.total===696);
+    await page.locator('#rg48AreaWidth').fill('130');
+    check('Panneau : dimension hors gamme refusée',(await page.evaluate(()=>document.querySelector('#resigresConfigurator')._rg48Quote)).status==='pending');
+    await page.locator('#rg48AreaWidth').fill('120');
+    await page.locator('.rg-confirm').click();
+    const panelSaved=await page.evaluate(()=>state.selected.filter(x=>x.manufacturer==='Resigres'&&x.resigresModel==='Panneaux / étagères').at(-1));
+    check('Panneau : tarif 696 EUR HT enregistré dans le projet',panelSaved?.price===696);
+
+    await resProduct('Frame','furniture');
+    await page.locator('#rg50FType').selectOption('h45-1d-1b');
+    await page.locator('#rg50FMat').selectOption('lacquer');
+    await page.locator('#rg50FColor').selectOption('Arena');
+    await page.locator('#rg50FWidth').fill('48');
+    await page.locator('#rg50FLength').fill('100');
+    await page.locator('#rg50FHeight').fill('45');
+    await page.locator('#rg50FDepth').fill('48');
+    check('Frame : finition plan obligatoire, pas de saisie prix manuel',await page.locator('#rg50FManualWrap').evaluate(e=>e.classList.contains('hidden')));
+    await page.locator('#rg50FTop').selectOption('lisa');
+    await page.locator('#rg50FTopColor').selectOption('Ártico');
+    await page.waitForFunction(()=>document.querySelector('#resigresConfigurator')?._q?.total===2380);
+    await page.locator('#rg50FWidth').fill('60');
+    check('Frame : 60 cm profondeur refusé',(await page.evaluate(()=>document.querySelector('#resigresConfigurator')._q)).status==='pending');
+    await page.locator('#rg50FWidth').fill('48');
+    await page.locator('.rg50-confirm').click();
+    const frameSaved=await page.evaluate(()=>state.selected.filter(x=>x.manufacturer==='Resigres'&&x.resigresModel==='Frame').at(-1));
+    check('Frame H45 : plan + meuble total 2380 EUR HT dans le projet',frameSaved?.price===2380);
+
+    await resProduct('Gesto','furniture');
+    await page.locator('#rg50FType').selectOption('h30');
+    await page.locator('#rg50FMat').selectOption('lacquer');
+    await page.locator('#rg50FColor').selectOption('Arena');
+    await page.locator('#rg50FWidth').fill('50');
+    await page.locator('#rg50FLength').fill('80');
+    await page.locator('#rg50FHeight').fill('30');
+    await page.locator('#rg50FDepth').fill('50');
+    await page.waitForFunction(()=>document.querySelector('#resigresConfigurator')?._q?.total===1198);
+    await page.locator('.rg50-confirm').click();
+    const gestoSaved=await page.evaluate(()=>state.selected.filter(x=>x.manufacturer==='Resigres'&&x.resigresModel==='Gesto').at(-1));
+    check('Gesto H30 : meuble total 1198 EUR HT dans le projet',gestoSaved?.price===1198);
+
     const recor=await page.evaluate(()=>{const p=CATALOG.find(x=>isRecorBathRequiringFeet(x)&&recorCompatibleFeet(x).length);return {reference:p.reference,key:productKey(p)};});
     await page.evaluate(p=>addCatalogProduct(p.reference,state.rooms[0]?.id,p.key),recor);
     await page.waitForSelector('#recorConfigurator input[name="recorFeet"]');
