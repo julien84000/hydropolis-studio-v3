@@ -147,7 +147,7 @@ function finishTiles(brand,variants,active,base,media){
    const exact=visual.match==='exact'?safeUrl(visual.image):'';
    const pressed=p.reference===active;
    return '<button type="button" class="mg-visual-finish'+(pressed?' is-current':'')+'" data-mg-finish="'+esc(p.reference)+'" aria-pressed="'+pressed+'">'+
-    (exact?'<img src="'+esc(exact)+'" alt="" loading="lazy" decoding="async" onerror="this.style.display=\\'none\\'">':'<span class="mg-finish-image-missing" aria-hidden="true">Finition à confirmer sur photo</span>')+
+    (exact?'<img src="'+esc(exact)+'" alt="" loading="lazy" decoding="async" onerror="this.remove()">':'<span class="mg-finish-image-missing" aria-hidden="true">Finition à confirmer sur photo</span>')+
     '<span>'+esc(p.finish||p.finishCode||'Standard')+'</span><small>'+esc(p.reference)+'</small></button>';
   }).join('')+'</div>';
 }
