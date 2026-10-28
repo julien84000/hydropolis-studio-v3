@@ -1,0 +1,913 @@
+{
+  "source": "https://g-ecatalogue-be-prod-we.azurewebsites.net/public/menu/get?country=FR&language=fr",
+  "site": "https://areapro.gessi.com/fr",
+  "retrievedAt": "2026-10-28",
+  "sourceSha256": "87d63298b7982c74c02e70b177180ef82d48a360512dfd3f866bcbf736bc0b79",
+  "areas": [
+    {
+      "id": "haute-culture",
+      "officialId": "6396B908B7AE225F6A0781601D758868EA79B6A8",
+      "name": "HAUTE CULTURE",
+      "collections": [
+        {
+          "id": "5425C0C7EA424E64E6E74CFD914B4C681ED221B5",
+          "name": "PERLE",
+          "sourceName": "PERLE",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/Gessi_Haute_Culture_Perle_5cb4ca98f4.jpg",
+          "series": []
+        },
+        {
+          "id": "019BAAEA74C0562BFF01A3DF1A6B872AD45C83C2",
+          "name": "JACQUELINE",
+          "sourceName": "JACQUELINE",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/Gessi_Haute_Culture_Jacqueline_c5750d47df.jpg",
+          "series": []
+        },
+        {
+          "id": "B40C49734D310C8C0AB61505C70DF11B75344DE9",
+          "name": "PELLE",
+          "sourceName": "PELLE",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/Gessi_Haute_Culture_Pelle_dc519aa9a4.jpg",
+          "series": [
+            {
+              "id": "66C62FF7AF8F55A39813512848ABBD552A82D474",
+              "name": "TRESSÉ",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/Gessi_Haute_Culture_Pelle_Laccetto_2_web_21aa298680.png"
+            },
+            {
+              "id": "873A04AC520F67DEB8B8857E768570D234F38EAE",
+              "name": "LACCETTO",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/Gessi_Haute_Culture_Pelle_Laccetto_2_79f89adfbe.png"
+            }
+          ]
+        },
+        {
+          "id": "E8332CC1278F8253498BF34AAB216133355ED2DC",
+          "name": "LUDOVICA",
+          "sourceName": "LUDOVICA",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/Gessi_Haute_Culture_Ludovica_7f952afd64.jpg",
+          "series": []
+        },
+        {
+          "id": "3E8211628BB44D51F6B0E115EC3137BA0EC7A284",
+          "name": "SENSAZIONI",
+          "sourceName": "SENSAZIONI",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/Gessi_Haute_Culture_Sensazioni_2_5f0d26953e.jpg",
+          "series": [
+            {
+              "id": "B534B8ABAEC87B41F75791F04839540F0A1F3606",
+              "name": "RIFLESSE",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/Gessi_Haute_Culture_Riflesse_7955843cd9.png"
+            },
+            {
+              "id": "24AEC0D1DEE417A7761A4EB0C2DB62E5E6360B9C",
+              "name": "DIFFUSE",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/Gessi_Haute_Culture_Diffuse_a83f278dce.png"
+            }
+          ]
+        },
+        {
+          "id": "37EE329BA7CFE90A80310B7F5163858629DF1E8E",
+          "name": "IMMERSIVA",
+          "sourceName": "IMMERSIVA",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/Gessi_Haute_Culture_Immersiva_e227af89d7.jpg",
+          "series": []
+        },
+        {
+          "id": "759EAE3D2911ED382B7B38D4BDDAD6221757A9AE",
+          "name": "GLASS CONNECTION",
+          "sourceName": "GLASS CONNECTION",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/Gessi_Haute_Culture_Glass_Connection_277d33245f.jpg",
+          "series": []
+        },
+        {
+          "id": "20150CBB17C38E44189DA48622E8C1F8283B0251",
+          "name": "RIFLESSIONI",
+          "sourceName": "RIFLESSIONI",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/Gessi_Haute_Culture_Riflessioni_2_9c4b8241d9.jpg",
+          "series": [
+            {
+              "id": "B2C48B0FB1681AB8FA07F6E4071C719B4710499A",
+              "name": "TELA",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/Gessi_Haute_Culture_Tela_d948d566da.png"
+            },
+            {
+              "id": "91E6571C876051FA0D499B0BEE9B319012F56D0E",
+              "name": "LAMÈ",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/Gessi_Haute_Culture_Lame_373fd9d68e.png"
+            },
+            {
+              "id": "E5F2AA6A4DC6489EBBE531F97E083A764D4A6D4D",
+              "name": "RIGATO",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/Gessi_Haute_Culture_Rigato_a46b60a0ac.png"
+            },
+            {
+              "id": "4C832BBAE305CF3FA1E3D481465EC8FB21FD2B1E",
+              "name": "SHANTUNG",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/Gessi_Haute_Culture_Shantung_7276093520.png"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bathroom",
+      "officialId": "25FC27FA2E8E47376A4F9E05486ABAD418C25CA3",
+      "name": "BATHROOM",
+      "collections": [
+        {
+          "id": "E8936E76370568745AD2A7F16712A6D9CB7F4DAE",
+          "name": "Incastri",
+          "sourceName": "INCASTRI",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/Incastri_cover_area_pro_ebdd7f863e.jpg",
+          "series": []
+        },
+        {
+          "id": "C8897B3695C8943E5DE406E65878D96A32FD6BB9",
+          "name": "INVERSO",
+          "sourceName": "INVERSO",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/INVERSO_49fc9d6eae.webp",
+          "series": [
+            {
+              "id": "FE87FED9903AEB5E0408B31E0C480019E072449A",
+              "name": "INVERSO DIAMANTATO",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/diamantato_726_3726dd49d6.png"
+            },
+            {
+              "id": "CCC8AA3F7E12D913573FACBB751582F6E10761F2",
+              "name": "INVERSO RIGATO",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/rigato_726_427576117e.png"
+            }
+          ]
+        },
+        {
+          "id": "3CFD4B6DC9F03A9169EB00461600CEEA2C3C040E",
+          "name": "VENTAGLIO",
+          "sourceName": "VENTAGLIO",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/VENTAGLIO_0c73e3ec7f.webp",
+          "series": []
+        },
+        {
+          "id": "8A8B36378EE8AC5C9952E13CD1C7E85BF3039E91",
+          "name": "ORIGINI",
+          "sourceName": "ORIGINI",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/ORIGINI_4df8a77cf0.webp",
+          "series": []
+        },
+        {
+          "id": "2C8E5CE17BAA01673BF7F9BC138D790ED7CD6D90",
+          "name": "GESSI316",
+          "sourceName": "GESSI316",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/GESSI_316_BATHROOM_8d154dd660.webp",
+          "series": [
+            {
+              "id": "37B11A2F46459DA10018825C240ABAD80BBDB0F9",
+              "name": "CESELLO",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/cesello_726_a91df30e20.png"
+            },
+            {
+              "id": "DB3F4167D3BE7C44BEE38BD065C4EF1B42157D64",
+              "name": "FLESSA",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/flessa_726_8049a94bb6.png"
+            },
+            {
+              "id": "2E5A113821B438F32D870C983DFEA13216900D37",
+              "name": "INTRECCIO",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/intreccio_726_c576d48b37.png"
+            },
+            {
+              "id": "9B3B809230072D4A178D1A3FBE66308B3F29EB50",
+              "name": "MECCANICA",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/meccaica_726_948b706b41.png"
+            },
+            {
+              "id": "F17A800FA8B57A66578BC34757D3D881DEAFD724",
+              "name": "TRAME",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/trame_726_9f2ed38f4c.png"
+            }
+          ]
+        },
+        {
+          "id": "7E66D4DE3216E439F8C03E93745D6C7807D2B871",
+          "name": "INCISO",
+          "sourceName": "INCISO",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/INCISO_BATHROOM_dfc3ca2b64.webp",
+          "series": [
+            {
+              "id": "A9FD14D60130AF47003188795A72E02020C79F7F",
+              "name": "INCISO -",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/inciso_L_copia_3d4428aaad.jpg"
+            },
+            {
+              "id": "FD3EB0B51A6866FA12D7A8EF6DE9881555EC35BD",
+              "name": "INCISO +",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/inciso_X_copia_f6fc40470a.jpg"
+            }
+          ]
+        },
+        {
+          "id": "841D907DDD73C3B6790D1134D7C69B4B3CD7FB99",
+          "name": "VENTI20",
+          "sourceName": "VENTI20",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/VENTI_20_BATHROOM_5bed1f16f7.webp",
+          "series": []
+        },
+        {
+          "id": "B8A91066AAA3D3C37304AB2419459DECB59A698C",
+          "name": "ANELLO",
+          "sourceName": "ANELLO",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/ANELLO_371b970308.jpg",
+          "series": []
+        },
+        {
+          "id": "460A7A342CEF41986E5C5D86E9F2A999F7C0B8CA",
+          "name": "INGRANAGGIO",
+          "sourceName": "INGRANAGGIO",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/INGRANAGGIO_d9c093c41d.webp",
+          "series": []
+        },
+        {
+          "id": "D1CC66D1B33D241518D25ADBD58CE6B16EB9E08B",
+          "name": "HABITO",
+          "sourceName": "HABITO",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/HABITO_5c652a672c.webp",
+          "series": [
+            {
+              "id": "8103A6F106F4039FE94212E7799FEE897A5404E7",
+              "name": "HABITO CESELLO",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/cesello_726_a91df30e20.png"
+            },
+            {
+              "id": "56B9B423AD8505B733AA0637C98CD9AE7F449DCF",
+              "name": "HABITO DIAMANTATO",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/diamantato_726_9fb632cf11.png"
+            },
+            {
+              "id": "02FD3DC08B4FE4A0D0A192A26D1F0C964EB60339",
+              "name": "HABITO INTRECCIO",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/intreccio_726_2d9697adda.png"
+            },
+            {
+              "id": "65F891A4FCB4B2D4C82C889BC16DA7D567BF0E51",
+              "name": "HABITO RIGATO",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/rigato_726_427576117e.png"
+            },
+            {
+              "id": "2D657ED39981162F3AC88729D32515C4DC8143C1",
+              "name": "HABITO TRAME",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/trame_726_9f2ed38f4c.png"
+            },
+            {
+              "id": "E69E9EB407311806A834090BEA9A83DE112079E6",
+              "name": "HABITO UNITO",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/unito_726_e9a22ecfb8.png"
+            }
+          ]
+        },
+        {
+          "id": "C9202A6F1BBDA317F6AEC5056C4407C466CBDD8C",
+          "name": "RETTANGOLO K",
+          "sourceName": "RETTANGOLO K",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/RETTANGOLO_K_fe385ed31b.webp",
+          "series": []
+        },
+        {
+          "id": "A9CCCE658B9D87D2168317B17C832879F3203602",
+          "name": "RETTANGOLO",
+          "sourceName": "RETTANGOLO",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/RETTANGOLO_BATHROOM_ac353ec126.webp",
+          "series": []
+        },
+        {
+          "id": "607876D0694B9DE63855999B2D5E214976C6010B",
+          "name": "GOCCIA",
+          "sourceName": "GOCCIA",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/GOCCIA_BATHROOM_df153ae93a.webp",
+          "series": []
+        },
+        {
+          "id": "3569306CDF301E63A80C6E2A8EE124C529E4C350",
+          "name": "RILIEVO",
+          "sourceName": "RILIEVO",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/RILIEVO_BATHROOM_d39d0c8d01.webp",
+          "series": []
+        },
+        {
+          "id": "77B0441F05A4D56917B25A76E8DA13C9DFDBDB63",
+          "name": "EQUILIBRIO",
+          "sourceName": "EQUILIBRIO",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/EQUILIBRIO_779004d288.webp",
+          "series": []
+        },
+        {
+          "id": "889105E4420718A5FCC6807690D467D90515248D",
+          "name": "MINIMALISTIC SHOWER",
+          "sourceName": "MINIMALISTIC SHOWER",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/MINIMALISTIC_SHOWER_5e2c63e563.webp",
+          "series": []
+        },
+        {
+          "id": "C890D45F8FD0BA6D30E0E0AB8E92761789263C61",
+          "name": "ACCESSORIES",
+          "sourceName": "ACCESSORIES",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/ACCESSORI_ec2b1c10fb.webp",
+          "series": []
+        },
+        {
+          "id": "E4B7D8A897984A2AC42CA14A8ED16B76C80D2A75",
+          "name": "PILLAR TAPS",
+          "sourceName": "PILLAR TAPS",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/PILLAR_TAPS_339a2217f2.webp",
+          "series": []
+        }
+      ]
+    },
+    {
+      "id": "private-wellness",
+      "officialId": "2FF1A5A0BE10F82C57539DDCE5A7B6F989AFAD4E",
+      "name": "PRIVATE WELLNESS",
+      "collections": [
+        {
+          "id": "C483F92C67017B6485CD2E04B3EB9C286648BFE1",
+          "name": "HI-FI",
+          "sourceName": "HI-FI",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/HI_FI_12eae4bb0d.webp",
+          "series": [
+            {
+              "id": "6638BA753F89E3C5D7CCE6A556235C62D955B78E",
+              "name": "HI-FI COMFORT",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/Hi_fi_Comfort_90be6b0b59.webp"
+            },
+            {
+              "id": "C483F92C67017B6485CD2E04B3EB9C286648BFE1",
+              "name": "HI-FI",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/Hi_fi_74266af975.webp"
+            },
+            {
+              "id": "5492BF221BF98EBB887E324E2FD59155CBA9E8BA",
+              "name": "HI-FI ORIGINI",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/Hi_fi_Origini_54fe9cab3b.webp"
+            },
+            {
+              "id": "19F2C7039822959C61117F4FCE8DE2095117DD4F",
+              "name": "HI-FI ECLECTIC",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/Hi_fi_Eclctic_c7917e987a.webp"
+            }
+          ]
+        },
+        {
+          "id": "06F6AAA5A27A9512F1671CB97847DBB167DDBDF1",
+          "name": "GESSI SOGNI",
+          "sourceName": "SOGNI",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/SOGNI_4439597f6a.webp",
+          "series": []
+        },
+        {
+          "id": "5D6587DC0AD469F4995C9FF9C55D6498467D7B52",
+          "name": "AFILO",
+          "sourceName": "AFILO",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/AFILO_123ca7acd4.webp",
+          "series": []
+        },
+        {
+          "id": "6B3CFB078711E43BFBB2E2E6F885490C2D8677C3",
+          "name": "MINIMALI",
+          "sourceName": "MINIMALI",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/MINIMALI_d2bfa27add.webp",
+          "series": []
+        },
+        {
+          "id": "B46BDB5ADA60E80686757EE2CD1525CE65B7FC49",
+          "name": "COLOUR",
+          "sourceName": "COLOUR",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/COLOUR_05a0ed978d.webp",
+          "series": []
+        },
+        {
+          "id": "D778C394DAA18D53A86B27A6F3F4AA2AD9F2473E",
+          "name": "TREMILLIMETRI",
+          "sourceName": "TREMILLIMETRI",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/TREMILLIMETRI_bb75474925.webp",
+          "series": []
+        },
+        {
+          "id": "70791F12F0BA4CDD1AC4877FECE5C0D82C2B01B2",
+          "name": "TONDO SHOWER",
+          "sourceName": "TONDO SHOWER",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/TONDO_SHOWER_47a7498377.webp",
+          "series": []
+        },
+        {
+          "id": "BE1BF33A33F9810D692F00DE174FAB3C304114FD",
+          "name": "SPOTWATER",
+          "sourceName": "SPOTWATER",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/SPOTWATER_e955ce389c.webp",
+          "series": [
+            {
+              "id": "1EBA270EDF9759B725C154C659FDF16BE4007279",
+              "name": "SPOTWATER316",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/SPOTWATER_316_d7cdbc5160.png"
+            },
+            {
+              "id": "BE1BF33A33F9810D692F00DE174FAB3C304114FD",
+              "name": "SPOTWATER",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/SPOTWATER_866d27805b.png"
+            }
+          ]
+        },
+        {
+          "id": "4D9600A0A2E4A7B83E16477646F6CE67FFB13F73",
+          "name": "CASCATA",
+          "sourceName": "CASCATA",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/CASCATA_c5fb06bdc5.webp",
+          "series": []
+        },
+        {
+          "id": "A720F6E8029FD7091F73DCF6BC38169AD96CD398",
+          "name": "BODY JETS",
+          "sourceName": "BODY-JETS",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/BODYJETS_e18b16ce59.webp",
+          "series": []
+        },
+        {
+          "id": "C1D79A94714D65858F6335B87360DD89B1332402",
+          "name": "SHOWER SETS",
+          "sourceName": "SHOWER SETS",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/SHOWER_SET_02ee844c64.webp",
+          "series": []
+        },
+        {
+          "id": "47B99FCDB0342CA2645D738F5A2F763EFA9A44D7",
+          "name": "SHOWER G",
+          "sourceName": "SHOWER G",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/SHOWER_G_4251a9dc9b.webp",
+          "series": [
+            {
+              "id": "67F806F63EE441413F67B2A9A7765BB96458599D",
+              "name": "SWING SYSTEM UNITO",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/Gessi_Swing_system_unito_18fd12e848.webp"
+            },
+            {
+              "id": "F0B752376ECF4A5367A4AF05A03B4B6C22A0CE71",
+              "name": "SWING SYSTEM RIGATO",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/Gessi_Swing_system_rigato_0380712dac.webp"
+            },
+            {
+              "id": "D7D6884F7B912FB7087696817458FC344541E408",
+              "name": "SWING SYSTEM DIAMANTATO",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/Gessi_Swing_system_diamantato_58c06da390.webp"
+            },
+            {
+              "id": "8418CCEABD27CC2E5910314E86F8B7E1F6BFD4DB",
+              "name": "SHOWER ACCESSORIES",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/Gessi_Shower_accessories_8ddb49c159.webp"
+            },
+            {
+              "id": "54AC39D262645F9533BBC70D5E0BD9C4724DDEAC",
+              "name": "DRAINS",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/Gessi_Drains_8ad112118c.webp"
+            }
+          ]
+        },
+        {
+          "id": "8CEA2ACEB3E0B132A651363CB4218DD9AFDF069A",
+          "name": "OUTDOOR",
+          "sourceName": "OUTDOOR",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/OUTDOOR_eeea220323.webp",
+          "series": [
+            {
+              "id": "8CEA2ACEB3E0B132A651363CB4218DD9AFDF069A",
+              "name": "OUTDOOR",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/outdoor_g01_d9994369f7.jpg"
+            },
+            {
+              "id": "EEC377C563ECE2DC4F138CA2DA86A575F0910943",
+              "name": "OUTDOOR L",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/outdoor_L_g01_f6c6e532c7.jpg"
+            },
+            {
+              "id": "67B33901C6E1199445B5A74EBB60D70D6FBEDBC6",
+              "name": "OUTDOOR ORIGINI",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/outdoor_origini_586040ef5d.jpg"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "total-look",
+      "officialId": "2A462148847F09B372155CF8CFDA01E35AA409C1",
+      "name": "TOTAL LOOK",
+      "collections": [
+        {
+          "id": "E64AD076D565BF3CCBDD38597FE600AD89413750",
+          "name": "FLUSH PLATES",
+          "sourceName": "FLUSH PLATES",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/FLUSH_PLATES_7e715648a1.webp",
+          "series": []
+        },
+        {
+          "id": "2A462148847F09B372155CF8CFDA01E35AA409C1",
+          "name": "TOTAL LOOK",
+          "sourceName": "TOTAL LOOK",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/TOTAL_LOOK_ea722f056c.webp",
+          "series": []
+        }
+      ]
+    },
+    {
+      "id": "sensor-taps",
+      "officialId": "A0A345C3C690AC5617050DC25A266D5104A1C5D6",
+      "name": "SENSOR TAPS",
+      "collections": [
+        {
+          "id": "7E66D4DE3216E439F8C03E93745D6C7807D2B871",
+          "name": "INCISO",
+          "sourceName": "INCISO",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/INCISO_ec89b68dd6.webp",
+          "series": []
+        },
+        {
+          "id": "2C8E5CE17BAA01673BF7F9BC138D790ED7CD6D90",
+          "name": "GESSI316",
+          "sourceName": "GESSI316",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/GESSI_316_e768720c4d.webp",
+          "series": [
+            {
+              "id": "DB3F4167D3BE7C44BEE38BD065C4EF1B42157D64",
+              "name": "FLESSA",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/flessa_726_8049a94bb6.png"
+            },
+            {
+              "id": "2E5A113821B438F32D870C983DFEA13216900D37",
+              "name": "INTRECCIO",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/intreccio_726_2d9697adda.png"
+            },
+            {
+              "id": "F17A800FA8B57A66578BC34757D3D881DEAFD724",
+              "name": "TRAME",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/trame_726_9f2ed38f4c.png"
+            },
+            {
+              "id": "37B11A2F46459DA10018825C240ABAD80BBDB0F9",
+              "name": "CESELLO",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/cesello_726_32bd1ac3b5.png"
+            },
+            {
+              "id": "9B3B809230072D4A178D1A3FBE66308B3F29EB50",
+              "name": "MECCANICA",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/meccaica_726_948b706b41.png"
+            }
+          ]
+        },
+        {
+          "id": "3569306CDF301E63A80C6E2A8EE124C529E4C350",
+          "name": "RILIEVO",
+          "sourceName": "RILIEVO",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/RILIEVO_9d308a77d4.webp",
+          "series": []
+        },
+        {
+          "id": "A9CCCE658B9D87D2168317B17C832879F3203602",
+          "name": "RETTANGOLO",
+          "sourceName": "RETTANGOLO",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/RETTANGOLO_b0ff827840.webp",
+          "series": []
+        },
+        {
+          "id": "025A882528F1A7D96FBB70176E17577E7F9B2C3F",
+          "name": "TONDO",
+          "sourceName": "TONDO",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/TONDO_c1220f1455.webp",
+          "series": []
+        },
+        {
+          "id": "607876D0694B9DE63855999B2D5E214976C6010B",
+          "name": "GOCCIA",
+          "sourceName": "GOCCIA",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/Goccia_Sensor_Taps_5bcb87f721.jpg",
+          "series": []
+        }
+      ]
+    },
+    {
+      "id": "home-decor",
+      "officialId": "D7B72939E50515D1CBAF467A2B8187C78B8CD94B",
+      "name": "HOME DECOR",
+      "collections": [
+        {
+          "id": "993704B16C90394D86E7A14FC22D3BE2FECD954C",
+          "name": "FRAGRANCES",
+          "sourceName": "FRAGRANCES",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/FRAGRANZE_8feb193655.webp",
+          "series": [
+            {
+              "id": "E4226EF8491994F632E1492960AC60A54C0E5620",
+              "name": "QUADRO",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/quadro_ba542fc0fe.png"
+            },
+            {
+              "id": "2E5A113821B438F32D870C983DFEA13216900D37",
+              "name": "INTRECCIO",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/intreccio_726_2d9697adda.png"
+            },
+            {
+              "id": "492FC2BD4CE3F49B5AB01998D44941A822A2D6BB",
+              "name": "DIAMANTATO",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/diamantato_726_9fb632cf11.png"
+            },
+            {
+              "id": "9B3B809230072D4A178D1A3FBE66308B3F29EB50",
+              "name": "MECCANICA",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/meccaica_726_948b706b41.png"
+            },
+            {
+              "id": "F17A800FA8B57A66578BC34757D3D881DEAFD724",
+              "name": "TRAME",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/trame_726_9f2ed38f4c.png"
+            },
+            {
+              "id": "37B11A2F46459DA10018825C240ABAD80BBDB0F9",
+              "name": "CESELLO",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/cesello_726_32bd1ac3b5.png"
+            },
+            {
+              "id": "E5F2AA6A4DC6489EBBE531F97E083A764D4A6D4D",
+              "name": "RIGATO",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/rigato_726_427576117e.png"
+            }
+          ]
+        },
+        {
+          "id": "34630743EA656E5566A03D400A32CED35A0DEBC6",
+          "name": "HOME VASES",
+          "sourceName": "VASES",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/VASI_2b683eb7b1.webp",
+          "series": [
+            {
+              "id": "492FC2BD4CE3F49B5AB01998D44941A822A2D6BB",
+              "name": "DIAMANTATO",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/diamantato_726_9fb632cf11.png"
+            },
+            {
+              "id": "2E5A113821B438F32D870C983DFEA13216900D37",
+              "name": "INTRECCIO",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/intreccio_726_2d9697adda.png"
+            },
+            {
+              "id": "9B3B809230072D4A178D1A3FBE66308B3F29EB50",
+              "name": "MECCANICA",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/meccaica_726_948b706b41.png"
+            },
+            {
+              "id": "F17A800FA8B57A66578BC34757D3D881DEAFD724",
+              "name": "TRAME",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/trame_726_9f2ed38f4c.png"
+            },
+            {
+              "id": "37B11A2F46459DA10018825C240ABAD80BBDB0F9",
+              "name": "CESELLO",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/cesello_726_32bd1ac3b5.png"
+            },
+            {
+              "id": "E5F2AA6A4DC6489EBBE531F97E083A764D4A6D4D",
+              "name": "RIGATO",
+              "image": "https://gwebassets.gessi.com/strapi-uploads/assets/rigato_726_427576117e.png"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "emporio",
+      "officialId": "BB6A18EE7A8FB7707FA8BE138C4B3F2F0BC899E9",
+      "name": "EMPORIO",
+      "collections": [
+        {
+          "id": "B847111552435898DEFDD97185DA809A02DBE6D0",
+          "name": "VIA MANZONI",
+          "sourceName": "VIA MANZONI",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/VIA_MANZONI_bfe8cc7b13.webp",
+          "series": []
+        },
+        {
+          "id": "B88E2F91F619647E017EFE27CFB4AC6BED887B3D",
+          "name": "VIA TORTONA",
+          "sourceName": "VIA TORTONA",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/VIA_TORTONA_de0ddfa2df.webp",
+          "series": []
+        }
+      ]
+    },
+    {
+      "id": "kitchen",
+      "officialId": "DA45F61F22E175291065FF124E234919C26E4E14",
+      "name": "KITCHEN",
+      "collections": [
+        {
+          "id": "A0975E82F9A8557EF2A34CE52966B0B928B763A3",
+          "name": "PELLE FILTERED",
+          "sourceName": "PELLE FILTERED",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/Pelle_Filtered_937744ba88.jpg",
+          "series": []
+        },
+        {
+          "id": "947F2D3B3CE84CEE36766DCD0121CEBCA7DF1082",
+          "name": "SEGNI FILTERED",
+          "sourceName": "SEGNI FILTERED",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/Segni_Filtered_ce3a2dcf92.jpg",
+          "series": []
+        },
+        {
+          "id": "EB679FE647B355149AC81037F3F71E35D6E0F382",
+          "name": "GESSI316 FILTERED",
+          "sourceName": "GESSI316 FILTERED",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/gessi_collezione_cucina_gessi_316_filtered_1_6bc05b4b4a.jpg",
+          "series": []
+        },
+        {
+          "id": "DEA4EAE007B7AC13D5C402BD757BA1571F47D33F",
+          "name": "HABITO FILTERED",
+          "sourceName": "HABITO FILTERED",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/gessi_collezione_cucina_habito_filteres_1_12dd3042a6.jpg",
+          "series": []
+        },
+        {
+          "id": "DD22C8F38CCCC836421F34F2B5B81AC146272C4A",
+          "name": "INEDITO FILTERED",
+          "sourceName": "INEDITO FILTERED",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/gessi_collezione_cucina_inedito_filtered_1_2b5a45e291.jpg",
+          "series": []
+        },
+        {
+          "id": "B40C49734D310C8C0AB61505C70DF11B75344DE9",
+          "name": "PELLE",
+          "sourceName": "PELLE",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/Pelle_749f1bf4e7.jpg",
+          "series": []
+        },
+        {
+          "id": "3FBAB1949E7EFDC2FC3AB4D3B8D77C2836DE800C",
+          "name": "SEGNI",
+          "sourceName": "SEGNI",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/Segni_6412069dad.jpg",
+          "series": []
+        },
+        {
+          "id": "841D907DDD73C3B6790D1134D7C69B4B3CD7FB99",
+          "name": "VENTI20",
+          "sourceName": "VENTI20",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/aspect_ratio_x1_Venti20_daa0c04c72.jpg",
+          "series": []
+        },
+        {
+          "id": "2C8E5CE17BAA01673BF7F9BC138D790ED7CD6D90",
+          "name": "GESSI316",
+          "sourceName": "GESSI316",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/aspect_ratio_x1_Gessi316_1bbd0c6a3b.jpg",
+          "series": []
+        },
+        {
+          "id": "D1CC66D1B33D241518D25ADBD58CE6B16EB9E08B",
+          "name": "HABITO",
+          "sourceName": "HABITO",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/aspect_ratio_x1_Habito_9e24c01ca0.jpg",
+          "series": []
+        },
+        {
+          "id": "48A446C5759BC7D63878959B526211548E8F7AD8",
+          "name": "OFFICINE V",
+          "sourceName": "OFFICINE V",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/OFFICINE_V_ff6c0f84af.webp",
+          "series": []
+        },
+        {
+          "id": "5ADE407009F53E57D9356578F50FBE81A9643C3F",
+          "name": "OFFICINE GESSI",
+          "sourceName": "OFFICINE GESSI",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/OFFICINE_f4ddfc5cf5.webp",
+          "series": []
+        },
+        {
+          "id": "D2367E814EC08D336083588642B0E6EE566A75B2",
+          "name": "MESH",
+          "sourceName": "MESH",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/MESH_f77764f00b.webp",
+          "series": []
+        },
+        {
+          "id": "B669EC0883E20AEBC3D041277D8D1A49DAC6C526",
+          "name": "FISSO",
+          "sourceName": "FISSO",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/FISSO_af40dcb1d3.webp",
+          "series": []
+        },
+        {
+          "id": "E56DD3E815684CBD9454DE6B9487DF5F20023A65",
+          "name": "SU&GIU'",
+          "sourceName": "SU&GIU'",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/SUEGIU_a90da2f515.webp",
+          "series": []
+        },
+        {
+          "id": "7E66D4DE3216E439F8C03E93745D6C7807D2B871",
+          "name": "INCISO",
+          "sourceName": "INCISO",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/aspect_ratio_x1_Inciso_dbcb2a23c6.jpg",
+          "series": []
+        },
+        {
+          "id": "C82DFDAF51F42F5086A7F4C3DED20F164BF029B0",
+          "name": "STELO",
+          "sourceName": "STELO",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/aspect_ratio_x1_Stelo_d610992035.jpg",
+          "series": []
+        },
+        {
+          "id": "582E59C7D5173CFE9167EF719DC4371B1F582F79",
+          "name": "INEDITO",
+          "sourceName": "INEDITO",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/INEDITO_5e7763636e.webp",
+          "series": []
+        },
+        {
+          "id": "94BC1AED4DFF5F5CB01136070AA91A433B25CEAC",
+          "name": "PROTON",
+          "sourceName": "PROTON",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/PROTON_130f950350.webp",
+          "series": []
+        },
+        {
+          "id": "3D7B0D0891FAEB0B49237D6ACEE2D6B99F8B1325",
+          "name": "JUST",
+          "sourceName": "JUST",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/JUST_9182187159.webp",
+          "series": []
+        },
+        {
+          "id": "B0FC615DF001E6E1AB3B8E0DBE4229AD2A887422",
+          "name": "ACCIAIO",
+          "sourceName": "ACCIAIO",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/ACCIAIO_04e2115c85.webp",
+          "series": []
+        },
+        {
+          "id": "35962EF7574987B57A1DD21A40D5B9B06BF4450D",
+          "name": "HELIUM",
+          "sourceName": "HELIUM",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/HELIUM_4354bbae76.webp",
+          "series": []
+        },
+        {
+          "id": "9AEF4A1D0F8C840CD63792FA1CD64B64B06D32F2",
+          "name": "THALIUM",
+          "sourceName": "THALIUM",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/THALIUM_4e0c54b431.webp",
+          "series": []
+        },
+        {
+          "id": "C2EBA05A1F1C722D7D1F7167FB1DDE776DF262F1",
+          "name": "MONACO",
+          "sourceName": "MONACO",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/MONACO_ff8e08b231.webp",
+          "series": []
+        },
+        {
+          "id": "DE789556B686235E3F08203A334B88FBDF04AD42",
+          "name": "NEUTRON",
+          "sourceName": "NEUTRON",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/NEUTRON_a628c576b3.webp",
+          "series": []
+        },
+        {
+          "id": "C28A383C490C0A55B0F5E44145AAFD0D81D58D2D",
+          "name": "SOAP DISPENSER",
+          "sourceName": "SOAP DISPENSER",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/SOAP_DISPENSER_fef1c9fbbb.webp",
+          "series": []
+        }
+      ]
+    },
+    {
+      "id": "technical-parts",
+      "officialId": "6196E6A66AEBA0BFABD14BE59660415E0C292DE4",
+      "name": "TECHNICAL PARTS",
+      "collections": [
+        {
+          "id": "180C14B1A5D04C44EF9DDCBD12D89DE784AE3312",
+          "name": "TECHNICAL ACCESSORIES",
+          "sourceName": "TECHNICAL ACCESSORIES",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/ACCESSORI_TECNICI_f9a2821c8e.webp",
+          "series": []
+        },
+        {
+          "id": "BFE755C9AFE8577FD00842ECE52061443EF64900",
+          "name": "BUILT-IN PARTS",
+          "sourceName": "BUILT-IN PARTS",
+          "image": "https://gwebassets.gessi.com/strapi-uploads/assets/BUILT_IN_PARTS_19f2a87687.webp",
+          "series": []
+        }
+      ]
+    }
+  ]
+}
