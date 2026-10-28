@@ -571,13 +571,21 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
       await page.locator('#sbordoniConfigurator .sbordoni-config-summary').count()===0);
     await page.locator('#sbordoniConfigurator .sbordoni-config-close').click();
 
+    const mobileTreeOverflow=async()=>{
+      const d=await page.locator('#brandConfigurator .recor-configurator').evaluate(x=>({
+        ok:x.scrollWidth<=x.clientWidth,client:x.clientWidth,scroll:x.scrollWidth,
+        offenders:[...x.querySelectorAll('*')].filter(n=>n.getBoundingClientRect().right>x.getBoundingClientRect().right+2).slice(0,6).map(n=>({tag:n.tagName,cls:String(n.className).slice(0,55),right:Math.round(n.getBoundingClientRect().right)}))
+      }));
+      if(!d.ok)console.error('BRAND_TREE_MOBILE_OVERFLOW',JSON.stringify(d));
+      return d.ok;
+    };
     // V11.64.6 — Bette official taxonomy before the existing 62,264-variant selector.
     await page.evaluate(()=>HydroBetteConfigurator.open({manufacturer:'Bette'},state.rooms[0]?.id||''));
     await page.waitForSelector('#brandConfigurator [data-bette-family="showers"]');
     check('Bette : 6 rubriques fabricant',await page.locator('#brandConfigurator [data-bette-family]').count()===6);
     await page.setViewportSize({width:390,height:844});
     check('Bette : arborescence sans débordement mobile 390',
-      await page.locator('#brandConfigurator .recor-configurator').evaluate(x=>x.scrollWidth<=x.clientWidth));
+      await mobileTreeOverflow());
     await page.setViewportSize({width:1440,height:1000});
     await page.locator('#brandConfigurator [data-bette-family="baths"]').click();
     check('Bette : filtres officiels Type, Forme et Fonction disponibles',
@@ -611,7 +619,7 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     check('Carrodrain : Essentials, Invisibles, Liquids et accessoires distincts',await page.locator('#brandConfigurator [data-carrodrain-family]').count()===4);
     await page.setViewportSize({width:390,height:844});
     check('Carrodrain : familles sans débordement mobile 390',
-      await page.locator('#brandConfigurator .recor-configurator').evaluate(x=>x.scrollWidth<=x.clientWidth));
+      await mobileTreeOverflow());
     await page.setViewportSize({width:1440,height:1000});
     await page.locator('#brandConfigurator [data-carrodrain-family="Essentials"]').click();
     await page.waitForSelector('#brandConfigurator [data-carrodrain-group="quattro-100"]');
