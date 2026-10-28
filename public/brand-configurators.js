@@ -178,6 +178,28 @@
    if(/accessoire|vidage|encastrement|equipement|pieds|support/.test(words))return 'equipment';
    return 'unclassified';
   }
+  // A supplier tariff family is filtered into an official facet only when
+  // its own name explicitly establishes the match. No shape/type inference
+  // from photographs or neighbouring products.
+  const BETTE_FACET_MATCH={
+    'vasques-a-encastrer':/vasque.*encastr/i,
+    'vasques-sous-plan':/vasque.*sous.plan/i,
+    'vasques-murales':/vasque.*mural/i,
+    'vasques-a-poser':/vasque.*poser/i,
+    'vasques-en-ilot':/vasque.*ilot/i,
+    'vasques-rondes':/vasque.*rond/i,
+    'vasques-rectangulaires-ou-carrees':/vasque.*(?:rectang|carre)/i,
+    'baignoires-compactes':/compact/i,
+    'baignoire-douche':/bain.*douche/i,
+    'bettesuno':/^bettesuno/i,'betteart':/^betteart/i,'bettelux':/^bettelux/i,
+    'betteloft':/^betteloft/i,'bettecomodo':/^bettecomodo/i,'betteone':/^betteone/i
+  };
+  const betteFacetMatches=(g,slug)=>{
+    const pattern=BETTE_FACET_MATCH[slug];
+    if(!pattern)return false;
+    const name=String(g?.family||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'');
+    return pattern.test(name);
+  };
   const CARRODRAIN_TREE=[
    {id:'Essentials',name:'Essentials',description:'Caniveaux et siphons essentiels'},
    {id:'Invisibles',name:'Invisibles',description:'Solutions à carreler et invisibles'},
@@ -225,11 +247,30 @@
       overlay.querySelectorAll('[data-bette-family]').forEach(x=>x.onclick=()=>{kind=x.dataset.betteFamily;groupSection='all';openSections()});
       overlay.querySelector('[data-bette-restore]')?.addEventListener('click',()=>{step='config';render()});
     };
+    const openFacet=(section,slug,label)=>{
+      step='facet';const cat=category(kind);
+      const all=groups.filter(g=>betteType(g)===kind),matching=all.filter(g=>betteFacetMatches(g,slug)),verified=matching.length>0;
+      const shown=verified?matching:all;
+      const subtitle=verified?'Le nom fabricant permet de retrouver '+matching.length+' famille(s) de cette sous-catégorie. Les autres familles restent dans le catalogue général.':
+       'Le tarif ne contient pas de balise certifiant ce sous-filtre. Voici les familles de la catégorie principale, sans prétendre à un filtrage exact.';
+      const content='<div class="brand-path"><button type="button" data-bette-back="sections">'+esc(cat.name)+'</button><span>›</span><b>'+esc(label)+'</b></div>'+
+        '<p class="brand-note">'+esc(subtitle)+'</p><div class="brand-category-grid">'+shown.map(g=>
+        '<button type="button" data-bette-group="'+esc(g.id)+'"><b>'+esc(g.family||g.id)+'</b><small>'+g.variants.length+' variantes tarifées</small></button>').join('')+'</div>'+
+        '<a class="brand-site-link" href="'+esc(cat.url+'/'+slug)+'" target="_blank" rel="noopener noreferrer">Voir cette sous-catégorie sur le site officiel</a>';
+      overlay=overlay||mount(shell('Bette',content));overlay.innerHTML=shell('Bette',content);
+      overlay.querySelector('.brand-config-close').onclick=close;overlay.querySelector('.brand-config-cancel').onclick=close;
+      overlay.querySelector('.brand-config-confirm').style.display='none';
+      overlay.querySelector('[data-bette-back]').onclick=openSections;
+      overlay.querySelectorAll('[data-bette-group]').forEach(x=>x.onclick=()=>{
+        if(draft.group!==x.dataset.betteGroup){draft.group=x.dataset.betteGroup;draft.model=draft.dim=draft.color=draft.option=draft.reference='';}
+        step='config';render()
+      });
+    };
     const openSections=()=>{
       step='sections';const cat=category(kind);
       const dataGroups=groups.filter(g=>betteType(g)===kind);
       const sections=cat.sections.map(x=>'<section class="brand-official-facets"><h3>'+esc(x.name)+'</h3><div class="brand-official-links">'+x.items.map(([name,slug])=>
-         '<a href="'+esc(cat.url+'/'+slug)+'" target="_blank" rel="noopener noreferrer">'+esc(name)+'</a>').join('')+'</div></section>').join('');
+         '<button type="button" data-bette-facet="'+esc(slug)+'" data-bette-facet-group="'+esc(x.name)+'">'+esc(name)+'</button>').join('')+'</div></section>').join('');
       const content='<div class="brand-path"><button data-bette-back="families">Produits</button><span>›</span><b>'+esc(cat.name)+'</b></div>'+
         '<p class="brand-note">Les filtres de type et de forme ci-dessous ouvrent les pages officielles. Le tarif importé ne contient pas toujours ces classifications : aucune correspondance n’est devinée.</p>'+sections+
         '<div class="brand-official-facets"><h3>Familles tarifées disponibles</h3><p class="brand-note">'+dataGroups.length+' familles classées à partir de la catégorie fournisseur.</p><div class="brand-category-grid">'+dataGroups.map(g=>
@@ -239,6 +280,7 @@
       overlay=overlay||mount(shell('Bette',content));overlay.innerHTML=shell('Bette',content);
       overlay.querySelector('.brand-config-close').onclick=close;overlay.querySelector('.brand-config-cancel').onclick=close;overlay.querySelector('.brand-config-confirm').style.display='none';
       overlay.querySelector('[data-bette-back]').onclick=openFamilies;
+      overlay.querySelectorAll('[data-bette-facet]').forEach(button=>button.onclick=()=>openFacet(button.dataset.betteFacetGroup,button.dataset.betteFacet,button.textContent));
       overlay.querySelectorAll('[data-bette-group]').forEach(x=>x.onclick=()=>{if(draft.group!==x.dataset.betteGroup){draft.group=x.dataset.betteGroup;draft.model=draft.dim=draft.color=draft.option=draft.reference='';}step='config';render()});
       overlay.querySelector('[data-bette-unclassified]').onclick=()=>{step='unclassified';openUnclassified()};
     };
@@ -403,7 +445,7 @@
     return sets.flat();
   }
   function eligibleBrand(brand,p){return !!p&&String(p.manufacturer||'').toLowerCase()===brand.toLowerCase()&&String(p.configuratorType||'').toLowerCase()===brand.toLowerCase();}
-  root.HydroBrandCatalogs={load:loadCatalogs,verifiedPublicPrice,initialExactVariant,initialHidroboxDraft,betteTree:BETTE_TREE,betteType,carrodrainTree:CARRODRAIN_TREE};
+  root.HydroBrandCatalogs={load:loadCatalogs,verifiedPublicPrice,initialExactVariant,initialHidroboxDraft,betteTree:BETTE_TREE,betteType,betteFacetMatches,carrodrainTree:CARRODRAIN_TREE};
   root.HydroBetteConfigurator={eligible:p=>eligibleBrand('Bette',p),open:openBette,close};
   root.HydroCarrodrainConfigurator={eligible:p=>eligibleBrand('Carrodrain',p),open:openCarrodrain,close,models:CARRODRAIN_MODELS};
   root.HydroHidroboxConfigurator={eligible:p=>eligibleBrand('Hidrobox',p),open:openHidrobox,close,groups:async()=>((await loadJson(BRAND_META.Hidrobox)).groups||[])};
