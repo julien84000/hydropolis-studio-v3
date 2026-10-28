@@ -142,3 +142,11 @@ Source directe : capture de la planche Resigres fournie dans la conversation le 
 - Classificateur +99 € par tiroir choisi (maximum contrôlé), supplément RAL/NCS +90 € si appliqué, avec code RAL/NCS obligatoire. Inclus : suspensions, découpes et sous-siphon.
 - Écran dédié à six étapes avec cartes illustrées par les pictogrammes recadrés de la planche, dimensions, finition, top et détail de prix HT. Les cellules non déchiffrables ne basculent pas sur un tarif d'un autre modèle ou autre finition.
 - Tests unitaires de toutes les configurations et des tops; tests navigateur Chromium sur H50 avec deux modules et tiroirs intérieurs, H30 simple avec top intégré; prix enregistrés dans le projet. Vérifier les résultats du dernier workflow avant fusion et le numéro de version sur Render après déploiement.
+
+### Validation CI et publication V11.62.11
+
+- PR #32 **fusionnée** : https://github.com/julien84000/hydropolis-studio-v3/pull/32, commit main `c6b72f86561e9148131c7b99e02ea031223ebd64`.
+- CI complète du commit source : https://github.com/julien84000/hydropolis-studio-v3/actions/runs/40701531216 : `npm run check`, `npm test`, `npm run build`, tests Playwright Chromium → **success**.
+- CI après fusion main : https://github.com/julien84000/hydropolis-studio-v3/actions/runs/40701784089 → **success**.
+- Publication Render : les premiers contrôles externes après la fusion indiquaient encore `11.62.10` et `2026-FR-v10`, alors que GitHub main contient bien `11.62.11` et `2026-FR-v11`. **Ne pas confondre fusion CI et déploiement effectif** ; confirmer /api/version et /resigres_2026_config.json ultérieurement.
+- Les tests sont sur une base isolée de CI ; aucune modification d'un projet utilisateur de production n'a été nécessaire.
