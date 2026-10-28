@@ -97,3 +97,16 @@ Branche de travail : `feat/v11.63.1-brands-pricing-integrity`. PR : https://gith
 - Tests unitaires : audit de la couverture 631/647 et contrôle des 367 associations nom de fichier = modèle. Test Chromium : naviguer jusqu'à Archie AR003, vérifier que le JPEG fournisseur est réellement chargé et que la référence figure sous l'image. Les autres fabricants ne sont pas modifiés.
 
 **Livraison** : PR à vérifier et CI complète à faire passer avant toute fusion ou contrôle de production. Aucun prix ni référence article n'a été inventé.
+
+
+## Checkpoint Hotbath — normalisation des références du tarif (28/10/2026)
+
+- Demande : utiliser **hotbath.it** comme source prioritaire des catégories et pages articles ; ne pas confondre le domaine source avec la disponibilité HTTP des vieilles URL photographiques. La fiche catégorie Archie présente bien AR003, mais son JPEG historique `/documents//ProdCateg/3522/AR003_1_2023.jpg` a renvoyé HTTP 404 lors du contrôle. Ne pas certifier une photo non disponible.
+- Normalisation réellement enregistrée sur la branche de la PR #35 : `public/catalog_hotbath.json` compte toujours **2 554 références**. Suppression stricte du suffixe final `.IT` sur **2 546 références commerciales** et **188 références de corps techniques**, uniquement chez Hotbath. Exemple : `AC003.BBP.IT` devient `AC003.BBP`. Les 8 références qui ne portaient pas ce suffixe restent intactes.
+- Les champs `sourceReference` et `sourceInternalReference` préservent les codes du tarif source pour audit ou rétrocompatibilité. Audit avant commit : **aucun doublon sur fabricant + référence canonique**, prix de base, prix total, supplément de corps, remise, collection, modèle et finition identiques aux valeurs antérieures.
+- `public/catalog-index.js` accepte aussi l'ancien code `.IT` via un alias ciblé Hotbath, **sans créer de seconde ligne tarifaire**. Cela protège les clés d'anciens projets clients ; aucune donnée utilisateur de production n'a été migrée.
+- Tests de régression : `tests/v11.63.2-hotbath-refs.test.js` contrôle le nombre de lignes, l'absence du suffixe, la provenance, l'unicité, les alias historiques, les prix et les corps techniques. Test ajouté au `npm test` de `package.json`.
+- Commits confirmés : catalogue `08da94936db91b499ae035c25e1bde3d3530793d`, alias `b98e8cd0a2117214fc9ecfbc30fbd2f6a0c04f60`, tests `8d9c3ac9ce341ef379ab0c244444e2861764a8b8`, exécution CI `436c215d779a0cf5c2b0447ce3248f1d4a5c683d`.
+- Les vérifications CI Node + Chromium du commit normalisé sont **en cours** à ce checkpoint : vérifier leur conclusion, corriger tout échec, puis fusionner la PR #35 uniquement si la révision finale est validée.
+- Production Render : dernier contrôle direct des endpoints `/api/version` et `/api/health` : **11.63.1**, `ok: true`, PostgreSQL. La 11.63.2 n'est pas déclarée déployée.
+- À poursuivre : contrôle navigateur des liens officiels `hotbath.it` et des visuels réellement décodables ; éviter les nouvelles correspondances inventées ; garder prix, finitions et corps techniques ; ensuite Hidrobox, Bette, Carrodrain, Zucchetti et Lefroy Brooks.
