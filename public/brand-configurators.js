@@ -20,6 +20,17 @@
     const url=String(value||'').trim();
     return /^(https:\/\/|\/(?!\/)|images\/)/i.test(url)?url:'';
   }
+  function verifiedPublicPrice(brand,variant){
+    const amount=Number(variant?.price);
+    if(!Number.isFinite(amount)||amount<=0)throw new Error('Prix public HT non vérifié pour cette référence fabricant.');
+    if(brand==='Hidrobox'){
+      const raw=Number(variant?.rawPrice);
+      if(!Number.isFinite(raw)||raw<=0)throw new Error('Tarif source Hidrobox manquant : prix non enregistré.');
+      const expected=Math.round(raw*104)/100;
+      if(Math.abs(amount-expected)>0.005)throw new Error('Hidrobox : le prix affiché ne correspond pas à +4 % du tarif source.');
+    }
+    return amount;
+  }
   function mediaFor(brand,p,g,v){
     const model=brand==='Carrodrain'?carrodrainVisual(g):null;
     const manufacturerUrl=model?.url||official(brand,v?.manufacturerUrl)||official(brand,g?.manufacturerUrl)||official(brand,p?.manufacturerUrl)||OFFICIAL_HOME[brand];
@@ -80,11 +91,12 @@
       const active=g&&g.id===chosenGroup?' is-active':'';
       const item=g
         ?'<button type="button" class="carrodrain-gallery-card'+active+'" data-carrodrain-group="'+esc(g.id)+'" aria-label="Configurer '+esc(m.name)+'">'+common+'</button>'
-        :'<a class="carrodrain-gallery-card" href="'+esc(m.url)+'" target="_blank" rel="noopener noreferrer" aria-label="Voir '+esc(m.name)+' sur Carrodrain">'+common+'<em>Voir chez Carrodrain</em></a>';
+        :'<a class="carrodrain-gallery-card" href="'+esc(m.url)+'" target="_blank" rel="noopener noreferrer" aria-label="Voir '+esc(m.name)+' sur Carrodrain">'+common+'<em>Hors tarif importé · Voir chez Carrodrain</em></a>';
       return {family:m.family,markup:item};
     });
     const families=['Essentials','Invisibles','Liquids','Accessoires'];
-    return '<div class="carrodrain-gallery-intro">Sélectionnez une collection, puis configurez la version, la longueur et la finition. Visuels officiels de gamme, non contractuels pour la finition choisie.</div>'
+    const priced=CARRODRAIN_MODELS.filter(m=>(groups||[]).some(g=>carrodrainVisual(g)?.id===m.id)).length;
+    return '<div class="carrodrain-gallery-intro">'+priced+' collections tarifées sur '+CARRODRAIN_MODELS.length+' présentées. Les collections sans grille ne peuvent pas être ajoutées automatiquement. Visuels officiels de gamme, non contractuels pour la finition choisie.</div>'
       +families.map(f=>'<section class="carrodrain-gallery-section"><h3>'+esc(f)+'</h3><div class="carrodrain-gallery-grid">'+cards.filter(x=>x.family===f).map(x=>x.markup).join('')+'</div></section>').join('');
   }
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
@@ -137,9 +149,23 @@
   function dimLabel(v){return [v.lengthMm&&`${v.lengthMm} mm`,v.widthMm&&`${v.widthMm} mm`,v.heightMm&&`${v.heightMm} mm`].filter(Boolean).join(' × ')||'Dimension non renseignée';}
   function chosen(select,values){const cur=select;return values.includes(cur)?cur:(values[0]??'');}
 
+  function initialExactVariant(groups,product){
+    const ref=String(product?.reference||'').trim();
+    let group=groups.find(g=>g.id===product?.configGroup);
+    // A catalogue card may have been moved to a different group. Prefer the
+    // supplier's exact reference over an obsolete, cached group identifier.
+    if(ref&&!(group?.variants||[]).some(v=>String(v.reference)===ref)){
+      const match=groups.find(g=>(g.variants||[]).some(v=>String(v.reference)===ref));
+      if(match)group=match;
+    }
+    const variant=ref?(group?.variants||[]).find(v=>String(v.reference)===ref)||null:null;
+    return {group,variant};
+  }
   async function openBette(p,roomId){
     const data=await loadJson(BRAND_META.Bette);const groups=data.groups||[];if(!groups.length)throw new Error('Catalogue Bette vide.');
-    const draft={group:p?.configGroup||'',model:'',dim:'',color:'',option:'',reference:''};
+    const original=initialExactVariant(groups,p);
+    const selected=original.variant;
+    const draft={group:original.group?.id||p?.configGroup||'',model:selected?.model||'',dim:selected?dimLabel(selected):'',color:selected?.color||'Standard',option:selected?.option||'Standard',reference:selected?.reference||''};
     if(!groups.some(g=>g.id===draft.group))draft.group=groups.find(g=>g.family===p?.collection)?.id||groups[0].id;
     let overlay;
     const render=()=>{
@@ -157,8 +183,9 @@
       Object.entries(map).forEach(([id,key])=>{const el=overlay.querySelector('#'+id);if(el)el.onchange=()=>{draft[key]=el.value;if(key==='group'){draft.model=draft.dim=draft.color=draft.option=draft.reference=''}else if(key==='model'){draft.dim=draft.color=draft.option=draft.reference=''}else if(key==='dim'){draft.color=draft.option=draft.reference=''}else if(key==='color'){draft.option=draft.reference=''}else if(key==='option'){draft.reference=''}render()}});
       overlay.querySelector('.brand-config-confirm').onclick=()=>{try{
         const selected=rows.find(v=>v.reference===draft.reference)||exact;if(!selected)throw new Error('Référence Bette introuvable.');
+        const price=verifiedPublicPrice('Bette',selected);
         const media=mediaFor('Bette',p,g,selected);
-        const configured={manufacturer:'Bette',collection:g.family,reference:selected.reference,base:selected.reference,designation:selected.designation,category:selected.category,finish:[selected.color,selected.option].filter(Boolean).join(' · '),price:selected.price,totalPrice:selected.price,currency:'€',vat:'HT',source:'TARIF BETTE.csv',sourceYear:2026,manufacturerUrl:media.manufacturerUrl,image:media.image,technicalSheetUrl:media.technicalSheetUrl,purchaseDiscount:50,configuratorType:'bette-configured'};
+        const configured={manufacturer:'Bette',collection:g.family,reference:selected.reference,base:selected.reference,designation:selected.designation,category:selected.category,finish:[selected.color,selected.option].filter(Boolean).join(' · '),price,totalPrice:price,currency:'€',vat:'HT',source:'TARIF BETTE.csv',sourceYear:2026,manufacturerUrl:media.manufacturerUrl,image:media.image||media.representativeImage,imageSource:media.image?'Visuel exact fabricant':'Visuel de collection · finition illustrative',imageFinishMatch:media.image?'exact':media.representativeImage?'collection':'missing',technicalSheetUrl:media.technicalSheetUrl,purchaseDiscount:50,configuratorType:'bette-configured'};
         commitConfigured(configured,roomId,'betteConfiguration',{group:g.id,family:g.family,model:selected.model,lengthMm:selected.lengthMm,widthMm:selected.widthMm,heightMm:selected.heightMm,color:selected.color,option:selected.option,reference:selected.reference});
       }catch(e){overlay.querySelector('.recor-config-error').textContent=e.message||String(e)}};
     };
@@ -167,7 +194,9 @@
 
   async function openCarrodrain(p,roomId){
     const data=await loadJson(BRAND_META.Carrodrain);const groups=data.groups||[];if(!groups.length)throw new Error('Catalogue Carrodrain vide.');
-    const draft={group:p?.configGroup||'',version:'',length:'',finish:'',reference:''};if(!groups.some(g=>g.id===draft.group))draft.group=groups.find(g=>g.model===p?.collection)?.id||groups[0].id;
+    const original=initialExactVariant(groups,p),selected=original.variant;
+    const draft={group:original.group?.id||p?.configGroup||'',version:selected?.version||'',length:selected?.length||'',finish:selected?.finish||'',reference:selected?.reference||''};
+    if(!groups.some(g=>g.id===draft.group))draft.group=groups.find(g=>g.model===p?.collection)?.id||groups[0].id;
     let overlay,mode='gallery';
     const gallery=()=>{
       const body=carrodrainGallery(groups,draft.group);
@@ -178,8 +207,9 @@
       overlay.querySelector('.brand-config-cancel').onclick=close;
       overlay.querySelector('.brand-config-confirm').style.display='none';
       overlay.querySelectorAll('[data-carrodrain-group]').forEach(el=>el.onclick=()=>{
+        const changed=draft.group!==el.dataset.carrodrainGroup;
         draft.group=el.dataset.carrodrainGroup;
-        draft.version=draft.length=draft.finish=draft.reference='';
+        if(changed)draft.version=draft.length=draft.finish=draft.reference='';
         mode='configure';render();
       });
     };
@@ -200,8 +230,9 @@
       Object.entries(map).forEach(([id,key])=>{const el=overlay.querySelector('#'+id);if(el)el.onchange=()=>{draft[key]=el.value;if(key==='group'){draft.version=draft.length=draft.finish=draft.reference=''}else if(key==='version'){draft.length=draft.finish=draft.reference=''}else if(key==='length'){draft.finish=draft.reference=''}else if(key==='finish'){draft.reference=''}render()}});
       overlay.querySelector('.brand-config-confirm').onclick=()=>{try{
         const selected=rows.find(v=>v.reference===draft.reference)||exact;if(!selected)throw new Error('Référence Carrodrain introuvable.');
+        const price=verifiedPublicPrice('Carrodrain',selected);
         const media=mediaFor('Carrodrain',p,g,selected);
-        const configured={manufacturer:'Carrodrain',collection:g.model,reference:selected.reference,base:selected.reference,designation:[g.model,selected.version,selected.length,selected.finish].filter(Boolean).join(' · '),category:'Caniveau de douche',finish:selected.finish||'',price:selected.price,totalPrice:selected.price,currency:'€',vat:'HT',source:'CD.L2027.pdf',sourceYear:2027,manufacturerUrl:media.manufacturerUrl,image:media.image||media.representativeImage,imageSource:media.image?'Visuel exact fabricant':'Visuel de collection Carrodrain · finition illustrative',imageFinishMatch:media.image?'exact':'collection',technicalSheetUrl:media.technicalSheetUrl,purchaseDiscount:50,configuratorType:'carrodrain-configured'};
+        const configured={manufacturer:'Carrodrain',collection:g.model,reference:selected.reference,base:selected.reference,designation:[g.model,selected.version,selected.length,selected.finish].filter(Boolean).join(' · '),category:'Caniveau de douche',finish:selected.finish||'',price,totalPrice:price,currency:'€',vat:'HT',source:'CD.L2027.pdf',sourceYear:2027,manufacturerUrl:media.manufacturerUrl,image:media.image||media.representativeImage,imageSource:media.image?'Visuel exact fabricant':'Visuel de collection Carrodrain · finition illustrative',imageFinishMatch:media.image?'exact':'collection',technicalSheetUrl:media.technicalSheetUrl,purchaseDiscount:50,configuratorType:'carrodrain-configured'};
         commitConfigured(configured,roomId,'carrodrainConfiguration',{group:g.id,model:g.model,version:selected.version,length:selected.length,finish:selected.finish,reference:selected.reference});
       }catch(e){overlay.querySelector('.recor-config-error').textContent=e.message||String(e)}};
     };
@@ -230,8 +261,9 @@
         const selected=rows.find(v=>v.reference===draft.reference)||exact;if(!selected)throw new Error('Référence Hidrobox introuvable.');
         const colorLabel2=({'BLA':'Blanc / Scene','BAS':'Kromat · Standard Basics','TRE':'Kromat · Standard Trends','SPE':'Kromat · Specials RAL/NCS'}[selected.colorGroup]||selected.colorGroup||'');
         const designation=[g.collection,selected.material,selected.width&&`Larg. ${selected.width} cm`,selected.length&&`Long. ${selected.length} cm`,selected.finish,colorLabel2].filter(Boolean).join(' · ');
+        const price=verifiedPublicPrice('Hidrobox',selected);
         const media=mediaFor('Hidrobox',p,g,selected);
-        const configured={manufacturer:'Hidrobox',collection:g.collection,reference:selected.reference,base:selected.reference,designation,category:g.category,finish:[selected.finish,colorLabel2].filter(Boolean).join(' · '),price:selected.price,totalPrice:selected.price,currency:'€',vat:'HT',source:'HIDROBOX_TARIF_FR_V0226_19-02-2026.pdf',sourceYear:2026,rawTariffPrice:selected.rawPrice,listPriceUpliftPct:4,manufacturerUrl:media.manufacturerUrl,image:media.image,technicalSheetUrl:media.technicalSheetUrl,purchaseDiscount:50,configuratorType:'hidrobox-configured'};
+        const configured={manufacturer:'Hidrobox',collection:g.collection,reference:selected.reference,base:selected.reference,designation,category:g.category,finish:[selected.finish,colorLabel2].filter(Boolean).join(' · '),price,totalPrice:price,currency:'€',vat:'HT',source:'HIDROBOX_TARIF_FR_V0226_19-02-2026.pdf',sourceYear:2026,rawTariffPrice:selected.rawPrice,listPriceUpliftPct:4,manufacturerUrl:media.manufacturerUrl,image:media.image,technicalSheetUrl:media.technicalSheetUrl,purchaseDiscount:50,configuratorType:'hidrobox-configured'};
         commitConfigured(configured,roomId,'hidroboxConfiguration',{group:g.id,collection:g.collection,material:selected.material,width:selected.width,length:selected.length,finish:selected.finish,colorGroup:selected.colorGroup,reference:selected.reference,rawTariffPrice:selected.rawPrice,price:selected.price,upliftPct:4,sourcePage:selected.sourcePage});
       }catch(e){overlay.querySelector('.recor-config-error').textContent=e.message||String(e)}};
     };
@@ -250,7 +282,7 @@
     return sets.flat();
   }
   function eligibleBrand(brand,p){return !!p&&String(p.manufacturer||'').toLowerCase()===brand.toLowerCase()&&String(p.configuratorType||'').toLowerCase()===brand.toLowerCase();}
-  root.HydroBrandCatalogs={load:loadCatalogs};
+  root.HydroBrandCatalogs={load:loadCatalogs,verifiedPublicPrice,initialExactVariant};
   root.HydroBetteConfigurator={eligible:p=>eligibleBrand('Bette',p),open:openBette,close};
   root.HydroCarrodrainConfigurator={eligible:p=>eligibleBrand('Carrodrain',p),open:openCarrodrain,close,models:CARRODRAIN_MODELS};
   root.HydroHidroboxConfigurator={eligible:p=>eligibleBrand('Hidrobox',p),open:openHidrobox,close,groups:async()=>((await loadJson(BRAND_META.Hidrobox)).groups||[])};

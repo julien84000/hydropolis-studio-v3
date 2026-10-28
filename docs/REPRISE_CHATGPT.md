@@ -60,3 +60,15 @@ Reprendre les audits Hidrobox/Bette/Carrodrain puis Zucchetti et Lefroy Brooks, 
 - **Terminé** : 98 PDF techniques, associations strictes, recherche et migration non destructrice, 99 compositions visuelles haute résolution reconstruite et auditée, nouvelle version 11.63.0 et déploiement vérifié.
 - **Non terminé / à poursuivre** : qualification commerciale de toutes les variantes Sbordoni (notamment photos réellement natives 4K inexistantes si le PDF ne les fournit pas), audits Hidrobox, Bette, Carrodrain, Zucchetti, Lefroy Brooks ; préserver les 12 collections / 53 catégories Hotbath et les tarifs Resigres.
 - Les tests navigateur ont été réalisés sur la base CI isolée, pas sur des projets personnels déjà enregistrés en production. Aucune migration de projets utilisateurs existants n'a été réalisée ou déclarée comme testée en production.
+
+## Checkpoint V11.63.1 — matrices Bette / Hidrobox / Carrodrain (28 octobre 2026)
+
+Branche de travail : `feat/v11.63.1-brands-pricing-integrity`. PR : https://github.com/julien84000/hydropolis-studio-v3/pull/34. Base main `b292df48fd5e5e8e412c0f4506a009f5327fbc96` (V11.63.0, Sbordoni intégré).
+
+- `scripts/audit-brand-pricing.js` charge réellement les fichiers Bette/Hidrobox/Carrodrain en gzip Base64 et vérifie toutes les 67 378 variantes : Bette 62 264 / 93 groupes, Hidrobox 4 479 / 27 groupes, Carrodrain 635 / 12 groupes. **Zéro prix vide/invalide, zéro référence manquante, zéro doublon exact.** Les 4 479 prix Hidrobox suivent strictement la hausse de 4 % arrondie aux centimes ; la remise achat à 50 % reste distincte.
+- Nouvelle vérification **au moment de l'enregistrement** des configurations : prix public HT positif exigé ; Hidrobox exige une ligne de prix brute et son montant majoré correct, sans seconde majoration.
+- Bette et Carrodrain rouvrent la **référence exacte** d'un article si elle est présente, y compris lorsque l'ancien `configGroup` est devenu périmé. Carrodrain n'efface pas la sélection en recliquant sur la même famille.
+- Bette peut conserver une image représentative de collection avec `imageFinishMatch: 'collection'` au lieu de laisser une vignette vide ou de déclarer l'image comme exacte.
+- Tests de régression ajoutés à `tests/v11.63.1-brand-pricing.test.js`, disponibles dans `npm test`. Le rapport technique est dans `docs/BRAND_PRICING_AUDIT_V11.63.1.md`.
+- **Limites des preuves** : ce contrôle confirme l'intégrité des **fichiers importés**, pas leur exhaustivité face aux PDF constructeur ; les images des variantes et la vérification source par page restent à poursuivre. Aucune des anciennes règles Resigres, des ressources Sbordoni ni des catégories Hotbath n'a été modifiée.
+- **À la reprise** : lire la PR #34, son dernier SHA, CI Chromium et le journal technique ; distinguer « branche sauvegardée », « tests réussis », « fusion » et « Render ». Poursuivre la couverture photographique et documentaire Bette / Carrodrain, les collections Hidrobox, puis Zucchetti et Lefroy Brooks. Ne pas remplir des prix absents par estimation.

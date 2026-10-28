@@ -1,0 +1,114 @@
+'use strict';
+const test=require('node:test');
+const assert=require('node:assert/strict');
+const {auditAll}=require('../scripts/audit-brand-pricing');
+
+test('Hidrobox / Bette / Carrodrain : all supplier price matrices are read and audited',()=>{
+ const data=auditAll();
+ const by=Object.fromEntries(data.map(a=>[a.brand,a]));
+ assert.equal(by.Hidrobox.groups,27);
+ assert.equal(by.Hidrobox.variants,4479);
+ assert.equal(by.Bette.groups,93);
+ assert.equal(by.Bette.variants,62264);
+ assert.equal(by.Carrodrain.groups,12);
+ assert.equal(by.Carrodrain.variants,635);
+ for(const r of data){
+   assert.equal(r.variants,r.priced+r.noPrice);
+   assert.equal(r.noPrice,0,r.brand+': invalid supplier price');
+   assert.equal(r.duplicateExact,0,r.brand+': duplicated exact variant');
+   assert.equal(r.issues['blank-reference']||0,0,r.brand+': missing manufacturer reference');
+ }
+ assert.equal(by.Hidrobox.rawCount,4479);
+ assert.equal(by.Hidrobox.incorrectUplift,0,'Hidrobox public HT must be source HT * 1.04 exactly once');
+ console.log('BRAND_PRICE_MATRIX_AUDIT',JSON.stringify(data.map(({_data,issueExamples,...x})=>x)));
+ console.log('BRAND_GROUP_COVERAGE',JSON.stringify(data.filter(x=>x.brand!=='Bette').map(x=>({brand:x.brand,groups:x._data.groups.map(g=>({id:g.id,collection:g.collection||g.model||g.family||'',rows:g.variants.length}))}))));
+});
+
+test('Buying conditions are stored separately from public list prices',()=>{
+ const data=auditAll();
+ for(const a of data){
+  assert.ok(a.priced>0);
+  for(const g of a._data.groups){
+    for(const v of g.variants){
+      assert.ok(v.price>0,a.brand+' '+v.reference);
+      if(a.brand==='Hidrobox'){
+        assert.ok(v.rawPrice>0);
+        assert.equal(v.price,Math.round(v.rawPrice*104)/100);
+      }
+    }
+  }
+ }
+});
+
+test('Supplier quote at commit never re-applies Hidrobox uplift or stores invalid prices',()=>{
+ const vm=require('node:vm');
+ const fs=require('node:fs');
+ const path=require('node:path');
+ const win={};
+ const code=fs.readFileSync(path.join(__dirname,'../public/brand-configurators.js'),'utf8');
+ vm.runInNewContext(code,{window:win,Map,Uint8Array});
+ const verified=win.HydroBrandCatalogs.verifiedPublicPrice;
+ assert.equal(verified('Hidrobox',{reference:'SARC0361',rawPrice:571,price:593.84}),593.84);
+ assert.equal(verified('Bette',{reference:'TEST',price:728}),728);
+ assert.equal(verified('Carrodrain',{reference:'TEST',price:195}),195);
+ assert.throws(()=>verified('Hidrobox',{rawPrice:571,price:617.59}),/4 %/);
+ assert.throws(()=>verified('Hidrobox',{price:593.84}),/Tarif source/);
+ assert.throws(()=>verified('Bette',{price:0}),/Prix public HT/);
+ assert.throws(()=>verified('Carrodrain',{price:'non tarifé'}),/Prix public HT/);
+ assert.match(code,/image:media.image\|\|media.representativeImage,imageSource:media.image/);
+});
+
+test('Bette and Carrodrain reopen the exact SKU rather than silently choosing the first variant',()=>{
+ const vm=require('node:vm');
+ const fs=require('node:fs');
+ const path=require('node:path');
+ const win={};
+ vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../public/brand-configurators.js'),'utf8'),{window:win,Map,Uint8Array});
+ const find=win.HydroBrandCatalogs.initialExactVariant;
+ const groups=[{id:'old',variants:[{reference:'OLD-1',price:100}]},{id:'new',variants:[{reference:'B-01',model:'Compact',color:'White',price:200},{reference:'B-02',model:'Large',color:'Black',price:300}]}];
+ const row=find(groups,{configGroup:'old',reference:'B-02'});
+ assert.equal(row.group.id,'new');
+ assert.equal(row.variant.reference,'B-02');
+ assert.equal(row.variant.price,300);
+ assert.equal(find(groups,{configGroup:'new',reference:'UNKNOWN'}).variant,null);
+ assert.equal(find(groups,{configGroup:'new'}).group.id,'new');
+ const code=fs.readFileSync(path.join(__dirname,'../public/brand-configurators.js'),'utf8');
+ assert.match(code,/const original=initialExactVariant\(groups,p\),selected=original.variant/);
+ assert.match(code,/const changed=draft.group!==el.dataset.carrodrainGroup/);
+});
+
+test('Carrodrain catalog identifies unpriced visual collections without inventing a price',()=>{
+ const fs=require('node:fs');
+ const path=require('node:path');
+ const code=fs.readFileSync(path.join(__dirname,'../public/brand-configurators.js'),'utf8');
+ assert.match(code,/collections tarifées sur/);
+ assert.match(code,/Hors tarif importé · Voir chez Carrodrain/);
+ const data=auditAll().find(x=>x.brand==='Carrodrain')._data;
+ const ids=new Set(data.groups.map(x=>x.id));
+ assert.equal(ids.has('invisible-disco-125'),false);
+ assert.equal(ids.has('kerlox'),false);
+ assert.equal(ids.has('liquid-snake'),true);
+});
+
+test('Real Bette and Carrodrain source references reopen with the original version',()=>{
+ const vm=require('node:vm'),fs=require('node:fs'),path=require('node:path');
+ const win={};
+ vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../public/brand-configurators.js'),'utf8'),{window:win,Map,Uint8Array});
+ const find=win.HydroBrandCatalogs.initialExactVariant;
+ const bette=loadReal('Bette');
+ const b=find(bette.groups,{configGroup:'obsolete-group',reference:'7350-000T2'});
+ assert.equal(b.group.id,'betteair');
+ assert.equal(b.variant.reference,'7350-000T2');
+ assert.equal(b.variant.lengthMm,900);
+ assert.equal(b.variant.widthMm,900);
+ const carro=loadReal('Carrodrain');
+ const c=find(carro.groups,{configGroup:'obsolete-group',reference:'100403'});
+ assert.equal(c.group.id,'cayman');
+ assert.equal(c.variant.reference,'100403');
+ assert.equal(c.variant.version,'LOW');
+ assert.equal(c.variant.length,'600');
+ assert.equal(c.variant.finish,'INOX stainless steel');
+});
+function loadReal(brand){
+ return require('../scripts/audit-brand-pricing').load(brand);
+}
