@@ -1,0 +1,74 @@
+/* V11.63.6 — Gessi Area Pro: photographic collection explorer */
+.gessi-overlay{position:fixed;inset:0;z-index:15200;background:rgba(17,17,18,.77);display:flex;align-items:center;justify-content:center;padding:14px;backdrop-filter:blur(4px)}
+.gessi-dialog{width:min(1440px,100%);height:min(94vh,1020px);display:flex;flex-direction:column;background:#f8f8f6;border-radius:14px;overflow:hidden;color:#222;box-shadow:0 30px 90px #0007}
+.gessi-top{background:#212420;color:#fff;padding:17px 24px 18px;display:flex;justify-content:space-between;align-items:center;flex:0 0 auto}
+.gessi-top small{font-size:10px;letter-spacing:.19em;color:#b8b7b1}
+.gessi-top h2{font-size:23px;margin:3px 0 0;letter-spacing:-.04em;font-weight:600;color:#fff}
+.gessi-top h2 span{font-weight:300;color:#d4d0c8}
+.gessi-close{border:0;background:transparent;color:#fff;font-size:30px;line-height:1;cursor:pointer;width:42px;height:42px;border-radius:100px}
+.gessi-close:hover{background:#ffffff21}
+.gessi-layout{display:grid;grid-template-columns:232px minmax(0,1fr);min-height:0;flex:1}
+.gessi-menu{padding:22px 12px;background:#eeeee9;border-right:1px solid #dcdcd5;overflow-y:auto;display:flex;flex-direction:column;gap:3px}
+.gessi-menu-heading{font-size:10px;letter-spacing:.16em;font-weight:700;color:#88877e;margin:0 10px 14px}
+.gessi-menu button{display:flex;justify-content:space-between;align-items:center;gap:7px;background:transparent;border:0;text-align:left;padding:12px 11px;cursor:pointer;color:#454640;font-size:13px;border-radius:7px;font-weight:500}
+.gessi-menu button small{font-variant-numeric:tabular-nums;font-size:10px;color:#98988d}
+.gessi-menu button:hover{background:#e1e1d9}.gessi-menu button.active{background:#282d28;color:white}.gessi-menu button.active small{color:#bdc4bd}
+.gessi-menu>a{font-size:11px;margin:24px 10px 8px;color:#5f665e;line-height:1.6}
+.gessi-main{overflow-y:auto;overscroll-behavior:contain}
+.gessi-body{padding:25px clamp(16px,3vw,38px) 48px}
+.gessi-crumb{display:flex;gap:9px;align-items:center;flex-wrap:wrap;font-size:12px;color:#918d83;margin-bottom:28px}
+.gessi-crumb button{border:0;background:none;color:#69736a;cursor:pointer;padding:0;font-size:12px}
+.gessi-crumb button:hover{text-decoration:underline}
+.gessi-heading{margin:0 0 26px}.gessi-heading>span{letter-spacing:.17em;font-weight:650;font-size:10px;color:#8c907e}
+.gessi-heading h2{font-weight:420;letter-spacing:-.04em;font-size:clamp(27px,3vw,39px);margin:6px 0;color:#272923;line-height:1.2}
+.gessi-heading p{margin:8px 0;color:#75756d;font-size:13px;line-height:1.5}
+.gessi-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.gessi-card{background:#fff;text-align:left;min-width:0;display:flex;flex-direction:column;border:1px solid #e5e5de;border-radius:8px;overflow:hidden;cursor:pointer;padding:0;transition:box-shadow .14s,transform .14s,border-color .14s}
+.gessi-card:not([disabled]):hover{transform:translateY(-2px);border-color:#a1a69a;box-shadow:0 7px 18px #17211617}
+.gessi-card:focus-visible{outline:2px solid #4d6650;outline-offset:2px}
+.gessi-card-image{display:block;position:relative;aspect-ratio:1.16;overflow:hidden;background:linear-gradient(135deg,#eceee9,#dddcd5)}
+.gessi-card-image img{display:block;width:100%;height:100%;object-fit:contain;background:#f3f3f0}
+.gessi-card-placeholder{position:absolute;inset:0;display:none;align-items:center;justify-content:center;text-align:center;font-size:11px;color:#8e928a;padding:20px}
+.gessi-card-image:not(:has(img)) .gessi-card-placeholder,.gessi-image-error .gessi-card-placeholder{display:flex}
+.gessi-image-error img{display:none!important}
+.gessi-card-info{display:flex;flex-direction:column;gap:5px;padding:12px 13px 17px;min-height:70px}
+.gessi-card-info strong{font-weight:550;font-size:15px;line-height:1.3;color:#343832}
+.gessi-card-info small{font-size:11px;color:#898b82;line-height:1.4}
+.gessi-no-tariff{opacity:.56;cursor:not-allowed}.gessi-no-tariff .gessi-card-image{filter:grayscale(.9)}
+.gessi-site-link{display:inline-block;margin:20px 0 5px;font-size:13px;color:#3b5940;text-decoration:underline;text-underline-offset:3px}
+.gessi-univers .gessi-card-image{aspect-ratio:1.65}
+.gessi-univers{grid-template-columns:repeat(3,minmax(0,1fr))}
+.gessi-products .gessi-card-image{aspect-ratio:1/1;background:#fff}
+.gessi-products .gessi-card-info strong{font-variant-numeric:tabular-nums}
+.gessi-searchbar{display:flex;align-items:flex-end;justify-content:space-between;gap:15px;margin-bottom:22px}
+.gessi-searchbar label{display:flex;flex-direction:column;gap:6px;width:min(450px,100%);font-size:12px;color:#696b63}
+.gessi-searchbar input,.gessi-reference-list select{width:100%;border:1px solid #cecec6;background:white;color:#252925;border-radius:6px;padding:12px 14px;font-size:14px;min-height:44px}
+.gessi-searchbar>span{color:#878a80;font-size:12px;padding-bottom:10px;white-space:nowrap}
+.gessi-pager{display:flex;align-items:center;justify-content:center;gap:18px;margin-top:28px;font-size:12px}
+.gessi-pager button{border:1px solid #c5c8c1;background:#fff;border-radius:5px;padding:10px 15px;cursor:pointer}
+.gessi-pager button:disabled{opacity:.35;cursor:not-allowed}
+.gessi-detail{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.9fr);gap:clamp(20px,4vw,56px);align-items:start}
+.gessi-large-photo{background:#fff;min-height:390px;border:1px solid #e1e3de;display:flex;flex-direction:column}
+.gessi-large-photo img{height:min(48vh,480px);min-height:260px;object-fit:contain;width:100%}
+.gessi-image-placeholder{display:none;flex:1;align-items:center;justify-content:center;color:#888b84;font-size:13px}
+.gessi-large-photo:not(:has(img)) .gessi-image-placeholder,.gessi-large-photo.gessi-image-error .gessi-image-placeholder{display:flex}
+.gessi-large-photo small{padding:14px 18px;display:block;color:#757a71;font-size:11px;line-height:1.5;border-top:1px solid #eeeee9}
+.gessi-configuration{display:flex;flex-direction:column;gap:16px;padding:7px 0}
+.gessi-kicker{font-size:10px;letter-spacing:.14em;color:#777d72;font-weight:650}
+.gessi-configuration h3{font-size:22px;font-weight:480;letter-spacing:-.025em;line-height:1.45;margin:0 0 7px}
+.gessi-reference-list{display:flex;flex-direction:column;gap:9px}
+.gessi-reference-list label{font-size:13px;font-weight:600;color:#51584d}
+.gessi-swatchbox{display:flex;align-items:center;gap:12px;background:#f0f1eb;padding:10px;border-radius:6px}
+.gessi-swatchbox>div{display:flex;flex-direction:column;gap:4px}
+.gessi-swatchbox small{font-size:9px;letter-spacing:.09em;color:#878c83}.gessi-swatchbox b{font-weight:600;font-size:12px}
+.gessi-swatch{width:40px;height:40px;border-radius:50%;overflow:hidden;border:1px solid #a6aaa0;background:#d8d6d0;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.gessi-swatch img{width:100%;height:100%;object-fit:cover}
+.gessi-selection{border-top:1px solid #dedfd8;border-bottom:1px solid #dedfd8;display:flex;justify-content:space-between;gap:12px;font-size:13px;padding:16px 0}
+.gessi-price{font-size:27px;color:#242c22;font-weight:650;display:flex;flex-direction:column;gap:3px}
+.gessi-price small{font-size:12px;color:#70776b;font-weight:400}
+.gessi-required{font-size:12px;color:#675b48;padding:11px;background:#f2ece0;margin:0}
+.gessi-add{border:0;background:#252f27;color:#fff;padding:15px 22px;font-weight:600;border-radius:5px;cursor:pointer;align-self:start;margin-top:6px}
+.gessi-add:hover{background:#405240}.gessi-add:disabled{opacity:.4;cursor:not-allowed}
+.gessi-error,.gessi-empty,.gessi-no-price{color:#8b584e;font-size:14px}
+@media(max-width:1100px){.gessi-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.gessi-univers{grid-template-columns:repeat(2,minmax(0,1fr))}.gessi-layout{grid-template-columns:190px minmax(0,1fr)}}
+@media(max-width:700px){.gessi-overlay{padding:0}.gessi-dialog{height:100dvh;max-height:none;border-radius:0}.gessi-top{padding:12px 17px}.gessi-layout{display:flex;flex-direction:column}.gessi-menu{display:flex;flex-direction:row;flex:0 0 auto;white-space:nowrap;overflow-x:auto;overflow-y:hidden;gap:5px;padding:9px;background:#eeeee9}.gessi-menu-heading,.gessi-menu>a,.gessi-menu button small{display:none}.gessi-menu button{flex:0 0 auto;padding:10px 12px;font-size:12px}.gessi-main{flex:1}.gessi-body{padding:18px 13px 40px}.gessi-crumb{margin-bottom:17px}.gessi-grid,.gessi-univers{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.gessi-card-info{padding:10px 10px 12px}.gessi-card-info strong{font-size:13px}.gessi-card-info small{font-size:10px}.gessi-detail{grid-template-columns:1fr;gap:19px}.gessi-large-photo{min-height:270px}.gessi-large-photo img{height:260px;min-height:0}.gessi-configuration{padding:0 4px}.gessi-configuration h3{font-size:19px}.gessi-searchbar>span{display:none}}
