@@ -72,3 +72,13 @@ La présence d'une grille chiffrée importée ne suffit pas à certifier que tou
 - **Source** : fichier PDF original `Tarif_FR_2026.pdf`, p. 22 et 34 **imprimées** (pages physiques 13 et 19 dans le document de 39 pages). Certaines séquences d'extraction utilisent un codage de police particulier ; les chiffres ont été normalisés en tenant compte du même codage utilisé pour les autres lignes du tarif. Le rendu visuel PDF reste un contrôle supplémentaire souhaitable avant validation commerciale.
 - **À poursuivre** : huit matrices configurées mais encore partielles (Extraplano Latéral, Extraplano Central / 1/4 rond, Atenea, Cosmo CF, Cosmo SF, Portes/vides/colonnes, Frame, Gesto) et onze groupes avec prix des déclinaisons non importés. Les autres familles restent inchangées.
 - **Validation** : l'import ne constitue pas à lui seul une validation navigateur, de persistance, de marges, de CI ou de production. Consigner ces résultats séparément après exécution réelle.
+
+## Validation technique post-fusion (28 octobre 2026)
+
+- **PR #28** fusionnée : https://github.com/julien84000/hydropolis-studio-v3/pull/28 — commit main `01154323102022ae07c4ca70c08e39f866863eff`.
+- **CI #28** réussie, y compris `npm ci`, `npm run check`, `npm test`, `npm run build` et `npm run test:browser` : https://github.com/julien84000/hydropolis-studio-v3/actions/runs/40691087810.
+- **PR #29** fusionnée : https://github.com/julien84000/hydropolis-studio-v3/pull/29 — commit main `a97b84e4c12945c9fb500d444632b287b37deccf` ; tests Chromium Gea CF/SF ajoutés (986/627 € au palier 141, progression au palier 161, épaisseur invalide et sélection projet).
+- **CI #29** réussie, incluant le parcours Playwright Gea CF/SF : https://github.com/julien84000/hydropolis-studio-v3/actions/runs/40691501892.
+- **Render** : `GET /api/version` répond `11.62.8`; `GET /api/health` répond `ok: true` et indique PostgreSQL. Le JSON de configuration servi est `2026-FR-v7`, et expose les prix Bois Gea CF [756, 756, 841, 899, 986, 1094, 1176, 1284] ainsi que Gea SF [483, 538, 590, 627, 681, 760, 794].
+- **Limite de vérification** : les tests navigateur s'exécutent sur un serveur local lancé par CI avec une base temporaire. L'ouverture d'une session utilisateur de production et la persistance d'un projet réel après réouverture n'ont **pas** été testées ; ne pas annoncer ces parcours de production comme prouvés.
+- **Action suivante** : importer et vérifier les six autres matrices Resigres partielles (en priorité Cosmo CF, Cosmo SF et Atenea), puis receveurs/vasques/meubles/composants ; chaque cellule doit rester liée au tarif source. Compléter les tests de reprise de projet et recalcul de marge.
