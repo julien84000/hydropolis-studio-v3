@@ -1,5 +1,5 @@
 {
-  "version": "2026-FR-v10",
+  "version": "2026-FR-v11",
   "source": "Tarif_FR_2026.pdf",
   "pricingPolicy": "V11.51: grilles standard/sur mesure = palier supérieur; receveurs Contract = surface réelle × tarif €/m² avec minimum de facturation; plans vasque Contract = tarif au cm + intégration vasque + options.",
   "global": {
@@ -7416,11 +7416,399 @@
       "dependencyMode": "certified-v50",
       "v50Furniture": {
         "sourcePage": "54",
-        "mode": "matrix",
+        "mode": "drawers-2026",
         "types": [
           {
-            "id": "drawer",
-            "label": "Tiroir sur mesure"
+            "id": "h30-single",
+            "heightCm": 30,
+            "modules": 1,
+            "drawersPerModule": 1,
+            "inner": false,
+            "label": "H30 · 1 module",
+            "shortLabel": "1 tiroir",
+            "minLengthCm": 1,
+            "maxLengthCm": 140,
+            "iconIndex": 0,
+            "lengthTiers": [
+              60,
+              80,
+              100,
+              120,
+              140
+            ],
+            "prices": {
+              "lacquer": [
+                615,
+                653,
+                718,
+                776,
+                1411
+              ],
+              "lacquer3d": [
+                720,
+                755,
+                808,
+                870,
+                null
+              ],
+              "woodRoble": [
+                837,
+                886,
+                966,
+                1034,
+                1476
+              ],
+              "woodOther": [
+                998,
+                1053,
+                1108,
+                1240,
+                1476
+              ]
+            }
+          },
+          {
+            "id": "h30-double",
+            "heightCm": 30,
+            "modules": 2,
+            "drawersPerModule": 1,
+            "inner": false,
+            "label": "H30 · 2 modules",
+            "shortLabel": "2 tiroirs côte à côte",
+            "minLengthCm": 120,
+            "maxLengthCm": 200,
+            "iconIndex": 1,
+            "lengthTiers": [
+              120,
+              140,
+              160,
+              180,
+              200
+            ],
+            "prices": {
+              "lacquer": [
+                990,
+                1012,
+                1072,
+                1110,
+                1150
+              ],
+              "lacquer3d": [
+                1050,
+                1112,
+                1152,
+                1210,
+                1251
+              ],
+              "woodRoble": [
+                1115,
+                1216,
+                1246,
+                1313,
+                1343
+              ],
+              "woodOther": [
+                1366,
+                1472,
+                1512,
+                1590,
+                1650
+              ]
+            }
+          },
+          {
+            "id": "h50-single",
+            "heightCm": 50,
+            "modules": 1,
+            "drawersPerModule": 1,
+            "inner": false,
+            "label": "H50 · 1 module",
+            "shortLabel": "1 grand tiroir",
+            "minLengthCm": 1,
+            "maxLengthCm": 140,
+            "iconIndex": 2,
+            "lengthTiers": [
+              60,
+              80,
+              100,
+              120,
+              140
+            ],
+            "prices": {
+              "lacquer": [
+                744,
+                789,
+                860,
+                924,
+                1521
+              ],
+              "lacquer3d": [
+                832,
+                890,
+                945,
+                1010,
+                null
+              ],
+              "woodRoble": [
+                895,
+                953,
+                1040,
+                1131,
+                1704
+              ],
+              "woodOther": [
+                1188,
+                1240,
+                1298,
+                1417,
+                1704
+              ]
+            }
+          },
+          {
+            "id": "h50-double",
+            "heightCm": 50,
+            "modules": 2,
+            "drawersPerModule": 1,
+            "inner": false,
+            "label": "H50 · 2 modules",
+            "shortLabel": "2 grands tiroirs côte à côte",
+            "minLengthCm": 120,
+            "maxLengthCm": 200,
+            "iconIndex": 3,
+            "lengthTiers": [
+              120,
+              140,
+              160,
+              180,
+              200
+            ],
+            "prices": {
+              "lacquer": [
+                1410,
+                1480,
+                1520,
+                1690,
+                1715
+              ],
+              "lacquer3d": [
+                1520,
+                1592,
+                1615,
+                1806,
+                1830
+              ],
+              "woodRoble": [
+                1590,
+                1860,
+                1920,
+                2010,
+                2080
+              ],
+              "woodOther": [
+                2402,
+                2559,
+                2600,
+                2680,
+                2712
+              ]
+            }
+          },
+          {
+            "id": "h50-inner-single",
+            "heightCm": 50,
+            "modules": 1,
+            "drawersPerModule": 1,
+            "inner": true,
+            "label": "H50 · 1 module avec tiroir intérieur",
+            "shortLabel": "1 tiroir + tiroir à l’anglaise",
+            "minLengthCm": 1,
+            "maxLengthCm": 140,
+            "iconIndex": 4,
+            "lengthTiers": [
+              60,
+              80,
+              100,
+              120,
+              140
+            ],
+            "prices": {
+              "lacquer": [
+                856,
+                902,
+                972,
+                1037,
+                1611
+              ],
+              "lacquer3d": [
+                980,
+                1029,
+                1085,
+                1179,
+                null
+              ],
+              "woodRoble": [
+                1029,
+                1096,
+                1153,
+                1243,
+                1859
+              ],
+              "woodOther": [
+                1399,
+                1484,
+                1495,
+                1668,
+                1889
+              ]
+            }
+          },
+          {
+            "id": "h50-inner-double",
+            "heightCm": 50,
+            "modules": 2,
+            "drawersPerModule": 1,
+            "inner": true,
+            "label": "H50 · 2 modules avec tiroirs intérieurs",
+            "shortLabel": "2 tiroirs + 2 tiroirs à l’anglaise",
+            "minLengthCm": 120,
+            "maxLengthCm": 200,
+            "iconIndex": 5,
+            "lengthTiers": [
+              120,
+              140,
+              160,
+              180,
+              200
+            ],
+            "prices": {
+              "lacquer": [
+                1546,
+                1790,
+                1830,
+                1930,
+                1990
+              ],
+              "lacquer3d": [
+                1671,
+                1850,
+                1925,
+                2020,
+                2130
+              ],
+              "woodRoble": [
+                1990,
+                2200,
+                2250,
+                2311,
+                2360
+              ],
+              "woodOther": [
+                2700,
+                2890,
+                2910,
+                2999,
+                3035
+              ]
+            }
+          },
+          {
+            "id": "h60-single",
+            "heightCm": 60,
+            "modules": 1,
+            "drawersPerModule": 2,
+            "inner": false,
+            "label": "H60 · 1 module",
+            "shortLabel": "2 tiroirs superposés",
+            "minLengthCm": 1,
+            "maxLengthCm": 140,
+            "iconIndex": 6,
+            "lengthTiers": [
+              60,
+              80,
+              100,
+              120,
+              140
+            ],
+            "prices": {
+              "lacquer": [
+                999,
+                1072,
+                1150,
+                1234,
+                1893
+              ],
+              "lacquer3d": [
+                null,
+                1155,
+                1270,
+                1320,
+                null
+              ],
+              "woodRoble": [
+                1188,
+                1246,
+                1343,
+                1440,
+                1999
+              ],
+              "woodOther": [
+                1392,
+                1472,
+                1550,
+                1734,
+                1999
+              ]
+            }
+          },
+          {
+            "id": "h60-double",
+            "heightCm": 60,
+            "modules": 2,
+            "drawersPerModule": 2,
+            "inner": false,
+            "label": "H60 · 2 modules",
+            "shortLabel": "2 × 2 tiroirs superposés",
+            "minLengthCm": 120,
+            "maxLengthCm": 200,
+            "iconIndex": 7,
+            "lengthTiers": [
+              120,
+              140,
+              160,
+              180,
+              200
+            ],
+            "prices": {
+              "lacquer": [
+                1980,
+                2090,
+                2140,
+                2300,
+                2350
+              ],
+              "lacquer3d": [
+                1999,
+                2310,
+                2350,
+                2455,
+                2490
+              ],
+              "woodRoble": [
+                2300,
+                2490,
+                2510,
+                2600,
+                2651
+              ],
+              "woodOther": [
+                2709,
+                2900,
+                2999,
+                3080,
+                3150
+              ]
+            }
           }
         ],
         "dimensionRules": {
@@ -7439,7 +7827,7 @@
         "materials": [
           {
             "id": "lacquer",
-            "label": "Laqué MDF",
+            "label": "Laqué — coloris standard",
             "priceClass": "lacquer",
             "colors": [
               "Terracota",
@@ -7454,39 +7842,41 @@
             ]
           },
           {
-            "id": "wood",
-            "label": "Bois",
-            "priceClass": "wood",
+            "id": "lacquer3d",
+            "label": "Laqué 3D",
+            "priceClass": "lacquer3d",
             "colors": [
-              "Roble",
+              "Terracota",
+              "Ártico",
+              "Antracita",
+              "Royal",
+              "Brie",
+              "Piedra",
+              "Negro",
+              "Arena",
+              "RAL/NCS"
+            ]
+          },
+          {
+            "id": "wood-roble",
+            "label": "Bois — Roble",
+            "priceClass": "woodRoble",
+            "colors": [
+              "Roble"
+            ]
+          },
+          {
+            "id": "wood-other",
+            "label": "Bois — Nogal US, rústico, salvaje, eucalyptus",
+            "priceClass": "woodOther",
+            "colors": [
               "Roble rústico",
               "Roble salvaje",
               "Nogal US",
-              "Eucalipto",
-              "Fumé"
+              "Eucalipto"
             ]
           }
         ],
-        "prices": {
-          "lacquer": [
-            392,
-            406,
-            515,
-            524,
-            537,
-            638,
-            656
-          ],
-          "wood": [
-            443,
-            498,
-            570,
-            597,
-            641,
-            720,
-            744
-          ]
-        },
         "includedOptions": [
           {
             "id": "suspensions",
@@ -7512,20 +7902,147 @@
             "type": "perUnit",
             "amount": 99,
             "unit": "tiroir"
-          },
-          {
-            "id": "ral",
-            "label": "Laqué RAL/NCS",
-            "type": "fixed",
-            "amount": 90,
-            "unit": "forfait"
           }
         ],
-        "pricingMode": "automatic",
+        "pricingMode": "drawer-by-height-configuration-finish-and-top",
         "notes": [
-          "Largeur/profondeur maximale du tiroir : 51 cm.",
-          "Les doubles sont livrés en deux pièces sauf indication contraire."
-        ]
+          "Tiroirs H30, H50, H60 : 8 configurations comme sur la planche fournisseur.",
+          "Finition : Laqué standard, Laqué 3D, Bois Roble, Bois autres essences.",
+          "Top intégré / couvert ou top à poser : tarif complémentaire non compris dans le caisson.",
+          "Largeur / profondeur max 51 cm ; doubles livrés en deux pièces sauf indication contraire."
+        ],
+        "pricesLegacyTopOnly": {
+          "lacquer": [
+            392,
+            406,
+            515,
+            524,
+            537,
+            638,
+            656
+          ],
+          "wood": [
+            443,
+            498,
+            570,
+            597,
+            641,
+            720,
+            744
+          ]
+        },
+        "drawerConfigurator": {
+          "sourcePage": "52-53 (Tarif FR PDF : 52 List / 54 List)",
+          "sourceImage": "Capture d’écran du tarif fournisseur fournie par le client le 28/10/2026",
+          "stepLabels": [
+            "Hauteur",
+            "Configuration",
+            "Dimensions",
+            "Finition",
+            "Fermeture / top",
+            "Suppléments"
+          ],
+          "minimumDrawerDepthCm": null,
+          "maximumDrawerDepthCm": 51,
+          "finishes": [
+            "lacquer",
+            "lacquer3d",
+            "woodRoble",
+            "woodOther"
+          ],
+          "tops": {
+            "integrated": {
+              "label": "Top intégré (couvert)",
+              "maxDepthCm": 50.5,
+              "minLengthCm": 1,
+              "lengthTiers": [
+                60,
+                80,
+                100,
+                120,
+                140
+              ],
+              "prices": {
+                "lacquer": [
+                  109,
+                  125,
+                  130,
+                  135,
+                  148
+                ],
+                "woodRoble": [
+                  128,
+                  136,
+                  141,
+                  146,
+                  150
+                ],
+                "woodOther": [
+                  145,
+                  150,
+                  156,
+                  191,
+                  204
+                ]
+              }
+            },
+            "separate": {
+              "label": "Top à poser",
+              "maxDepthCm": 51,
+              "minLengthCm": 1,
+              "lengthTiers": [
+                81,
+                101,
+                121,
+                141,
+                161,
+                181,
+                201
+              ],
+              "prices": {
+                "lacquer": [
+                  392,
+                  406,
+                  515,
+                  524,
+                  537,
+                  638,
+                  656
+                ],
+                "wood": [
+                  443,
+                  498,
+                  570,
+                  597,
+                  641,
+                  720,
+                  744
+                ]
+              }
+            }
+          },
+          "topOptions": [
+            {
+              "id": "none",
+              "label": "Sans top"
+            },
+            {
+              "id": "integrated",
+              "label": "Top intégré / couvert"
+            },
+            {
+              "id": "separate",
+              "label": "Top à poser"
+            }
+          ],
+          "notes": [
+            "Tableaux H30/H50/H60 en prix public HT, quatre colonnes distinctes, jamais remplacer par un tarif de top.",
+            "Le tableau montre les deux modules côte à côte et non deux unités indépendantes à multiplier.",
+            "Cellules laqué 3D illisibles ou marquées — conservées à null.",
+            "Les tops se tarifent à part selon leur finition propre, indépendamment des 4 colonnes du caisson.",
+            "Laqué RAL/NCS +90 € selon option fournisseur ; une seule fois par configuration, sans double comptage."
+          ]
+        }
       }
     },
     {
