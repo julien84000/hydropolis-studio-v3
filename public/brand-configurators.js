@@ -87,7 +87,7 @@
     }
     return null;
   }
-  function carrodrainGallery(groups,chosenGroup){
+  function carrodrainGallery(groups,chosenGroup,selectedFamily){
     const cards=CARRODRAIN_MODELS.map(m=>{
       const g=(groups||[]).find(g=>carrodrainVisual(g)?.id===m.id);
       const common='<img src="'+esc(m.image)+'" alt="Carrodrain '+esc(m.name)+'" loading="lazy" decoding="async" onerror="this.style.display=\'none\'"><span class="carrodrain-gallery-caption"><b>'+esc(m.name)+'</b><small>'+esc(m.subtitle)+'</small></span>';
@@ -97,7 +97,7 @@
         :'<a class="carrodrain-gallery-card" href="'+esc(m.url)+'" target="_blank" rel="noopener noreferrer" aria-label="Voir '+esc(m.name)+' sur Carrodrain">'+common+'<em>Hors tarif importé · Voir chez Carrodrain</em></a>';
       return {family:m.family,markup:item};
     });
-    const families=['Essentials','Invisibles','Liquids','Accessoires'];
+    const families=selectedFamily?[selectedFamily]:['Essentials','Invisibles','Liquids','Accessoires'];
     const priced=CARRODRAIN_MODELS.filter(m=>(groups||[]).some(g=>carrodrainVisual(g)?.id===m.id)).length;
     return '<div class="carrodrain-gallery-intro">'+priced+' collections tarifées sur '+CARRODRAIN_MODELS.length+' présentées. Les collections sans grille ne peuvent pas être ajoutées automatiquement. Visuels officiels de gamme, non contractuels pour la finition choisie.</div>'
       +families.map(f=>'<section class="carrodrain-gallery-section"><h3>'+esc(f)+'</h3><div class="carrodrain-gallery-grid">'+cards.filter(x=>x.family===f).map(x=>x.markup).join('')+'</div></section>').join('');
@@ -280,15 +280,34 @@
     const original=initialExactVariant(groups,p),selected=original.variant;
     const draft={group:original.group?.id||p?.configGroup||'',version:selected?.version||'',length:selected?.length||'',finish:selected?.finish||'',reference:selected?.reference||''};
     if(!groups.some(g=>g.id===draft.group))draft.group=groups.find(g=>g.model===p?.collection)?.id||groups[0].id;
-    let overlay,mode='gallery';
+    let overlay,mode='families',family='Essentials';
+    const familyView=()=>{
+      mode='families';const cards=CARRODRAIN_TREE.map(x=>{
+        const names=CARRODRAIN_MODELS.filter(m=>m.family===x.id);
+        return '<button type="button" class="carrodrain-family-card" data-carrodrain-family="'+esc(x.id)+'">'+
+          (names[0]?.image?'<img src="'+esc(names[0].image)+'" alt="" loading="lazy">':'')+
+          '<b>'+esc(x.name)+'</b><small>'+esc(x.description)+' · '+names.length+' modèles</small></button>';
+      }).join('');
+      const body='<div class="brand-path"><strong>Carrodrain</strong><span>›</span><strong>Gammes de produits</strong></div>'+
+        '<div class="carrodrain-family-grid">'+cards+'</div>'+
+        '<p class="brand-note">Essentials, Invisibles et Liquids sont les trois familles du site Carrodrain. Les accessoires sont regroupés séparément pour faciliter la consultation.</p>'+
+        '<a class="brand-site-link" href="https://carrodrain.com/fr" target="_blank" rel="noopener noreferrer">Site officiel Carrodrain</a>';
+      overlay=overlay||mount(shell('Carrodrain',body));overlay.innerHTML=shell('Carrodrain',body);
+      overlay.querySelector('.recor-configurator').classList.add('carrodrain-gallery-modal');
+      overlay.querySelector('.brand-config-close').onclick=close;overlay.querySelector('.brand-config-cancel').onclick=close;
+      overlay.querySelector('.brand-config-confirm').style.display='none';
+      overlay.querySelectorAll('[data-carrodrain-family]').forEach(el=>el.onclick=()=>{family=el.dataset.carrodrainFamily;mode='gallery';gallery()});
+    };
     const gallery=()=>{
-      const body=carrodrainGallery(groups,draft.group);
+      const body='<div class="brand-path"><button type="button" data-carrodrain-back="families">Gammes</button><span>›</span><b>'+esc(family)+'</b></div>'+
+       carrodrainGallery(groups,draft.group,family);
       overlay=overlay||mount(shell('Carrodrain',body));
       overlay.innerHTML=shell('Carrodrain',body);
       overlay.querySelector('.recor-configurator').classList.add('carrodrain-gallery-modal');
       overlay.querySelector('.brand-config-close').onclick=close;
       overlay.querySelector('.brand-config-cancel').onclick=close;
       overlay.querySelector('.brand-config-confirm').style.display='none';
+      overlay.querySelector('[data-carrodrain-back]').onclick=familyView;
       overlay.querySelectorAll('[data-carrodrain-group]').forEach(el=>el.onclick=()=>{
         const changed=draft.group!==el.dataset.carrodrainGroup;
         draft.group=el.dataset.carrodrainGroup;
@@ -303,7 +322,7 @@
       const lengths=uniq(rows.map(v=>v.length));draft.length=chosen(draft.length,lengths);rows=rows.filter(v=>v.length===draft.length);
       const finishes=uniq(rows.map(v=>v.finish||'À carreler'));draft.finish=chosen(draft.finish,finishes);rows=rows.filter(v=>(v.finish||'À carreler')===draft.finish);
       const refs=rows.map(v=>v.reference);draft.reference=chosen(draft.reference,refs);const exact=rows.find(v=>v.reference===draft.reference)||rows[0];
-      const body=`<button type="button" class="carrodrain-back-to-gallery">← Toutes les collections</button><div class="recor-config-section"><div class="recor-config-title"><b>1. Collection</b><span>Caniveau Carrodrain</span></div><div class="v1146-field-grid">${field('ccGroup','Collection',groups.map(x=>x.id),g.id,id=>groups.find(x=>x.id===id)?.model||id)}${field('ccVersion','Version',versions,draft.version)}${field('ccLength','Longueur / format',lengths,draft.length,v=>/^\d+$/.test(v)?`${Number(v)/10} cm`:v)}${field('ccFinish','Finition',finishes,draft.finish)}${field('ccRef','Référence finale',refs,draft.reference)}</div></div>
+      const body=`<div class="brand-path"><button type="button" class="carrodrain-back-to-gallery">← ${esc(family)}</button><span>›</span><b>${esc(g.model||g.id)}</b></div><div class="recor-config-section"><div class="recor-config-title"><b>1. Collection</b><span>Caniveau Carrodrain</span></div><div class="v1146-field-grid">${field('ccGroup','Collection',groups.map(x=>x.id),g.id,id=>groups.find(x=>x.id===id)?.model||id)}${field('ccVersion','Version',versions,draft.version)}${field('ccLength','Longueur / format',lengths,draft.length,v=>/^\d+$/.test(v)?`${Number(v)/10} cm`:v)}${field('ccFinish','Finition',finishes,draft.finish)}${field('ccRef','Référence finale',refs,draft.reference)}</div></div>
       <div class="recor-config-summary">${mediaPreview('Carrodrain',p,g,exact)}<div><b>${money(exact?.price)} HT</b><span>${esc([g.model,draft.version,draft.length,draft.finish].filter(Boolean).join(' · '))}</span><small>Réf. ${esc(exact?.reference||'—')} · tarif Carrodrain 2027</small></div></div>`;
       overlay=overlay||mount(shell('Carrodrain',body));if(overlay.innerHTML!==shell('Carrodrain',body))overlay.innerHTML=shell('Carrodrain',body);
       overlay.querySelector('.brand-config-close').onclick=close;overlay.querySelector('.brand-config-cancel').onclick=close;
@@ -311,6 +330,12 @@
       overlay.querySelector('.carrodrain-back-to-gallery').onclick=()=>{mode='gallery';gallery()};
       const map={ccGroup:'group',ccVersion:'version',ccLength:'length',ccFinish:'finish',ccRef:'reference'};
       Object.entries(map).forEach(([id,key])=>{const el=overlay.querySelector('#'+id);if(el)el.onchange=()=>{draft[key]=el.value;if(key==='group'){draft.version=draft.length=draft.finish=draft.reference=''}else if(key==='version'){draft.length=draft.finish=draft.reference=''}else if(key==='length'){draft.finish=draft.reference=''}else if(key==='finish'){draft.reference=''}render()}});
+      const versionTiles=choiceTiles('ccVersion',versions,draft.version);
+      const finishTiles=choiceTiles('ccFinish',finishes,draft.finish);
+      const fields=overlay.querySelector('.v1146-field-grid');
+      if(versionTiles)overlay.querySelector('#ccVersion')?.closest('label')?.insertAdjacentHTML('afterend',versionTiles);
+      if(finishTiles)overlay.querySelector('#ccFinish')?.closest('label')?.insertAdjacentHTML('afterend',finishTiles);
+      wireChoices(overlay);
       overlay.querySelector('.brand-config-confirm').onclick=()=>{try{
         const selected=rows.find(v=>v.reference===draft.reference)||exact;if(!selected)throw new Error('Référence Carrodrain introuvable.');
         const price=verifiedPublicPrice('Carrodrain',selected);
@@ -319,7 +344,7 @@
         commitConfigured(configured,roomId,'carrodrainConfiguration',{group:g.id,model:g.model,version:selected.version,length:selected.length,finish:selected.finish,reference:selected.reference});
       }catch(e){overlay.querySelector('.recor-config-error').textContent=e.message||String(e)}};
     };
-    gallery();
+    familyView();
   }
 
   function initialHidroboxDraft(groups,product){
