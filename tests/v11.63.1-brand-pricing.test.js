@@ -56,3 +56,22 @@ test('Supplier quote at commit never re-applies Hidrobox uplift or stores invali
  assert.throws(()=>verified('Carrodrain',{price:'non tarifé'}),/Prix public HT/);
  assert.match(code,/image:media.image\|\|media.representativeImage,imageSource:media.image/);
 });
+
+test('Bette and Carrodrain reopen the exact SKU rather than silently choosing the first variant',()=>{
+ const vm=require('node:vm');
+ const fs=require('node:fs');
+ const path=require('node:path');
+ const win={};
+ vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../public/brand-configurators.js'),'utf8'),{window:win,Map,Uint8Array});
+ const find=win.HydroBrandCatalogs.initialExactVariant;
+ const groups=[{id:'old',variants:[{reference:'OLD-1',price:100}]},{id:'new',variants:[{reference:'B-01',model:'Compact',color:'White',price:200},{reference:'B-02',model:'Large',color:'Black',price:300}]}];
+ const row=find(groups,{configGroup:'old',reference:'B-02'});
+ assert.equal(row.group.id,'new');
+ assert.equal(row.variant.reference,'B-02');
+ assert.equal(row.variant.price,300);
+ assert.equal(find(groups,{configGroup:'new',reference:'UNKNOWN'}).variant,null);
+ assert.equal(find(groups,{configGroup:'new'}).group.id,'new');
+ const code=fs.readFileSync(path.join(__dirname,'../public/brand-configurators.js'),'utf8');
+ assert.match(code,/const original=initialExactVariant\(groups,p\),selected=original.variant/);
+ assert.match(code,/const changed=draft.group!==el.dataset.carrodrainGroup/);
+});
