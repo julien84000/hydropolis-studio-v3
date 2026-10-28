@@ -1,5 +1,5 @@
 {
-  "version": "2026-FR-v6",
+  "version": "2026-FR-v7",
   "source": "Tarif_FR_2026.pdf",
   "pricingPolicy": "V11.51: grilles standard/sur mesure = palier supérieur; receveurs Contract = surface réelle × tarif €/m² avec minimum de facturation; plans vasque Contract = tarif au cm + intégration vasque + options.",
   "global": {
@@ -1808,7 +1808,7 @@
             "id": "backsplash-integrated-concave",
             "label": "Plinthe intégrée concave 4–30 cm",
             "type": "perCm",
-            "amount": 2.0,
+            "amount": 2,
             "unit": "cm"
           },
           {
@@ -2048,7 +2048,7 @@
             "id": "backsplash-integrated-concave",
             "label": "Plinthe intégrée concave 4–30 cm",
             "type": "perCm",
-            "amount": 2.0,
+            "amount": 2,
             "unit": "cm"
           },
           {
@@ -2285,7 +2285,7 @@
             "id": "backsplash-integrated-concave",
             "label": "Plinthe intégrée concave 4–30 cm",
             "type": "perCm",
-            "amount": 2.0,
+            "amount": 2,
             "unit": "cm"
           },
           {
@@ -2512,7 +2512,7 @@
             "id": "backsplash-integrated-concave",
             "label": "Plinthe intégrée concave 4–30 cm",
             "type": "perCm",
-            "amount": 2.0,
+            "amount": 2,
             "unit": "cm"
           },
           {
@@ -2653,7 +2653,48 @@
               181,
               201
             ],
-            "prices": {}
+            "prices": {
+              "resin": [
+                446,
+                464,
+                491,
+                556,
+                796,
+                823,
+                880,
+                950
+              ],
+              "solid": [
+                496,
+                528,
+                578,
+                632,
+                859,
+                923,
+                999,
+                1058
+              ],
+              "wood": [
+                756,
+                756,
+                841,
+                899,
+                986,
+                1094,
+                1176,
+                1284
+              ],
+              "gpc": [
+                1268,
+                1268,
+                1374,
+                1511,
+                1645,
+                1944,
+                2264,
+                2552
+              ]
+            }
           }
         ],
         "includedOptions": [
@@ -2721,7 +2762,7 @@
             "id": "backsplash-integrated-concave",
             "label": "Plinthe intégrée concave 4–30 cm",
             "type": "perCm",
-            "amount": 2.0,
+            "amount": 2,
             "unit": "cm"
           },
           {
@@ -2740,11 +2781,14 @@
           }
         ],
         "ralSupplement": 95,
-        "pricingMode": "manual-safe",
+        "pricingMode": "automatic",
         "notes": [
           "Les dimensions intermédiaires utilisent le palier supérieur de la grille.",
-          "Les choix incompatibles sont masqués automatiquement."
-        ]
+          "Les choix incompatibles sont masqués automatiquement.",
+          "Tarifs PVP du Tarif_FR_2026.pdf, page 22. Grilles Gea importées sans interpolation : palier supérieur pour les longueurs intermédiaires."
+        ],
+        "minWidthCm": 30,
+        "minLengthCm": 50
       }
     },
     {
@@ -2897,8 +2941,8 @@
           }
         ],
         "ratesPerLengthCm": {
-          "solid": 6.0,
-          "resin": 7.0
+          "solid": 6,
+          "resin": 7
         },
         "integrationPrices": {
           "standard": 89,
@@ -2971,7 +3015,7 @@
             "id": "backsplash-integrated-concave",
             "label": "Plinthe intégrée concave 4–30 cm",
             "type": "perCm",
-            "amount": 2.0,
+            "amount": 2,
             "unit": "cm"
           },
           {
@@ -3276,7 +3320,7 @@
             "id": "backsplash-integrated-concave",
             "label": "Plinthe intégrée concave 4–30 cm",
             "type": "perCm",
-            "amount": 2.0,
+            "amount": 2,
             "unit": "cm"
           },
           {
@@ -3568,7 +3612,7 @@
             "id": "backsplash-integrated-concave",
             "label": "Plinthe intégrée concave 4–30 cm",
             "type": "perCm",
-            "amount": 2.0,
+            "amount": 2,
             "unit": "cm"
           },
           {
@@ -3811,7 +3855,7 @@
             "id": "backsplash-integrated-concave",
             "label": "Plinthe intégrée concave 4–30 cm",
             "type": "perCm",
-            "amount": 2.0,
+            "amount": 2,
             "unit": "cm"
           },
           {
@@ -4035,7 +4079,7 @@
             "id": "backsplash-integrated-concave",
             "label": "Plinthe intégrée concave 4–30 cm",
             "type": "perCm",
-            "amount": 2.0,
+            "amount": 2,
             "unit": "cm"
           },
           {
@@ -4265,7 +4309,7 @@
             "id": "backsplash-integrated-concave",
             "label": "Plinthe intégrée concave 4–30 cm",
             "type": "perCm",
-            "amount": 2.0,
+            "amount": 2,
             "unit": "cm"
           },
           {
@@ -4391,7 +4435,35 @@
               181,
               201
             ],
-            "prices": {}
+            "prices": {
+              "resin": [
+                285,
+                330,
+                454,
+                480,
+                534,
+                585,
+                632
+              ],
+              "solid": [
+                336,
+                389,
+                507,
+                572,
+                636,
+                685,
+                734
+              ],
+              "wood": [
+                483,
+                538,
+                590,
+                627,
+                681,
+                760,
+                794
+              ]
+            }
           }
         ],
         "includedOptions": [
@@ -4459,7 +4531,7 @@
             "id": "backsplash-integrated-concave",
             "label": "Plinthe intégrée concave 4–30 cm",
             "type": "perCm",
-            "amount": 2.0,
+            "amount": 2,
             "unit": "cm"
           },
           {
@@ -4478,11 +4550,14 @@
           }
         ],
         "ralSupplement": 95,
-        "pricingMode": "manual-safe",
+        "pricingMode": "automatic",
         "notes": [
           "Les dimensions intermédiaires utilisent le palier supérieur de la grille.",
-          "Les choix incompatibles sont masqués automatiquement."
-        ]
+          "Les choix incompatibles sont masqués automatiquement.",
+          "Tarifs PVP du Tarif_FR_2026.pdf, page 34. Grilles Gea importées sans interpolation : palier supérieur pour les longueurs intermédiaires."
+        ],
+        "minWidthCm": 30,
+        "minLengthCm": 50
       }
     },
     {
@@ -4696,7 +4771,7 @@
             "id": "backsplash-integrated-concave",
             "label": "Plinthe intégrée concave 4–30 cm",
             "type": "perCm",
-            "amount": 2.0,
+            "amount": 2,
             "unit": "cm"
           },
           {
