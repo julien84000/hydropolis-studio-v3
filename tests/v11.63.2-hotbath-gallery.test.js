@@ -71,3 +71,31 @@ test('Hotbath official image selector shows only the verified current CDN for ex
  assert.equal(finder({base:'AR003'},'Cobber',images),'');
  assert.equal(finder({base:'AR999-UNKNOWN'},'Archie',images),'');
 });
+
+
+test('Hotbath: modern Guy Diamond/Row images take precedence with exact model identity',()=>{
+ const vm=require('node:vm');
+ const win={HydroManufacturerGuide:{open:()=>{}}};
+ vm.runInNewContext(fs.readFileSync(path.join(root,'hotbath-official-guide.js'),'utf8'),{window:win});
+ const guide=win.HydroHotbathOfficialGuide;
+ const recovered=images.modernImageOverrides?.Guy||{};
+ assert.ok(Object.keys(recovered).length>=38,'38 modern Guy photographs identified');
+ for(const [ref,src] of Object.entries(recovered)){
+  assert.match(src.url,/^https:\/\/hotbath\.com\/images\/compano\//);
+  const m=src.url.match(/\/images\/compano\/([^/]+)\//);
+  assert.equal(clean(m[1]),clean(ref),ref+' exact modern model');
+  assert.match(src.sourcePage,/^https:\/\/hotbath\.com\/en-gb\/collections\/guy-(?:diamond|row)\/$/);
+  assert.equal(guide.photo({base:ref},'Guy',images),src.url);
+ }
+ assert.equal(guide.photo({base:'GY003R'},'Archie',images),'','same code in another collection not interchangeable');
+ const bad={...images,modernImageOverrides:{Guy:{GY003R:{url:'https://hotbath.com/images/compano/GY004R/wrong.png'}}}};
+ assert.notEqual(guide.photo({base:'GY003R'},'Guy',bad),bad.modernImageOverrides.Guy.GY003R.url);
+});
+
+test('Hotbath: actual supplier collection hero images are available without changing other brands',()=>{
+ const names=['Archie','Gent','Chap','Ace','Gal','Cobber','Cobber X','Fellow','Mate','Tron'];
+ for(const name of names){
+  assert.match(images.modernCollectionImages?.[name]||'',/^https:\/\/hotbath\.com\/images\/(?:compano|properties)\//,name);
+  assert.match(images.modernCollectionSources?.[name]?.url||'',/^https:\/\/hotbath\.com\/en-gb\/collections\//);
+ }
+});
