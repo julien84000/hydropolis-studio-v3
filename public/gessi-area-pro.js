@@ -121,6 +121,12 @@ function card(o){
  '<span class="gessi-card-image">'+image+'<span class="gessi-card-placeholder">Visuel non disponible</span></span>'+
  '<span class="gessi-card-info"><strong>'+esc(o.name)+'</strong><small>'+esc(o.note||'')+'</small></span></button>';
 }
+function technicalMarkup(record){
+ const fields=Array.isArray(record?.technical)?record.technical:[];
+ if(!fields.length)return '<p class="gessi-tech-empty">Caractéristiques détaillées non communiquées par le service officiel. Consultez la fiche du fabricant pour les PDF disponibles.</p>';
+ return '<dl class="gessi-tech-list">'+fields.slice(0,60).map(x=>'<div><dt>'+esc(x.name)+'</dt><dd>'+esc(x.value)+'</dd></div>').join('')+'</dl>'+
+ '<p class="gessi-tech-source">Source : caractéristiques du produit Gessi · les dimensions d’emballage sont exclues.</p>';
+}
 function open(rows,roomId,onAdd){
  const source=(rows||[]).filter(p=>p?.manufacturer==='Gessi');
  if(typeof document==='undefined')throw Error('Navigateur requis');
@@ -131,6 +137,27 @@ function open(rows,roomId,onAdd){
  '</section>';
  document.body.appendChild(overlay);
  let data=null,index=null,area=null,collection=null,type='',model=null,reference='',stage='areas',search='',page=0;
+ const technicalCache=new Map();
+ async function loadTechnical(base){
+   if(!/^\d{5}$/.test(base))return;
+   let record=technicalCache.get(base);
+   if(!record){
+     try{
+       const response=await fetch('/api/gessi/technical/'+base,{headers:{Accept:'application/json'}});
+       if(!response.ok)throw Error('Gessi '+response.status);
+       const payload=await response.json();
+       if(payload.code!==base)throw Error('Référence technique non concordante');
+       record=payload;technicalCache.set(base,record);
+     }catch(error){
+       record={technical:[]};
+       // An upstream failure must not disable pricing, configuration or adding an item.
+     }
+   }
+   if(stage==='finish'&&model?.base===base){
+     const target=body.querySelector('#gessi-tech-content');
+     if(target)target.innerHTML=technicalMarkup(record);
+   }
+ }
  const body=overlay.querySelector('.gessi-body'),menu=overlay.querySelector('.gessi-menu');
  const previousFocus=document.activeElement;
  const close=()=>{overlay.remove();root.removeEventListener('keydown',onKey);previousFocus?.focus?.()};
@@ -213,7 +240,8 @@ function open(rows,roomId,onAdd){
     '<div class="gessi-selection">Référence finale <b>'+esc(p.reference)+'</b></div>'+
     (hasPrice(p)?'<strong class="gessi-price">'+money(p.totalPrice??p.price)+' <small>HT · tarif Hydropolis</small></strong>':'<p class="gessi-no-price">Prix public non disponible : ajout impossible</p>')+
     (p.internalReference?'<p class="gessi-required">Corps / complément : '+esc(p.internalReference)+' · '+money(Number(p.internalPrice||0))+' HT'+(Number(p.totalPrice)>Number(p.price)?' (prix total indiqué ci-dessus)':'')+'</p>':'')+
-    '<a class="gessi-site-link" href="'+esc(productPage(p))+'" target="_blank" rel="noopener noreferrer">Fiche fabricant, plans et documents techniques ↗</a>'+
+    '<section class="gessi-tech-panel" aria-label="Fiche technique Gessi"><h4>Fiche technique du produit</h4><div id="gessi-tech-content" aria-live="polite">Chargement des données fabricant…</div></section>'+ 
+    '<a class="gessi-site-link" href="'+esc(productPage(p))+'" target="_blank" rel="noopener noreferrer">Consulter la fiche Gessi et ses éventuels PDF ↗</a>'+
     '<button id="gessi-add" type="button" class="gessi-add" '+(hasPrice(p)?'':'disabled')+'>Ajouter cette référence au projet</button></div></div>';
   }
   body.innerHTML=back+'<div class="gessi-heading"><span>GESSI · AREA PRO</span><h2>'+esc(heading)+'</h2><p>'+esc(sub)+'</p></div>'+html;
@@ -234,6 +262,7 @@ function open(rows,roomId,onAdd){
     reference=button.dataset.finish;render();
     [...body.querySelectorAll('[data-finish]')].find(b=>b.dataset.finish===reference)?.focus();
   });
+  if(stage==='finish')loadTechnical(model?.base||'');
   const add=body.querySelector('#gessi-add');
   if(add)add.onclick=()=>{
     const p=model.variants.find(v=>v.reference===reference);
@@ -251,5 +280,5 @@ function open(rows,roomId,onAdd){
  }).catch(e=>{if(overlay.isConnected)body.innerHTML='<p class="gessi-error">Impossible de charger le menu Gessi : '+esc(e.message)+'</p><a href="'+SOURCE+'" target="_blank" rel="noopener noreferrer">Ouvrir Area Pro ↗</a>'});
  return {brand:'Gessi',rows:source,roomId,close};
 }
-root.HydroGessiAreaPro= {withOfficialMenu,collectionDetails,officialPhoto,open,buildIndex,listAreaCollections,selectArea,modelsFor,typesFor,modelBase,finishCode,findImage,productPage,officialName};
+root.HydroGessiAreaPro= {technicalMarkup,withOfficialMenu,collectionDetails,officialPhoto,open,buildIndex,listAreaCollections,selectArea,modelsFor,typesFor,modelBase,finishCode,findImage,productPage,officialName};
 })(window);
