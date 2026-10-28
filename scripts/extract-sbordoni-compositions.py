@@ -159,7 +159,7 @@ def main() -> None:
         output[key] = image
         audit[key] = details
     # Transactional: do not touch existing JPGs until all 99 can be rendered.
-    with TemporaryDirectory(prefix="sbordoni-hd-") as temp:
+    with TemporaryDirectory(prefix=".sbordoni-hd-staging-", dir=OUT) as temp:
         staging = Path(temp)
         for key, im in output.items():
             dest = staging / (key + ".jpg")
