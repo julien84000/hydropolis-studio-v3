@@ -28,7 +28,7 @@ test('Resigres: 38 model configurations match every imported catalogue article a
  assert.deepEqual([...productNames].sort(),[...configNames].sort());
  const counts={};for(const m of cfg.models)counts[m.category]=(counts[m.category]||0)+1;
  assert.deepEqual(counts,categoryCounts);
- assert.equal(cfg.version,'2026-FR-v10');
+ assert.equal(cfg.version,'2026-FR-v11');
  assert.ok(cfg.models.every(m=>/^\d{1,2}(?:-\d{1,2})?$/.test(String(m.sourcePage||''))));
 });
 test('Resigres: classify all 38 models by pricing evidence, never assume missing matrices are priced',()=>{
@@ -39,7 +39,7 @@ test('Resigres: classify all 38 models by pricing evidence, never assume missing
  for(const model of cfg.models){
    const name=key(model);
    if(knownAuto.has(name)){
-     assert.ok((model.pricingRules||[]).length||model.v50BasinTop?.pricingMode?.startsWith('automatic')||['automatic','partial-automatic'].includes(model.v50Furniture?.pricingMode)||model.dependencyMatrix?.type==='dependent-combinations','Expected a pricing rule for '+name);
+     assert.ok((model.pricingRules||[]).length||model.v50BasinTop?.pricingMode?.startsWith('automatic')||['automatic','partial-automatic','drawer-by-height-configuration-finish-and-top'].includes(model.v50Furniture?.pricingMode)||model.dependencyMatrix?.type==='dependent-combinations','Expected a pricing rule for '+name);
    }
    if(pendingMatrix.has(name)&&model.v50BasinTop){
      assert.equal(model.v50BasinTop.pricingMode,'manual-safe',name);
@@ -97,9 +97,9 @@ test('Other Resigres families: fixed certified examples and rules remain functio
  const contract=V50.basinQuote(cfg,{model:'Contract CF',kind:'basin-top',shape:'standard',material:'solid-surface',
    color:'S-Blanco',basinGroup:'one',basinCount:1,widthCm:50,lengthCm:100,heightCm:10,paidOptions:{}});
  assert.equal(contract.status,'automatic');assert.equal(contract.basePrice,689);
- const drawers=V50.furnitureQuote(cfg,{model:'Tiroirs sur mesure',type:'drawer',material:'lacquer',
+ const drawers=V50.furnitureQuote(cfg,{model:'Tiroirs sur mesure',type:'h30-single',material:'lacquer',
    color:'Arena',widthCm:50,lengthCm:100,paidOptions:{}});
- assert.equal(drawers.status,'automatic');assert.equal(drawers.basePrice,406);
+ assert.equal(drawers.status,'automatic');assert.equal(drawers.basePrice,718);
  const pending=V50.furnitureQuote(cfg,{model:'Frame',type:'h45-1d-1b',material:'lacquer',
    color:'Arena',widthCm:48,lengthCm:100,heightCm:45,depthCm:48,paidOptions:{}});
  assert.equal(pending.status,'pending');assert.match(pending.reason,/finition et le coloris du plan vasque/);
@@ -308,4 +308,71 @@ test('V11.62.10: all new furniture price tables are dimensionally consistent and
    assert.ok(prices.every(x=>x===null||Number.isInteger(x)&&x>0),m.name+':'+key);
   }
  }
+});
+
+test('Resigres 2026 p52 : eight drawer cabinet pictograms and four distinct finish columns',()=>{
+ const m=cfg.models.find(x=>x.name==='Tiroirs sur mesure'),v=m.v50Furniture;
+ assert.equal(v.pricingMode,'drawer-by-height-configuration-finish-and-top');
+ assert.equal(v.types.length,8);assert.equal(v.materials.length,4);
+ assert.deepEqual([...new Set(v.types.map(t=>t.heightCm))].sort(),[30,50,60]);
+ assert.equal(v.types.filter(x=>x.heightCm===30).length,2);
+ assert.equal(v.types.filter(x=>x.heightCm===50).length,4);
+ assert.equal(v.types.filter(x=>x.heightCm===60).length,2);
+ assert.deepEqual(v.types.map(x=>x.iconIndex),[0,1,2,3,4,5,6,7]);
+ for(const t of v.types){assert.equal(t.lengthTiers.length,5);
+  assert.equal(Object.keys(t.prices).length,4);
+  for(const row of Object.values(t.prices)){assert.equal(row.length,5);assert(row.every(p=>p===null||Number.isInteger(p)&&p>0))}
+ }
+ const uri=v.drawerConfigurator.pictogramSprite;
+ assert(uri.startsWith('data:image/png;base64,iVBORw0KGgo'));
+ const png=Buffer.from(uri.split(',')[1],'base64');
+ assert.equal(png.readUInt32BE(16),352);assert.equal(png.readUInt32BE(20),380);
+ assert.equal(png.subarray(-8,-4).toString(),'IEND');
+ const zlib=require('node:zlib');const data=[];let offset=8;
+ while(offset+12<=png.length){const n=png.readUInt32BE(offset),kind=png.toString('ascii',offset+4,offset+8);
+  if(kind==='IDAT')data.push(png.subarray(offset+8,offset+8+n));
+  offset+=12+n;if(kind==='IEND')break;
+ }
+ assert.ok(data.length>0);
+ assert.ok(zlib.inflateSync(Buffer.concat(data)).length>1000,'The actual supplier icon sprite must decode correctly');
+ assert.match(app,/function openDrawers\(/);
+ assert.match(app,/data-rgdraw-variant/);
+});
+test('Resigres tiroirs : les 8 compositions se chiffrent sur leurs grilles et ne confondent pas les tops',()=>{
+ const make=(type,material,color,l,extra={})=>V50.drawerQuote(cfg,{model:'Tiroirs sur mesure',kind:'furniture',type,material,color,lengthCm:l,widthCm:49,heightCm:parseInt(type.slice(1,3),10),topType:'none',paidOptions:{classifier:0},...extra});
+ const rows=[
+ ['h30-single','lacquer','Arena',100,718],
+ ['h30-double','wood-other','Nogal US',150,1512],
+ ['h50-single','wood-roble','Roble',120,1131],
+ ['h50-double','lacquer3d','Ártico',160,1615],
+ ['h50-inner-single','lacquer','Arena',80,902],
+ ['h50-inner-double','wood-other','Nogal US',150,2910],
+ ['h60-single','wood-roble','Roble',100,1343],
+ ['h60-double','wood-other','Nogal US',190,3150]
+ ];
+ for(const [type,material,color,l,price] of rows){
+  const q=make(type,material,color,l);assert.equal(q.status,'automatic',type);assert.equal(q.total,price,type);
+ }
+ assert.equal(make('h30-single','lacquer3d','Ártico',130).status,'pending');
+ assert.equal(make('h60-single','lacquer3d','Ártico',58).status,'pending');
+ assert.equal(make('h30-double','lacquer','Arena',110).status,'pending');
+ assert.equal(make('h50-inner-double','wood-other','Nogal US',210).status,'pending');
+ assert.equal(make('h50-inner-double','wood-other','Nogal US',150,{widthCm:52}).status,'pending');
+});
+test('Resigres tiroirs : le top intégré ou à poser est un prix distinct, options sans double comptage',()=>{
+ const sel={model:'Tiroirs sur mesure',kind:'furniture',type:'h50-inner-double',material:'wood-other',color:'Nogal US',widthCm:49,lengthCm:150,heightCm:50,topType:'separate',topMaterial:'wood',paidOptions:{classifier:2}};
+ const quote=V50.drawerQuote(cfg,sel);
+ assert.equal(quote.basePrice,2910);
+ assert.equal(quote.topPrice,641);
+ assert.equal(quote.supplements.total,839);
+ assert.equal(quote.total,3749);
+ assert.equal(quote.pricedLength,160);
+ assert.equal(quote.topTier,161);
+ assert.equal(V50.drawerQuote(cfg,{...sel,topType:'none',topMaterial:''}).total,3108);
+ assert.equal(V50.drawerQuote(cfg,{...sel,topType:'integrated',topMaterial:'woodOther',lengthCm:120}).total,3089); // caisson 2700 + top intégré 191 + classificateurs 198
+ assert.equal(V50.drawerQuote(cfg,{...sel,topType:'integrated',topMaterial:'woodOther',widthCm:51}).status,'pending');
+ assert.equal(V50.drawerQuote(cfg,{...sel,paidOptions:{classifier:9}}).status,'pending');
+ const ral=V50.drawerQuote(cfg,{...sel,type:'h30-single',heightCm:30,lengthCm:100,material:'lacquer',color:'RAL/NCS',ralNcs:'RAL 7031',topType:'none',paidOptions:{classifier:0}});
+ assert.equal(ral.total,808);
+ assert.equal(V50.drawerQuote(cfg,{...sel,type:'h30-single',heightCm:30,lengthCm:100,material:'lacquer',color:'RAL/NCS',ralNcs:'',topType:'none'}).status,'pending');
 });

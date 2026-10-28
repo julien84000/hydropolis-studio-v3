@@ -246,6 +246,51 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     const gestoSaved=await page.evaluate(()=>state.selected.filter(x=>x.manufacturer==='Resigres'&&x.resigresModel==='Gesto').at(-1));
     check('Gesto H30 : meuble total 1198 EUR HT dans le projet',gestoSaved?.price===1198);
 
+
+    // V11.62.11 : parcours pictographique réel de la gamme Tiroirs sur mesure.
+    await resProduct('Tiroirs sur mesure','furniture');
+    await page.waitForSelector('#rgdrawHeights');
+    check('Tiroirs sur mesure : trois hauteurs proposées',(await page.locator('[data-rgdraw-height]').count())===3);
+    await page.locator('[data-rgdraw-height="50"]').click();
+    check('Tiroirs H50 : 4 configurations graphiques',(await page.locator('[data-rgdraw-variant]').count())===4);
+    check('Tiroirs : pictogrammes exacts du catalogue présents',
+      (await page.locator('[data-rgdraw-variant="h50-inner-double"] .rgdraw-picto').getAttribute('style')).includes('data:image/png;base64,'));
+    await page.locator('[data-rgdraw-variant="h50-inner-double"]').click();
+    await page.locator('#rgdrawLength').fill('150');
+    await page.locator('#rgdrawDepth').fill('49');
+    await page.locator('[data-rgdraw-material="wood-other"]').click();
+    await page.locator('#rgdrawColor').selectOption('Nogal US');
+    await page.locator('[data-rgdraw-top="separate"]').click();
+    await page.locator('#rgdrawTopMaterial').selectOption('wood');
+    await page.locator('#rgdrawClassifier').fill('2');
+    await page.waitForFunction(()=>document.querySelector('#resigresConfigurator')?._q?.total===3749);
+    const drawersQuote=await page.evaluate(()=>document.querySelector('#resigresConfigurator')._q);
+    check('Tiroirs H50 double intérieur : caisson 2910 + top 641 + classeurs 198',
+      drawersQuote.status==='automatic'&&drawersQuote.basePrice===2910&&drawersQuote.topPrice===641&&drawersQuote.total===3749);
+    await page.locator('#rgdrawDepth').fill('52');
+    check('Tiroirs : profondeur au-delà de 51 cm refusée',
+      (await page.evaluate(()=>document.querySelector('#resigresConfigurator')._q)).status==='pending');
+    await page.locator('#rgdrawDepth').fill('49');
+    await page.locator('.rg50-confirm').click();
+    const drawerSaved=await page.evaluate(()=>state.selected.filter(x=>x.manufacturer==='Resigres'&&x.resigresModel==='Tiroirs sur mesure').at(-1));
+    check('Tiroirs avec top : prix total exact enregistré dans le projet',
+      drawerSaved?.price===3749&&drawerSaved.resigresConfiguration?.topType==='separate');
+
+    await resProduct('Tiroirs sur mesure','furniture');
+    await page.locator('[data-rgdraw-height="30"]').click();
+    await page.locator('[data-rgdraw-variant="h30-single"]').click();
+    await page.locator('#rgdrawLength').fill('100');
+    await page.locator('#rgdrawDepth').fill('50');
+    await page.locator('[data-rgdraw-material="lacquer"]').click();
+    await page.locator('#rgdrawColor').selectOption('Arena');
+    await page.locator('[data-rgdraw-top="integrated"]').click();
+    await page.locator('#rgdrawTopMaterial').selectOption('lacquer');
+    await page.waitForFunction(()=>document.querySelector('#resigresConfigurator')?._q?.total===848);
+    check('Tiroirs H30 simple : caisson 718 + top intégré 130',
+      (await page.evaluate(()=>document.querySelector('#resigresConfigurator')._q)).topPrice===130);
+    await page.locator('.rg50-confirm').click();
+    report.resigresDrawers={doubleTotal:drawersQuote.total,singleTotal:848};
+
     const recor=await page.evaluate(()=>{const p=CATALOG.find(x=>isRecorBathRequiringFeet(x)&&recorCompatibleFeet(x).length);return {reference:p.reference,key:productKey(p)};});
     await page.evaluate(p=>addCatalogProduct(p.reference,state.rooms[0]?.id,p.key),recor);
     await page.waitForSelector('#recorConfigurator input[name="recorFeet"]');

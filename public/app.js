@@ -6282,7 +6282,47 @@ $$(".nav").forEach(n=>n.onclick=()=>showView(n.dataset.view));
     if(v.maxWidthCm&&w>Number(v.maxWidthCm))return {status:"pending",pricingStatus:"manual",reason:`Largeur maximale ${v.maxWidthCm} cm`,total:0};if(v.maxLengthCm&&l>Number(v.maxLengthCm))return {status:"pending",pricingStatus:"manual",reason:`Longueur maximale ${v.maxLengthCm} cm`,total:0};
     let group=(v.groups||[]).find(x=>x.id===s.basinGroup);if(!group&&v.groups?.length===1)group=v.groups[0];if(!group)return {status:"pending",pricingStatus:"manual",reason:"Choisissez la configuration de vasque",total:0};if(Array.isArray(shape.groups)&&shape.groups.length&&!shape.groups.includes(group.id))return {status:"pending",pricingStatus:"manual",reason:"Configuration de vasque incompatible avec la forme",total:0};const pricedLength=ceilTier(l,group.lengthTiers||[]);const sup=paidSupplements(v,s);if(pricedLength==null)return {status:"pending",pricingStatus:"manual",reason:"Longueur hors grille tarifaire",total:0};if(v.pricingMode==="manual-safe"||!Object.keys(group.prices||{}).length)return {status:"pending",pricingStatus:"manual",reason:`Structure certifiée, cellule tarifaire à vérifier page ${v.sourcePage||model.sourcePage}`,total:0,supplements:sup,pricedLength,rule:{sourcePage:v.sourcePage||model.sourcePage}};const arr=group.prices?.[mat.priceClass]||[],li=(group.lengthTiers||[]).map(Number).indexOf(pricedLength),basePrice=Number(arr[li]);if(!(basePrice>0))return {status:"pending",pricingStatus:"manual",reason:"Cellule tarifaire non certifiée pour cette combinaison",total:0,supplements:sup,pricedLength};return {status:"automatic",pricingStatus:"automatic-verified",basePrice:round2(basePrice),supplements:sup,total:round2(basePrice+sup.total),pricedLength,breakdown:`${group.label} · ${mat.label} · ${w} × ${l} cm → palier ${pricedLength} cm`,rule:{sourcePage:v.sourcePage||model.sourcePage}};
   }
-  function furnitureQuote(config,s){const model=modelConfig(config,s.model,"furniture"),v=model?.v50Furniture;if(!v)return {status:"pending",pricingStatus:"manual",reason:"Matrice meuble V11.50 absente",total:0};const type=(v.types||[]).find(x=>x.id===s.type);if(!type)return {status:"pending",pricingStatus:"manual",reason:"Choisissez le type de meuble",total:0};const mat=(v.materials||[]).find(x=>x.id===s.material);if(!mat)return {status:"pending",pricingStatus:"manual",reason:"Choisissez la matière",total:0};if(!(mat.colors||[]).includes(s.color))return {status:"pending",pricingStatus:"manual",reason:"Coloris indisponible pour cette matière",total:0};const w=Number(s.widthCm),l=Number(s.lengthCm),h=Number(s.heightCm),d=Number(s.depthCm);if(type.widthRange&&w>0&&(w<type.widthRange[0]||w>type.widthRange[1]))return {status:"pending",pricingStatus:"manual",reason:`Largeur autorisée ${type.widthRange[0]}–${type.widthRange[1]} cm`,total:0};if(type.heightRange&&h>0&&(h<type.heightRange[0]||h>type.heightRange[1]))return {status:"pending",pricingStatus:"manual",reason:`Hauteur autorisée ${type.heightRange[0]}–${type.heightRange[1]} cm`,total:0};if(type.depthRange&&d>0&&(d<type.depthRange[0]||d>type.depthRange[1]))return {status:"pending",pricingStatus:"manual",reason:`Profondeur autorisée ${type.depthRange[0]}–${type.depthRange[1]} cm`,total:0};const sup=paidSupplements(v,s);
+  // Tarification séparée des caissons et des tops. Source: Tarif Resigres FR 2026, p.52-53 (pages imprimées du document).
+  function drawerQuote(config,s){
+    const model=modelConfig(config,"Tiroirs sur mesure","furniture"),v=model?.v50Furniture,dc=v?.drawerConfigurator;
+    const pending=reason=>({status:"pending",pricingStatus:"manual",reason,total:0});
+    if(!dc)return pending("Configurateur Tiroirs sur mesure indisponible");
+    const type=(v.types||[]).find(t=>t.id===s.type);
+    if(!type)return pending("Choisissez d’abord la hauteur et le nombre de tiroirs");
+    const mat=(v.materials||[]).find(m=>m.id===s.material);
+    if(!mat||!(mat.colors||[]).includes(s.color))return pending("Choisissez une finition et un coloris compatibles");
+    const w=Number(s.widthCm),l=Number(s.lengthCm);
+    if(!(w>0&&w<=dc.maximumDrawerDepthCm))return pending("Profondeur hors plage (maximum 51 cm)");
+    if(!(l>=type.minLengthCm&&l<=type.maxLengthCm))return pending(`Longueur hors plage pour ${type.label} : ${type.minLengthCm}–${type.maxLengthCm} cm`);
+    if(s.heightCm&&Number(s.heightCm)!==Number(type.heightCm))return pending("Hauteur incompatible avec le pictogramme sélectionné");
+    const tier=ceilTier(l,type.lengthTiers),idx=type.lengthTiers.indexOf(tier);
+    const drawerBase=type.prices?.[mat.priceClass]?.[idx];
+    if(!(typeof drawerBase==="number"&&drawerBase>0))return pending("Tarif caisson non certifié pour cette finition / longueur");
+    const wantsRAL=s.color==="RAL/NCS";
+    if(wantsRAL&&!String(s.ralNcs||"").trim())return pending("Précisez la référence du coloris RAL/NCS");
+    let topPrice=0,topTier=null,topLabel="Sans top";
+    const topType=s.topType||"none";
+    if(!["none","integrated","separate"].includes(topType))return pending("Type de top invalide");
+    if(topType!=="none"){
+      const top=dc.tops?.[topType];
+      if(!top||!(w<=top.maxDepthCm&&l>=top.minLengthCm))return pending("Dimensions incompatibles avec le top");
+      const allowed=topType==="integrated"?["lacquer","woodRoble","woodOther"]:["lacquer","wood"];
+      if(!allowed.includes(s.topMaterial))return pending("Choisissez la finition exacte du top");
+      topTier=ceilTier(l,top.lengthTiers);const ti=top.lengthTiers.indexOf(topTier);
+      const price=top.prices?.[s.topMaterial]?.[ti];
+      if(!(typeof price==="number"&&price>0))return pending("Top hors grille fournisseur ou cellule non certifiée");
+      topPrice=price;topLabel=top.label;
+    }
+    const drawers=type.modules*(type.drawersPerModule+(type.inner?1:0));
+    const count=Number(s.paidOptions?.classifier||0);
+    if(!Number.isInteger(count)||count<0||count>drawers)return pending(`Maximum ${drawers} classificateur(s) pour cette configuration`);
+    const applied=[];
+    if(count)applied.push({id:"classifier",label:"Classificateur",quantity:count,amount:99*count});
+    if(wantsRAL)applied.push({id:"ral",label:"Laqué RAL/NCS",amount:90});
+    const extra=applied.reduce((total,x)=>total+x.amount,0),base=drawerBase+topPrice;
+    return {status:"automatic",pricingStatus:"automatic-verified",basePrice:drawerBase,topPrice,supplements:{total:round2(extra+topPrice),applied},total:round2(base+extra),pricedLength:tier,topTier,breakdown:`${type.label} · ${mat.label} · ${w} × ${l} cm → palier ${tier} cm · ${topLabel}`,rule:{sourcePage:v.sourcePage||model.sourcePage},topLabel,drawerCount:drawers};
+  }
+  function furnitureQuote(config,s){if(s.model==="Tiroirs sur mesure")return drawerQuote(config,s);const model=modelConfig(config,s.model,"furniture"),v=model?.v50Furniture;if(!v)return {status:"pending",pricingStatus:"manual",reason:"Matrice meuble V11.50 absente",total:0};const type=(v.types||[]).find(x=>x.id===s.type);if(!type)return {status:"pending",pricingStatus:"manual",reason:"Choisissez le type de meuble",total:0};const mat=(v.materials||[]).find(x=>x.id===s.material);if(!mat)return {status:"pending",pricingStatus:"manual",reason:"Choisissez la matière",total:0};if(!(mat.colors||[]).includes(s.color))return {status:"pending",pricingStatus:"manual",reason:"Coloris indisponible pour cette matière",total:0};const w=Number(s.widthCm),l=Number(s.lengthCm),h=Number(s.heightCm),d=Number(s.depthCm);if(type.widthRange&&w>0&&(w<type.widthRange[0]||w>type.widthRange[1]))return {status:"pending",pricingStatus:"manual",reason:`Largeur autorisée ${type.widthRange[0]}–${type.widthRange[1]} cm`,total:0};if(type.heightRange&&h>0&&(h<type.heightRange[0]||h>type.heightRange[1]))return {status:"pending",pricingStatus:"manual",reason:`Hauteur autorisée ${type.heightRange[0]}–${type.heightRange[1]} cm`,total:0};if(type.depthRange&&d>0&&(d<type.depthRange[0]||d>type.depthRange[1]))return {status:"pending",pricingStatus:"manual",reason:`Profondeur autorisée ${type.depthRange[0]}–${type.depthRange[1]} cm`,total:0};const sup=paidSupplements(v,s);
     // Source-page exact furniture matrices: never reuse another type or finish as a price proxy.
     const typeTable=v.priceTablesByType?.[type.id];
     if(typeTable){
@@ -6309,7 +6349,7 @@ $$(".nav").forEach(n=>n.onclick=()=>showView(n.dataset.view));
     if(v.pricingMode==="automatic"&&v.prices){if(!(l>0))return {status:"pending",pricingStatus:"manual",reason:"Indiquez la longueur",total:0};if(v.dimensionRules?.maxDepthCm&&w>Number(v.dimensionRules.maxDepthCm))return {status:"pending",pricingStatus:"manual",reason:`Largeur/profondeur maximale ${v.dimensionRules.maxDepthCm} cm`,total:0};const pricedLength=ceilTier(l,v.dimensionRules?.lengthTiers||[]),li=(v.dimensionRules?.lengthTiers||[]).map(Number).indexOf(pricedLength),base=Number(v.prices?.[mat.priceClass]?.[li]);if(!(base>0))return {status:"pending",pricingStatus:"manual",reason:"Cellule tarifaire non certifiée",total:0,supplements:sup,pricedLength};return {status:"automatic",pricingStatus:"automatic-verified",basePrice:round2(base),supplements:sup,total:round2(base+sup.total),pricedLength,breakdown:`${type.label} · ${mat.label} · longueur ${l} cm → palier ${pricedLength} cm`,rule:{sourcePage:v.sourcePage||model.sourcePage}};}
     return {status:"pending",pricingStatus:"manual",reason:`Structure ${type.label} certifiée, prix à vérifier page ${v.sourcePage||model.sourcePage}`,total:0,supplements:sup,rule:{sourcePage:v.sourcePage||model.sourcePage}};
   }
-  return {round2,ceilTier,modelConfig,basinQuote,furnitureQuote};
+  return {round2,ceilTier,modelConfig,basinQuote,furnitureQuote,drawerQuote};
 });
 
 ;
@@ -6360,7 +6400,86 @@ $$(".nav").forEach(n=>n.onclick=()=>showView(n.dataset.view));
     matSel.addEventListener("change",renderColor);typeSel.addEventListener("change",update);["#rg50FWidth","#rg50FLength","#rg50FHeight","#rg50FDepth","#rg50FManual"].forEach(s=>$(s)?.addEventListener("input",update));$("#rg50FTop")?.addEventListener("change",()=>{renderTop();update()});$("#rg50FTopColor")?.addEventListener("change",update);colorSel.addEventListener("change",update);o.querySelectorAll("[data-rg50-included],[data-rg50-paid-check],[data-rg50-paid]").forEach(x=>x.addEventListener("input",update));$(".rg50-confirm").onclick=()=>{const err=$(".v1146-modal-error"),s=selection();let q=V50.furnitureQuote(config,s);if(!s.type){err.textContent="Choisissez le type de meuble.";return}if(!s.material){err.textContent="Choisissez la matière.";return}if(!s.color){err.textContent="Choisissez le coloris.";return}if(q.status!=="automatic"){if($("#rg50FManualWrap").classList.contains("hidden")){err.textContent=q.reason||"Configuration invalide ou incomplète.";return}const manual=Number($("#rg50FManual").value);if(!(manual>0)){err.textContent=q.reason||"Tarif non déterminé.";return}q={...q,status:"manual",pricingStatus:"manual-verified-by-user",basePrice:manual,total:manual+(q.supplements?.total||0),rule:q.rule||{sourcePage}}}commit(p,roomId,s,q,model)};
   }
 
-  async function open50(p,roomId){const config=await loadConfig(),model=V50.modelConfig(config,p.resigresModel,p.resigresKind);if(!model)throw new Error("Modèle Resigres absent de la configuration V11.50");if((p.resigresKind==="basin-top"||p.resigresKind==="furniture-basin-top")&&model.v50BasinTop)return openBasin(p,roomId,config,model);if(p.resigresKind==="furniture"&&model.v50Furniture)return openFurniture(p,roomId,config,model);return baseAdd50(p.reference,roomId,p.compareKey||"")}
+
+  function openDrawers(p,roomId,config,model){
+    const v=model.v50Furniture,dc=v.drawerConfigurator;
+    const styles=`<style>
+    .rgdraw-step{border-top:1px solid #e6ddd5;padding:14px 0}
+    .rgdraw-step h3{font-size:14px;margin:0 0 10px}
+    .rgdraw-choice-row{display:flex;gap:8px;flex-wrap:wrap}
+    .rgdraw-choice{border:1px solid #ddd2c7;border-radius:9px;background:#fff;padding:9px 12px;cursor:pointer;color:#2c2926;font:inherit;text-align:left}
+    .rgdraw-choice[aria-pressed="true"]{border:2px solid #b88034;background:#fcf7ef;padding:8px 11px}
+    .rgdraw-choice[disabled]{opacity:.4;cursor:not-allowed}
+    .rgdraw-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:9px}
+    .rgdraw-card{display:flex;align-items:center;gap:10px;min-height:116px;width:100%;padding:8px;text-align:left}
+    .rgdraw-card[aria-pressed="true"]{padding:7px}
+    .rgdraw-picto{display:block;width:176px;min-width:120px;height:95px;max-width:48%;background-repeat:no-repeat;background-size:352px 380px;background-color:#fff;image-rendering:auto}
+    .rgdraw-card b{display:block;font-size:12px}.rgdraw-card small{display:block;color:#6f655e;font-size:11px;margin-top:4px}
+    .rgdraw-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .rgdraw-grid label{font-size:12px;font-weight:600}
+    .rgdraw-grid input,.rgdraw-grid select{display:block;width:100%;margin-top:5px;border:1px solid #ded5ce;border-radius:8px;padding:9px;box-sizing:border-box}
+    .rgdraw-hint{color:#6a615a;font-size:12px;margin:7px 0}
+    .rgdraw-price-parts{font-size:12px;line-height:1.8}
+    @media(max-width:600px){.rgdraw-grid{grid-template-columns:1fr}.rgdraw-cards{grid-template-columns:1fr}}
+    </style>`;
+    const o=shell("52–53","Tiroirs sur mesure","Hauteur → composition → dimensions → finition → top → prix public HT",`${styles}
+     <div class="v1149-flow"><b>1. Hauteur</b><span>→</span><b>2. Tiroirs</b><span>→</span><b>3. Dimensions</b><span>→</span><b>4. Finition</b><span>→</span><b>5. Top</b><span>→</span><b>6. Options</b></div>
+     <section class="rgdraw-step"><h3>1. Hauteur du meuble</h3><div class="rgdraw-choice-row" id="rgdrawHeights">${[30,50,60].map(h=>`<button type="button" class="rgdraw-choice" data-rgdraw-height="${h}" aria-pressed="false">H${h} cm</button>`).join("")}</div></section>
+     <section class="rgdraw-step"><h3>2. Choisir le nombre et la disposition des tiroirs</h3><p class="rgdraw-hint">Pictogrammes extraits de la planche Resigres, page 52.</p><div class="rgdraw-cards" id="rgdrawVariants">Sélectionnez d'abord une hauteur.</div></section>
+     <section class="rgdraw-step"><h3>3. Dimensions réelles (cm)</h3><div class="rgdraw-grid"><label>Longueur du meuble<input id="rgdrawLength" type="number" min="1" step="1" placeholder="ex. 120"></label><label>Profondeur du meuble<input id="rgdrawDepth" type="number" min="1" max="51" step="0.5" placeholder="max. 51"></label></div><p class="rgdraw-hint" id="rgdrawLimits">Les doubles sont tarifés comme un ensemble, pas par multiplication d'un tiroir simple.</p></section>
+     <section class="rgdraw-step"><h3>4. Finition du caisson</h3><div class="rgdraw-choice-row" id="rgdrawMaterials">${(v.materials||[]).map(m=>`<button type="button" class="rgdraw-choice" data-rgdraw-material="${esc(m.id)}" aria-pressed="false">${esc(m.label)}</button>`).join("")}</div><div class="rgdraw-grid" style="margin-top:10px"><label>Coloris<select id="rgdrawColor"><option value="">Choisir une finition…</option></select></label><label id="rgdrawRalWrap" class="hidden">Référence RAL/NCS<input id="rgdrawRal" placeholder="ex. RAL 7031"></label></div></section>
+     <section class="rgdraw-step"><h3>5. Fermeture supérieure (option)</h3><div class="rgdraw-choice-row" id="rgdrawTops">${dc.topOptions.map(t=>`<button type="button" class="rgdraw-choice" data-rgdraw-top="${esc(t.id)}" aria-pressed="${t.id==="none"}">${esc(t.label)}</button>`).join("")}</div><div id="rgdrawTopMaterialWrap" class="rgdraw-grid hidden" style="margin-top:10px"><label>Finition du top<select id="rgdrawTopMaterial"><option value="">Choisir une finition…</option></select></label></div><p class="rgdraw-hint" id="rgdrawTopHint">Le prix du top s'ajoute à celui du caisson.</p></section>
+     <section class="rgdraw-step"><h3>6. Options et accessoires</h3><div class="rgdraw-grid"><label>Nombre de classificateurs (+99 € / tiroir)<input id="rgdrawClassifier" type="number" value="0" min="0" max="4" step="1"></label></div><p class="rgdraw-hint">Suspensions, découpes et sous-siphon compris. Coloris RAL/NCS : +90 € si choisi.</p></section>
+     <div class="v1146-pricing-panel"><div><b>Prix public HT de la configuration</b><small id="rgdrawHelp">Commencez par la hauteur.</small></div><div id="rgdrawPrice" class="v1146-auto-price">—</div></div>
+     <div id="rgdrawBreakdown" class="rgdraw-price-parts"></div>`);
+    const $=sel=>o.querySelector(sel),choice=(selector,attr,value)=>o.querySelectorAll(selector).forEach(el=>el.setAttribute("aria-pressed",String(el.dataset[attr]===String(value))));
+    let height=0,modelId="",material="",topType="none";
+    const byId=id=>(v.types||[]).find(t=>t.id===id);
+    function showVariants(){
+      const types=v.types.filter(x=>x.heightCm===height);
+      const sprite=String(dc.pictogramSprite||"");
+      $("#rgdrawVariants").innerHTML=types.map(t=>{
+        const posX=-(t.iconIndex%2)*176,posY=-Math.floor(t.iconIndex/2)*95;
+        const pic=sprite?`<span class="rgdraw-picto" role="img" aria-label="Croquis fournisseur : ${esc(t.shortLabel)}" style="background-image:url('${sprite}');background-position:${posX}px ${posY}px"></span>`:`<span class="rgdraw-picto">${t.modules} module(s) · ${t.drawersPerModule} niveau(x)</span>`;
+        return `<button type="button" class="rgdraw-choice rgdraw-card" data-rgdraw-variant="${esc(t.id)}" aria-pressed="${t.id===modelId}">${pic}<span><b>${esc(t.shortLabel)}</b><small>${t.inner?"Tiroir intérieur inclus · ":""}longueur jusqu'à ${t.maxLengthCm} cm</small></span></button>`;
+      }).join("");
+      o.querySelectorAll("[data-rgdraw-variant]").forEach(el=>el.onclick=()=>{modelId=el.dataset.rgdrawVariant;choice("[data-rgdraw-variant]","rgdrawVariant",modelId);const t=byId(modelId);$("#rgdrawLimits").textContent=`${t.label} : longueur ${t.minLengthCm}–${t.maxLengthCm} cm, profondeur max. 51 cm. ${t.modules>1?"Ensemble double (prix global).":""}`;$("#rgdrawClassifier").max=String(t.modules*(t.drawersPerModule+(t.inner?1:0)));$("#rgdrawClassifier").value="0";update();});
+    }
+    function showColor(){
+      const m=v.materials.find(x=>x.id===material);
+      $("#rgdrawColor").innerHTML=options(m?.colors||[],"Choisir le coloris…");
+      $("#rgdrawColor").value="";$("#rgdrawRal").value="";update();
+    }
+    function showTop(){
+      const select=$("#rgdrawTopMaterial"),integrated=dc.tops.integrated,separate=dc.tops.separate;
+      const entries=topType==="integrated"?[{id:"lacquer",label:"Laqué standard"},{id:"woodRoble",label:"Bois Roble"},{id:"woodOther",label:"Bois autres essences"}]:topType==="separate"?[{id:"lacquer",label:"Laqué MDF"},{id:"wood",label:"Bois"}]:[];
+      select.innerHTML=options(entries,"Choisir la finition du top…");select.value="";
+      $("#rgdrawTopMaterialWrap").classList.toggle("hidden",topType==="none");
+      $("#rgdrawTopHint").textContent=topType==="none"?"Sans fermeture supérieure.":topType==="integrated"?"Couvert intégré, profondeur max. 50,5 cm, longueur max. 140 cm.":"Top à poser de 1,6 cm, profondeur max. 51 cm, longueur max. 201 cm.";
+      update();
+    }
+    function selection(){
+      const t=byId(modelId);return{model:"Tiroirs sur mesure",kind:"furniture",type:modelId,typeLabel:t?.label||"",material,color:$("#rgdrawColor").value,colorLabel:$("#rgdrawColor").value,ralNcs:$("#rgdrawRal").value,
+       widthCm:Number($("#rgdrawDepth").value)||0,depthCm:Number($("#rgdrawDepth").value)||0,lengthCm:Number($("#rgdrawLength").value)||0,heightCm:t?.heightCm||0,
+       topType,topMaterial:$("#rgdrawTopMaterial").value,paidOptions:{classifier:Number($("#rgdrawClassifier").value)||0},includedOptions:["suspensions","cuts","siphon-space"]};
+    }
+    function update(){
+      const data=selection(),q=V50.drawerQuote(config,data);o._q=q;
+      $("#rgdrawRalWrap").classList.toggle("hidden",data.color!=="RAL/NCS");
+      $("#rgdrawPrice").textContent=q.status==="automatic"?money(q.total):"—";
+      $("#rgdrawHelp").textContent=q.status==="automatic"?q.breakdown:(q.reason||"Configuration incomplète");
+      $("#rgdrawBreakdown").innerHTML=q.status==="automatic"?
+       `<div>Caisson : <b>${money(q.basePrice)}</b> · Top : <b>${money(q.topPrice)}</b> · Suppléments : <b>${money(q.supplements.total-q.topPrice)}</b></div><strong>Total public HT : ${money(q.total)}</strong>`:"";
+    }
+    o.querySelectorAll("[data-rgdraw-height]").forEach(el=>el.onclick=()=>{height=Number(el.dataset.rgdrawHeight);modelId="";choice("[data-rgdraw-height]","rgdrawHeight",height);showVariants();update()});
+    o.querySelectorAll("[data-rgdraw-material]").forEach(el=>el.onclick=()=>{material=el.dataset.rgdrawMaterial;choice("[data-rgdraw-material]","rgdrawMaterial",material);showColor()});
+    o.querySelectorAll("[data-rgdraw-top]").forEach(el=>el.onclick=()=>{topType=el.dataset.rgdrawTop;choice("[data-rgdraw-top]","rgdrawTop",topType);showTop()});
+    ["#rgdrawLength","#rgdrawDepth","#rgdrawColor","#rgdrawRal","#rgdrawTopMaterial","#rgdrawClassifier"].forEach(sel=>$(sel).addEventListener("input",update));
+    $(".rg50-confirm").onclick=()=>{const data=selection(),q=V50.drawerQuote(config,data);if(q.status!=="automatic"){ $(".v1146-modal-error").textContent=q.reason||"Configuration incomplète.";return}commit(p,roomId,data,q,model)};
+    update();
+  }
+
+  async function open50(p,roomId){const config=await loadConfig(),model=V50.modelConfig(config,p.resigresModel,p.resigresKind);if(!model)throw new Error("Modèle Resigres absent de la configuration V11.50");if((p.resigresKind==="basin-top"||p.resigresKind==="furniture-basin-top")&&model.v50BasinTop)return openBasin(p,roomId,config,model);if(p.resigresKind==="furniture"&&p.resigresModel==="Tiroirs sur mesure"&&model.v50Furniture?.drawerConfigurator)return openDrawers(p,roomId,config,model);if(p.resigresKind==="furniture"&&model.v50Furniture)return openFurniture(p,roomId,config,model);return baseAdd50(p.reference,roomId,p.compareKey||"")}
   addCatalogProduct=function(ref,roomId,key=""){const p=productFromCatalogSources(ref,key);if(p?.configuratorType==="resigres"&&["basin-top","furniture-basin-top","furniture"].includes(p.resigresKind)){open50(p,normalizedRoomId(roomId)).catch(e=>{console.error("[Resigres V11.50]",e);alert("Configurateur Resigres indisponible : "+e.message)});return}return baseAdd50(ref,roomId,key)};
 })();
 
