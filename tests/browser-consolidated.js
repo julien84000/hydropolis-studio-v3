@@ -482,7 +482,9 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     // V11.63.3 — real Chromium navigation to the official manufacturer CAD links.
     await page.evaluate(()=>HydroHidroboxConfigurator.open({manufacturer:'Hidrobox'},state.rooms[0]?.id||''));
     await page.waitForSelector('#hidroboxGuided [data-kind="family"][data-choice="receveurs"]',{timeout:20000});
+    check('Hidrobox : 9 familles exactement comme le site officiel',await page.locator('#hidroboxGuided [data-kind="family"]').count()===9);
     await page.locator('#hidroboxGuided [data-kind="family"][data-choice="receveurs"]').click();
+    check('Hidrobox : 11 collections officielles de receveurs',await page.locator('#hidroboxGuided [data-kind="collection"]').count()===11);
     await page.locator('#hidroboxGuided [data-kind="collection"]').filter({hasText:'Neo Plus'}).first().click();
     await page.waitForSelector('#hidroboxGuided a[href$="BIMobject-Shower-tray-Neo-Plus.zip"]');
     check('Hidrobox Neo Plus : lien BIM officiel visible',
@@ -511,6 +513,12 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     check('Hidrobox Line : options de dimensions et de matière conservées',
       await page.locator('#hidroboxGuided [data-facet]').count()>0&&
       await page.locator('#hidroboxGuided .hidrobox-neo-hero img').count()<=1);
+    await page.locator('#hidroboxGuided .hidrobox-back').click();
+    await page.locator('#hidroboxGuided .hidrobox-back').click();
+    await page.locator('#hidroboxGuided [data-kind="family"][data-choice="bains-encastres"]').click();
+    check('Hidrobox : Beta Fusion et Beta Evoque classées parmi les baignoires encastrées',
+      await page.locator('#hidroboxGuided [data-kind="collection"][data-choice="beta-fusion"]').count()===1&&
+      await page.locator('#hidroboxGuided [data-kind="collection"][data-choice="beta-evoque"]').count()===1);
     await page.locator('#hidroboxGuided .hidrobox-close').click();
 
     // V11.64.4 — Sbordoni photographic collection selection without touching composition prices.
@@ -529,12 +537,31 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
       await page.locator('#sbordoniConfigurator .sbordoni-config-summary').count()===0);
     await page.locator('#sbordoniConfigurator .sbordoni-config-close').click();
 
+    // V11.64.6 — Bette official taxonomy before the existing 62,264-variant selector.
+    await page.evaluate(()=>HydroBetteConfigurator.open({manufacturer:'Bette'},state.rooms[0]?.id||''));
+    await page.waitForSelector('#brandConfigurator [data-bette-family="showers"]');
+    check('Bette : 6 rubriques fabricant',await page.locator('#brandConfigurator [data-bette-family]').count()===6);
+    await page.locator('#brandConfigurator [data-bette-family="baths"]').click();
+    check('Bette : filtres officiels Type, Forme et Fonction disponibles',
+      await page.locator('#brandConfigurator .brand-official-facets h3').allTextContents().then(a=>['Type','Forme','Fonction'].every(x=>a.includes(x))));
+    check('Bette : aucune classification fictive des variantes comme officielles',
+      await page.locator('#brandConfigurator .brand-note').first().innerText().then(x=>x.includes('aucune correspondance')));
+    await page.locator('#brandConfigurator [data-bette-back="families"]').click();
+    await page.locator('#brandConfigurator [data-bette-family="showers"]').click();
+    await page.locator('#brandConfigurator [data-bette-unclassified]').click();
+    check('Bette : les familles sans classement restent accessibles',await page.locator('#brandConfigurator [data-bette-back="sections"]').count()===1);
+    await page.locator('#brandConfigurator .brand-config-close').click();
+
     // V11.63.4 — Carrodrain: choose real LOW/PRO variants and check
     // manufacturer-page PDF mapping without substituting neighbouring versions.
     await page.evaluate(()=>HydroCarrodrainConfigurator.open({manufacturer:'Carrodrain'},state.rooms[0]?.id||''));
-    await page.waitForSelector('#brandConfigurator [data-carrodrain-group="quattro-100"]',{timeout:20000});
+    await page.waitForSelector('#brandConfigurator [data-carrodrain-family="Essentials"]',{timeout:20000});
+    check('Carrodrain : Essentials, Invisibles, Liquids et accessoires distincts',await page.locator('#brandConfigurator [data-carrodrain-family]').count()===4);
+    await page.locator('#brandConfigurator [data-carrodrain-family="Essentials"]').click();
+    await page.waitForSelector('#brandConfigurator [data-carrodrain-group="quattro-100"]');
     await page.locator('#brandConfigurator [data-carrodrain-group="quattro-100"]').click();
     await page.waitForSelector('#brandConfigurator #ccVersion');
+    check('Carrodrain : versions LOW et PRO présentées en cartes',await page.locator('#brandConfigurator [data-brand-choice="ccVersion"]').count()===2);
     await page.locator('#brandConfigurator #ccVersion').selectOption('LOW');
     await page.waitForSelector('#brandConfigurator a[href*="Quattro_100_LOW_Technical_Specifications_2025.pdf"]');
     check('Carrodrain Quattro LOW : bonne fiche technique',
