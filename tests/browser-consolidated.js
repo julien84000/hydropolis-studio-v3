@@ -429,6 +429,56 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     check('Référence tarifaire Hotbath conservée',ref&&detail.includes(ref));
     await page.locator('#manufacturerGuidedSelector .mg-close').click();
 
+    // V11.64 — Gessi-inspired guide validation in a REAL Chromium DOM on desktop/mobile.
+    // Synthetic tariff rows are used so the exact selected object and price can be asserted
+    // without mutating a user project. Official finish imagery is resolved by existing assets.
+    for(const viewport of [{width:1440,height:1000},{width:390,height:844}]){
+      await page.setViewportSize(viewport);
+      for(const spec of [
+        {brand:'Lefroy Brooks',collection:'1900 Classic',base:'BL1185',first:'BL1185-CP',second:'BL1185-NK',finish1:'CP',finish2:'NK'},
+        {brand:'Zucchetti',collection:'Octo',base:'ZOC564',first:'ZOC564.C40',second:'ZOC564.C50',finish1:'C40',finish2:'C50'}
+      ]){
+        await page.evaluate(spec=>{
+          const rows=[
+            {manufacturer:spec.brand,collection:spec.collection,base:spec.base,reference:spec.first,finishCode:spec.finish1,finish:'Finition 1',designation:'Mitigeur d’essai',category:'Lavabo',price:411,totalPrice:411},
+            {manufacturer:spec.brand,collection:spec.collection,base:spec.base,reference:spec.second,finishCode:spec.finish2,finish:'Finition 2',designation:'Mitigeur d’essai',category:'Lavabo',price:522,totalPrice:522}
+          ];
+          window.__visualGuideRows=rows;window.__visualGuideAdded=null;
+          HydroManufacturerGuide.open(spec.brand,rows,'browser-test',p=>{
+            window.__visualGuideAdded={same:rows.includes(p),reference:p.reference,price:p.price};
+          });
+        },spec);
+        await page.locator('#manufacturerGuidedSelector [data-go="collection"]').first().click();
+        await page.locator('#manufacturerGuidedSelector [data-go="category"]').first().click();
+        await page.locator('#manufacturerGuidedSelector [data-go="model"]').first().click();
+        const tiles=page.locator('#manufacturerGuidedSelector [data-mg-finish]');
+        await tiles.first().waitFor();
+        check('V11.64 deux variantes visuelles '+spec.brand+' '+viewport.width,await tiles.count()===2);
+        const first=page.locator('#manufacturerGuidedSelector [data-mg-finish]').first();
+        const second=page.locator('#manufacturerGuidedSelector [data-mg-finish]').last();
+        check('V11.64 sélection initiale '+spec.brand,await first.getAttribute('aria-pressed')==='true');
+        await second.click();
+        check('V11.64 finition/référence mise à jour '+spec.brand,
+          await second.getAttribute('aria-pressed')==='true'&&
+          (await page.locator('#manufacturerGuidedSelector .mg-finalref').innerText()).includes(spec.second));
+        check('V11.64 prix original '+spec.brand,(await page.locator('#manufacturerGuidedSelector .mg-price').innerText()).includes('522'));
+        check('V11.64 une photographie principale maximum '+spec.brand,
+          await page.locator('#manufacturerGuidedSelector .mg-photo img').count()<=1);
+        const layout=await page.locator('#manufacturerGuidedSelector').evaluate(x=>({
+          overflow:x.querySelector('.mg-dialog').scrollWidth>x.querySelector('.mg-dialog').clientWidth,
+          background:getComputedStyle(x.querySelector('.mg-header')).backgroundColor,
+          grid:getComputedStyle(x.querySelector('.mg-visual-finishes')).display
+        }));
+        check('V11.64 présentation harmonisée sans débordement '+spec.brand+' '+viewport.width,
+          !layout.overflow&&layout.background==='rgb(33, 36, 32)'&&layout.grid==='grid');
+        await page.locator('#manufacturerGuidedSelector #mgAdd').click();
+        const added=await page.evaluate(()=>window.__visualGuideAdded);
+        check('V11.64 ajout conserve objet et prix '+spec.brand,
+          added?.same&&added.reference===spec.second&&added.price===522);
+      }
+    }
+    await page.setViewportSize({width:1440,height:1000});
+
     // V11.63.3 — real Chromium navigation to the official manufacturer CAD links.
     await page.evaluate(()=>HydroHidroboxConfigurator.open({manufacturer:'Hidrobox'},state.rooms[0]?.id||''));
     await page.waitForSelector('#hidroboxGuided [data-kind="family"][data-choice="receveurs"]',{timeout:20000});
