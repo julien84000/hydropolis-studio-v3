@@ -61,7 +61,7 @@ def session():
     return _tls.session
 def test_candidate(url):
     try:
-        resp=session().get(url,timeout=(6,12),allow_redirects=True)
+        resp=session().get(url,timeout=(4,8),allow_redirects=True)
         if resp.status_code!=200 or len(resp.content)<2500 or len(resp.content)>8_000_000:
             return None
         ctype=resp.headers.get('Content-Type','').lower()
@@ -81,6 +81,7 @@ def verify(row):
         return collection,ref,dead,None,0
     attempts=0
     for url in candidate_urls(ref,collection):
+        if attempts>=10:break
         attempts+=1
         found=test_candidate(url)
         if found:
