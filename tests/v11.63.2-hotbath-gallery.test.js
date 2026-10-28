@@ -99,3 +99,16 @@ test('Hotbath: actual supplier collection hero images are available without chan
   assert.match(images.modernCollectionSources?.[name]?.url||'',/^https:\/\/hotbath\.com\/en-gb\/collections\//);
  }
 });
+
+
+test('Hotbath detail includes selectable finish cards and keeps reference-based pricing',()=>{
+ const js=fs.readFileSync(path.join(root,'hotbath-official-guide.js'),'utf8');
+ const css=fs.readFileSync(path.join(root,'styles.css'),'utf8');
+ assert.match(js,/data-hb-finish-ref/);
+ assert.match(js,/aria-pressed/);
+ assert.match(js,/chosen=button\.dataset\.hbFinishRef/);
+ assert.match(js,/current\.variants\|\|\[\]/);
+ assert.match(css,/\.mg-hotbath-official \.hb-finish-options/);
+ assert.match(css,/\.mg-hotbath-official \.hb-finish-option/);
+ assert.match(js,/Ajout indisponible · tarif absent/);
+});
