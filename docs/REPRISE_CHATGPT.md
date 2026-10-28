@@ -188,3 +188,18 @@ Branche de travail : `feat/v11.63.1-brands-pricing-integrity`. PR : https://gith
 La PR #36 (Hidrobox CAO/BIM) a déjà été livrée sous **V11.63.3** et est en production. Pour éviter deux déploiements indiscernables par `/api/version`, les correctifs de la PR #37 (réouverture Hidrobox, images indépendantes, et 24 photos Lefroy Brooks exactes) sont désormais versionnés **V11.63.4** dans `package.json` et `package-lock.json`. Les fichiers de tests gardent leur nom initial `v11.63.3-...` afin de préserver la traçabilité des commits.
 
 **État** : CI du dernier commit V11.63.4, fusion et déploiement **à revérifier**. Le checkpoint V11.63.3 ci-dessus décrit l'ordre de développement ; il ne signifie pas que ces fonctionnalités étaient incluses dans le déploiement précédent.
+
+
+## Extension V11.63.5 — photos fabricant Lefroy Brooks Classic / Ten Ten (28 octobre 2026)
+
+**Base** : `main` commit `106866ca40db34033d110ffd996d1d5816fff402`, V11.63.4 (PR #37 fusionnée). Render V11.63.4 `/api/version` et `/api/health` vérifiés : `ok:true`, PostgreSQL. La validation finale `main` de cette version était encore en cours au contrôle intermédiaire (ne pas inventer son résultat).
+
+**Branche** : `feat/v11.63.5-lefroy-official-finish-gallery`, dédiée à l'extension de la galerie existante (pas de retouche des prix ni des projets).
+
+- Deux catégories **officielles** examinées : `https://uk.lefroybrooks.com/classic-basin-taps` et `https://uk.lefroybrooks.com/ten-ten-basin-taps`. Leurs liens produits ont été recoupés avec le catalogue tarifaire Lefroy Brooks importé, en filtrant **uniquement** sur la base exacte et les finitions réellement tarifées.
+- 45 pages de modèles supplémentaires inspectées : **42 modèles** ont directement donné les quatre photos de finition `AG`, `CP`, `NK`, `PB` ; deux modèles (`WL1185`, `BL1185`) ont des photos officielles avec le suffixe documenté `_closed` et ont été ajoutés après contrôle des huit noms de fichiers ; `LS1220` n'avait aucun nom de fichier vérifiable et n'a pas été inventé.
+- Avec les **six modèles / 24 photos** de V11.63.4, la galerie `public/brand-guide-collections.json` possède désormais **50 modèles × 4 finitions = 200 photos** vérifiées **par la référence explicite dans le nom de fichier récupéré sur la page produit officielle** : **40 Classic + 10 Ten Ten**. Les 176 nouvelles photos n'affectent pas les catalogues tarifaires. Le mapping `finishModels['Lefroy Brooks']`, `modelPages` et les photos représentatives existants sont conservés et enrichis.
+- Aucun contrôle universel HTTP 200 / décodage de chaque fichier image, ni vérification de toutes les variantes hors ces 50 modèles n'est revendiqué. L'extraction de liens sur le site officiel ne garantit pas qu'une image restera servie ; le navigateur applique le traitement d'erreur déjà prévu.
+- Le test historique des 24 photos V11.63.4 reste valide. Le nouveau test `tests/v11.63.5-lefroy-finish-gallery.test.js` vérifie **les 200 URL**, code modèle et finition, l'absence de duplication, l'existence de chacune des 200 variantes tarifaires correspondantes, la sélection du visuel exact et les 10 modèles Ten Ten. `npm test` l'exécute.
+- `package.json` et `package-lock.json` versionnés **11.63.5**. **CI, fusion, déploiement V11.63.5 à vérifier**. Ne pas confondre 200 photos finitions pour 50 modèles avec couverture de l'ensemble des 3 397 références / environ 900 modèles Lefroy Brooks.
+- À poursuivre : images et documentations exactes des autres collections Lefroy Brooks, Zucchetti, Hidrobox, Bette, Carrodrain et lacunes Hotbath ; audit ligne à ligne des prix par rapport aux documents sources Bette/Hidrobox/Carrodrain, sans perturber les correctifs Resigres/Sbordoni ni les données clients.
