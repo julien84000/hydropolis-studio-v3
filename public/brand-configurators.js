@@ -148,9 +148,23 @@
   function dimLabel(v){return [v.lengthMm&&`${v.lengthMm} mm`,v.widthMm&&`${v.widthMm} mm`,v.heightMm&&`${v.heightMm} mm`].filter(Boolean).join(' × ')||'Dimension non renseignée';}
   function chosen(select,values){const cur=select;return values.includes(cur)?cur:(values[0]??'');}
 
+  function initialExactVariant(groups,product){
+    const ref=String(product?.reference||'').trim();
+    let group=groups.find(g=>g.id===product?.configGroup);
+    // A catalogue card may have been moved to a different group. Prefer the
+    // supplier's exact reference over an obsolete, cached group identifier.
+    if(ref&&!(group?.variants||[]).some(v=>String(v.reference)===ref)){
+      const match=groups.find(g=>(g.variants||[]).some(v=>String(v.reference)===ref));
+      if(match)group=match;
+    }
+    const variant=ref?(group?.variants||[]).find(v=>String(v.reference)===ref)||null:null;
+    return {group,variant};
+  }
   async function openBette(p,roomId){
     const data=await loadJson(BRAND_META.Bette);const groups=data.groups||[];if(!groups.length)throw new Error('Catalogue Bette vide.');
-    const draft={group:p?.configGroup||'',model:'',dim:'',color:'',option:'',reference:''};
+    const original=initialExactVariant(groups,p);
+    const selected=original.variant;
+    const draft={group:original.group?.id||p?.configGroup||'',model:selected?.model||'',dim:selected?dimLabel(selected):'',color:selected?.color||'Standard',option:selected?.option||'Standard',reference:selected?.reference||''};
     if(!groups.some(g=>g.id===draft.group))draft.group=groups.find(g=>g.family===p?.collection)?.id||groups[0].id;
     let overlay;
     const render=()=>{
@@ -179,7 +193,9 @@
 
   async function openCarrodrain(p,roomId){
     const data=await loadJson(BRAND_META.Carrodrain);const groups=data.groups||[];if(!groups.length)throw new Error('Catalogue Carrodrain vide.');
-    const draft={group:p?.configGroup||'',version:'',length:'',finish:'',reference:''};if(!groups.some(g=>g.id===draft.group))draft.group=groups.find(g=>g.model===p?.collection)?.id||groups[0].id;
+    const original=initialExactVariant(groups,p),selected=original.variant;
+    const draft={group:original.group?.id||p?.configGroup||'',version:selected?.version||'',length:selected?.length||'',finish:selected?.finish||'',reference:selected?.reference||''};
+    if(!groups.some(g=>g.id===draft.group))draft.group=groups.find(g=>g.model===p?.collection)?.id||groups[0].id;
     let overlay,mode='gallery';
     const gallery=()=>{
       const body=carrodrainGallery(groups,draft.group);
@@ -190,8 +206,9 @@
       overlay.querySelector('.brand-config-cancel').onclick=close;
       overlay.querySelector('.brand-config-confirm').style.display='none';
       overlay.querySelectorAll('[data-carrodrain-group]').forEach(el=>el.onclick=()=>{
+        const changed=draft.group!==el.dataset.carrodrainGroup;
         draft.group=el.dataset.carrodrainGroup;
-        draft.version=draft.length=draft.finish=draft.reference='';
+        if(changed)draft.version=draft.length=draft.finish=draft.reference='';
         mode='configure';render();
       });
     };
@@ -264,7 +281,7 @@
     return sets.flat();
   }
   function eligibleBrand(brand,p){return !!p&&String(p.manufacturer||'').toLowerCase()===brand.toLowerCase()&&String(p.configuratorType||'').toLowerCase()===brand.toLowerCase();}
-  root.HydroBrandCatalogs={load:loadCatalogs,verifiedPublicPrice};
+  root.HydroBrandCatalogs={load:loadCatalogs,verifiedPublicPrice,initialExactVariant};
   root.HydroBetteConfigurator={eligible:p=>eligibleBrand('Bette',p),open:openBette,close};
   root.HydroCarrodrainConfigurator={eligible:p=>eligibleBrand('Carrodrain',p),open:openCarrodrain,close,models:CARRODRAIN_MODELS};
   root.HydroHidroboxConfigurator={eligible:p=>eligibleBrand('Hidrobox',p),open:openHidrobox,close,groups:async()=>((await loadJson(BRAND_META.Hidrobox)).groups||[])};
