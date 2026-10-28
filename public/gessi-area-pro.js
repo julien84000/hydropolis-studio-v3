@@ -50,20 +50,39 @@ function officialName(source,areas){
  }
  return found;
 }
+// Several official collections span multiple universes (e.g. Inciso / Kitchen / Sensor Taps).
+// Partition the original tariff objects: never duplicate an SKU across universes.
+function selectArea(p,name,areas){
+ const allowed=areas.filter(a=>a.collections.some(c=>norm(c)===norm(name)));
+ if(allowed.length<=1)return allowed[0];
+ const explicit=norm(p?.universe||p?.univers||p?.areaProArea||p?.environment||p?.catalogue||p?.catalog||p?.section||'');
+ const chosen=allowed.find(a=>norm(a.id)===explicit||norm(a.name)===explicit);
+ if(chosen)return chosen;
+ const detail=norm([p?.category,p?.productType,p?.subcategory,p?.family,p?.collection,p?.designation].filter(Boolean).join(' '));
+ if(allowed.some(a=>a.id==='kitchen')&&/(cuisine|kitchen|evier|sink)/.test(detail))return allowed.find(a=>a.id==='kitchen');
+ if(allowed.some(a=>a.id==='sensor-taps')&&/(electronique|sensor|capteur|infrarouge)/.test(detail))return allowed.find(a=>a.id==='sensor-taps');
+ if(allowed.some(a=>a.id==='private-wellness')&&/(wellness|hammam|sauna|spa)/.test(detail))return allowed.find(a=>a.id==='private-wellness');
+ // Ambiguous records stay in their default catalogue instead of being copied everywhere.
+ return allowed.find(a=>a.id==='bathroom')||allowed[0];
+}
 function buildIndex(rows,data){
- const areas=data?.areas||[],byName=new Map(),unmapped=[];
+ const areas=data?.areas||[],byName=new Map(),byAreaName=new Map(),unmapped=[];
  for(const p of rows||[]){
    if(p?.manufacturer!=='Gessi')continue;
    const name=officialName(p.collection,areas);
    if(!name){unmapped.push(p);continue}
-   const key=norm(name);
+   const area=selectArea(p,name,areas);
+   if(!area){unmapped.push(p);continue}
+   const key=norm(name),areaKey=area.id+'|'+key;
    if(!byName.has(key))byName.set(key,[]);
+   if(!byAreaName.has(areaKey))byAreaName.set(areaKey,[]);
    byName.get(key).push(p);
+   byAreaName.get(areaKey).push(p);
  }
- return {areas,byName,unmapped,total:(rows||[]).filter(p=>p?.manufacturer==='Gessi').length};
+ return {areas,byName,byAreaName,unmapped,total:(rows||[]).filter(p=>p?.manufacturer==='Gessi').length};
 }
 function listAreaCollections(index,area){
- const entries=(area?.collections||[]).map(name=>({name,rows:index.byName.get(norm(name))||[]}));
+ const entries=(area?.collections||[]).map(name=>({name,rows:index.byAreaName?.get(area.id+'|'+norm(name))||[]}));
  if(area?.id==='bathroom'&&index.unmapped.length)entries.push({name:'Autres références du tarif',rows:index.unmapped,notOfficial:true});
  return entries;
 }
@@ -202,5 +221,5 @@ function open(rows,roomId,onAdd){
  }).catch(e=>{if(overlay.isConnected)body.innerHTML='<p class="gessi-error">Impossible de charger le menu Gessi : '+esc(e.message)+'</p><a href="'+SOURCE+'" target="_blank" rel="noopener noreferrer">Ouvrir Area Pro ↗</a>'});
  return {brand:'Gessi',rows:source,roomId,close};
 }
-root.HydroGessiAreaPro={open,buildIndex,listAreaCollections,modelsFor,typesFor,modelBase,finishCode,findImage,productPage,officialName};
+root.HydroGessiAreaPro={open,buildIndex,listAreaCollections,selectArea,modelsFor,typesFor,modelBase,finishCode,findImage,productPage,officialName};
 })(window);
