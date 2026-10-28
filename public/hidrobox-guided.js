@@ -14,39 +14,40 @@ const TECH='https://hidrobox.com/wp-content/uploads/2025/01/ES_NeoPlus_FactSheet
 const MANUAL='https://hidrobox.com/wp-content/uploads/2025/07/mus_247_NeoPlus_Shower_Tray_0223-03.pdf';
 const NEO_BIM='https://hidrobox.com/wp-content/uploads/2025/01/BIMobject-Shower-tray-Neo-Plus.zip';
 const NEO_3D='https://hidrobox.com/wp-content/uploads/2025/05/Neo-Plus-80x140x3-1.zip';
+/* Hidrobox.com/fr/produits/ — nine current manufacturer product classes,
+ * in the exact order shown in the official French product navigation. */
 const CATEGORY=[
-  {key:'receveurs',name:'Receveurs de douche',img:'https://hidrobox.com/wp-content/uploads/2025/03/01_Platos-de-ducha_Hidrobox.png',url:HOUSE+'produit/receveurs-de-douche/'},
-  {key:'panneaux',name:'Panneaux',img:'https://hidrobox.com/wp-content/uploads/2025/05/02_Paneles_Hidrobox.png',url:HOUSE+'produit/panneaux/'},
-  {key:'vasques-a-poser',name:'Vasques à poser',img:'https://hidrobox.com/wp-content/uploads/2025/03/05_Lavabos-de-apoyo_Hidrobox.png',url:HOUSE+'produit/vasques-a-poser/'},
-  {key:'vasques-suspendues',name:'Vasques suspendues',img:'https://hidrobox.com/wp-content/uploads/2025/05/04_Lavabos-suspendidos_Hidrobox-1.png',url:HOUSE+'produit/vasques-suspendus/'},
-  {key:'vasques-sur-pied',name:'Vasques sur pied',img:'https://hidrobox.com/wp-content/uploads/2025/05/06_Lavabos-a-suelo_Hidrobox.png',url:HOUSE+'produit/vasques-sur-pied/'},
-  {key:'plans',name:'Plans de travail',img:'https://hidrobox.com/wp-content/uploads/2025/03/pro4.png',url:HOUSE+'produit/plans-de-travail/'},
-  {key:'bains-ilot',name:'Baignoires îlot',img:'https://hidrobox.com/wp-content/uploads/2025/03/08_Baneras-exentas_Hidrobox.png',url:HOUSE+'produit/baignoires-ilot/'},
-  {key:'bains-encastres',name:'Baignoires encastrées',img:'https://hidrobox.com/wp-content/uploads/2025/05/09_Baneras-encastradas_Hidrobox.png',url:HOUSE+'produit/baignoires-encastrees/'},
-  {key:'accessoires',name:'Accessoires',img:'https://hidrobox.com/wp-content/uploads/2025/03/ACCESORIOS-HIDROBOX-1.png',url:HOUSE+'produit/accessoires/'},
-  {key:'autres',name:'Autres références tarifées',img:'',url:HOUSE},
-  {key:'toutes',name:'Toutes les collections tarifées',img:'',url:HOUSE}
+ {key:'receveurs',name:'Receveurs de douche',img:'https://hidrobox.com/wp-content/uploads/2025/03/01_Platos-de-ducha_Hidrobox.png',url:HOUSE+'produit/receveurs-de-douche/'},
+ {key:'panneaux',name:'Panneaux',img:'https://hidrobox.com/wp-content/uploads/2025/05/02_Paneles_Hidrobox.png',url:HOUSE+'produit/panneaux/'},
+ {key:'accessoires',name:'Accessoires',img:'https://hidrobox.com/wp-content/uploads/2025/03/ACCESORIOS-HIDROBOX-1.png',url:HOUSE+'produit/accessoires/'},
+ {key:'vasques-suspendues',name:'Vasques suspendues',img:'https://hidrobox.com/wp-content/uploads/2025/05/04_Lavabos-suspendidos_Hidrobox-1.png',url:HOUSE+'produit/vasques-suspendus/'},
+ {key:'vasques-a-poser',name:'Vasques à poser',img:'https://hidrobox.com/wp-content/uploads/2025/03/05_Lavabos-de-apoyo_Hidrobox.png',url:HOUSE+'produit/vasques-a-poser/'},
+ {key:'vasques-sur-pied',name:'Vasques sur pied',img:'https://hidrobox.com/wp-content/uploads/2025/05/06_Lavabos-a-suelo_Hidrobox.png',url:HOUSE+'produit/vasques-sur-pied/'},
+ {key:'plans',name:'Plans de travail',img:'https://hidrobox.com/wp-content/uploads/2025/03/pro4.png',url:HOUSE+'produit/plans-de-travail/'},
+ {key:'bains-ilot',name:'Baignoires îlot',img:'https://hidrobox.com/wp-content/uploads/2025/03/08_Baneras-exentas_Hidrobox.png',url:HOUSE+'produit/baignoires-ilot/'},
+ {key:'bains-encastres',name:'Baignoires encastrées',img:'https://hidrobox.com/wp-content/uploads/2025/05/09_Baneras-encastradas_Hidrobox.png',url:HOUSE+'produit/baignoires-encastrees/'}
 ];
 const SHOWER_MODELS=['neo plus','line','twins','quadro','one','pure','arq','loovers','unique','iconik','falcon'];
 
-/* Official Hidrobox 2026 categories, verified from the brand's own category pages. */
-const HIDROBOX_ALL_OFFICIAL=[
- ...['neo-plus','line','twins','quadro','one','pure','arq','loovers','unique','iconik','falcon'].map(slug=>({key:slug,name:slug.split('-').map(v=>v[0].toUpperCase()+v.slice(1)).join(' '),category:'receveurs',url:HOUSE+'collections/'+slug+'/'})),
- {key:'paneles',name:'Panneaux muraux',category:'panneaux'},
- {key:'estantes',name:'Étagères',category:'accessoires'},
- {key:'hornacinas',name:'Niches',category:'accessoires'},
- {key:'totems',name:'Totems',category:'accessoires'},
- ...['program','program-colour','lom','guest','swap','titan','soul','civit','intim'].map(slug=>({key:slug,name:slug.split('-').map(v=>v[0].toUpperCase()+v.slice(1)).join(' '),category:'vasques-suspendues'})),
- {key:'spot',name:'Spot',category:'vasques-a-poser'},
- {key:'fs',name:'FS',category:'vasques-sur-pied'},
- {key:'artop',name:'Artop',category:'plans'},
- {key:'space',name:'Space',category:'bains-ilot'},
- {key:'beta-essential',name:'Beta Essential',category:'bains-ilot'},
- {key:'beta-evoque',name:'Beta Evoque',category:'bains-ilot'},
- {key:'beta-fusion',name:'Beta Fusion',category:'bains-encastres'}
-].map(x=>({...x,url:x.url||(x.key==='intim'||x.key==='falcon'?HOUSE+'produit/'+(x.key==='falcon'?'receveurs-de-douche/':'vasques-suspendus/'):HOUSE+'collections/'+x.key+'/')}));
+/* Official Hidrobox French product categories and collections, verified on 29/10/2026.
+ * Beta Evoque is shown in BOTH bath categories on the source website; there
+ * remains only one underlying tariff group. Intim is marked private there. */
+const HIDROBOX_PRODUCT_TREE=[
+ {category:'receveurs',collections:[['neo-plus','Neo Plus'],['line','Line'],['twins','Twins'],['one','One'],['pure','Pure'],['quadro','Quadro'],['arq','Arq'],['unique','Unique'],['iconik','Iconik'],['loovers','Loovers'],['falcon','Falcon']]},
+ {category:'panneaux',collections:[['paneles','Paneles']]},
+ {category:'accessoires',collections:[['estantes','Estantes'],['hornacinas','Hornacinas'],['totems','Totems']]},
+ {category:'vasques-suspendues',collections:[['program','Program'],['program-colour','Program Colour'],['lom','Lom'],['guest','Guest'],['swap','Swap'],['titan','Titan'],['soul','Soul'],['civit','Civit'],['intim','Intim']]},
+ {category:'vasques-a-poser',collections:[['spot','Spot']]},
+ {category:'vasques-sur-pied',collections:[['fs','FS']]},
+ {category:'plans',collections:[['artop','Artop']]},
+ {category:'bains-ilot',collections:[['space','Space'],['beta-essential','Beta Essential'],['beta-evoque','Beta Evoque']]},
+ {category:'bains-encastres',collections:[['beta-fusion','Beta Fusion'],['beta-evoque','Beta Evoque']]}
+];
+const HIDROBOX_ALL_OFFICIAL=HIDROBOX_PRODUCT_TREE.flatMap(branch=>branch.collections.map(([key,name])=>({
+ key,name,category:branch.category,url:HOUSE+'collections/'+key+'/',
+ private:key==='intim',tariffAlias:key==='paneles'?'panneaux-muraux':''
+})));
 const HIDROBOX_OFFICIAL_BY_NAME=new Map(HIDROBOX_ALL_OFFICIAL.map(x=>[x.name.toLowerCase(),x]));
-
 const norm=x=>String(x||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
 function groupCategory(g){
  const name=norm(g.collection||g.family||g.model||g.id),category=norm(g.category);
