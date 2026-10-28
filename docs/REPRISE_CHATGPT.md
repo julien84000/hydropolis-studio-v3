@@ -233,3 +233,9 @@ La PR #36 (Hidrobox CAO/BIM) a déjà été livrée sous **V11.63.3** et est en 
 - La PR #39 a été fusionnée avant la sortie Carrodrain, en commit `63e10723b67aa34ebf9f327a234325167b47ad23`, version 11.63.5. Le présent chantier documentaire doit porter la **V11.63.6**, avec tous les visuels exacts Lefroy Brooks PR39 préservés.
 - La branche/PR précédente #38 reste un checkpoint technique, non fusionné. Privilégier la nouvelle PR propre basée sur main PR39, sans forcer une fusion Git.
 - L'ancienne version 11.63.5 de ce checkpoint ne désigne plus la livraison Carrodrain ; vérifier version, CI et Render sur le nouveau SHA avant annonce.
+
+
+### Test Chromium Carrodrain — correction de l'identifiant de groupe
+- Première CI de la PR #40 : `40772540069`, **npm ci/check/test/build réussis**, mais navigateur échoué à la ligne de sélection Quattro, car le test cherchait `data-carrodrain-group="quattro"`.
+- La matrice tarifaire fournisseur possède le vrai groupe `quattro-100` (voir `BRAND_GROUP_COVERAGE` dans les logs) ; l'interface le convertit correctement en visuel de gamme `quattro`. Le scénario Chromium a été corrigé pour sélectionner la **clé de groupe réelle**, sans modifier le prix ni le produit (`f7673c6d88b621ac6529c743e39ba470b85f1062`).
+- CI complète du nouveau SHA requise avant fusion. Cette erreur de test ne démontre pas une panne du configurateur ni une photographie erronée ; conserver ce diagnostic précis.
