@@ -362,7 +362,7 @@ test('Resigres tiroirs : le top intégré ou à poser est un prix distinct, opti
  assert.equal(quote.pricedLength,160);
  assert.equal(quote.topTier,161);
  assert.equal(V50.drawerQuote(cfg,{...sel,topType:'none',topMaterial:''}).total,3108);
- assert.equal(V50.drawerQuote(cfg,{...sel,topType:'integrated',topMaterial:'woodOther',lengthCm:120}).total,2798); // 2700? calculated separately below
+ assert.equal(V50.drawerQuote(cfg,{...sel,topType:'integrated',topMaterial:'woodOther',lengthCm:120}).total,3089); // caisson 2700 + top intégré 191 + classificateurs 198
  assert.equal(V50.drawerQuote(cfg,{...sel,topType:'integrated',topMaterial:'woodOther',widthCm:51}).status,'pending');
  assert.equal(V50.drawerQuote(cfg,{...sel,paidOptions:{classifier:9}}).status,'pending');
  const ral=V50.drawerQuote(cfg,{...sel,type:'h30-single',heightCm:30,lengthCm:100,material:'lacquer',color:'RAL/NCS',ralNcs:'RAL 7031',topType:'none',paidOptions:{classifier:0}});
