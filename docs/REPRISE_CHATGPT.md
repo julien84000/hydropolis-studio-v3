@@ -203,3 +203,33 @@ La PR #36 (Hidrobox CAO/BIM) a déjà été livrée sous **V11.63.3** et est en 
 - Le test historique des 24 photos V11.63.4 reste valide. Le nouveau test `tests/v11.63.5-lefroy-finish-gallery.test.js` vérifie **les 200 URL**, code modèle et finition, l'absence de duplication, l'existence de chacune des 200 variantes tarifaires correspondantes, la sélection du visuel exact et les 10 modèles Ten Ten. `npm test` l'exécute.
 - `package.json` et `package-lock.json` versionnés **11.63.5**. **CI, fusion, déploiement V11.63.5 à vérifier**. Ne pas confondre 200 photos finitions pour 50 modèles avec couverture de l'ensemble des 3 397 références / environ 900 modèles Lefroy Brooks.
 - À poursuivre : images et documentations exactes des autres collections Lefroy Brooks, Zucchetti, Hidrobox, Bette, Carrodrain et lacunes Hotbath ; audit ligne à ligne des prix par rapport aux documents sources Bette/Hidrobox/Carrodrain, sans perturber les correctifs Resigres/Sbordoni ni les données clients.
+
+
+## Checkpoint Carrodrain V11.63.6 — documentation par version (28/10/2026)
+
+- Branche distante `feat/v11.63.4-carrodrain-docs` basée sur main `7b1509ce7c6ebc7b0e62f943924b9757a5d90e80` (Hotbath et Hidrobox V11.63.3 livrées). Une PR #37 `fix/v11.63.3-hidrobox-reopen-supplier-guides` existait et évoluait **en parallèle** ; ne jamais écraser ses correctifs. Rebase/merge main si elle est fusionnée avant cette branche.
+- Audit des **14 pages de produit officielles Carrodrain** (Cayman, Cayman Mono, Twiggi, Quattro, Disco, Invisible, Invisible Quattro, Invisible Disco, Liquid, Liquid Mono, Liquid Quattro, Liquid Disco, Liquid Snake, Kerlox), données technique et notices obtenues uniquement depuis leurs liens publiés. Source : `https://carrodrain.com/en/products/<slug>`.
+- Nouveau module `public/carrodrain-documents.js` : registre explicite des pages fournisseurs et URLs PDF exactes, originaires de `cdn.shopify.com/s/files/1/0400/4459/3315/files/`. Pour les familles documentées, **fichier LOW distinct de PRO** ; ne jamais substituer l'un à l'autre. Cayman, Twiggi et Invisible disposent de fiches généralistes **déclarées comme familiales** ; Liquid Mono ne possède pas de fiche technique spécifique identifiée, donc aucun document ne lui est inventé. Les notices communes sont identifiées comme famille.
+- `public/brand-configurators.js` utilise le registre dans `mediaFor('Carrodrain')` pour la version réellement sélectionnée ; propose fiche technique et notice, persiste `technicalSheetUrl`, `installationGuideUrl` et libellés dans l'article sélectionné. Les images restent issues du flux antérieur, sans faux visuel de finition.
+- `public/index.html` charge le registre avant le configurateur, `public/sw.js` le précache ; `tests/v11.63.4-carrodrain-docs.test.js` contrôle 14 familles, distinction LOW/PRO, domaines sûrs et **635 lignes tarifaires inchangées** avec remise d'achat 50 %. Chromium : changer Quattro LOW/PRO et constater que la bonne fiche apparaît sans celle de l'autre version.
+- `package.json` / lockfile préparés en **11.63.4** ; aucune modification de `public/brand-data/*` ni de prix 2027. **Limite** : liens extraits de pages fabricant, pas d'ouverture et validation binaire de chaque PDF ; leur présence sur le site n'atteste pas les dimensions exactes de chaque variante.
+- Commits sauvegardés : source `2af49d2a0d5b12602db6a9b85d4960ccf82538ff`, HTML `0aa16fb2d3c7f4b7984e9c66d6eda9c0ac2fdba0`, SW `b77fa2b576be907d5e81027c1ba4cb94ec2b4aef`, liaison catalogue `87ef7530ae53bc3262bd44049684eb1d73a145ea`, tests unitaires `01e9921e46d18d78c23e2a920813d2e26ac655b9`, Chromium `6e7293c9ef02f19c9a8af03404938db877292ade`, package `f77909e3df76dd47ec89ec090179d8da37a50468`, lockfile `e6751b2bb163ab2c989418d4e4b7292d5ed32252`.
+- **Avant fusion** : obtenir CI GitHub incluant npm ci/check/test/build et Playwright ; corriger échecs, actualiser branche depuis main en conservant PR37, valider disponibilité éventuelle des documents ; ne déclarer une V11.63.4 sur Render qu'après `/api/version` et `/api/health`. Après Carrodrain : Bette visuels/versions, Hidrobox visuels, Zucchetti et Lefroy Brooks.
+
+
+### Fusion des développements parallèles — 28/10/2026
+- La PR #37 (continuité Hidrobox / médias Lefroy Brooks et Zucchetti) a été fusionnée dans `main` : `106866ca40db34033d110ffd996d1d5816fff402`. Son numéro applicatif est déjà V11.63.4. **Cette intégration documentaire Carrodrain reprend donc V11.63.5.**
+- `public/brand-configurators.js`, `package.json`, `package-lock.json` et ce journal ont été fusionnés à partir des versions de la PR #37 et non remplacés par les anciennes versions de la PR #38. L'arbre final doit conserver `public/manufacturer-guide.js`, `public/brand-guide-collections.json` et les deux suites de test PR37.
+- Contrôle CI complet et Render V11.63.5 toujours à réaliser ; aucune garantie de livraison avant leur réussite.
+
+
+### Validation ciblée Invisible Disco et intégration PR37
+- Un test CI initial a détecté que la fiche `Invisible_Disco_125_Technical_Specifications_2025.pdf` ne porte pas la mention LOW. Elle est maintenant **fiche généraliste de famille**, sans revendiquer la version LOW ; la fiche `Invisible_Disco_125_PRO_Specifications_2025.pdf` reste spécifique PRO. Commits `ad2bee170c6ffe214798cc1d30c2f0185c8ea645` et `f80e389350c381d9d1b416d05ebdca7e7937e0ed`.
+- L'intégration main de la PR #37 est confirmée et conservée dans un commit de fusion non destructif `1c26a8d2bb395d94efe725275f0fa75f7cbeca0c`; les fichiers de configuration et les tests de continuité sont présents dans l'arbre résultant.
+- La CI `40771954140` a réussi sur un commit intermédiaire, mais **ne remplace pas la validation du dernier HEAD**. Recontrôler le run associé au nouveau SHA, puis seulement fusionner PR #38.
+
+
+### Dernière synchronisation de version — PR39 Lefroy Brooks
+- La PR #39 a été fusionnée avant la sortie Carrodrain, en commit `63e10723b67aa34ebf9f327a234325167b47ad23`, version 11.63.5. Le présent chantier documentaire doit porter la **V11.63.6**, avec tous les visuels exacts Lefroy Brooks PR39 préservés.
+- La branche/PR précédente #38 reste un checkpoint technique, non fusionné. Privilégier la nouvelle PR propre basée sur main PR39, sans forcer une fusion Git.
+- L'ancienne version 11.63.5 de ce checkpoint ne désigne plus la livraison Carrodrain ; vérifier version, CI et Render sur le nouveau SHA avant annonce.
