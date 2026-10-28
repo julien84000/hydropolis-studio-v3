@@ -193,8 +193,8 @@ function openHotbath(rows,roomId,onAdd){
  }
  mount();
  Promise.all([
-  fetch('/brand-guide-hotbath-taxonomy.json',{cache:'force-cache'}).then(r=>{if(!r.ok)throw Error('Taxonomy '+r.status);return r.json()}),
-  fetch('/brand-guide-hotbath-media.json',{cache:'force-cache'}).then(r=>{if(!r.ok)throw Error('Photos '+r.status);return r.json()})
+  fetch('/brand-guide-hotbath-taxonomy.json?v=11.63.2',{cache:'no-cache'}).then(r=>{if(!r.ok)throw Error('Taxonomy '+r.status);return r.json()}),
+  fetch('/brand-guide-hotbath-media.json?v=11.63.2',{cache:'no-cache'}).then(r=>{if(!r.ok)throw Error('Photos '+r.status);return r.json()})
  ]).then(([t,p])=>{taxonomy=t;photos=p;render()})
  .catch(e=>{console.warn('[HydroHotbathOfficialGuide]',e);loadFailed=true;render()});
  render();
