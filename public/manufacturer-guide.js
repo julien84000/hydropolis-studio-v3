@@ -138,6 +138,19 @@ function findModelVisual(brand,p,base,media){
  if(owned)return {image:owned,caption:'Illustration catalogue · finition à vérifier',match:'catalogue'};
  return {image:'',caption:'Visuel du modèle non disponible',match:'missing'};
 }
+/* Shared Gessi-style visual finish selector. Only proven exact-finish images are shown
+ * inside finish tiles; representative model photos remain on the main visual only. */
+function finishTiles(brand,variants,active,base,media){
+ return '<div class="mg-visual-finishes" role="group" aria-label="Choisir la finition et la référence">'+
+  (variants||[]).map(p=>{
+   const visual=findModelVisual(brand,p,base,media);
+   const exact=visual.match==='exact'?safeUrl(visual.image):'';
+   const pressed=p.reference===active;
+   return '<button type="button" class="mg-visual-finish'+(pressed?' is-current':'')+'" data-mg-finish="'+esc(p.reference)+'" aria-pressed="'+pressed+'">'+
+    (exact?'<img src="'+esc(exact)+'" alt="" loading="lazy" decoding="async" onerror="this.style.display=\\'none\\'">':'<span class="mg-finish-image-missing" aria-hidden="true">Finition à confirmer sur photo</span>')+
+    '<span>'+esc(p.finish||p.finishCode||'Standard')+'</span><small>'+esc(p.reference)+'</small></button>';
+  }).join('')+'</div>';
+}
 function isSupported(brand){return BRANDS.includes(brand)}
 function open(brand,rows,roomId,onAdd){
  if(!isSupported(brand))return;
@@ -211,7 +224,7 @@ function open(brand,rows,roomId,onAdd){
      content='<section class="mg-detail"><div class="mg-photo">'+
        (imageResult.image?'<img src="'+esc(imageResult.image)+'" alt="'+esc(model.base)+'" onerror="this.style.display=\'none\'">':'<div class="mg-noimage">Image de référence indisponible</div>')+
        '<small>'+esc(imageResult.caption)+'</small></div><div class="mg-config"><div class="mg-ref">Référence de base : '+esc(model.base)+'</div><h3>'+esc(selected.designation||model.base)+'</h3>'+
-       '<label class="mg-finishes">Finition et référence<select id="mgFinish">'+variants.map(p=>'<option value="'+esc(p.reference)+'" '+(p.reference===finishRef?'selected':'')+'>'+esc(p.finish||p.finishCode||'Standard')+' · '+esc(p.reference)+'</option>').join('')+'</select></label>'+
+       '<div class="mg-finish-caption">Choisir une finition · référence tarifée</div>'+finishTiles(brand,variants,finishRef,model.base,media)+
        '<div class="mg-finalref">Référence finale : <b>'+esc(selected.reference)+'</b></div>'+
        (validPrice(selected)?'<strong class="mg-price">'+euro(Number(selected.totalPrice??selected.price))+' HT</strong>':'<strong>Prix à confirmer</strong>')+
        (selected.internalReference?'<p class="mg-roughin">Corps / complément requis : '+esc(selected.internalReference)+' · '+euro(Number(selected.internalPrice||0))+' HT'+(Number(selected.totalPrice)>Number(selected.price)?' (inclus dans le prix affiché)':'')+'</p>':'')+
@@ -240,8 +253,10 @@ function open(brand,rows,roomId,onAdd){
    const prev=overlay.querySelector('#mgPrev'),next=overlay.querySelector('#mgNext');
    if(prev)prev.onclick=()=>{modelPage=Math.max(0,modelPage-1);render()};
    if(next)next.onclick=()=>{modelPage+=1;render()};
-   const finish=overlay.querySelector('#mgFinish');
-   if(finish)finish.onchange=()=>{finishRef=finish.value;render()};
+   overlay.querySelectorAll('[data-mg-finish]').forEach(button=>button.onclick=()=>{
+     finishRef=button.dataset.mgFinish;render();
+     [...overlay.querySelectorAll('[data-mg-finish]')].find(b=>b.dataset.mgFinish===finishRef)?.focus();
+   });
    const add=overlay.querySelector('#mgAdd');
    if(add)add.onclick=()=>{if(!selected||!validPrice(selected))return;try{onAdd(selected);close()}catch(err){alert('Impossible d’ajouter la référence : '+(err?.message||String(err)))}};
  }
@@ -258,5 +273,5 @@ function open(brand,rows,roomId,onAdd){
  getMedia().then(m=>{if(!overlay.isConnected)return;media=m;state.media=m;render()});
  return state;
 }
-root.HydroManufacturerGuide={isSupported,open,displayCollection,modelBase,groupProducts,groupModels,findCollectionVisual,findModelVisual,getMedia};
+root.HydroManufacturerGuide={isSupported,open,displayCollection,modelBase,groupProducts,groupModels,findCollectionVisual,findModelVisual,finishTiles,getMedia};
 })(window);
