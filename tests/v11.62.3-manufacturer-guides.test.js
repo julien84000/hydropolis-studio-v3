@@ -109,6 +109,10 @@ test('Gessi-style manufacturer finish cards preserve exact SKU and never dress g
  assert.match(html,/Finition à confirmer sur photo/);
  assert.equal(variants[0].price,400);
  assert.equal(variants[1].price,450);
+ const misleading=[{...variants[1],image:'https://images.example.test/BL1185-NK.jpg',imageSource:'exact'}];
+ const safe=guide.finishTiles('Lefroy Brooks',misleading,misleading[0].reference,'BL1185',media);
+ assert.doesNotMatch(safe,/images\\.example\\.test/);
+ assert.match(safe,/Finition à confirmer sur photo/);
  const css=fs.readFileSync(path.join(dir,'styles.css'),'utf8');
  assert.match(css,/\.mg-visual-finishes\{/);
  assert.match(css,/\.mg-visual-finish\[aria-pressed="true"\]/);
