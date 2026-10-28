@@ -239,9 +239,18 @@
     gallery();
   }
 
+  function initialHidroboxDraft(groups,product){
+    const original=initialExactVariant(groups,product),v=original.variant;
+    // An existing Hidrobox product can represent any of the 4,479
+    // configured rows. Reopening must not silently reset it to the first
+    // material, dimension, finish, colour or price in its family.
+    let group=original.group?.id||product?.configGroup||'';
+    if(!groups.some(g=>g.id===group))group=groups.find(g=>g.collection===product?.collection)?.id||groups[0]?.id||'';
+    return {group,material:v?.material||'',width:v?.width||'',length:v?.length||'',finish:v?.finish||'',colorGroup:v?.colorGroup||'',reference:v?.reference||''};
+  }
   async function openHidrobox(p,roomId){
     const data=await loadJson(BRAND_META.Hidrobox);const groups=data.groups||[];if(!groups.length)throw new Error('Catalogue Hidrobox vide.');
-    const draft={group:p?.configGroup||'',material:'',width:'',length:'',finish:'',colorGroup:'',reference:''};if(!groups.some(g=>g.id===draft.group))draft.group=groups.find(g=>g.collection===p?.collection)?.id||groups[0].id;
+    const draft=initialHidroboxDraft(groups,p);
     let overlay;
     const displayBlank=v=>v||'Non précisé dans la matrice';
     const render=()=>{
@@ -282,7 +291,7 @@
     return sets.flat();
   }
   function eligibleBrand(brand,p){return !!p&&String(p.manufacturer||'').toLowerCase()===brand.toLowerCase()&&String(p.configuratorType||'').toLowerCase()===brand.toLowerCase();}
-  root.HydroBrandCatalogs={load:loadCatalogs,verifiedPublicPrice,initialExactVariant};
+  root.HydroBrandCatalogs={load:loadCatalogs,verifiedPublicPrice,initialExactVariant,initialHidroboxDraft};
   root.HydroBetteConfigurator={eligible:p=>eligibleBrand('Bette',p),open:openBette,close};
   root.HydroCarrodrainConfigurator={eligible:p=>eligibleBrand('Carrodrain',p),open:openCarrodrain,close,models:CARRODRAIN_MODELS};
   root.HydroHidroboxConfigurator={eligible:p=>eligibleBrand('Hidrobox',p),open:openHidrobox,close,groups:async()=>((await loadJson(BRAND_META.Hidrobox)).groups||[])};
