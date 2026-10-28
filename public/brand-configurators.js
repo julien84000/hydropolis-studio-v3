@@ -158,7 +158,7 @@
    {id:'baths',name:'Baignoires',url:'https://www.my-bette.com/fr/produits/baignoires',sections:[
      {name:'Type',items:[['Baignoires encastrables','baignoires-encastrable'],['Baignoires sous plan','baignoires-sous-plan'],['Baignoires îlot','baignoires-ilot'],['Baignoires avec tablier','baignoires-avec-tablier']]},
      {name:'Forme',items:[['Rectangulaires','baignoires-rectangulaires'],['Ovales','baignoires-ovales'],["D’angle",'baignoires-d-angle']]},
-     {name:'Fonction',items:[['Balnéo','baignoires-balneo'],['Compactes','baignoires-compactes'],['Baignoires-douches','baignoires-douches'],['1 personne','baignoires-1-personne'],['2 personnes','baignoires-2-personnes']]}]},
+     {name:'Fonction',items:[['Balnéo','baignoires-baln%C3%A9o'],['Compactes','baignoires-compactes'],['Baignoires-douches','baignoire-douche'],['1 personne','baignoires-1-personne'],['2 personnes','baignoires-2-personnes']]}]},
    {id:'showers',name:'Receveurs de douche',url:'https://www.my-bette.com/fr/produits/receveurs-de-douche',sections:[
      {name:'Type',items:[['Extra-plats','receveur-de-douche-extra-plat'],['Surélevés','receveurs-de-douche-sureleves']]},
      {name:'Forme',items:[['Rectangulaires','receveurs-de-douche-rectangulaires'],['Quart de rond','receveurs-de-douche-en-quart-de-rond'],['Pentagonaux','receveurs-de-douche-pentagonaux']]}]},
