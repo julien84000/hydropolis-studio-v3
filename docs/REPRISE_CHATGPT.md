@@ -1,3 +1,18 @@
+## Checkpoint — migration visuelle Gessi vers les autres marques (28/10/2026)
+
+**Branche non fusionnée :** `feat/shared-gessi-visual-pattern-v1164`, depuis main `deb83ee86cca5b37ad30b3df8eb95346f78b8cf6`.
+**Instruction utilisateur :** conserver le configurateur Gessi comme modèle visuel commun pour toutes les marques, mais préserver les moteurs métiers fabricants (Sbordoni composition, Hidrobox/Bette dimensions, Carrodrain caniveaux, Hotbath finitions, etc.).
+
+**Travail sauvegardé :** `public/manufacturer-guide.js` : sélection de finition par cartes photographiques Zucchetti/Lefroy Brooks, photo uniquement si correspondance finition exacte ; `public/styles.css` : habillage Gessi pour les explorateurs Hotbath/Zucchetti/Lefroy Brooks, responsive ; `tests/v11.62.3-manufacturer-guides.test.js` : test de référence/photo exacte et prix inchangés ; `docs/VISUAL_CONFIGURATORS_MIGRATION.md` : périmètre et reprise.
+
+**PR Gessi #45** ouverte et CI complète réussie sur `a61f0efbc19219e9ac5a7ec8dc4b29e6f0e7104d`. **PR Bette #43** toujours en brouillon lors du départ. Ne pas écraser ces travaux. Render a été revérifié : version 11.63.9, `ok:true`, PostgreSQL.
+
+**Tests de cette nouvelle branche :** en attente de CI GitHub après création de PR. **Non fusionné, non déployé**. Ne pas affirmer que les configurateurs Bette/Sbordoni/Hidrobox/Carrodrain sont déjà migrés.
+
+**Reprise :** consulter `docs/VISUAL_CONFIGURATORS_MIGRATION.md` pour l'ordre de migration, les fichiers et le prompt autonome. Re-vérifier `main`, PR #45/#43, CI et Render ; tester la nouvelle UI sur desktop/mobile avant fusion. Fusion seulement avec CI verte et pas de conflit avec la release Gessi 11.64.0.
+
+---
+
 ## État actuel — 28 octobre 2026 — 11.63.9
 
 **Consigne actuelle de Julien : fiches techniques uniquement. Ne pas développer d’intégration BIM ni CAO.** Les mentions BIM/CAO ci-dessous décrivent les recherches historiques et ne sont plus le périmètre demandé.
