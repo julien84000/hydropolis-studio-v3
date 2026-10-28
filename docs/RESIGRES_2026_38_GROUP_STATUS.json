@@ -1,0 +1,393 @@
+{
+  "version": "2026-FR-v9",
+  "supplierSource": "Tarif_FR_2026.pdf",
+  "scope": "Every one of the 38 models and 8 product categories",
+  "warning": "automatic_rules_present is not proof that all combinations or commercial options are covered; partial slots must remain pending",
+  "summary": {
+    "automaticRules": 31,
+    "withPartialConfigurator": 5,
+    "withoutAutomatic": 2
+  },
+  "groups": [
+    {
+      "category": "Receveur",
+      "model": "Extraplano Latéral",
+      "kind": "shower-tray",
+      "sourcePage": "2",
+      "classification": "partial_configurator_without_verified_price_matrix",
+      "verifiedCellsLoaded": 0,
+      "unverifiedCells": 0,
+      "notes": null
+    },
+    {
+      "category": "Receveur",
+      "model": "Extraplano Central / 1/4 rond",
+      "kind": "shower-tray",
+      "sourcePage": "4",
+      "classification": "partial_configurator_without_verified_price_matrix",
+      "verifiedCellsLoaded": 0,
+      "unverifiedCells": 0,
+      "notes": null
+    },
+    {
+      "category": "Receveur",
+      "model": "Extraplano Contract",
+      "kind": "shower-tray",
+      "sourcePage": "5",
+      "classification": "automatic_rules_present",
+      "verifiedCellsLoaded": 0,
+      "unverifiedCells": 0,
+      "notes": null
+    },
+    {
+      "category": "Receveur",
+      "model": "Vento / Vento Contract",
+      "kind": "shower-tray",
+      "sourcePage": "6",
+      "classification": "automatic_rules_present",
+      "verifiedCellsLoaded": 0,
+      "unverifiedCells": 0,
+      "notes": null
+    },
+    {
+      "category": "Receveur",
+      "model": "Cosmo / Cosmo Contract",
+      "kind": "shower-tray",
+      "sourcePage": "8",
+      "classification": "automatic_rules_present",
+      "verifiedCellsLoaded": 0,
+      "unverifiedCells": 0,
+      "notes": null
+    },
+    {
+      "category": "Receveur",
+      "model": "Urban",
+      "kind": "shower-tray",
+      "sourcePage": "10",
+      "classification": "automatic_rules_present",
+      "verifiedCellsLoaded": 0,
+      "unverifiedCells": 0,
+      "notes": null
+    },
+    {
+      "category": "Receveur",
+      "model": "Nix / Nix Contract",
+      "kind": "shower-tray",
+      "sourcePage": "12",
+      "classification": "automatic_rules_present",
+      "verifiedCellsLoaded": 0,
+      "unverifiedCells": 0,
+      "notes": null
+    },
+    {
+      "category": "Plan de vasque",
+      "model": "Atenea",
+      "kind": "basin-top",
+      "sourcePage": "14",
+      "classification": "automatic_partial_cells",
+      "verifiedCellsLoaded": 51,
+      "unverifiedCells": 3,
+      "notes": "Only explicitly sourced cells or variants are automatic. Other variations remain pending; no interpolation."
+    },
+    {
+      "category": "Plan de vasque",
+      "model": "Vento CF",
+      "kind": "basin-top",
+      "sourcePage": "16",
+      "classification": "automatic_rules_present",
+      "verifiedCellsLoaded": 26,
+      "unverifiedCells": 0,
+      "notes": null
+    },
+    {
+      "category": "Plan de vasque",
+      "model": "Cosmo CF",
+      "kind": "basin-top",
+      "sourcePage": "18",
+      "classification": "automatic_partial_cells",
+      "verifiedCellsLoaded": 41,
+      "unverifiedCells": 1,
+      "notes": "Only explicitly sourced cells or variants are automatic. Other variations remain pending; no interpolation."
+    },
+    {
+      "category": "Plan de vasque",
+      "model": "Urban CF",
+      "kind": "basin-top",
+      "sourcePage": "20",
+      "classification": "automatic_rules_present",
+      "verifiedCellsLoaded": 24,
+      "unverifiedCells": 0,
+      "notes": null
+    },
+    {
+      "category": "Plan de vasque",
+      "model": "Gea CF",
+      "kind": "basin-top",
+      "sourcePage": "22",
+      "classification": "automatic_rules_present",
+      "verifiedCellsLoaded": 32,
+      "unverifiedCells": 0,
+      "notes": null
+    },
+    {
+      "category": "Plan de vasque",
+      "model": "Contract CF",
+      "kind": "basin-top",
+      "sourcePage": "24",
+      "classification": "automatic_rules_present",
+      "verifiedCellsLoaded": 0,
+      "unverifiedCells": 0,
+      "notes": null
+    },
+    {
+      "category": "Plan de vasque pour meuble",
+      "model": "Selene",
+      "kind": "furniture-basin-top",
+      "sourcePage": "26",
+      "classification": "automatic_rules_present",
+      "verifiedCellsLoaded": 36,
+      "unverifiedCells": 0,
+      "notes": null
+    },
+    {
+      "category": "Plan de vasque pour meuble",
+      "model": "Vento SF",
+      "kind": "furniture-basin-top",
+      "sourcePage": "28",
+      "classification": "automatic_rules_present",
+      "verifiedCellsLoaded": 26,
+      "unverifiedCells": 0,
+      "notes": null
+    },
+    {
+      "category": "Plan de vasque pour meuble",
+      "model": "Cosmo SF",
+      "kind": "furniture-basin-top",
+      "sourcePage": "30",
+      "classification": "automatic_partial_cells",
+      "verifiedCellsLoaded": 20,
+      "unverifiedCells": 1,
+      "notes": "Only explicitly sourced cells or variants are automatic. Other variations remain pending; no interpolation."
+    },
+    {
+      "category": "Plan de vasque pour meuble",
+      "model": "Urban SF",
+      "kind": "furniture-basin-top",
+      "sourcePage": "32",
+      "classification": "automatic_rules_present",
+      "verifiedCellsLoaded": 26,
+      "unverifiedCells": 0,
+      "notes": null
+    },
+    {
+      "category": "Plan de vasque pour meuble",
+      "model": "Gea SF",
+      "kind": "furniture-basin-top",
+      "sourcePage": "34",
+      "classification": "automatic_rules_present",
+      "verifiedCellsLoaded": 21,
+      "unverifiedCells": 0,
+      "notes": null
+    },
+    {
+      "category": "Plan de vasque pour meuble",
+      "model": "Contract SF",
+      "kind": "furniture-basin-top",
+      "sourcePage": "36",
+      "classification": "automatic_rules_present",
+      "verifiedCellsLoaded": 0,
+      "unverifiedCells": 0,
+      "notes": null
+    },
+    {
+      "category": "Vasque",
+      "model": "Axis",
+      "kind": "basin",
+      "sourcePage": "38",
+      "classification": "no_automatic_tariff",
+      "verifiedCellsLoaded": 0,
+      "unverifiedCells": 0,
+      "notes": null
+    },
+    {
+      "category": "Vasque",
+      "model": "Ares",
+      "kind": "basin",
+      "sourcePage": "40-41",
+      "classification": "automatic_partial_cells",
+      "verifiedCellsLoaded": 0,
+      "unverifiedCells": 0,
+      "notes": "Only explicitly sourced cells or variants are automatic. Other variations remain pending; no interpolation."
+    },
+    {
+      "category": "Vasque",
+      "model": "Crono",
+      "kind": "basin",
+      "sourcePage": "42-45",
+      "classification": "automatic_partial_cells",
+      "verifiedCellsLoaded": 0,
+      "unverifiedCells": 0,
+      "notes": "Only explicitly sourced cells or variants are automatic. Other variations remain pending; no interpolation."
+    },
+    {
+      "category": "Vasque",
+      "model": "Kos / Neo",
+      "kind": "basin",
+      "sourcePage": "44-45",
+      "classification": "automatic_partial_cells",
+      "verifiedCellsLoaded": 0,
+      "unverifiedCells": 0,
+      "notes": "Only explicitly sourced cells or variants are automatic. Other variations remain pending; no interpolation."
+    },
+    {
+      "category": "Vasque",
+      "model": "Gesto / Frame",
+      "kind": "basin",
+      "sourcePage": "46-47",
+      "classification": "automatic_partial_cells",
+      "verifiedCellsLoaded": 0,
+      "unverifiedCells": 0,
+      "notes": "Only explicitly sourced cells or variants are automatic. Other variations remain pending; no interpolation."
+    },
+    {
+      "category": "Vasque",
+      "model": "Urban",
+      "kind": "basin",
+      "sourcePage": "48",
+      "classification": "automatic_partial_cells",
+      "verifiedCellsLoaded": 0,
+      "unverifiedCells": 0,
+      "notes": "Only explicitly sourced cells or variants are automatic. Other variations remain pending; no interpolation."
+    },
+    {
+      "category": "Baignoire",
+      "model": "Nalu",
+      "kind": "bath",
+      "sourcePage": "50",
+      "classification": "automatic_rules_present",
+      "verifiedCellsLoaded": 0,
+      "unverifiedCells": 0,
+      "notes": null
+    },
+    {
+      "category": "Baignoire",
+      "model": "Delia",
+      "kind": "bath",
+      "sourcePage": "51",
+      "classification": "automatic_rules_present",
+      "verifiedCellsLoaded": 0,
+      "unverifiedCells": 0,
+      "notes": null
+    },
+    {
+      "category": "Baignoire",
+      "model": "Nesta",
+      "kind": "bath",
+      "sourcePage": "52",
+      "classification": "automatic_rules_present",
+      "verifiedCellsLoaded": 0,
+      "unverifiedCells": 0,
+      "notes": null
+    },
+    {
+      "category": "Baignoire",
+      "model": "Vento",
+      "kind": "bath",
+      "sourcePage": "53",
+      "classification": "automatic_rules_present",
+      "verifiedCellsLoaded": 0,
+      "unverifiedCells": 0,
+      "notes": null
+    },
+    {
+      "category": "Meuble",
+      "model": "Tiroirs sur mesure",
+      "kind": "furniture",
+      "sourcePage": "54",
+      "classification": "automatic_rules_present",
+      "verifiedCellsLoaded": 0,
+      "unverifiedCells": 0,
+      "notes": null
+    },
+    {
+      "category": "Meuble",
+      "model": "Portes, vides et colonnes",
+      "kind": "furniture",
+      "sourcePage": "56-58",
+      "classification": "partial_configurator_without_verified_price_matrix",
+      "verifiedCellsLoaded": 0,
+      "unverifiedCells": 0,
+      "notes": null
+    },
+    {
+      "category": "Meuble",
+      "model": "Frame",
+      "kind": "furniture",
+      "sourcePage": "60",
+      "classification": "partial_configurator_without_verified_price_matrix",
+      "verifiedCellsLoaded": 0,
+      "unverifiedCells": 0,
+      "notes": null
+    },
+    {
+      "category": "Meuble",
+      "model": "Gesto",
+      "kind": "furniture",
+      "sourcePage": "62",
+      "classification": "partial_configurator_without_verified_price_matrix",
+      "verifiedCellsLoaded": 0,
+      "unverifiedCells": 0,
+      "notes": null
+    },
+    {
+      "category": "Miroir",
+      "model": "RD / SQ",
+      "kind": "mirror",
+      "sourcePage": "64",
+      "classification": "automatic_rules_present",
+      "verifiedCellsLoaded": 0,
+      "unverifiedCells": 0,
+      "notes": null
+    },
+    {
+      "category": "Miroir",
+      "model": "FS / FL",
+      "kind": "mirror",
+      "sourcePage": "66",
+      "classification": "automatic_rules_present",
+      "verifiedCellsLoaded": 0,
+      "unverifiedCells": 0,
+      "notes": null
+    },
+    {
+      "category": "Miroir",
+      "model": "Frame / Gesto",
+      "kind": "mirror",
+      "sourcePage": "68",
+      "classification": "no_automatic_tariff",
+      "verifiedCellsLoaded": 0,
+      "unverifiedCells": 0,
+      "notes": null
+    },
+    {
+      "category": "Complément",
+      "model": "Porte-serviettes",
+      "kind": "accessory",
+      "sourcePage": "70",
+      "classification": "automatic_partial_cells",
+      "verifiedCellsLoaded": 0,
+      "unverifiedCells": 0,
+      "notes": "Only explicitly sourced cells or variants are automatic. Other variations remain pending; no interpolation."
+    },
+    {
+      "category": "Complément",
+      "model": "Panneaux / étagères",
+      "kind": "accessory",
+      "sourcePage": "71",
+      "classification": "automatic_partial_cells",
+      "verifiedCellsLoaded": 0,
+      "unverifiedCells": 0,
+      "notes": "Only explicitly sourced cells or variants are automatic. Other variations remain pending; no interpolation."
+    }
+  ]
+}

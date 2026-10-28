@@ -17,8 +17,8 @@ function engine(name){
 }
 const V49=engine('v1149-pricing'),V50=engine('v1150-pricing');
 const categoryCounts={'Receveur':7,'Plan de vasque':6,'Plan de vasque pour meuble':6,'Vasque':6,'Baignoire':4,'Meuble':4,'Miroir':3,'Complément':2};
-const knownAuto=new Set(['Extraplano Contract|shower-tray','Vento / Vento Contract|shower-tray','Cosmo / Cosmo Contract|shower-tray','Urban|shower-tray','Nix / Nix Contract|shower-tray','Vento CF|basin-top','Gea CF|basin-top','Urban CF|basin-top','Contract CF|basin-top','Selene|furniture-basin-top','Vento SF|furniture-basin-top','Gea SF|furniture-basin-top','Urban SF|furniture-basin-top','Contract SF|furniture-basin-top','Tiroirs sur mesure|furniture','Nalu|bath','Delia|bath','RD / SQ|mirror','FS / FL|mirror']);
-const pendingMatrix=new Set(['Extraplano Latéral|shower-tray','Extraplano Central / 1/4 rond|shower-tray','Atenea|basin-top','Cosmo CF|basin-top','Cosmo SF|furniture-basin-top','Portes, vides et colonnes|furniture','Frame|furniture','Gesto|furniture']);
+const knownAuto=new Set(['Extraplano Contract|shower-tray','Vento / Vento Contract|shower-tray','Cosmo / Cosmo Contract|shower-tray','Urban|shower-tray','Nix / Nix Contract|shower-tray','Vento CF|basin-top','Cosmo CF|basin-top','Gea CF|basin-top','Urban CF|basin-top','Contract CF|basin-top','Atenea|basin-top','Selene|furniture-basin-top','Vento SF|furniture-basin-top','Cosmo SF|furniture-basin-top','Gea SF|furniture-basin-top','Urban SF|furniture-basin-top','Contract SF|furniture-basin-top','Tiroirs sur mesure|furniture','Nalu|bath','Delia|bath','RD / SQ|mirror','FS / FL|mirror','Nesta|bath','Vento|bath','Ares|basin','Crono|basin','Kos / Neo|basin','Gesto / Frame|basin','Urban|basin','Porte-serviettes|accessory','Panneaux / étagères|accessory']);
+const pendingMatrix=new Set(['Extraplano Latéral|shower-tray','Extraplano Central / 1/4 rond|shower-tray','Portes, vides et colonnes|furniture','Frame|furniture','Gesto|furniture']);
 const key=m=>m.name+'|'+m.kind;
 test('Resigres: 38 model configurations match every imported catalogue article and all 8 categories',()=>{
  assert.equal(cfg.models.length,38);
@@ -28,18 +28,18 @@ test('Resigres: 38 model configurations match every imported catalogue article a
  assert.deepEqual([...productNames].sort(),[...configNames].sort());
  const counts={};for(const m of cfg.models)counts[m.category]=(counts[m.category]||0)+1;
  assert.deepEqual(counts,categoryCounts);
- assert.equal(cfg.version,'2026-FR-v7');
+ assert.equal(cfg.version,'2026-FR-v9');
  assert.ok(cfg.models.every(m=>/^\d{1,2}(?:-\d{1,2})?$/.test(String(m.sourcePage||''))));
 });
 test('Resigres: classify all 38 models by pricing evidence, never assume missing matrices are priced',()=>{
  const uncoded=cfg.models.filter(m=>!knownAuto.has(key(m))&&!pendingMatrix.has(key(m)));
- assert.equal(knownAuto.size,19);
- assert.equal(pendingMatrix.size,8);
- assert.equal(uncoded.length,11);
+ assert.equal(knownAuto.size,31);
+ assert.equal(pendingMatrix.size,5);
+ assert.equal(uncoded.length,2);
  for(const model of cfg.models){
    const name=key(model);
    if(knownAuto.has(name)){
-     assert.ok((model.pricingRules||[]).length||model.v50BasinTop?.pricingMode?.startsWith('automatic')||model.v50Furniture?.pricingMode==='automatic','Expected a pricing rule for '+name);
+     assert.ok((model.pricingRules||[]).length||model.v50BasinTop?.pricingMode?.startsWith('automatic')||model.v50Furniture?.pricingMode==='automatic'||model.dependencyMatrix?.type==='dependent-combinations','Expected a pricing rule for '+name);
    }
    if(pendingMatrix.has(name)&&model.v50BasinTop){
      assert.equal(model.v50BasinTop.pricingMode,'manual-safe',name);
@@ -62,11 +62,11 @@ test('Resigres: every imported positive price and grid has consistent numerical 
    for(const group of m.v50BasinTop?.groups||[]){
      for(const [material,amounts] of Object.entries(group.prices||{})){
        assert.equal(amounts.length,group.lengthTiers.length,m.name+' '+group.id+' '+material+' mismatched length');
-       assert.ok(amounts.every(x=>Number.isFinite(x)&&x>0),m.name+' invalid '+material+' price');
+       assert.ok(amounts.every(x=>x===null||Number.isFinite(x)&&x>0),m.name+' invalid '+material+' price');
      }
    }
    for(const [mat,amounts] of Object.entries(m.v50Furniture?.prices||{})){
-     assert.ok(amounts.every(x=>Number.isFinite(x)&&x>0),m.name+' invalid '+mat+' price');
+     assert.ok(amounts.every(x=>x===null||Number.isFinite(x)&&x>0),m.name+' invalid '+mat+' price');
    }
  }
 });
@@ -177,4 +177,75 @@ test('V11.62.8: Gea SF source p.34, distinct material tariffs and fixed thicknes
  assert.equal(V50.basinQuote(cfg,{...selection,material:'solid-surface',color:'S-Blanco'}).total,572);
  assert.equal(V50.basinQuote(cfg,{...selection,heightCm:5}).status,'pending');
  assert.equal(V50.basinQuote(cfg,{...selection,material:'gpc',color:'Onix'}).status,'pending');
+});
+
+test('V11.62.9: Atenea official 2026 p.14: Standard Solid Surface S-Blanco 140 × 51 cm is 1098 EUR HT',()=>{
+ const sel={model:'Atenea',kind:'basin-top',shape:'standard',material:'solid-surface',color:'S-Blanco',
+  basinGroup:'one',widthCm:51,lengthCm:140,paidOptions:{}};
+ const q=V50.basinQuote(cfg,sel);
+ assert.equal(q.status,'automatic');assert.equal(q.total,1098);assert.equal(q.pricedLength,141);assert.equal(q.rule.sourcePage,'14');
+ assert.equal(V50.basinQuote(cfg,{...sel,lengthCm:142}).total,1228);
+ assert.equal(V50.basinQuote(cfg,{...sel,material:'lisa',color:'Arena'}).total,938);
+ assert.equal(V50.basinQuote(cfg,{...sel,material:'gpc',color:'Onix'}).status,'pending'); // Unreadable glyph p.14: never guess
+ assert.equal(V50.basinQuote(cfg,{...sel,shape:'oval',material:'gpc',color:'Onix'}).status,'pending');
+ assert.equal(V50.basinQuote(cfg,{...sel,widthCm:52}).status,'pending');
+ assert.equal(V50.basinQuote(cfg,{...sel,paidOptions:{'towel-rail':1}}).total,1218);
+});
+test('V11.62.9: Cosmo CF and SF tariffs by basin number and XL version, no unsupported automatic price',()=>{
+ const base={model:'Cosmo CF',kind:'basin-top',shape:'cosmo-standard',material:'lisa',color:'Arena',
+  basinGroup:'one',widthCm:51,lengthCm:140,paidOptions:{}};
+ const q=V50.basinQuote(cfg,base);
+ assert.equal(q.status,'automatic');assert.equal(q.total,1100);assert.equal(q.pricedLength,141);
+ assert.equal(V50.basinQuote(cfg,{...base,lengthCm:90}).status,'pending'); // PDF digit damaged for resin 82–101 cm
+ assert.equal(V50.basinQuote(cfg,{...base,material:'gpc',color:'Onix'}).total,2798);
+ assert.equal(V50.basinQuote(cfg,{...base,basinGroup:'two',lengthCm:140}).total,1175);
+ assert.equal(V50.basinQuote(cfg,{...base,shape:'cosmo-xl85',basinGroup:'one-xl85',lengthCm:140}).total,1073);
+ assert.equal(V50.basinQuote(cfg,{...base,shape:'cosmo-xl120',basinGroup:'one-xl120',lengthCm:160}).total,1540);
+ const sf={...base,model:'Cosmo SF',kind:'furniture-basin-top'};
+ assert.equal(V50.basinQuote(cfg,sf).total,871);
+ assert.equal(V50.basinQuote(cfg,{...sf,shape:'cosmo-xl120',basinGroup:'one-xl120',lengthCm:160}).total,1305);
+ assert.equal(V50.basinQuote(cfg,{...sf,material:'gpc',color:'Onix'}).status,'pending');
+});
+test('V11.62.9: classify every source price slot on three imported models, recording unverified cells as null',()=>{
+ const expected={'Atenea':54,'Cosmo CF':42,'Cosmo SF':21};
+ let imported=0,unknown=0;
+ for(const [name,slots] of Object.entries(expected)){
+  const m=cfg.models.find(x=>x.name===name),groups=m.v50BasinTop.groups;
+  assert.equal(m.v50BasinTop.pricingMode,'automatic');
+  let count=0;
+  for(const g of groups)for(const [mat,prices]of Object.entries(g.prices)){assert.equal(prices.length,g.lengthTiers.length);count+=prices.length;unknown+=prices.filter(x=>x===null).length;}
+  assert.equal(count,slots);imported+=count;
+ }
+ assert.equal(imported,117);
+ assert.equal(unknown,5);
+});
+
+test('V11.62.9: cross-category supplier variant tariffs and commercial options, without invented cells',()=>{
+ const linked={module:{exports:{}},window:{}};
+ for(const part of ['v1146-pricing','v1148-pricing']){
+  const begin=app.indexOf('/* SOURCE public/'+part+'.js */'),end=app.indexOf('/* SOURCE public/',begin+12);
+  assert(begin>=0&&end>begin);
+  linked.module={exports:{}};
+  vm.runInNewContext(app.slice(begin,end),linked);
+ }
+ const V48=linked.module.exports;
+ const cases=[
+  ['Ares','basin','se','resin','Ártico',299],
+  ['Crono','basin','mini','resin','Ártico',199],
+  ['Kos / Neo','basin','kos','solid','S-Blanco',390],
+  ['Gesto / Frame','basin','gesto-recto','resin','Ártico',376],
+  ['Urban','basin','urban','solid','S-Blanco',518],
+  ['Porte-serviettes','accessory','frame-mini','lacquer','Ártico',48],
+  ['Panneaux / étagères','accessory','shelf-80','solid','S-Blanco',246],
+  ['Nesta','bath','80x160','solid-surface','S-Blanco',3556],
+  ['Vento','bath','80x170','solid-surface','S-Blanco',3794]
+ ];
+ for(const [model,kind,size,material,color,price]of cases){
+  const q=V48.dependentQuote(cfg,{model,kind,size,material,color,options:[]});
+  assert.equal(q.status,'automatic',model);assert.equal(q.total,price,model);
+ }
+ const waste=V48.dependentQuote(cfg,{model:'Crono',kind:'basin',size:'mini',material:'resin',color:'Ártico',options:['colored-waste']});
+ assert.equal(waste.total,265);
+ assert.equal(V48.dependentQuote(cfg,{model:'Ares',kind:'basin',size:'h90',material:'resin',color:'Ártico'}).status,'pending');
+ assert.equal(V48.dependentQuote(cfg,{model:'Panneaux / étagères',kind:'accessory',size:'shelf-80',material:'resin',color:'RAL/NCS'}).total,226);
 });

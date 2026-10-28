@@ -82,3 +82,33 @@ La présence d'une grille chiffrée importée ne suffit pas à certifier que tou
 - **Render** : `GET /api/version` répond `11.62.8`; `GET /api/health` répond `ok: true` et indique PostgreSQL. Le JSON de configuration servi est `2026-FR-v7`, et expose les prix Bois Gea CF [756, 756, 841, 899, 986, 1094, 1176, 1284] ainsi que Gea SF [483, 538, 590, 627, 681, 760, 794].
 - **Limite de vérification** : les tests navigateur s'exécutent sur un serveur local lancé par CI avec une base temporaire. L'ouverture d'une session utilisateur de production et la persistance d'un projet réel après réouverture n'ont **pas** été testées ; ne pas annoncer ces parcours de production comme prouvés.
 - **Action suivante** : importer et vérifier les six autres matrices Resigres partielles (en priorité Cosmo CF, Cosmo SF et Atenea), puis receveurs/vasques/meubles/composants ; chaque cellule doit rester liée au tarif source. Compléter les tests de reprise de projet et recalcul de marge.
+
+## V11.62.9 — audit transversal des 38 groupes et 8 catégories (28 octobre 2026)
+
+**Origine de la correction** : capture Atenea Standard, Solid Surface S-Blanco, 140 × 51 cm avec palier 141 cm ; le configurateur ne retournait aucun prix puisque les tableaux Atenea étaient vides. La page 14 du tarif fournisseur indique **1 098 € HT** pour ce cas, hors options.
+
+### Nouveaux prix intégrés
+
+- **Plans vasques / plans pour meubles** : Atenea (54 cellules, 3 à vérifier), Cosmo CF (42 cellules, 1 à vérifier), Cosmo SF (21 cellules, 1 à vérifier). **117 positions**, dont **112 chiffrées** à partir du fournisseur ; cinq cellules restent `null` à cause de glyphes illisibles dans l'extraction du PDF. Les prix ne sont pas interpolés. Pour Atenea standard, 140 × 51 Solid Surface S-Blanco = 1 098 € HT (palier 141 cm), 142 cm = 1 228 € HT (palier 161 cm).
+- **Vasques** : variantes avec tarification conditionnelle explicite pour Ares, Crono, Kos / Neo, Gesto / Frame et Urban. Le choix exact `version → matière → finition/couleur` est obligatoire. Les dimensions sont des formats constructeur fixes ; aucune adaptation arbitraire n'est permise.
+- **Compléments** : variantes de porte-serviettes Frame, Mini Frame et Gesto (finitions vérifiables) ; étagères largeur 12 cm en quatre longueurs, finition Pizarra/Lisa standard, RAL ou Solid Surface. Les panneaux et socles ne sont pas assimilés à des étagères : leur tarification au m² reste à intégrer.
+- **Suppléments** : bonde clic colorée +66 € sur les vasques Crono, Kos / Neo et Gesto / Frame, ajoutée au prix public HT par le moteur déjà existant (sans double comptage du RAL/NCS).
+- **Baignoires Nesta / Vento** : l'ancien état classait leurs prix « non importés », mais leurs matrices de combinaisons dépendantes étaient déjà présentes dans le code. Elles sont donc comptées dans la couverture automatique existante. Aucun doublon de tarif n'a été créé.
+
+### État vérifié par catégorie (nombre de groupes possédant des règles automatiques / total)
+
+| Catégorie | Avec règles automatiques | Total | Restant |
+|---|---:|---:|---:|
+| Receveurs | 5 | 7 | Extraplano Latéral, Extraplano Central/1/4 rond : matrices complexes non certifiées intégralement |
+| Plans vasques | 6 | 6 | Certaines cellules Atenea/Cosmo restent non vérifiées |
+| Plans vasques pour meubles | 6 | 6 | Une cellule Cosmo SF reste non vérifiée |
+| Vasques | 5 | 6 | Axis et variantes manquantes |
+| Baignoires | 4 | 4 | Contrôler les combinaisons commerciales, même si règles présentes |
+| Meubles | 1 | 4 | Portes/vides/colonnes, Frame, Gesto : matrices combinatoires manquantes |
+| Miroirs | 2 | 3 | Frame/Gesto : matrices non intégrées |
+| Compléments | 2 | 2 | Panneaux/socles et quelques finitions à intégrer |
+| **TOTAL** | **31** | **38** | **5 groupes avec configurateur partiel, 2 sans prix automatique** |
+
+**Point essentiel** : « 31 groupes avec règles automatiques » ne signifie PAS 31 groupes intégralement tarifés. En particulier les vasques et accessoires cités ne couvrent que leurs variantes clairement retrouvées dans le document. Le fichier de statut par groupe est `docs/RESIGRES_2026_38_GROUP_STATUS.json`. Toute cellule non prouvée reste non tarifée automatiquement ; un prix n'est jamais dérivé arbitrairement d'une autre matière, dimension ou finition.
+
+**Tests prévus dans cette branche** : cas Atenea sur la capture, paliers, prix Cosmo CF et SF, exclusion GPC incompatible, bonde +66 €, calcul de neuf exemples dans des catégories distinctes et tests Chromium de sept nouveaux parcours vers le projet. Noter les résultats CI avant toute fusion et ne déclarer la version en production qu'après contrôle Render.

@@ -6033,17 +6033,18 @@ $$(".nav").forEach(n=>n.onclick=()=>showView(n.dataset.view));
         <label class="v1146-span-2">Détails complémentaires<input id="rg48Details" placeholder="Option ou précision client éventuelle"></label>
       </div>
       <div class="v1148-compat-note" id="rg48Compat">Commencez par choisir la dimension.</div>
+      ${(model.supplements||[]).length?`<div class="v1146-known-options"><b>Options tarifées</b>${model.supplements.map(x=>`<label><input type="checkbox" data-rg48-extra="${esc48(x.id)}"><span>${esc48(x.label)} · +${euro(x.amount)} HT</span></label>`).join("")}</div>`:""}
       <div class="v1146-pricing-panel"><div><b>Prix public HT</b><small id="rg48PriceHelp">Le tarif apparaîtra après les trois choix.</small></div><div id="rg48Price" class="v1146-auto-price">—</div></div>
       <div id="rg48Calc" class="v1146-calc"></div>`);
     const $r=s=>overlay.querySelector(s),sizeSel=$r("#rg48Size"),matSel=$r("#rg48Material"),colSel=$r("#rg48Color");
     function selection(){
       const size=V48.sizeOption(matrix,sizeSel.value),mat=V48.materialOption(size,matSel.value),col=V48.colorOption(mat,colSel.value);
-      return {model:p.resigresModel,kind:p.resigresKind,size:sizeSel.value,sizeLabel:size?.label||"",widthCm:size?.widthCm||null,lengthCm:size?.lengthCm||null,material:matSel.value,materialLabel:mat?.label||"",finish:mat?.finish||"",color:colSel.value,colorLabel:col?.label||"",ralNcs:$r("#rg48Ral")?.value||"",details:$r("#rg48Details")?.value||"",options:[]};
+      return {model:p.resigresModel,kind:p.resigresKind,size:sizeSel.value,sizeLabel:size?.label||"",widthCm:size?.widthCm||null,lengthCm:size?.lengthCm||null,material:matSel.value,materialLabel:mat?.label||"",finish:mat?.finish||"",color:colSel.value,colorLabel:col?.label||"",ralNcs:$r("#rg48Ral")?.value||"",details:$r("#rg48Details")?.value||"",options:[...overlay.querySelectorAll("[data-rg48-extra]:checked")].map(x=>x.dataset.rg48Extra)};
     }
     function updatePrice(){
       const s=selection(),q=V48.quote(config,s,0);overlay._rg48Quote=q;
       const auto=q.status==="automatic";$r("#rg48Price").textContent=auto?euro(q.basePrice):"—";$r("#rg48PriceHelp").textContent=auto?`${q.breakdown} · page ${sourcePage}`:q.reason||"Choix incomplet";
-      $r("#rg48Calc").innerHTML=auto?`<span>Base : <b>${euro(q.basePrice)}</b></span><strong>Total public HT : ${euro(q.total)}</strong>`:"";
+      $r("#rg48Calc").innerHTML=auto?`<span>Base : <b>${euro(q.basePrice)}</b> · suppléments : <b>${euro(q.supplements?.total||0)}</b></span><strong>Total public HT : ${euro(q.total)}</strong>`:"";
       const selectedSize=V48.sizeOption(matrix,sizeSel.value),selectedMat=V48.materialOption(selectedSize,matSel.value);
       if(selectedMat)$r("#rg48Compat").innerHTML=`<b>${esc48(selectedSize.label)}</b> → ${esc48(selectedMat.label)} → ${colSel.value?esc48(V48.colorOption(selectedMat,colSel.value)?.label||colSel.value):"choisissez la finition/couleur"}`;
     }
@@ -6059,7 +6060,7 @@ $$(".nav").forEach(n=>n.onclick=()=>showView(n.dataset.view));
     function onColor(){
       const size=V48.sizeOption(matrix,sizeSel.value),mat=V48.materialOption(size,matSel.value),col=V48.colorOption(mat,colSel.value);$r(".rg48-ral").classList.toggle("hidden",!col?.customCode);if(!col?.customCode)$r("#rg48Ral").value="";updatePrice();
     }
-    sizeSel.addEventListener("change",onSize);matSel.addEventListener("change",onMaterial);colSel.addEventListener("change",onColor);$r("#rg48Ral").addEventListener("input",updatePrice);$r("#rg48Details").addEventListener("input",updatePrice);
+    sizeSel.addEventListener("change",onSize);matSel.addEventListener("change",onMaterial);colSel.addEventListener("change",onColor);overlay.querySelectorAll("[data-rg48-extra]").forEach(el=>el.addEventListener("change",updatePrice));$r("#rg48Ral").addEventListener("input",updatePrice);$r("#rg48Details").addEventListener("input",updatePrice);
     $r(".rg-confirm").onclick=()=>{const err=$r(".v1146-modal-error"),s=selection(),q=V48.quote(config,s,0),size=V48.sizeOption(matrix,s.size),mat=V48.materialOption(size,s.material),col=V48.colorOption(mat,s.color);if(!size){err.textContent="Choisissez la dimension.";return}if(!mat){err.textContent="Choisissez la matière.";return}if(!col){err.textContent="Choisissez la finition / couleur.";return}if(col.customCode&&!String(s.ralNcs||"").trim()){err.textContent="Indiquez la référence RAL/NCS.";return}if(!(q.total>0)){err.textContent=q.reason||"Tarif non déterminé.";return}commitConfigured(p,roomId,s,q,model)};
     sizeSel.focus();
   }

@@ -1,5 +1,5 @@
 {
-  "version": "2026-FR-v7",
+  "version": "2026-FR-v9",
   "source": "Tarif_FR_2026.pdf",
   "pricingPolicy": "V11.51: grilles standard/sur mesure = palier supérieur; receveurs Contract = surface réelle × tarif €/m² avec minimum de facturation; plans vasque Contract = tarif au cm + intégration vasque + options.",
   "global": {
@@ -1716,7 +1716,38 @@
               181,
               201
             ],
-            "prices": {}
+            "prices": {
+              "resin": [
+                564,
+                585,
+                648,
+                779,
+                938,
+                1077,
+                1257,
+                1299
+              ],
+              "solid": [
+                687,
+                727,
+                760,
+                921,
+                1098,
+                1228,
+                1363,
+                1442
+              ],
+              "gpc": [
+                2245,
+                2245,
+                2352,
+                2487,
+                null,
+                2860,
+                3176,
+                3466
+              ]
+            }
           },
           {
             "id": "one-xl",
@@ -1728,7 +1759,29 @@
               181,
               201
             ],
-            "prices": {}
+            "prices": {
+              "resin": [
+                866,
+                1135,
+                1295,
+                1534,
+                null
+              ],
+              "solid": [
+                1074,
+                1262,
+                1366,
+                1574,
+                1615
+              ],
+              "gpc": [
+                2487,
+                null,
+                2860,
+                3176,
+                3466
+              ]
+            }
           },
           {
             "id": "two",
@@ -1740,7 +1793,29 @@
               181,
               201
             ],
-            "prices": {}
+            "prices": {
+              "resin": [
+                973,
+                1074,
+                1207,
+                1408,
+                1457
+              ],
+              "solid": [
+                1079,
+                1138,
+                1274,
+                1465,
+                1539
+              ],
+              "gpc": [
+                3121,
+                3248,
+                3598,
+                3891,
+                4358
+              ]
+            }
           }
         ],
         "includedOptions": [
@@ -1827,11 +1902,12 @@
           }
         ],
         "ralSupplement": 95,
-        "pricingMode": "manual-safe",
+        "pricingMode": "automatic",
         "notes": [
           "Les dimensions intermédiaires utilisent le palier supérieur de la grille.",
           "Les choix incompatibles sont masqués automatiquement.",
-          "GPC uniquement sur les formes autorisées par le tarif."
+          "GPC uniquement sur les formes autorisées par le tarif.",
+          "Tarifs fournisseur Resigres FR 2026, page imprimée 14. Les cellules nulles sont volontairement non tarifées, faute d'extraction fiable du glyphe PDF."
         ]
       }
     },
@@ -2182,7 +2258,26 @@
               181,
               201
             ],
-            "prices": {}
+            "prices": {
+              "resin": [
+                719,
+                null,
+                998,
+                1100,
+                1217,
+                1506,
+                1576
+              ],
+              "gpc": [
+                2423,
+                2529,
+                2665,
+                2798,
+                2997,
+                3415,
+                3704
+              ]
+            }
           },
           {
             "id": "two",
@@ -2194,7 +2289,22 @@
               181,
               201
             ],
-            "prices": {}
+            "prices": {
+              "resin": [
+                1093,
+                1175,
+                1291,
+                1592,
+                1660
+              ],
+              "gpc": [
+                3477,
+                3604,
+                3953,
+                4347,
+                4714
+              ]
+            }
           },
           {
             "id": "one-xl85",
@@ -2206,7 +2316,22 @@
               181,
               201
             ],
-            "prices": {}
+            "prices": {
+              "resin": [
+                1015,
+                1073,
+                1237,
+                1539,
+                1610
+              ],
+              "gpc": [
+                2665,
+                2798,
+                3097,
+                3415,
+                3704
+              ]
+            }
           },
           {
             "id": "one-xl120",
@@ -2217,7 +2342,20 @@
               181,
               201
             ],
-            "prices": {}
+            "prices": {
+              "resin": [
+                1461,
+                1540,
+                1829,
+                1900
+              ],
+              "gpc": [
+                2798,
+                2997,
+                3415,
+                3704
+              ]
+            }
           }
         ],
         "includedOptions": [
@@ -2304,10 +2442,11 @@
           }
         ],
         "ralSupplement": 95,
-        "pricingMode": "manual-safe",
+        "pricingMode": "automatic",
         "notes": [
           "Les dimensions intermédiaires utilisent le palier supérieur de la grille.",
-          "Les choix incompatibles sont masqués automatiquement."
+          "Les choix incompatibles sont masqués automatiquement.",
+          "Tarifs fournisseur Resigres FR 2026, page imprimée 18. Les cellules nulles sont volontairement non tarifées, faute d'extraction fiable du glyphe PDF."
         ]
       }
     },
@@ -3976,7 +4115,17 @@
               181,
               201
             ],
-            "prices": {}
+            "prices": {
+              "resin": [
+                632,
+                null,
+                813,
+                871,
+                1025,
+                1242,
+                1310
+              ]
+            }
           },
           {
             "id": "two",
@@ -3988,7 +4137,15 @@
               181,
               201
             ],
-            "prices": {}
+            "prices": {
+              "resin": [
+                971,
+                1077,
+                1156,
+                1392,
+                1456
+              ]
+            }
           },
           {
             "id": "one-xl85",
@@ -4000,7 +4157,15 @@
               181,
               201
             ],
-            "prices": {}
+            "prices": {
+              "resin": [
+                849,
+                949,
+                1024,
+                1241,
+                1306
+              ]
+            }
           },
           {
             "id": "one-xl120",
@@ -4011,7 +4176,14 @@
               181,
               201
             ],
-            "prices": {}
+            "prices": {
+              "resin": [
+                1230,
+                1305,
+                1564,
+                1630
+              ]
+            }
           }
         ],
         "includedOptions": [
@@ -4098,10 +4270,11 @@
           }
         ],
         "ralSupplement": 95,
-        "pricingMode": "manual-safe",
+        "pricingMode": "automatic",
         "notes": [
           "Les dimensions intermédiaires utilisent le palier supérieur de la grille.",
-          "Les choix incompatibles sont masqués automatiquement."
+          "Les choix incompatibles sont masqués automatiquement.",
+          "Tarifs fournisseur Resigres FR 2026, page imprimée 30. Les cellules nulles sont volontairement non tarifées, faute d'extraction fiable du glyphe PDF."
         ]
       }
     },
@@ -4820,7 +4993,372 @@
         "color",
         "options"
       ],
-      "dependencyMode": "safe-manual"
+      "dependencyMode": "partial-fixed-variants-2026",
+      "dependencyMatrix": {
+        "type": "dependent-combinations",
+        "steps": [
+          "size",
+          "material",
+          "color"
+        ],
+        "sourcePage": "40-41",
+        "sizes": [
+          {
+            "id": "se",
+            "label": "Ares SE · 40 × 40 × 5 cm",
+            "materials": [
+              {
+                "id": "resin",
+                "label": "Lisa / Pizarra — coloris standard ou RAL/NCS",
+                "finish": "Lisa/Pizarra",
+                "colors": [
+                  {
+                    "id": "Gris 7015",
+                    "label": "Gris 7015",
+                    "price": 299
+                  },
+                  {
+                    "id": "Ártico",
+                    "label": "Ártico",
+                    "price": 299
+                  },
+                  {
+                    "id": "Lino",
+                    "label": "Lino",
+                    "price": 299
+                  },
+                  {
+                    "id": "Antracita",
+                    "label": "Antracita",
+                    "price": 299
+                  },
+                  {
+                    "id": "Moka",
+                    "label": "Moka",
+                    "price": 299
+                  },
+                  {
+                    "id": "Piedra",
+                    "label": "Piedra",
+                    "price": 299
+                  },
+                  {
+                    "id": "Arena",
+                    "label": "Arena",
+                    "price": 299
+                  },
+                  {
+                    "id": "Negro",
+                    "label": "Negro",
+                    "price": 299
+                  },
+                  {
+                    "id": "Basalto",
+                    "label": "Basalto",
+                    "price": 299
+                  },
+                  {
+                    "id": "RAL/NCS",
+                    "label": "RAL/NCS",
+                    "price": 327,
+                    "customCode": true
+                  }
+                ]
+              },
+              {
+                "id": "gpc",
+                "label": "GPC",
+                "finish": "GPC",
+                "colors": [
+                  {
+                    "id": "Calacatta G",
+                    "label": "Calacatta G",
+                    "price": 1990
+                  },
+                  {
+                    "id": "Taj Mahal",
+                    "label": "Taj Mahal",
+                    "price": 1990
+                  },
+                  {
+                    "id": "Marquina",
+                    "label": "Marquina",
+                    "price": 1990
+                  },
+                  {
+                    "id": "Caliza",
+                    "label": "Caliza",
+                    "price": 1990
+                  },
+                  {
+                    "id": "Quartz Green",
+                    "label": "Quartz Green",
+                    "price": 1990
+                  },
+                  {
+                    "id": "Onix",
+                    "label": "Onix",
+                    "price": 1990
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "h13",
+            "label": "Ares H13 · 40 × 40 × 13 cm",
+            "materials": [
+              {
+                "id": "resin",
+                "label": "Lisa / Pizarra — coloris standard ou RAL/NCS",
+                "finish": "Lisa/Pizarra",
+                "colors": [
+                  {
+                    "id": "Gris 7015",
+                    "label": "Gris 7015",
+                    "price": 340
+                  },
+                  {
+                    "id": "Ártico",
+                    "label": "Ártico",
+                    "price": 340
+                  },
+                  {
+                    "id": "Lino",
+                    "label": "Lino",
+                    "price": 340
+                  },
+                  {
+                    "id": "Antracita",
+                    "label": "Antracita",
+                    "price": 340
+                  },
+                  {
+                    "id": "Moka",
+                    "label": "Moka",
+                    "price": 340
+                  },
+                  {
+                    "id": "Piedra",
+                    "label": "Piedra",
+                    "price": 340
+                  },
+                  {
+                    "id": "Arena",
+                    "label": "Arena",
+                    "price": 340
+                  },
+                  {
+                    "id": "Negro",
+                    "label": "Negro",
+                    "price": 340
+                  },
+                  {
+                    "id": "Basalto",
+                    "label": "Basalto",
+                    "price": 340
+                  },
+                  {
+                    "id": "RAL/NCS",
+                    "label": "RAL/NCS",
+                    "price": 373,
+                    "customCode": true
+                  }
+                ]
+              },
+              {
+                "id": "gpc",
+                "label": "GPC",
+                "finish": "GPC",
+                "colors": [
+                  {
+                    "id": "Calacatta G",
+                    "label": "Calacatta G",
+                    "price": 1990
+                  },
+                  {
+                    "id": "Taj Mahal",
+                    "label": "Taj Mahal",
+                    "price": 1990
+                  },
+                  {
+                    "id": "Marquina",
+                    "label": "Marquina",
+                    "price": 1990
+                  },
+                  {
+                    "id": "Caliza",
+                    "label": "Caliza",
+                    "price": 1990
+                  },
+                  {
+                    "id": "Quartz Green",
+                    "label": "Quartz Green",
+                    "price": 1990
+                  },
+                  {
+                    "id": "Onix",
+                    "label": "Onix",
+                    "price": 1990
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "h40",
+            "label": "Ares H40 · 40 × 40 × 40 cm",
+            "materials": [
+              {
+                "id": "resin",
+                "label": "Lisa / Pizarra — coloris standard ou RAL/NCS",
+                "finish": "Lisa/Pizarra",
+                "colors": [
+                  {
+                    "id": "Gris 7015",
+                    "label": "Gris 7015",
+                    "price": 898
+                  },
+                  {
+                    "id": "Ártico",
+                    "label": "Ártico",
+                    "price": 898
+                  },
+                  {
+                    "id": "Lino",
+                    "label": "Lino",
+                    "price": 898
+                  },
+                  {
+                    "id": "Antracita",
+                    "label": "Antracita",
+                    "price": 898
+                  },
+                  {
+                    "id": "Moka",
+                    "label": "Moka",
+                    "price": 898
+                  },
+                  {
+                    "id": "Piedra",
+                    "label": "Piedra",
+                    "price": 898
+                  },
+                  {
+                    "id": "Arena",
+                    "label": "Arena",
+                    "price": 898
+                  },
+                  {
+                    "id": "Negro",
+                    "label": "Negro",
+                    "price": 898
+                  },
+                  {
+                    "id": "Basalto",
+                    "label": "Basalto",
+                    "price": 898
+                  }
+                ]
+              },
+              {
+                "id": "gpc",
+                "label": "GPC",
+                "finish": "GPC",
+                "colors": [
+                  {
+                    "id": "Calacatta G",
+                    "label": "Calacatta G",
+                    "price": 2767
+                  },
+                  {
+                    "id": "Taj Mahal",
+                    "label": "Taj Mahal",
+                    "price": 2767
+                  },
+                  {
+                    "id": "Marquina",
+                    "label": "Marquina",
+                    "price": 2767
+                  },
+                  {
+                    "id": "Caliza",
+                    "label": "Caliza",
+                    "price": 2767
+                  },
+                  {
+                    "id": "Quartz Green",
+                    "label": "Quartz Green",
+                    "price": 2767
+                  },
+                  {
+                    "id": "Onix",
+                    "label": "Onix",
+                    "price": 2767
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "h90",
+            "label": "Ares H90 · 40 × 40 × 90 cm",
+            "materials": [
+              {
+                "id": "resin",
+                "label": "Lisa / Pizarra — coloris standard ou RAL/NCS",
+                "finish": "Lisa/Pizarra",
+                "colors": [
+                  {
+                    "id": "RAL/NCS",
+                    "label": "RAL/NCS",
+                    "price": 1535,
+                    "customCode": true
+                  }
+                ]
+              },
+              {
+                "id": "gpc",
+                "label": "GPC",
+                "finish": "GPC",
+                "colors": [
+                  {
+                    "id": "Calacatta G",
+                    "label": "Calacatta G",
+                    "price": 3990
+                  },
+                  {
+                    "id": "Taj Mahal",
+                    "label": "Taj Mahal",
+                    "price": 3990
+                  },
+                  {
+                    "id": "Marquina",
+                    "label": "Marquina",
+                    "price": 3990
+                  },
+                  {
+                    "id": "Caliza",
+                    "label": "Caliza",
+                    "price": 3990
+                  },
+                  {
+                    "id": "Quartz Green",
+                    "label": "Quartz Green",
+                    "price": 3990
+                  },
+                  {
+                    "id": "Onix",
+                    "label": "Onix",
+                    "price": 3990
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "pricingScope": "Exact variants explicitly listed in the manufacturer 2026 price sheet; no interpolation or extrapolation; other versions remain to import."
+      }
     },
     {
       "name": "Crono",
@@ -4833,7 +5371,408 @@
         "color",
         "options"
       ],
-      "dependencyMode": "safe-manual"
+      "dependencyMode": "partial-fixed-variants-2026",
+      "dependencyMatrix": {
+        "type": "dependent-combinations",
+        "steps": [
+          "size",
+          "material",
+          "color"
+        ],
+        "sourcePage": "42-45",
+        "sizes": [
+          {
+            "id": "recto",
+            "label": "Crono Recto · Ø 37,5 × 10 cm",
+            "materials": [
+              {
+                "id": "resin",
+                "label": "Lisa — coloris standard ou RAL/NCS",
+                "finish": "Lisa",
+                "colors": [
+                  {
+                    "id": "Gris 7015",
+                    "label": "Gris 7015",
+                    "price": 228
+                  },
+                  {
+                    "id": "Ártico",
+                    "label": "Ártico",
+                    "price": 228
+                  },
+                  {
+                    "id": "Lino",
+                    "label": "Lino",
+                    "price": 228
+                  },
+                  {
+                    "id": "Antracita",
+                    "label": "Antracita",
+                    "price": 228
+                  },
+                  {
+                    "id": "Moka",
+                    "label": "Moka",
+                    "price": 228
+                  },
+                  {
+                    "id": "Piedra",
+                    "label": "Piedra",
+                    "price": 228
+                  },
+                  {
+                    "id": "Arena",
+                    "label": "Arena",
+                    "price": 228
+                  },
+                  {
+                    "id": "Negro",
+                    "label": "Negro",
+                    "price": 228
+                  },
+                  {
+                    "id": "Basalto",
+                    "label": "Basalto",
+                    "price": 228
+                  },
+                  {
+                    "id": "RAL/NCS",
+                    "label": "RAL/NCS",
+                    "price": 251,
+                    "customCode": true
+                  }
+                ]
+              },
+              {
+                "id": "solid",
+                "label": "Solid Surface",
+                "finish": "Solid Surface",
+                "colors": [
+                  {
+                    "id": "S-Blanco",
+                    "label": "S-Blanco",
+                    "price": 340
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "mini",
+            "label": "Crono Mini · Ø 25 × 10 cm",
+            "materials": [
+              {
+                "id": "resin",
+                "label": "Lisa — coloris standard ou RAL/NCS",
+                "finish": "Lisa",
+                "colors": [
+                  {
+                    "id": "Gris 7015",
+                    "label": "Gris 7015",
+                    "price": 199
+                  },
+                  {
+                    "id": "Ártico",
+                    "label": "Ártico",
+                    "price": 199
+                  },
+                  {
+                    "id": "Lino",
+                    "label": "Lino",
+                    "price": 199
+                  },
+                  {
+                    "id": "Antracita",
+                    "label": "Antracita",
+                    "price": 199
+                  },
+                  {
+                    "id": "Moka",
+                    "label": "Moka",
+                    "price": 199
+                  },
+                  {
+                    "id": "Piedra",
+                    "label": "Piedra",
+                    "price": 199
+                  },
+                  {
+                    "id": "Arena",
+                    "label": "Arena",
+                    "price": 199
+                  },
+                  {
+                    "id": "Negro",
+                    "label": "Negro",
+                    "price": 199
+                  },
+                  {
+                    "id": "Basalto",
+                    "label": "Basalto",
+                    "price": 199
+                  },
+                  {
+                    "id": "RAL/NCS",
+                    "label": "RAL/NCS",
+                    "price": 223,
+                    "customCode": true
+                  }
+                ]
+              },
+              {
+                "id": "solid",
+                "label": "Solid Surface",
+                "finish": "Solid Surface",
+                "colors": [
+                  {
+                    "id": "S-Blanco",
+                    "label": "S-Blanco",
+                    "price": 270
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "h40",
+            "label": "Crono H40 · Ø 42 × 40 cm",
+            "materials": [
+              {
+                "id": "resin",
+                "label": "Lisa — coloris standard ou RAL/NCS",
+                "finish": "Lisa",
+                "colors": [
+                  {
+                    "id": "Gris 7015",
+                    "label": "Gris 7015",
+                    "price": 800
+                  },
+                  {
+                    "id": "Ártico",
+                    "label": "Ártico",
+                    "price": 800
+                  },
+                  {
+                    "id": "Lino",
+                    "label": "Lino",
+                    "price": 800
+                  },
+                  {
+                    "id": "Antracita",
+                    "label": "Antracita",
+                    "price": 800
+                  },
+                  {
+                    "id": "Moka",
+                    "label": "Moka",
+                    "price": 800
+                  },
+                  {
+                    "id": "Piedra",
+                    "label": "Piedra",
+                    "price": 800
+                  },
+                  {
+                    "id": "Arena",
+                    "label": "Arena",
+                    "price": 800
+                  },
+                  {
+                    "id": "Negro",
+                    "label": "Negro",
+                    "price": 800
+                  },
+                  {
+                    "id": "Basalto",
+                    "label": "Basalto",
+                    "price": 800
+                  },
+                  {
+                    "id": "RAL/NCS",
+                    "label": "RAL/NCS",
+                    "price": 880,
+                    "customCode": true
+                  }
+                ]
+              },
+              {
+                "id": "solid",
+                "label": "Solid Surface",
+                "finish": "Solid Surface",
+                "colors": [
+                  {
+                    "id": "S-Blanco",
+                    "label": "S-Blanco",
+                    "price": 939
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "h90",
+            "label": "Crono H90 · Ø 42 × 90 cm",
+            "materials": [
+              {
+                "id": "resin",
+                "label": "Lisa — coloris standard ou RAL/NCS",
+                "finish": "Lisa",
+                "colors": [
+                  {
+                    "id": "Gris 7015",
+                    "label": "Gris 7015",
+                    "price": 1290
+                  },
+                  {
+                    "id": "Ártico",
+                    "label": "Ártico",
+                    "price": 1290
+                  },
+                  {
+                    "id": "Lino",
+                    "label": "Lino",
+                    "price": 1290
+                  },
+                  {
+                    "id": "Antracita",
+                    "label": "Antracita",
+                    "price": 1290
+                  },
+                  {
+                    "id": "Moka",
+                    "label": "Moka",
+                    "price": 1290
+                  },
+                  {
+                    "id": "Piedra",
+                    "label": "Piedra",
+                    "price": 1290
+                  },
+                  {
+                    "id": "Arena",
+                    "label": "Arena",
+                    "price": 1290
+                  },
+                  {
+                    "id": "Negro",
+                    "label": "Negro",
+                    "price": 1290
+                  },
+                  {
+                    "id": "Basalto",
+                    "label": "Basalto",
+                    "price": 1290
+                  },
+                  {
+                    "id": "RAL/NCS",
+                    "label": "RAL/NCS",
+                    "price": 1419,
+                    "customCode": true
+                  }
+                ]
+              },
+              {
+                "id": "solid",
+                "label": "Solid Surface",
+                "finish": "Solid Surface",
+                "colors": [
+                  {
+                    "id": "S-Blanco",
+                    "label": "S-Blanco",
+                    "price": 1555
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "curvo",
+            "label": "Crono Curvo · Ø 36 × 12,5 cm",
+            "materials": [
+              {
+                "id": "resin",
+                "label": "Lisa — coloris standard ou RAL/NCS",
+                "finish": "Lisa",
+                "colors": [
+                  {
+                    "id": "Gris 7015",
+                    "label": "Gris 7015",
+                    "price": 228
+                  },
+                  {
+                    "id": "Ártico",
+                    "label": "Ártico",
+                    "price": 228
+                  },
+                  {
+                    "id": "Lino",
+                    "label": "Lino",
+                    "price": 228
+                  },
+                  {
+                    "id": "Antracita",
+                    "label": "Antracita",
+                    "price": 228
+                  },
+                  {
+                    "id": "Moka",
+                    "label": "Moka",
+                    "price": 228
+                  },
+                  {
+                    "id": "Piedra",
+                    "label": "Piedra",
+                    "price": 228
+                  },
+                  {
+                    "id": "Arena",
+                    "label": "Arena",
+                    "price": 228
+                  },
+                  {
+                    "id": "Negro",
+                    "label": "Negro",
+                    "price": 228
+                  },
+                  {
+                    "id": "Basalto",
+                    "label": "Basalto",
+                    "price": 228
+                  },
+                  {
+                    "id": "RAL/NCS",
+                    "label": "RAL/NCS",
+                    "price": 251,
+                    "customCode": true
+                  }
+                ]
+              },
+              {
+                "id": "solid",
+                "label": "Solid Surface",
+                "finish": "Solid Surface",
+                "colors": [
+                  {
+                    "id": "S-Blanco",
+                    "label": "S-Blanco",
+                    "price": 340
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "pricingScope": "Exact variants explicitly listed in the manufacturer 2026 price sheet; no interpolation or extrapolation; other versions remain to import."
+      },
+      "supplements": [
+        {
+          "id": "colored-waste",
+          "label": "Bonde clic colorée",
+          "type": "fixed",
+          "amount": 66,
+          "sourcePage": "42-45"
+        }
+      ]
     },
     {
       "name": "Kos / Neo",
@@ -4846,7 +5785,256 @@
         "color",
         "options"
       ],
-      "dependencyMode": "safe-manual"
+      "dependencyMode": "partial-fixed-variants-2026",
+      "dependencyMatrix": {
+        "type": "dependent-combinations",
+        "steps": [
+          "size",
+          "material",
+          "color"
+        ],
+        "sourcePage": "44-45",
+        "sizes": [
+          {
+            "id": "kos",
+            "label": "Kos · 47 × 31 × 14,5 cm",
+            "materials": [
+              {
+                "id": "resin",
+                "label": "Lisa — coloris standard ou RAL/NCS",
+                "finish": "Lisa",
+                "colors": [
+                  {
+                    "id": "Gris 7015",
+                    "label": "Gris 7015",
+                    "price": 295
+                  },
+                  {
+                    "id": "Ártico",
+                    "label": "Ártico",
+                    "price": 295
+                  },
+                  {
+                    "id": "Lino",
+                    "label": "Lino",
+                    "price": 295
+                  },
+                  {
+                    "id": "Antracita",
+                    "label": "Antracita",
+                    "price": 295
+                  },
+                  {
+                    "id": "Moka",
+                    "label": "Moka",
+                    "price": 295
+                  },
+                  {
+                    "id": "Piedra",
+                    "label": "Piedra",
+                    "price": 295
+                  },
+                  {
+                    "id": "Arena",
+                    "label": "Arena",
+                    "price": 295
+                  },
+                  {
+                    "id": "Negro",
+                    "label": "Negro",
+                    "price": 295
+                  },
+                  {
+                    "id": "Basalto",
+                    "label": "Basalto",
+                    "price": 295
+                  },
+                  {
+                    "id": "RAL/NCS",
+                    "label": "RAL/NCS",
+                    "price": 324,
+                    "customCode": true
+                  }
+                ]
+              },
+              {
+                "id": "solid",
+                "label": "Solid Surface",
+                "finish": "Solid Surface",
+                "colors": [
+                  {
+                    "id": "S-Blanco",
+                    "label": "S-Blanco",
+                    "price": 390
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "neo-recto",
+            "label": "Neo Recto · 50 × 34,5 × 10 cm",
+            "materials": [
+              {
+                "id": "resin",
+                "label": "Lisa — coloris standard ou RAL/NCS",
+                "finish": "Lisa",
+                "colors": [
+                  {
+                    "id": "Gris 7015",
+                    "label": "Gris 7015",
+                    "price": 228
+                  },
+                  {
+                    "id": "Ártico",
+                    "label": "Ártico",
+                    "price": 228
+                  },
+                  {
+                    "id": "Lino",
+                    "label": "Lino",
+                    "price": 228
+                  },
+                  {
+                    "id": "Antracita",
+                    "label": "Antracita",
+                    "price": 228
+                  },
+                  {
+                    "id": "Moka",
+                    "label": "Moka",
+                    "price": 228
+                  },
+                  {
+                    "id": "Piedra",
+                    "label": "Piedra",
+                    "price": 228
+                  },
+                  {
+                    "id": "Arena",
+                    "label": "Arena",
+                    "price": 228
+                  },
+                  {
+                    "id": "Negro",
+                    "label": "Negro",
+                    "price": 228
+                  },
+                  {
+                    "id": "Basalto",
+                    "label": "Basalto",
+                    "price": 228
+                  },
+                  {
+                    "id": "RAL/NCS",
+                    "label": "RAL/NCS",
+                    "price": 251,
+                    "customCode": true
+                  }
+                ]
+              },
+              {
+                "id": "solid",
+                "label": "Solid Surface",
+                "finish": "Solid Surface",
+                "colors": [
+                  {
+                    "id": "S-Blanco",
+                    "label": "S-Blanco",
+                    "price": 335
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "neo-curvo",
+            "label": "Neo Curvo · 55 × 38 × 15 cm",
+            "materials": [
+              {
+                "id": "resin",
+                "label": "Lisa — coloris standard ou RAL/NCS",
+                "finish": "Lisa",
+                "colors": [
+                  {
+                    "id": "Gris 7015",
+                    "label": "Gris 7015",
+                    "price": 228
+                  },
+                  {
+                    "id": "Ártico",
+                    "label": "Ártico",
+                    "price": 228
+                  },
+                  {
+                    "id": "Lino",
+                    "label": "Lino",
+                    "price": 228
+                  },
+                  {
+                    "id": "Antracita",
+                    "label": "Antracita",
+                    "price": 228
+                  },
+                  {
+                    "id": "Moka",
+                    "label": "Moka",
+                    "price": 228
+                  },
+                  {
+                    "id": "Piedra",
+                    "label": "Piedra",
+                    "price": 228
+                  },
+                  {
+                    "id": "Arena",
+                    "label": "Arena",
+                    "price": 228
+                  },
+                  {
+                    "id": "Negro",
+                    "label": "Negro",
+                    "price": 228
+                  },
+                  {
+                    "id": "Basalto",
+                    "label": "Basalto",
+                    "price": 228
+                  },
+                  {
+                    "id": "RAL/NCS",
+                    "label": "RAL/NCS",
+                    "price": 250,
+                    "customCode": true
+                  }
+                ]
+              },
+              {
+                "id": "solid",
+                "label": "Solid Surface",
+                "finish": "Solid Surface",
+                "colors": [
+                  {
+                    "id": "S-Blanco",
+                    "label": "S-Blanco",
+                    "price": 345
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "pricingScope": "Exact variants explicitly listed in the manufacturer 2026 price sheet; no interpolation or extrapolation; other versions remain to import."
+      },
+      "supplements": [
+        {
+          "id": "colored-waste",
+          "label": "Bonde clic colorée",
+          "type": "fixed",
+          "amount": 66,
+          "sourcePage": "44-45"
+        }
+      ]
     },
     {
       "name": "Gesto / Frame",
@@ -4859,7 +6047,314 @@
         "color",
         "options"
       ],
-      "dependencyMode": "safe-manual"
+      "dependencyMode": "partial-fixed-variants-2026",
+      "dependencyMatrix": {
+        "type": "dependent-combinations",
+        "steps": [
+          "size",
+          "material",
+          "color"
+        ],
+        "sourcePage": "46-47",
+        "sizes": [
+          {
+            "id": "gesto-recto",
+            "label": "Gesto Recto · 41 × 40 × 12,5 cm",
+            "materials": [
+              {
+                "id": "resin",
+                "label": "Lisa — coloris standard ou RAL/NCS",
+                "finish": "Lisa",
+                "colors": [
+                  {
+                    "id": "Gris 7015",
+                    "label": "Gris 7015",
+                    "price": 376
+                  },
+                  {
+                    "id": "Ártico",
+                    "label": "Ártico",
+                    "price": 376
+                  },
+                  {
+                    "id": "Lino",
+                    "label": "Lino",
+                    "price": 376
+                  },
+                  {
+                    "id": "Antracita",
+                    "label": "Antracita",
+                    "price": 376
+                  },
+                  {
+                    "id": "Moka",
+                    "label": "Moka",
+                    "price": 376
+                  },
+                  {
+                    "id": "Piedra",
+                    "label": "Piedra",
+                    "price": 376
+                  },
+                  {
+                    "id": "Arena",
+                    "label": "Arena",
+                    "price": 376
+                  },
+                  {
+                    "id": "Negro",
+                    "label": "Negro",
+                    "price": 376
+                  },
+                  {
+                    "id": "Basalto",
+                    "label": "Basalto",
+                    "price": 376
+                  },
+                  {
+                    "id": "RAL/NCS",
+                    "label": "RAL/NCS",
+                    "price": 413,
+                    "customCode": true
+                  }
+                ]
+              },
+              {
+                "id": "solid",
+                "label": "Solid Surface",
+                "finish": "Solid Surface",
+                "colors": [
+                  {
+                    "id": "S-Blanco",
+                    "label": "S-Blanco",
+                    "price": 439
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "gesto-curvo",
+            "label": "Gesto Curvo · 39,5 × 40 × 12,5 cm",
+            "materials": [
+              {
+                "id": "resin",
+                "label": "Lisa — coloris standard ou RAL/NCS",
+                "finish": "Lisa",
+                "colors": [
+                  {
+                    "id": "Gris 7015",
+                    "label": "Gris 7015",
+                    "price": 376
+                  },
+                  {
+                    "id": "Ártico",
+                    "label": "Ártico",
+                    "price": 376
+                  },
+                  {
+                    "id": "Lino",
+                    "label": "Lino",
+                    "price": 376
+                  },
+                  {
+                    "id": "Antracita",
+                    "label": "Antracita",
+                    "price": 376
+                  },
+                  {
+                    "id": "Moka",
+                    "label": "Moka",
+                    "price": 376
+                  },
+                  {
+                    "id": "Piedra",
+                    "label": "Piedra",
+                    "price": 376
+                  },
+                  {
+                    "id": "Arena",
+                    "label": "Arena",
+                    "price": 376
+                  },
+                  {
+                    "id": "Negro",
+                    "label": "Negro",
+                    "price": 376
+                  },
+                  {
+                    "id": "Basalto",
+                    "label": "Basalto",
+                    "price": 376
+                  },
+                  {
+                    "id": "RAL/NCS",
+                    "label": "RAL/NCS",
+                    "price": 413,
+                    "customCode": true
+                  }
+                ]
+              },
+              {
+                "id": "solid",
+                "label": "Solid Surface",
+                "finish": "Solid Surface",
+                "colors": [
+                  {
+                    "id": "S-Blanco",
+                    "label": "S-Blanco",
+                    "price": 439
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "gesto-xl",
+            "label": "Gesto XL · 38,5 × 100 × 12,5 cm",
+            "materials": [
+              {
+                "id": "resin",
+                "label": "Lisa — coloris standard ou RAL/NCS",
+                "finish": "Lisa",
+                "colors": [
+                  {
+                    "id": "Gris 7015",
+                    "label": "Gris 7015",
+                    "price": 660
+                  },
+                  {
+                    "id": "Ártico",
+                    "label": "Ártico",
+                    "price": 660
+                  },
+                  {
+                    "id": "Lino",
+                    "label": "Lino",
+                    "price": 660
+                  },
+                  {
+                    "id": "Antracita",
+                    "label": "Antracita",
+                    "price": 660
+                  },
+                  {
+                    "id": "Moka",
+                    "label": "Moka",
+                    "price": 660
+                  },
+                  {
+                    "id": "Piedra",
+                    "label": "Piedra",
+                    "price": 660
+                  },
+                  {
+                    "id": "Arena",
+                    "label": "Arena",
+                    "price": 660
+                  },
+                  {
+                    "id": "Negro",
+                    "label": "Negro",
+                    "price": 660
+                  },
+                  {
+                    "id": "Basalto",
+                    "label": "Basalto",
+                    "price": 660
+                  }
+                ]
+              },
+              {
+                "id": "solid",
+                "label": "Solid Surface",
+                "finish": "Solid Surface",
+                "colors": [
+                  {
+                    "id": "S-Blanco",
+                    "label": "S-Blanco",
+                    "price": 760
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "frame",
+            "label": "Frame · 47 × 56 × 18 cm",
+            "materials": [
+              {
+                "id": "resin",
+                "label": "Lisa — coloris standard ou RAL/NCS",
+                "finish": "Lisa",
+                "colors": [
+                  {
+                    "id": "Gris 7015",
+                    "label": "Gris 7015",
+                    "price": 595
+                  },
+                  {
+                    "id": "Ártico",
+                    "label": "Ártico",
+                    "price": 595
+                  },
+                  {
+                    "id": "Lino",
+                    "label": "Lino",
+                    "price": 595
+                  },
+                  {
+                    "id": "Antracita",
+                    "label": "Antracita",
+                    "price": 595
+                  },
+                  {
+                    "id": "Moka",
+                    "label": "Moka",
+                    "price": 595
+                  },
+                  {
+                    "id": "Piedra",
+                    "label": "Piedra",
+                    "price": 595
+                  },
+                  {
+                    "id": "Arena",
+                    "label": "Arena",
+                    "price": 595
+                  },
+                  {
+                    "id": "Negro",
+                    "label": "Negro",
+                    "price": 595
+                  },
+                  {
+                    "id": "Basalto",
+                    "label": "Basalto",
+                    "price": 595
+                  },
+                  {
+                    "id": "RAL/NCS",
+                    "label": "RAL/NCS",
+                    "price": 654,
+                    "customCode": true
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "pricingScope": "Exact variants explicitly listed in the manufacturer 2026 price sheet; no interpolation or extrapolation; other versions remain to import."
+      },
+      "supplements": [
+        {
+          "id": "colored-waste",
+          "label": "Bonde clic colorée",
+          "type": "fixed",
+          "amount": 66,
+          "sourcePage": "46-47"
+        }
+      ]
     },
     {
       "name": "Urban",
@@ -4872,7 +6367,95 @@
         "color",
         "options"
       ],
-      "dependencyMode": "safe-manual"
+      "dependencyMode": "partial-fixed-variants-2026",
+      "dependencyMatrix": {
+        "type": "dependent-combinations",
+        "steps": [
+          "size",
+          "material",
+          "color"
+        ],
+        "sourcePage": "48",
+        "sizes": [
+          {
+            "id": "urban",
+            "label": "Vasque Urban · Ø 35 × 4,8 cm",
+            "materials": [
+              {
+                "id": "resin",
+                "label": "Lisa — coloris standard ou RAL/NCS",
+                "finish": "Lisa",
+                "colors": [
+                  {
+                    "id": "Gris 7015",
+                    "label": "Gris 7015",
+                    "price": 395
+                  },
+                  {
+                    "id": "Ártico",
+                    "label": "Ártico",
+                    "price": 395
+                  },
+                  {
+                    "id": "Lino",
+                    "label": "Lino",
+                    "price": 395
+                  },
+                  {
+                    "id": "Antracita",
+                    "label": "Antracita",
+                    "price": 395
+                  },
+                  {
+                    "id": "Moka",
+                    "label": "Moka",
+                    "price": 395
+                  },
+                  {
+                    "id": "Piedra",
+                    "label": "Piedra",
+                    "price": 395
+                  },
+                  {
+                    "id": "Arena",
+                    "label": "Arena",
+                    "price": 395
+                  },
+                  {
+                    "id": "Negro",
+                    "label": "Negro",
+                    "price": 395
+                  },
+                  {
+                    "id": "Basalto",
+                    "label": "Basalto",
+                    "price": 395
+                  },
+                  {
+                    "id": "RAL/NCS",
+                    "label": "RAL/NCS",
+                    "price": 434,
+                    "customCode": true
+                  }
+                ]
+              },
+              {
+                "id": "solid",
+                "label": "Solid Surface",
+                "finish": "Solid Surface",
+                "colors": [
+                  {
+                    "id": "S-Blanco",
+                    "label": "S-Blanco",
+                    "price": 518
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "pricingScope": "Exact variants explicitly listed in the manufacturer 2026 price sheet; no interpolation or extrapolation; other versions remain to import."
+      }
     },
     {
       "name": "Nalu",
@@ -6265,7 +7848,279 @@
         "color",
         "options"
       ],
-      "dependencyMode": "safe-manual"
+      "dependencyMode": "partial-fixed-variants-2026",
+      "dependencyMatrix": {
+        "type": "dependent-combinations",
+        "steps": [
+          "size",
+          "material",
+          "color"
+        ],
+        "sourcePage": "70",
+        "sizes": [
+          {
+            "id": "frame",
+            "label": "Porte-serviette Frame · 90 × 15 cm",
+            "materials": [
+              {
+                "id": "wood",
+                "label": "Bois",
+                "finish": "Bois",
+                "colors": [
+                  {
+                    "id": "Roble",
+                    "label": "Roble",
+                    "price": 790
+                  },
+                  {
+                    "id": "Roble rústico",
+                    "label": "Roble rústico",
+                    "price": 790
+                  },
+                  {
+                    "id": "Roble salvaje",
+                    "label": "Roble salvaje",
+                    "price": 790
+                  },
+                  {
+                    "id": "Nogal US",
+                    "label": "Nogal US",
+                    "price": 790
+                  },
+                  {
+                    "id": "Eucalipto",
+                    "label": "Eucalipto",
+                    "price": 790
+                  },
+                  {
+                    "id": "Fumé",
+                    "label": "Fumé",
+                    "price": 790
+                  }
+                ]
+              },
+              {
+                "id": "lacquer",
+                "label": "Laqué",
+                "finish": "Laquée",
+                "colors": [
+                  {
+                    "id": "Gris 7015",
+                    "label": "Gris 7015",
+                    "price": 890
+                  },
+                  {
+                    "id": "Ártico",
+                    "label": "Ártico",
+                    "price": 890
+                  },
+                  {
+                    "id": "Lino",
+                    "label": "Lino",
+                    "price": 890
+                  },
+                  {
+                    "id": "Antracita",
+                    "label": "Antracita",
+                    "price": 890
+                  },
+                  {
+                    "id": "Moka",
+                    "label": "Moka",
+                    "price": 890
+                  },
+                  {
+                    "id": "Piedra",
+                    "label": "Piedra",
+                    "price": 890
+                  },
+                  {
+                    "id": "Arena",
+                    "label": "Arena",
+                    "price": 890
+                  },
+                  {
+                    "id": "Negro",
+                    "label": "Negro",
+                    "price": 890
+                  },
+                  {
+                    "id": "Basalto",
+                    "label": "Basalto",
+                    "price": 890
+                  },
+                  {
+                    "id": "RAL/NCS",
+                    "label": "RAL/NCS",
+                    "price": 990,
+                    "customCode": true
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "frame-mini",
+            "label": "Porte-serviette Mini Frame · largeur 50 cm",
+            "materials": [
+              {
+                "id": "lacquer",
+                "label": "Laqué",
+                "finish": "Laquée",
+                "colors": [
+                  {
+                    "id": "Gris 7015",
+                    "label": "Gris 7015",
+                    "price": 48
+                  },
+                  {
+                    "id": "Ártico",
+                    "label": "Ártico",
+                    "price": 48
+                  },
+                  {
+                    "id": "Lino",
+                    "label": "Lino",
+                    "price": 48
+                  },
+                  {
+                    "id": "Antracita",
+                    "label": "Antracita",
+                    "price": 48
+                  },
+                  {
+                    "id": "Moka",
+                    "label": "Moka",
+                    "price": 48
+                  },
+                  {
+                    "id": "Piedra",
+                    "label": "Piedra",
+                    "price": 48
+                  },
+                  {
+                    "id": "Arena",
+                    "label": "Arena",
+                    "price": 48
+                  },
+                  {
+                    "id": "Negro",
+                    "label": "Negro",
+                    "price": 48
+                  },
+                  {
+                    "id": "Basalto",
+                    "label": "Basalto",
+                    "price": 48
+                  },
+                  {
+                    "id": "RAL/NCS",
+                    "label": "RAL/NCS",
+                    "price": 53,
+                    "customCode": true
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "gesto",
+            "label": "Porte-serviette Gesto · 90 × 25 cm",
+            "materials": [
+              {
+                "id": "wood",
+                "label": "Bois",
+                "finish": "Bois",
+                "colors": [
+                  {
+                    "id": "Roble",
+                    "label": "Roble",
+                    "price": 990
+                  },
+                  {
+                    "id": "Roble rústico",
+                    "label": "Roble rústico",
+                    "price": 990
+                  },
+                  {
+                    "id": "Roble salvaje",
+                    "label": "Roble salvaje",
+                    "price": 990
+                  },
+                  {
+                    "id": "Nogal US",
+                    "label": "Nogal US",
+                    "price": 990
+                  },
+                  {
+                    "id": "Eucalipto",
+                    "label": "Eucalipto",
+                    "price": 990
+                  },
+                  {
+                    "id": "Fumé",
+                    "label": "Fumé",
+                    "price": 990
+                  }
+                ]
+              },
+              {
+                "id": "lacquer",
+                "label": "Laqué",
+                "finish": "Laquée",
+                "colors": [
+                  {
+                    "id": "Gris 7015",
+                    "label": "Gris 7015",
+                    "price": 1089
+                  },
+                  {
+                    "id": "Ártico",
+                    "label": "Ártico",
+                    "price": 1089
+                  },
+                  {
+                    "id": "Lino",
+                    "label": "Lino",
+                    "price": 1089
+                  },
+                  {
+                    "id": "Antracita",
+                    "label": "Antracita",
+                    "price": 1089
+                  },
+                  {
+                    "id": "Moka",
+                    "label": "Moka",
+                    "price": 1089
+                  },
+                  {
+                    "id": "Piedra",
+                    "label": "Piedra",
+                    "price": 1089
+                  },
+                  {
+                    "id": "Arena",
+                    "label": "Arena",
+                    "price": 1089
+                  },
+                  {
+                    "id": "Negro",
+                    "label": "Negro",
+                    "price": 1089
+                  },
+                  {
+                    "id": "Basalto",
+                    "label": "Basalto",
+                    "price": 1089
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "pricingScope": "Exact variants explicitly listed in the manufacturer 2026 price sheet; no interpolation or extrapolation; other versions remain to import."
+      }
     },
     {
       "name": "Panneaux / étagères",
@@ -6278,7 +8133,323 @@
         "color",
         "options"
       ],
-      "dependencyMode": "safe-manual"
+      "dependencyMode": "partial-fixed-variants-2026",
+      "dependencyMatrix": {
+        "type": "dependent-combinations",
+        "steps": [
+          "size",
+          "material",
+          "color"
+        ],
+        "sourcePage": "71",
+        "sizes": [
+          {
+            "id": "shelf-40",
+            "label": "Étagère · largeur 12 cm, longueur ≤ 40 cm",
+            "materials": [
+              {
+                "id": "resin",
+                "label": "Lisa / Pizarra — coloris standard ou RAL/NCS",
+                "finish": "Lisa/Pizarra",
+                "colors": [
+                  {
+                    "id": "Gris 7015",
+                    "label": "Gris 7015",
+                    "price": 140
+                  },
+                  {
+                    "id": "Ártico",
+                    "label": "Ártico",
+                    "price": 140
+                  },
+                  {
+                    "id": "Lino",
+                    "label": "Lino",
+                    "price": 140
+                  },
+                  {
+                    "id": "Antracita",
+                    "label": "Antracita",
+                    "price": 140
+                  },
+                  {
+                    "id": "Moka",
+                    "label": "Moka",
+                    "price": 140
+                  },
+                  {
+                    "id": "Piedra",
+                    "label": "Piedra",
+                    "price": 140
+                  },
+                  {
+                    "id": "Arena",
+                    "label": "Arena",
+                    "price": 140
+                  },
+                  {
+                    "id": "Negro",
+                    "label": "Negro",
+                    "price": 140
+                  },
+                  {
+                    "id": "Basalto",
+                    "label": "Basalto",
+                    "price": 140
+                  },
+                  {
+                    "id": "RAL/NCS",
+                    "label": "RAL/NCS",
+                    "price": 154,
+                    "customCode": true
+                  }
+                ]
+              },
+              {
+                "id": "solid",
+                "label": "Solid Surface",
+                "finish": "Solid Surface",
+                "colors": [
+                  {
+                    "id": "S-Blanco",
+                    "label": "S-Blanco",
+                    "price": 168
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "shelf-50",
+            "label": "Étagère · largeur 12 cm, longueur 41–50 cm",
+            "materials": [
+              {
+                "id": "resin",
+                "label": "Lisa / Pizarra — coloris standard ou RAL/NCS",
+                "finish": "Lisa/Pizarra",
+                "colors": [
+                  {
+                    "id": "Gris 7015",
+                    "label": "Gris 7015",
+                    "price": 149
+                  },
+                  {
+                    "id": "Ártico",
+                    "label": "Ártico",
+                    "price": 149
+                  },
+                  {
+                    "id": "Lino",
+                    "label": "Lino",
+                    "price": 149
+                  },
+                  {
+                    "id": "Antracita",
+                    "label": "Antracita",
+                    "price": 149
+                  },
+                  {
+                    "id": "Moka",
+                    "label": "Moka",
+                    "price": 149
+                  },
+                  {
+                    "id": "Piedra",
+                    "label": "Piedra",
+                    "price": 149
+                  },
+                  {
+                    "id": "Arena",
+                    "label": "Arena",
+                    "price": 149
+                  },
+                  {
+                    "id": "Negro",
+                    "label": "Negro",
+                    "price": 149
+                  },
+                  {
+                    "id": "Basalto",
+                    "label": "Basalto",
+                    "price": 149
+                  },
+                  {
+                    "id": "RAL/NCS",
+                    "label": "RAL/NCS",
+                    "price": 164,
+                    "customCode": true
+                  }
+                ]
+              },
+              {
+                "id": "solid",
+                "label": "Solid Surface",
+                "finish": "Solid Surface",
+                "colors": [
+                  {
+                    "id": "S-Blanco",
+                    "label": "S-Blanco",
+                    "price": 179
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "shelf-60",
+            "label": "Étagère · largeur 12 cm, longueur 51–60 cm",
+            "materials": [
+              {
+                "id": "resin",
+                "label": "Lisa / Pizarra — coloris standard ou RAL/NCS",
+                "finish": "Lisa/Pizarra",
+                "colors": [
+                  {
+                    "id": "Gris 7015",
+                    "label": "Gris 7015",
+                    "price": 165
+                  },
+                  {
+                    "id": "Ártico",
+                    "label": "Ártico",
+                    "price": 165
+                  },
+                  {
+                    "id": "Lino",
+                    "label": "Lino",
+                    "price": 165
+                  },
+                  {
+                    "id": "Antracita",
+                    "label": "Antracita",
+                    "price": 165
+                  },
+                  {
+                    "id": "Moka",
+                    "label": "Moka",
+                    "price": 165
+                  },
+                  {
+                    "id": "Piedra",
+                    "label": "Piedra",
+                    "price": 165
+                  },
+                  {
+                    "id": "Arena",
+                    "label": "Arena",
+                    "price": 165
+                  },
+                  {
+                    "id": "Negro",
+                    "label": "Negro",
+                    "price": 165
+                  },
+                  {
+                    "id": "Basalto",
+                    "label": "Basalto",
+                    "price": 165
+                  },
+                  {
+                    "id": "RAL/NCS",
+                    "label": "RAL/NCS",
+                    "price": 182,
+                    "customCode": true
+                  }
+                ]
+              },
+              {
+                "id": "solid",
+                "label": "Solid Surface",
+                "finish": "Solid Surface",
+                "colors": [
+                  {
+                    "id": "S-Blanco",
+                    "label": "S-Blanco",
+                    "price": 198
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "shelf-80",
+            "label": "Étagère · largeur 12 cm, longueur 61–80 cm",
+            "materials": [
+              {
+                "id": "resin",
+                "label": "Lisa / Pizarra — coloris standard ou RAL/NCS",
+                "finish": "Lisa/Pizarra",
+                "colors": [
+                  {
+                    "id": "Gris 7015",
+                    "label": "Gris 7015",
+                    "price": 205
+                  },
+                  {
+                    "id": "Ártico",
+                    "label": "Ártico",
+                    "price": 205
+                  },
+                  {
+                    "id": "Lino",
+                    "label": "Lino",
+                    "price": 205
+                  },
+                  {
+                    "id": "Antracita",
+                    "label": "Antracita",
+                    "price": 205
+                  },
+                  {
+                    "id": "Moka",
+                    "label": "Moka",
+                    "price": 205
+                  },
+                  {
+                    "id": "Piedra",
+                    "label": "Piedra",
+                    "price": 205
+                  },
+                  {
+                    "id": "Arena",
+                    "label": "Arena",
+                    "price": 205
+                  },
+                  {
+                    "id": "Negro",
+                    "label": "Negro",
+                    "price": 205
+                  },
+                  {
+                    "id": "Basalto",
+                    "label": "Basalto",
+                    "price": 205
+                  },
+                  {
+                    "id": "RAL/NCS",
+                    "label": "RAL/NCS",
+                    "price": 226,
+                    "customCode": true
+                  }
+                ]
+              },
+              {
+                "id": "solid",
+                "label": "Solid Surface",
+                "finish": "Solid Surface",
+                "colors": [
+                  {
+                    "id": "S-Blanco",
+                    "label": "S-Blanco",
+                    "price": 246
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "pricingScope": "Exact variants explicitly listed in the manufacturer 2026 price sheet; no interpolation or extrapolation; other versions remain to import."
+      }
     }
   ],
   "spareParts": {
