@@ -34,12 +34,17 @@
   function mediaFor(brand,p,g,v){
     const model=brand==='Carrodrain'?carrodrainVisual(g):null;
     const supplierDocs=model?root.HydroCarrodrainDocuments?.resolve(model.id,v?.version):null;
-    const manufacturerUrl=model?.url||official(brand,v?.manufacturerUrl)||official(brand,g?.manufacturerUrl)||official(brand,p?.manufacturerUrl)||OFFICIAL_HOME[brand];
-    const technicalSheetUrl=official(brand,v?.technicalSheetUrl)||supplierDocs?.technicalSheetUrl||official(brand,g?.technicalSheetUrl)||official(brand,p?.technicalSheetUrl)||'';
+    const bette=brand==='Bette'?root.HydroBetteResources?.resolve(g?.family||p?.collection):null;
+    const manufacturerUrl=model?.url||bette?.productPage||official(brand,v?.manufacturerUrl)||official(brand,g?.manufacturerUrl)||official(brand,p?.manufacturerUrl)||OFFICIAL_HOME[brand];
+    const technicalSheetUrl=official(brand,v?.technicalSheetUrl)||supplierDocs?.technicalSheetUrl||official(brand,bette?.technicalSheetUrl)||official(brand,g?.technicalSheetUrl)||official(brand,p?.technicalSheetUrl)||'';
     const installationGuideUrl=supplierDocs?.installationGuideUrl||'';
-    const image=trustedImage(v?.image);
-    const representativeImage=!image?trustedImage(model?.image||g?.image||p?.image):'';
-    return {manufacturerUrl,technicalSheetUrl,installationGuideUrl,technicalScope:supplierDocs?.technicalScope||'',installationScope:supplierDocs?.installationScope||'',image,representativeImage};
+    const suppliedImage=trustedImage(v?.image);
+    // An unlabeled Bette product picture is NOT proof of the selected colour.
+    // Keep it visible only as a representative visual unless its provenance
+    // explicitly validates the finished article.
+    const image=brand==='Bette'&&v?.imageFinishMatch!=='exact'?'':suppliedImage;
+    const representativeImage=!image?trustedImage(suppliedImage||model?.image||g?.image||p?.image):'';
+    return {manufacturerUrl,technicalSheetUrl,installationGuideUrl,technicalScope:supplierDocs?.technicalScope||bette?.technicalScope||'',installationScope:supplierDocs?.installationScope||'',configuratorPage:bette?.configuratorPage||'',downloadsPage:bette?.downloadsPage||'',image,representativeImage};
   }
   function mediaPreview(brand,p,g,v){
     const m=mediaFor(brand,p,g,v),src=m.image||m.representativeImage;
@@ -49,7 +54,8 @@
     const note=m.image?'Visuel de la référence sélectionnée':m.representativeImage?'Visuel de collection · finition non garantie':'La photo fabricant sera recherchée après ajout';
     const tech=m.technicalSheetUrl?' · <a href="'+esc(m.technicalSheetUrl)+'" target="_blank" rel="noopener noreferrer">'+(m.technicalScope==='exact-version'?'Fiche technique '+esc(v?.version||''):'Fiche technique fabricant · famille')+'</a>':'';
     const install=m.installationGuideUrl?' · <a href="'+esc(m.installationGuideUrl)+'" target="_blank" rel="noopener noreferrer">Notice de pose · famille</a>':'';
-    return '<div class="brand-config-media" style="display:flex;flex-direction:column;align-items:center;gap:6px">'+photo+'<small style="font-size:11px;text-align:center">'+esc(note)+'<br><a href="'+esc(m.manufacturerUrl)+'" target="_blank" rel="noopener noreferrer">Voir le produit chez '+esc(brand)+'</a>'+tech+install+'</small></div>';
+    const betteLinks=brand==='Bette'?'<br><a href="'+esc(m.configuratorPage)+'" target="_blank" rel="noopener noreferrer">Configurateur 3D Bette · couleurs et options</a> · <a href="'+esc(m.downloadsPage)+'" target="_blank" rel="noopener noreferrer">Plans, CAO/BIM et notices Bette</a>':'';
+    return '<div class="brand-config-media" style="display:flex;flex-direction:column;align-items:center;gap:6px">'+photo+'<small style="font-size:11px;text-align:center">'+esc(note)+'<br><a href="'+esc(m.manufacturerUrl)+'" target="_blank" rel="noopener noreferrer">Voir le produit chez '+esc(brand)+'</a>'+tech+install+betteLinks+'</small></div>';
   }
 
   // Official Carrodrain storefront model images (collection illustrations).
@@ -188,7 +194,7 @@
         const selected=rows.find(v=>v.reference===draft.reference)||exact;if(!selected)throw new Error('Référence Bette introuvable.');
         const price=verifiedPublicPrice('Bette',selected);
         const media=mediaFor('Bette',p,g,selected);
-        const configured={manufacturer:'Bette',collection:g.family,reference:selected.reference,base:selected.reference,designation:selected.designation,category:selected.category,finish:[selected.color,selected.option].filter(Boolean).join(' · '),price,totalPrice:price,currency:'€',vat:'HT',source:'TARIF BETTE.csv',sourceYear:2026,manufacturerUrl:media.manufacturerUrl,image:media.image||media.representativeImage,imageSource:media.image?'Visuel exact fabricant':'Visuel de collection · finition illustrative',imageFinishMatch:media.image?'exact':media.representativeImage?'collection':'missing',technicalSheetUrl:media.technicalSheetUrl,purchaseDiscount:50,configuratorType:'bette-configured'};
+        const configured={manufacturer:'Bette',collection:g.family,reference:selected.reference,base:selected.reference,designation:selected.designation,category:selected.category,finish:[selected.color,selected.option].filter(Boolean).join(' · '),price,totalPrice:price,currency:'€',vat:'HT',source:'TARIF BETTE.csv',sourceYear:2026,manufacturerUrl:media.manufacturerUrl,image:media.image||media.representativeImage,imageSource:media.image?'Visuel exact fabricant':'Visuel de collection · finition illustrative',imageFinishMatch:media.image?'exact':media.representativeImage?'collection':'missing',technicalSheetUrl:media.technicalSheetUrl,technicalSheetLabel:media.technicalScope==='family'?'Fiche technique Bette · famille':'Fiche technique Bette',purchaseDiscount:50,configuratorType:'bette-configured'};
         commitConfigured(configured,roomId,'betteConfiguration',{group:g.id,family:g.family,model:selected.model,lengthMm:selected.lengthMm,widthMm:selected.widthMm,heightMm:selected.heightMm,color:selected.color,option:selected.option,reference:selected.reference});
       }catch(e){overlay.querySelector('.recor-config-error').textContent=e.message||String(e)}};
     };
