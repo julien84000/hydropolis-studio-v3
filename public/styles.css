@@ -3049,3 +3049,5 @@ main{background:transparent}
 #hydroVersionReload{padding:9px 12px;border:0;border-radius:8px;background:#9b7036;color:#fff;font-weight:600;white-space:nowrap;cursor:pointer;}
 #hydroVersionDismiss{border:0;background:transparent;color:#4b433b;padding:5px 8px;cursor:pointer;font-size:23px;line-height:1;}
 @media(max-width:670px){.rg50-swap-hint,#hydroVersionUpdate{flex-wrap:wrap}#hydroVersionUpdate{top:10px}#hydroVersionReload{flex:1;}}
+
+.sbordoni-documents{width:min(780px,90vw);max-height:85vh;border:1px solid #ddd;border-radius:16px;padding:24px;color:#222}.sbordoni-documents::backdrop{background:rgb(0 0 0 / 45%)}.sbordoni-documents>button{float:right}.sbordoni-documents label{display:grid;gap:8px;margin:20px 0}.sbordoni-documents input{padding:12px}.sbordoni-document-list{display:grid;gap:12px}.sbordoni-document-list a{display:block;padding:10px;border-bottom:1px solid #eee}

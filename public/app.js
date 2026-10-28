@@ -2007,6 +2007,7 @@ function renderCatalog(){
      window.HydroManufacturerGuide?.open?.(brand,rows,$("#targetRoom")?.value||state.rooms[0]?.id||"",
        p=>addCatalogProduct(p.reference,$("#targetRoom")?.value||state.rooms[0]?.id||"",productKey(p)));
    });
+   if(results.querySelector('.sbordoni-launch-actions')){const docs=document.createElement('button');docs.type='button';docs.className='btn ghost';docs.textContent='Fiches techniques';docs.onclick=()=>window.HydroSbordoniDocuments?.open();results.querySelector('.sbordoni-launch-actions').appendChild(docs);}
    results.querySelector(".sbordoni-launch-basin")?.addEventListener("click",()=>window.HydroSbordoniConfigurator?.open?.({collection:fs.collection},$("#targetRoom")?.value||state.rooms[0]?.id||""));
    results.querySelector(".sbordoni-launch-wc")?.addEventListener("click",()=>window.HydroSbordoniWCConfigurator?.open?.({collection:fs.collection},$("#targetRoom")?.value||state.rooms[0]?.id||""));
    results.querySelectorAll(".add").forEach(b=>b.onclick=()=>{try{addCatalogProduct(b.dataset.ref,$("#targetRoom")?.value||state.rooms[0]?.id||"",b.dataset.key||"")}catch(e){alert(`Impossible d’ajouter cet article : ${e.message||"erreur inconnue"}`)}});
@@ -2252,6 +2253,7 @@ function normalizedRoomId(roomId){
 }
 function createSelectedProductRecord(p,roomId,parentId=""){
   if(!p)return null;
+  p={...p,...(window.HydroSbordoniDocuments?.fields(p)||{})};
   const targetRoomId=normalizedRoomId(roomId);
   const cached=cachedManufacturerImage(p);
   const embeddedRecorVisual=recorEmbeddedVisual(p);
@@ -2297,6 +2299,7 @@ function createSelectedProductRecord(p,roomId,parentId=""){
 }
 function commitSelectedRecords(records,{showProject=false}={}){
   const valid=(records||[]).filter(Boolean);
+  if(typeof window!=="undefined")valid.forEach(p=>window.HydroSbordoniDocuments?.migrate(p));
   if(!valid.length)return [];
   state.selected.push(...valid);
   reconcileProjectRoughIns();
@@ -3273,6 +3276,7 @@ function roomProductImageHtml(p){
 
 function migrateLegacySbordoniGroupedConfigurations(){
   const result=window.HydroSbordoniModel.migrate(state.selected||[]);
+  for(const p of result.selected){const before=JSON.stringify(p);window.HydroSbordoniDocuments?.migrate(p);if(before!==JSON.stringify(p))result.changed=true;}
   if(result.changed)state.selected=result.selected;
   return result.changed;
 }
