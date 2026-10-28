@@ -19,6 +19,11 @@ test('Official Bette main sections, French faceted links and original 62,264 pri
  const by={};for(const g of data.groups){const type=api.betteType(g);by[type]=(by[type]||0)+1;}
  console.log('BETTE_OFFICIAL_TYPE_COVERAGE',JSON.stringify({by,examples:data.groups.slice(0,28).map(g=>({id:g.id,family:g.family,category:g.category,variantCategory:g.variants[0]?.category,kind:api.betteType(g)}))}));
  assert.equal(Object.values(by).reduce((a,b)=>a+b,0),93,'no Bette tariff group hidden');
+ const basin=data.groups.find(g=>g.id==='betteaqua-vasque-a-encastrer');
+ assert.equal(api.betteFacetMatches(basin,'vasques-a-encastrer'),true);
+ assert.equal(api.betteFacetMatches(basin,'vasques-a-poser'),false);
+ assert.equal(api.betteFacetMatches(data.groups.find(g=>g.id==='betteair'),'baignoires-ilot'),false);
+
 });
 
 test('Carrodrain official groups include all 13 site models, 635 exact priced supplier variants unchanged',()=>{
