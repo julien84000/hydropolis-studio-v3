@@ -580,6 +580,13 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
       await page.locator('#brandConfigurator .brand-official-facets h3').allTextContents().then(a=>['Type','Forme','Fonction'].every(x=>a.includes(x))));
     check('Bette : aucune classification fictive des variantes comme officielles',
       await page.locator('#brandConfigurator .brand-note').first().innerText().then(x=>x.includes('aucune correspondance')));
+    await page.locator('#brandConfigurator [data-bette-facet="baignoires-ilot"]').click();
+    check('Bette : vraie navigation interne catégorie puis type',
+      await page.locator('#brandConfigurator [data-bette-back="sections"]').count()===1&&
+      await page.locator('#brandConfigurator .brand-category-grid [data-bette-group]').count()>0);
+    check('Bette : pas de filtre de type inventé si le tarif est non renseigné',
+      await page.locator('#brandConfigurator .brand-note').first().innerText().then(x=>x.includes('sans prétendre à un filtrage exact')));
+    await page.locator('#brandConfigurator [data-bette-back="sections"]').click();
     await page.locator('#brandConfigurator [data-bette-back="families"]').click();
     await page.locator('#brandConfigurator [data-bette-family="showers"]').click();
     await page.locator('#brandConfigurator [data-bette-unclassified]').click();
