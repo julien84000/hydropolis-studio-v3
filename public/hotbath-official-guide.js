@@ -53,7 +53,7 @@ function photo(model,collection,photos){
   if(clean(ref)!==key||typeof url!=='string')continue;
   const current=url.match(/^https:\/\/hotbath\.com\/images\/compano\/([^/?#]+)\//i);
   if(current&&clean(current[1])===key)return url;
-  const historical=url.match(/^https:\/\/(?:www\.)?hotbath\.it\/documents\/ProdCateg\/\d+\/([^/?#]+\.(?:jpe?g|png))(?:\?.*)?$/i);
+  const historical=url.match(/^https:\/\/(?:www\.)?hotbath\.it\/documents\/+ProdCateg\/\d+\/([^/?#]+\.(?:jpe?g|png))(?:\?.*)?$/i);
   if(historical){
    const code=decodeURIComponent(historical[1]).replace(/\.[^.]+$/,'').split('_')[0];
    if(clean(code)===key)return url;
