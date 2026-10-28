@@ -24,7 +24,7 @@ test('V11.63.3 Lefroy Brooks Classic: 24 official finish-specific photos match e
    const variants=catalogue.filter(row=>row.base===base);
    assert.equal(variants.length,4,base+' must have four imported tariff finishes');
    const supplierPage=media.modelPages['Lefroy Brooks'][base];
-   assert.equal(supplierPage,'https://uk.lefroybrooks.com/classic-basin-taps/'+base.toLowerCase().replace(/^([a-z]{2})(\\d{4})$/,'$1-$2'));
+   assert.equal(supplierPage,'https://uk.lefroybrooks.com/classic-basin-taps/'+base.slice(0,2).toLowerCase()+'-'+base.slice(2));
    for(const finish of ['AG','CP','NK','PB']){
      const p=variants.find(x=>x.finishCode===finish);
      assert.ok(p,base+finish+' must remain in the price list');
