@@ -1,0 +1,2891 @@
+{
+  "version": 2,
+  "catalogueSha256": "d0eb7aac8feb11888f3c50d78d580d3508dbd3d9f1dcbefc795d31c71d95645f",
+  "extraction": "Rendered PDF image placements at 3 px/point; mirrors preserved, captions outside placements excluded",
+  "count": 99,
+  "images": {
+    "5022-default": {
+      "sourcePage": 93,
+      "printedPage": 91,
+      "sourceImageXref": 3221,
+      "sourceBox": [
+        239,
+        687,
+        313,
+        758
+      ],
+      "renderClip": [
+        239.616,
+        687.0,
+        313.0,
+        758.0
+      ],
+      "transform": "display-matrix=[74.01806,0.00000,-0.00000,81.14606]; image-rect=[239.616, 678.482, 313.634, 759.628]",
+      "pixelSize": [
+        190,
+        189
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "98e57c063849c773c5c89226ae624ba63c220b5a5f7a49ce6dab534f8d66e943",
+      "bytes": 7561
+    },
+    "5033-default": {
+      "sourcePage": 93,
+      "printedPage": 91,
+      "sourceImageXref": 3230,
+      "sourceBox": [
+        395,
+        686,
+        466,
+        759
+      ],
+      "renderClip": [
+        395.129,
+        686.254,
+        466.0,
+        759.0
+      ],
+      "transform": "display-matrix=[-70.89120,-0.00000,-0.00000,73.38600]; image-rect=[395.129, 686.254, 466.02, 759.64]",
+      "pixelSize": [
+        172,
+        198
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "eca65a666c23bf2381db249a12676cf1714df2697c55b40f2a22b61266376288",
+      "bytes": 6892
+    },
+    "5107-high": {
+      "sourcePage": 93,
+      "printedPage": 91,
+      "sourceImageXref": null,
+      "sourceBox": [
+        215,
+        66,
+        328,
+        287
+      ],
+      "renderClip": [
+        215.0,
+        66.0,
+        328.0,
+        287.0
+      ],
+      "transform": "page-clip-no-xref",
+      "pixelSize": [
+        308,
+        654
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "reviewed-page-clip",
+      "sha256": "4137f969ddcfa64e6deb55337f8802e3974d0f180c2b9c2b1e4c792038990d94",
+      "bytes": 19560
+    },
+    "5107-low": {
+      "sourcePage": 93,
+      "printedPage": 91,
+      "sourceImageXref": 3233,
+      "sourceBox": [
+        215,
+        338,
+        328,
+        478
+      ],
+      "renderClip": [
+        222.058,
+        338.0,
+        328.0,
+        478.0
+      ],
+      "transform": "display-matrix=[108.72575,0.00000,-0.00000,163.08864]; image-rect=[222.058, 321.184, 330.783, 484.273]",
+      "pixelSize": [
+        296,
+        406
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "eb3e830085ad0586404a923b38ed3492e78b32620db3bbb3bca18a2204d41a7a",
+      "bytes": 14483
+    },
+    "5109-high": {
+      "sourcePage": 93,
+      "printedPage": 91,
+      "sourceImageXref": null,
+      "sourceBox": [
+        373,
+        66,
+        483,
+        287
+      ],
+      "renderClip": [
+        373.0,
+        66.0,
+        483.0,
+        287.0
+      ],
+      "transform": "page-clip-no-xref",
+      "pixelSize": [
+        305,
+        654
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "reviewed-page-clip",
+      "sha256": "e5d6b94a0f04d502b6b5188609745971548396ccaae4f3209fcda74e1b0ae51e",
+      "bytes": 19796
+    },
+    "5109-low": {
+      "sourcePage": 93,
+      "printedPage": 91,
+      "sourceImageXref": 3228,
+      "sourceBox": [
+        373,
+        338,
+        483,
+        478
+      ],
+      "renderClip": [
+        374.278,
+        338.0,
+        482.51,
+        478.0
+      ],
+      "transform": "display-matrix=[108.23206,0.00000,-0.00000,153.18599]; image-rect=[374.278, 331.087, 482.51, 484.273]",
+      "pixelSize": [
+        296,
+        403
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "71492014bfb7822be9f8f361174cf660ebd394a262c918be1c0dc1669ac11bca",
+      "bytes": 15239
+    },
+    "5177-default": {
+      "sourcePage": 93,
+      "printedPage": 91,
+      "sourceImageXref": 3222,
+      "sourceBox": [
+        222,
+        521,
+        324,
+        635
+      ],
+      "renderClip": [
+        225.393,
+        521.0,
+        324.0,
+        634.312
+      ],
+      "transform": "display-matrix=[98.84159,0.00000,-0.00000,148.26241]; image-rect=[225.393, 486.049, 324.235, 634.312]",
+      "pixelSize": [
+        257,
+        311
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [
+        {
+          "text": "art. 5177+5130",
+          "box": [
+            57,
+            325,
+            250,
+            339
+          ]
+        }
+      ],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "ed7dac9f067751efc4b1f421b4a80ae4e7f4fe85655af319b8bd2450825d557e",
+      "bytes": 12398
+    },
+    "5179-default": {
+      "sourcePage": 93,
+      "printedPage": 91,
+      "sourceImageXref": 3229,
+      "sourceBox": [
+        378,
+        522,
+        480,
+        636
+      ],
+      "renderClip": [
+        378.0,
+        522.0,
+        480.0,
+        634.312
+      ],
+      "transform": "display-matrix=[103.33439,0.00000,-0.00000,155.00160]; image-rect=[377.098, 479.31, 480.433, 634.312]",
+      "pixelSize": [
+        262,
+        303
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [
+        {
+          "text": "art. 5179+5130",
+          "box": [
+            61,
+            322,
+            254,
+            336
+          ]
+        }
+      ],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "91e818be0115df3d690a019500675b7dbd11e4cd27a611ccb439d95cdc9383d8",
+      "bytes": 11799
+    },
+    "5304-alone": {
+      "sourcePage": 109,
+      "printedPage": 107,
+      "sourceImageXref": 3113,
+      "sourceBox": [
+        197,
+        81,
+        310,
+        141
+      ],
+      "renderClip": [
+        197.0,
+        81.0,
+        310.0,
+        141.0
+      ],
+      "transform": "display-matrix=[113.79824,0.00000,-0.00000,61.03851]; image-rect=[196.793, 80.848, 310.591, 141.887]",
+      "pixelSize": [
+        339,
+        165
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "e729aa6153567f5224bdf71641dded4128a67ab4bcee9de6e065848d984c56b8",
+      "bytes": 8372
+    },
+    "5305-alone": {
+      "sourcePage": 109,
+      "printedPage": 107,
+      "sourceImageXref": 3114,
+      "sourceBox": [
+        197,
+        228,
+        309,
+        287
+      ],
+      "renderClip": [
+        197.0,
+        228.423,
+        307.217,
+        287.0
+      ],
+      "transform": "display-matrix=[110.29674,0.00000,-0.00000,59.16040]; image-rect=[196.92, 228.423, 307.217, 287.584]",
+      "pixelSize": [
+        328,
+        161
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "4e871a857b8f8f3a47b8326bb2a959e2dfea00c3701d68853787c7000e4ff8a5",
+      "bytes": 7798
+    },
+    "5309-default": {
+      "sourcePage": 93,
+      "printedPage": 91,
+      "sourceImageXref": 3231,
+      "sourceBox": [
+        543,
+        697,
+        623,
+        769
+      ],
+      "renderClip": [
+        543.0,
+        697.0,
+        623.0,
+        769.0
+      ],
+      "transform": "display-matrix=[98.84159,0.00000,-0.00000,148.26241]; image-rect=[533.644, 633.674, 632.486, 781.936]",
+      "pixelSize": [
+        221,
+        163
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [
+        {
+          "text": "art. 5309+S127__",
+          "box": [
+            0,
+            208,
+            199,
+            215
+          ]
+        }
+      ],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "89155944568d447206d33e3d2fe0826eb00a324bdf7af32aa63f88e489e7b9af",
+      "bytes": 7985
+    },
+    "5324-default": {
+      "sourcePage": 109,
+      "printedPage": 107,
+      "sourceImageXref": 3115,
+      "sourceBox": [
+        377,
+        347,
+        457,
+        426
+      ],
+      "renderClip": [
+        377.762,
+        347.503,
+        457.0,
+        426.0
+      ],
+      "transform": "display-matrix=[-80.00043,-0.00000,-0.00000,78.68108]; image-rect=[377.762, 347.503, 457.762, 426.184]",
+      "pixelSize": [
+        228,
+        216
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "b63c8fc6a5ceb84806fde625d047aa65df99f9efdbdbbf5a7d81a4e16e26c5cf",
+      "bytes": 12785
+    },
+    "5352-alone": {
+      "sourcePage": 109,
+      "printedPage": 107,
+      "sourceImageXref": 3110,
+      "sourceBox": [
+        48,
+        85,
+        145,
+        133
+      ],
+      "renderClip": [
+        48.0,
+        85.0,
+        145.0,
+        133.0
+      ],
+      "transform": "display-matrix=[-202.17598,-0.00000,-0.00000,303.26401]; image-rect=[3.616, -35.315, 205.792, 267.949]",
+      "pixelSize": [
+        276,
+        109
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "8bcd897eb73ec237d7da5a2b7cc08585f6aa57a571b80f164e74df2acd321b89",
+      "bytes": 5350
+    },
+    "5359-5359M": {
+      "sourcePage": 108,
+      "printedPage": 106,
+      "sourceImageXref": 3132,
+      "sourceBox": [
+        529,
+        179,
+        639,
+        247
+      ],
+      "renderClip": [
+        529.0,
+        179.0,
+        639.0,
+        247.0
+      ],
+      "transform": "display-matrix=[-202.17598,-0.00000,-0.00000,303.26401]; image-rect=[499.843, 59.418, 702.019, 362.682]",
+      "pixelSize": [
+        307,
+        166
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "54268caf5cc9d7fa24ae97fbe137b306c9e94de7d115d0e886a5520c5ba4edbf",
+      "bytes": 7976
+    },
+    "5359-5771": {
+      "sourcePage": 108,
+      "printedPage": 106,
+      "sourceImageXref": 3135,
+      "sourceBox": [
+        529,
+        277,
+        639,
+        425
+      ],
+      "renderClip": [
+        529.0,
+        277.0,
+        639.0,
+        425.0
+      ],
+      "transform": "display-matrix=[-202.17598,-0.00000,-0.00000,303.26401]; image-rect=[492.296, 159.402, 694.472, 462.666]",
+      "pixelSize": [
+        314,
+        435
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "0bf82fae55d913806f1f4bc61ba461d6825127bac3f4bc3b5ecec28c40cb22e5",
+      "bytes": 14255
+    },
+    "5359-M5359": {
+      "sourcePage": 108,
+      "printedPage": 106,
+      "sourceImageXref": 3139,
+      "sourceBox": [
+        529,
+        450,
+        639,
+        597
+      ],
+      "renderClip": [
+        529.0,
+        450.0,
+        639.0,
+        597.0
+      ],
+      "transform": "display-matrix=[125.98971,0.00000,-0.00000,151.07657]; image-rect=[519.517, 447.893, 645.506, 598.969]",
+      "pixelSize": [
+        324,
+        417
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "c7dae81491c7a0564894aed5d5ed5b8a8fc0257e80d4043523e5625a2e0a12db",
+      "bytes": 18922
+    },
+    "5359-M5359G": {
+      "sourcePage": 108,
+      "printedPage": 106,
+      "sourceImageXref": 3142,
+      "sourceBox": [
+        529,
+        617,
+        639,
+        766
+      ],
+      "renderClip": [
+        529.0,
+        617.0,
+        639.0,
+        766.0
+      ],
+      "transform": "display-matrix=[125.48057,0.00000,-0.00000,151.07657]; image-rect=[520.038, 616.402, 645.518, 767.479]",
+      "pixelSize": [
+        325,
+        417
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "ac67d92c7b69115459eeb65ca99bcb9268604334ada0a535634170b78c3c4786",
+      "bytes": 22841
+    },
+    "5359-alone": {
+      "sourcePage": 108,
+      "printedPage": 106,
+      "sourceImageXref": 3138,
+      "sourceBox": [
+        529,
+        82,
+        639,
+        135
+      ],
+      "renderClip": [
+        529.0,
+        82.0,
+        639.0,
+        135.0
+      ],
+      "transform": "display-matrix=[-125.44199,-0.00000,-0.00000,55.62000]; image-rect=[520.048, 81.521, 645.49, 137.141]",
+      "pixelSize": [
+        307,
+        127
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "d8727095a594c7710324efb87865d115ca3063749a95b3b179e5c16fc8600ca4",
+      "bytes": 6879
+    },
+    "5365-5365M": {
+      "sourcePage": 108,
+      "printedPage": 106,
+      "sourceImageXref": 3131,
+      "sourceBox": [
+        300,
+        179,
+        422,
+        247
+      ],
+      "renderClip": [
+        300.0,
+        179.0,
+        422.0,
+        247.0
+      ],
+      "transform": "display-matrix=[-202.17598,-0.00000,-0.00000,303.26401]; image-rect=[273.689, 65.437, 475.865, 368.701]",
+      "pixelSize": [
+        330,
+        173
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "f3ff1234cdefd93a6cf209d208928807ae6e62051487540f777ce0fcb5d1eea8",
+      "bytes": 8706
+    },
+    "5365-5771": {
+      "sourcePage": 108,
+      "printedPage": 106,
+      "sourceImageXref": 3134,
+      "sourceBox": [
+        300,
+        277,
+        422,
+        425
+      ],
+      "renderClip": [
+        300.0,
+        277.0,
+        422.0,
+        425.0
+      ],
+      "transform": "display-matrix=[-202.17598,-0.00000,-0.00000,303.26401]; image-rect=[270.674, 164.92, 472.85, 468.184]",
+      "pixelSize": [
+        325,
+        434
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "6936cdff0ec7294a77940a6e65d6d897749ca8b6fd47cc889b6745bcabd3db1c",
+      "bytes": 13814
+    },
+    "5365-M5365": {
+      "sourcePage": 108,
+      "printedPage": 106,
+      "sourceImageXref": 3136,
+      "sourceBox": [
+        300,
+        450,
+        422,
+        597
+      ],
+      "renderClip": [
+        300.0,
+        450.0,
+        413.064,
+        597.0
+      ],
+      "transform": "display-matrix=[117.47314,0.00000,-0.00000,151.07657]; image-rect=[295.591, 447.922, 413.064, 598.998]",
+      "pixelSize": [
+        333,
+        417
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "3f3b606fc00e632aa295d248bebeb705ecb6b8f0c0e3bb52b9853a5a9c91c70d",
+      "bytes": 19513
+    },
+    "5365-M5365G": {
+      "sourcePage": 108,
+      "printedPage": 106,
+      "sourceImageXref": 3141,
+      "sourceBox": [
+        300,
+        617,
+        422,
+        766
+      ],
+      "renderClip": [
+        300.0,
+        617.0,
+        413.064,
+        766.0
+      ],
+      "transform": "display-matrix=[117.47314,0.00000,-0.00000,151.07657]; image-rect=[295.591, 616.431, 413.064, 767.508]",
+      "pixelSize": [
+        333,
+        417
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "d0387cd0fc1f4fa7379cc17ba74cdfc87aa8a2269bd0c4c8f8d16d23843fddfa",
+      "bytes": 23986
+    },
+    "5365-alone": {
+      "sourcePage": 108,
+      "printedPage": 106,
+      "sourceImageXref": 3137,
+      "sourceBox": [
+        300,
+        82,
+        422,
+        135
+      ],
+      "renderClip": [
+        300.0,
+        82.705,
+        422.0,
+        135.0
+      ],
+      "transform": "display-matrix=[-129.76199,-0.00000,-0.00000,55.67400]; image-rect=[296.279, 82.705, 426.041, 138.379]",
+      "pixelSize": [
+        331,
+        129
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "eb4cb7eb5f47f2b031adc85f5f364accffbc568aec986166aa347dd46eaf9a1a",
+      "bytes": 6946
+    },
+    "5369-5369M": {
+      "sourcePage": 108,
+      "printedPage": 106,
+      "sourceImageXref": 3143,
+      "sourceBox": [
+        54,
+        179,
+        201,
+        247
+      ],
+      "renderClip": [
+        54.0,
+        179.0,
+        201.0,
+        247.0
+      ],
+      "transform": "display-matrix=[-202.17598,-0.00000,-0.00000,303.26401]; image-rect=[41.533, 69.914, 243.709, 373.178]",
+      "pixelSize": [
+        359,
+        194
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "ecc708c46afe9bc2f3b68e03e402bf971f9d6d0f04c449ae5e63b4983dc2e832",
+      "bytes": 10373
+    },
+    "5369-5771": {
+      "sourcePage": 108,
+      "printedPage": 106,
+      "sourceImageXref": 3133,
+      "sourceBox": [
+        54,
+        277,
+        201,
+        425
+      ],
+      "renderClip": [
+        54.0,
+        277.0,
+        201.0,
+        425.0
+      ],
+      "transform": "display-matrix=[-202.17598,-0.00000,-0.00000,303.26401]; image-rect=[37.871, 169.618, 240.047, 472.882]",
+      "pixelSize": [
+        357,
+        434
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "f41e5befd7cb0eeec1cb09b0fb91911fde7225a750d11bb1765d834a35276b24",
+      "bytes": 14789
+    },
+    "5369-M5369": {
+      "sourcePage": 108,
+      "printedPage": 106,
+      "sourceImageXref": 3130,
+      "sourceBox": [
+        54,
+        450,
+        201,
+        597
+      ],
+      "renderClip": [
+        54.0,
+        450.0,
+        201.0,
+        597.0
+      ],
+      "transform": "display-matrix=[173.29372,0.00000,-0.00000,150.70628]; image-rect=[45.379, 447.814, 218.673, 598.52]",
+      "pixelSize": [
+        385,
+        427
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "d790f1d8d0df03bc29333e38b57b030df0141be00c599387e1c94072cd9f52c7",
+      "bytes": 22297
+    },
+    "5369-M5369G": {
+      "sourcePage": 108,
+      "printedPage": 106,
+      "sourceImageXref": 3140,
+      "sourceBox": [
+        54,
+        617,
+        201,
+        766
+      ],
+      "renderClip": [
+        54.0,
+        617.0,
+        201.0,
+        766.0
+      ],
+      "transform": "display-matrix=[173.29372,0.00000,-0.00000,150.70628]; image-rect=[45.379, 616.323, 218.673, 767.029]",
+      "pixelSize": [
+        385,
+        429
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "a5a2a45b5f007a3c4a5c3c7d3917b37951764a1962d0d7177d0cf105096d33f0",
+      "bytes": 28108
+    },
+    "5369-alone": {
+      "sourcePage": 108,
+      "printedPage": 106,
+      "sourceImageXref": 3129,
+      "sourceBox": [
+        54,
+        82,
+        201,
+        135
+      ],
+      "renderClip": [
+        63.797,
+        82.732,
+        200.255,
+        135.0
+      ],
+      "transform": "display-matrix=[-136.45799,-0.00000,-0.00000,55.62000]; image-rect=[63.797, 82.732, 200.255, 138.352]",
+      "pixelSize": [
+        353,
+        138
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "35112b64598fa1b7bfdd10477d654dd24b821d585d2100cb719c2719e59c8555",
+      "bytes": 8210
+    },
+    "5520-default": {
+      "sourcePage": 109,
+      "printedPage": 107,
+      "sourceImageXref": 3108,
+      "sourceBox": [
+        377,
+        65,
+        459,
+        149
+      ],
+      "renderClip": [
+        377.0,
+        65.0,
+        459.0,
+        149.0
+      ],
+      "transform": "display-matrix=[128.49409,0.00000,-0.00000,192.74117]; image-rect=[348.832, -20.283, 477.326, 172.458]",
+      "pixelSize": [
+        218,
+        233
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "1bfcbd260b8802995b286637658aaa5050162bd68b0f6158b613e53368cd7de7",
+      "bytes": 10398
+    },
+    "5521-default": {
+      "sourcePage": 109,
+      "printedPage": 107,
+      "sourceImageXref": 3109,
+      "sourceBox": [
+        372,
+        213,
+        454,
+        297
+      ],
+      "renderClip": [
+        372.0,
+        213.0,
+        454.0,
+        297.0
+      ],
+      "transform": "display-matrix=[98.15521,0.00000,-0.00000,96.30193]; image-rect=[364.001, 203.435, 462.156, 299.737]",
+      "pixelSize": [
+        233,
+        227
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "482dd82f5a29b4fc999dce32fd4677cc3a3ab30af1cb0351e015c91534969f9c",
+      "bytes": 9250
+    },
+    "5700-G571": {
+      "sourcePage": 92,
+      "printedPage": 90,
+      "sourceImageXref": 3275,
+      "sourceBox": [
+        41,
+        637,
+        204,
+        780
+      ],
+      "renderClip": [
+        42.52,
+        637.0,
+        199.768,
+        780.0
+      ],
+      "transform": "display-matrix=[-157.24797,-0.00000,-0.00000,235.87198]; image-rect=[42.52, 554.536, 199.768, 790.408]",
+      "pixelSize": [
+        440,
+        422
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [
+        {
+          "text": "art. 5700+G571",
+          "box": [
+            143,
+            386,
+            342,
+            417
+          ]
+        }
+      ],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "fae2bf308d3b8223e5f6111be168c07964fd4344b0ffb957566c915c49b54a1a",
+      "bytes": 16334
+    },
+    "5700-N5700": {
+      "sourcePage": 92,
+      "printedPage": 90,
+      "sourceImageXref": 3288,
+      "sourceBox": [
+        41,
+        318,
+        204,
+        455
+      ],
+      "renderClip": [
+        45.354,
+        318.0,
+        202.602,
+        455.0
+      ],
+      "transform": "display-matrix=[-157.24797,-0.00000,-0.00000,235.87198]; image-rect=[45.354, 232.452, 202.602, 468.324]",
+      "pixelSize": [
+        431,
+        405
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "4be81cad6780c5a96dddb492bbe8f4e03e7586d1b7a7f9e9556c79cbca5b5530",
+      "bytes": 17746
+    },
+    "5700-P5700": {
+      "sourcePage": 92,
+      "printedPage": 90,
+      "sourceImageXref": 3287,
+      "sourceBox": [
+        41,
+        164,
+        204,
+        300
+      ],
+      "renderClip": [
+        42.52,
+        164.0,
+        199.842,
+        300.0
+      ],
+      "transform": "display-matrix=[-157.32283,-0.00000,-0.00000,143.79239]; image-rect=[42.52, 161.903, 199.842, 305.695]",
+      "pixelSize": [
+        438,
+        408
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "5c4f85b1ebda4ae029a6d8c940eaae686986722b6ad410a448b74761b74f1e82",
+      "bytes": 20514
+    },
+    "5700-Y5700": {
+      "sourcePage": 92,
+      "printedPage": 90,
+      "sourceImageXref": 3289,
+      "sourceBox": [
+        41,
+        475,
+        204,
+        617
+      ],
+      "renderClip": [
+        41.507,
+        475.0,
+        204.0,
+        617.0
+      ],
+      "transform": "display-matrix=[-163.59000,-0.00000,-0.00000,143.76599]; image-rect=[41.507, 473.949, 205.097, 617.715]",
+      "pixelSize": [
+        479,
+        416
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [
+        {
+          "text": "art. 5700+Y5700__",
+          "box": [
+            128,
+            407,
+            363,
+            425
+          ]
+        }
+      ],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "fcb4e21708cf5cc86c8f1520d9997833d481a99d6fde3f0de89f30e67be2017f",
+      "bytes": 26826
+    },
+    "5700-alone": {
+      "sourcePage": 92,
+      "printedPage": 90,
+      "sourceImageXref": 3276,
+      "sourceBox": [
+        41,
+        87,
+        204,
+        139
+      ],
+      "renderClip": [
+        42.321,
+        87.0,
+        199.569,
+        139.0
+      ],
+      "transform": "display-matrix=[-157.24797,-0.00000,-0.00000,235.87198]; image-rect=[42.321, 10.332, 199.569, 246.204]",
+      "pixelSize": [
+        436,
+        125
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "ab27063cb930ecba7172d2d11c6da7dafd343e47ac985dfc1fb936af4025f9bb",
+      "bytes": 9080
+    },
+    "5758-5771": {
+      "sourcePage": 93,
+      "printedPage": 91,
+      "sourceImageXref": 3238,
+      "sourceBox": [
+        47,
+        637,
+        151,
+        773
+      ],
+      "renderClip": [
+        47.0,
+        637.0,
+        151.0,
+        773.0
+      ],
+      "transform": "display-matrix=[-157.24797,-0.00000,-0.00000,235.87198]; image-rect=[23.977, 551.865, 181.225, 787.736]",
+      "pixelSize": [
+        272,
+        345
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [
+        {
+          "text": "art. 5758+5771",
+          "box": [
+            68,
+            388,
+            266,
+            407
+          ]
+        }
+      ],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "3a3c39a3f08205d672ac6a5ca7f462991e34b365cc6963085ce5b1e3a00beee1",
+      "bytes": 10736
+    },
+    "5758-N5758": {
+      "sourcePage": 93,
+      "printedPage": 91,
+      "sourceImageXref": 3235,
+      "sourceBox": [
+        47,
+        319,
+        151,
+        452
+      ],
+      "renderClip": [
+        47.0,
+        319.0,
+        151.0,
+        452.0
+      ],
+      "transform": "display-matrix=[-152.75519,-0.00000,-0.00000,229.13278]; image-rect=[28.937, 235.287, 181.693, 464.419]",
+      "pixelSize": [
+        261,
+        370
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "f6576b2cc3e51f71370a1cddfa9ea5513d8721183b9a7992f35fc0538f226b01",
+      "bytes": 11783
+    },
+    "5758-P5758": {
+      "sourcePage": 93,
+      "printedPage": 91,
+      "sourceImageXref": 3237,
+      "sourceBox": [
+        47,
+        163,
+        151,
+        296
+      ],
+      "renderClip": [
+        47.0,
+        163.0,
+        151.0,
+        296.0
+      ],
+      "transform": "display-matrix=[-152.75519,-0.00000,-0.00000,229.13278]; image-rect=[32.088, 80.798, 184.843, 309.931]",
+      "pixelSize": [
+        260,
+        384
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "870d2a6e85df03067d25384bed8fe72f79b05c368164bb5578a1371ca971a5a3",
+      "bytes": 15641
+    },
+    "5758-Y5758": {
+      "sourcePage": 93,
+      "printedPage": 91,
+      "sourceImageXref": 3239,
+      "sourceBox": [
+        47,
+        475,
+        151,
+        614
+      ],
+      "renderClip": [
+        47.0,
+        475.0,
+        151.0,
+        614.0
+      ],
+      "transform": "display-matrix=[-152.75519,-0.00000,-0.00000,143.77917]; image-rect=[23.9, 474.415, 176.655, 618.195]",
+      "pixelSize": [
+        307,
+        387
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [
+        {
+          "text": "art. 5758+Y5758__",
+          "box": [
+            49,
+            409,
+            285,
+            416
+          ]
+        }
+      ],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "d74cd9caceb8d21cf5d91bb2b3016d4b171b5d2ad96fd0390f831ae0602f6600",
+      "bytes": 19579
+    },
+    "5758-alone": {
+      "sourcePage": 93,
+      "printedPage": 91,
+      "sourceImageXref": 3236,
+      "sourceBox": [
+        47,
+        88,
+        151,
+        136
+      ],
+      "renderClip": [
+        47.0,
+        88.0,
+        151.0,
+        136.0
+      ],
+      "transform": "display-matrix=[-152.75519,-0.00000,-0.00000,229.13278]; image-rect=[26.773, 4.263, 179.528, 233.396]",
+      "pixelSize": [
+        262,
+        98
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "34b021cda06ea85f35f8abc20586977da5dcff360993f642285b892a94626e56",
+      "bytes": 5389
+    },
+    "5765-5771": {
+      "sourcePage": 92,
+      "printedPage": 90,
+      "sourceImageXref": 3282,
+      "sourceBox": [
+        528,
+        637,
+        647,
+        780
+      ],
+      "renderClip": [
+        528.0,
+        637.0,
+        647.0,
+        780.0
+      ],
+      "transform": "display-matrix=[-157.24797,-0.00000,-0.00000,235.87198]; image-rect=[504.132, 554.811, 661.38, 790.683]",
+      "pixelSize": [
+        294,
+        352
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [
+        {
+          "text": "art. 5765+5771",
+          "box": [
+            74,
+            388,
+            272,
+            419
+          ]
+        }
+      ],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "1d7a3861fee156c5d3151d70ca7b55e8706e87cffd093196ec62ec8b5347f69c",
+      "bytes": 11064
+    },
+    "5765-N5765": {
+      "sourcePage": 92,
+      "printedPage": 90,
+      "sourceImageXref": 3285,
+      "sourceBox": [
+        528,
+        318,
+        647,
+        455
+      ],
+      "renderClip": [
+        528.0,
+        318.0,
+        647.0,
+        455.0
+      ],
+      "transform": "display-matrix=[-152.75519,-0.00000,-0.00000,229.13278]; image-rect=[500.348, 237.773, 653.103, 466.905]",
+      "pixelSize": [
+        297,
+        381
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "06962012cf72c85f518d09d7a4e38d3c77017ec261fe18576b8a56eec88d9056",
+      "bytes": 12518
+    },
+    "5765-P5765": {
+      "sourcePage": 92,
+      "printedPage": 90,
+      "sourceImageXref": 3284,
+      "sourceBox": [
+        528,
+        164,
+        647,
+        300
+      ],
+      "renderClip": [
+        528.0,
+        164.0,
+        647.0,
+        300.0
+      ],
+      "transform": "display-matrix=[-152.75519,-0.00000,-0.00000,229.13278]; image-rect=[507.029, 85.05, 659.784, 314.183]",
+      "pixelSize": [
+        296,
+        386
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "5d4ea4b6072fce809dcb02635d0f45bc78994bf599a322c5e149da0872fe2cb4",
+      "bytes": 16755
+    },
+    "5765-Y5765": {
+      "sourcePage": 92,
+      "printedPage": 90,
+      "sourceImageXref": 3286,
+      "sourceBox": [
+        528,
+        475,
+        647,
+        617
+      ],
+      "renderClip": [
+        528.0,
+        475.0,
+        647.0,
+        617.0
+      ],
+      "transform": "display-matrix=[-130.31517,-0.00000,-0.00000,143.77917]; image-rect=[520.426, 473.839, 650.741, 617.618]",
+      "pixelSize": [
+        344,
+        375
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [
+        {
+          "text": "art. 5765+Y5765__",
+          "box": [
+            55,
+            413,
+            291,
+            425
+          ]
+        }
+      ],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "d91fb7d6df5e6d54727674def85547f6cf72d9fb06d11f864d6d2ff147849185",
+      "bytes": 20971
+    },
+    "5765-alone": {
+      "sourcePage": 92,
+      "printedPage": 90,
+      "sourceImageXref": 3283,
+      "sourceBox": [
+        528,
+        87,
+        647,
+        139
+      ],
+      "renderClip": [
+        528.0,
+        87.0,
+        647.0,
+        139.0
+      ],
+      "transform": "display-matrix=[-152.75519,-0.00000,-0.00000,229.13278]; image-rect=[506.714, 8.504, 659.469, 237.637]",
+      "pixelSize": [
+        296,
+        100
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "db821e43247652b4deb045c6a2e7c1b4783a741de278a1835d2bbc23aa8e8edf",
+      "bytes": 6037
+    },
+    "5770-5771": {
+      "sourcePage": 92,
+      "printedPage": 90,
+      "sourceImageXref": 3279,
+      "sourceBox": [
+        378,
+        637,
+        519,
+        780
+      ],
+      "renderClip": [
+        378.0,
+        637.0,
+        516.477,
+        780.0
+      ],
+      "transform": "display-matrix=[-152.75519,-0.00000,-0.00000,229.13278]; image-rect=[363.722, 557.125, 516.477, 786.258]",
+      "pixelSize": [
+        314,
+        356
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [
+        {
+          "text": "art. 5770+5771",
+          "box": [
+            98,
+            388,
+            297,
+            418
+          ]
+        }
+      ],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "3bfd31fafa6fe00e658b656e83b786fb006268dfe491d05d70d24404b6aa94e2",
+      "bytes": 11810
+    },
+    "5770-N5770": {
+      "sourcePage": 92,
+      "printedPage": 90,
+      "sourceImageXref": 3280,
+      "sourceBox": [
+        378,
+        318,
+        519,
+        455
+      ],
+      "renderClip": [
+        378.0,
+        318.0,
+        515.06,
+        455.0
+      ],
+      "transform": "display-matrix=[-152.75519,-0.00000,-0.00000,229.13278]; image-rect=[362.304, 242.836, 515.06, 471.968]",
+      "pixelSize": [
+        319,
+        388
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "0d28e1f1953c552710ff43684299166357ab9c8c5458557143f956ea10ffe7ff",
+      "bytes": 13490
+    },
+    "5770-P5770": {
+      "sourcePage": 92,
+      "printedPage": 90,
+      "sourceImageXref": 3278,
+      "sourceBox": [
+        378,
+        164,
+        519,
+        300
+      ],
+      "renderClip": [
+        378.0,
+        164.0,
+        517.894,
+        300.0
+      ],
+      "transform": "display-matrix=[-152.75519,-0.00000,-0.00000,229.13278]; image-rect=[365.139, 89.302, 517.894, 318.435]",
+      "pixelSize": [
+        321,
+        396
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "f09c6104f951cb04994827f945ee3a69f74fe372aa4e4429c6295db902919fb1",
+      "bytes": 18142
+    },
+    "5770-Y5770": {
+      "sourcePage": 92,
+      "printedPage": 90,
+      "sourceImageXref": 3281,
+      "sourceBox": [
+        378,
+        475,
+        519,
+        617
+      ],
+      "renderClip": [
+        378.0,
+        475.0,
+        508.632,
+        614.185
+      ],
+      "transform": "display-matrix=[-131.62079,-0.00000,-0.00000,139.78078]; image-rect=[377.011, 474.405, 508.632, 614.185]",
+      "pixelSize": [
+        365,
+        385
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [
+        {
+          "text": "art. 5770+Y5770__",
+          "box": [
+            80,
+            409,
+            315,
+            417
+          ]
+        }
+      ],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "9c9a0952f6b8414aa4c3f3c6c9702bd9ef65312a0f644bf82cbb613053ba9fd9",
+      "bytes": 21540
+    },
+    "5770-alone": {
+      "sourcePage": 92,
+      "printedPage": 90,
+      "sourceImageXref": 3277,
+      "sourceBox": [
+        378,
+        87,
+        519,
+        139
+      ],
+      "renderClip": [
+        378.0,
+        87.0,
+        517.894,
+        139.0
+      ],
+      "transform": "display-matrix=[-152.75519,-0.00000,-0.00000,229.13278]; image-rect=[365.139, 12.521, 517.894, 241.654]",
+      "pixelSize": [
+        321,
+        111
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "00c9fc8c1a59fd12a5e16206bc1423db27bc087568f899f554babef9cfb2041c",
+      "bytes": 6889
+    },
+    "5775-5771": {
+      "sourcePage": 92,
+      "printedPage": 90,
+      "sourceImageXref": 3292,
+      "sourceBox": [
+        225,
+        637,
+        365,
+        780
+      ],
+      "renderClip": [
+        225.0,
+        637.0,
+        365.0,
+        780.0
+      ],
+      "transform": "display-matrix=[-152.75519,-0.00000,-0.00000,229.13278]; image-rect=[217.819, 559.486, 370.574, 788.619]",
+      "pixelSize": [
+        339,
+        352
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [
+        {
+          "text": "art. 5775+5771",
+          "box": [
+            102,
+            388,
+            300,
+            418
+          ]
+        }
+      ],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "1a0c810d434a5c46157a3d020f999bf6abfa86e1089a47a11b828b97c6421997",
+      "bytes": 12488
+    },
+    "5775-N5775": {
+      "sourcePage": 92,
+      "printedPage": 90,
+      "sourceImageXref": 3293,
+      "sourceBox": [
+        225,
+        318,
+        365,
+        455
+      ],
+      "renderClip": [
+        225.0,
+        318.0,
+        363.487,
+        455.0
+      ],
+      "transform": "display-matrix=[-152.75519,-0.00000,-0.00000,229.13278]; image-rect=[210.732, 243.779, 363.487, 472.912]",
+      "pixelSize": [
+        334,
+        385
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "1dc7de780a36c3fb8b1e057d871855f441623be618179ef289cf6ce62d57df59",
+      "bytes": 13703
+    },
+    "5775-P5775": {
+      "sourcePage": 92,
+      "printedPage": 90,
+      "sourceImageXref": 3290,
+      "sourceBox": [
+        225,
+        164,
+        365,
+        300
+      ],
+      "renderClip": [
+        225.0,
+        164.0,
+        365.0,
+        300.0
+      ],
+      "transform": "display-matrix=[-152.75519,-0.00000,-0.00000,229.13278]; image-rect=[214.984, 90.709, 367.739, 319.841]",
+      "pixelSize": [
+        342,
+        388
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "e9c3e393d6543149b4e79f2c54edb7ce25ea8eaad12b5bccf8ceecb31c7b013d",
+      "bytes": 17982
+    },
+    "5775-Y5775": {
+      "sourcePage": 92,
+      "printedPage": 90,
+      "sourceImageXref": 3294,
+      "sourceBox": [
+        225,
+        475,
+        365,
+        617
+      ],
+      "renderClip": [
+        225.0,
+        475.0,
+        359.135,
+        617.0
+      ],
+      "transform": "display-matrix=[-134.23198,-0.00000,-0.00000,143.77917]; image-rect=[224.904, 474.41, 359.135, 618.189]",
+      "pixelSize": [
+        376,
+        388
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [
+        {
+          "text": "art. 5775+Y5775__",
+          "box": [
+            83,
+            409,
+            319,
+            425
+          ]
+        }
+      ],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "bb65245a06f01335c3938c5427df6c803a2038f07d3439291a4a95247a222d95",
+      "bytes": 22743
+    },
+    "5775-alone": {
+      "sourcePage": 92,
+      "printedPage": 90,
+      "sourceImageXref": 3291,
+      "sourceBox": [
+        225,
+        87,
+        365,
+        139
+      ],
+      "renderClip": [
+        225.0,
+        87.0,
+        365.0,
+        139.0
+      ],
+      "transform": "display-matrix=[-156.37794,-0.00000,-0.00000,234.56694]; image-rect=[210.732, 12.047, 367.11, 246.614]",
+      "pixelSize": [
+        350,
+        116
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "cc4293f4eeafdac54bceefc09a814728973995f3b2165803e4d796970299b3eb",
+      "bytes": 8328
+    },
+    "7020-high": {
+      "sourcePage": 57,
+      "printedPage": 55,
+      "sourceImageXref": null,
+      "sourceBox": [
+        210,
+        85,
+        312,
+        298
+      ],
+      "renderClip": [
+        210.0,
+        85.0,
+        312.0,
+        298.0
+      ],
+      "transform": "page-clip-no-xref",
+      "pixelSize": [
+        281,
+        629
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "reviewed-page-clip",
+      "sha256": "7378a52ecc7372d1fd89ef1fda0e5c2b8e545bcec72454f9e9cc65fe2cfbb12c",
+      "bytes": 16396
+    },
+    "7020-low": {
+      "sourcePage": 57,
+      "printedPage": 55,
+      "sourceImageXref": 3484,
+      "sourceBox": [
+        210,
+        342,
+        312,
+        477
+      ],
+      "renderClip": [
+        210.0,
+        342.0,
+        312.0,
+        477.0
+      ],
+      "transform": "display-matrix=[108.64894,0.00000,-0.00000,162.97340]; image-rect=[207.32, 333.103, 315.969, 496.077]",
+      "pixelSize": [
+        281,
+        390
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "eacff054f4eb39b2a967596de49ad7423465bdf16046c562c29ce7a723a84fcf",
+      "bytes": 13362
+    },
+    "7021-high": {
+      "sourcePage": 57,
+      "printedPage": 55,
+      "sourceImageXref": null,
+      "sourceBox": [
+        386,
+        85,
+        484,
+        298
+      ],
+      "renderClip": [
+        386.0,
+        85.0,
+        484.0,
+        298.0
+      ],
+      "transform": "page-clip-no-xref",
+      "pixelSize": [
+        277,
+        629
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "reviewed-page-clip",
+      "sha256": "2ac280bca49b0597bea110fd1a98b88584c99998c656be9e239cbb0e8fd931f5",
+      "bytes": 16361
+    },
+    "7021-low": {
+      "sourcePage": 57,
+      "printedPage": 55,
+      "sourceImageXref": 3479,
+      "sourceBox": [
+        386,
+        342,
+        484,
+        477
+      ],
+      "renderClip": [
+        386.0,
+        342.0,
+        484.0,
+        477.0
+      ],
+      "transform": "display-matrix=[108.64894,0.00000,-0.00000,162.59615]; image-rect=[380.317, 334.505, 488.966, 497.101]",
+      "pixelSize": [
+        281,
+        389
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "234f2a7fdb0d171a5b22431d6a5662c26f55b6303f6fbdaa3f697417329bd56a",
+      "bytes": 12961
+    },
+    "7024-default": {
+      "sourcePage": 57,
+      "printedPage": 55,
+      "sourceImageXref": 3486,
+      "sourceBox": [
+        218,
+        686,
+        308,
+        750
+      ],
+      "renderClip": [
+        218.0,
+        686.0,
+        308.0,
+        750.0
+      ],
+      "transform": "display-matrix=[108.64893,0.00000,-0.00000,162.97342]; image-rect=[214.703, 629.282, 323.351, 792.255]",
+      "pixelSize": [
+        222,
+        175
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "b051dc0d764f6cd5d34732ef01fbacc74e6298ac7b1aed5815a1a9b34d3fbef2",
+      "bytes": 7077
+    },
+    "7032-default": {
+      "sourcePage": 57,
+      "printedPage": 55,
+      "sourceImageXref": 3483,
+      "sourceBox": [
+        212,
+        520,
+        311,
+        633
+      ],
+      "renderClip": [
+        212.0,
+        520.0,
+        311.0,
+        633.0
+      ],
+      "transform": "display-matrix=[117.88638,0.00000,-0.00000,176.82957]; image-rect=[198.69, 474.641, 316.576, 651.471]",
+      "pixelSize": [
+        282,
+        319
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "94b8dfe1657dc5a32d49cc4d2b0b8894a558a8856c65e6630aa1ebfabde21f2f",
+      "bytes": 12092
+    },
+    "7034-default": {
+      "sourcePage": 57,
+      "printedPage": 55,
+      "sourceImageXref": 3480,
+      "sourceBox": [
+        383,
+        521,
+        484,
+        632
+      ],
+      "renderClip": [
+        383.0,
+        521.399,
+        484.0,
+        632.0
+      ],
+      "transform": "display-matrix=[107.99953,0.00000,-0.00000,115.27298]; image-rect=[382.842, 521.399, 490.842, 636.672]",
+      "pixelSize": [
+        290,
+        319
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "207be7fa64c322e326a56b871c6db8f0cec1dcf2d0cd0b2669c5143c64996110",
+      "bytes": 14968
+    },
+    "7050-alone": {
+      "sourcePage": 57,
+      "printedPage": 55,
+      "sourceImageXref": 3482,
+      "sourceBox": [
+        52,
+        555,
+        153,
+        612
+      ],
+      "renderClip": [
+        52.0,
+        555.0,
+        153.0,
+        612.0
+      ],
+      "transform": "display-matrix=[-128.25946,-0.00000,-0.00000,118.26278]; image-rect=[39.752, 521.736, 168.012, 639.998]",
+      "pixelSize": [
+        266,
+        116
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "b5ebc19c1a3d472111f2d9357365b83473474cd4369da628dee400b8af167139",
+      "bytes": 5566
+    },
+    "7064-7001": {
+      "sourcePage": 57,
+      "printedPage": 55,
+      "sourceImageXref": 3481,
+      "sourceBox": [
+        52,
+        342,
+        149,
+        461
+      ],
+      "renderClip": [
+        52.0,
+        342.0,
+        149.0,
+        461.0
+      ],
+      "transform": "display-matrix=[-147.12480,-0.00000,-0.00000,220.68724]; image-rect=[27.638, 261.918, 174.763, 482.605]",
+      "pixelSize": [
+        262,
+        346
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "03f8b039ac11c6aa433d7fe01ce22e3ed7dcd02181c424e2d491161c8a41ddce",
+      "bytes": 10931
+    },
+    "7064-P7064": {
+      "sourcePage": 57,
+      "printedPage": 55,
+      "sourceImageXref": 3475,
+      "sourceBox": [
+        52,
+        183,
+        149,
+        300
+      ],
+      "renderClip": [
+        52.0,
+        185.141,
+        149.0,
+        300.0
+      ],
+      "transform": "display-matrix=[-111.42478,-0.00000,-0.00000,143.28809]; image-rect=[48.583, 185.141, 160.008, 328.429]",
+      "pixelSize": [
+        256,
+        329
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "191d6a0b7922db07f09610eb62ddd59d524d127180e8bbcf0ca954ba88550d7f",
+      "bytes": 13972
+    },
+    "7064-alone": {
+      "sourcePage": 57,
+      "printedPage": 55,
+      "sourceImageXref": 3474,
+      "sourceBox": [
+        52,
+        82,
+        149,
+        146
+      ],
+      "renderClip": [
+        52.0,
+        86.456,
+        149.0,
+        136.361
+      ],
+      "transform": "display-matrix=[-111.42478,-0.00000,-0.00000,49.90499]; image-rect=[48.583, 86.456, 160.008, 136.361]",
+      "pixelSize": [
+        256,
+        119
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "88ec53f335ef36c851a197db97eaa995a59e3e0fd233e7c4209b5616923deb96",
+      "bytes": 6040
+    },
+    "7070-7001": {
+      "sourcePage": 56,
+      "printedPage": 54,
+      "sourceImageXref": 3513,
+      "sourceBox": [
+        530,
+        345,
+        637,
+        471
+      ],
+      "renderClip": [
+        530.0,
+        345.0,
+        637.0,
+        471.0
+      ],
+      "transform": "display-matrix=[-144.95288,-0.00000,-0.00000,217.42935]; image-rect=[513.394, 262.847, 658.346, 480.276]",
+      "pixelSize": [
+        275,
+        348
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "1f45580122e383fc05fd184cd89dfaf76e84ebc480d10363143e76585629b05c",
+      "bytes": 10604
+    },
+    "7070-7070M": {
+      "sourcePage": 56,
+      "printedPage": 54,
+      "sourceImageXref": 3512,
+      "sourceBox": [
+        530,
+        669,
+        637,
+        762
+      ],
+      "renderClip": [
+        530.0,
+        669.0,
+        637.0,
+        762.0
+      ],
+      "transform": "display-matrix=[-144.95288,-0.00000,-0.00000,217.42935]; image-rect=[513.394, 585.774, 658.346, 803.203]",
+      "pixelSize": [
+        273,
+        159
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "92aee92a3ac10516765cf2ed31f0708f58304683a2233528dfde5ad796c9f3bb",
+      "bytes": 7552
+    },
+    "7070-P7070": {
+      "sourcePage": 56,
+      "printedPage": 54,
+      "sourceImageXref": 3521,
+      "sourceBox": [
+        530,
+        182,
+        637,
+        322
+      ],
+      "renderClip": [
+        530.0,
+        182.0,
+        637.0,
+        322.0
+      ],
+      "transform": "display-matrix=[-148.06960,-0.00000,-0.00000,222.10443]; image-rect=[509.568, 105.508, 657.638, 327.613]",
+      "pixelSize": [
+        282,
+        363
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "51e0785c32fb2056f823c7781ef64188bff66250c21d56c1f96197298063821a",
+      "bytes": 14759
+    },
+    "7070-alone": {
+      "sourcePage": 56,
+      "printedPage": 54,
+      "sourceImageXref": 3520,
+      "sourceBox": [
+        530,
+        82,
+        637,
+        147
+      ],
+      "renderClip": [
+        530.0,
+        85.047,
+        637.0,
+        136.307
+      ],
+      "transform": "display-matrix=[-123.34933,-0.00000,-0.00000,51.26005]; image-rect=[515.452, 85.047, 638.802, 136.307]",
+      "pixelSize": [
+        282,
+        115
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "5925a4ece75f041a0f6c0c75f9d2de999a5c7520b1aaf9dae559818dca316950",
+      "bytes": 6136
+    },
+    "7100-7001": {
+      "sourcePage": 56,
+      "printedPage": 54,
+      "sourceImageXref": 3518,
+      "sourceBox": [
+        300,
+        345,
+        445,
+        471
+      ],
+      "renderClip": [
+        300.472,
+        345.0,
+        445.0,
+        471.0
+      ],
+      "transform": "display-matrix=[-144.95288,-0.00000,-0.00000,217.42935]; image-rect=[300.472, 264.795, 445.425, 482.225]",
+      "pixelSize": [
+        363,
+        348
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "cb59d88788203adbe5b1d5c64cf3bf8d59a05b68a2795b0d3b169d925eca2b1d",
+      "bytes": 11886
+    },
+    "7100-7100M": {
+      "sourcePage": 56,
+      "printedPage": 54,
+      "sourceImageXref": 3519,
+      "sourceBox": [
+        300,
+        669,
+        445,
+        762
+      ],
+      "renderClip": [
+        301.89,
+        669.0,
+        445.0,
+        762.0
+      ],
+      "transform": "display-matrix=[-144.95288,-0.00000,-0.00000,217.42935]; image-rect=[301.89, 591.86, 446.843, 809.289]",
+      "pixelSize": [
+        359,
+        175
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "402536e5d105c7787ad55db7cc62bc76b5dc203c944ed33c6b58daf0c594d137",
+      "bytes": 8918
+    },
+    "7100-G720": {
+      "sourcePage": 56,
+      "printedPage": 54,
+      "sourceImageXref": 3517,
+      "sourceBox": [
+        300,
+        500,
+        445,
+        636
+      ],
+      "renderClip": [
+        300.0,
+        500.0,
+        439.756,
+        636.0
+      ],
+      "transform": "display-matrix=[-144.95288,-0.00000,-0.00000,217.42935]; image-rect=[294.803, 422.463, 439.756, 639.893]",
+      "pixelSize": [
+        368,
+        357
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [
+        {
+          "text": "art. 7100+G720",
+          "box": [
+            107,
+            400,
+            306,
+            407
+          ]
+        }
+      ],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "4368be100eb2dfbc9928740f2691f4c659f5b9faa15ba8ee33a072a7016acc93",
+      "bytes": 11576
+    },
+    "7100-P7100": {
+      "sourcePage": 56,
+      "printedPage": 54,
+      "sourceImageXref": 3515,
+      "sourceBox": [
+        300,
+        182,
+        445,
+        322
+      ],
+      "renderClip": [
+        300.0,
+        182.0,
+        444.008,
+        322.0
+      ],
+      "transform": "display-matrix=[-144.95288,-0.00000,-0.00000,217.42935]; image-rect=[299.055, 111.372, 444.008, 328.802]",
+      "pixelSize": [
+        373,
+        370
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "ac58fcc4caadc8cf7091ca394172b8b84007c02d741ec585f4bbf0bfa40fc845",
+      "bytes": 15805
+    },
+    "7100-alone": {
+      "sourcePage": 56,
+      "printedPage": 54,
+      "sourceImageXref": 3516,
+      "sourceBox": [
+        300,
+        82,
+        445,
+        147
+      ],
+      "renderClip": [
+        300.0,
+        85.239,
+        439.047,
+        135.493
+      ],
+      "transform": "display-matrix=[-144.91417,-0.00000,-0.00000,50.25343]; image-rect=[294.133, 85.239, 439.047, 135.493]",
+      "pixelSize": [
+        366,
+        116
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "028fe47a566be775ea28cb70e4efa8111da5305394de047b7f26c5104f2902a4",
+      "bytes": 7171
+    },
+    "7200-G720": {
+      "sourcePage": 56,
+      "printedPage": 54,
+      "sourceImageXref": 3514,
+      "sourceBox": [
+        42,
+        498,
+        245,
+        637
+      ],
+      "renderClip": [
+        42.0,
+        498.0,
+        241.989,
+        637.0
+      ],
+      "transform": "display-matrix=[200.51343,0.00000,-0.00000,143.80493]; image-rect=[41.476, 495.977, 241.989, 639.782]",
+      "pixelSize": [
+        534,
+        403
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [
+        {
+          "text": "art. 7200+G720",
+          "box": [
+            184,
+            405,
+            388,
+            416
+          ]
+        }
+      ],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "017d219cd27a606da9f548fd4629622f7792d7bcbcfdb5e5de8c9474c4bb044d",
+      "bytes": 17225
+    },
+    "7200-P7200": {
+      "sourcePage": 56,
+      "printedPage": 54,
+      "sourceImageXref": 3511,
+      "sourceBox": [
+        42,
+        182,
+        245,
+        322
+      ],
+      "renderClip": [
+        42.0,
+        184.567,
+        241.964,
+        322.0
+      ],
+      "transform": "display-matrix=[200.48468,0.00000,-0.00000,143.80341]; image-rect=[41.479, 184.567, 241.964, 328.37]",
+      "pixelSize": [
+        536,
+        401
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "f337f28c43a1b0e8ecfdd0eb7f7006637c6abe1a8a46bf495e97e782e1fff089",
+      "bytes": 20172
+    },
+    "7200-alone": {
+      "sourcePage": 56,
+      "printedPage": 54,
+      "sourceImageXref": 3510,
+      "sourceBox": [
+        42,
+        82,
+        245,
+        147
+      ],
+      "renderClip": [
+        42.176,
+        85.213,
+        233.858,
+        146.809
+      ],
+      "transform": "display-matrix=[191.68257,0.00000,-0.00000,61.59658]; image-rect=[42.176, 85.213, 233.858, 146.809]",
+      "pixelSize": [
+        541,
+        165
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "b594c413536f87f4181f2d9c840f158019851437daa566f4e9c249fe0b091eff",
+      "bytes": 11916
+    },
+    "9020-high": {
+      "sourcePage": 29,
+      "printedPage": 27,
+      "sourceImageXref": null,
+      "sourceBox": [
+        67,
+        84,
+        176,
+        310
+      ],
+      "renderClip": [
+        67.0,
+        84.0,
+        176.0,
+        310.0
+      ],
+      "transform": "page-clip-no-xref",
+      "pixelSize": [
+        237,
+        656
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "reviewed-page-clip",
+      "sha256": "a4f36980eaf3f0587c0277c8c90404770cb01d22b7cb82eafb46b6ef8e2dda52",
+      "bytes": 15893
+    },
+    "9020-low": {
+      "sourcePage": 29,
+      "printedPage": 27,
+      "sourceImageXref": 3656,
+      "sourceBox": [
+        67,
+        350,
+        180,
+        499
+      ],
+      "renderClip": [
+        67.0,
+        350.0,
+        171.514,
+        499.0
+      ],
+      "transform": "display-matrix=[-113.24211,-0.00000,-0.00000,167.93175]; image-rect=[58.272, 340.686, 171.514, 508.618]",
+      "pixelSize": [
+        243,
+        429
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "05ff4d0b26b1e1459eba4e8730242ed59110511519f5acbcc54ff5a6dfed9553",
+      "bytes": 12209
+    },
+    "9021-high": {
+      "sourcePage": 29,
+      "printedPage": 27,
+      "sourceImageXref": null,
+      "sourceBox": [
+        282,
+        84,
+        389,
+        310
+      ],
+      "renderClip": [
+        282.0,
+        84.0,
+        389.0,
+        310.0
+      ],
+      "transform": "page-clip-no-xref",
+      "pixelSize": [
+        237,
+        656
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "reviewed-page-clip",
+      "sha256": "5f451339cc6ce1c5179b7aaa4f5fa8c4b3a909bc1b3e48df9944e0bcfacf56b7",
+      "bytes": 16093
+    },
+    "9021-low": {
+      "sourcePage": 29,
+      "printedPage": 27,
+      "sourceImageXref": 3648,
+      "sourceBox": [
+        282,
+        350,
+        393,
+        499
+      ],
+      "renderClip": [
+        282.0,
+        350.0,
+        384.346,
+        499.0
+      ],
+      "transform": "display-matrix=[-113.24211,-0.00000,-0.00000,167.93175]; image-rect=[271.104, 340.686, 384.346, 508.618]",
+      "pixelSize": [
+        242,
+        429
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "f222cb669114614ebb20d8a45a684b7eaaa211d843d45fdac62dd4d683383ae5",
+      "bytes": 12340
+    },
+    "9024-default": {
+      "sourcePage": 29,
+      "printedPage": 27,
+      "sourceImageXref": 3655,
+      "sourceBox": [
+        60,
+        539,
+        163,
+        659
+      ],
+      "renderClip": [
+        60.0,
+        539.0,
+        163.0,
+        659.0
+      ],
+      "transform": "display-matrix=[-133.46930,-0.00000,-0.00000,131.54509]; image-rect=[52.845, 531.17, 186.314, 662.715]",
+      "pixelSize": [
+        231,
+        352
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "133c47db5270c8d65716da27776ad7ecfcbf136dc1178a8a3477b707cb96c9d7",
+      "bytes": 10467
+    },
+    "9025-default": {
+      "sourcePage": 29,
+      "printedPage": 27,
+      "sourceImageXref": 3647,
+      "sourceBox": [
+        272,
+        539,
+        374,
+        659
+      ],
+      "renderClip": [
+        272.0,
+        539.0,
+        374.0,
+        659.0
+      ],
+      "transform": "display-matrix=[-133.46930,-0.00000,-0.00000,131.54509]; image-rect=[265.677, 531.17, 399.146, 662.715]",
+      "pixelSize": [
+        231,
+        352
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "2fbd31e0061699f7febe8a953ac1d071c7156eec7bba1edb786c1da45eb83795",
+      "bytes": 10239
+    },
+    "9026-default": {
+      "sourcePage": 29,
+      "printedPage": 27,
+      "sourceImageXref": 3650,
+      "sourceBox": [
+        299,
+        690,
+        385,
+        775
+      ],
+      "renderClip": [
+        299.0,
+        690.0,
+        385.0,
+        775.0
+      ],
+      "transform": "display-matrix=[-102.69052,-0.00000,-0.00000,112.42684]; image-rect=[289.612, 666.392, 392.302, 778.819]",
+      "pixelSize": [
+        186,
+        179
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "48e9508847ebb284596557a53cad608c029405863144e2e08f3f8f29fabcb59a",
+      "bytes": 6123
+    },
+    "9050-alone": {
+      "sourcePage": 28,
+      "printedPage": 26,
+      "sourceImageXref": 3671,
+      "sourceBox": [
+        315,
+        706,
+        438,
+        775
+      ],
+      "renderClip": [
+        316.903,
+        706.0,
+        435.587,
+        775.0
+      ],
+      "transform": "display-matrix=[109.72980,13.47312,-8.95445,72.92812]; image-rect=[316.903, 697.928, 435.587, 784.329]",
+      "pixelSize": [
+        271,
+        134
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "9e72fb0baef41ad6d0589dffc46cd887b64e97bef440b06e9b36755fa3f53974",
+      "bytes": 6518
+    },
+    "9065-9001": {
+      "sourcePage": 28,
+      "printedPage": 26,
+      "sourceImageXref": 3681,
+      "sourceBox": [
+        510,
+        654,
+        640,
+        780
+      ],
+      "renderClip": [
+        513.417,
+        654.0,
+        636.702,
+        780.0
+      ],
+      "transform": "display-matrix=[-123.28489,-0.00000,-0.00000,143.75598]; image-rect=[513.417, 653.793, 636.702, 797.549]",
+      "pixelSize": [
+        298,
+        335
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "e339914110fc7994917480e57bc733a1678588306c1091a89da734101d62301d",
+      "bytes": 10310
+    },
+    "9065-N9065": {
+      "sourcePage": 28,
+      "printedPage": 26,
+      "sourceImageXref": 3682,
+      "sourceBox": [
+        510,
+        340,
+        640,
+        478
+      ],
+      "renderClip": [
+        513.39,
+        341.266,
+        636.692,
+        478.0
+      ],
+      "transform": "display-matrix=[-123.30223,-0.00000,-0.00000,139.79274]; image-rect=[513.39, 341.266, 636.692, 481.059]",
+      "pixelSize": [
+        294,
+        359
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "a60e9ce48dd7b0b928dd97013bb562ca9d6f2f2933d8cde3e8fee13a3fd29686",
+      "bytes": 15326
+    },
+    "9065-P9065": {
+      "sourcePage": 28,
+      "printedPage": 26,
+      "sourceImageXref": 3680,
+      "sourceBox": [
+        510,
+        180,
+        640,
+        324
+      ],
+      "renderClip": [
+        513.418,
+        185.346,
+        636.685,
+        324.0
+      ],
+      "transform": "display-matrix=[-123.26694,-0.00000,-0.00000,143.76747]; image-rect=[513.418, 185.346, 636.685, 329.113]",
+      "pixelSize": [
+        294,
+        368
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [
+        {
+          "text": "art. 9065+P9065__",
+          "box": [
+            59,
+            411,
+            296,
+            415
+          ]
+        }
+      ],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "a535dc9b1cff4438aacb22d51f4f3e80da1f8eb12a8ae91c3840bd0691c8ebd2",
+      "bytes": 15531
+    },
+    "9065-R9065": {
+      "sourcePage": 28,
+      "printedPage": 26,
+      "sourceImageXref": 3674,
+      "sourceBox": [
+        510,
+        495,
+        640,
+        637
+      ],
+      "renderClip": [
+        528.898,
+        497.852,
+        634.882,
+        637.0
+      ],
+      "transform": "display-matrix=[-105.98399,-0.00000,-0.00000,139.85280]; image-rect=[528.898, 497.852, 634.882, 637.705]",
+      "pixelSize": [
+        312,
+        394
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [
+        {
+          "text": "art. 9065+R9065__",
+          "box": [
+            12,
+            411,
+            250,
+            417
+          ]
+        }
+      ],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "e20a3022f8bbbf656f069a1d64dc38d00fe9f62fe772737b6cc26758167f61a4",
+      "bytes": 20420
+    },
+    "9065-alone": {
+      "sourcePage": 28,
+      "printedPage": 26,
+      "sourceImageXref": 3679,
+      "sourceBox": [
+        510,
+        80,
+        640,
+        147
+      ],
+      "renderClip": [
+        513.413,
+        84.755,
+        636.7,
+        146.305
+      ],
+      "transform": "display-matrix=[-123.28659,-0.00000,-0.00000,61.54992]; image-rect=[513.413, 84.755, 636.7, 146.305]",
+      "pixelSize": [
+        292,
+        113
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "6ed1a7fd313d1070a8abb1f3e99003cc7cafb122e0d6039ac147290f948c1b69",
+      "bytes": 6888
+    },
+    "9090-N9090": {
+      "sourcePage": 28,
+      "printedPage": 26,
+      "sourceImageXref": 3678,
+      "sourceBox": [
+        305,
+        340,
+        446,
+        478
+      ],
+      "renderClip": [
+        311.569,
+        341.276,
+        440.391,
+        478.0
+      ],
+      "transform": "display-matrix=[-128.82182,-0.00000,-0.00000,143.76416]; image-rect=[311.569, 341.276, 440.391, 485.041]",
+      "pixelSize": [
+        375,
+        388
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "35f1fa51bc9504ad73af223bc717700b4d86bac96a5ce6d3c36237120cbcef5f",
+      "bytes": 16515
+    },
+    "9090-P9090": {
+      "sourcePage": 28,
+      "printedPage": 26,
+      "sourceImageXref": 3676,
+      "sourceBox": [
+        305,
+        180,
+        446,
+        324
+      ],
+      "renderClip": [
+        311.584,
+        185.371,
+        440.371,
+        324.0
+      ],
+      "transform": "display-matrix=[-128.78680,-0.00000,-0.00000,143.74425]; image-rect=[311.584, 185.371, 440.371, 329.116]",
+      "pixelSize": [
+        371,
+        388
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [
+        {
+          "text": "art. 9090+P9090__",
+          "box": [
+            74,
+            411,
+            311,
+            415
+          ]
+        }
+      ],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "38928909de01b1d6b6d0609e01d0aa255c763d65dae6dbc1a71449536598ffa5",
+      "bytes": 19230
+    },
+    "9090-R9090": {
+      "sourcePage": 28,
+      "printedPage": 26,
+      "sourceImageXref": 3673,
+      "sourceBox": [
+        305,
+        495,
+        446,
+        637
+      ],
+      "renderClip": [
+        313.465,
+        497.858,
+        440.415,
+        637.0
+      ],
+      "transform": "display-matrix=[-126.95039,-0.00000,-0.00000,143.82718]; image-rect=[313.465, 497.858, 440.415, 641.685]",
+      "pixelSize": [
+        367,
+        396
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [
+        {
+          "text": "art. 9090+R9090__",
+          "box": [
+            68,
+            411,
+            305,
+            417
+          ]
+        }
+      ],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "1bd749dcdab8f9341b9a004f51fc5c603f1924b962a323dd199dc489eb2f4c99",
+      "bytes": 22158
+    },
+    "9090-alone": {
+      "sourcePage": 28,
+      "printedPage": 26,
+      "sourceImageXref": 3677,
+      "sourceBox": [
+        305,
+        80,
+        446,
+        147
+      ],
+      "renderClip": [
+        311.583,
+        85.953,
+        440.385,
+        147.0
+      ],
+      "transform": "display-matrix=[-128.80191,-0.00000,-0.00000,61.55135]; image-rect=[311.583, 85.953, 440.385, 147.505]",
+      "pixelSize": [
+        374,
+        133
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "213d814551c283e60db9be6e728246acc1e739c8ac772dd128e9dbceefc5524c",
+      "bytes": 8456
+    },
+    "9200-N9200": {
+      "sourcePage": 28,
+      "printedPage": 26,
+      "sourceImageXref": 3675,
+      "sourceBox": [
+        42,
+        340,
+        245,
+        478
+      ],
+      "renderClip": [
+        47.244,
+        341.249,
+        241.949,
+        478.0
+      ],
+      "transform": "display-matrix=[-194.70534,-0.00000,-0.00000,143.77357]; image-rect=[47.244, 341.249, 241.949, 485.022]",
+      "pixelSize": [
+        544,
+        388
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "79488f8e244399eb5e60c2bd26bb326d3571dd3fc90ac52efc199955c76e4e86",
+      "bytes": 21520
+    },
+    "9200-P9200": {
+      "sourcePage": 28,
+      "printedPage": 26,
+      "sourceImageXref": 3670,
+      "sourceBox": [
+        42,
+        180,
+        245,
+        324
+      ],
+      "renderClip": [
+        42.0,
+        185.307,
+        241.964,
+        324.0
+      ],
+      "transform": "display-matrix=[-200.46396,-0.00000,-0.00000,143.73587]; image-rect=[41.5, 185.307, 241.964, 329.043]",
+      "pixelSize": [
+        547,
+        412
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [
+        {
+          "text": "art. 9200+P9200__",
+          "box": [
+            193,
+            411,
+            430,
+            416
+          ]
+        }
+      ],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "21e9b66043218a0a7ec7e90bf8717353014a247ae05a3cc272f9c3d84c7f23ff",
+      "bytes": 25145
+    },
+    "9200-R9200": {
+      "sourcePage": 28,
+      "printedPage": 26,
+      "sourceImageXref": 3672,
+      "sourceBox": [
+        42,
+        495,
+        245,
+        637
+      ],
+      "renderClip": [
+        46.535,
+        497.889,
+        241.977,
+        637.0
+      ],
+      "transform": "display-matrix=[-195.44106,-0.00000,-0.00000,143.78340]; image-rect=[46.535, 497.889, 241.977, 641.673]",
+      "pixelSize": [
+        553,
+        397
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [
+        {
+          "text": "art. 9200+R9200__",
+          "box": [
+            179,
+            411,
+            417,
+            417
+          ]
+        }
+      ],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "2f18c6500535954d9a7279968944a398e7df35ad5e46b60e4f32808a3bb5b1de",
+      "bytes": 27073
+    },
+    "9200-alone": {
+      "sourcePage": 28,
+      "printedPage": 26,
+      "sourceImageXref": 3669,
+      "sourceBox": [
+        42,
+        80,
+        245,
+        147
+      ],
+      "renderClip": [
+        42.0,
+        85.966,
+        241.967,
+        147.0
+      ],
+      "transform": "display-matrix=[-200.48447,-0.00000,-0.00000,61.56225]; image-rect=[41.482, 85.966, 241.967, 147.528]",
+      "pixelSize": [
+        540,
+        140
+      ],
+      "rasterScale": 3.0,
+      "removedCaptionMasks": [],
+      "method": "pdf-page-rendered-xref",
+      "sha256": "13ea5000be34d840f09006e73690e619af19535e093ccfbf27f61736db8b7f6d",
+      "bytes": 11281
+    }
+  }
+}

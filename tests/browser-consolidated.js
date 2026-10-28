@@ -42,6 +42,29 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     await page.waitForFunction(()=>typeof CATALOG!=='undefined'&&CATALOG.filter(x=>x.manufacturer==='Nicolazzi').length===36303,{timeout:60000});
     await page.waitForFunction(()=>CATALOG.some(x=>x.manufacturer==='Alpi'),{timeout:30000});
     await page.waitForFunction(()=>CATALOG.filter(x=>x.manufacturer==='Zucchetti').length===12053,{timeout:60000});
+    await page.evaluate(()=>window.HydroSbordoniDocuments.open());
+    check('98 fiches Sbordoni consultables',await page.locator('.sbordoni-document-list a').count()===98);
+    await page.locator('.sbordoni-documents input').fill('7200');
+    check('recherche de fiches par référence',await page.locator('.sbordoni-document-list a').count()>0);
+    const suppliedLink=await page.locator('.sbordoni-document-list a').first().getAttribute('href');
+    const suppliedPDF=await page.request.get(base+suppliedLink);
+    check('PDF Sbordoni fourni accessible',suppliedPDF.ok()&&(await suppliedPDF.body()).subarray(0,4).toString()==='%PDF');
+    await page.keyboard.press('Escape');
+    await page.locator('.sbordoni-documents').waitFor({state:'detached'});
+    check('fermeture clavier fiches Sbordoni',await page.locator('.sbordoni-documents').count()===0);
+    // Real HTTP and image decode regression, not just source-file presence.
+    const hdImageResponse=await page.request.get(base+'/sbordoni/compositions/5700-G571.jpg');
+    check('Composition Sbordoni HD consultable',hdImageResponse.ok()&&String(hdImageResponse.headers()['content-type']||'').includes('image/jpeg'));
+    const hdDimensions=await page.evaluate(()=>new Promise((resolve,reject)=>{
+      const img=new Image();img.onload=()=>resolve([img.naturalWidth,img.naturalHeight]);
+      img.onerror=()=>reject(new Error('Impossible de charger image 5700-G571'));
+      img.src='/sbordoni/compositions/5700-G571.jpg';
+    }));
+    check('Composition 5700-G571 : dimensions du PDF haute résolution',hdDimensions[0]>=400&&hdDimensions[1]>=390);
+    const hdManifestResponse=await page.request.get(base+'/sbordoni/compositions/hd-manifest.json');
+    check('Audit HD Sbordoni accessible',hdManifestResponse.ok()&&(await hdManifestResponse.json()).count===99);
+
+
     report.loadMs=Date.now()-started;
     report.counts=await page.evaluate(()=>{let counts={};for(const p of CATALOG)counts[p.manufacturer]=(counts[p.manufacturer]||0)+1;return counts;});
     await page.evaluate(()=>{document.querySelector('#manufacturerFilter').value='Gessi';document.querySelector('#manufacturerFilter').dispatchEvent(new Event('change'));});
