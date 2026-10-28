@@ -66,3 +66,14 @@ CI run 40776014311 : tests métier et navigateur existants réussis ; le nouveau
 ## Préparation du déploiement 11.63.9 — PR #44
 
 CI complète réussie sur e2237f0 (run 40776321617), y compris parcours navigateur Gessi desktop/mobile et régressions existantes. Version portée à 11.63.9 pour renouveler les caches ; menu officiel ajouté au shell hors connexion. Nouvelle CI requise sur ce commit de version avant fusion. Déploiement demandé explicitement par Julien ; pas encore vérifié en production à ce stade. Les sous-séries et documents/BIM dynamiques restent à développer.
+
+
+## Checkpoint — Gessi V11.64.0 (travail repris après quota Work)
+
+- Base : main deb83ee86cca5b37ad30b3df8eb95346f78b8cf6 / version 11.63.9, PR #44 fusionnée ; Render 11.63.9 et PostgreSQL OK vérifiés le 28/10/2026.
+- Branche : feat/gessi-technical-sheets-11640. Nouvelle route serveur GET /api/gessi/technical/:code pour récupérer les **caractéristiques techniques officielles du produit** avec un code Gessi exactement à cinq chiffres ; URL fournisseur fixe, validation de l'identité, timeout, limite de taille, cache mémoire limité, erreurs explicites.
+- Explorateur : panneau « Fiche technique du produit » directement dans l'étape finale de configuration, après la sélection modèle/finition. Lecture à la demande ; une panne du fabricant ne bloque ni les prix, ni l'ajout au projet. Les dimensions affichées proviennent du champ product.technical, jamais des dimensions d'emballage.
+- IMPORTANT **pas de BIM/CAO**. L'API publique GetProductAttachments observée pour 59003 et 66134 ne donne que des objets BIM ; elle ne permet pas d'établir un lien PDF technique fiable. Le panneau ne prétend donc pas offrir un PDF et ne lie pas une mauvaise fiche à un SKU. Lien vers la fiche officielle Gessi où le fabricant propose, selon l'article, un téléchargement PDF.
+- Version package + lock 11.64.0 et tests Node + navigateur Gessi. Aucun changement aux 16 211 articles tarifés Gessi ni aux autres marques, tarifs, remises ou projets.
+- **Validation CI, PR et Render en attente** tant que GitHub Actions n'a pas terminé. Ne jamais annoncer 11.64.0 en production sans vérifier /api/version et /api/health.
+- **Suite** : accéder aux vrais PDF techniques via une source officielle vérifiable référence par référence (ne pas confondre notices de pose et fiches), puis rattacher les sous-séries à une liste de vrais produits officiels sans affectation arbitraire de références tarifées. Préserver PR #43 Bette (brouillon).
