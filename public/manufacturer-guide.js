@@ -146,7 +146,7 @@ function finishTiles(brand,variants,active,base,media){
    // Verified model+finish associations only: never trust a generic catalogue
    // image, filename heuristic or unverified imageSource flag for a finish tile.
    const finish=String(p.finishCode||'').trim().toUpperCase();
-   const exact=finish?safeUrl(media?.collections?.finishModels?.[brand]?.[nrm(base)]?.[finish]):'';
+   const exact=finish?safeUrl(media?.collections?.finishModels?.[brand]?.[nrm(base).toUpperCase()]?.[finish]):'';
    const pressed=p.reference===active;
    return '<button type="button" class="mg-visual-finish'+(pressed?' is-current':'')+'" data-mg-finish="'+esc(p.reference)+'" aria-pressed="'+pressed+'">'+
     (exact?'<img src="'+esc(exact)+'" alt="" loading="lazy" decoding="async" onerror="this.remove()">':'<span class="mg-finish-image-missing" aria-hidden="true">Finition à confirmer sur photo</span>')+
