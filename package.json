@@ -1,13 +1,13 @@
 {
   "name": "hydropolis-studio-v3",
-  "version": "11.63.3",
+  "version": "11.63.4",
   "private": true,
   "description": "Hydropolis Studio — catalogue, projets et visuels fabricants",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "check": "node tests/check-syntax.js",
-    "test": "node verify-release.js && node --test tests/consolidated.test.js tests/v11.57-regression.test.js tests/v11.58-dornbracht.test.js tests/v11.60-sbordoni-configurator.test.js tests/v11.62-brands.test.js tests/v11.62.3-manufacturer-guides.test.js tests/v11.62.5-hotbath-taxonomy.test.js tests/v11.62.6-resigres-audit.test.js tests/pdf-readiness.test.js tests/sbordoni-documents.test.js tests/sbordoni-hd-assets.test.js tests/v11.63.1-brand-pricing.test.js tests/v11.63.2-hotbath-gallery.test.js tests/v11.63.2-hotbath-refs.test.js tests/v11.63.3-hidrobox-cad.test.js",
+    "test": "node verify-release.js && node --test tests/consolidated.test.js tests/v11.57-regression.test.js tests/v11.58-dornbracht.test.js tests/v11.60-sbordoni-configurator.test.js tests/v11.62-brands.test.js tests/v11.62.3-manufacturer-guides.test.js tests/v11.62.5-hotbath-taxonomy.test.js tests/v11.62.6-resigres-audit.test.js tests/pdf-readiness.test.js tests/sbordoni-documents.test.js tests/sbordoni-hd-assets.test.js tests/v11.63.1-brand-pricing.test.js tests/v11.63.2-hotbath-gallery.test.js tests/v11.63.2-hotbath-refs.test.js tests/v11.63.3-hidrobox-cad.test.js tests/v11.63.3-brand-guides-continuity.test.js tests/v11.63.3-lefroy-finish-media.test.js",
     "build": "npm run check && npm test",
     "test:browser": "node tests/browser-consolidated.js && node tests/v11.57-browser.js",
     "test:live": "node tests/live-assets.js"
