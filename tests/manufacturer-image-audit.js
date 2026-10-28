@@ -93,5 +93,9 @@ test('Bette official pictures are exact-model scoped, never borrowed for another
  assert.equal(photo('Bette','BetteOcean Low-Line'),'');
  assert.equal(photo('Bette','BetteStarlet I Silhouette'),'');
  assert.equal(photo('Hidrobox','Neo Plus'),'');
+ const media=win.HydroBrandCatalogs.mediaFor('Bette',{}, {family:'BetteOcean'}, {reference:'8858'});
+ assert.equal(media.image,'');
+ assert.equal(media.representativeImage,photo('Bette','BetteOcean'));
+ assert.equal(win.HydroBrandCatalogs.mediaFor('Bette',{}, {family:'BetteOcean Low-Line'}, {reference:'TEST'}).representativeImage,'');
 });
 module.exports={report};
