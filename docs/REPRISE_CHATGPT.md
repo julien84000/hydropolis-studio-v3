@@ -206,3 +206,9 @@ La PR #36 (Hidrobox CAO/BIM) a déjà été livrée sous **V11.63.3** et est en 
 - La PR #37 (continuité Hidrobox / médias Lefroy Brooks et Zucchetti) a été fusionnée dans `main` : `106866ca40db34033d110ffd996d1d5816fff402`. Son numéro applicatif est déjà V11.63.4. **Cette intégration documentaire Carrodrain reprend donc V11.63.5.**
 - `public/brand-configurators.js`, `package.json`, `package-lock.json` et ce journal ont été fusionnés à partir des versions de la PR #37 et non remplacés par les anciennes versions de la PR #38. L'arbre final doit conserver `public/manufacturer-guide.js`, `public/brand-guide-collections.json` et les deux suites de test PR37.
 - Contrôle CI complet et Render V11.63.5 toujours à réaliser ; aucune garantie de livraison avant leur réussite.
+
+
+### Validation ciblée Invisible Disco et intégration PR37
+- Un test CI initial a détecté que la fiche `Invisible_Disco_125_Technical_Specifications_2025.pdf` ne porte pas la mention LOW. Elle est maintenant **fiche généraliste de famille**, sans revendiquer la version LOW ; la fiche `Invisible_Disco_125_PRO_Specifications_2025.pdf` reste spécifique PRO. Commits `ad2bee170c6ffe214798cc1d30c2f0185c8ea645` et `f80e389350c381d9d1b416d05ebdca7e7937e0ed`.
+- L'intégration main de la PR #37 est confirmée et conservée dans un commit de fusion non destructif `1c26a8d2bb395d94efe725275f0fa75f7cbeca0c`; les fichiers de configuration et les tests de continuité sont présents dans l'arbre résultant.
+- La CI `40771954140` a réussi sur un commit intermédiaire, mais **ne remplace pas la validation du dernier HEAD**. Recontrôler le run associé au nouveau SHA, puis seulement fusionner PR #38.
