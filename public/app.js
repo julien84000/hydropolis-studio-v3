@@ -6292,7 +6292,7 @@ $$(".nav").forEach(n=>n.onclick=()=>showView(n.dataset.view));
       if(typeTable.priceIncludesTop){
         const top=(v.topFinishes||[]).find(t=>t.id===s.topFinish);
         if(!top||(top.colors||[]).indexOf(s.topColor)<0)return {status:"pending",pricingStatus:"manual",reason:"Sélectionnez la finition et le coloris du plan vasque",total:0};
-        if(s.topColor==="RAL/NCS")return {status:"pending",pricingStatus:"manual",reason:"Option RAL du plan vasque non certifiée pour la tarification automatique",total:0};
+        if(s.topColor==="RAL/NCS"||s.color==="RAL/NCS")return {status:"pending",pricingStatus:"manual",reason:"Combinaison RAL meuble/plan vasque non certifiée pour la tarification automatique",total:0};
       }
       const key=mat.priceClass+(typeTable.priceIncludesTop?":"+s.topFinish:"");
       const tier=ceilTier(l,typeTable.lengthTiers||[]);
