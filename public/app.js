@@ -6143,6 +6143,7 @@ $$(".nav").forEach(n=>n.onclick=()=>showView(n.dataset.view));
       const minW=Math.min(...widths),maxW=Math.max(...widths),minL=Math.min(...lengths),maxL=Math.max(...lengths);
       if(w<minW||w>maxW||l<minL||l>maxL)return {status:"pending",pricingStatus:"manual",reason:`Dimensions hors grille certifiée (${minW}–${maxW} × ${minL}–${maxL} cm)`,total:0,rule};
       pricedWidth=ceilTier(w,widths);pricedLength=ceilTier(l,lengths);
+      if(rule.intermediateRule==="standard-only"&&(pricedWidth!==w||pricedLength!==l))return {status:"pending",pricingStatus:"manual",reason:"Ce modèle existe uniquement dans les dimensions standard certifiées de la grille fabricant",total:0,rule};
       const wi=widths.indexOf(pricedWidth),li=lengths.indexOf(pricedLength);basePrice=Number(rule.matrix?.[wi]?.[li]);
       if(!(basePrice>0))return {status:"pending",pricingStatus:"manual",reason:`Cellule ${pricedWidth} × ${pricedLength} non certifiée : vérifier le tarif`,total:0,rule,pricedWidth,pricedLength};
       breakdown=`${w} × ${l} cm → palier tarifaire ${pricedWidth} × ${pricedLength} cm · ${finish}`;
