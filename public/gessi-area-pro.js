@@ -38,6 +38,14 @@ function collectionUrl(area,name){
  const slug=norm(name)==='gessi316'?'gessi316':String(name).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
  return areaUrl(area)+'/collections/'+slug;
 }
+// Keep the existing tariff index compatible while adding verified menu metadata.
+function withOfficialMenu(data,menu){
+ if(!Array.isArray(menu?.areas)||!menu.areas.length)return data;
+ return {...data,areas:menu.areas.map(a=>({id:a.id,name:a.name,note:'Menu officiel Gessi',
+   collections:a.collections.map(c=>c.name),collectionDetails:a.collections}))};
+}
+function collectionDetails(area,name){return area?.collectionDetails?.find(c=>norm(c.name)===norm(name))||null}
+function officialPhoto(area,name){return trusted(collectionDetails(area,name)?.image)}
 function officialName(source,areas){
  const key=norm(source);
  if(!key)return '';
@@ -82,7 +90,7 @@ function buildIndex(rows,data){
  return {areas,byName,byAreaName,unmapped,total:(rows||[]).filter(p=>p?.manufacturer==='Gessi').length};
 }
 function listAreaCollections(index,area){
- const entries=(area?.collections||[]).map(name=>({name,rows:index.byAreaName?.get(area.id+'|'+norm(name))||[]}));
+ const entries=(area?.collections||[]).map(name=>({name,details:collectionDetails(area,name),rows:index.byAreaName?.get(area.id+'|'+norm(name))||[]}));
  if(area?.id==='bathroom'&&index.unmapped.length)entries.push({name:'Autres références du tarif',rows:index.unmapped,notOfficial:true});
  return entries;
 }
@@ -124,8 +132,18 @@ function open(rows,roomId,onAdd){
  document.body.appendChild(overlay);
  let data=null,index=null,area=null,collection=null,type='',model=null,reference='',stage='areas',search='',page=0;
  const body=overlay.querySelector('.gessi-body'),menu=overlay.querySelector('.gessi-menu');
- const close=()=>{overlay.remove();root.removeEventListener('keydown',onKey)};
- const onKey=e=>{if(e.key==='Escape')close()};
+ const previousFocus=document.activeElement;
+ const close=()=>{overlay.remove();root.removeEventListener('keydown',onKey);previousFocus?.focus?.()};
+ const onKey=e=>{
+  if(e.key==='Escape'){e.preventDefault();close()}
+  if(e.key==='Tab'){
+   const controls=[...overlay.querySelectorAll('button:not([disabled]),a[href],input,select')].filter(el=>el.getClientRects().length);
+   const first=controls[0],last=controls[controls.length-1];
+   if(e.shiftKey&&(document.activeElement===first||!overlay.contains(document.activeElement))){e.preventDefault();last?.focus()}
+   else if(!e.shiftKey&&(document.activeElement===last||!overlay.contains(document.activeElement))){e.preventDefault();first?.focus()}
+  }
+ };
+ overlay.querySelector('.gessi-close').focus();
  overlay.querySelector('.gessi-close').onclick=close;
  overlay.onclick=e=>{if(e.target===overlay)close()};
  root.addEventListener('keydown',onKey);
@@ -152,16 +170,16 @@ function open(rows,roomId,onAdd){
    heading='Choisissez votre univers';sub='L’architecture officielle du menu Gessi Area Pro';
    html='<div class="gessi-grid gessi-univers">'+index.areas.map(a=>{
     const groups=listAreaCollections(index,a),rows=groups.flatMap(g=>g.rows);
-    return card({key:a.id,action:'area',name:a.name,note:a.note+' · '+groups.filter(g=>g.rows.length).length+' collections du tarif',image:bestPhoto(rows,data)});
+    return card({key:a.id,action:'area',name:a.name,note:groups.filter(g=>!g.notOfficial).length+' collections officielles',image:a.collectionDetails?.find(c=>trusted(c.image))?.image||bestPhoto(rows,data)});
    }).join('')+'</div>';
   }else if(stage==='collections'){
-   heading=area.name;sub='Collections Gessi · photographies de produits représentatifs lorsque disponibles';
+   heading=area.name;sub='Collections officielles Gessi · choisissez une collection illustrée';
    html='<div class="gessi-grid gessi-collections">'+listAreaCollections(index,area).map(c=>card({
-    action:'collection',key:c.name,name:c.name,note:c.rows.length?modelsFor(c.rows).length+' modèles du tarif':'Pas de référence tarifée',image:bestPhoto(c.rows,data),unavailable:!c.rows.length
+    action:'collection',key:c.name,name:c.name,note:c.rows.length?modelsFor(c.rows).length+' modèles du tarif':'Pas de référence tarifée',image:officialPhoto(area,c.name)||bestPhoto(c.rows,data)
    })).join('')+'</div><a class="gessi-site-link" href="'+esc(areaUrl(area))+'" target="_blank" rel="noopener noreferrer">Voir toutes les collections sur Area Pro ↗</a>';
   }else if(stage==='types'){
-   heading=collection.name;sub='Sélectionnez une famille de produits';
-   html='<div class="gessi-grid gessi-types">'+typesFor(collectionRows()).map(c=>card({
+   heading=collection.name;sub=collectionRows().length?'Sélectionnez une famille de produits':'Collection officielle · tarif Hydropolis non disponible';
+   html=(!collectionRows().length?'<p class="gessi-empty">Les articles de cette collection ne sont pas encore intégrés au tarif Hydropolis. Consultez les références et configurations sur le site officiel Gessi.</p>':'')+'<div class="gessi-grid gessi-types">'+typesFor(collectionRows()).map(c=>card({
     action:'type',key:c.name,name:c.name,note:modelsFor(c.rows).length+' modèles',image:bestPhoto(c.rows,data)
    })).join('')+'</div><a class="gessi-site-link" href="'+esc(collection.notOfficial?areaUrl(area):collectionUrl(area,collection.name))+'" target="_blank" rel="noopener noreferrer">Voir la collection chez Gessi ↗</a>';
   }else if(stage==='models'){
@@ -184,7 +202,12 @@ function open(rows,roomId,onAdd){
    html='<div class="gessi-detail"><div class="gessi-large-photo">'+img+'<div class="gessi-image-placeholder">Visuel exact indisponible</div>'+
     '<small>'+(pic.match==='exact'?'Photographie Gessi correspondant au code finition '+esc(code):pic.match==='illustrative'?'Visuel catalogue : la finition représentée peut différer':'Aucune photographie vérifiée pour cette référence')+'</small></div>'+
     '<div class="gessi-configuration"><span class="gessi-kicker">RÉFÉRENCE DE BASE · '+esc(model.base)+'</span><h3>'+esc(p.designation||p.productType||model.base)+'</h3>'+
-    '<div class="gessi-reference-list"><label for="gessi-finishes">Finition &amp; référence tarifée</label><select id="gessi-finishes">'+variants.map(v=>'<option value="'+esc(v.reference)+'" '+(v.reference===reference?'selected':'')+'>'+esc(v.finish||v.finishCode||'Standard')+' — '+esc(v.reference)+'</option>').join('')+'</select></div>'+
+    '<div class="gessi-reference-list"><span>Finition &amp; référence tarifée</span><div class="gessi-finish-grid" role="group" aria-label="Choisir la finition">'+variants.map(v=>{
+      const code=finishCode(v),photo=exactImage(v,data);
+      return '<button type="button" class="gessi-finish-choice" data-finish="'+esc(v.reference)+'" aria-pressed="'+(v.reference===reference)+'">'+
+       (photo?'<img class="gessi-finish-product" src="'+esc(photo)+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">':code?'<img class="gessi-finish-swatch" src="https://gessistorage.azureedge.net/finiturethumb/'+encodeURIComponent(code)+'.jpg" alt="" loading="lazy" onerror="this.style.display=\'none\'">':'')+
+       '<span>'+esc(v.finish||code||'Standard')+'</span><small>'+esc(v.reference)+'</small></button>';
+    }).join('')+'</div></div>'+
     '<div class="gessi-swatchbox">'+(code?'<span class="gessi-swatch"><img alt="" src="https://gessistorage.azureedge.net/finiturethumb/'+encodeURIComponent(code)+'.jpg" onerror="this.style.display=\'none\'"></span>':'')+
     '<div><small>FINITION SÉLECTIONNÉE</small><b>'+esc(p.finish||code||'Standard')+'</b></div></div>'+
     '<div class="gessi-selection">Référence finale <b>'+esc(p.reference)+'</b></div>'+
@@ -207,7 +230,10 @@ function open(rows,roomId,onAdd){
   const prev=body.querySelector('#gessi-prev'),next=body.querySelector('#gessi-next');
   if(prev)prev.onclick=()=>{page=Math.max(0,page-1);render()};
   if(next)next.onclick=()=>{page+=1;render()};
-  const select=body.querySelector('#gessi-finishes');if(select)select.onchange=()=>{reference=select.value;render()};
+  body.querySelectorAll('[data-finish]').forEach(button=>button.onclick=()=>{
+    reference=button.dataset.finish;render();
+    [...body.querySelectorAll('[data-finish]')].find(b=>b.dataset.finish===reference)?.focus();
+  });
   const add=body.querySelector('#gessi-add');
   if(add)add.onclick=()=>{
     const p=model.variants.find(v=>v.reference===reference);
@@ -215,11 +241,15 @@ function open(rows,roomId,onAdd){
     try{onAdd(p);close()}catch(e){root.alert?.('Ajout impossible : '+(e?.message||String(e)))}
   };
  }
- fetch('/gessi-area-pro-data.json',{cache:'force-cache'}).then(r=>{if(!r.ok)throw Error('Gessi '+r.status);return r.json()}).then(x=>{
+ Promise.all([
+  fetch('/gessi-area-pro-data.json',{cache:'force-cache'}).then(r=>{if(!r.ok)throw Error('Gessi '+r.status);return r.json()}),
+  fetch('/gessi-area-pro-menu.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw Error('Menu '+r.status);return r.json()}).catch(()=>null)
+ ]).then(([legacy,official])=>{
+   const x=withOfficialMenu(legacy,official);
    if(!overlay.isConnected)return;
    data=x;index=buildIndex(source,data);render();
  }).catch(e=>{if(overlay.isConnected)body.innerHTML='<p class="gessi-error">Impossible de charger le menu Gessi : '+esc(e.message)+'</p><a href="'+SOURCE+'" target="_blank" rel="noopener noreferrer">Ouvrir Area Pro ↗</a>'});
  return {brand:'Gessi',rows:source,roomId,close};
 }
-root.HydroGessiAreaPro={open,buildIndex,listAreaCollections,selectArea,modelsFor,typesFor,modelBase,finishCode,findImage,productPage,officialName};
+root.HydroGessiAreaPro= {withOfficialMenu,collectionDetails,officialPhoto,open,buildIndex,listAreaCollections,selectArea,modelsFor,typesFor,modelBase,finishCode,findImage,productPage,officialName};
 })(window);

@@ -256,3 +256,18 @@ La PR #36 (Hidrobox CAO/BIM) a déjà été livrée sous **V11.63.3** et est en 
 - `public/gessi-area-pro.js`: index par couple univers/collection et allocation univoque des objets tarifaires Gessi. Priorité à l'univers explicite (`universe`, `catalogue`, etc), puis aux familles/propriétés produit attestées (cuisine / électronique / wellness). Ambiguïtés par défaut dans Bathroom si présent; les références non associables restent listées séparément. Aucune modification des tarifs, remises, images 130 finitions certifiées ou des articles conservés.
 - `tests/v11.63.6-gessi-areapro.test.js`: régression multi-univers, comptage sans doublons, priorité des métadonnées explicites. Version 11.63.8 dans package+lock.
 - Validation CI Node/Chromium, fusion et vérification Render **à effectuer**. Les PRs et fonctionnalités précédentes, notamment Carrodrain, doivent rester intactes.
+
+## Point de reprise Gessi — 28 octobre 2026 — branche feat/gessi-official-resources-1164
+
+Travail isolé de main acd5bf3 (11.63.8). Sources officielles déjà sauvegardées dans aa7b12de7ba61dbbf954ca5df2a3e1effd724bd2. Voir **docs/GESSI_AREA_PRO_DEVELOPMENT.md** pour les détails et le prompt de reprise.
+
+Nouvelle étape : menu officiel FR (9 univers, 79 entrées) avec photographies de collections ; boutons visuels de finition ; consultation des collections sans tarif par lien fabricant ; gestion du focus clavier. Aucun tarif ni projet modifié. `npm run build` : 124 tests réussis. Test navigateur spécifique ajouté mais non exécuté localement (téléchargement Chromium échoué) : attendre la CI avant fusion. Aucun déploiement de cette branche annoncé, application toujours 11.63.8 lors du dernier contrôle.
+
+Reste : navigation par sous-séries, listes publiques de produits non tarifés, images et documents techniques/BIM chargés à la demande. Préserver la PR Bette #43 et tout changement plus récent de main. Les sources Gessi et le plan de reprise sont dans le document dédié. Le dossier original hydropolis-studio-v3 contient d'anciens essais Sbordoni non publiés : ne pas les mélanger à cette branche.
+
+PR de sauvegarde Gessi : **#44** (https://github.com/julien84000/hydropolis-studio-v3/pull/44), interface dans **e7b5235aef663789f93957886fd2c15c3c82be3b**. Premier run CI : 40776014311, syntaxe/tests/build réussis, navigateur encore en cours lors de l'écriture. Le document GESSI_AREA_PRO_DEVELOPMENT.md conserve également les endpoints publics observés et les précautions de correspondance article/finition/version pour éviter de refaire la recherche.
+Le premier run #44 a ensuite échoué sur l'encodage UTF-8 de la page HTML synthétique du nouveau test Gessi (les parcours desktop/mobile et tests existants avaient passé). Correction du charset dans le test ; attendre le nouveau run avant toute fusion.
+
+## Préparation du déploiement 11.63.9 — PR #44
+
+CI complète réussie sur e2237f0 (run 40776321617), y compris parcours navigateur Gessi desktop/mobile et régressions existantes. Version portée à 11.63.9 pour renouveler les caches ; menu officiel ajouté au shell hors connexion. Nouvelle CI requise sur ce commit de version avant fusion. Déploiement demandé explicitement par Julien ; pas encore vérifié en production à ce stade. Les sous-séries et documents/BIM dynamiques restent à développer.
