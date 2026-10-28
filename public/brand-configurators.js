@@ -35,7 +35,8 @@
     const model=brand==='Carrodrain'?carrodrainVisual(g):null;
     const supplierDocs=model?root.HydroCarrodrainDocuments?.resolve(model.id,v?.version):null;
     const bette=brand==='Bette'?root.HydroBetteResources?.resolve(g?.family||p?.collection):null;
-    const manufacturerUrl=model?.url||bette?.productPage||official(brand,v?.manufacturerUrl)||official(brand,g?.manufacturerUrl)||official(brand,p?.manufacturerUrl)||OFFICIAL_HOME[brand];
+    const exactBettePage=brand==='Bette'&&/\/fr\/produit\//.test(String(v?.manufacturerUrl||''))?official(brand,v.manufacturerUrl):'';
+    const manufacturerUrl=model?.url||exactBettePage||bette?.productPage||official(brand,v?.manufacturerUrl)||official(brand,g?.manufacturerUrl)||official(brand,p?.manufacturerUrl)||OFFICIAL_HOME[brand];
     const technicalSheetUrl=official(brand,v?.technicalSheetUrl)||supplierDocs?.technicalSheetUrl||official(brand,bette?.technicalSheetUrl)||official(brand,g?.technicalSheetUrl)||official(brand,p?.technicalSheetUrl)||'';
     const installationGuideUrl=supplierDocs?.installationGuideUrl||'';
     const suppliedImage=trustedImage(v?.image);
@@ -54,7 +55,7 @@
     const note=m.image?'Visuel de la référence sélectionnée':m.representativeImage?'Visuel de collection · finition non garantie':'La photo fabricant sera recherchée après ajout';
     const tech=m.technicalSheetUrl?' · <a href="'+esc(m.technicalSheetUrl)+'" target="_blank" rel="noopener noreferrer">'+(m.technicalScope==='exact-version'?'Fiche technique '+esc(v?.version||''):'Fiche technique fabricant · famille')+'</a>':'';
     const install=m.installationGuideUrl?' · <a href="'+esc(m.installationGuideUrl)+'" target="_blank" rel="noopener noreferrer">Notice de pose · famille</a>':'';
-    const betteLinks=brand==='Bette'?'<br><a href="'+esc(m.configuratorPage)+'" target="_blank" rel="noopener noreferrer">Configurateur 3D Bette · couleurs et options</a> · <a href="'+esc(m.downloadsPage)+'" target="_blank" rel="noopener noreferrer">Plans, CAO/BIM et notices Bette</a>':'';
+    const betteLinks=brand==='Bette'&&m.configuratorPage&&m.downloadsPage?'<br><a href="'+esc(m.configuratorPage)+'" target="_blank" rel="noopener noreferrer">Configurateur 3D Bette · couleurs et options</a> · <a href="'+esc(m.downloadsPage)+'" target="_blank" rel="noopener noreferrer">Plans, CAO/BIM et notices Bette</a>':'';
     return '<div class="brand-config-media" style="display:flex;flex-direction:column;align-items:center;gap:6px">'+photo+'<small style="font-size:11px;text-align:center">'+esc(note)+'<br><a href="'+esc(m.manufacturerUrl)+'" target="_blank" rel="noopener noreferrer">Voir le produit chez '+esc(brand)+'</a>'+tech+install+betteLinks+'</small></div>';
   }
 
