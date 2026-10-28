@@ -11,6 +11,12 @@
       if(rows.length<size){byKey.clear();byRef.clear();byMaker.clear();size=0;}
       for(;size<rows.length;size++){
         const p=rows[size];byKey.set(key(p),p);
+        // Preserve access to Hotbath articles saved before the 2026 .IT normalization.
+        // The legacy supplier SKU remains metadata, not a separate priced article.
+        if(p?.manufacturer==='Hotbath'&&p.sourceReference&&p.sourceReference!==p.reference){
+          byKey.set(`${p.manufacturer}|${p.sourceReference}`,p);
+          if(!byRef.has(p.sourceReference))byRef.set(p.sourceReference,p);
+        }
         if(!byRef.has(p.reference))byRef.set(p.reference,p);
         if(!byMaker.has(p.manufacturer))byMaker.set(p.manufacturer,[]);
         byMaker.get(p.manufacturer).push(p);
