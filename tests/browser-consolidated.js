@@ -78,6 +78,46 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     const configured=await page.evaluate(()=>state.selected.filter(x=>x.manufacturer==='Resigres').at(-1));
     check('Resigres : configuration et prix conservés au projet',configured.resigresConfiguration?.total===paidQuote.total&&configured.price===paidQuote.total);
     report.resigres={basePrice:baseQuote.total,withPaidOption:paidQuote.total,configuration:configured.resigresConfiguration};
+    // Gea CF and SF must price in the actual UI, not only in the isolated pricing engine.
+    const openGea=async model=>{
+      const product=await page.evaluate(model=>{
+        const p=CATALOG.find(x=>x.manufacturer==='Resigres'&&x.resigresModel===model);
+        return p?{reference:p.reference,key:productKey(p)}:null;
+      },model);
+      check('Catalogue Resigres : '+model+' présent',!!product);
+      await page.evaluate(p=>addCatalogProduct(p.reference,state.rooms[0]?.id,p.key),product);
+      await page.waitForSelector('#resigresConfigurator #rg50Height');
+      await page.locator('#resigresConfigurator .v1149-shape').first().click();
+      await page.locator('#rg50Mat').selectOption('wood');
+      await page.locator('#rg50Color').selectOption('Nogal US');
+      await page.locator('#rg50Group').selectOption('slab');
+      await page.locator('#rg50Length').fill('140');
+      await page.locator('#rg50Width').fill('45');
+      await page.locator('#rg50Height').fill(model==='Gea CF'?'5':'1.5');
+      await page.waitForFunction(()=>document.querySelector('#resigresConfigurator')?._q?.status==='automatic');
+    };
+    await openGea('Gea CF');
+    const geaCfPrice=await page.evaluate(()=>document.querySelector('#resigresConfigurator')._q);
+    check('Gea CF : Nogal US 140 × 45 × 5 cm = 986 € HT, palier 141',geaCfPrice.total===986&&geaCfPrice.pricedLength===141);
+    check('Gea CF : aucune saisie manuelle de prix',await page.locator('#rg50ManualWrap').evaluate(x=>x.classList.contains('hidden')));
+    await page.locator('#rg50Length').fill('142');
+    check('Gea CF : palier 161 cm = 1094 € HT',(await page.evaluate(()=>document.querySelector('#resigresConfigurator')._q)).total===1094);
+    await page.locator('#rg50Length').fill('140');
+    await page.locator('#rg50Height').fill('4');
+    check('Gea CF : épaisseur hors tarif refusée',(await page.evaluate(()=>document.querySelector('#resigresConfigurator')._q)).status==='pending');
+    await page.locator('#rg50Height').fill('5');
+    await page.locator('.rg50-confirm').click();
+    const geaSaved=await page.evaluate(()=>state.selected.filter(x=>x.manufacturer==='Resigres'&&x.resigresModel==='Gea CF').at(-1));
+    check('Gea CF : 986 € conservés dans la sélection projet',geaSaved?.price===986&&geaSaved.resigresConfiguration?.total===986);
+
+    await openGea('Gea SF');
+    const geaSfPrice=await page.evaluate(()=>document.querySelector('#resigresConfigurator')._q);
+    check('Gea SF : Nogal US 140 × 45 × 1,5 cm = 627 € HT',geaSfPrice.total===627&&geaSfPrice.pricedLength===141);
+    await page.locator('.rg50-confirm').click();
+    const geaSfSaved=await page.evaluate(()=>state.selected.filter(x=>x.manufacturer==='Resigres'&&x.resigresModel==='Gea SF').at(-1));
+    check('Gea SF : 627 € conservés dans la sélection projet',geaSfSaved?.price===627&&geaSfSaved.resigresConfiguration?.total===627);
+    report.gea={cf:geaCfPrice.total,sf:geaSfPrice.total};
+
     const recor=await page.evaluate(()=>{const p=CATALOG.find(x=>isRecorBathRequiringFeet(x)&&recorCompatibleFeet(x).length);return {reference:p.reference,key:productKey(p)};});
     await page.evaluate(p=>addCatalogProduct(p.reference,state.rooms[0]?.id,p.key),recor);
     await page.waitForSelector('#recorConfigurator input[name="recorFeet"]');
