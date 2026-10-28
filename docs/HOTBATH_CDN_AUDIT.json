@@ -1,0 +1,182 @@
+{
+  "inspected": 367,
+  "verified": 158,
+  "unavailable": 209,
+  "requests": 2457,
+  "resolvedByCollection": {
+    "Ace": 19,
+    "Archie": 26,
+    "Chap": 13,
+    "Cobber": 17,
+    "Cobber X": 4,
+    "Fellow": 1,
+    "Gal": 6,
+    "Gent": 26,
+    "Guy": 32,
+    "Mate": 9,
+    "Ray": 4,
+    "Tron": 1
+  },
+  "missingExamples": [
+    {
+      "collection": "Ace",
+      "ref": "GLA320"
+    },
+    {
+      "collection": "Ace",
+      "ref": "M015"
+    },
+    {
+      "collection": "Ace",
+      "ref": "M017"
+    },
+    {
+      "collection": "Ace",
+      "ref": "M274"
+    },
+    {
+      "collection": "Ace",
+      "ref": "P708"
+    },
+    {
+      "collection": "Ace",
+      "ref": "P710"
+    },
+    {
+      "collection": "Ace",
+      "ref": "SDSAC9"
+    },
+    {
+      "collection": "Archie",
+      "ref": "AR035"
+    },
+    {
+      "collection": "Archie",
+      "ref": "AR078W"
+    },
+    {
+      "collection": "Archie",
+      "ref": "AR096-15"
+    },
+    {
+      "collection": "Archie",
+      "ref": "AR096-25"
+    },
+    {
+      "collection": "Archie",
+      "ref": "AR096-30"
+    },
+    {
+      "collection": "Archie",
+      "ref": "AR124"
+    },
+    {
+      "collection": "Archie",
+      "ref": "AR142"
+    },
+    {
+      "collection": "Archie",
+      "ref": "AR2002"
+    },
+    {
+      "collection": "Archie",
+      "ref": "AR320"
+    },
+    {
+      "collection": "Archie",
+      "ref": "AR471"
+    },
+    {
+      "collection": "Archie",
+      "ref": "AR7066"
+    },
+    {
+      "collection": "Archie",
+      "ref": "AR710"
+    },
+    {
+      "collection": "Archie",
+      "ref": "ARA321"
+    },
+    {
+      "collection": "Archie",
+      "ref": "FKM11"
+    },
+    {
+      "collection": "Archie",
+      "ref": "SDS33"
+    },
+    {
+      "collection": "Chap",
+      "ref": "C7066"
+    },
+    {
+      "collection": "Chap",
+      "ref": "CB450"
+    },
+    {
+      "collection": "Chap",
+      "ref": "CB452"
+    },
+    {
+      "collection": "Chap",
+      "ref": "CB453"
+    },
+    {
+      "collection": "Chap",
+      "ref": "CBA321"
+    },
+    {
+      "collection": "Chap",
+      "ref": "M017"
+    },
+    {
+      "collection": "Chap",
+      "ref": "M317"
+    },
+    {
+      "collection": "Chap",
+      "ref": "M445"
+    },
+    {
+      "collection": "Chap",
+      "ref": "M470"
+    },
+    {
+      "collection": "Chap",
+      "ref": "M471"
+    },
+    {
+      "collection": "Chap",
+      "ref": "M472"
+    },
+    {
+      "collection": "Chap",
+      "ref": "P708"
+    },
+    {
+      "collection": "Chap",
+      "ref": "P710"
+    },
+    {
+      "collection": "Chap",
+      "ref": "SDSCH9"
+    },
+    {
+      "collection": "Cobber",
+      "ref": "CB040"
+    },
+    {
+      "collection": "Cobber",
+      "ref": "CB041"
+    },
+    {
+      "collection": "Cobber",
+      "ref": "CB095-15"
+    },
+    {
+      "collection": "Cobber",
+      "ref": "CB095-18"
+    }
+  ]
+}
