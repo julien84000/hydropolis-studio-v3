@@ -42,5 +42,7 @@ jobs:
             echo "No verified image changes"
           else
             git commit -m "Hotbath: remplacer les archives 404 par les seules images CDN réellement vérifiées"
+            git fetch origin refs/heads/feat/v11.63.2-hotbath-official-gallery
+            git rebase FETCH_HEAD
             git push origin HEAD:refs/heads/feat/v11.63.2-hotbath-official-gallery
           fi
