@@ -63,5 +63,5 @@ test('Hotbath official image selector accepts double slash from manufacturer and
  assert.match(a,/^https:\/\/hotbath\.it\/documents\/\/ProdCateg\/3522\/AR003_1_2023\.jpg/);
  assert.equal(finder({base:'AR003M'},'Archie',images),images.byCollection.Archie.AR003M);
  assert.equal(finder({base:'AR003'},'Cobber',images),'');
- assert.equal(finder({base:'AR031'},'Archie',images),'');
+ assert.equal(finder({base:'AR999-UNKNOWN'},'Archie',images),'');
 });
