@@ -84,4 +84,14 @@ test('manufacturer image audit keeps index and storage integrity',()=>{
  assert(report.configured.Carrodrain.variants>0);
  assert(!entries.get('Sbordoni').brokenLocal,'Sbordoni rows point to absent crop URLs/files');
 });
+test('Bette official pictures are exact-model scoped, never borrowed for another family',()=>{
+ const vm=require('node:vm'),win={};
+ vm.runInNewContext(fs.readFileSync(path.join(PUBLIC,'brand-configurators.js'),'utf8'),{window:win,Map,Uint8Array});
+ const photo=win.HydroBrandCatalogs.verifiedModelPhoto;
+ assert.match(photo('Bette','BetteOcean'),/^https:\/\/content\.my-bette\.com\/produkt_bilder\/BetteOcean-/);
+ assert.match(photo('Bette','BetteStarlet I'),/^https:\/\/content\.my-bette\.com\/produkt_bilder\/BetteStarlet-I-/);
+ assert.equal(photo('Bette','BetteOcean Low-Line'),'');
+ assert.equal(photo('Bette','BetteStarlet I Silhouette'),'');
+ assert.equal(photo('Hidrobox','Neo Plus'),'');
+});
 module.exports={report};
