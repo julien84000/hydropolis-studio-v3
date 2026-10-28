@@ -86,6 +86,6 @@ test('Hotbath 2026: official collections can price exact models shared by suppli
   assert.equal(covered,611,'price-list collection aliases must not hide official exact models');
   assert.ok(shared>=100,'shared price-list collections must be indexed');
   assert.ok(index.has('Cobber X'),'Cobber-X from price list must match official Cobber X');
-  assert.equal(index.get('Cobber X').has('CX003'),true);
+  assert.equal(index.get('Cobber X').has('CX003C'),true);
   assert.equal(index.has('Sparky'),false,'Sparky is not one of the 12 official browse collections');
 });
