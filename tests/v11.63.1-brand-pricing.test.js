@@ -76,3 +76,16 @@ test('Bette and Carrodrain reopen the exact SKU rather than silently choosing th
  assert.match(code,/const original=initialExactVariant\(groups,p\),selected=original.variant/);
  assert.match(code,/const changed=draft.group!==el.dataset.carrodrainGroup/);
 });
+
+test('Carrodrain catalog identifies unpriced visual collections without inventing a price',()=>{
+ const fs=require('node:fs');
+ const path=require('node:path');
+ const code=fs.readFileSync(path.join(__dirname,'../public/brand-configurators.js'),'utf8');
+ assert.match(code,/collections tarifées sur/);
+ assert.match(code,/Hors tarif importé · Voir chez Carrodrain/);
+ const data=auditAll().find(x=>x.brand==='Carrodrain')._data;
+ const ids=new Set(data.groups.map(x=>x.id));
+ assert.equal(ids.has('invisible-disco-125'),false);
+ assert.equal(ids.has('kerlox'),false);
+ assert.equal(ids.has('liquid-snake'),true);
+});
