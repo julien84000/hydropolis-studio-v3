@@ -450,8 +450,8 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     // V11.63.4 — Carrodrain: choose real LOW/PRO variants and check
     // manufacturer-page PDF mapping without substituting neighbouring versions.
     await page.evaluate(()=>HydroCarrodrainConfigurator.open({manufacturer:'Carrodrain'},state.rooms[0]?.id||''));
-    await page.waitForSelector('#brandConfigurator [data-carrodrain-group="quattro"]',{timeout:20000});
-    await page.locator('#brandConfigurator [data-carrodrain-group="quattro"]').click();
+    await page.waitForSelector('#brandConfigurator [data-carrodrain-group="quattro-100"]',{timeout:20000});
+    await page.locator('#brandConfigurator [data-carrodrain-group="quattro-100"]').click();
     await page.waitForSelector('#brandConfigurator #ccVersion');
     await page.locator('#brandConfigurator #ccVersion').selectOption('LOW');
     await page.waitForSelector('#brandConfigurator a[href*="Quattro_100_LOW_Technical_Specifications_2025.pdf"]');
