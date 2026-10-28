@@ -8,7 +8,7 @@ const taxonomy=JSON.parse(fs.readFileSync(path.join(root,'brand-guide-hotbath-ta
 const images=JSON.parse(fs.readFileSync(path.join(root,'brand-guide-hotbath-media.json'),'utf8'));
 const clean=x=>String(x||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
 
-test('Hotbath: 53 exact supplier galleries and 631 verified photos, no cross-collection substitution',()=>{
+test('Hotbath: 53 exact supplier galleries and only HTTP-verified product photos, no cross-collection substitution',()=>{
  const cats=Object.entries(taxonomy.collections);
  assert.equal(cats.length,12);
  assert.equal(cats.reduce((sum,[,rows])=>sum+rows.length,0),53);
@@ -21,13 +21,16 @@ test('Hotbath: 53 exact supplier galleries and 631 verified photos, no cross-col
    const img=photos.get(ref);
    if(!img){missing.push(collection+':'+ref);continue}
    count++;
-   assert.match(img,/^https:\/\/hotbath\.(?:it|com)\//,collection+':'+ref);
+   assert.match(img,/^https:\/\/hotbath\.com\//,collection+':'+ref);
    assert(!/placeholder/i.test(img),collection+':'+ref);
   }
  }
  assert.equal(total,647);
- assert.equal(count,631);
- assert.equal(missing.length,16);
+ assert.equal(images.historicalURLsValidated,true,'remove dead old URLs only after CDN scan');
+ assert.equal(count,422);
+ assert.equal(missing.length,225);
+ assert.equal(Object.keys(images.verifiedContemporaryCDN||{}).length,158);
+ assert.equal(Object.keys(images.missingContemporaryCDN||{}).length,209);
  assert.equal(Object.keys(images.officialHistoricalSources).length,367);
  for(const [id,spec]of Object.entries(images.officialHistoricalSources)){
    const [collection,ref]=id.split('|');
@@ -36,7 +39,10 @@ test('Hotbath: 53 exact supplier galleries and 631 verified photos, no cross-col
    const filename=decodeURIComponent(spec.verifiedImage.split('?')[0].split('/').at(-1)).split('_')[0].replace(/\.[^.]+$/,'');
    assert.equal(clean(filename),expected,id+' must match exact photo filename');
    assert.match(spec.page,/^https:\/\/hotbath\.it\/fr\/prods\//);
-   assert.equal(images.byCollection[collection][ref],spec.verifiedImage);
+   const cdn=images.verifiedContemporaryCDN[id],missing=images.missingContemporaryCDN[id];
+   assert.ok(Boolean(cdn)!==Boolean(missing),id+' must be either verified or unavailable');
+   if(cdn){assert.equal(images.byCollection[collection][ref],cdn.url);assert.equal(cdn.status,200);assert.ok(cdn.pixels[0]>=100&&cdn.pixels[1]>=100)}
+   else assert.equal(images.byCollection[collection][ref],undefined);
    assert.equal(spec.match,'exact supplier filename');
  }
  console.log('HOTBATH_IMAGE_COVERAGE',JSON.stringify({verified:count,total,missing}));
@@ -54,13 +60,13 @@ test('Hotbath: product-grid styling matches supplier approach and does not impac
  assert.doesNotMatch(css,/\.mg-official-gallery \.mg-tile\{[^}]*background:#fff/);
 });
 
-test('Hotbath official image selector accepts double slash from manufacturer and refuses unrelated models',()=>{
+test('Hotbath official image selector shows only the verified current CDN for exact references',()=>{
  const vm=require('node:vm'),win={HydroManufacturerGuide:{open:()=>{}}};
  const file=fs.readFileSync(path.join(root,'hotbath-official-guide.js'),'utf8');
  vm.runInNewContext(file,{window:win});
  const finder=win.HydroHotbathOfficialGuide.photo;
  const a=finder({base:'AR003'},'Archie',images);
- assert.match(a,/^https:\/\/hotbath\.it\/documents\/\/ProdCateg\/3522\/AR003_1_2023\.jpg/);
+ assert.match(a,/^https:\/\/hotbath\.com\/images\/compano\/AR003\/AR003IX_02\.png/);
  assert.equal(finder({base:'AR003M'},'Archie',images),images.byCollection.Archie.AR003M);
  assert.equal(finder({base:'AR003'},'Cobber',images),'');
  assert.equal(finder({base:'AR999-UNKNOWN'},'Archie',images),'');
