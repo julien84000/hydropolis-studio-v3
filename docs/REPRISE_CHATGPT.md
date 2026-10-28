@@ -1,3 +1,18 @@
+## Checkpoint images de tous les configurateurs — PR #48, 28/10/2026
+
+- **Demande utilisateur** : photo pour chaque article dans les différents configurateurs, pas uniquement une belle présentation générale. Ne pas inventer de photo d'une autre référence ou prétendre que toutes les finitions sont photographiées.
+- **Main de départ** `4823e664cd852e90a61f4bc2f43888aaf1c6f3ec` V11.64.2. Branche isolée `audit/manufacturer-product-images-v11643`, PR brouillon #48. Aucun fichier tarif ni base de projets modifiés.
+- **Audit enregistré** : `tests/manufacturer-image-audit.js`, appelé par `npm test`. 108 175 lignes catalogue + groupes et variantes Bette/Hidrobox/Carrodrain ; distingue images déclarées, index modèle/finition et fichiers locaux réels. Attention aux résolveurs dynamiques, non mesurés par ce test.
+- **Rapport précis et plan** : `docs/PHOTO_AUDIT_ALL_MANUFACTURERS.md`. Sbordoni : 4 613 images locales indexées / 5 216 références, 603 non résolues. Bette : 93 familles/62 264 variantes sans image dans matrice. Hidrobox : 27 familles/4 479 variantes sans image dans matrice. Carrodrain : 12 familles/635 variantes, galerie modèle séparée. Les autres fournisseurs et Gessi utilisent aussi des mécanismes hors matrice, ne pas confondre.
+- **Premier correctif sauvegardé non déployé** : photographies officielles confirmées des modèles stricts BetteOcean et BetteStarlet I dans `public/brand-configurators.js`, partagées uniquement avec leurs variantes de **même famille**, toujours étiquetées finition illustrative. Test anti-transfert au modèle voisin ajouté.
+- **CI** : run #40782256861 et #40782547917 réussis sur les checkpoints d'audit précédents ; vérifier la CI du **dernier SHA** avec les premières images avant tout éventuel merge.
+- **À poursuivre** : approvisionner les 91 familles Bette restantes à partir des fiches constructeur, les 27 Hidrobox, les 603 Sbordoni, et vérifier Hotbath/Zucchetti/Lefroy/Gessi/fournisseurs additionnels. Références + prix + fiches techniques ne doivent pas changer. L'audit seul n'atteint pas 100 % ; garder PR #48 en brouillon tant que la couverture réelle n'est pas satisfaisante.
+
+### Prompt de reprise 
+Reprendre la PR #48 sur GitHub `julien84000/hydropolis-studio-v3` ; lire `docs/PHOTO_AUDIT_ALL_MANUFACTURERS.md`, `tests/manufacturer-image-audit.js` et ce checkpoint. Contrôler le SHA de `main` et la dernière CI. L'utilisateur veut toutes les photos par article ; ajouter les mappings produits officiels strictement vérifiés par famille puis les images par finition si confirmées, sans jamais réutiliser l'image d'un autre modèle. Tester les images dans Chromium sur ordinateur et mobile ; contrôler sauvegarde et export PDF avant fusion/déploiement, puis Render `/api/version` et `/api/health`. Commits/checkpoints fréquents.
+
+---
+
 ## Validation du modèle visuel partagé — 28 octobre 2026 — V11.64.2 (PR #47)
 
 - Dernier `main` intégré : `d33a83c0bbc3e3a7e3ab548d8f28d48865b675fa` (V11.64.1, Gessi sous-séries et fiches techniques préservées). Branche `feat/shared-gessi-visual-pattern-v1164` : merge de reprise avec parents explicites (branche + `main`), aucun ancien fichier Gessi remplacé.
