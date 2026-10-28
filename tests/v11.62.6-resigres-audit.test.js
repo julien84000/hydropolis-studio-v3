@@ -102,7 +102,7 @@ test('Other Resigres families: fixed certified examples and rules remain functio
  assert.equal(drawers.status,'automatic');assert.equal(drawers.basePrice,406);
  const pending=V50.furnitureQuote(cfg,{model:'Frame',type:'h45-1d-1b',material:'lacquer',
    color:'Arena',widthCm:48,lengthCm:100,heightCm:45,depthCm:48,paidOptions:{}});
- assert.equal(pending.status,'pending');assert.match(pending.reason,/page 60/);
+ assert.equal(pending.status,'pending');assert.match(pending.reason,/finition et le coloris du plan vasque/);
 });
 test('Manual price cannot be entered for inverted dimensions, out-of-grid lengths or incomplete furniture/shower details',()=>{
  assert.match(app,/Longueur du plan \(cm\)<input id="rg50Length"/);
