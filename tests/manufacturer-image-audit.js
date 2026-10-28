@@ -92,7 +92,13 @@ test('Bette official pictures are exact-model scoped, never borrowed for another
  const photo=win.HydroBrandCatalogs.verifiedModelPhoto;
  assert.match(photo('Bette','BetteOcean'),/^https:\/\/content\.my-bette\.com\/produkt_bilder\/BetteOcean-/);
  assert.match(photo('Bette','BetteStarlet I'),/^https:\/\/content\.my-bette\.com\/produkt_bilder\/BetteStarlet-I-/);
- assert.equal(photo('Bette','BetteOcean Low-Line'),'');
+ assert.match(photo('Bette','BetteArt'),/\/BetteArt-134583\//);
+ assert.match(photo('Bette','BetteLux'),/\/BetteLux-134554\//);
+ assert.match(photo('Bette','BetteStarlet'),/\/BetteStarlet-133350\//);
+ assert.equal(photo('Bette','BetteArt IV'),'');
+ assert.equal(photo('Bette','BetteLux Oval'),'');
+ assert.equal(photo('Bette','BetteStarlet Oval'),'');
+  assert.equal(photo('Bette','BetteOcean Low-Line'),'');
  assert.equal(photo('Bette','BetteStarlet I Silhouette'),'');
  assert.equal(photo('Hidrobox','Neo Plus'),'');
  const media=win.HydroBrandCatalogs.mediaFor('Bette',{}, {family:'BetteOcean'}, {reference:'8858'});
