@@ -58,3 +58,34 @@ test('Hotbath 2026: technical bodies retain complete provenance without changing
     assert.ok(Number.isFinite(p.price)&&Number.isFinite(p.totalPrice));
   }
 });
+
+test('Hotbath 2026: official collections can price exact models shared by supplier collections',()=>{
+  const vm=require('node:vm');
+  const fs=require('node:fs');
+  const taxonomy=require(path.join(__dirname,'..','public','brand-guide-hotbath-taxonomy.json'));
+  const window={HydroManufacturerGuide:{open:()=>{}}};
+  vm.runInNewContext(fs.readFileSync(path.join(__dirname,'..','public','hotbath-official-guide.js'),'utf8'),{window});
+  const guide=window.HydroHotbathOfficialGuide;
+  const index=guide.tariffIndex(rows);
+  let total=0,covered=0,shared=0;
+  for(const [collection,categories] of Object.entries(taxonomy.collections)){
+    const unique=[...new Set(categories.flatMap(cat=>cat.refs))];
+    for(const ref of unique){
+      total++;
+      const models=guide.officialModels(collection,{refs:[ref]},index);
+      assert.equal(models.length,1);
+      const matched=models[0].variants;
+      const ids=new Set(matched.map(p=>p.reference));
+      assert.equal(ids.size,matched.length,'duplicate tariff price for '+collection+' / '+ref);
+      assert.ok(matched.every(p=>p.manufacturer==='Hotbath'&&p.base===ref));
+      if(matched.length)covered++;
+      if(matched.some(p=>p.collection.includes('/')))shared++;
+    }
+  }
+  assert.equal(total,647);
+  assert.equal(covered,611,'price-list collection aliases must not hide official exact models');
+  assert.ok(shared>=100,'shared price-list collections must be indexed');
+  assert.ok(index.has('Cobber X'),'Cobber-X from price list must match official Cobber X');
+  assert.equal(index.get('Cobber X').has('CX003'),true);
+  assert.equal(index.has('Sparky'),false,'Sparky is not one of the 12 official browse collections');
+});
