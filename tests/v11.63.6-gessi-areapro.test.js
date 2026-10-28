@@ -78,3 +78,18 @@ test('V11.63.6: Gessi launcher and versioned assets are included without changin
  assert.doesNotMatch(js,/fetch\(\s*['"]\/api\/.*(?:price|tariff)/);
  assert.match(read('gessi-area-pro.css'),/gessi-univers/);
 });
+
+test('V11.63.8: same supplier collection in three Area Pro universes never duplicates priced SKUs',()=>{
+ const bathroom=variant('Inciso','56121','031',200,'Mitigeur lavabo');
+ const kitchen=variant('Inciso','56122','031',220,'Mitigeur cuisine');
+ const sensor=variant('Inciso','56123','031',240,'Robinet électronique');
+ const unknown=variant('Inciso','56124','031',260,'Accessoire');
+ const idx=g.buildIndex([bathroom,kitchen,sensor,unknown],site);
+ const at=id=>g.listAreaCollections(idx,site.areas.find(a=>a.id===id)).find(c=>c.name==='Inciso').rows;
+ assert.deepEqual(at('bathroom').map(p=>p.reference),[bathroom.reference,unknown.reference]);
+ assert.deepEqual(at('kitchen').map(p=>p.reference),[kitchen.reference]);
+ assert.deepEqual(at('sensor-taps').map(p=>p.reference),[sensor.reference]);
+ assert.equal(at('bathroom').length+at('kitchen').length+at('sensor-taps').length,4);
+ assert.equal(idx.total,4);
+ assert.equal(g.selectArea({...unknown,universe:'Kitchen'},'Inciso',site.areas).id,'kitchen');
+});
