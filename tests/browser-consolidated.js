@@ -447,6 +447,23 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
       await page.locator('#hidroboxGuided a[href$="STL-Line-Hidrobox.zip"]').count()===1);
     await page.locator('#hidroboxGuided .hidrobox-close').click();
 
+    // V11.63.4 — Carrodrain: choose real LOW/PRO variants and check
+    // manufacturer-page PDF mapping without substituting neighbouring versions.
+    await page.evaluate(()=>HydroCarrodrainConfigurator.open({manufacturer:'Carrodrain'},state.rooms[0]?.id||''));
+    await page.waitForSelector('#brandConfigurator [data-carrodrain-group="quattro"]',{timeout:20000});
+    await page.locator('#brandConfigurator [data-carrodrain-group="quattro"]').click();
+    await page.waitForSelector('#brandConfigurator #ccVersion');
+    await page.locator('#brandConfigurator #ccVersion').selectOption('LOW');
+    await page.waitForSelector('#brandConfigurator a[href*="Quattro_100_LOW_Technical_Specifications_2025.pdf"]');
+    check('Carrodrain Quattro LOW : bonne fiche technique',
+      await page.locator('#brandConfigurator a[href*="Quattro_100_LOW_Technical_Specifications_2025.pdf"]').count()===1);
+    await page.locator('#brandConfigurator #ccVersion').selectOption('PRO');
+    await page.waitForSelector('#brandConfigurator a[href*="Quattro_100_PRO_Technical_Specifications_2025.pdf"]');
+    check('Carrodrain Quattro PRO : pas de fiche LOW substituée',
+      await page.locator('#brandConfigurator a[href*="Quattro_100_PRO_Technical_Specifications_2025.pdf"]').count()===1 &&
+      await page.locator('#brandConfigurator a[href*="Quattro_100_LOW_Technical_Specifications_2025.pdf"]').count()===0);
+    await page.locator('#brandConfigurator .brand-config-close').click();
+
     // V11.62.6 — browser regression on actual Resigres Selene: verify
     // price on the visible product configuration and invalid dimension protection.
     await page.waitForFunction(()=>CATALOG.some(p=>p.manufacturer==='Resigres'&&p.resigresModel==='Selene'),{timeout:25000});
