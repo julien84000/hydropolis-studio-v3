@@ -127,3 +127,24 @@ Branche de travail : `feat/v11.63.1-brands-pricing-integrity`. PR : https://gith
 - Le contrôle HTTP et décodage raster ultérieur a examiné les **367 archives historiques**, récupéré **158 URL CDN modernes** et constaté **209 URL sans variante CDN prouvée**. L'application affiche maintenant **422 modèles sur 647 avec une URL photographique compatible et vérifiée par ce processus**, et **225 sans photographie fiable**. Source durable : `docs/HOTBATH_CDN_AUDIT.json` et `public/brand-guide-hotbath-media.json`.
 - Le fait qu'une fiche existe sur `hotbath.it` ne prouve pas que son JPEG `/documents/ProdCateg/...` existe encore (AR003 a répondu 404). La preuve photographique de la finition reste distincte du modèle et du prix exact.
 - **Validation nécessaire** : dernière exécution complète de GitHub Actions, images réelles et navigation Chromium avant fusion ; la couverture 422/647 ne doit pas être présentée comme 97,5 %.
+
+
+## Livraison Hotbath V11.63.2 et début Hidrobox V11.63.3 — 28/10/2026
+
+### Hotbath livrée
+- PR #35 fusionnée (squash `860504041b1e957d0008e509781883dbedc952fb`) ; dernière CI PR https://github.com/julien84000/hydropolis-studio-v3/actions/runs/40769131756 : succès, Chromium compris ; CI post-fusion https://github.com/julien84000/hydropolis-studio-v3/actions/runs/40769382483 : succès.
+- Render effectivement vérifié : `GET /api/version` → `11.63.2` et `GET /api/health` → `ok: true`, PostgreSQL. Aucun projet utilisateur de production modifié manuellement.
+- Références commerciales `.IT` retirées 2 546/2 554, codes techniques 188, réouverture des anciennes références conservée avec alias ; prix et remises inchangés.
+- Taxonomie officielle `hotbath.it` inchangée, modèles avec tarifs exacts 611/647 ; liens photographiques vérifiés 422/647 (225 sans preuve), détails dans le journal ci-dessus.
+
+### Hidrobox V11.63.3 — préparation non déployée
+- Branche : `feat/v11.63.3-hidrobox-official-cad`, créée sur `main` `860504041b1e957d0008e509781883dbedc952fb`.
+- Les pages officielles `https://hidrobox.com/fr/collections/neo-plus/` et `https://hidrobox.com/fr/collections/line/` exposent quatre nouvelles ressources constructeur :
+  - Neo Plus BIM : `https://hidrobox.com/wp-content/uploads/2025/01/BIMobject-Shower-tray-Neo-Plus.zip`
+  - Neo Plus 3D : `https://hidrobox.com/wp-content/uploads/2025/05/Neo-Plus-80x140x3-1.zip` (fichier d'exemple 80 × 140 × 3 cm, **ne pas promettre compatibilité avec toutes les tailles**).
+  - Line BIM : `https://hidrobox.com/wp-content/uploads/2025/05/BIMobject-Shower-tray-Line-X-Scene-Smooth.zip`
+  - Line STL : `https://hidrobox.com/wp-content/uploads/2025/05/STL-Line-Hidrobox.zip`.
+- `public/hidrobox-guided.js` : les ressources sont proposées comme **documents de famille**, jamais présentées comme CAO exacte de la variante, sans remplacer fiches techniques ou notices. `officialZip` n'autorise que des ZIP du domaine constructeur en HTTPS. Les URLs ont été extraites des pages officielles ; **le contenu des ZIP n'a pas été ouvert ni audité**.
+- Tarifs : aucun fichier `public/brand-data/hidrobox-*` n'est modifié. Conserver 4 479 variantes, majoration publique +4 % une seule fois, remise achat 50 %. Test `tests/v11.63.3-hidrobox-cad.test.js` inclus à `npm test`.
+- Commits : code `9c5205b338bb1f336a76507bd588e0a413232a9e`, tests `cf95b8d85af7bd86ba5c17db315af47884dbfc84`, package `159e94713102e1e6257f90509f983cc776b68782`, lockfile `7f075f8fb079383e89791c852aeda1e3820c9c95`.
+- **En attente** : CI complète, Chromium, PR, vérification de l'ouverture réelle des ressources dans le navigateur et non-régression, et fusion éventuelle. **Render reste en V11.63.2** tant que cette branche n'est pas fusionnée/déployée.
