@@ -218,10 +218,12 @@
     const openFamilies=()=>{
       step='families';
       const content='<div class="brand-path"><b>Produits Bette</b></div><div class="brand-category-grid">'+BETTE_TREE.map(x=>'<button type="button" data-bette-family="'+esc(x.id)+'"><b>'+esc(x.name)+'</b><small>Rubrique du site officiel</small></button>').join('')+'</div>'+
+       (selected?'<button type="button" class="brand-restore-sku" data-bette-restore>Reprendre la configuration enregistrée · '+esc(selected.reference)+'</button>':'')+
        '<a class="brand-site-link" href="https://www.my-bette.com/fr/produits/" target="_blank" rel="noopener noreferrer">Catalogue officiel Bette</a>';
       overlay=overlay||mount(shell('Bette',content));overlay.innerHTML=shell('Bette',content);
       overlay.querySelector('.brand-config-close').onclick=close;overlay.querySelector('.brand-config-cancel').onclick=close;overlay.querySelector('.brand-config-confirm').style.display='none';
       overlay.querySelectorAll('[data-bette-family]').forEach(x=>x.onclick=()=>{kind=x.dataset.betteFamily;groupSection='all';openSections()});
+      overlay.querySelector('[data-bette-restore]')?.addEventListener('click',()=>{step='config';render()});
     };
     const openSections=()=>{
       step='sections';const cat=category(kind);
@@ -237,7 +239,7 @@
       overlay=overlay||mount(shell('Bette',content));overlay.innerHTML=shell('Bette',content);
       overlay.querySelector('.brand-config-close').onclick=close;overlay.querySelector('.brand-config-cancel').onclick=close;overlay.querySelector('.brand-config-confirm').style.display='none';
       overlay.querySelector('[data-bette-back]').onclick=openFamilies;
-      overlay.querySelectorAll('[data-bette-group]').forEach(x=>x.onclick=()=>{draft.group=x.dataset.betteGroup;draft.model=draft.dim=draft.color=draft.option=draft.reference='';step='config';render()});
+      overlay.querySelectorAll('[data-bette-group]').forEach(x=>x.onclick=()=>{if(draft.group!==x.dataset.betteGroup){draft.group=x.dataset.betteGroup;draft.model=draft.dim=draft.color=draft.option=draft.reference='';}step='config';render()});
       overlay.querySelector('[data-bette-unclassified]').onclick=()=>{step='unclassified';openUnclassified()};
     };
     const openUnclassified=()=>{
@@ -248,7 +250,7 @@
       overlay=overlay||mount(shell('Bette',content));overlay.innerHTML=shell('Bette',content);
       overlay.querySelector('.brand-config-close').onclick=close;overlay.querySelector('.brand-config-cancel').onclick=close;overlay.querySelector('.brand-config-confirm').style.display='none';
       overlay.querySelector('[data-bette-back]').onclick=openSections;
-      overlay.querySelectorAll('[data-bette-group]').forEach(x=>x.onclick=()=>{draft.group=x.dataset.betteGroup;draft.model=draft.dim=draft.color=draft.option=draft.reference='';step='config';render()});
+      overlay.querySelectorAll('[data-bette-group]').forEach(x=>x.onclick=()=>{if(draft.group!==x.dataset.betteGroup){draft.group=x.dataset.betteGroup;draft.model=draft.dim=draft.color=draft.option=draft.reference='';}step='config';render()});
     };
     const render=()=>{
       const g=groups.find(x=>x.id===draft.group)||groups[0],all=g.variants||[];
@@ -291,12 +293,14 @@
       const body='<div class="brand-path"><strong>Carrodrain</strong><span>›</span><strong>Gammes de produits</strong></div>'+
         '<div class="carrodrain-family-grid">'+cards+'</div>'+
         '<p class="brand-note">Essentials, Invisibles et Liquids sont les trois familles du site Carrodrain. Les accessoires sont regroupés séparément pour faciliter la consultation.</p>'+
+        (selected?'<button class="brand-restore-sku" type="button" data-carrodrain-restore>Reprendre la configuration enregistrée · '+esc(selected.reference)+'</button>':'')+
         '<a class="brand-site-link" href="https://carrodrain.com/fr" target="_blank" rel="noopener noreferrer">Site officiel Carrodrain</a>';
       overlay=overlay||mount(shell('Carrodrain',body));overlay.innerHTML=shell('Carrodrain',body);
       overlay.querySelector('.recor-configurator').classList.add('carrodrain-gallery-modal');
       overlay.querySelector('.brand-config-close').onclick=close;overlay.querySelector('.brand-config-cancel').onclick=close;
       overlay.querySelector('.brand-config-confirm').style.display='none';
       overlay.querySelectorAll('[data-carrodrain-family]').forEach(el=>el.onclick=()=>{family=el.dataset.carrodrainFamily;mode='gallery';gallery()});
+      overlay.querySelector('[data-carrodrain-restore]')?.addEventListener('click',()=>{family=carrodrainVisual(groups.find(g=>g.id===draft.group))?.family||'Essentials';mode='configure';render()});
     };
     const gallery=()=>{
       const body='<div class="brand-path"><button type="button" data-carrodrain-back="families">Gammes</button><span>›</span><b>'+esc(family)+'</b></div>'+
@@ -399,7 +403,7 @@
     return sets.flat();
   }
   function eligibleBrand(brand,p){return !!p&&String(p.manufacturer||'').toLowerCase()===brand.toLowerCase()&&String(p.configuratorType||'').toLowerCase()===brand.toLowerCase();}
-  root.HydroBrandCatalogs={load:loadCatalogs,verifiedPublicPrice,initialExactVariant,initialHidroboxDraft};
+  root.HydroBrandCatalogs={load:loadCatalogs,verifiedPublicPrice,initialExactVariant,initialHidroboxDraft,betteTree:BETTE_TREE,betteType,carrodrainTree:CARRODRAIN_TREE};
   root.HydroBetteConfigurator={eligible:p=>eligibleBrand('Bette',p),open:openBette,close};
   root.HydroCarrodrainConfigurator={eligible:p=>eligibleBrand('Carrodrain',p),open:openCarrodrain,close,models:CARRODRAIN_MODELS};
   root.HydroHidroboxConfigurator={eligible:p=>eligibleBrand('Hidrobox',p),open:openHidrobox,close,groups:async()=>((await loadJson(BRAND_META.Hidrobox)).groups||[])};
