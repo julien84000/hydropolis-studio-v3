@@ -197,7 +197,7 @@
   const betteFacetMatches=(g,slug)=>{
     const pattern=BETTE_FACET_MATCH[slug];
     if(!pattern)return false;
-    const name=String(g?.family||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'');
+    const name=String(g?.family||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
     return pattern.test(name);
   };
   const CARRODRAIN_TREE=[
