@@ -546,8 +546,12 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
       JSON.stringify(['beta-fusion','beta-evoque']));
     await page.locator('#hidroboxGuided [data-hidrobox-home]').click();
     await page.setViewportSize({width:390,height:844});
-    const mobile=await page.locator('#hidroboxGuided .hidrobox-guide').evaluate(x=>x.scrollWidth<=x.clientWidth);
-    check('Hidrobox official tree : no horizontal overflow on mobile 390',mobile);
+    const mobile=await page.locator('#hidroboxGuided .hidrobox-guide').evaluate(x=>({
+      clientWidth:x.clientWidth,scrollWidth:x.scrollWidth,
+      offenders:[...x.querySelectorAll('*')].filter(el=>el.getBoundingClientRect().right>x.getBoundingClientRect().right+2).slice(0,5).map(el=>({tag:el.tagName,cls:el.className,right:Math.round(el.getBoundingClientRect().right)}))
+    }));
+    if(mobile.scrollWidth>mobile.clientWidth)console.error('HIDROBOX_MOBILE_OVERFLOW',JSON.stringify(mobile));
+    check('Hidrobox official tree : no horizontal overflow on mobile 390',mobile.scrollWidth<=mobile.clientWidth);
     await page.setViewportSize({width:1440,height:1000});
     await page.locator('#hidroboxGuided .hidrobox-close').click();
 
