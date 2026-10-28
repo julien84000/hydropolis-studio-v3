@@ -1,3 +1,9 @@
+## Checkpoint C — images Bette vérifiées, PR #48
+
+En complément du rapport ci-dessous, 5 familles Bette (Art, Lux, Ocean, Starlet, Starlet I) utilisent maintenant une photographie de leur fiche officielle, en tant que visuel du modèle non contractuel pour taille/finition. Les variantes analogues de noms différents restent sans photo directe. Les nouvelles associations et leurs tests sont enregistrés sur la PR #48 (audit/manufacturer-product-images-v11643), non fusionnée/déployée. Tester la CI du dernier SHA avant fusion.
+
+---
+
 ## Checkpoint images de tous les configurateurs — PR #48, 28/10/2026
 
 - **Demande utilisateur** : photo pour chaque article dans les différents configurateurs, pas uniquement une belle présentation générale. Ne pas inventer de photo d'une autre référence ou prétendre que toutes les finitions sont photographiées.
