@@ -129,6 +129,36 @@ Branche de travail : `feat/v11.63.1-brands-pricing-integrity`. PR : https://gith
 - **Validation nécessaire** : dernière exécution complète de GitHub Actions, images réelles et navigation Chromium avant fusion ; la couverture 422/647 ne doit pas être présentée comme 97,5 %.
 
 
+## Livraison Hotbath V11.63.2 et début Hidrobox V11.63.3 — 28/10/2026
+
+### Hotbath livrée
+- PR #35 fusionnée (squash `860504041b1e957d0008e509781883dbedc952fb`) ; dernière CI PR https://github.com/julien84000/hydropolis-studio-v3/actions/runs/40769131756 : succès, Chromium compris ; CI post-fusion https://github.com/julien84000/hydropolis-studio-v3/actions/runs/40769382483 : succès.
+- Render effectivement vérifié : `GET /api/version` → `11.63.2` et `GET /api/health` → `ok: true`, PostgreSQL. Aucun projet utilisateur de production modifié manuellement.
+- Références commerciales `.IT` retirées 2 546/2 554, codes techniques 188, réouverture des anciennes références conservée avec alias ; prix et remises inchangés.
+- Taxonomie officielle `hotbath.it` inchangée, modèles avec tarifs exacts 611/647 ; liens photographiques vérifiés 422/647 (225 sans preuve), détails dans le journal ci-dessus.
+
+### Hidrobox V11.63.3 — préparation non déployée
+- Branche : `feat/v11.63.3-hidrobox-official-cad`, créée sur `main` `860504041b1e957d0008e509781883dbedc952fb`.
+- Les pages officielles `https://hidrobox.com/fr/collections/neo-plus/` et `https://hidrobox.com/fr/collections/line/` exposent quatre nouvelles ressources constructeur :
+  - Neo Plus BIM : `https://hidrobox.com/wp-content/uploads/2025/01/BIMobject-Shower-tray-Neo-Plus.zip`
+  - Neo Plus 3D : `https://hidrobox.com/wp-content/uploads/2025/05/Neo-Plus-80x140x3-1.zip` (fichier d'exemple 80 × 140 × 3 cm, **ne pas promettre compatibilité avec toutes les tailles**).
+  - Line BIM : `https://hidrobox.com/wp-content/uploads/2025/05/BIMobject-Shower-tray-Line-X-Scene-Smooth.zip`
+  - Line STL : `https://hidrobox.com/wp-content/uploads/2025/05/STL-Line-Hidrobox.zip`.
+- `public/hidrobox-guided.js` : les ressources sont proposées comme **documents de famille**, jamais présentées comme CAO exacte de la variante, sans remplacer fiches techniques ou notices. `officialZip` n'autorise que des ZIP du domaine constructeur en HTTPS. Les URLs ont été extraites des pages officielles ; **le contenu des ZIP n'a pas été ouvert ni audité**.
+- Tarifs : aucun fichier `public/brand-data/hidrobox-*` n'est modifié. Conserver 4 479 variantes, majoration publique +4 % une seule fois, remise achat 50 %. Test `tests/v11.63.3-hidrobox-cad.test.js` inclus à `npm test`.
+- Commits : code `9c5205b338bb1f336a76507bd588e0a413232a9e`, tests `cf95b8d85af7bd86ba5c17db315af47884dbfc84`, package `159e94713102e1e6257f90509f983cc776b68782`, lockfile `7f075f8fb079383e89791c852aeda1e3820c9c95`.
+- **En attente** : CI complète, Chromium, PR, vérification de l'ouverture réelle des ressources dans le navigateur et non-régression, et fusion éventuelle. **Render reste en V11.63.2** tant que cette branche n'est pas fusionnée/déployée.
+
+
+## Livraison confirmée sur GitHub V11.63.3 — Hidrobox (28/10/2026)
+
+- **PR #36 fusionnée** dans `main` le 28/10/2026 : commit squash `988de9313255ab4fe448edfaf57722139612706c`, source `0b374ce95e8c9edf778bace5af2a29cdc6a7b524`. Base : Hotbath V11.63.2 `860504041b1e957d0008e509781883dbedc952fb`.
+- **CI de la PR** : https://github.com/julien84000/hydropolis-studio-v3/actions/runs/40770116572 — `npm ci`, `npm run check`, `npm test`, `npm run build`, `npm run test:browser` : **succès**, y compris navigation réelle Chromium sur les liens BIM/3D Neo Plus et Line.
+- **CI après fusion** : https://github.com/julien84000/hydropolis-studio-v3/actions/runs/40770477834 — encore en cours au checkpoint ; vérifier sa conclusion sur GitHub.
+- **Render après fusion, dernier contrôle** : `GET /api/version` renvoie encore **11.63.2**, `GET /api/health` = `ok: true`, `database: postgresql`. La présence du code V11.63.3 sur main ne suffit pas à déclarer la production mise à jour. Revérifier ces endpoints pour conclure.
+- **Changement effectif** : liens CAO constructeur BIM et 3D Neo Plus/Line affichés avec signalement des exemples dimensionnels ; pas de changement des données tarifaires 2026 Hidrobox. Les ZIP officiels n'ont pas été inspectés en profondeur.
+- **Reprise exacte** : vérifier `main`, CI post-fusion et production ; poursuivre qualité et attribution des images et notices Hidrobox, puis Bette, Carrodrain, Zucchetti et Lefroy Brooks. Préserver les 67 378 variantes tarifaires importées et toute la V11.63.2 Hotbath/Resigres/Sbordoni.
+
 ## Checkpoint V11.63.3 — continuité Hidrobox et guides Zucchetti / Lefroy Brooks (28 octobre 2026)
 
 **Base vérifiée** : `main` commit `860504041b1e957d0008e509781883dbedc952fb`, PR #35 Hotbath fusionnée, validation `main` https://github.com/julien84000/hydropolis-studio-v3/actions/runs/40769382483 **réussie**. Les endpoints Render `/api/version` et `/api/health` indiquaient **11.63.2**, `ok:true`, PostgreSQL au moment de reprendre. Ne pas confondre cette preuve avec le déploiement futur V11.63.3.
@@ -143,3 +173,12 @@ Branche de travail : `feat/v11.63.1-brands-pricing-integrity`. PR : https://gith
 **Travaux encore ouverts du prompt initial** : vérifier la disponibilité HTTP et le rendu des photos officielles modèle par modèle, associer davantage de fiches techniques exactes, comparer les 67 378 variantes Bette/Hidrobox/Carrodrain avec leurs fichiers tarifaires source (au-delà du contrôle interne), enrichir les parcours Zucchetti / Lefroy Brooks, compléter les photos Hotbath manquantes sans inventer d'association, maintenir la qualité des 99 images Sbordoni et préserver tous les correctifs Resigres V11.62.11+.
 
 **Reprise** : contrôler la dernière tête de branche, la PR et sa CI (tests, build, Chromium), corriger avant fusion ; vérifier à nouveau la version Render après fusion. Ne jamais déclarer « déployé » sur la seule foi d'une PR fusionnée.
+
+
+### Complément V11.63.3 — photos réelles Lefroy Brooks et fusion des chantiers
+
+- Six bases Classic `CL1220`, `WL9007`, `LB1230`, `CH1230`, `LB1224`, `WL1224` possèdent chacune quatre finitions `AG`, `CP`, `NK`, `PB` dans `catalog_lefroy_brooks.json`.
+- Pour ces 24 références, `public/brand-guide-collections.json` contient des photos individuelles extraites de pages fabricant sur `uk.lefroybrooks.com/classic-basin-taps/`. Les noms de fichier identifient modèle et finition. `manufacturer-guide.js` utilise une photo de finition exacte ainsi qu'un lien détaillé, sans extrapolation aux autres modèles.
+- `tests/v11.63.3-lefroy-finish-media.test.js` contrôle chaque référence et nom de fichier ; ajouté à `npm test`.
+- Coordination : PR #36 Hidrobox CAD/BIM fusionnée dans main `988de9313255ab4fe448edfaf57722139612706c`, documentée à `7b1509ce7c6ebc7b0e62f943924b9757a5d90e80`. Préserver les ressources CAO de famille et leur suite de tests, en y ajoutant les correctifs PR #37.
+- Fusion PR #37 et déploiement de ces photos/restaurations à vérifier ; ne jamais considérer les fichiers ZIP génériques comme CAO exacte de toute dimension.

@@ -12,6 +12,8 @@ const eu=n=>Number(n).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFra
 const HOUSE='https://hidrobox.com/fr/';
 const TECH='https://hidrobox.com/wp-content/uploads/2025/01/ES_NeoPlus_FactSheet.pdf';
 const MANUAL='https://hidrobox.com/wp-content/uploads/2025/07/mus_247_NeoPlus_Shower_Tray_0223-03.pdf';
+const NEO_BIM='https://hidrobox.com/wp-content/uploads/2025/01/BIMobject-Shower-tray-Neo-Plus.zip';
+const NEO_3D='https://hidrobox.com/wp-content/uploads/2025/05/Neo-Plus-80x140x3-1.zip';
 const CATEGORY=[
   {key:'receveurs',name:'Receveurs de douche',img:'https://hidrobox.com/wp-content/uploads/2025/03/01_Platos-de-ducha_Hidrobox.png',url:HOUSE+'produit/receveurs-de-douche/'},
   {key:'panneaux',name:'Panneaux',img:'https://hidrobox.com/wp-content/uploads/2025/05/02_Paneles_Hidrobox.png',url:HOUSE+'produit/panneaux/'},
@@ -117,8 +119,8 @@ function collections(){
 
 /* Manufacturer-direct technical sheets, only where their URLs were verified. */
 const HIDROBOX_DOCUMENTS={
-  'neo plus':{technical:'https://hidrobox.com/wp-content/uploads/2025/01/ES_NeoPlus_FactSheet.pdf',manual:'https://hidrobox.com/wp-content/uploads/2025/07/mus_247_NeoPlus_Shower_Tray_0223-03.pdf'},
-  line:{technical:'https://hidrobox.com/wp-content/uploads/2025/05/ES_Line_FactSheet.pdf',manual:'https://hidrobox.com/wp-content/uploads/2025/07/mus_220_Line_Shower_Tray_0223-07.pdf'},
+  'neo plus':{technical:TECH,manual:MANUAL,bim:NEO_BIM,model3D:NEO_3D},
+  line:{technical:'https://hidrobox.com/wp-content/uploads/2025/05/ES_Line_FactSheet.pdf',manual:'https://hidrobox.com/wp-content/uploads/2025/07/mus_220_Line_Shower_Tray_0223-07.pdf',bim:'https://hidrobox.com/wp-content/uploads/2025/05/BIMobject-Shower-tray-Line-X-Scene-Smooth.zip',model3D:'https://hidrobox.com/wp-content/uploads/2025/05/STL-Line-Hidrobox.zip'},
   twins:{technical:'https://hidrobox.com/wp-content/uploads/ES_Twins_Showertray_Factsheet_2026-1.pdf',manual:'https://hidrobox.com/wp-content/uploads/2025/07/mus_240_Twin_Shower_Tray_0624-07.pdf'},
   quadro:{technical:'https://hidrobox.com/wp-content/uploads/ES_Quadro_Showertray_Factsheet_2026.pdf',manual:'https://hidrobox.com/wp-content/uploads/2025/07/mus_221_Quadro_Shower_Tray_0223-07.pdf'},
   one:{technical:'https://hidrobox.com/wp-content/uploads/ES_One_Showertray_Factsheet_2026.pdf',manual:'https://hidrobox.com/wp-content/uploads/2025/07/mus_213_One_Shower_Tray_0223-12.pdf'},
@@ -160,6 +162,7 @@ const universalDraft={};
 const cleanVal=v=>String(v??'');
 const onlyValues=(rows,key)=>[...new Set(rows.map(v=>cleanVal(v[key])))].filter(Boolean);
 const officialPdf=url=>/^https:\/\/hidrobox\.com\/wp-content\/uploads\/[^#?]+\.pdf$/i.test(String(url||''))?url:'';
+const officialZip=url=>/^https:\/\/hidrobox\.com\/wp-content\/uploads\/[^#?]+\.zip$/i.test(String(url||''))?url:'';
 const officialImage=url=>/^https:\/\/(?:www\.)?hidrobox\.com\/[^"'<>]+/i.test(String(url||''))?url:'';
 function officialCollection(g){
   const raw=norm(g.collection||g.family||g.model||g.id);
@@ -216,9 +219,12 @@ function universalPage(g){
  const canAdd=selected&&Number.isFinite(price)&&price>0&&selected.reference;
  const tech=officialPdf(selected?.technicalSheetUrl||g.technicalSheetUrl||assets.technical);
  const manual=officialPdf(selected?.installationGuideUrl||g.installationGuideUrl||assets.manual);
+ const bim=officialZip(assets.bim),model3D=officialZip(assets.model3D);
  const docs='<div class="hidrobox-downloads"><a href="'+escape(url)+'" target="_blank" rel="noopener noreferrer">Voir la collection</a>'+
    (tech?'<a href="'+escape(tech)+'" target="_blank" rel="noopener noreferrer">Fiche technique</a>':'')+
-   (manual?'<a href="'+escape(manual)+'" target="_blank" rel="noopener noreferrer">Notice de pose</a>':'')+'</div>';
+   (manual?'<a href="'+escape(manual)+'" target="_blank" rel="noopener noreferrer">Notice de pose</a>':'')+
+   (bim?'<a href="'+escape(bim)+'" target="_blank" rel="noopener noreferrer">Objet BIM constructeur · famille</a>':'')+
+   (model3D?'<a href="'+escape(model3D)+'" target="_blank" rel="noopener noreferrer">Modèle 3D constructeur · exemple, dimensions à vérifier</a>':'')+'</div>';
  const markup='<button type="button" class="hidrobox-back">← Collections</button>'+
    '<div class="hidrobox-neo-hero">'+(mainImage?'<img src="'+escape(mainImage)+'" alt="'+escape(name)+'" loading="lazy" onerror="this.style.display=\'none\'">':'')+
    '<div><div class="eyebrow">'+escape(family?.name||'Hidrobox')+'</div><h3>'+escape(name)+'</h3>'+
@@ -310,7 +316,9 @@ function neoPage(){
  '<div><div class="eyebrow">Receveur de douche · Neo Plus</div><h3>NEO PLUS</h3><p>Scene Solid Surface ou Kromat. Fabriqué au centimètre selon les plages du tarif 2026.</p>'+
  '<a href="'+HOUSE+'collections/neo-plus/" target="_blank" rel="noopener noreferrer">Produit officiel</a><div class="hidrobox-downloads">'+
  '<a href="'+TECH+'" target="_blank" rel="noopener noreferrer">Fiche technique PDF</a>'+
- '<a href="'+MANUAL+'" target="_blank" rel="noopener noreferrer">Notice de pose PDF</a></div>'+
+ '<a href="'+MANUAL+'" target="_blank" rel="noopener noreferrer">Notice de pose PDF</a>'+
+ '<a href="'+NEO_BIM+'" target="_blank" rel="noopener noreferrer">Objet BIM constructeur · Neo Plus</a>'+
+ '<a href="'+NEO_3D+'" target="_blank" rel="noopener noreferrer">Modèle 3D constructeur · 80 × 140 × 3 cm</a></div>'+
  '<small>Illustration issue de la catégorie receveurs, non contractuelle pour ce modèle et sa finition.</small></div></div>'+
  '<div class="hidrobox-fields">'+opts('hnForm','Forme',catalogue.FORMATS.map(f=>f.key),neo.form)+
  opts('hnMaterial','Matière',['Kromat','Scene'],neo.material)+

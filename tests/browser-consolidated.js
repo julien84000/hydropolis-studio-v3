@@ -429,6 +429,24 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     check('Référence tarifaire Hotbath conservée',ref&&detail.includes(ref));
     await page.locator('#manufacturerGuidedSelector .mg-close').click();
 
+    // V11.63.3 — real Chromium navigation to the official manufacturer CAD links.
+    await page.evaluate(()=>HydroHidroboxConfigurator.open({manufacturer:'Hidrobox'},state.rooms[0]?.id||''));
+    await page.waitForSelector('#hidroboxGuided [data-kind="family"][data-choice="receveurs"]',{timeout:20000});
+    await page.locator('#hidroboxGuided [data-kind="family"][data-choice="receveurs"]').click();
+    await page.locator('#hidroboxGuided [data-kind="collection"]').filter({hasText:'Neo Plus'}).first().click();
+    await page.waitForSelector('#hidroboxGuided a[href$="BIMobject-Shower-tray-Neo-Plus.zip"]');
+    check('Hidrobox Neo Plus : lien BIM officiel visible',
+      await page.locator('#hidroboxGuided a[href$="BIMobject-Shower-tray-Neo-Plus.zip"]').getAttribute('target')==='_blank');
+    check('Hidrobox Neo Plus : exemple 3D de la bonne taille identifié',
+      await page.locator('#hidroboxGuided a[href$="Neo-Plus-80x140x3-1.zip"]').innerText().then(s=>s.includes('80 × 140 × 3 cm')));
+    await page.locator('#hidroboxGuided .hidrobox-back').click();
+    await page.locator('#hidroboxGuided [data-kind="collection"]').filter({hasText:'Line'}).first().click();
+    await page.waitForSelector('#hidroboxGuided a[href$="STL-Line-Hidrobox.zip"]');
+    check('Hidrobox Line : BIM et modèle 3D de famille affichés',
+      await page.locator('#hidroboxGuided a[href$="BIMobject-Shower-tray-Line-X-Scene-Smooth.zip"]').count()===1 &&
+      await page.locator('#hidroboxGuided a[href$="STL-Line-Hidrobox.zip"]').count()===1);
+    await page.locator('#hidroboxGuided .hidrobox-close').click();
+
     // V11.62.6 — browser regression on actual Resigres Selene: verify
     // price on the visible product configuration and invalid dimension protection.
     await page.waitForFunction(()=>CATALOG.some(p=>p.manufacturer==='Resigres'&&p.resigresModel==='Selene'),{timeout:25000});
