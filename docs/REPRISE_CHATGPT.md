@@ -11,6 +11,8 @@ Développé :
 - `server.js`, `package.json`, `package-lock.json` et tests Node + Chromium correspondants.
 - Exemple source publique vérifié : menu Bathroom/INVERSO/INVERSO DIAMANTATO ; API officielle `GetProductList` retourne 181 modèles, avec `productId`, `productMainImage`, `productsConfigured` et `priceInfo:null`. Ne jamais utiliser les prix fournisseur null comme les prix Hydropolis.
 
+CI : la PR #46 cible temporairement main pour déclencher le workflow Release validation (qui ne s'exécute que sur les PR vers main) ; elle reste en brouillon et dépend de la PR #45. Ne pas fusionner avant réconciliation du diff et nouveau contrôle CI.
+
 **Non terminé** : les PDF techniques Gessi exacts ne sont toujours pas associés : le site les affiche, mais l'API de pièces jointes inspectée ne les fournit pas ; identification et vérification de chaque URL PDF encore nécessaires. Pagination amont par jeton à compléter lorsqu'elle est réellement rencontrée. Données client et matrices tarifaires intactes.
 
 **Validation** : le code est sauvegardé en commits distants sur la branche ; attendre les résultats de la CI du dernier SHA avant toute fusion. Production reste V11.63.9 tant qu'aucun contrôle de livraison n'atteste le contraire.
