@@ -20,7 +20,7 @@ const CATEGORY=[
  {key:'receveurs',name:'Receveurs de douche',img:'https://hidrobox.com/wp-content/uploads/2025/03/01_Platos-de-ducha_Hidrobox.png',url:HOUSE+'produit/receveurs-de-douche/'},
  {key:'panneaux',name:'Panneaux',img:'https://hidrobox.com/wp-content/uploads/2025/05/02_Paneles_Hidrobox.png',url:HOUSE+'produit/panneaux/'},
  {key:'accessoires',name:'Accessoires',img:'https://hidrobox.com/wp-content/uploads/2025/03/ACCESORIOS-HIDROBOX-1.png',url:HOUSE+'produit/accessoires/'},
- {key:'vasques-suspendues',name:'Vasques suspendues',img:'https://hidrobox.com/wp-content/uploads/2025/05/04_Lavabos-suspendidos_Hidrobox-1.png',url:HOUSE+'produit/vasques-suspendus/'},
+ {key:'vasques-suspendues',name:'Vasques suspendus',img:'https://hidrobox.com/wp-content/uploads/2025/05/04_Lavabos-suspendidos_Hidrobox-1.png',url:HOUSE+'produit/vasques-suspendus/'},
  {key:'vasques-a-poser',name:'Vasques à poser',img:'https://hidrobox.com/wp-content/uploads/2025/03/05_Lavabos-de-apoyo_Hidrobox.png',url:HOUSE+'produit/vasques-a-poser/'},
  {key:'vasques-sur-pied',name:'Vasques sur pied',img:'https://hidrobox.com/wp-content/uploads/2025/05/06_Lavabos-a-suelo_Hidrobox.png',url:HOUSE+'produit/vasques-sur-pied/'},
  {key:'plans',name:'Plans de travail',img:'https://hidrobox.com/wp-content/uploads/2025/03/pro4.png',url:HOUSE+'produit/plans-de-travail/'},
@@ -81,7 +81,9 @@ function shell(title,content,wide=false){
 }
 function tiles(rows,kind){
  return '<div class="hidrobox-guide-grid">'+rows.map(x=>{
-  const picture=x.img?'<img src="'+escape(x.img)+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">':'<div class="hidrobox-guide-no-image">HIDROBOX</div>';
+  const picture=x.img?'<img src="'+escape(x.img)+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">':
+   kind==='collection'?'<div class="hidrobox-collection-identity"><span>'+escape(String(x.name||'H').split(/\\s+/).map(p=>p[0]||'').join('').slice(0,2).toUpperCase())+'</span><small>COLLECTION HIDROBOX</small></div>':
+   '<div class="hidrobox-guide-no-image">HIDROBOX</div>';
   return '<button type="button" class="hidrobox-guide-tile" data-kind="'+escape(kind)+'" data-choice="'+escape(x.key)+'">'+picture+'<span class="hidrobox-guide-tile-name">'+escape(x.name)+'</span>'+(x.note?'<small>'+escape(x.note)+'</small>':'')+'</button>';
  }).join('')+'</div>';
 }
@@ -105,8 +107,8 @@ function wireVisualFacets(){
 }
 /* Official page taxonomy is authoritative for navigation; the supplier's
  * imported price sheet only controls whether a collection is configurable. */
-function groupFor(entry){
- return groups.find(g=>norm(g.id)===norm(entry.tariffAlias||entry.key)||
+function groupFor(entry,allGroups=groups){
+ return allGroups.find(g=>norm(g.id)===norm(entry.tariffAlias||entry.key)||
   norm(g.collection)===norm(entry.name));
 }
 function unmappedGroups(category){
@@ -429,5 +431,5 @@ async function open(p,roomId){
  cat='receveurs';stage='families';chosenGroup=null;
  families();
 }
-root.HydroHidroboxConfigurator={...base,open,close,neoPlus:catalogue};
+root.HydroHidroboxConfigurator={...base,open,close,neoPlus:catalogue,officialCategories:CATEGORY,officialCollections:HIDROBOX_ALL_OFFICIAL,officialProductTree:HIDROBOX_PRODUCT_TREE,tariffGroupFor:groupFor};
 })(window);
