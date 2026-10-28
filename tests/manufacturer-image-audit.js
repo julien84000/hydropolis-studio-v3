@@ -71,7 +71,7 @@ for(const [brand,n] of [['Bette',3],['Hidrobox',1],['Carrodrain',1]]){
  const variants=groups.flatMap(g=>g.variants||[]);
  const exact=variants.filter(p=>usefulUrl(p.image)).length;
  const representative=variants.filter(p=>!usefulUrl(p.image)&&groups.some(g=>g.variants?.includes(p)&&usefulUrl(g.image))).length;
- configured[brand]={groups:groups.length,variants:variants.length,declaredExact:exact,groupIllustrative:representative,missing:variants.length-exact-representative,samplesMissing:variants.filter(p=>!usefulUrl(p.image)&&!groups.some(g=>g.variants?.includes(p)&&usefulUrl(g.image))).slice(0,10).map(p=>p.reference)};
+ configured[brand]={groups:groups.length,variants:variants.length,groupNames:groups.map(g=>g.family||g.collection||g.model||g.id),declaredExact:exact,groupIllustrative:representative,missing:variants.length-exact-representative,samplesMissing:variants.filter(p=>!usefulUrl(p.image)&&!groups.some(g=>g.variants?.includes(p)&&usefulUrl(g.image))).slice(0,10).map(p=>p.reference)};
 }
 const report={method:'index-and-declaration-audit, NO REMOTE HTTP validation',supplierCatalogs:Object.fromEntries([...entries].sort((a,b)=>a[0].localeCompare(b[0])).map(([k,v])=>[k,v])),configured,officialIndexes:{zucchettiModels:Object.keys(guide.models.Zucchetti||{}).length,lefroyModels:Object.keys(guide.models['Lefroy Brooks']||{}).length,lefroyExactFinishes:Object.values(guide.finishModels['Lefroy Brooks']||{}).reduce((n,x)=>n+Object.keys(x).length,0),hotbathHistoricallyMissing:Object.keys(hot.missingContemporaryCDN||{}).length,gessiExactFinishes:Object.values(gessi.exactFinishImages||{}).reduce((n,x)=>n+Object.keys(x).length,0)}};
 if(require.main===module)console.log('PHOTO_AUDIT_JSON '+JSON.stringify(report));
