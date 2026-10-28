@@ -85,6 +85,7 @@ test('V11.62.2 guided Hidrobox supports every priced supplier group',()=>{
  assert.match(html,/hidrobox-guided\.js/);
  assert.match(html,/hidrobox-neo-plus-2026\.js/);
  assert.match(guide,/HIDROBOX_PRODUCT_TREE/);
+ assert.match(guide,/function groupFor\(/);
  assert.match(guide,/universalPage\(group\)/);
  assert.match(guide,/source:'HIDROBOX_TARIF_FR_V0226_19-02-2026\.pdf'/);
  assert.match(guide,/technicalSheetUrl:tech/);
@@ -92,6 +93,25 @@ test('V11.62.2 guided Hidrobox supports every priced supplier group',()=>{
  const win={HydroHidroboxConfigurator:{groups:async()=>groups}};
  vm.runInNewContext(neoCode,{window:win});
  vm.runInNewContext(guide,{window:win});
+ const tree=win.HydroHidroboxConfigurator;
+ assert.equal(tree.officialCategories.length,9,'exactly 9 official product categories');
+ assert.deepEqual(Array.from(tree.officialCategories,x=>x.key),[
+   'receveurs','panneaux','accessoires','vasques-suspendues',
+   'vasques-a-poser','vasques-sur-pied','plans','bains-ilot','bains-encastres'
+ ]);
+ assert.equal(tree.officialCollections.length,32,'all published category-to-collection placements');
+ assert.deepEqual(Array.from(tree.officialCollections.filter(x=>x.category==='receveurs'),x=>x.name),
+   ['Neo Plus','Line','Twins','One','Pure','Quadro','Arq','Unique','Iconik','Loovers','Falcon']);
+ assert.equal(tree.officialCollections.filter(x=>x.key==='beta-evoque').length,2,
+   'Beta Evoque is in the two supplier bath categories');
+ assert.ok(tree.officialCollections.find(x=>x.key==='intim').private,
+   'Intim is flagged private, not a priceable product');
+ assert.equal(tree.tariffGroupFor(tree.officialCollections.find(x=>x.key==='paneles'),groups)?.id,'panneaux-muraux');
+ assert.equal(tree.tariffGroupFor(tree.officialCollections.find(x=>x.key==='estantes'),groups),undefined,
+   'grouped accessories must not be assigned to a single collection without proof');
+ const matched=new Set(tree.officialCollections.map(entry=>tree.tariffGroupFor(entry,groups)?.id).filter(Boolean));
+ assert.equal(matched.size,26,'26 exact Hidrobox groups mapped; one transversal accessory group kept separate');
+ assert.deepEqual(groups.filter(g=>!matched.has(g.id)).map(g=>g.id),['niches-etageres-et-pieces-speciales']);
  const neo=win.HydroNeoPlus2026;
  const x={form:'rectangle',width:90,length:120,material:'Kromat',texture:'Lisse',group:'BAS',color:'Beige',grille:'Point Inox',bonde:'Horizontale standard'};
  const p=neo.lookup(x);
