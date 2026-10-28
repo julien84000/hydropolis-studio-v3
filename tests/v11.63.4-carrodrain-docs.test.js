@@ -26,7 +26,7 @@ test('Carrodrain: 14 official product pages and only supplier-hosted published P
  assert.equal(docs.resolve('quattro','LOW').installationGuideUrl,'','Cayman manual is not silently labelled Quattro installation');
 });
 test('Carrodrain: LOW and PRO files are never swapped and family documents remain labelled',()=>{
- for(const id of ['quattro','disco','invisiblequattro','invisibledisco','liquid','liquidquattro','liquiddisco','liquidsnake']){
+ for(const id of ['quattro','disco','invisiblequattro','liquid','liquidquattro','liquiddisco','liquidsnake']){
    const lo=docs.resolve(id,'LOW'),hi=docs.resolve(id,'PRO');
    assert.equal(lo.technicalScope,'exact-version',id);
    assert.equal(hi.technicalScope,'exact-version',id);
@@ -34,6 +34,8 @@ test('Carrodrain: LOW and PRO files are never swapped and family documents remai
    assert.match(lo.technicalSheetUrl,/(?:LOW|_125_Technical)/);
    assert.match(hi.technicalSheetUrl,/PRO/);
  }
+ assert.equal(docs.resolve('invisibledisco','LOW').technicalScope,'family','unlabelled generic PDF is not certified LOW');
+ assert.equal(docs.resolve('invisibledisco','PRO').technicalScope,'exact-version');
  assert.equal(docs.resolve('cayman','PRO').technicalScope,'family');
  assert.equal(docs.resolve('invisible','LOW').technicalScope,'family');
  assert.equal(docs.resolve('liquidmono','PRO').installationScope,'family');
