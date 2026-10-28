@@ -82,7 +82,7 @@ function shell(title,content,wide=false){
 function tiles(rows,kind){
  return '<div class="hidrobox-guide-grid">'+rows.map(x=>{
   const picture=x.img?'<img src="'+escape(x.img)+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">':
-   kind==='collection'?'<div class="hidrobox-collection-identity"><span>'+escape(String(x.name||'H').split(/\\s+/).map(p=>p[0]||'').join('').slice(0,2).toUpperCase())+'</span><small>COLLECTION HIDROBOX</small></div>':
+   kind==='collection'?'<div class="hidrobox-collection-identity"><span>'+escape(String(x.name||'H').split(' ').map(p=>p[0]||'').join('').slice(0,2).toUpperCase())+'</span><small>COLLECTION HIDROBOX</small></div>':
    '<div class="hidrobox-guide-no-image">HIDROBOX</div>';
   return '<button type="button" class="hidrobox-guide-tile" data-kind="'+escape(kind)+'" data-choice="'+escape(x.key)+'">'+picture+'<span class="hidrobox-guide-tile-name">'+escape(x.name)+'</span>'+(x.note?'<small>'+escape(x.note)+'</small>':'')+'</button>';
  }).join('')+'</div>';
