@@ -42,7 +42,16 @@ jobs:
             echo "No verified image changes"
           else
             git commit -m "Hotbath: remplacer les archives 404 par les seules images CDN réellement vérifiées"
-            git fetch origin refs/heads/feat/v11.63.2-hotbath-official-gallery
-            git rebase FETCH_HEAD
-            git push origin HEAD:refs/heads/feat/v11.63.2-hotbath-official-gallery
+            for i in 1 2 3 4 5; do
+              git fetch origin refs/heads/feat/v11.63.2-hotbath-official-gallery
+              git rebase FETCH_HEAD
+              if git push origin HEAD:refs/heads/feat/v11.63.2-hotbath-official-gallery; then
+                echo "Audited CDN links committed without overwriting remote changes"
+                exit 0
+              fi
+              echo "Concurrent commit; retrying rebase + push $i/5"
+              sleep 3
+            done
+            echo "Unable to publish audited CDN links after 5 safe retries" >&2
+            exit 1
           fi
