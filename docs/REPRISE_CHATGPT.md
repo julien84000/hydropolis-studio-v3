@@ -1,3 +1,13 @@
+## Validation Gessi sous-séries — 28 octobre 2026
+
+- PR #45 fusionnée dans `main` : commit `b891e41488594ee40622e6494b0b5aff05773bf5`, CI de branche `40778154441` réussie.
+- Render contrôlé après fusion : `/api/version=11.64.0` ; `/api/health` = `{ok:true,version:'11.64.0',database:'postgresql'}`.
+- PR #46 (branche `feat/gessi-official-series-11641`) : **CI complète réussie** sur `b405f89522e4c16c34220db4bbf2b592586bfa5f` : run `40779687094`, `npm ci`, `npm run check`, `npm test`, `npm run build`, `npm run test:browser` Chromium. Pas d'échec.
+- La PR #46 cible désormais `main` et conserve la V11.64.1 en préparation. Cette validation précède uniquement l'ajout documentaire présent ; contrôler la CI du dernier SHA de la PR avant fusion. Aucun déploiement V11.64.1 annoncé à ce stade.
+- Reprise : contrôler le résultat CI de la PR #46, fusionner uniquement si vert, vérifier Render `/api/version` et `/api/health`, puis poursuivre l'association stricte des **PDF techniques exacts** Gessi.
+
+---
+
 ## Checkpoint Gessi V11.64.1 — 28 octobre 2026, branche isolée
 
 **État de départ vérifié** : main `deb83ee86cca5b37ad30b3df8eb95346f78b8cf6`, Render `/api/version=11.63.9` et `/api/health={ok:true,database:postgresql,version:11.63.9}`. PR #45 Gessi V11.64.0 toujours en brouillon au point de départ, CI `40778154441` réussie (Node et Chromium) ; PR #43 Bette séparée et préservée.
