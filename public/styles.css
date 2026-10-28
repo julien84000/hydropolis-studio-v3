@@ -3267,3 +3267,51 @@ main{background:transparent}
  #hidroboxGuided .hidrobox-unmapped .hidrobox-guide-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
  #hidroboxGuided .hidrobox-unpriced-collection{padding:18px}
 }
+
+
+/* V11.64.6 — site-first official manufacturer trees: Bette and Carrodrain */
+#brandConfigurator .recor-configurator{width:min(1190px,calc(100vw - 28px));max-height:95vh;background:#f8f9f7;color:#27302a;border-radius:12px}
+#brandConfigurator .recor-config-head{background:#222923;color:#fff;margin:-24px -24px 23px;padding:21px 24px;border:0;align-items:center}
+#brandConfigurator .recor-config-head h2{color:#fff;font-family:Inter,Arial,sans-serif;letter-spacing:-.025em;font-weight:520}
+#brandConfigurator .recor-config-head p{color:#d0d7d0}
+#brandConfigurator .recor-config-head .eyebrow{color:#bacbb9}
+#brandConfigurator .recor-config-head .icon{color:#fff}
+#brandConfigurator .brand-path{display:flex;align-items:center;gap:9px;flex-wrap:wrap;font-size:12px;color:#656d64;margin:8px 0 20px}
+#brandConfigurator .brand-path b,#brandConfigurator .brand-path strong{color:#283a2d}
+#brandConfigurator .brand-path button{background:transparent;border:0;color:#48634c;cursor:pointer;padding:7px 0;text-align:left;font-size:12px}
+#brandConfigurator .brand-category-grid,#brandConfigurator .carrodrain-family-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:16px 0 20px}
+#brandConfigurator .brand-category-grid>button,#brandConfigurator .carrodrain-family-card{display:flex;flex-direction:column;justify-content:space-between;gap:12px;min-height:112px;background:#fff;border:1px solid #dfe5dd;border-radius:9px;padding:18px;cursor:pointer;text-align:left;color:#26332b;min-width:0}
+#brandConfigurator .brand-category-grid>button:hover,#brandConfigurator .brand-category-grid>button:focus-visible,
+#brandConfigurator .carrodrain-family-card:hover,#brandConfigurator .carrodrain-family-card:focus-visible{border-color:#557354;box-shadow:0 8px 20px #26332718;outline-offset:3px}
+#brandConfigurator .brand-category-grid b,#brandConfigurator .carrodrain-family-card b{font-size:17px;font-weight:600}
+#brandConfigurator .brand-category-grid small,#brandConfigurator .carrodrain-family-card small{font-size:11px;line-height:1.45;color:#6f796e}
+#brandConfigurator .carrodrain-family-card{padding:0;overflow:hidden}
+#brandConfigurator .carrodrain-family-card img{width:100%;height:170px;object-fit:contain;background:#fff}
+#brandConfigurator .carrodrain-family-card b,#brandConfigurator .carrodrain-family-card small{margin-left:16px;margin-right:16px}
+#brandConfigurator .carrodrain-family-card small{margin-bottom:16px}
+#brandConfigurator .brand-official-facets{border-top:1px solid #dbe2db;padding-top:12px;margin:14px 0}
+#brandConfigurator .brand-official-facets h3{font-size:14px;color:#2f4433}
+#brandConfigurator .brand-official-links{display:flex;flex-wrap:wrap;gap:8px}
+#brandConfigurator .brand-official-links a{border:1px solid #dce4db;padding:11px 13px;background:#fff;color:#344d37;border-radius:6px;text-decoration:none;font-size:12px}
+#brandConfigurator .brand-official-links a:hover{border-color:#5c765c}
+#brandConfigurator .brand-site-link{display:inline-block;margin:14px 0 12px;color:#405d43;font-size:12px}
+#brandConfigurator .brand-note{font-size:12px;color:#707870;line-height:1.6}
+#brandConfigurator .brand-visual-choice{grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}
+#brandConfigurator .brand-visual-choice button{min-height:48px;border:1px solid #dce5dc;background:#fff;color:#2d392d;padding:9px;border-radius:6px;cursor:pointer;overflow-wrap:anywhere}
+#brandConfigurator .brand-visual-choice button[aria-pressed="true"]{border:2px solid #476c4a;background:#e8f1e7;font-weight:650}
+#brandConfigurator .brand-visual-choice button:focus-visible{outline:2px solid #4b6a4e;outline-offset:3px}
+#brandConfigurator .recor-config-summary{background:#fff;padding:18px;border:1px solid #e0e4dc;border-radius:8px;align-items:center}
+#brandConfigurator .brand-config-media img{object-fit:contain!important;background:#fff}
+#brandConfigurator .carrodrain-gallery-card{background:#fff;border:1px solid #e2e6df;color:#26322a;aspect-ratio:1.4}
+#brandConfigurator .carrodrain-gallery-card img{object-fit:contain;max-height:100%;background:#fff}
+@media(max-width:820px){#brandConfigurator .brand-category-grid,#brandConfigurator .carrodrain-family-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){
+ #brandConfigurator .recor-configurator{width:100%;max-height:100dvh;border-radius:0}
+ #brandConfigurator .recor-config-head{margin:-20px -20px 18px;padding:15px}
+ #brandConfigurator .brand-category-grid,#brandConfigurator .carrodrain-family-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+ #brandConfigurator .brand-category-grid>button{padding:12px;min-height:92px}
+ #brandConfigurator .brand-category-grid b,#brandConfigurator .carrodrain-family-card b{font-size:13px}
+ #brandConfigurator .carrodrain-family-card img{height:120px}
+ #brandConfigurator .brand-visual-choice{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #brandConfigurator .brand-official-links a{padding:10px}
+}
