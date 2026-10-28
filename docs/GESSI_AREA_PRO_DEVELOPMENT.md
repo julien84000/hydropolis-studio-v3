@@ -48,3 +48,7 @@ Dimensions : lire product.technical, jamais packageHeight/Width/Length (emballag
 Intégration recommandée : route serveur à URL fabricant fixe, validation des ID contre le menu, timeout, taille et cache bornés ; chargement à la demande pour éviter de ralentir les autres marques. L'ajout existant passe volontairement l'objet tarifaire original à onAdd(p). Vérifier aussi le lanceur manufacturer-guide/app.js avant de vouloir propager de nouveaux documents au projet : son callback résout aujourd'hui la référence dans le catalogue.
 
 CI run 40776014311 : tests métier et navigateur existants réussis ; le nouveau parcours Gessi passe desktop/mobile jusqu'à l'assertion du texte français non tarifé. Échec identifié dans la page de test synthétique sans charset UTF-8 (texte interprété en Latin-1), pas dans l'application réelle. Page de test corrigée avec content-type UTF-8 et meta charset ; relancer la CI. Aucun test supprimé ou assoupli.
+
+## Préparation du déploiement 11.63.9 — PR #44
+
+CI complète réussie sur e2237f0 (run 40776321617), y compris parcours navigateur Gessi desktop/mobile et régressions existantes. Version portée à 11.63.9 pour renouveler les caches ; menu officiel ajouté au shell hors connexion. Nouvelle CI requise sur ce commit de version avant fusion. Déploiement demandé explicitement par Julien ; pas encore vérifié en production à ce stade. Les sous-séries et documents/BIM dynamiques restent à développer.

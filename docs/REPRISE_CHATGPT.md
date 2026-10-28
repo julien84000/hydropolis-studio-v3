@@ -267,3 +267,7 @@ Reste : navigation par sous-séries, listes publiques de produits non tarifés, 
 
 PR de sauvegarde Gessi : **#44** (https://github.com/julien84000/hydropolis-studio-v3/pull/44), interface dans **e7b5235aef663789f93957886fd2c15c3c82be3b**. Premier run CI : 40776014311, syntaxe/tests/build réussis, navigateur encore en cours lors de l'écriture. Le document GESSI_AREA_PRO_DEVELOPMENT.md conserve également les endpoints publics observés et les précautions de correspondance article/finition/version pour éviter de refaire la recherche.
 Le premier run #44 a ensuite échoué sur l'encodage UTF-8 de la page HTML synthétique du nouveau test Gessi (les parcours desktop/mobile et tests existants avaient passé). Correction du charset dans le test ; attendre le nouveau run avant toute fusion.
+
+## Préparation du déploiement 11.63.9 — PR #44
+
+CI complète réussie sur e2237f0 (run 40776321617), y compris parcours navigateur Gessi desktop/mobile et régressions existantes. Version portée à 11.63.9 pour renouveler les caches ; menu officiel ajouté au shell hors connexion. Nouvelle CI requise sur ce commit de version avant fusion. Déploiement demandé explicitement par Julien ; pas encore vérifié en production à ce stade. Les sous-séries et documents/BIM dynamiques restent à développer.
