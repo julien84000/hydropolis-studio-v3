@@ -3610,6 +3610,58 @@
     }
   },
   "modernCollectionImages": {
-    "Guy": "https://hotbath.com/images/compano/GY003D/GY003DTB_02.png?resolution=600x600&quality=85&isLogo=true"
+    "Guy": "https://hotbath.com/images/compano/GY003D/GY003DTB_02.png?resolution=600x600&quality=85&isLogo=true",
+    "Archie": "https://hotbath.com/images/properties/ar014.jpg?resolution=1920x0",
+    "Gent": "https://hotbath.com/images/properties/header-hotbath-gent-gt033.jpg?resolution=1920x0",
+    "Chap": "https://hotbath.com/images/compano/C133/C133PBP_02.png?resolution=600x600&quality=85&isLogo=true",
+    "Ace": "https://hotbath.com/images/properties/ac004.jpg?resolution=1920x0",
+    "Gal": "https://hotbath.com/images/properties/gl004.jpg?resolution=1920x0",
+    "Cobber": "https://hotbath.com/images/properties/cb004.jpg?resolution=1920x0",
+    "Cobber X": "https://hotbath.com/images/properties/cx003hc.jpg?resolution=1920x0",
+    "Fellow": "https://hotbath.com/images/properties/fkm11.jpg?resolution=1920x0",
+    "Mate": "https://hotbath.com/images/properties/m620.jpg?resolution=1920x0",
+    "Tron": "https://hotbath.com/images/properties/tr003.jpg?resolution=1920x0"
+  },
+  "modernCollectionSources": {
+    "Archie": {
+      "url": "https://hotbath.com/en-gb/collections/archie/",
+      "kind": "official collection lifestyle image"
+    },
+    "Gent": {
+      "url": "https://hotbath.com/en-gb/collections/gent/",
+      "kind": "official collection lifestyle image"
+    },
+    "Chap": {
+      "url": "https://hotbath.com/en-gb/collections/chap/",
+      "kind": "official model image"
+    },
+    "Ace": {
+      "url": "https://hotbath.com/en-gb/collections/ace/",
+      "kind": "official collection lifestyle image"
+    },
+    "Gal": {
+      "url": "https://hotbath.com/en-gb/collections/gal/",
+      "kind": "official collection lifestyle image"
+    },
+    "Cobber": {
+      "url": "https://hotbath.com/en-gb/collections/cobber/",
+      "kind": "official collection lifestyle image"
+    },
+    "Cobber X": {
+      "url": "https://hotbath.com/en-gb/collections/cobber-x/",
+      "kind": "official collection lifestyle image"
+    },
+    "Fellow": {
+      "url": "https://hotbath.com/en-gb/collections/fellow/",
+      "kind": "official collection lifestyle image"
+    },
+    "Mate": {
+      "url": "https://hotbath.com/en-gb/collections/mate/",
+      "kind": "official collection lifestyle image"
+    },
+    "Tron": {
+      "url": "https://hotbath.com/en-gb/collections/tron/",
+      "kind": "official collection lifestyle image"
+    }
   }
 }
