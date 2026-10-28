@@ -3037,3 +3037,15 @@ main{background:transparent}
 .mg-official-gallery .mg-photo-unavailable{padding-bottom:38px;}
 @media(max-width:1024px){.mg-tile-photo{height:150px}.mg-grid.mg-official-gallery{grid-template-columns:repeat(3,minmax(0,1fr));}}
 @media(max-width:720px){.mg-tile-photo{height:125px}.mg-grid.mg-official-gallery{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.mg-official-gallery .mg-tile-meta{min-height:32px}.mg-official-gallery .mg-tile-meta strong{font-size:11px}}
+
+
+/* V11.62.7 Resigres dimension direction and safe update prompt */
+.rg50-dimension-guide{margin:8px 0 10px;padding:10px 12px;border:1px solid #e5dacc;border-radius:9px;background:#fbf8f3;color:#625340;font-size:12px;line-height:1.55;}
+.rg50-swap-hint{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:8px 0 12px;padding:10px 13px;border:1px solid #d19c66;background:#fff8ec;border-radius:9px;color:#663e1c;font-size:12px;}
+.rg50-swap-hint.hidden{display:none!important;}
+.rg50-swap-hint button{border:1px solid #ac793f;border-radius:7px;padding:8px 11px;background:#8b642d;color:#fff;cursor:pointer;font-size:12px;font-weight:650;}
+#hydroVersionUpdate{position:fixed;z-index:25000;top:16px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:16px;max-width:min(880px,calc(100vw - 24px));width:max-content;padding:13px 15px;border:1px solid #cb9d4f;border-radius:12px;background:#fffdf9;box-shadow:0 10px 35px #0003;color:#302c25;}
+#hydroVersionUpdate>div{display:grid;gap:4px;max-width:525px;}#hydroVersionUpdate b{font-size:14px;}#hydroVersionUpdate small{font-size:12px;color:#695e4c;line-height:1.45;}
+#hydroVersionReload{padding:9px 12px;border:0;border-radius:8px;background:#9b7036;color:#fff;font-weight:600;white-space:nowrap;cursor:pointer;}
+#hydroVersionDismiss{border:0;background:transparent;color:#4b433b;padding:5px 8px;cursor:pointer;font-size:23px;line-height:1;}
+@media(max-width:670px){.rg50-swap-hint,#hydroVersionUpdate{flex-wrap:wrap}#hydroVersionUpdate{top:10px}#hydroVersionReload{flex:1;}}
