@@ -1,3 +1,9 @@
+## Réconciliation avec Hidrobox V11.64.5 — 29 octobre 2026
+
+La PR #50 est fusionnée dans `main` (commit `368aa86d0ad33c9734fd22ffaf9a6e95465dc716`). Les tests Node, navigateur desktop/mobile, visuels et parcours privés d'Hidrobox livrés par #50 ont été **préservés**. Les développements Bette/Carrodrain et les nouveaux tests sont ajoutés à cette base et la version préparée reste **11.64.6**. Revalider la CI complète de la PR #51 après les commits de réconciliation. PR #43 Bette et PR #48 audit photo restent non fusionnées.
+
+---
+
 ## Checkpoint — Arborescences produits officielles Hidrobox, Bette et Carrodrain — 29 octobre 2026
 
 **Source :** parcours publics FR vérifiés : `https://hidrobox.com/fr/produits/`, `https://www.my-bette.com/fr/produits/`, `https://carrodrain.com/fr`. Branche de travail `feat/official-trees-hidrobox-bette-carrodrain-11646` dérivée de `feat/hidrobox-official-product-tree-11645` (code Hidrobox déjà sauvegardé, non fusionné à l'origine). Dernière version main au départ V11.64.4. Version candidate 11.64.6.
@@ -12,6 +18,21 @@
 **À vérifier impérativement :** CI complète pour la dernière tête de branche (tests Node et navigateur), corriger tous les échecs et vérifier la classification réelle des 93 familles Bette via le log `BETTE_OFFICIAL_TYPE_COVERAGE`. Si beaucoup restent sans catégorie, éviter de prétendre que le filtre du site est appliqué aux SKU ; enrichir sur preuves seulement. Préserver les fonctionnalités de réouverture par référence exacte. Réconcilier si `main` avance. Ne fusionner qu'après validation, vérifier Render `/api/version` et `/api/health`. Fiches techniques seulement, pas d'intégration BIM/CAO nouvelle.
 
 **Prompt de reprise** : Reprendre `julien84000/hydropolis-studio-v3`, branche `feat/official-trees-hidrobox-bette-carrodrain-11646` et sa PR. Vérifier dernier main, PR #48/#43, lire `docs/REPRISE_CHATGPT.md`, lister derniers commits et la CI. Tester les arborescences Hidrobox/Bette/Carrodrain contre les rubriques officielles, corriger les échecs et les mauvais liens, conserver 4 479/62 264/635 tarifs, toutes les remises, l'identité des références et documents. Conserver les sections non tarifées consultables. Après CI verte seulement, fusionner, vérifier la version effective et santé de Render, puis poursuivre l'association de photos exactes sans assimiler image de famille à variante exacte.
+
+---
+## Reprise Hidrobox — arborescence officielle du site (29 octobre 2026), V11.64.5
+
+**Branche :** `feat/hidrobox-official-product-tree-11645` depuis `main` `75e8c7b6366a1a56c5df8bb023a86a905e8990c6` (V11.64.4). PR #48 audit photos et PR #43 Bette sont séparées et doivent rester intactes.
+
+**Objectif utilisateur :** reproduire précisément l'arborescence de `https://hidrobox.com/fr/produits/` plutôt que la liste mélangée des lignes tarifaires. **Documentation complète et liens :** `docs/HIDROBOX_PRODUCT_TREE.md`.
+
+**Code sauvegardé :** `public/hidrobox-guided.js` : 9 catégories et 32 positions de collection vérifiées, navigation classe → collection → configuration tarifée / fiche sans prix, Beta Evoque dans deux catégories sans duplication tarifaire, groupe transversal Accessoires séparé, identifiants source et fil d'Ariane. `public/styles.css` : mises en page responsive des cartes. Tests Node et Chromium renforcés pour les vraies catégories, Neo Plus, Program, Intim (privée), Beta Evoque et viewport mobile. Version 11.64.5 dans package et lock.
+
+**Précautions :** 26/27 groupes tarifaires mappés directement ; ne pas attribuer arbitrairement les 969 lignes de « Niches, étagères et pièces spéciales » à Estantes/Hornacinas. Aucune photo de collection non sourcée ni prix/PDF inventé. Conserver **+4 % sur tarif**, **remise 50 % achat**, devis/projets. Photos détaillées toujours dans le périmètre de la PR #48.
+
+**Validation :** vérifier CI du dernier commit de la branche et navigateur Chromium, puis fusionner uniquement CI verte. Recontrôler version `main` et Render `/api/version` et `/api/health` avant d'annoncer le déploiement. Ne pas considérer le travail publié avant ces contrôles.
+
+**Prompt autonome :** Reprends Hydropolis Studio sur le dernier `main` et la branche `feat/hidrobox-official-product-tree-11645`, lis `docs/HIDROBOX_PRODUCT_TREE.md` et sa PR, vérifie la CI complète, les 9 catégories et 32 placements officiels, les tests Chromium desktop/mobile, les imports de prix et la conservation +4 % / -50 %, sans heuristiques trompeuses sur images. Corrige les échecs, enregistre les commits, fusionne uniquement après validation, contrôle Render. Préserve PR #48 et #43.
 
 ---
 
