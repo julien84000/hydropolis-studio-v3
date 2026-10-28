@@ -1,5 +1,5 @@
 {
-  "version": "2026-FR-v9",
+  "version": "2026-FR-v10",
   "source": "Tarif_FR_2026.pdf",
   "pricingPolicy": "V11.51: grilles standard/sur mesure = palier supérieur; receveurs Contract = surface réelle × tarif €/m² avec minimum de facturation; plans vasque Contract = tarif au cm + intégration vasque + options.",
   "global": {
@@ -422,7 +422,13 @@
             "Pizarra sur mesure",
             "Lisa",
             "Solid Surface"
-          ]
+          ],
+          "pricingRuleByFinish": {
+            "Pizarra standard": "quarter-pizarra-standard",
+            "Pizarra sur mesure": "quarter-pizarra-custom",
+            "Lisa": "quarter-lisa",
+            "Solid Surface": "quarter-solid"
+          }
         }
       ],
       "supplements": [
@@ -481,7 +487,146 @@
           ]
         },
         "rule": "ceil-upper-tier"
-      }
+      },
+      "pricingRules": [
+        {
+          "id": "quarter-pizarra-standard",
+          "label": "1/4 rond Pizarra standard",
+          "type": "matrix",
+          "sourcePage": "4",
+          "widths": [
+            80,
+            90,
+            100
+          ],
+          "lengths": [
+            80,
+            90,
+            100
+          ],
+          "intermediateRule": "standard-only",
+          "matrix": [
+            [
+              310,
+              null,
+              null
+            ],
+            [
+              null,
+              381,
+              null
+            ],
+            [
+              null,
+              null,
+              448
+            ]
+          ]
+        },
+        {
+          "id": "quarter-pizarra-custom",
+          "label": "1/4 rond Pizarra sur mesure",
+          "type": "matrix",
+          "sourcePage": "4",
+          "widths": [
+            80,
+            90,
+            100
+          ],
+          "lengths": [
+            80,
+            90,
+            100
+          ],
+          "intermediateRule": "standard-only",
+          "matrix": [
+            [
+              340,
+              null,
+              null
+            ],
+            [
+              null,
+              416,
+              null
+            ],
+            [
+              null,
+              null,
+              489
+            ]
+          ]
+        },
+        {
+          "id": "quarter-lisa",
+          "label": "1/4 rond Lisa",
+          "type": "matrix",
+          "sourcePage": "4",
+          "widths": [
+            80,
+            90,
+            100
+          ],
+          "lengths": [
+            80,
+            90,
+            100
+          ],
+          "intermediateRule": "standard-only",
+          "matrix": [
+            [
+              436,
+              null,
+              null
+            ],
+            [
+              null,
+              508,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ]
+          ]
+        },
+        {
+          "id": "quarter-solid",
+          "label": "1/4 rond Solid Surface",
+          "type": "matrix",
+          "sourcePage": "4",
+          "widths": [
+            80,
+            90,
+            100
+          ],
+          "lengths": [
+            80,
+            90,
+            100
+          ],
+          "intermediateRule": "standard-only",
+          "matrix": [
+            [
+              680,
+              null,
+              null
+            ],
+            [
+              null,
+              714,
+              null
+            ],
+            [
+              null,
+              null,
+              859
+            ]
+          ]
+        }
+      ],
+      "pricingCoverage": "1/4 rond 80×80,90×90,100×100; other central configurations still pending"
     },
     {
       "name": "Extraplano Contract",
@@ -4980,7 +5125,147 @@
         "color",
         "options"
       ],
-      "dependencyMode": "safe-manual"
+      "dependencyMode": "partial-exact-2026",
+      "dependencyMatrix": {
+        "type": "dependent-combinations",
+        "sourcePage": "38",
+        "steps": [
+          "size",
+          "material",
+          "color"
+        ],
+        "pricingScope": "Tarif_FR_2026.pdf imprimé p38: uniquement variantes et matières déchiffrées; pas de substitution entre ensembles.",
+        "sizes": [
+          {
+            "id": "axis-free",
+            "label": "Vasque Axis seule · Ø 39 × H 20 cm",
+            "materials": [
+              {
+                "id": "lisa",
+                "label": "Lisa/Pizarra",
+                "finish": "Lisa",
+                "colors": [
+                  {
+                    "id": "Gris 7015",
+                    "label": "Gris 7015",
+                    "price": 390
+                  },
+                  {
+                    "id": "Ártico",
+                    "label": "Ártico",
+                    "price": 390
+                  },
+                  {
+                    "id": "Lino",
+                    "label": "Lino",
+                    "price": 390
+                  },
+                  {
+                    "id": "Antracita",
+                    "label": "Antracita",
+                    "price": 390
+                  },
+                  {
+                    "id": "Moka",
+                    "label": "Moka",
+                    "price": 390
+                  },
+                  {
+                    "id": "Piedra",
+                    "label": "Piedra",
+                    "price": 390
+                  },
+                  {
+                    "id": "Arena",
+                    "label": "Arena",
+                    "price": 390
+                  },
+                  {
+                    "id": "Negro",
+                    "label": "Negro",
+                    "price": 390
+                  },
+                  {
+                    "id": "Basalto",
+                    "label": "Basalto",
+                    "price": 390
+                  },
+                  {
+                    "id": "RAL/NCS",
+                    "label": "RAL/NCS",
+                    "customCode": true,
+                    "price": 455
+                  }
+                ]
+              },
+              {
+                "id": "solid",
+                "label": "Solid Surface",
+                "finish": "Solid Surface",
+                "colors": [
+                  {
+                    "id": "S-Blanco",
+                    "label": "S-Blanco",
+                    "price": 470
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "axis-wall",
+            "label": "Vasque Axis avec support mural · Ø39 × H30 cm",
+            "materials": [
+              {
+                "id": "solid",
+                "label": "Solid Surface",
+                "finish": "Solid Surface",
+                "colors": [
+                  {
+                    "id": "S-Blanco",
+                    "label": "S-Blanco",
+                    "price": 780
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "axis-floor",
+            "label": "Axis avec pied au sol · Ø39 × H90 cm",
+            "materials": [
+              {
+                "id": "solid",
+                "label": "Solid Surface",
+                "finish": "Solid Surface",
+                "colors": [
+                  {
+                    "id": "S-Blanco",
+                    "label": "S-Blanco",
+                    "price": 1763
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "supplements": [
+        {
+          "id": "colored-waste",
+          "label": "Bonde clic colorée",
+          "amount": 55,
+          "type": "fixed",
+          "sourcePage": "38"
+        },
+        {
+          "id": "jointless",
+          "label": "Assemblage sans joints (version avec pied)",
+          "amount": 90,
+          "type": "fixed",
+          "sourcePage": "38"
+        }
+      ]
     },
     {
       "name": "Ares",
