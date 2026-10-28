@@ -3226,7 +3226,7 @@ main{background:transparent}
 }
 @media(max-width:700px){
  #hidroboxGuided .recor-configurator,#sbordoniConfigurator .recor-configurator{width:100%;max-height:100dvh;border-radius:0}
- #hidroboxGuided .recor-config-head,#sbordoniConfigurator .recor-config-head{margin:-20px -20px 18px;padding:17px 18px}
+ #hidroboxGuided .recor-config-head,#sbordoniConfigurator .recor-config-head{margin:-17px -17px 18px;padding:17px 18px}
  #hidroboxGuided .hidrobox-guide-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
  #hidroboxGuided .hidrobox-guide-tile img{height:132px}
  #hidroboxGuided .hidrobox-neo-hero{grid-template-columns:1fr;gap:12px}
@@ -3238,4 +3238,32 @@ main{background:transparent}
  #sbordoniConfigurator .sbordoni-visual-result{grid-template-columns:1fr;padding:14px;gap:7px}
  #sbordoniConfigurator .sbordoni-result-photo{min-height:190px}
  #sbordoniConfigurator .sbordoni-result-photo img{height:235px}
+}
+
+
+/* V11.64.5 — authoritative Hidrobox FR product taxonomy. */
+#hidroboxGuided .hidrobox-tree-path{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:4px 0 24px;padding:10px 13px;border:1px solid #e0e5dc;border-radius:7px;background:#fff;color:#747c72;font-size:12px}
+#hidroboxGuided .hidrobox-tree-path button{border:0;background:transparent;color:#506e56;cursor:pointer;padding:3px 0;font-weight:600;width:auto}
+#hidroboxGuided .hidrobox-tree-path button:hover{text-decoration:underline}
+#hidroboxGuided .hidrobox-tree-path strong{color:#263328;font-weight:650}
+#hidroboxGuided .hidrobox-tree-path span{color:#9ba69a}
+#hidroboxGuided .hidrobox-collection-identity{height:170px;width:100%;background:#edf0e9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
+#hidroboxGuided .hidrobox-collection-identity span{display:grid;place-items:center;width:80px;height:80px;border:1px solid #c4cdbf;border-radius:50%;font-size:27px;letter-spacing:-.07em;color:#5b705a;font-family:Georgia,serif}
+#hidroboxGuided .hidrobox-collection-identity small{font-size:9px;letter-spacing:.15em;color:#738270;text-align:center}
+#hidroboxGuided .hidrobox-guide-tile-name{padding:12px 14px 2px;font-size:15px}
+#hidroboxGuided .hidrobox-guide-tile small{padding:5px 14px 14px;line-height:1.4}
+#hidroboxGuided .hidrobox-unmapped{margin:24px 0;padding:18px 20px;background:#f0f0e9;border:1px solid #dde2d8;border-radius:9px}
+#hidroboxGuided .hidrobox-unmapped h3{font-size:15px;margin:0 0 8px;color:#3d493c}
+#hidroboxGuided .hidrobox-unmapped .hidrobox-guide-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+#hidroboxGuided .hidrobox-unpriced-collection{max-width:700px;margin:12px auto;padding:28px;border:1px solid #dfe4db;border-radius:10px;background:#fff;display:grid;gap:15px}
+#hidroboxGuided .hidrobox-unpriced-collection h3{font-size:clamp(27px,3vw,39px);font-weight:500;letter-spacing:-.04em;color:#263126;margin:0}
+#hidroboxGuided .hidrobox-unpriced-collection p{font-size:14px;color:#565e55;line-height:1.6;margin:0}
+#hidroboxGuided .hidrobox-unpriced-collection strong{font-size:12px;color:#816440;padding-top:16px;border-top:1px solid #e8eae4}
+@media(max-width:700px){
+ #hidroboxGuided .hidrobox-collection-identity{height:128px}
+ #hidroboxGuided .hidrobox-collection-identity span{width:65px;height:65px;font-size:23px}
+ #hidroboxGuided .hidrobox-collection-identity small{font-size:8px}
+ #hidroboxGuided .hidrobox-guide-tile-name{font-size:13px}
+ #hidroboxGuided .hidrobox-unmapped .hidrobox-guide-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #hidroboxGuided .hidrobox-unpriced-collection{padding:18px}
 }

@@ -1,3 +1,19 @@
+## Reprise Hidrobox — arborescence officielle du site (29 octobre 2026), V11.64.5
+
+**Branche :** `feat/hidrobox-official-product-tree-11645` depuis `main` `75e8c7b6366a1a56c5df8bb023a86a905e8990c6` (V11.64.4). PR #48 audit photos et PR #43 Bette sont séparées et doivent rester intactes.
+
+**Objectif utilisateur :** reproduire précisément l'arborescence de `https://hidrobox.com/fr/produits/` plutôt que la liste mélangée des lignes tarifaires. **Documentation complète et liens :** `docs/HIDROBOX_PRODUCT_TREE.md`.
+
+**Code sauvegardé :** `public/hidrobox-guided.js` : 9 catégories et 32 positions de collection vérifiées, navigation classe → collection → configuration tarifée / fiche sans prix, Beta Evoque dans deux catégories sans duplication tarifaire, groupe transversal Accessoires séparé, identifiants source et fil d'Ariane. `public/styles.css` : mises en page responsive des cartes. Tests Node et Chromium renforcés pour les vraies catégories, Neo Plus, Program, Intim (privée), Beta Evoque et viewport mobile. Version 11.64.5 dans package et lock.
+
+**Précautions :** 26/27 groupes tarifaires mappés directement ; ne pas attribuer arbitrairement les 969 lignes de « Niches, étagères et pièces spéciales » à Estantes/Hornacinas. Aucune photo de collection non sourcée ni prix/PDF inventé. Conserver **+4 % sur tarif**, **remise 50 % achat**, devis/projets. Photos détaillées toujours dans le périmètre de la PR #48.
+
+**Validation :** vérifier CI du dernier commit de la branche et navigateur Chromium, puis fusionner uniquement CI verte. Recontrôler version `main` et Render `/api/version` et `/api/health` avant d'annoncer le déploiement. Ne pas considérer le travail publié avant ces contrôles.
+
+**Prompt autonome :** Reprends Hydropolis Studio sur le dernier `main` et la branche `feat/hidrobox-official-product-tree-11645`, lis `docs/HIDROBOX_PRODUCT_TREE.md` et sa PR, vérifie la CI complète, les 9 catégories et 32 placements officiels, les tests Chromium desktop/mobile, les imports de prix et la conservation +4 % / -50 %, sans heuristiques trompeuses sur images. Corrige les échecs, enregistre les commits, fusionne uniquement après validation, contrôle Render. Préserve PR #48 et #43.
+
+---
+
 ## Checkpoint migration Gessi — Hidrobox et Sbordoni, V11.64.4 (28/10/2026)
 
 - Branche : `feat/visual-hidrobox-sbordoni-11644` construite sur `main` `4823e664cd852e90a61f4bc2f43888aaf1c6f3ec` (version 11.64.2). Ne pas écraser la PR #48 (audit des images fabricants, **encore en brouillon**) ni la PR #43 Bette.

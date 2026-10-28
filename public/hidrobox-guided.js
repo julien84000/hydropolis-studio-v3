@@ -14,39 +14,40 @@ const TECH='https://hidrobox.com/wp-content/uploads/2025/01/ES_NeoPlus_FactSheet
 const MANUAL='https://hidrobox.com/wp-content/uploads/2025/07/mus_247_NeoPlus_Shower_Tray_0223-03.pdf';
 const NEO_BIM='https://hidrobox.com/wp-content/uploads/2025/01/BIMobject-Shower-tray-Neo-Plus.zip';
 const NEO_3D='https://hidrobox.com/wp-content/uploads/2025/05/Neo-Plus-80x140x3-1.zip';
+/* Hidrobox.com/fr/produits/ — nine current manufacturer product classes,
+ * in the exact order shown in the official French product navigation. */
 const CATEGORY=[
-  {key:'receveurs',name:'Receveurs de douche',img:'https://hidrobox.com/wp-content/uploads/2025/03/01_Platos-de-ducha_Hidrobox.png',url:HOUSE+'produit/receveurs-de-douche/'},
-  {key:'panneaux',name:'Panneaux',img:'https://hidrobox.com/wp-content/uploads/2025/05/02_Paneles_Hidrobox.png',url:HOUSE+'produit/panneaux/'},
-  {key:'vasques-a-poser',name:'Vasques à poser',img:'https://hidrobox.com/wp-content/uploads/2025/03/05_Lavabos-de-apoyo_Hidrobox.png',url:HOUSE+'produit/vasques-a-poser/'},
-  {key:'vasques-suspendues',name:'Vasques suspendues',img:'https://hidrobox.com/wp-content/uploads/2025/05/04_Lavabos-suspendidos_Hidrobox-1.png',url:HOUSE+'produit/vasques-suspendus/'},
-  {key:'vasques-sur-pied',name:'Vasques sur pied',img:'https://hidrobox.com/wp-content/uploads/2025/05/06_Lavabos-a-suelo_Hidrobox.png',url:HOUSE+'produit/vasques-sur-pied/'},
-  {key:'plans',name:'Plans de travail',img:'https://hidrobox.com/wp-content/uploads/2025/03/pro4.png',url:HOUSE+'produit/plans-de-travail/'},
-  {key:'bains-ilot',name:'Baignoires îlot',img:'https://hidrobox.com/wp-content/uploads/2025/03/08_Baneras-exentas_Hidrobox.png',url:HOUSE+'produit/baignoires-ilot/'},
-  {key:'bains-encastres',name:'Baignoires encastrées',img:'https://hidrobox.com/wp-content/uploads/2025/05/09_Baneras-encastradas_Hidrobox.png',url:HOUSE+'produit/baignoires-encastrees/'},
-  {key:'accessoires',name:'Accessoires',img:'https://hidrobox.com/wp-content/uploads/2025/03/ACCESORIOS-HIDROBOX-1.png',url:HOUSE+'produit/accessoires/'},
-  {key:'autres',name:'Autres références tarifées',img:'',url:HOUSE},
-  {key:'toutes',name:'Toutes les collections tarifées',img:'',url:HOUSE}
+ {key:'receveurs',name:'Receveurs de douche',img:'https://hidrobox.com/wp-content/uploads/2025/03/01_Platos-de-ducha_Hidrobox.png',url:HOUSE+'produit/receveurs-de-douche/'},
+ {key:'panneaux',name:'Panneaux',img:'https://hidrobox.com/wp-content/uploads/2025/05/02_Paneles_Hidrobox.png',url:HOUSE+'produit/panneaux/'},
+ {key:'accessoires',name:'Accessoires',img:'https://hidrobox.com/wp-content/uploads/2025/03/ACCESORIOS-HIDROBOX-1.png',url:HOUSE+'produit/accessoires/'},
+ {key:'vasques-suspendues',name:'Vasques suspendus',img:'https://hidrobox.com/wp-content/uploads/2025/05/04_Lavabos-suspendidos_Hidrobox-1.png',url:HOUSE+'produit/vasques-suspendus/'},
+ {key:'vasques-a-poser',name:'Vasques à poser',img:'https://hidrobox.com/wp-content/uploads/2025/03/05_Lavabos-de-apoyo_Hidrobox.png',url:HOUSE+'produit/vasques-a-poser/'},
+ {key:'vasques-sur-pied',name:'Vasques sur pied',img:'https://hidrobox.com/wp-content/uploads/2025/05/06_Lavabos-a-suelo_Hidrobox.png',url:HOUSE+'produit/vasques-sur-pied/'},
+ {key:'plans',name:'Plans de travail',img:'https://hidrobox.com/wp-content/uploads/2025/03/pro4.png',url:HOUSE+'produit/plans-de-travail/'},
+ {key:'bains-ilot',name:'Baignoires îlot',img:'https://hidrobox.com/wp-content/uploads/2025/03/08_Baneras-exentas_Hidrobox.png',url:HOUSE+'produit/baignoires-ilot/'},
+ {key:'bains-encastres',name:'Baignoires encastrées',img:'https://hidrobox.com/wp-content/uploads/2025/05/09_Baneras-encastradas_Hidrobox.png',url:HOUSE+'produit/baignoires-encastrees/'}
 ];
 const SHOWER_MODELS=['neo plus','line','twins','quadro','one','pure','arq','loovers','unique','iconik','falcon'];
 
-/* Official Hidrobox 2026 categories, verified from the brand's own category pages. */
-const HIDROBOX_ALL_OFFICIAL=[
- ...['neo-plus','line','twins','quadro','one','pure','arq','loovers','unique','iconik','falcon'].map(slug=>({key:slug,name:slug.split('-').map(v=>v[0].toUpperCase()+v.slice(1)).join(' '),category:'receveurs',url:HOUSE+'collections/'+slug+'/'})),
- {key:'paneles',name:'Panneaux muraux',category:'panneaux'},
- {key:'estantes',name:'Étagères',category:'accessoires'},
- {key:'hornacinas',name:'Niches',category:'accessoires'},
- {key:'totems',name:'Totems',category:'accessoires'},
- ...['program','program-colour','lom','guest','swap','titan','soul','civit','intim'].map(slug=>({key:slug,name:slug.split('-').map(v=>v[0].toUpperCase()+v.slice(1)).join(' '),category:'vasques-suspendues'})),
- {key:'spot',name:'Spot',category:'vasques-a-poser'},
- {key:'fs',name:'FS',category:'vasques-sur-pied'},
- {key:'artop',name:'Artop',category:'plans'},
- {key:'space',name:'Space',category:'bains-ilot'},
- {key:'beta-essential',name:'Beta Essential',category:'bains-ilot'},
- {key:'beta-evoque',name:'Beta Evoque',category:'bains-ilot'},
- {key:'beta-fusion',name:'Beta Fusion',category:'bains-encastres'}
-].map(x=>({...x,url:x.url||(x.key==='intim'||x.key==='falcon'?HOUSE+'produit/'+(x.key==='falcon'?'receveurs-de-douche/':'vasques-suspendus/'):HOUSE+'collections/'+x.key+'/')}));
+/* Official Hidrobox French product categories and collections, verified on 29/10/2026.
+ * Beta Evoque is shown in BOTH bath categories on the source website; there
+ * remains only one underlying tariff group. Intim is marked private there. */
+const HIDROBOX_PRODUCT_TREE=[
+ {category:'receveurs',collections:[['neo-plus','Neo Plus'],['line','Line'],['twins','Twins'],['one','One'],['pure','Pure'],['quadro','Quadro'],['arq','Arq'],['unique','Unique'],['iconik','Iconik'],['loovers','Loovers'],['falcon','Falcon']]},
+ {category:'panneaux',collections:[['paneles','Paneles']]},
+ {category:'accessoires',collections:[['estantes','Estantes'],['hornacinas','Hornacinas'],['totems','Totems']]},
+ {category:'vasques-suspendues',collections:[['program','Program'],['program-colour','Program Colour'],['lom','Lom'],['guest','Guest'],['swap','Swap'],['titan','Titan'],['soul','Soul'],['civit','Civit'],['intim','Intim']]},
+ {category:'vasques-a-poser',collections:[['spot','Spot']]},
+ {category:'vasques-sur-pied',collections:[['fs','FS']]},
+ {category:'plans',collections:[['artop','Artop']]},
+ {category:'bains-ilot',collections:[['space','Space'],['beta-essential','Beta Essential'],['beta-evoque','Beta Evoque']]},
+ {category:'bains-encastres',collections:[['beta-fusion','Beta Fusion'],['beta-evoque','Beta Evoque']]}
+];
+const HIDROBOX_ALL_OFFICIAL=HIDROBOX_PRODUCT_TREE.flatMap(branch=>branch.collections.map(([key,name])=>({
+ key,name,category:branch.category,url:HOUSE+'collections/'+key+'/',
+ private:key==='intim',tariffAlias:key==='paneles'?'panneaux-muraux':''
+})));
 const HIDROBOX_OFFICIAL_BY_NAME=new Map(HIDROBOX_ALL_OFFICIAL.map(x=>[x.name.toLowerCase(),x]));
-
 const norm=x=>String(x||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
 function groupCategory(g){
  const name=norm(g.collection||g.family||g.model||g.id),category=norm(g.category);
@@ -73,12 +74,16 @@ function close(){overlay?.remove();overlay=null}
 function shell(title,content,wide=false){
  if(!overlay){overlay=document.createElement('div');overlay.id='hidroboxGuided';overlay.className='recor-configurator-overlay';document.body.appendChild(overlay);overlay.addEventListener('click',e=>{if(e.target===overlay)close()});}
  overlay.innerHTML='<section class="recor-configurator hidrobox-guide'+(wide?' hidrobox-guide-wide':'')+'" role="dialog" aria-modal="true" aria-label="Hidrobox">'+
-  '<div class="recor-config-head"><div><div class="eyebrow">Hidrobox · configurateur guidé</div><h2>'+escape(title)+'</h2><p>Famille → collection → configuration → référence et prix</p></div><button class="icon hidrobox-close" type="button" aria-label="Fermer">×</button></div>'+content+'</section>';
+  '<div class="recor-config-head"><div><div class="eyebrow">Hidrobox · catalogue officiel</div><h2>'+escape(title)+'</h2><p>Catégorie → collection → configuration → référence tarifée</p></div><button class="icon hidrobox-close" type="button" aria-label="Fermer">×</button></div>'+treePath()+content+'</section>';
  overlay.querySelector('.hidrobox-close').onclick=close;
+ overlay.querySelector('[data-hidrobox-home]')?.addEventListener('click',families);
+ overlay.querySelector('[data-hidrobox-category]')?.addEventListener('click',collections);
 }
 function tiles(rows,kind){
  return '<div class="hidrobox-guide-grid">'+rows.map(x=>{
-  const picture=x.img?'<img src="'+escape(x.img)+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">':'<div class="hidrobox-guide-no-image">HIDROBOX</div>';
+  const picture=x.img?'<img src="'+escape(x.img)+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">':
+   kind==='collection'?'<div class="hidrobox-collection-identity"><span>'+escape(String(x.name||'H').split(' ').map(p=>p[0]||'').join('').slice(0,2).toUpperCase())+'</span><small>COLLECTION HIDROBOX</small></div>':
+   '<div class="hidrobox-guide-no-image">HIDROBOX</div>';
   return '<button type="button" class="hidrobox-guide-tile" data-kind="'+escape(kind)+'" data-choice="'+escape(x.key)+'">'+picture+'<span class="hidrobox-guide-tile-name">'+escape(x.name)+'</span>'+(x.note?'<small>'+escape(x.note)+'</small>':'')+'</button>';
  }).join('')+'</div>';
 }
@@ -100,39 +105,77 @@ function wireVisualFacets(){
   select.dispatchEvent(new Event('change',{bubbles:true}));
  });
 }
+/* Official page taxonomy is authoritative for navigation; the supplier's
+ * imported price sheet only controls whether a collection is configurable. */
+function groupFor(entry,allGroups=groups){
+ return allGroups.find(g=>norm(g.id)===norm(entry.tariffAlias||entry.key)||
+  norm(g.collection)===norm(entry.name));
+}
+function unmappedGroups(category){
+ return groups.filter(g=>groupCategory(g)===category&&!HIDROBOX_ALL_OFFICIAL.some(entry=>groupFor(entry)?.id===g.id));
+}
+function treePath(){
+ const parent=CATEGORY.find(x=>x.key===cat);
+ const category=stage==='families'?'':'<span aria-hidden="true">›</span>'+
+  (stage==='collections'?'<strong>'+escape(parent?.name||'Collections')+'</strong>':'<button type="button" data-hidrobox-category>'+escape(parent?.name||'Collections')+'</button>');
+ const current=stage==='neo'?'Neo Plus':stage==='group'?chosenGroup?.collection||chosenGroup?.family||chosenGroup?.model||'Configuration':stage==='official'?chosenGroup?.name||'Collection':'';
+ return '<nav class="hidrobox-tree-path" aria-label="Parcours du configurateur">'+
+ (stage==='families'?'<strong>Produits Hidrobox</strong>':'<button type="button" data-hidrobox-home>Produits Hidrobox</button>')+
+ category+(current?'<span aria-hidden="true">›</span><strong>'+escape(current)+'</strong>':'')+'</nav>';
+}
 function families(){
- stage='families';
- shell('Choisir un type de produit',tiles(CATEGORY.filter(c=>c.key!=='autres'||groups.some(g=>groupCategory(g)==='autres')),'family')+
- '<p class="hidrobox-guide-note">Les catégories reprennent la navigation du fabricant. Les collections sans prix importé restent accessibles sur son site.</p>',true);
+ stage='families';chosenGroup=null;
+ const cards=CATEGORY.map(c=>({...c,note:HIDROBOX_ALL_OFFICIAL.filter(x=>x.category===c.key).length+' collections officielles'}));
+ shell('Choisir une catégorie de produits',tiles(cards,'family')+
+ '<p class="hidrobox-guide-note">Navigation basée sur les neuf catégories publiées sur hidrobox.com/fr/produits/. Les images de catégorie illustrent une famille, pas une référence tarifée.</p>'+
+ '<a class="hidrobox-official-link" href="'+HOUSE+'produits/" target="_blank" rel="noopener noreferrer">Voir l’arborescence du fabricant</a>',true);
  overlay.querySelectorAll('[data-kind=family]').forEach(b=>b.onclick=()=>{cat=b.dataset.choice;collections()});
 }
 function collections(){
- stage='collections';const family=CATEGORY.find(x=>x.key===cat);
- const priced=cat==='toutes'?groups:groups.filter(x=>groupCategory(x)===cat);
- const cards=priced.map(g=>({key:g.id,name:g.collection||g.family||g.model||g.id,img:CATEGORY.find(c=>c.key===groupCategory(g))?.img||family?.img,note:(g.variants?.length||0)+' déclinaisons · tarif source'}));
-
- const have=new Set(cards.map(x=>norm(x.name)));
- const officialEntries=HIDROBOX_ALL_OFFICIAL.filter(x=>x.category===cat||cat==='toutes');
- for(const entry of officialEntries){
-   if(have.has(norm(entry.name)))continue;
-   cards.push({key:'official-'+entry.key,name:entry.name,img:CATEGORY.find(c=>c.key===entry.category)?.img,note:'Collection officielle · tarif non importé'});
- }
-
- shell(family?.name||'Collections','<button class="hidrobox-back" type="button">← Familles</button>'+tiles(cards,'collection')+
- '<p class="hidrobox-guide-note">Illustrations de familles provenant du site Hidrobox. Les visuels exacts de chaque collection restent à associer.</p>'+
- '<a class="hidrobox-official-link" href="'+escape(family?.url||HOUSE)+'" target="_blank" rel="noopener noreferrer">Voir toutes les collections sur le site officiel</a>',true);
- overlay.querySelector('.hidrobox-back').onclick=families;
- overlay.querySelectorAll('[data-kind=collection]').forEach(b=>b.onclick=()=>{
-   const key=b.dataset.choice;
-   const group=groups.find(x=>x.id===key);
-   if(norm(group?.collection||group?.id||key)==='neo plus'||key==='neo-plus-official'||norm(group?.collection)==='neo plus'){neoPage();return;}
-   if(!group){
-     const entry=HIDROBOX_ALL_OFFICIAL.find(x=>'official-'+x.key===key);
-     if(entry)root.open(entry.url,'_blank','noopener');
-     return;
-   }
-   universalPage(group);
+ stage='collections';chosenGroup=null;
+ const family=CATEGORY.find(x=>x.key===cat);
+ const official=HIDROBOX_ALL_OFFICIAL.filter(x=>x.category===cat);
+ const cards=official.map(entry=>{
+  const g=groupFor(entry);
+  return {key:entry.key,name:entry.name,img:officialImage(g?.image)||'',note:entry.private?'Collection privée sur le site du fabricant':g?(g.variants?.length||0)+' lignes du tarif source · à configurer':'Collection officielle · tarif non importé'};
  });
+ const orphans=unmappedGroups(cat);
+ const extra=orphans.length?
+  '<section class="hidrobox-unmapped"><h3>Lignes tarifaires hors collections du site</h3><p class="hidrobox-guide-note">Ces postes sont regroupés dans le tarif mais ne correspondent pas à une collection unique du menu fabricant. Choisissez leur référence avec précaution.</p>'+
+  tiles(orphans.map(g=>({key:g.id,name:g.collection||g.family||g.model||g.id,img:'',note:(g.variants?.length||0)+' lignes tarifées · groupe transversal'})),'unmapped')+'</section>':'';
+ shell(family?.name||'Collections','<button class="hidrobox-back" type="button">← Catégories</button>'+
+  tiles(cards,'collection')+extra+
+  '<p class="hidrobox-guide-note">Collections et ordre issus de la rubrique Produits de Hidrobox. Une photo n’est affichée que si elle est associée au modèle ; aucun visuel de catégorie ne remplace une photographie de référence.</p>'+
+  '<a class="hidrobox-official-link" href="'+escape(family?.url||HOUSE)+'" target="_blank" rel="noopener noreferrer">Consulter cette catégorie chez Hidrobox</a>',true);
+ overlay.querySelector('.hidrobox-back').onclick=families;
+ overlay.querySelectorAll('[data-kind=collection]').forEach(button=>button.onclick=()=>{
+  const entry=official.find(x=>x.key===button.dataset.choice);
+  if(!entry)return;
+  if(entry.key==='neo-plus'){neoPage();return;}
+  const group=groupFor(entry);
+  if(group){universalPage(group);return;}
+  officialInfo(entry);
+ });
+ overlay.querySelectorAll('[data-kind=unmapped]').forEach(button=>button.onclick=()=>{
+  const group=orphans.find(x=>x.id===button.dataset.choice);
+  if(group)universalPage(group);
+ });
+}
+function officialInfo(entry){
+ stage='official';chosenGroup=entry;
+ const category=CATEGORY.find(c=>c.key===cat);
+ const assets=HIDROBOX_DOCUMENTS[norm(entry.name)]||{};
+ const tech=officialPdf(assets.technical);
+ const docs=tech?'<a class="hidrobox-official-link" href="'+escape(tech)+'" target="_blank" rel="noopener noreferrer">Fiche technique fabricant</a>':'';
+ const url=entry.private?category?.url:entry.url;
+ const markup='<button class="hidrobox-back" type="button">← Collections</button>'+
+  '<section class="hidrobox-unpriced-collection"><div class="eyebrow">'+escape(category?.name||'Hidrobox')+'</div><h3>'+escape(entry.name)+'</h3>'+
+  '<p>'+ (entry.private?'Cette collection est indiquée « Privé » dans le menu du fabricant.':"Cette collection figure au catalogue officiel, mais aucune référence et aucun tarif correspondants n’ont été importés.")+
+  ' Vous pouvez consulter la documentation du fabricant, sans ajout automatique au devis.</p>'+
+  '<div class="hidrobox-downloads"><a href="'+escape(url||HOUSE)+'" target="_blank" rel="noopener noreferrer">Voir sur Hidrobox</a>'+docs+'</div>'+
+  '<strong>Aucun tarif disponible dans Hydropolis · aucune référence inventée</strong></section>';
+ shell(entry.name+' · catalogue',markup,true);
+ overlay.querySelector('.hidrobox-back').onclick=collections;
 }
 
 /* Manufacturer-direct technical sheets, only where their URLs were verified. */
@@ -388,5 +431,5 @@ async function open(p,roomId){
  cat='receveurs';stage='families';chosenGroup=null;
  families();
 }
-root.HydroHidroboxConfigurator={...base,open,close,neoPlus:catalogue};
+root.HydroHidroboxConfigurator={...base,open,close,neoPlus:catalogue,officialCategories:CATEGORY,officialCollections:HIDROBOX_ALL_OFFICIAL,officialProductTree:HIDROBOX_PRODUCT_TREE,tariffGroupFor:groupFor};
 })(window);
