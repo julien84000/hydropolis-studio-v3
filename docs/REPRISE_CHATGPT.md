@@ -148,3 +148,13 @@ Branche de travail : `feat/v11.63.1-brands-pricing-integrity`. PR : https://gith
 - Tarifs : aucun fichier `public/brand-data/hidrobox-*` n'est modifié. Conserver 4 479 variantes, majoration publique +4 % une seule fois, remise achat 50 %. Test `tests/v11.63.3-hidrobox-cad.test.js` inclus à `npm test`.
 - Commits : code `9c5205b338bb1f336a76507bd588e0a413232a9e`, tests `cf95b8d85af7bd86ba5c17db315af47884dbfc84`, package `159e94713102e1e6257f90509f983cc776b68782`, lockfile `7f075f8fb079383e89791c852aeda1e3820c9c95`.
 - **En attente** : CI complète, Chromium, PR, vérification de l'ouverture réelle des ressources dans le navigateur et non-régression, et fusion éventuelle. **Render reste en V11.63.2** tant que cette branche n'est pas fusionnée/déployée.
+
+
+## Livraison confirmée sur GitHub V11.63.3 — Hidrobox (28/10/2026)
+
+- **PR #36 fusionnée** dans `main` le 28/10/2026 : commit squash `988de9313255ab4fe448edfaf57722139612706c`, source `0b374ce95e8c9edf778bace5af2a29cdc6a7b524`. Base : Hotbath V11.63.2 `860504041b1e957d0008e509781883dbedc952fb`.
+- **CI de la PR** : https://github.com/julien84000/hydropolis-studio-v3/actions/runs/40770116572 — `npm ci`, `npm run check`, `npm test`, `npm run build`, `npm run test:browser` : **succès**, y compris navigation réelle Chromium sur les liens BIM/3D Neo Plus et Line.
+- **CI après fusion** : https://github.com/julien84000/hydropolis-studio-v3/actions/runs/40770477834 — encore en cours au checkpoint ; vérifier sa conclusion sur GitHub.
+- **Render après fusion, dernier contrôle** : `GET /api/version` renvoie encore **11.63.2**, `GET /api/health` = `ok: true`, `database: postgresql`. La présence du code V11.63.3 sur main ne suffit pas à déclarer la production mise à jour. Revérifier ces endpoints pour conclure.
+- **Changement effectif** : liens CAO constructeur BIM et 3D Neo Plus/Line affichés avec signalement des exemples dimensionnels ; pas de changement des données tarifaires 2026 Hidrobox. Les ZIP officiels n'ont pas été inspectés en profondeur.
+- **Reprise exacte** : vérifier `main`, CI post-fusion et production ; poursuivre qualité et attribution des images et notices Hidrobox, puis Bette, Carrodrain, Zucchetti et Lefroy Brooks. Préserver les 67 378 variantes tarifaires importées et toute la V11.63.2 Hotbath/Resigres/Sbordoni.
