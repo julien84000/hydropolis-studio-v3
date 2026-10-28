@@ -1,3 +1,34 @@
+## Affinement V11.64.6 — sous-catégories Bette navigables — 29/10/2026
+
+- Après la sélection « Baignoires / Receveurs / Vasques », les rubriques **Type, Forme, Fonction** sont maintenant des étapes interactives internes (boutons) avant les familles tarifées, pas seulement des liens sortants.
+- Le filtrage d'une famille du tarif n'est activé que si son nom contient une indication probante (ex. « BetteAqua Vasque à encastrer » pour le type à encastrer, BetteLux pour la gamme). Si le tarif ne porte pas la propriété, le catalogue de la catégorie est affiché clairement **non filtré**, avec lien vers la sous-catégorie constructeur vérifiée. La correspondance tarif/référence/prix ne change pas.
+- La CI précédente PR #51 (run `40786016901`) passait avec 135 tests et Chromium, mais elle **précède** cette amélioration et la réconciliation finale avec la PR #50. La CI du dernier commit de la PR #51 est désormais **indispensable** avant fusion.
+- Les regroupements Bette du tarif source sont certifiés par `BETTE_OFFICIAL_TYPE_COVERAGE` : 51 groupes Baignoire, 20 Douche, 22 Lavabo, total 93, aucun orphelin. Ne pas inventer les propriétés de dimensions/forme au niveau des groupes.
+
+---
+
+## Réconciliation avec Hidrobox V11.64.5 — 29 octobre 2026
+
+La PR #50 est fusionnée dans `main` (commit `368aa86d0ad33c9734fd22ffaf9a6e95465dc716`). Les tests Node, navigateur desktop/mobile, visuels et parcours privés d'Hidrobox livrés par #50 ont été **préservés**. Les développements Bette/Carrodrain et les nouveaux tests sont ajoutés à cette base et la version préparée reste **11.64.6**. Revalider la CI complète de la PR #51 après les commits de réconciliation. PR #43 Bette et PR #48 audit photo restent non fusionnées.
+
+---
+
+## Checkpoint — Arborescences produits officielles Hidrobox, Bette et Carrodrain — 29 octobre 2026
+
+**Source :** parcours publics FR vérifiés : `https://hidrobox.com/fr/produits/`, `https://www.my-bette.com/fr/produits/`, `https://carrodrain.com/fr`. Branche de travail `feat/official-trees-hidrobox-bette-carrodrain-11646` dérivée de `feat/hidrobox-official-product-tree-11645` (code Hidrobox déjà sauvegardé, non fusionné à l'origine). Dernière version main au départ V11.64.4. Version candidate 11.64.6.
+
+**Fait :**
+- Hidrobox : 9 familles officielles, collections ordonnées comme sur le site, Beta Evoque dans les deux familles baignoires, distinction produit officiel sans prix / groupe tarifaire, options réelles pilotées par la matrice source de 4 479 lignes (+4 % une fois, remise achat 50 %).
+- Bette : 6 rubriques de navigation dont baignoires par type/forme/fonction, receveurs par type/forme, vasques par type/forme, équipement et gammes design. Les sous-filtres ouvrent les URL constructeur ; la grille Bette de 93 groupes et 62 264 prix reste intacte, classification fournisseur uniquement quand suffisamment explicite, groupes sans classement accessibles sous « Autres références du tarif ». Sélection du produit puis variante/dimension/couleur/options exactes comme avant.
+- Carrodrain : parcours Essentials / Invisibles / Liquids puis 13 modèles officiels + espace accessoire Kerlox, sélection LOW/PRO et finitions par cartes visuelles reliées aux selects tarifaires d'origine. Les 12 groupes tarifés / 635 prix restent inchangés et les produits hors tarif ne sont pas ajoutables. Documents LOW/PRO par version préservés.
+- `public/hidrobox-guided.js`, `public/brand-configurators.js`, `public/styles.css` ; tests Node `tests/v11.64.6-official-trees.test.js` et Chromium `tests/browser-consolidated.js`. `package.json` et lock sur 11.64.6.
+- La PR #48 d'audit photo et la PR #43 Bette restent hors périmètre et non écrasées. Aucune modification des sources fournisseurs ni de la BDD.
+
+**À vérifier impérativement :** CI complète pour la dernière tête de branche (tests Node et navigateur), corriger tous les échecs et vérifier la classification réelle des 93 familles Bette via le log `BETTE_OFFICIAL_TYPE_COVERAGE`. Si beaucoup restent sans catégorie, éviter de prétendre que le filtre du site est appliqué aux SKU ; enrichir sur preuves seulement. Préserver les fonctionnalités de réouverture par référence exacte. Réconcilier si `main` avance. Ne fusionner qu'après validation, vérifier Render `/api/version` et `/api/health`. Fiches techniques seulement, pas d'intégration BIM/CAO nouvelle.
+
+**Prompt de reprise** : Reprendre `julien84000/hydropolis-studio-v3`, branche `feat/official-trees-hidrobox-bette-carrodrain-11646` et sa PR. Vérifier dernier main, PR #48/#43, lire `docs/REPRISE_CHATGPT.md`, lister derniers commits et la CI. Tester les arborescences Hidrobox/Bette/Carrodrain contre les rubriques officielles, corriger les échecs et les mauvais liens, conserver 4 479/62 264/635 tarifs, toutes les remises, l'identité des références et documents. Conserver les sections non tarifées consultables. Après CI verte seulement, fusionner, vérifier la version effective et santé de Render, puis poursuivre l'association de photos exactes sans assimiler image de famille à variante exacte.
+
+---
 ## Reprise Hidrobox — arborescence officielle du site (29 octobre 2026), V11.64.5
 
 **Branche :** `feat/hidrobox-official-product-tree-11645` depuis `main` `75e8c7b6366a1a56c5df8bb023a86a905e8990c6` (V11.64.4). PR #48 audit photos et PR #43 Bette sont séparées et doivent rester intactes.

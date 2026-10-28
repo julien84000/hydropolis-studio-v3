@@ -571,12 +571,61 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
       await page.locator('#sbordoniConfigurator .sbordoni-config-summary').count()===0);
     await page.locator('#sbordoniConfigurator .sbordoni-config-close').click();
 
+    const mobileTreeOverflow=async()=>{
+      const d=await page.locator('#brandConfigurator .recor-configurator').evaluate(x=>({
+        ok:x.scrollWidth<=x.clientWidth,client:x.clientWidth,scroll:x.scrollWidth,
+        offenders:[...x.querySelectorAll('*')].filter(n=>n.getBoundingClientRect().right>x.getBoundingClientRect().right+2).slice(0,6).map(n=>({tag:n.tagName,cls:String(n.className).slice(0,55),right:Math.round(n.getBoundingClientRect().right)}))
+      }));
+      if(!d.ok)console.error('BRAND_TREE_MOBILE_OVERFLOW',JSON.stringify(d));
+      return d.ok;
+    };
+    // V11.64.6 — Bette official taxonomy before the existing 62,264-variant selector.
+    await page.evaluate(()=>HydroBetteConfigurator.open({manufacturer:'Bette'},state.rooms[0]?.id||''));
+    await page.waitForSelector('#brandConfigurator [data-bette-family="showers"]');
+    check('Bette : 6 rubriques fabricant',await page.locator('#brandConfigurator [data-bette-family]').count()===6);
+    await page.setViewportSize({width:390,height:844});
+    check('Bette : arborescence sans débordement mobile 390',
+      await mobileTreeOverflow());
+    await page.setViewportSize({width:1440,height:1000});
+    await page.locator('#brandConfigurator [data-bette-family="baths"]').click();
+    check('Bette : filtres officiels Type, Forme et Fonction disponibles',
+      await page.locator('#brandConfigurator .brand-official-facets h3').allTextContents().then(a=>['Type','Forme','Fonction'].every(x=>a.includes(x))));
+    check('Bette : aucune classification fictive des variantes comme officielles',
+      await page.locator('#brandConfigurator .brand-note').first().innerText().then(x=>x.includes('aucune correspondance')));
+    await page.locator('#brandConfigurator [data-bette-facet="baignoires-ilot"]').click();
+    check('Bette : vraie navigation interne catégorie puis type',
+      await page.locator('#brandConfigurator [data-bette-back="sections"]').count()===1&&
+      await page.locator('#brandConfigurator .brand-category-grid [data-bette-group]').count()>0);
+    check('Bette : pas de filtre de type inventé si le tarif est non renseigné',
+      await page.locator('#brandConfigurator .brand-note').first().innerText().then(x=>x.includes('sans prétendre à un filtrage exact')));
+    await page.locator('#brandConfigurator [data-bette-back="sections"]').click();
+    await page.locator('#brandConfigurator [data-bette-back="families"]').click();
+    await page.locator('#brandConfigurator [data-bette-family="design"]').click();
+    check('Bette : six gammes design officielles',await page.locator('#brandConfigurator [data-bette-facet-group="Gammes officielles"]').count()===6);
+    await page.locator('#brandConfigurator [data-bette-facet="bettelux"]').click();
+    check('Bette : BetteLux donne accès aux vraies familles tarifées de la gamme',
+      await page.locator('#brandConfigurator [data-bette-group]').count()>0);
+    await page.locator('#brandConfigurator [data-bette-back="sections"]').click();
+    await page.locator('#brandConfigurator [data-bette-back="families"]').click();
+    await page.locator('#brandConfigurator [data-bette-family="showers"]').click();
+    await page.locator('#brandConfigurator [data-bette-unclassified]').click();
+    check('Bette : les familles sans classement restent accessibles',await page.locator('#brandConfigurator [data-bette-back="sections"]').count()===1);
+    await page.locator('#brandConfigurator .brand-config-close').click();
+
     // V11.63.4 — Carrodrain: choose real LOW/PRO variants and check
     // manufacturer-page PDF mapping without substituting neighbouring versions.
     await page.evaluate(()=>HydroCarrodrainConfigurator.open({manufacturer:'Carrodrain'},state.rooms[0]?.id||''));
-    await page.waitForSelector('#brandConfigurator [data-carrodrain-group="quattro-100"]',{timeout:20000});
+    await page.waitForSelector('#brandConfigurator [data-carrodrain-family="Essentials"]',{timeout:20000});
+    check('Carrodrain : Essentials, Invisibles, Liquids et accessoires distincts',await page.locator('#brandConfigurator [data-carrodrain-family]').count()===4);
+    await page.setViewportSize({width:390,height:844});
+    check('Carrodrain : familles sans débordement mobile 390',
+      await mobileTreeOverflow());
+    await page.setViewportSize({width:1440,height:1000});
+    await page.locator('#brandConfigurator [data-carrodrain-family="Essentials"]').click();
+    await page.waitForSelector('#brandConfigurator [data-carrodrain-group="quattro-100"]');
     await page.locator('#brandConfigurator [data-carrodrain-group="quattro-100"]').click();
     await page.waitForSelector('#brandConfigurator #ccVersion');
+    check('Carrodrain : versions LOW et PRO présentées en cartes',await page.locator('#brandConfigurator [data-brand-choice="ccVersion"]').count()===2);
     await page.locator('#brandConfigurator #ccVersion').selectOption('LOW');
     await page.waitForSelector('#brandConfigurator a[href*="Quattro_100_LOW_Technical_Specifications_2025.pdf"]');
     check('Carrodrain Quattro LOW : bonne fiche technique',

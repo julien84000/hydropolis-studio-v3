@@ -87,7 +87,7 @@
     }
     return null;
   }
-  function carrodrainGallery(groups,chosenGroup){
+  function carrodrainGallery(groups,chosenGroup,selectedFamily){
     const cards=CARRODRAIN_MODELS.map(m=>{
       const g=(groups||[]).find(g=>carrodrainVisual(g)?.id===m.id);
       const common='<img src="'+esc(m.image)+'" alt="Carrodrain '+esc(m.name)+'" loading="lazy" decoding="async" onerror="this.style.display=\'none\'"><span class="carrodrain-gallery-caption"><b>'+esc(m.name)+'</b><small>'+esc(m.subtitle)+'</small></span>';
@@ -97,7 +97,7 @@
         :'<a class="carrodrain-gallery-card" href="'+esc(m.url)+'" target="_blank" rel="noopener noreferrer" aria-label="Voir '+esc(m.name)+' sur Carrodrain">'+common+'<em>Hors tarif importé · Voir chez Carrodrain</em></a>';
       return {family:m.family,markup:item};
     });
-    const families=['Essentials','Invisibles','Liquids','Accessoires'];
+    const families=selectedFamily?[selectedFamily]:['Essentials','Invisibles','Liquids','Accessoires'];
     const priced=CARRODRAIN_MODELS.filter(m=>(groups||[]).some(g=>carrodrainVisual(g)?.id===m.id)).length;
     return '<div class="carrodrain-gallery-intro">'+priced+' collections tarifées sur '+CARRODRAIN_MODELS.length+' présentées. Les collections sans grille ne peuvent pas être ajoutées automatiquement. Visuels officiels de gamme, non contractuels pour la finition choisie.</div>'
       +families.map(f=>'<section class="carrodrain-gallery-section"><h3>'+esc(f)+'</h3><div class="carrodrain-gallery-grid">'+cards.filter(x=>x.family===f).map(x=>x.markup).join('')+'</div></section>').join('');
@@ -152,6 +152,71 @@
   function dimLabel(v){return [v.lengthMm&&`${v.lengthMm} mm`,v.widthMm&&`${v.widthMm} mm`,v.heightMm&&`${v.heightMm} mm`].filter(Boolean).join(' × ')||'Dimension non renseignée';}
   function chosen(select,values){const cur=select;return values.includes(cur)?cur:(values[0]??'');}
 
+  /* Official French manufacturer taxonomy. No filter is claimed as a verified
+   * SKU property unless supported by the original supplier tariff fields. */
+  const BETTE_TREE=[
+   {id:'baths',name:'Baignoires',url:'https://www.my-bette.com/fr/produits/baignoires',sections:[
+     {name:'Type',items:[['Baignoires encastrables','baignoires-encastrable'],['Baignoires sous plan','baignoires-sous-plan'],['Baignoires îlot','baignoires-ilot'],['Baignoires avec tablier','baignoires-avec-tablier']]},
+     {name:'Forme',items:[['Rectangulaires','baignoires-rectangulaires'],['Ovales','baignoires-ovales'],["D’angle",'baignoires-d-angle']]},
+     {name:'Fonction',items:[['Balnéo','baignoires-baln%C3%A9o'],['Compactes','baignoires-compactes'],['Baignoires-douches','baignoire-douche'],['1 personne','baignoires-1-personne'],['2 personnes','baignoires-2-personnes']]}]},
+   {id:'showers',name:'Receveurs de douche',url:'https://www.my-bette.com/fr/produits/receveurs-de-douche',sections:[
+     {name:'Type',items:[['Extra-plats','receveur-de-douche-extra-plat'],['Surélevés','receveurs-de-douche-sureleves']]},
+     {name:'Forme',items:[['Rectangulaires','receveurs-de-douche-rectangulaires'],['Quart de rond','receveurs-de-douche-en-quart-de-rond'],['Pentagonaux','receveurs-de-douche-pentagonaux']]}]},
+   {id:'basins',name:'Vasques',url:'https://www.my-bette.com/fr/produits/vasques',sections:[
+     {name:'Type',items:[['À encastrer','vasques-a-encastrer'],['Sous plan','vasques-sous-plan'],['Murales','vasques-murales'],['À poser','vasques-a-poser'],['En îlot','vasques-en-ilot']]},
+     {name:'Forme',items:[['Rondes','vasques-rondes'],['Rectangulaires ou carrées','vasques-rectangulaires-ou-carrees']]}]},
+   {id:'equipment',name:'Équipement et encastrement',url:'https://www.my-bette.com/fr/produits/equipement-encastrement',sections:[]},
+   {id:'design',name:'Gammes design',url:'https://www.my-bette.com/fr/produits/gammes-design',sections:[{name:'Gammes officielles',items:[['BetteSuno','bettesuno'],['BetteArt','betteart'],['BetteLux','bettelux'],['BetteLoft','betteloft'],['BetteComodo','bettecomodo'],['BetteOne','betteone']]}]},
+   {id:'news',name:'Nouveautés',url:'https://www.my-bette.com/fr/produits/nouveautes',sections:[]}
+  ];
+  function betteType(g){
+   const v=g?.variants?.[0]||{};
+   const words=[v.category,g.category,v.type,g.type,v.designation,g.family].filter(Boolean).join(' ').toLowerCase();
+   if(/receveur|douche|shower|betteair/.test(words))return 'showers';
+   if(/baignoire|bain|bath|balnéo/.test(words))return 'baths';
+   if(/vasque|lavabo|lavatory|washbasin|basin/.test(words))return 'basins';
+   if(/accessoire|vidage|encastrement|equipement|pieds|support/.test(words))return 'equipment';
+   return 'unclassified';
+  }
+  // A supplier tariff family is filtered into an official facet only when
+  // its own name explicitly establishes the match. No shape/type inference
+  // from photographs or neighbouring products.
+  const BETTE_FACET_MATCH={
+    'vasques-a-encastrer':/vasque.*encastr/i,
+    'vasques-sous-plan':/vasque.*sous.plan/i,
+    'vasques-murales':/vasque.*mural/i,
+    'vasques-a-poser':/vasque.*poser/i,
+    'vasques-en-ilot':/vasque.*ilot/i,
+    'vasques-rondes':/vasque.*rond/i,
+    'vasques-rectangulaires-ou-carrees':/vasque.*(?:rectang|carre)/i,
+    'baignoires-compactes':/compact/i,
+    'baignoire-douche':/bain.*douche/i,
+    'bettesuno':/^bettesuno/i,'betteart':/^betteart/i,'bettelux':/^bettelux/i,
+    'betteloft':/^betteloft/i,'bettecomodo':/^bettecomodo/i,'betteone':/^betteone/i
+  };
+  const betteFacetMatches=(g,slug)=>{
+    const pattern=BETTE_FACET_MATCH[slug];
+    if(!pattern)return false;
+    const name=String(g?.family||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    return pattern.test(name);
+  };
+  const CARRODRAIN_TREE=[
+   {id:'Essentials',name:'Essentials',description:'Caniveaux et siphons essentiels'},
+   {id:'Invisibles',name:'Invisibles',description:'Solutions à carreler et invisibles'},
+   {id:'Liquids',name:'Liquids',description:'Solutions pour sols coulés'},
+   {id:'Accessoires',name:'Accessoires',description:'Étanchéité et accessoires · hors gammes principales'}
+  ];
+  function choiceTiles(id,values,current,labeler=v=>v){
+   if(values.length<2||values.length>18)return '';
+   return '<div class="brand-visual-choice" role="group" aria-label="'+esc(id)+'">'+values.map(v=>
+    '<button type="button" data-brand-choice="'+esc(id)+'" data-brand-value="'+esc(v)+'" aria-pressed="'+(String(current)===String(v))+'">'+esc(labeler(v))+'</button>').join('')+'</div>';
+  }
+  function wireChoices(overlay){
+   overlay.querySelectorAll('[data-brand-choice]').forEach(b=>b.onclick=()=>{
+    const el=overlay.querySelector('#'+b.dataset.brandChoice);
+    if(!el)return;el.value=b.dataset.brandValue;el.dispatchEvent(new Event('change',{bubbles:true}));
+   });
+  }
   function initialExactVariant(groups,product){
     const ref=String(product?.reference||'').trim();
     let group=groups.find(g=>g.id===product?.configGroup);
@@ -170,7 +235,66 @@
     const selected=original.variant;
     const draft={group:original.group?.id||p?.configGroup||'',model:selected?.model||'',dim:selected?dimLabel(selected):'',color:selected?.color||'Standard',option:selected?.option||'Standard',reference:selected?.reference||''};
     if(!groups.some(g=>g.id===draft.group))draft.group=groups.find(g=>g.family===p?.collection)?.id||groups[0].id;
-    let overlay;
+    let overlay,step='families',kind='showers',groupSection='all';
+    const category=(id)=>BETTE_TREE.find(x=>x.id===id)||BETTE_TREE[0];
+    const openFamilies=()=>{
+      step='families';
+      const content='<div class="brand-path"><b>Produits Bette</b></div><div class="brand-category-grid">'+BETTE_TREE.map(x=>'<button type="button" data-bette-family="'+esc(x.id)+'"><b>'+esc(x.name)+'</b><small>Rubrique du site officiel</small></button>').join('')+'</div>'+
+       (selected?'<button type="button" class="brand-restore-sku" data-bette-restore>Reprendre la configuration enregistrée · '+esc(selected.reference)+'</button>':'')+
+       '<a class="brand-site-link" href="https://www.my-bette.com/fr/produits/" target="_blank" rel="noopener noreferrer">Catalogue officiel Bette</a>';
+      overlay=overlay||mount(shell('Bette',content));overlay.innerHTML=shell('Bette',content);
+      overlay.querySelector('.brand-config-close').onclick=close;overlay.querySelector('.brand-config-cancel').onclick=close;overlay.querySelector('.brand-config-confirm').style.display='none';
+      overlay.querySelectorAll('[data-bette-family]').forEach(x=>x.onclick=()=>{kind=x.dataset.betteFamily;groupSection='all';openSections()});
+      overlay.querySelector('[data-bette-restore]')?.addEventListener('click',()=>{step='config';render()});
+    };
+    const openFacet=(section,slug,label)=>{
+      step='facet';const cat=category(kind);
+      const all=kind==='design'?groups:groups.filter(g=>betteType(g)===kind),matching=all.filter(g=>betteFacetMatches(g,slug)),verified=matching.length>0;
+      const shown=verified?matching:all;
+      const subtitle=verified?'Le nom fabricant permet de retrouver '+matching.length+' famille(s) de cette sous-catégorie. Les autres familles restent dans le catalogue général.':
+       'Le tarif ne contient pas de balise certifiant ce sous-filtre. Voici les familles de la catégorie principale, sans prétendre à un filtrage exact.';
+      const content='<div class="brand-path"><button type="button" data-bette-back="sections">'+esc(cat.name)+'</button><span>›</span><b>'+esc(label)+'</b></div>'+
+        '<p class="brand-note">'+esc(subtitle)+'</p><div class="brand-category-grid">'+shown.map(g=>
+        '<button type="button" data-bette-group="'+esc(g.id)+'"><b>'+esc(g.family||g.id)+'</b><small>'+g.variants.length+' variantes tarifées</small></button>').join('')+'</div>'+
+        '<a class="brand-site-link" href="'+esc(cat.url+'/'+slug)+'" target="_blank" rel="noopener noreferrer">Voir cette sous-catégorie sur le site officiel</a>';
+      overlay=overlay||mount(shell('Bette',content));overlay.innerHTML=shell('Bette',content);
+      overlay.querySelector('.brand-config-close').onclick=close;overlay.querySelector('.brand-config-cancel').onclick=close;
+      overlay.querySelector('.brand-config-confirm').style.display='none';
+      overlay.querySelector('[data-bette-back]').onclick=openSections;
+      overlay.querySelectorAll('[data-bette-group]').forEach(x=>x.onclick=()=>{
+        if(draft.group!==x.dataset.betteGroup){draft.group=x.dataset.betteGroup;draft.model=draft.dim=draft.color=draft.option=draft.reference='';}
+        step='config';render()
+      });
+    };
+    const openSections=()=>{
+      step='sections';const cat=category(kind);
+      const designSlugs=BETTE_TREE.find(x=>x.id==='design')?.sections?.[0]?.items.map(x=>x[1])||[];
+      const dataGroups=kind==='design'?groups.filter(g=>designSlugs.some(slug=>betteFacetMatches(g,slug))):groups.filter(g=>betteType(g)===kind);
+      const sections=cat.sections.map(x=>'<section class="brand-official-facets"><h3>'+esc(x.name)+'</h3><div class="brand-official-links">'+x.items.map(([name,slug])=>
+         '<button type="button" data-bette-facet="'+esc(slug)+'" data-bette-facet-group="'+esc(x.name)+'">'+esc(name)+'</button>').join('')+'</div></section>').join('');
+      const content='<div class="brand-path"><button data-bette-back="families">Produits</button><span>›</span><b>'+esc(cat.name)+'</b></div>'+
+        '<p class="brand-note">Les filtres de type et de forme ci-dessous ouvrent les pages officielles. Le tarif importé ne contient pas toujours ces classifications : aucune correspondance n’est devinée.</p>'+sections+
+        '<div class="brand-official-facets"><h3>Familles tarifées disponibles</h3><p class="brand-note">'+dataGroups.length+' familles classées à partir de la catégorie fournisseur.</p><div class="brand-category-grid">'+dataGroups.map(g=>
+         '<button type="button" data-bette-group="'+esc(g.id)+'"><b>'+esc(g.family||g.id)+'</b><small>'+g.variants.length+' variantes tarifées</small></button>').join('')+
+         '<button type="button" data-bette-unclassified><b>Autres références du tarif</b><small>Familles sans classement constructeur certifié</small></button></div></div>'+
+         '<a class="brand-site-link" href="'+esc(cat.url)+'" target="_blank" rel="noopener noreferrer">Voir '+esc(cat.name)+' chez Bette</a>';
+      overlay=overlay||mount(shell('Bette',content));overlay.innerHTML=shell('Bette',content);
+      overlay.querySelector('.brand-config-close').onclick=close;overlay.querySelector('.brand-config-cancel').onclick=close;overlay.querySelector('.brand-config-confirm').style.display='none';
+      overlay.querySelector('[data-bette-back]').onclick=openFamilies;
+      overlay.querySelectorAll('[data-bette-facet]').forEach(button=>button.onclick=()=>openFacet(button.dataset.betteFacetGroup,button.dataset.betteFacet,button.textContent));
+      overlay.querySelectorAll('[data-bette-group]').forEach(x=>x.onclick=()=>{if(draft.group!==x.dataset.betteGroup){draft.group=x.dataset.betteGroup;draft.model=draft.dim=draft.color=draft.option=draft.reference='';}step='config';render()});
+      overlay.querySelector('[data-bette-unclassified]').onclick=()=>{step='unclassified';openUnclassified()};
+    };
+    const openUnclassified=()=>{
+      const unknown=groups.filter(g=>betteType(g)==='unclassified');
+      const content='<div class="brand-path"><button data-bette-back="sections">Produits</button><span>›</span><b>Autres références du tarif</b></div>'+
+       '<p class="brand-note">Familles sans catégorie attestée par le tarif. Elles restent accessibles sans attribution fictive à une rubrique du site.</p>'+
+       '<div class="brand-category-grid">'+unknown.map(g=>'<button type="button" data-bette-group="'+esc(g.id)+'"><b>'+esc(g.family||g.id)+'</b><small>'+g.variants.length+' variantes</small></button>').join('')+'</div>';
+      overlay=overlay||mount(shell('Bette',content));overlay.innerHTML=shell('Bette',content);
+      overlay.querySelector('.brand-config-close').onclick=close;overlay.querySelector('.brand-config-cancel').onclick=close;overlay.querySelector('.brand-config-confirm').style.display='none';
+      overlay.querySelector('[data-bette-back]').onclick=openSections;
+      overlay.querySelectorAll('[data-bette-group]').forEach(x=>x.onclick=()=>{if(draft.group!==x.dataset.betteGroup){draft.group=x.dataset.betteGroup;draft.model=draft.dim=draft.color=draft.option=draft.reference='';}step='config';render()});
+    };
     const render=()=>{
       const g=groups.find(x=>x.id===draft.group)||groups[0],all=g.variants||[];
       const models=uniq(all.map(v=>v.model));draft.model=chosen(draft.model,models);let rows=all.filter(v=>v.model===draft.model);
@@ -178,10 +302,11 @@
       const colors=uniq(rows.map(v=>v.color||'Standard'));draft.color=chosen(draft.color,colors);rows=rows.filter(v=>(v.color||'Standard')===draft.color);
       const opts=uniq(rows.map(v=>v.option||'Standard'));draft.option=chosen(draft.option,opts);rows=rows.filter(v=>(v.option||'Standard')===draft.option);
       const refs=rows.map(v=>v.reference);draft.reference=chosen(draft.reference,refs);const exact=rows.find(v=>v.reference===draft.reference)||rows[0];
-      const body=`<div class="recor-config-section"><div class="recor-config-title"><b>1. Produit</b><span>Famille Bette</span></div><div class="v1146-field-grid">${field('bcGroup','Produit',groups.map(x=>x.id),g.id,id=>groups.find(x=>x.id===id)?.family||id)}${field('bcModel','Version',models,draft.model)}${field('bcDim','Dimensions',dims,draft.dim)}${field('bcColor','Couleur',colors,draft.color)}${field('bcOption','Option / équipement',opts,draft.option)}${field('bcRef','Référence finale',refs,draft.reference)}</div></div>
+      const body=`<div class="brand-path"><button class="bette-back-to-families" type="button">← Familles</button><span>›</span><b>${esc(g.family)}</b></div><div class="recor-config-section"><div class="recor-config-title"><b>1. Produit</b><span>Famille Bette</span></div><div class="v1146-field-grid">${field('bcGroup','Produit',groups.map(x=>x.id),g.id,id=>groups.find(x=>x.id===id)?.family||id)}${field('bcModel','Version',models,draft.model)}${field('bcDim','Dimensions',dims,draft.dim)}${field('bcColor','Couleur',colors,draft.color)}${field('bcOption','Option / équipement',opts,draft.option)}${field('bcRef','Référence finale',refs,draft.reference)}</div></div>
       <div class="recor-config-summary">${mediaPreview('Bette',p,g,exact)}<div><b>${money(exact?.price)} HT</b><span>${esc(exact?.designation||g.family)}</span><small>Réf. ${esc(exact?.reference||'—')} · tarif Bette</small></div></div>`;
       overlay=overlay||mount(shell('Bette',body));if(overlay.innerHTML!==shell('Bette',body))overlay.innerHTML=shell('Bette',body);
       overlay.querySelector('.brand-config-close').onclick=close;overlay.querySelector('.brand-config-cancel').onclick=close;
+      overlay.querySelector('.bette-back-to-families').onclick=openFamilies;
       const map={bcGroup:'group',bcModel:'model',bcDim:'dim',bcColor:'color',bcOption:'option',bcRef:'reference'};
       Object.entries(map).forEach(([id,key])=>{const el=overlay.querySelector('#'+id);if(el)el.onchange=()=>{draft[key]=el.value;if(key==='group'){draft.model=draft.dim=draft.color=draft.option=draft.reference=''}else if(key==='model'){draft.dim=draft.color=draft.option=draft.reference=''}else if(key==='dim'){draft.color=draft.option=draft.reference=''}else if(key==='color'){draft.option=draft.reference=''}else if(key==='option'){draft.reference=''}render()}});
       overlay.querySelector('.brand-config-confirm').onclick=()=>{try{
@@ -192,7 +317,7 @@
         commitConfigured(configured,roomId,'betteConfiguration',{group:g.id,family:g.family,model:selected.model,lengthMm:selected.lengthMm,widthMm:selected.widthMm,heightMm:selected.heightMm,color:selected.color,option:selected.option,reference:selected.reference});
       }catch(e){overlay.querySelector('.recor-config-error').textContent=e.message||String(e)}};
     };
-    render();
+    openFamilies();
   }
 
   async function openCarrodrain(p,roomId){
@@ -200,15 +325,36 @@
     const original=initialExactVariant(groups,p),selected=original.variant;
     const draft={group:original.group?.id||p?.configGroup||'',version:selected?.version||'',length:selected?.length||'',finish:selected?.finish||'',reference:selected?.reference||''};
     if(!groups.some(g=>g.id===draft.group))draft.group=groups.find(g=>g.model===p?.collection)?.id||groups[0].id;
-    let overlay,mode='gallery';
+    let overlay,mode='families',family='Essentials';
+    const familyView=()=>{
+      mode='families';const cards=CARRODRAIN_TREE.map(x=>{
+        const names=CARRODRAIN_MODELS.filter(m=>m.family===x.id);
+        return '<button type="button" class="carrodrain-family-card" data-carrodrain-family="'+esc(x.id)+'">'+
+          (names[0]?.image?'<img src="'+esc(names[0].image)+'" alt="" loading="lazy">':'')+
+          '<b>'+esc(x.name)+'</b><small>'+esc(x.description)+' · '+names.length+' modèles</small></button>';
+      }).join('');
+      const body='<div class="brand-path"><strong>Carrodrain</strong><span>›</span><strong>Gammes de produits</strong></div>'+
+        '<div class="carrodrain-family-grid">'+cards+'</div>'+
+        '<p class="brand-note">Essentials, Invisibles et Liquids sont les trois familles du site Carrodrain. Les accessoires sont regroupés séparément pour faciliter la consultation.</p>'+
+        (selected?'<button class="brand-restore-sku" type="button" data-carrodrain-restore>Reprendre la configuration enregistrée · '+esc(selected.reference)+'</button>':'')+
+        '<a class="brand-site-link" href="https://carrodrain.com/fr" target="_blank" rel="noopener noreferrer">Site officiel Carrodrain</a>';
+      overlay=overlay||mount(shell('Carrodrain',body));overlay.innerHTML=shell('Carrodrain',body);
+      overlay.querySelector('.recor-configurator').classList.add('carrodrain-gallery-modal');
+      overlay.querySelector('.brand-config-close').onclick=close;overlay.querySelector('.brand-config-cancel').onclick=close;
+      overlay.querySelector('.brand-config-confirm').style.display='none';
+      overlay.querySelectorAll('[data-carrodrain-family]').forEach(el=>el.onclick=()=>{family=el.dataset.carrodrainFamily;mode='gallery';gallery()});
+      overlay.querySelector('[data-carrodrain-restore]')?.addEventListener('click',()=>{family=carrodrainVisual(groups.find(g=>g.id===draft.group))?.family||'Essentials';mode='configure';render()});
+    };
     const gallery=()=>{
-      const body=carrodrainGallery(groups,draft.group);
+      const body='<div class="brand-path"><button type="button" data-carrodrain-back="families">Gammes</button><span>›</span><b>'+esc(family)+'</b></div>'+
+       carrodrainGallery(groups,draft.group,family);
       overlay=overlay||mount(shell('Carrodrain',body));
       overlay.innerHTML=shell('Carrodrain',body);
       overlay.querySelector('.recor-configurator').classList.add('carrodrain-gallery-modal');
       overlay.querySelector('.brand-config-close').onclick=close;
       overlay.querySelector('.brand-config-cancel').onclick=close;
       overlay.querySelector('.brand-config-confirm').style.display='none';
+      overlay.querySelector('[data-carrodrain-back]').onclick=familyView;
       overlay.querySelectorAll('[data-carrodrain-group]').forEach(el=>el.onclick=()=>{
         const changed=draft.group!==el.dataset.carrodrainGroup;
         draft.group=el.dataset.carrodrainGroup;
@@ -223,7 +369,7 @@
       const lengths=uniq(rows.map(v=>v.length));draft.length=chosen(draft.length,lengths);rows=rows.filter(v=>v.length===draft.length);
       const finishes=uniq(rows.map(v=>v.finish||'À carreler'));draft.finish=chosen(draft.finish,finishes);rows=rows.filter(v=>(v.finish||'À carreler')===draft.finish);
       const refs=rows.map(v=>v.reference);draft.reference=chosen(draft.reference,refs);const exact=rows.find(v=>v.reference===draft.reference)||rows[0];
-      const body=`<button type="button" class="carrodrain-back-to-gallery">← Toutes les collections</button><div class="recor-config-section"><div class="recor-config-title"><b>1. Collection</b><span>Caniveau Carrodrain</span></div><div class="v1146-field-grid">${field('ccGroup','Collection',groups.map(x=>x.id),g.id,id=>groups.find(x=>x.id===id)?.model||id)}${field('ccVersion','Version',versions,draft.version)}${field('ccLength','Longueur / format',lengths,draft.length,v=>/^\d+$/.test(v)?`${Number(v)/10} cm`:v)}${field('ccFinish','Finition',finishes,draft.finish)}${field('ccRef','Référence finale',refs,draft.reference)}</div></div>
+      const body=`<div class="brand-path"><button type="button" class="carrodrain-back-to-gallery">← ${esc(family)}</button><span>›</span><b>${esc(g.model||g.id)}</b></div><div class="recor-config-section"><div class="recor-config-title"><b>1. Collection</b><span>Caniveau Carrodrain</span></div><div class="v1146-field-grid">${field('ccGroup','Collection',groups.map(x=>x.id),g.id,id=>groups.find(x=>x.id===id)?.model||id)}${field('ccVersion','Version',versions,draft.version)}${field('ccLength','Longueur / format',lengths,draft.length,v=>/^\d+$/.test(v)?`${Number(v)/10} cm`:v)}${field('ccFinish','Finition',finishes,draft.finish)}${field('ccRef','Référence finale',refs,draft.reference)}</div></div>
       <div class="recor-config-summary">${mediaPreview('Carrodrain',p,g,exact)}<div><b>${money(exact?.price)} HT</b><span>${esc([g.model,draft.version,draft.length,draft.finish].filter(Boolean).join(' · '))}</span><small>Réf. ${esc(exact?.reference||'—')} · tarif Carrodrain 2027</small></div></div>`;
       overlay=overlay||mount(shell('Carrodrain',body));if(overlay.innerHTML!==shell('Carrodrain',body))overlay.innerHTML=shell('Carrodrain',body);
       overlay.querySelector('.brand-config-close').onclick=close;overlay.querySelector('.brand-config-cancel').onclick=close;
@@ -231,6 +377,12 @@
       overlay.querySelector('.carrodrain-back-to-gallery').onclick=()=>{mode='gallery';gallery()};
       const map={ccGroup:'group',ccVersion:'version',ccLength:'length',ccFinish:'finish',ccRef:'reference'};
       Object.entries(map).forEach(([id,key])=>{const el=overlay.querySelector('#'+id);if(el)el.onchange=()=>{draft[key]=el.value;if(key==='group'){draft.version=draft.length=draft.finish=draft.reference=''}else if(key==='version'){draft.length=draft.finish=draft.reference=''}else if(key==='length'){draft.finish=draft.reference=''}else if(key==='finish'){draft.reference=''}render()}});
+      const versionTiles=choiceTiles('ccVersion',versions,draft.version);
+      const finishTiles=choiceTiles('ccFinish',finishes,draft.finish);
+      const fields=overlay.querySelector('.v1146-field-grid');
+      if(versionTiles)overlay.querySelector('#ccVersion')?.closest('label')?.insertAdjacentHTML('afterend',versionTiles);
+      if(finishTiles)overlay.querySelector('#ccFinish')?.closest('label')?.insertAdjacentHTML('afterend',finishTiles);
+      wireChoices(overlay);
       overlay.querySelector('.brand-config-confirm').onclick=()=>{try{
         const selected=rows.find(v=>v.reference===draft.reference)||exact;if(!selected)throw new Error('Référence Carrodrain introuvable.');
         const price=verifiedPublicPrice('Carrodrain',selected);
@@ -239,7 +391,7 @@
         commitConfigured(configured,roomId,'carrodrainConfiguration',{group:g.id,model:g.model,version:selected.version,length:selected.length,finish:selected.finish,reference:selected.reference});
       }catch(e){overlay.querySelector('.recor-config-error').textContent=e.message||String(e)}};
     };
-    gallery();
+    familyView();
   }
 
   function initialHidroboxDraft(groups,product){
@@ -294,7 +446,7 @@
     return sets.flat();
   }
   function eligibleBrand(brand,p){return !!p&&String(p.manufacturer||'').toLowerCase()===brand.toLowerCase()&&String(p.configuratorType||'').toLowerCase()===brand.toLowerCase();}
-  root.HydroBrandCatalogs={load:loadCatalogs,verifiedPublicPrice,initialExactVariant,initialHidroboxDraft};
+  root.HydroBrandCatalogs={load:loadCatalogs,verifiedPublicPrice,initialExactVariant,initialHidroboxDraft,betteTree:BETTE_TREE,betteType,betteFacetMatches,carrodrainTree:CARRODRAIN_TREE};
   root.HydroBetteConfigurator={eligible:p=>eligibleBrand('Bette',p),open:openBette,close};
   root.HydroCarrodrainConfigurator={eligible:p=>eligibleBrand('Carrodrain',p),open:openCarrodrain,close,models:CARRODRAIN_MODELS};
   root.HydroHidroboxConfigurator={eligible:p=>eligibleBrand('Hidrobox',p),open:openHidrobox,close,groups:async()=>((await loadJson(BRAND_META.Hidrobox)).groups||[])};
