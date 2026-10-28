@@ -36,8 +36,9 @@ test('Gessi technical route deduplicates inflight requests and bounds memory',as
 });
 test('Gessi server registers one read-only route without supplier write calls',async()=>{
  let route='';
- const handler=require('../gessi-technical-server')({get:async()=>make()}, {get:async()=>make()});
- assert.ok(handler);
+ const app={get(name,callback){route=name;assert.equal(typeof callback,'function');}};
+ const service=require('../gessi-technical-server')(app,{get:async()=>make()});
+ assert.ok(service);assert.equal(route,'/api/gessi/technical/:code');
  // Check wiring in main Express server and no technical PDF is fabricated.
  const fs=require('node:fs');
  const server=fs.readFileSync(require('node:path').join(__dirname,'../server.js'),'utf8');
