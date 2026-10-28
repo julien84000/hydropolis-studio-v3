@@ -182,3 +182,9 @@ Branche de travail : `feat/v11.63.1-brands-pricing-integrity`. PR : https://gith
 - `tests/v11.63.3-lefroy-finish-media.test.js` contrôle chaque référence et nom de fichier ; ajouté à `npm test`.
 - Coordination : PR #36 Hidrobox CAD/BIM fusionnée dans main `988de9313255ab4fe448edfaf57722139612706c`, documentée à `7b1509ce7c6ebc7b0e62f943924b9757a5d90e80`. Préserver les ressources CAO de famille et leur suite de tests, en y ajoutant les correctifs PR #37.
 - Fusion PR #37 et déploiement de ces photos/restaurations à vérifier ; ne jamais considérer les fichiers ZIP génériques comme CAO exacte de toute dimension.
+
+### Numérotation de la livraison PR #37 : V11.63.4
+
+La PR #36 (Hidrobox CAO/BIM) a déjà été livrée sous **V11.63.3** et est en production. Pour éviter deux déploiements indiscernables par `/api/version`, les correctifs de la PR #37 (réouverture Hidrobox, images indépendantes, et 24 photos Lefroy Brooks exactes) sont désormais versionnés **V11.63.4** dans `package.json` et `package-lock.json`. Les fichiers de tests gardent leur nom initial `v11.63.3-...` afin de préserver la traçabilité des commits.
+
+**État** : CI du dernier commit V11.63.4, fusion et déploiement **à revérifier**. Le checkpoint V11.63.3 ci-dessus décrit l'ordre de développement ; il ne signifie pas que ces fonctionnalités étaient incluses dans le déploiement précédent.
