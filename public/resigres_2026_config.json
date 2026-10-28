@@ -8561,7 +8561,7 @@
         "color",
         "options"
       ],
-      "dependencyMode": "partial-fixed-variants-2026",
+      "dependencyMode": "partial-dynamic-area-and-fixed-shelf",
       "dependencyMatrix": {
         "type": "dependent-combinations",
         "steps": [
@@ -8874,10 +8874,201 @@
                 ]
               }
             ]
+          },
+          {
+            "id": "panel-area",
+            "label": "Panneau sur mesure · épaisseur 2,5 cm · longueur ≤240 cm",
+            "dynamicArea": true,
+            "dimensionLabels": [
+              "Largeur du panneau",
+              "Longueur du panneau"
+            ],
+            "widthRange": [
+              1,
+              120
+            ],
+            "lengthRange": [
+              1,
+              240
+            ],
+            "minSqm": 0.3,
+            "sourcePage": "71",
+            "materials": [
+              {
+                "id": "resin",
+                "label": "Pizarra / Lisa",
+                "finish": "Lisa/Pizarra",
+                "colors": [
+                  {
+                    "id": "Gris 7015",
+                    "label": "Gris 7015",
+                    "pricePerSqm": 290
+                  },
+                  {
+                    "id": "Ártico",
+                    "label": "Ártico",
+                    "pricePerSqm": 290
+                  },
+                  {
+                    "id": "Lino",
+                    "label": "Lino",
+                    "pricePerSqm": 290
+                  },
+                  {
+                    "id": "Antracita",
+                    "label": "Antracita",
+                    "pricePerSqm": 290
+                  },
+                  {
+                    "id": "Moka",
+                    "label": "Moka",
+                    "pricePerSqm": 290
+                  },
+                  {
+                    "id": "Piedra",
+                    "label": "Piedra",
+                    "pricePerSqm": 290
+                  },
+                  {
+                    "id": "Arena",
+                    "label": "Arena",
+                    "pricePerSqm": 290
+                  },
+                  {
+                    "id": "Negro",
+                    "label": "Negro",
+                    "pricePerSqm": 290
+                  },
+                  {
+                    "id": "Basalto",
+                    "label": "Basalto",
+                    "pricePerSqm": 290
+                  },
+                  {
+                    "id": "RAL/NCS",
+                    "label": "RAL/NCS",
+                    "customCode": true,
+                    "pricePerSqm": 325
+                  }
+                ]
+              },
+              {
+                "id": "solid",
+                "label": "Solid Surface",
+                "finish": "Solid Surface",
+                "colors": [
+                  {
+                    "id": "S-Blanco",
+                    "label": "S-Blanco",
+                    "pricePerSqm": 395
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "plinth-area",
+            "label": "Socle sur mesure · épaisseur 0,4 cm · longueur ≤240 cm",
+            "dynamicArea": true,
+            "dimensionLabels": [
+              "Hauteur du socle",
+              "Longueur du socle"
+            ],
+            "widthRange": [
+              1,
+              20
+            ],
+            "lengthRange": [
+              1,
+              240
+            ],
+            "minSqm": 0.3,
+            "sourcePage": "71",
+            "materials": [
+              {
+                "id": "resin",
+                "label": "Pizarra / Lisa",
+                "finish": "Lisa/Pizarra",
+                "colors": [
+                  {
+                    "id": "Gris 7015",
+                    "label": "Gris 7015",
+                    "pricePerSqm": 290
+                  },
+                  {
+                    "id": "Ártico",
+                    "label": "Ártico",
+                    "pricePerSqm": 290
+                  },
+                  {
+                    "id": "Lino",
+                    "label": "Lino",
+                    "pricePerSqm": 290
+                  },
+                  {
+                    "id": "Antracita",
+                    "label": "Antracita",
+                    "pricePerSqm": 290
+                  },
+                  {
+                    "id": "Moka",
+                    "label": "Moka",
+                    "pricePerSqm": 290
+                  },
+                  {
+                    "id": "Piedra",
+                    "label": "Piedra",
+                    "pricePerSqm": 290
+                  },
+                  {
+                    "id": "Arena",
+                    "label": "Arena",
+                    "pricePerSqm": 290
+                  },
+                  {
+                    "id": "Negro",
+                    "label": "Negro",
+                    "pricePerSqm": 290
+                  },
+                  {
+                    "id": "Basalto",
+                    "label": "Basalto",
+                    "pricePerSqm": 290
+                  },
+                  {
+                    "id": "RAL/NCS",
+                    "label": "RAL/NCS",
+                    "customCode": true,
+                    "pricePerSqm": 325
+                  }
+                ]
+              },
+              {
+                "id": "solid",
+                "label": "Solid Surface",
+                "finish": "Solid Surface",
+                "colors": [
+                  {
+                    "id": "S-Blanco",
+                    "label": "S-Blanco",
+                    "pricePerSqm": 395
+                  }
+                ]
+              }
+            ]
           }
         ],
-        "pricingScope": "Exact variants explicitly listed in the manufacturer 2026 price sheet; no interpolation or extrapolation; other versions remain to import."
-      }
+        "pricingScope": "Étagères avec 4 longueurs fixes et panneaux/socles au m² (surface réelle avec minimum de 0,3 m²), finition et dimensions selon page 71; autres prestations non extrapolées."
+      },
+      "supplements": [
+        {
+          "id": "finished-edge",
+          "label": "Bords finis",
+          "type": "fixed",
+          "amount": 60,
+          "sourcePage": "71"
+        }
+      ]
     }
   ],
   "spareParts": {
