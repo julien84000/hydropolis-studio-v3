@@ -306,7 +306,7 @@
     return sets.flat();
   }
   function eligibleBrand(brand,p){return !!p&&String(p.manufacturer||'').toLowerCase()===brand.toLowerCase()&&String(p.configuratorType||'').toLowerCase()===brand.toLowerCase();}
-  root.HydroBrandCatalogs={load:loadCatalogs,verifiedPublicPrice,initialExactVariant,initialHidroboxDraft,verifiedModelPhoto};
+  root.HydroBrandCatalogs={load:loadCatalogs,verifiedPublicPrice,initialExactVariant,initialHidroboxDraft,verifiedModelPhoto,mediaFor};
   root.HydroBetteConfigurator={eligible:p=>eligibleBrand('Bette',p),open:openBette,close};
   root.HydroCarrodrainConfigurator={eligible:p=>eligibleBrand('Carrodrain',p),open:openCarrodrain,close,models:CARRODRAIN_MODELS};
   root.HydroHidroboxConfigurator={eligible:p=>eligibleBrand('Hidrobox',p),open:openHidrobox,close,groups:async()=>((await loadJson(BRAND_META.Hidrobox)).groups||[])};
