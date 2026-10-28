@@ -13,6 +13,7 @@ function modelBase(p){
  return ref;
 }
 const usefulUrl=x=>/^(https:\/\/|\/(?!\/)|images\/)/i.test(String(x||''));
+const packedAssets=JSON.parse(fs.readFileSync(path.join(__dirname,'../assets_index.json'),'utf8'));
 const manifest=read('catalog_manifest.json');
 const guide=read('brand-guide-collections.json'),hot=read('brand-guide-hotbath-media.json'),sb=read('sbordoni/sbordoni-image-index.json'),gessi=read('gessi-area-pro-data.json');
 const entries=new Map(),missed=new Map();
@@ -25,7 +26,7 @@ function observe(brand,p){
  if(own&&own.startsWith('https://'))row.remoteDeclared++;
  let backed=false;
  if(local){
-  backed=fs.existsSync(path.join(PUBLIC,own.slice(1)));
+  backed=fs.existsSync(path.join(PUBLIC,own.slice(1)))||Boolean(packedAssets[own]);
   if(backed)row.localResolved++;else row.brokenLocal++;
  }else if(own.startsWith('/api/sbordoni-image')){
   const ref=new URL(own,'https://hydropolis.test').searchParams.get('ref');
@@ -83,6 +84,7 @@ test('manufacturer image audit keeps index and storage integrity',()=>{
  assert(report.configured.Hidrobox.variants>0);
  assert(report.configured.Carrodrain.variants>0);
  assert(!entries.get('Sbordoni').brokenLocal,'Sbordoni rows point to absent crop URLs/files');
+ assert.equal(entries.get('Recor').brokenLocal,0,'packed Recor photo assets must count as local');
 });
 test('Bette official pictures are exact-model scoped, never borrowed for another family',()=>{
  const vm=require('node:vm'),win={};
