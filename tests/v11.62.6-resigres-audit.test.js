@@ -17,7 +17,7 @@ function engine(name){
 }
 const V49=engine('v1149-pricing'),V50=engine('v1150-pricing');
 const categoryCounts={'Receveur':7,'Plan de vasque':6,'Plan de vasque pour meuble':6,'Vasque':6,'Baignoire':4,'Meuble':4,'Miroir':3,'Complément':2};
-const knownAuto=new Set(['Extraplano Contract|shower-tray','Vento / Vento Contract|shower-tray','Cosmo / Cosmo Contract|shower-tray','Urban|shower-tray','Nix / Nix Contract|shower-tray','Vento CF|basin-top','Cosmo CF|basin-top','Gea CF|basin-top','Urban CF|basin-top','Contract CF|basin-top','Atenea|basin-top','Selene|furniture-basin-top','Vento SF|furniture-basin-top','Cosmo SF|furniture-basin-top','Gea SF|furniture-basin-top','Urban SF|furniture-basin-top','Contract SF|furniture-basin-top','Tiroirs sur mesure|furniture','Nalu|bath','Delia|bath','RD / SQ|mirror','FS / FL|mirror']);
+const knownAuto=new Set(['Extraplano Contract|shower-tray','Vento / Vento Contract|shower-tray','Cosmo / Cosmo Contract|shower-tray','Urban|shower-tray','Nix / Nix Contract|shower-tray','Vento CF|basin-top','Cosmo CF|basin-top','Gea CF|basin-top','Urban CF|basin-top','Contract CF|basin-top','Atenea|basin-top','Selene|furniture-basin-top','Vento SF|furniture-basin-top','Cosmo SF|furniture-basin-top','Gea SF|furniture-basin-top','Urban SF|furniture-basin-top','Contract SF|furniture-basin-top','Tiroirs sur mesure|furniture','Nalu|bath','Delia|bath','RD / SQ|mirror','FS / FL|mirror','Nesta|bath','Vento|bath','Ares|basin','Crono|basin','Kos / Neo|basin','Gesto / Frame|basin','Urban|basin','Porte-serviettes|accessory','Panneaux / étagères|accessory']);
 const pendingMatrix=new Set(['Extraplano Latéral|shower-tray','Extraplano Central / 1/4 rond|shower-tray','Portes, vides et colonnes|furniture','Frame|furniture','Gesto|furniture']);
 const key=m=>m.name+'|'+m.kind;
 test('Resigres: 38 model configurations match every imported catalogue article and all 8 categories',()=>{
@@ -28,18 +28,18 @@ test('Resigres: 38 model configurations match every imported catalogue article a
  assert.deepEqual([...productNames].sort(),[...configNames].sort());
  const counts={};for(const m of cfg.models)counts[m.category]=(counts[m.category]||0)+1;
  assert.deepEqual(counts,categoryCounts);
- assert.equal(cfg.version,'2026-FR-v8');
+ assert.equal(cfg.version,'2026-FR-v9');
  assert.ok(cfg.models.every(m=>/^\d{1,2}(?:-\d{1,2})?$/.test(String(m.sourcePage||''))));
 });
 test('Resigres: classify all 38 models by pricing evidence, never assume missing matrices are priced',()=>{
  const uncoded=cfg.models.filter(m=>!knownAuto.has(key(m))&&!pendingMatrix.has(key(m)));
- assert.equal(knownAuto.size,22);
+ assert.equal(knownAuto.size,31);
  assert.equal(pendingMatrix.size,5);
- assert.equal(uncoded.length,11);
+ assert.equal(uncoded.length,2);
  for(const model of cfg.models){
    const name=key(model);
    if(knownAuto.has(name)){
-     assert.ok((model.pricingRules||[]).length||model.v50BasinTop?.pricingMode?.startsWith('automatic')||model.v50Furniture?.pricingMode==='automatic','Expected a pricing rule for '+name);
+     assert.ok((model.pricingRules||[]).length||model.v50BasinTop?.pricingMode?.startsWith('automatic')||model.v50Furniture?.pricingMode==='automatic'||model.dependencyMatrix?.type==='dependent-combinations','Expected a pricing rule for '+name);
    }
    if(pendingMatrix.has(name)&&model.v50BasinTop){
      assert.equal(model.v50BasinTop.pricingMode,'manual-safe',name);
@@ -218,4 +218,27 @@ test('V11.62.9: classify every source price slot on three imported models, recor
  }
  assert.equal(imported,117);
  assert.equal(unknown,5);
+});
+
+test('V11.62.9: cross-category supplier variant tariffs and commercial options, without invented cells',()=>{
+ const V48=engine('v1148-pricing');
+ const cases=[
+  ['Ares','basin','se','resin','Ártico',299],
+  ['Crono','basin','mini','resin','Ártico',199],
+  ['Kos / Neo','basin','kos','solid','S-Blanco',390],
+  ['Gesto / Frame','basin','gesto-recto','resin','Ártico',376],
+  ['Urban','basin','urban','solid','S-Blanco',518],
+  ['Porte-serviettes','accessory','frame-mini','lacquer','Ártico',48],
+  ['Panneaux / étagères','accessory','shelf-80','solid','S-Blanco',246],
+  ['Nesta','bath','80x160','solid-surface','S-Blanco',3556],
+  ['Vento','bath','80x170','solid-surface','S-Blanco',3794]
+ ];
+ for(const [model,kind,size,material,color,price]of cases){
+  const q=V48.dependentQuote(cfg,{model,kind,size,material,color,options:[]});
+  assert.equal(q.status,'automatic',model);assert.equal(q.total,price,model);
+ }
+ const waste=V48.dependentQuote(cfg,{model:'Crono',kind:'basin',size:'mini',material:'resin',color:'Ártico',options:['colored-waste']});
+ assert.equal(waste.total,265);
+ assert.equal(V48.dependentQuote(cfg,{model:'Ares',kind:'basin',size:'h90',material:'resin',color:'Ártico'}).status,'pending');
+ assert.equal(V48.dependentQuote(cfg,{model:'Panneaux / étagères',kind:'accessory',size:'shelf-80',material:'resin',color:'RAL/NCS'}).total,226);
 });
