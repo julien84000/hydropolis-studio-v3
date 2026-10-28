@@ -1,5 +1,5 @@
 {
-  "version": "2026-FR-v7",
+  "version": "2026-FR-v8",
   "source": "Tarif_FR_2026.pdf",
   "pricingPolicy": "V11.51: grilles standard/sur mesure = palier supérieur; receveurs Contract = surface réelle × tarif €/m² avec minimum de facturation; plans vasque Contract = tarif au cm + intégration vasque + options.",
   "global": {
@@ -1716,7 +1716,38 @@
               181,
               201
             ],
-            "prices": {}
+            "prices": {
+              "resin": [
+                564,
+                585,
+                648,
+                779,
+                938,
+                1077,
+                1257,
+                1299
+              ],
+              "solid": [
+                687,
+                727,
+                760,
+                921,
+                1098,
+                1228,
+                1363,
+                1442
+              ],
+              "gpc": [
+                2245,
+                2245,
+                2352,
+                2487,
+                null,
+                2860,
+                3176,
+                3466
+              ]
+            }
           },
           {
             "id": "one-xl",
@@ -1728,7 +1759,29 @@
               181,
               201
             ],
-            "prices": {}
+            "prices": {
+              "resin": [
+                866,
+                1135,
+                1295,
+                1534,
+                null
+              ],
+              "solid": [
+                1074,
+                1262,
+                1366,
+                1574,
+                1615
+              ],
+              "gpc": [
+                2487,
+                null,
+                2860,
+                3176,
+                3466
+              ]
+            }
           },
           {
             "id": "two",
@@ -1740,7 +1793,29 @@
               181,
               201
             ],
-            "prices": {}
+            "prices": {
+              "resin": [
+                973,
+                1074,
+                1207,
+                1408,
+                1457
+              ],
+              "solid": [
+                1079,
+                1138,
+                1274,
+                1465,
+                1539
+              ],
+              "gpc": [
+                3121,
+                3248,
+                3598,
+                3891,
+                4358
+              ]
+            }
           }
         ],
         "includedOptions": [
@@ -1827,11 +1902,12 @@
           }
         ],
         "ralSupplement": 95,
-        "pricingMode": "manual-safe",
+        "pricingMode": "automatic",
         "notes": [
           "Les dimensions intermédiaires utilisent le palier supérieur de la grille.",
           "Les choix incompatibles sont masqués automatiquement.",
-          "GPC uniquement sur les formes autorisées par le tarif."
+          "GPC uniquement sur les formes autorisées par le tarif.",
+          "Tarifs fournisseur Resigres FR 2026, page imprimée 14. Les cellules nulles sont volontairement non tarifées, faute d'extraction fiable du glyphe PDF."
         ]
       }
     },
@@ -2182,7 +2258,26 @@
               181,
               201
             ],
-            "prices": {}
+            "prices": {
+              "resin": [
+                719,
+                null,
+                998,
+                1100,
+                1217,
+                1506,
+                1576
+              ],
+              "gpc": [
+                2423,
+                2529,
+                2665,
+                2798,
+                2997,
+                3415,
+                3704
+              ]
+            }
           },
           {
             "id": "two",
@@ -2194,7 +2289,22 @@
               181,
               201
             ],
-            "prices": {}
+            "prices": {
+              "resin": [
+                1093,
+                1175,
+                1291,
+                1592,
+                1660
+              ],
+              "gpc": [
+                3477,
+                3604,
+                3953,
+                4347,
+                4714
+              ]
+            }
           },
           {
             "id": "one-xl85",
@@ -2206,7 +2316,22 @@
               181,
               201
             ],
-            "prices": {}
+            "prices": {
+              "resin": [
+                1015,
+                1073,
+                1237,
+                1539,
+                1610
+              ],
+              "gpc": [
+                2665,
+                2798,
+                3097,
+                3415,
+                3704
+              ]
+            }
           },
           {
             "id": "one-xl120",
@@ -2217,7 +2342,20 @@
               181,
               201
             ],
-            "prices": {}
+            "prices": {
+              "resin": [
+                1461,
+                1540,
+                1829,
+                1900
+              ],
+              "gpc": [
+                2798,
+                2997,
+                3415,
+                3704
+              ]
+            }
           }
         ],
         "includedOptions": [
@@ -2304,10 +2442,11 @@
           }
         ],
         "ralSupplement": 95,
-        "pricingMode": "manual-safe",
+        "pricingMode": "automatic",
         "notes": [
           "Les dimensions intermédiaires utilisent le palier supérieur de la grille.",
-          "Les choix incompatibles sont masqués automatiquement."
+          "Les choix incompatibles sont masqués automatiquement.",
+          "Tarifs fournisseur Resigres FR 2026, page imprimée 18. Les cellules nulles sont volontairement non tarifées, faute d'extraction fiable du glyphe PDF."
         ]
       }
     },
@@ -3976,7 +4115,17 @@
               181,
               201
             ],
-            "prices": {}
+            "prices": {
+              "resin": [
+                632,
+                null,
+                813,
+                871,
+                1025,
+                1242,
+                1310
+              ]
+            }
           },
           {
             "id": "two",
@@ -3988,7 +4137,15 @@
               181,
               201
             ],
-            "prices": {}
+            "prices": {
+              "resin": [
+                971,
+                1077,
+                1156,
+                1392,
+                1456
+              ]
+            }
           },
           {
             "id": "one-xl85",
@@ -4000,7 +4157,15 @@
               181,
               201
             ],
-            "prices": {}
+            "prices": {
+              "resin": [
+                849,
+                949,
+                1024,
+                1241,
+                1306
+              ]
+            }
           },
           {
             "id": "one-xl120",
@@ -4011,7 +4176,14 @@
               181,
               201
             ],
-            "prices": {}
+            "prices": {
+              "resin": [
+                1230,
+                1305,
+                1564,
+                1630
+              ]
+            }
           }
         ],
         "includedOptions": [
@@ -4098,10 +4270,11 @@
           }
         ],
         "ralSupplement": 95,
-        "pricingMode": "manual-safe",
+        "pricingMode": "automatic",
         "notes": [
           "Les dimensions intermédiaires utilisent le palier supérieur de la grille.",
-          "Les choix incompatibles sont masqués automatiquement."
+          "Les choix incompatibles sont masqués automatiquement.",
+          "Tarifs fournisseur Resigres FR 2026, page imprimée 30. Les cellules nulles sont volontairement non tarifées, faute d'extraction fiable du glyphe PDF."
         ]
       }
     },
