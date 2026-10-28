@@ -1,0 +1,30 @@
+name: Hotbath historical image availability
+
+on:
+  push:
+    branches:
+      - feat/v11.63.2-hotbath-official-gallery
+    paths:
+      - .github/workflows/hotbath-image-availability.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-hotbath:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check original historical image responses
+        shell: bash
+        run: |
+          set -euo pipefail
+          for url in           "https://hotbath.it/documents//ProdCateg/3522/AR003_1_2023.jpg"           "https://hotbath.it/documents/ProdCateg/3522/AR003_1_2023.jpg"           "https://www.hotbath.it/documents/ProdCateg/3522/AR003_1_2023.jpg"           "https://hotbath.com/images/compano/AR003/AR003IX_02.png?resolution=600x600&quality=85&isLogo=true"
+          do
+            file=$(mktemp)
+            status=$(curl -L -sS --retry 1 --max-time 25 -A 'Mozilla/5.0'                -H 'Referer: https://hotbath.it/fr/prods/1471/3521/Archie'                -o "$file" -w '%{http_code}' "$url" || true)
+            bytes=$(wc -c < "$file" | tr -d ' ')
+            kind=$(file -b --mime-type "$file")
+            echo "HOTBATH_IMAGE_CHECK status=$status bytes=$bytes mime=$kind url=$url"
+            rm -f "$file"
+          done

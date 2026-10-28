@@ -83,3 +83,47 @@ Branche de travail : `feat/v11.63.1-brands-pricing-integrity`. PR : https://gith
 - **Carrodrain** : galerie 14 familles, **12 réellement tarifées** dans la matrice importée ; Invisible Disco et Kerlox sont proposés comme liens fournisseur, non tarifés automatiquement.
 - **À poursuivre** : comparer ces données importées directement aux tarifs source sur toutes les références (cohérence interne ≠ exhaustivité), compléter les documents et visuels exacts Bette/Hidrobox/Carrodrain, puis Zucchetti et Lefroy Brooks. Préserver Resigres, Sbordoni et Hotbath.
 - Rapport durable : `docs/BRAND_PRICING_AUDIT_V11.63.1.md`. Aucun projet utilisateur ancien n'a été manipulé en production lors de ces tests.
+
+## V11.63.2 — Hotbath : photographies constructeur et grille par collection
+
+**Point de départ** : `main` V11.63.1, commit `b788977875fb8c6fa1aaad87dce9cb18c34b18e0` ; préserve les audits Bette/Hidrobox/Carrodrain, Resigres V11.62.11, Sbordoni V11.63.0 et Hotbath prix d'origine.
+
+- Audit initial des 53 catégories et de leurs 647 associations référence/catégorie : seules **264** avaient une photographie liée à une référence exacte dans l'ancienne taxonomie (les nombres sont comptés par catégorie, y compris références répétées entre catégories).
+- Sources officielles consultées : grilles produits de `hotbath.com/en-gb/collections/` pour Gent, Archie, Chap, Cobber, Cobber X, Gal, Ace, Mate, Fellow, Tron ; la plupart des visuels déjà indexés proviennent de ces pages actuelles. Une nouvelle correspondance Archie AR096-20 a été ajoutée.
+- **367 photos supplémentaires** trouvées dans les **53 grilles historiques officielles `hotbath.it/fr/prods/`**, uniquement lorsque le nom du fichier image photographique comporte **exactement** la référence modèle attendue pour la même collection et catégorie (après normalisation des points, tirets et accents). Aucune image approchante ou d'une autre collection n'est attribuée automatiquement.
+- **Couverture : 631/647 associations (97,5 %)** d'après les métadonnées ; 16 restent sans photographie certifiée. Ne pas inventer d'image pour AR131/AR129 et les autres références manquantes ; ne pas remplacer le prix ou la finition par ceux d'un modèle voisin.
+- Les URLs et leurs pages d'origine sont enregistrées sous `officialHistoricalSources` et `official2026Sources` dans `public/brand-guide-hotbath-media.json`. La grille affiche des photos de produit sur carré clair avec la référence sous l'image (style Hotbath) et un compteur photos/références. CSS strictement limité à `.mg-hotbath-official`.
+- Les finitions continuent d'être sélectionnées uniquement sur les références tarifaires existantes, avec le prix du catalogue et les corps techniques éventuels. Les visuels de modèle ne sont **pas** présentés comme exacts pour toutes les finitions.
+- Tests unitaires : audit de la couverture 631/647 et contrôle des 367 associations nom de fichier = modèle. Test Chromium : naviguer jusqu'à Archie AR003, vérifier que le JPEG fournisseur est réellement chargé et que la référence figure sous l'image. Les autres fabricants ne sont pas modifiés.
+
+**Livraison** : PR à vérifier et CI complète à faire passer avant toute fusion ou contrôle de production. Aucun prix ni référence article n'a été inventé.
+
+
+## Checkpoint Hotbath — normalisation des références du tarif (28/10/2026)
+
+- Demande : utiliser **hotbath.it** comme source prioritaire des catégories et pages articles ; ne pas confondre le domaine source avec la disponibilité HTTP des vieilles URL photographiques. La fiche catégorie Archie présente bien AR003, mais son JPEG historique `/documents//ProdCateg/3522/AR003_1_2023.jpg` a renvoyé HTTP 404 lors du contrôle. Ne pas certifier une photo non disponible.
+- Normalisation réellement enregistrée sur la branche de la PR #35 : `public/catalog_hotbath.json` compte toujours **2 554 références**. Suppression stricte du suffixe final `.IT` sur **2 546 références commerciales** et **188 références de corps techniques**, uniquement chez Hotbath. Exemple : `AC003.BBP.IT` devient `AC003.BBP`. Les 8 références qui ne portaient pas ce suffixe restent intactes.
+- Les champs `sourceReference` et `sourceInternalReference` préservent les codes du tarif source pour audit ou rétrocompatibilité. Audit avant commit : **aucun doublon sur fabricant + référence canonique**, prix de base, prix total, supplément de corps, remise, collection, modèle et finition identiques aux valeurs antérieures.
+- `public/catalog-index.js` accepte aussi l'ancien code `.IT` via un alias ciblé Hotbath, **sans créer de seconde ligne tarifaire**. Cela protège les clés d'anciens projets clients ; aucune donnée utilisateur de production n'a été migrée.
+- Tests de régression : `tests/v11.63.2-hotbath-refs.test.js` contrôle le nombre de lignes, l'absence du suffixe, la provenance, l'unicité, les alias historiques, les prix et les corps techniques. Test ajouté au `npm test` de `package.json`.
+- Commits confirmés : catalogue `08da94936db91b499ae035c25e1bde3d3530793d`, alias `b98e8cd0a2117214fc9ecfbc30fbd2f6a0c04f60`, tests `8d9c3ac9ce341ef379ab0c244444e2861764a8b8`, exécution CI `436c215d779a0cf5c2b0447ce3248f1d4a5c683d`.
+- Les vérifications CI Node + Chromium du commit normalisé sont **en cours** à ce checkpoint : vérifier leur conclusion, corriger tout échec, puis fusionner la PR #35 uniquement si la révision finale est validée.
+- Production Render : dernier contrôle direct des endpoints `/api/version` et `/api/health` : **11.63.1**, `ok: true`, PostgreSQL. La 11.63.2 n'est pas déclarée déployée.
+- À poursuivre : contrôle navigateur des liens officiels `hotbath.it` et des visuels réellement décodables ; éviter les nouvelles correspondances inventées ; garder prix, finitions et corps techniques ; ensuite Hidrobox, Bette, Carrodrain, Zucchetti et Lefroy Brooks.
+
+
+### Correctif d'association collections Hotbath — PR #35
+
+- Le tarif source contient des lignes associées à plusieurs collections, par exemple `Ace / Fellow` et `Cobber / Mate`, ainsi que l'orthographe `Cobber-X`. L'ancien index de `public/hotbath-official-guide.js` exigeait `p.collection === nomOfficiel`, excluant silencieusement une partie des tarifs pourtant présents.
+- L'index lit désormais tous les libellés séparés par `/`, normalise l'orthographe contre les **12 collections officielles connues** et référence **la même ligne tarifaire**, sans en créer de copie ni modifier prix, finition, code interne, ou collection d'origine. Les familles n'appartenant pas aux 12 catégories du navigateur (ex. Sparky) restent dans le catalogue source sans être attribuées à une collection inventée.
+- Contrôle analytique du catalogue et des 647 références officielles : **385 modèles tarifés avant**, **611 modèles avec correspondance exacte après** (226 modèles supplémentaires, 36 modèles restant sans ligne tarifaire exacte). C'est une amélioration de liaison, **pas une importation de nouvelles références**. Les tests unitaires correspondants sont dans `tests/v11.63.2-hotbath-refs.test.js`.
+- Commits sur PR #35 : index `3221378c05f0889fd74e925c1e9a9b178c92062c`, tests `e1afdf86baec170a1a9afe67a0909c981b9fbc99`, ajustement de la vraie référence Cobber X `CX003C` au lieu de `CX003` dans le test `50b7ac69ee11cd7137b50ac5f3a818a4f830d7e9`. Le test sur `e1afdf8` avait échoué sur la référence factice du contrôle ; ce cas est corrigé et nécessite la CI du dernier SHA.
+- Continuité : le retrait du suffixe `.IT` et ses alias restent en place ; tests de sauvegarde des projets en production non exécutés ; la PR #35 n'est pas fusionnée et le déploiement Render reste à vérifier après une éventuelle fusion.
+
+
+### Qualification des photographies Hotbath (rectification des métriques)
+
+- Les **631/647** associations mentionnées au début de la PR #35 étaient un résultat de recherche de correspondances par nom de fichier sur les pages fournisseur, **pas une validation de disponibilité HTTP des images**. Ne pas reprendre ce chiffre comme couverture photographique réellement affichable.
+- Le contrôle HTTP et décodage raster ultérieur a examiné les **367 archives historiques**, récupéré **158 URL CDN modernes** et constaté **209 URL sans variante CDN prouvée**. L'application affiche maintenant **422 modèles sur 647 avec une URL photographique compatible et vérifiée par ce processus**, et **225 sans photographie fiable**. Source durable : `docs/HOTBATH_CDN_AUDIT.json` et `public/brand-guide-hotbath-media.json`.
+- Le fait qu'une fiche existe sur `hotbath.it` ne prouve pas que son JPEG `/documents/ProdCateg/...` existe encore (AR003 a répondu 404). La preuve photographique de la finition reste distincte du modèle et du prix exact.
+- **Validation nécessaire** : dernière exécution complète de GitHub Actions, images réelles et navigation Chromium avant fusion ; la couverture 422/647 ne doit pas être présentée comme 97,5 %.

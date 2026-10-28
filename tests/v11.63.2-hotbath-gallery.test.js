@@ -1,0 +1,114 @@
+'use strict';
+const test=require('node:test');
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const root=path.join(__dirname,'..','public');
+const taxonomy=JSON.parse(fs.readFileSync(path.join(root,'brand-guide-hotbath-taxonomy.json'),'utf8'));
+const images=JSON.parse(fs.readFileSync(path.join(root,'brand-guide-hotbath-media.json'),'utf8'));
+const clean=x=>String(x||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+
+test('Hotbath: 53 exact supplier galleries and only HTTP-verified product photos, no cross-collection substitution',()=>{
+ const cats=Object.entries(taxonomy.collections);
+ assert.equal(cats.length,12);
+ assert.equal(cats.reduce((sum,[,rows])=>sum+rows.length,0),53);
+ let count=0,total=0,missing=[];
+ for(const [collection,rows]of cats){
+  const refs=[...new Set(rows.flatMap(row=>row.refs.map(clean)))];
+  const photos=new Map(Object.entries(images.byCollection[collection]||{}).map(([ref,url])=>[clean(ref),url]));
+  for(const ref of refs){
+   total++;
+   const img=photos.get(ref);
+   if(!img){missing.push(collection+':'+ref);continue}
+   count++;
+   assert.match(img,/^https:\/\/hotbath\.com\//,collection+':'+ref);
+   assert(!/placeholder/i.test(img),collection+':'+ref);
+  }
+ }
+ assert.equal(total,647);
+ assert.equal(images.historicalURLsValidated,true,'remove dead old URLs only after CDN scan');
+ assert.equal(count,422);
+ assert.equal(missing.length,225);
+ assert.equal(Object.keys(images.verifiedContemporaryCDN||{}).length,158);
+ assert.equal(Object.keys(images.missingContemporaryCDN||{}).length,209);
+ assert.equal(Object.keys(images.officialHistoricalSources).length,367);
+ for(const [id,spec]of Object.entries(images.officialHistoricalSources)){
+   const [collection,ref]=id.split('|');
+   assert.ok(taxonomy.collections[collection],id);
+   const expected=clean(ref);
+   const filename=decodeURIComponent(spec.verifiedImage.split('?')[0].split('/').at(-1)).split('_')[0].replace(/\.[^.]+$/,'');
+   assert.equal(clean(filename),expected,id+' must match exact photo filename');
+   assert.match(spec.page,/^https:\/\/hotbath\.it\/fr\/prods\//);
+   const cdn=images.verifiedContemporaryCDN[id],missing=images.missingContemporaryCDN[id];
+   assert.ok(Boolean(cdn)!==Boolean(missing),id+' must be either verified or unavailable');
+   if(cdn){assert.equal(images.byCollection[collection][ref],cdn.url);assert.equal(cdn.status,200);assert.ok(cdn.pixels[0]>=100&&cdn.pixels[1]>=100)}
+   else assert.equal(images.byCollection[collection][ref],undefined);
+   assert.equal(spec.match,'exact supplier filename');
+ }
+ console.log('HOTBATH_IMAGE_COVERAGE',JSON.stringify({verified:count,total,missing}));
+});
+
+test('Hotbath: product-grid styling matches supplier approach and does not impact other manufacturers',()=>{
+ const js=fs.readFileSync(path.join(root,'hotbath-official-guide.js'),'utf8');
+ const css=fs.readFileSync(path.join(root,'styles.css'),'utf8');
+ assert.match(js,/mg-overlay mg-hotbath-official/);
+ assert.match(js,/pictured\+' photos \/ '\+filtered.length/);
+ assert.match(css,/\.mg-hotbath-official \.mg-official-gallery \.mg-tile-meta/);
+ assert.match(css,/\.mg-hotbath-official \.mg-official-gallery \.mg-tile-photo img/);
+ assert.match(css,/position:static;display:flex;flex-direction:column/);
+ assert.match(css,/object-fit:contain/);
+ assert.doesNotMatch(css,/\.mg-official-gallery \.mg-tile\{[^}]*background:#fff/);
+});
+
+test('Hotbath official image selector shows only the verified current CDN for exact references',()=>{
+ const vm=require('node:vm'),win={HydroManufacturerGuide:{open:()=>{}}};
+ const file=fs.readFileSync(path.join(root,'hotbath-official-guide.js'),'utf8');
+ vm.runInNewContext(file,{window:win});
+ const finder=win.HydroHotbathOfficialGuide.photo;
+ const a=finder({base:'AR003'},'Archie',images);
+ assert.match(a,/^https:\/\/hotbath\.com\/images\/compano\/AR003\/AR003IX_02\.png/);
+ assert.equal(finder({base:'AR003M'},'Archie',images),images.byCollection.Archie.AR003M);
+ assert.equal(finder({base:'AR003'},'Cobber',images),'');
+ assert.equal(finder({base:'AR999-UNKNOWN'},'Archie',images),'');
+});
+
+
+test('Hotbath: modern Guy Diamond/Row images take precedence with exact model identity',()=>{
+ const vm=require('node:vm');
+ const win={HydroManufacturerGuide:{open:()=>{}}};
+ vm.runInNewContext(fs.readFileSync(path.join(root,'hotbath-official-guide.js'),'utf8'),{window:win});
+ const guide=win.HydroHotbathOfficialGuide;
+ const recovered=images.modernImageOverrides?.Guy||{};
+ assert.ok(Object.keys(recovered).length>=38,'38 modern Guy photographs identified');
+ for(const [ref,src] of Object.entries(recovered)){
+  assert.match(src.url,/^https:\/\/hotbath\.com\/images\/compano\//);
+  const m=src.url.match(/\/images\/compano\/([^/]+)\//);
+  assert.equal(clean(m[1]),clean(ref),ref+' exact modern model');
+  assert.match(src.sourcePage,/^https:\/\/hotbath\.com\/en-gb\/collections\/guy-(?:diamond|row)\/$/);
+  assert.equal(guide.photo({base:ref},'Guy',images),src.url);
+ }
+ assert.equal(guide.photo({base:'GY003R'},'Archie',images),'','same code in another collection not interchangeable');
+ const bad={...images,modernImageOverrides:{Guy:{GY003R:{url:'https://hotbath.com/images/compano/GY004R/wrong.png'}}}};
+ assert.notEqual(guide.photo({base:'GY003R'},'Guy',bad),bad.modernImageOverrides.Guy.GY003R.url);
+});
+
+test('Hotbath: actual supplier collection hero images are available without changing other brands',()=>{
+ const names=['Archie','Gent','Chap','Ace','Gal','Cobber','Cobber X','Fellow','Mate','Tron'];
+ for(const name of names){
+  assert.match(images.modernCollectionImages?.[name]||'',/^https:\/\/hotbath\.com\/images\/(?:compano|properties)\//,name);
+  assert.match(images.modernCollectionSources?.[name]?.url||'',/^https:\/\/hotbath\.com\/en-gb\/collections\//);
+ }
+});
+
+
+test('Hotbath detail includes selectable finish cards and keeps reference-based pricing',()=>{
+ const js=fs.readFileSync(path.join(root,'hotbath-official-guide.js'),'utf8');
+ const css=fs.readFileSync(path.join(root,'styles.css'),'utf8');
+ assert.match(js,/data-hb-finish-ref/);
+ assert.match(js,/aria-pressed/);
+ assert.match(js,/chosen=button\.dataset\.hbFinishRef/);
+ assert.match(js,/current\.variants\|\|\[\]/);
+ assert.match(css,/\.mg-hotbath-official \.hb-finish-options/);
+ assert.match(css,/\.mg-hotbath-official \.hb-finish-option/);
+ assert.match(js,/Ajout indisponible · tarif absent/);
+});

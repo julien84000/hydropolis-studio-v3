@@ -29,7 +29,8 @@ test('V11.62.3 official photographic collections have grounded source URLs',()=>
  assert.match(h.byCollection.Archie.AR110,/^https:\/\/hotbath\.com\/images\/compano\/AR110\//);
  assert.equal(h.byCollection.Guy.AR088,undefined);
  assert.ok(Object.keys(h.byCollection.Archie).length>=45);
- assert.ok(!Object.values(h.byCollection.Archie).some(url=>url.includes('hotbath.it/documents')));
+ assert.ok(Object.values(h.byCollection.Archie).every(url=>/^https:\/\/hotbath\.(?:com|it)\//.test(url)));
+ assert.match(h.byCollection.Archie.AR003,/hotbath\.com\/images\/compano\/AR003\/AR003IX_02\.png/);
  assert.equal(Object.keys(images.collections['Lefroy Brooks']).length,8);
  assert.equal(Object.keys(images.collections.Zucchetti).length>=13,true);
  assert.match(images.collections.Zucchetti['Octo X'].image,/assets\.zucchettidesign\.it/);
@@ -88,4 +89,5 @@ test('V11.62.4 references appear on photo overlay; broken URL preserves photo ar
  assert.match(css,/grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
  const d=hot();
  assert.ok(Object.values(d.byCollection.Archie).every(v=>v.startsWith('https://hotbath.com/images/compano/')));
+ assert.match(d.byCollection.Archie.AR003,/AR003IX_02\.png/);
 });

@@ -23,14 +23,21 @@ function tariffIndex(rows){
  const index=new Map();
  for(const p of rows||[]){
    if(p?.manufacturer!=='Hotbath')continue;
-   const col=String(p.collection||'');
    const key=modelKey(p);
-   if(!col||!key)continue;
-   const collection=index.get(col)||new Map();
-   if(!index.has(col))index.set(col,collection);
-   const records=collection.get(key)||[];
-   if(!records.some(v=>v.reference===p.reference))records.push(p);
-   collection.set(key,records);
+   if(!key)continue;
+   // The 2026 price list contains shared collections (e.g. "Ace / Fellow")
+   // and spells Cobber X as "Cobber-X". Match against the 12 verified
+   // collections only, without changing the original supplier row or price.
+   const collections=new Set(String(p.collection||'').split('/').map(label=>
+     ORDER.find(official=>clean(official)===clean(label))||''
+   ).filter(Boolean));
+   for(const col of collections){
+     const collection=index.get(col)||new Map();
+     if(!index.has(col))index.set(col,collection);
+     const records=collection.get(key)||[];
+     if(!records.some(v=>v.reference===p.reference))records.push(p);
+     collection.set(key,records);
+   }
  }
  return index;
 }
@@ -43,11 +50,30 @@ function officialModels(collection,category,index){
  return (category?.refs||[]).map(base=>({base,variants:priced.get(clean(base))||[],source:'official'}));
 }
 function photo(model,collection,photos){
+ // Always select by collection AND exact catalogue model code.
+ // Older official Hotbath imagery is served from hotbath.it; the historical
+ // filename must still identify the requested model. No generic fallback.
  const dict=photos?.byCollection?.[collection]||{};
- const key=clean(model.base);
- let url='';
- for(const [ref,pic] of Object.entries(dict))if(clean(ref)===key){url=pic;break}
- return /^https:\/\/hotbath\.com\/images\/compano\//.test(url)?url:'';
+ const key=clean(model?.base);
+ if(!key)return '';
+ // Prefer newer manufacturer photos when the exact model appears on its current
+ // collection page, rather than an historical hotbath.it URL that may return 404.
+ for(const [ref,source] of Object.entries(photos?.modernImageOverrides?.[collection]||{})){
+  if(clean(ref)!==key)continue;
+  const current=String(source?.url||'').match(/^https:\/\/hotbath\.com\/images\/compano\/([^/?#]+)\//i);
+  if(current&&clean(current[1])===key)return source.url;
+ }
+ for(const [ref,url] of Object.entries(dict)){
+  if(clean(ref)!==key||typeof url!=='string')continue;
+  const current=url.match(/^https:\/\/hotbath\.com\/images\/compano\/([^/?#]+)\//i);
+  if(current&&clean(current[1])===key)return url;
+  const historical=url.match(/^https:\/\/(?:www\.)?hotbath\.it\/documents\/+ProdCateg\/\d+\/([^/?#]+\.(?:jpe?g|png))(?:\?.*)?$/i);
+  if(historical){
+   const code=decodeURIComponent(historical[1]).replace(/\.[^.]+$/,'').split('_')[0];
+   if(clean(code)===key)return url;
+  }
+ }
+ return '';
 }
 function categories(collection,taxonomy,index){
  const items=(taxonomy?.collections?.[collection]||[]).filter(x=>Array.isArray(x.refs));
@@ -63,7 +89,7 @@ function openHotbath(rows,roomId,onAdd){
  const prices=tariffIndex(rows),ALL=48;
  let taxonomy=null,photos=null,loadFailed=false;
  const mount=()=>{
-   overlay=document.createElement('div');overlay.className='mg-overlay';overlay.id='manufacturerGuidedSelector';
+   overlay=document.createElement('div');overlay.className='mg-overlay mg-hotbath-official';overlay.id='manufacturerGuidedSelector';
    overlay.innerHTML='<div class="mg-dialog" role="dialog" aria-modal="true" aria-label="Catalogue Hotbath">'+
       '<div class="mg-header"><span class="mg-brand">Hotbath</span><button type="button" class="mg-close" aria-label="Fermer">×</button></div>'+
       '<div class="mg-content"></div></div>';
@@ -83,8 +109,8 @@ function openHotbath(rows,roomId,onAdd){
  const list=()=>categories(collection,taxonomy,prices);
  const models=()=>officialModels(collection,category,prices);
  const repr=m=>m.variants?.find(p=>p.image)||m.variants?.[0]||null;
- const supplierLink=()=>validURL(category?.url)||'https://hotbath.com/en-gb/';
- const imageDetail=(model,variant)=>photo(model,collection,photos)||(variant&&/^https?:\/\//.test(variant.image||'')?variant.image:'');
+ const supplierLink=()=>/^https:\/\/hotbath\.it\/fr\/prods\//.test(String(category?.url||''))?category.url:'https://hotbath.it/fr/';
+ const imageDetail=(model)=>photo(model,collection,photos); // Never show an unverified generic tariff thumbnail as an exact product.
  const breadcrumb=()=>{
    const levels=[{title:'Hotbath',phase:'collections'}];
    if(collection)levels.push({title:collection,phase:'categories'});
@@ -96,6 +122,7 @@ function openHotbath(rows,roomId,onAdd){
  const missing=(label)=>'<div class="mg-empty">'+esc(label)+'</div>';
  function render(){
    if(!overlay?.isConnected)return;
+   overlay.dataset.stage=phase;
    const target=overlay.querySelector('.mg-content');
    if(!taxonomy||!photos){
      target.innerHTML='<div class="mg-section-head"><h2>Catalogue Hotbath</h2></div>'+missing(loadFailed?'Index fabricant indisponible, réessayez plus tard.':'Chargement des collections et références du fabricant…');
@@ -108,7 +135,7 @@ function openHotbath(rows,roomId,onAdd){
        const cats=categories(name,taxonomy,prices);
        const entry=photos?.collectionImages?.[name];
        const first=Object.values(photos?.byCollection?.[name]||{}).find(Boolean);
-       return {name,id:name,action:'collection',image:validURL(entry)||first||'',
+       return {name,id:name,action:'collection',image:validURL(photos?.modernCollectionImages?.[name])||validURL(entry)||first||'',
          note:cats.filter(x=>!x.extra).length+' catégories · '+new Set(cats.filter(x=>!x.extra).flatMap(x=>x.refs)).size+' articles'};
      }),'mg-collections');
    }else if(phase==='categories'){
@@ -125,9 +152,10 @@ function openHotbath(rows,roomId,onAdd){
      const all=models(),term=clean(search);
      const filtered=all.filter(x=>!term||clean(x.base+' '+String(repr(x)?.designation||'')).includes(term));
      const paged=filtered.slice(offset*ALL,(offset+1)*ALL);
-     body='<div class="mg-search"><label>Rechercher une référence<input id="hb-ref-search" type="search" placeholder="Référence ou désignation…" value="'+esc(search)+'"></label><span>'+filtered.length+' références fabricant</span></div>'+
+    const pictured=filtered.filter(x=>Boolean(photo(x,collection,photos))).length;
+     body='<div class="mg-search"><label>Rechercher une référence<input id="hb-ref-search" type="search" placeholder="Référence ou désignation…" value="'+esc(search)+'"></label><span>'+pictured+' photos / '+filtered.length+' références</span></div>'+
         cards(paged.map(m=>({name:m.base,id:m.base,action:'model',image:photo(m,collection,photos),priced:m.variants.some(v=>price(v)>0),note:m.variants.some(v=>price(v)>0)
-          ?'Prix disponible · '+String(repr(m)?.designation||'').slice(0,100)
+          ?'Tarif disponible · finition à choisir'
           :'Tarif non importé'})),'mg-products mg-official-gallery')+
         (filtered.length>ALL?'<div class="mg-pagination"><button type="button" id="hb-prev" '+(offset===0?'disabled':'')+'>Précédent</button><span>Page '+(offset+1)+' / '+Math.ceil(filtered.length/ALL)+'</span><button type="button" id="hb-next" '+((offset+1)*ALL>=filtered.length?'disabled':'')+'>Suivant</button></div>':'')+
         '<p class="mg-guide-note">Source : <a href="'+esc(supplierLink())+'" target="_blank" rel="noopener noreferrer">catalogue Hotbath · '+esc(category.label)+'</a>. Les articles absents du tarif restent consultables, sans prix estimé.</p>';
@@ -142,8 +170,11 @@ function openHotbath(rows,roomId,onAdd){
        '<small>'+(photo(current,collection,photos)?'Photo fabricant du modèle · finition illustrative':'Image non vérifiée pour la finition')+'</small></div>'+
        '<div class="mg-config"><div class="mg-ref">Référence : '+esc(current.base)+'</div>'+
        '<h3>'+esc(p?.designation||current.base)+'</h3>'+
-       (variants.length?'<label class="mg-finishes">Référence et finition<select id="hb-finish">'+variants.map(v=>
-         '<option value="'+esc(v.reference)+'" '+(chosen===v.reference?'selected':'')+'>'+esc(v.finish||v.finishCode||'Standard')+' · '+esc(v.reference)+'</option>').join('')+'</select></label>':'')+
+       (variants.length?'<div class="hb-variant-select"><label class="mg-finishes">Référence et finition<select id="hb-finish">'+variants.map(v=>
+         '<option value="'+esc(v.reference)+'" '+(chosen===v.reference?'selected':'')+'>'+esc(v.finish||v.finishCode||'Standard')+' · '+esc(v.reference)+'</option>').join('')+'</select></label>'+
+         '<div class="hb-finish-options" role="group" aria-label="Choisir une finition Hotbath">'+variants.map(v=>
+         '<button class="hb-finish-option'+(chosen===v.reference?' is-current':'')+'" type="button" data-hb-finish-ref="'+esc(v.reference)+'" aria-pressed="'+(chosen===v.reference)+'">'+
+         '<span>'+esc(v.finish||v.finishCode||'Standard')+'</span><small>'+esc(v.reference)+'</small></button>').join('')+'</div></div>':'')+
        (hasPrice?'<div class="mg-finalref">Référence tarif : <b>'+esc(p.reference)+'</b></div><strong class="mg-price">'+euro(price(p))+' HT</strong>':
         '<strong class="mg-price">Tarif à importer</strong><p class="mg-guide-note">Cette référence figure dans le catalogue officiel Hotbath, mais aucune correspondance tarifaire sûre n’est disponible dans Hydropolis. Aucun montant n’a été inventé.</p>')+
        (p?.internalReference?'<p class="mg-roughin">Corps technique : '+esc(p.internalReference)+' · '+euro(p.internalPrice||0)+' HT</p>':'')+
@@ -174,13 +205,17 @@ function openHotbath(rows,roomId,onAdd){
    if(next)next.onclick=()=>{offset+=1;render()};
    const finish=target.querySelector('#hb-finish');
    if(finish)finish.onchange=()=>{chosen=finish.value;render()};
+   target.querySelectorAll('[data-hb-finish-ref]').forEach(button=>button.onclick=()=>{
+     chosen=button.dataset.hbFinishRef;
+     render();
+   });
    const add=target.querySelector('#hb-add');
    if(add)add.onclick=()=>{const rec=(current.variants||[]).find(p=>p.reference===chosen);if(!rec||!(price(rec)>0))return;try{onAdd(rec);close()}catch(e){alert('Impossible d’ajouter : '+e.message)}};
  }
  mount();
  Promise.all([
-  fetch('/brand-guide-hotbath-taxonomy.json',{cache:'force-cache'}).then(r=>{if(!r.ok)throw Error('Taxonomy '+r.status);return r.json()}),
-  fetch('/brand-guide-hotbath-media.json',{cache:'force-cache'}).then(r=>{if(!r.ok)throw Error('Photos '+r.status);return r.json()})
+  fetch('/brand-guide-hotbath-taxonomy.json?v=11.63.2',{cache:'no-cache'}).then(r=>{if(!r.ok)throw Error('Taxonomy '+r.status);return r.json()}),
+  fetch('/brand-guide-hotbath-media.json?v=11.63.2',{cache:'no-cache'}).then(r=>{if(!r.ok)throw Error('Photos '+r.status);return r.json()})
  ]).then(([t,p])=>{taxonomy=t;photos=p;render()})
  .catch(e=>{console.warn('[HydroHotbathOfficialGuide]',e);loadFailed=true;render()});
  render();
