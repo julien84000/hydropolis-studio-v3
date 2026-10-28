@@ -94,6 +94,46 @@ def trim_blank_border(im: Image.Image) -> Image.Image:
     return im.crop((x0, y0, x1, y1))
 
 
+def erase_vector_captions(page: fitz.Page, clip: fitz.Rect, im: Image.Image, scale: float) -> list[dict]:
+    """Hide manufacturer 'art.' labels that overlap the image, not its legs.
+
+    Catalogue art. labels are PDF text drawn on top of some otherwise clean
+    photographs, between the supports. They survive rendering an image xref.
+    Mask only the exact vector-text line bounding box (plus 1.5 PDF points).
+    """
+    import re
+
+    words = page.get_text("words")
+    by_line: dict[tuple[int, int], list] = {}
+    for item in words:
+        rect = fitz.Rect(item[:4])
+        if intersection_area(rect, clip) <= 0:
+            continue
+        by_line.setdefault((int(item[5]), int(item[6])), []).append(item)
+    draw = ImageDraw.Draw(im)
+    erased = []
+    for line_words in by_line.values():
+        tokens = [str(item[4]).lower().strip() for item in line_words]
+        if not any(re.fullmatch(r"art(?:\.|:|icolo)?", t) for t in tokens):
+            continue
+        x0 = min(item[0] for item in line_words)
+        y0 = min(item[1] for item in line_words)
+        x1 = max(item[2] for item in line_words)
+        y1 = max(item[3] for item in line_words)
+        text_box = fitz.Rect(x0 - 1.5, y0 - 1.5, x1 + 1.5, y1 + 1.5) & clip
+        if text_box.is_empty:
+            continue
+        coords = [
+            max(0, int(math.floor((text_box.x0 - clip.x0) * scale))),
+            max(0, int(math.floor((text_box.y0 - clip.y0) * scale))),
+            min(im.width - 1, int(math.ceil((text_box.x1 - clip.x0) * scale))),
+            min(im.height - 1, int(math.ceil((text_box.y1 - clip.y0) * scale))),
+        ]
+        draw.rectangle(coords, fill="white")
+        erased.append({"text": " ".join(item[4] for item in line_words), "box": coords})
+    return erased
+
+
 def render_image(page: fitz.Page, spec: dict) -> tuple[Image.Image, dict]:
     clip, orientation = locate_placement(page, spec)
     # Three PDF pixels per point gives a real 423px-wide display crop for the
@@ -101,6 +141,7 @@ def render_image(page: fitz.Page, spec: dict) -> tuple[Image.Image, dict]:
     zoom = min(MAX_SCALE, SCALE)
     pix = page.get_pixmap(matrix=fitz.Matrix(zoom, zoom), clip=clip, alpha=False, annots=False)
     original = Image.open(io.BytesIO(pix.tobytes("png"))).convert("RGB")
+    caption_masks = erase_vector_captions(page, clip, original, zoom)
     trimmed = trim_blank_border(original)
     stats = ImageStat.Stat(trimmed)
     if max(stats.stddev) < 3:
@@ -114,6 +155,7 @@ def render_image(page: fitz.Page, spec: dict) -> tuple[Image.Image, dict]:
         "transform": orientation,
         "pixelSize": list(trimmed.size),
         "rasterScale": zoom,
+        "removedCaptionMasks": caption_masks,
         "method": "pdf-page-rendered-xref" if spec.get("xref") else "reviewed-page-clip",
     }
 
