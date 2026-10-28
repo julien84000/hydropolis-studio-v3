@@ -482,9 +482,13 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     // V11.63.3 — real Chromium navigation to the official manufacturer CAD links.
     await page.evaluate(()=>HydroHidroboxConfigurator.open({manufacturer:'Hidrobox'},state.rooms[0]?.id||''));
     await page.waitForSelector('#hidroboxGuided [data-kind="family"][data-choice="receveurs"]',{timeout:20000});
-    check('Hidrobox : 9 familles exactement comme le site officiel',await page.locator('#hidroboxGuided [data-kind="family"]').count()===9);
+    check('Hidrobox official : nine product classes, in website order',
+      JSON.stringify(await page.locator('#hidroboxGuided [data-kind="family"]').evaluateAll(xs=>xs.map(x=>x.dataset.choice)))===
+      JSON.stringify(['receveurs','panneaux','accessoires','vasques-suspendues','vasques-a-poser','vasques-sur-pied','plans','bains-ilot','bains-encastres']));
     await page.locator('#hidroboxGuided [data-kind="family"][data-choice="receveurs"]').click();
-    check('Hidrobox : 11 collections officielles de receveurs',await page.locator('#hidroboxGuided [data-kind="collection"]').count()===11);
+    check('Hidrobox official : 11 shower collections and real site order',
+      JSON.stringify(await page.locator('#hidroboxGuided [data-kind="collection"]').evaluateAll(xs=>xs.map(x=>x.dataset.choice)))===
+      JSON.stringify(['neo-plus','line','twins','one','pure','quadro','arq','unique','iconik','loovers','falcon']));
     await page.locator('#hidroboxGuided [data-kind="collection"]').filter({hasText:'Neo Plus'}).first().click();
     await page.waitForSelector('#hidroboxGuided a[href$="BIMobject-Shower-tray-Neo-Plus.zip"]');
     check('Hidrobox Neo Plus : lien BIM officiel visible',
@@ -513,12 +517,42 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     check('Hidrobox Line : options de dimensions et de matière conservées',
       await page.locator('#hidroboxGuided [data-facet]').count()>0&&
       await page.locator('#hidroboxGuided .hidrobox-neo-hero img').count()<=1);
+    // Product tree must branch into actual supplier collections, not a flat tariff list.
+    await page.locator('#hidroboxGuided [data-hidrobox-home]').click();
+    await page.locator('#hidroboxGuided [data-kind="family"][data-choice="vasques-suspendues"]').click();
+    check('Hidrobox official : 9 wall-mounted washbasin collections',
+      await page.locator('#hidroboxGuided [data-kind="collection"]').count()===9);
+    await page.locator('#hidroboxGuided [data-kind="collection"][data-choice="program"]').click();
+    check('Hidrobox Program : exact imported tariff and configuration remain',
+      await page.locator('#hidroboxGuided [data-facet]').count()>0&&
+      await page.locator('#hidroboxGuided #huAdd').isEnabled()&&
+      (await page.locator('#hidroboxGuided .hidrobox-tree-path').innerText()).includes('Program'));
     await page.locator('#hidroboxGuided .hidrobox-back').click();
-    await page.locator('#hidroboxGuided .hidrobox-back').click();
-    await page.locator('#hidroboxGuided [data-kind="family"][data-choice="bains-encastres"]').click();
-    check('Hidrobox : Beta Fusion et Beta Evoque classées parmi les baignoires encastrées',
-      await page.locator('#hidroboxGuided [data-kind="collection"][data-choice="beta-fusion"]').count()===1&&
+    await page.locator('#hidroboxGuided [data-kind="collection"][data-choice="intim"]').click();
+    check('Hidrobox Intim : private site collection has no fictitious quote item',
+      await page.locator('#hidroboxGuided .hidrobox-unpriced-collection').count()===1&&
+      await page.locator('#hidroboxGuided #huAdd').count()===0);
+    await page.locator('#hidroboxGuided [data-hidrobox-home]').click();
+    await page.locator('#hidroboxGuided [data-kind="family"][data-choice="bains-ilot"]').click();
+    check('Hidrobox official : Beta Evoque appears in the freestanding bath branch',
       await page.locator('#hidroboxGuided [data-kind="collection"][data-choice="beta-evoque"]').count()===1);
+    await page.locator('#hidroboxGuided [data-kind="collection"][data-choice="beta-evoque"]').click();
+    check('Hidrobox Beta Evoque : one verified price matrix rather than new dummy variants',
+      await page.locator('#hidroboxGuided #huAdd').count()===1);
+    await page.locator('#hidroboxGuided [data-hidrobox-home]').click();
+    await page.locator('#hidroboxGuided [data-kind="family"][data-choice="bains-encastres"]').click();
+    check('Hidrobox official : Beta Evoque also appears in built-in baths',
+      JSON.stringify(await page.locator('#hidroboxGuided [data-kind="collection"]').evaluateAll(xs=>xs.map(x=>x.dataset.choice)))===
+      JSON.stringify(['beta-fusion','beta-evoque']));
+    await page.locator('#hidroboxGuided [data-hidrobox-home]').click();
+    await page.setViewportSize({width:390,height:844});
+    const mobile=await page.locator('#hidroboxGuided .hidrobox-guide').evaluate(x=>({
+      clientWidth:x.clientWidth,scrollWidth:x.scrollWidth,
+      offenders:[...x.querySelectorAll('*')].filter(el=>el.getBoundingClientRect().right>x.getBoundingClientRect().right+2).slice(0,5).map(el=>({tag:el.tagName,cls:el.className,right:Math.round(el.getBoundingClientRect().right)}))
+    }));
+    if(mobile.scrollWidth>mobile.clientWidth)console.error('HIDROBOX_MOBILE_OVERFLOW',JSON.stringify(mobile));
+    check('Hidrobox official tree : no horizontal overflow on mobile 390',mobile.scrollWidth<=mobile.clientWidth);
+    await page.setViewportSize({width:1440,height:1000});
     await page.locator('#hidroboxGuided .hidrobox-close').click();
 
     // V11.64.4 — Sbordoni photographic collection selection without touching composition prices.
