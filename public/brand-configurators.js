@@ -249,7 +249,7 @@
     };
     const openFacet=(section,slug,label)=>{
       step='facet';const cat=category(kind);
-      const all=groups.filter(g=>betteType(g)===kind),matching=all.filter(g=>betteFacetMatches(g,slug)),verified=matching.length>0;
+      const all=kind==='design'?groups:groups.filter(g=>betteType(g)===kind),matching=all.filter(g=>betteFacetMatches(g,slug)),verified=matching.length>0;
       const shown=verified?matching:all;
       const subtitle=verified?'Le nom fabricant permet de retrouver '+matching.length+' famille(s) de cette sous-catégorie. Les autres familles restent dans le catalogue général.':
        'Le tarif ne contient pas de balise certifiant ce sous-filtre. Voici les familles de la catégorie principale, sans prétendre à un filtrage exact.';
@@ -268,7 +268,8 @@
     };
     const openSections=()=>{
       step='sections';const cat=category(kind);
-      const dataGroups=groups.filter(g=>betteType(g)===kind);
+      const designSlugs=BETTE_TREE.find(x=>x.id==='design')?.sections?.[0]?.items.map(x=>x[1])||[];
+      const dataGroups=kind==='design'?groups.filter(g=>designSlugs.some(slug=>betteFacetMatches(g,slug))):groups.filter(g=>betteType(g)===kind);
       const sections=cat.sections.map(x=>'<section class="brand-official-facets"><h3>'+esc(x.name)+'</h3><div class="brand-official-links">'+x.items.map(([name,slug])=>
          '<button type="button" data-bette-facet="'+esc(slug)+'" data-bette-facet-group="'+esc(x.name)+'">'+esc(name)+'</button>').join('')+'</div></section>').join('');
       const content='<div class="brand-path"><button data-bette-back="families">Produits</button><span>›</span><b>'+esc(cat.name)+'</b></div>'+
