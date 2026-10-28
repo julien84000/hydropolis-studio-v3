@@ -102,8 +102,8 @@ function openHotbath(rows,roomId,onAdd){
  const list=()=>categories(collection,taxonomy,prices);
  const models=()=>officialModels(collection,category,prices);
  const repr=m=>m.variants?.find(p=>p.image)||m.variants?.[0]||null;
- const supplierLink=()=>validURL(category?.url)||'https://hotbath.com/en-gb/';
- const imageDetail=(model,variant)=>photo(model,collection,photos)||(variant&&/^https?:\/\//.test(variant.image||'')?variant.image:'');
+ const supplierLink=()=>/^https:\/\/hotbath\.it\/fr\/prods\//.test(String(category?.url||''))?category.url:'https://hotbath.it/fr/';
+ const imageDetail=(model)=>photo(model,collection,photos); // Never show an unverified generic tariff thumbnail as an exact product.
  const breadcrumb=()=>{
    const levels=[{title:'Hotbath',phase:'collections'}];
    if(collection)levels.push({title:collection,phase:'categories'});
