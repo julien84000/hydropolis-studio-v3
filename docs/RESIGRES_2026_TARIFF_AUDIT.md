@@ -150,3 +150,5 @@ Source directe : capture de la planche Resigres fournie dans la conversation le 
 - CI après fusion main : https://github.com/julien84000/hydropolis-studio-v3/actions/runs/40701784089 → **success**.
 - Publication Render : les premiers contrôles externes après la fusion indiquaient encore `11.62.10` et `2026-FR-v10`, alors que GitHub main contient bien `11.62.11` et `2026-FR-v11`. **Ne pas confondre fusion CI et déploiement effectif** ; confirmer /api/version et /resigres_2026_config.json ultérieurement.
 - Les tests sont sur une base isolée de CI ; aucune modification d'un projet utilisateur de production n'a été nécessaire.
+
+- **Contrôle Render final après rollout** (28/10/2026) : `/api/version` → `11.62.11`, `/api/health` → `ok:true`, PostgreSQL. `/resigres_2026_config.json` → `2026-FR-v11`, contient bien les modèles `h50-inner-double` / `h60-double`, les deux familles de top et le sprite `data:image/png;base64` des huit pictogrammes. Les versions 11.62.10 relevées pendant le redéploiement étaient transitoires.
