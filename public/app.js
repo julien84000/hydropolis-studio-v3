@@ -5954,11 +5954,19 @@ $$(".nav").forEach(n=>n.onclick=()=>showView(n.dataset.view));
     if(!material)return {status:"pending",reason:"Choisissez ensuite la matière",matrix,size};
     const color=colorOption(material,selection?.color);
     if(!color)return {status:"pending",reason:"Choisissez enfin la finition / couleur",matrix,size,material};
-    const base=Number(color.price)||0;
+    // Prix au m² uniquement pour les panneaux/socles déclarés dans le tarif p71.
+    const rate=Number(color.pricePerSqm)||0;
+    const isArea=size.dynamicArea===true;
+    const width=Number(selection.widthCm),length=Number(selection.lengthCm);
+    if(isArea&&(!(width>0&&length>0)||!rate))return {status:"pending",reason:"Saisissez les deux dimensions d'une variante avec tarif au m²",matrix,size,material,color};
+    if(isArea&&((size.widthRange&&!(width>=size.widthRange[0]&&width<=size.widthRange[1]))||(size.lengthRange&&!(length>=size.lengthRange[0]&&length<=size.lengthRange[1]))))return {status:"pending",reason:"Dimensions hors limites du panneau/socle fabricant",matrix,size,material,color};
+    const area=isArea?width*length/10000:0;
+    const billedArea=isArea?Math.max(Number(size.minSqm)||0,area):0;
+    const base=isArea?round(billedArea*rate,2):(Number(color.price)||0);
     if(!(base>0))return {status:"pending",reason:"Tarif non certifié pour cette combinaison",matrix,size,material,color};
     const supp=V46?.supplements?V46.supplements(config,selection):{total:0,applied:[]};
-    const label=[size.label,material.label,color.label].filter(Boolean).join(" · ");
-    return {status:"automatic",pricingStatus:"automatic-verified",basePrice:base,total:round(base+(Number(supp.total)||0),2),supplements:supp,breakdown:label,matrix,size,material,color,rule:{sourcePage:matrix.sourcePage||modelConfig(config,selection?.model,selection?.kind)?.sourcePage||""}};
+    const label=[size.label,material.label,color.label,isArea?`${round(area,3)} m² réels → ${round(billedArea,3)} m² facturés × ${rate} €/m²`:""].filter(Boolean).join(" · ");
+    return {status:"automatic",pricingStatus:"automatic-verified",basePrice:base,total:round(base+(Number(supp.total)||0),2),supplements:supp,breakdown:label,matrix,size,material,color,rule:{sourcePage:size.sourcePage||matrix.sourcePage||modelConfig(config,selection?.model,selection?.kind)?.sourcePage||""}};
   }
   function finishColors(config,finish){
     const map=config?.global?.finishColorMap||{};
@@ -6028,6 +6036,8 @@ $$(".nav").forEach(n=>n.onclick=()=>showView(n.dataset.view));
       <div class="v1146-field-grid v1148-dependent-grid">
         <label class="v1146-span-2">1. Dimension<select id="rg48Size">${optionHtml(matrix.sizes,"Choisir une dimension…")}</select></label>
         <label class="v1146-span-2 rg48-material hidden">2. Matière<select id="rg48Material"></select></label>
+        <label class="rg48-area hidden"><span id="rg48AreaWidthLabel">Largeur (cm)</span><input id="rg48AreaWidth" type="number" min="0.1" step="0.1"></label>
+        <label class="rg48-area hidden"><span id="rg48AreaLengthLabel">Longueur (cm)</span><input id="rg48AreaLength" type="number" min="0.1" step="0.1"></label>
         <label class="v1146-span-2 rg48-color hidden">3. Finition / couleur<select id="rg48Color"></select></label>
         <label class="v1146-span-2 rg48-ral hidden">Référence RAL/NCS<input id="rg48Ral" placeholder="ex. RAL 7031 ou NCS S 2005-Y20R"></label>
         <label class="v1146-span-2">Détails complémentaires<input id="rg48Details" placeholder="Option ou précision client éventuelle"></label>
@@ -6039,7 +6049,7 @@ $$(".nav").forEach(n=>n.onclick=()=>showView(n.dataset.view));
     const $r=s=>overlay.querySelector(s),sizeSel=$r("#rg48Size"),matSel=$r("#rg48Material"),colSel=$r("#rg48Color");
     function selection(){
       const size=V48.sizeOption(matrix,sizeSel.value),mat=V48.materialOption(size,matSel.value),col=V48.colorOption(mat,colSel.value);
-      return {model:p.resigresModel,kind:p.resigresKind,size:sizeSel.value,sizeLabel:size?.label||"",widthCm:size?.widthCm||null,lengthCm:size?.lengthCm||null,material:matSel.value,materialLabel:mat?.label||"",finish:mat?.finish||"",color:colSel.value,colorLabel:col?.label||"",ralNcs:$r("#rg48Ral")?.value||"",details:$r("#rg48Details")?.value||"",options:[...overlay.querySelectorAll("[data-rg48-extra]:checked")].map(x=>x.dataset.rg48Extra)};
+      return {model:p.resigresModel,kind:p.resigresKind,size:sizeSel.value,sizeLabel:size?.label||"",widthCm:size?.dynamicArea?Number($r("#rg48AreaWidth").value)||0:size?.widthCm||null,lengthCm:size?.dynamicArea?Number($r("#rg48AreaLength").value)||0:size?.lengthCm||null,material:matSel.value,materialLabel:mat?.label||"",finish:mat?.finish||"",color:colSel.value,colorLabel:col?.label||"",ralNcs:$r("#rg48Ral")?.value||"",details:$r("#rg48Details")?.value||"",options:[...overlay.querySelectorAll("[data-rg48-extra]:checked")].map(x=>x.dataset.rg48Extra)};
     }
     function updatePrice(){
       const s=selection(),q=V48.quote(config,s,0);overlay._rg48Quote=q;
@@ -6050,6 +6060,9 @@ $$(".nav").forEach(n=>n.onclick=()=>showView(n.dataset.view));
     }
     function onSize(){
       const size=V48.sizeOption(matrix,sizeSel.value);matSel.innerHTML=optionHtml(size?.materials||[],"Choisir la matière…");matSel.value="";colSel.innerHTML=optionHtml([],"Choisir d’abord la matière…");colSel.value="";
+      overlay.querySelectorAll(".rg48-area").forEach(e=>e.classList.toggle("hidden",!size?.dynamicArea));
+      $r("#rg48AreaWidthLabel").textContent=(size?.dimensionLabels?.[0]||"Largeur")+" (cm)";$r("#rg48AreaLengthLabel").textContent=(size?.dimensionLabels?.[1]||"Longueur")+" (cm)";
+      $r("#rg48AreaWidth").value="";$r("#rg48AreaLength").value="";
       $r(".rg48-material").classList.toggle("hidden",!size);$r(".rg48-color").classList.add("hidden");$r(".rg48-ral").classList.add("hidden");
       const allowed=(size?.materials||[]).map(x=>x.label).join(" / ");$r("#rg48Compat").innerHTML=size?`Pour <b>${esc48(size.label)}</b>, matières disponibles : <b>${esc48(allowed)}</b>.`:"Commencez par choisir la dimension.";updatePrice();
     }
@@ -6060,7 +6073,7 @@ $$(".nav").forEach(n=>n.onclick=()=>showView(n.dataset.view));
     function onColor(){
       const size=V48.sizeOption(matrix,sizeSel.value),mat=V48.materialOption(size,matSel.value),col=V48.colorOption(mat,colSel.value);$r(".rg48-ral").classList.toggle("hidden",!col?.customCode);if(!col?.customCode)$r("#rg48Ral").value="";updatePrice();
     }
-    sizeSel.addEventListener("change",onSize);matSel.addEventListener("change",onMaterial);colSel.addEventListener("change",onColor);overlay.querySelectorAll("[data-rg48-extra]").forEach(el=>el.addEventListener("change",updatePrice));$r("#rg48Ral").addEventListener("input",updatePrice);$r("#rg48Details").addEventListener("input",updatePrice);
+    sizeSel.addEventListener("change",onSize);matSel.addEventListener("change",onMaterial);colSel.addEventListener("change",onColor);["#rg48AreaWidth","#rg48AreaLength"].forEach(sel=>$r(sel).addEventListener("input",updatePrice));overlay.querySelectorAll("[data-rg48-extra]").forEach(el=>el.addEventListener("change",updatePrice));$r("#rg48Ral").addEventListener("input",updatePrice);$r("#rg48Details").addEventListener("input",updatePrice);
     $r(".rg-confirm").onclick=()=>{const err=$r(".v1146-modal-error"),s=selection(),q=V48.quote(config,s,0),size=V48.sizeOption(matrix,s.size),mat=V48.materialOption(size,s.material),col=V48.colorOption(mat,s.color);if(!size){err.textContent="Choisissez la dimension.";return}if(!mat){err.textContent="Choisissez la matière.";return}if(!col){err.textContent="Choisissez la finition / couleur.";return}if(col.customCode&&!String(s.ralNcs||"").trim()){err.textContent="Indiquez la référence RAL/NCS.";return}if(!(q.total>0)){err.textContent=q.reason||"Tarif non déterminé.";return}commitConfigured(p,roomId,s,q,model)};
     sizeSel.focus();
   }
