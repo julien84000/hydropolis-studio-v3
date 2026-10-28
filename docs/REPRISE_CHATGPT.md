@@ -159,6 +159,36 @@ Branche de travail : `feat/v11.63.1-brands-pricing-integrity`. PR : https://gith
 - **Changement effectif** : liens CAO constructeur BIM et 3D Neo Plus/Line affichés avec signalement des exemples dimensionnels ; pas de changement des données tarifaires 2026 Hidrobox. Les ZIP officiels n'ont pas été inspectés en profondeur.
 - **Reprise exacte** : vérifier `main`, CI post-fusion et production ; poursuivre qualité et attribution des images et notices Hidrobox, puis Bette, Carrodrain, Zucchetti et Lefroy Brooks. Préserver les 67 378 variantes tarifaires importées et toute la V11.63.2 Hotbath/Resigres/Sbordoni.
 
+## Checkpoint V11.63.3 — continuité Hidrobox et guides Zucchetti / Lefroy Brooks (28 octobre 2026)
+
+**Base vérifiée** : `main` commit `860504041b1e957d0008e509781883dbedc952fb`, PR #35 Hotbath fusionnée, validation `main` https://github.com/julien84000/hydropolis-studio-v3/actions/runs/40769382483 **réussie**. Les endpoints Render `/api/version` et `/api/health` indiquaient **11.63.2**, `ok:true`, PostgreSQL au moment de reprendre. Ne pas confondre cette preuve avec le déploiement futur V11.63.3.
+
+**Branche de reprise** : `fix/v11.63.3-hidrobox-reopen-supplier-guides`. Modifications réalisées et sauvegardées :
+- `public/brand-configurators.js` : en ouvrant à nouveau un article Hidrobox, rechercher sa **référence exacte** dans les groupes tarifaires, même si `configGroup` est obsolète, et restaurer matière, largeur, longueur, texture, couleur et référence d'origine. Jusqu'alors, Hidrobox repartait de la première déclinaison malgré une référence sauvegardée. Les prix et la règle `prix HT = arrondi(prix source × 1,04)`, la remise d'achat 50 % et les 4 479 lignes importées ne sont pas modifiés.
+- `public/manufacturer-guide.js` : si l'index Hotbath échoue à charger, ne plus jeter les photos Zucchetti / Lefroy Brooks chargées indépendamment, et réciproquement. Une requête défaillante peut être retentée lors de l'ouverture suivante. Le libellé générique `Zucchetti` du tarif n'est plus présenté comme une collection officielle, mais comme « Références sans collection attribuée » ; **aucun article n'est supprimé ou déplacé entre collections réelles**.
+- `tests/v11.63.3-brand-guides-continuity.test.js` : régression de la réouverture Hidrobox sur une variante réelle non initiale, survivance des restaurations exactes Bette/Carrodrain, et scénarios de panne isolée des index de visuels. Test inclus dans `npm test`. `package.json` version 11.63.3.
+
+**Statut à ce checkpoint** : modifications **commitées**, CI V11.63.3 **à examiner**, fusion et déploiement V11.63.3 **non confirmés**. Aucune manipulation de vrais projets utilisateur sur la base de production. Les tests sur fixtures et GitHub ne prouvent pas une migration de projets réels.
+
+**Travaux encore ouverts du prompt initial** : vérifier la disponibilité HTTP et le rendu des photos officielles modèle par modèle, associer davantage de fiches techniques exactes, comparer les 67 378 variantes Bette/Hidrobox/Carrodrain avec leurs fichiers tarifaires source (au-delà du contrôle interne), enrichir les parcours Zucchetti / Lefroy Brooks, compléter les photos Hotbath manquantes sans inventer d'association, maintenir la qualité des 99 images Sbordoni et préserver tous les correctifs Resigres V11.62.11+.
+
+**Reprise** : contrôler la dernière tête de branche, la PR et sa CI (tests, build, Chromium), corriger avant fusion ; vérifier à nouveau la version Render après fusion. Ne jamais déclarer « déployé » sur la seule foi d'une PR fusionnée.
+
+
+### Complément V11.63.3 — photos réelles Lefroy Brooks et fusion des chantiers
+
+- Six bases Classic `CL1220`, `WL9007`, `LB1230`, `CH1230`, `LB1224`, `WL1224` possèdent chacune quatre finitions `AG`, `CP`, `NK`, `PB` dans `catalog_lefroy_brooks.json`.
+- Pour ces 24 références, `public/brand-guide-collections.json` contient des photos individuelles extraites de pages fabricant sur `uk.lefroybrooks.com/classic-basin-taps/`. Les noms de fichier identifient modèle et finition. `manufacturer-guide.js` utilise une photo de finition exacte ainsi qu'un lien détaillé, sans extrapolation aux autres modèles.
+- `tests/v11.63.3-lefroy-finish-media.test.js` contrôle chaque référence et nom de fichier ; ajouté à `npm test`.
+- Coordination : PR #36 Hidrobox CAD/BIM fusionnée dans main `988de9313255ab4fe448edfaf57722139612706c`, documentée à `7b1509ce7c6ebc7b0e62f943924b9757a5d90e80`. Préserver les ressources CAO de famille et leur suite de tests, en y ajoutant les correctifs PR #37.
+- Fusion PR #37 et déploiement de ces photos/restaurations à vérifier ; ne jamais considérer les fichiers ZIP génériques comme CAO exacte de toute dimension.
+
+### Numérotation de la livraison PR #37 : V11.63.4
+
+La PR #36 (Hidrobox CAO/BIM) a déjà été livrée sous **V11.63.3** et est en production. Pour éviter deux déploiements indiscernables par `/api/version`, les correctifs de la PR #37 (réouverture Hidrobox, images indépendantes, et 24 photos Lefroy Brooks exactes) sont désormais versionnés **V11.63.4** dans `package.json` et `package-lock.json`. Les fichiers de tests gardent leur nom initial `v11.63.3-...` afin de préserver la traçabilité des commits.
+
+**État** : CI du dernier commit V11.63.4, fusion et déploiement **à revérifier**. Le checkpoint V11.63.3 ci-dessus décrit l'ordre de développement ; il ne signifie pas que ces fonctionnalités étaient incluses dans le déploiement précédent.
+
 
 ## Checkpoint Carrodrain V11.63.4 — documentation par version (28/10/2026)
 
@@ -170,3 +200,9 @@ Branche de travail : `feat/v11.63.1-brands-pricing-integrity`. PR : https://gith
 - `package.json` / lockfile préparés en **11.63.4** ; aucune modification de `public/brand-data/*` ni de prix 2027. **Limite** : liens extraits de pages fabricant, pas d'ouverture et validation binaire de chaque PDF ; leur présence sur le site n'atteste pas les dimensions exactes de chaque variante.
 - Commits sauvegardés : source `2af49d2a0d5b12602db6a9b85d4960ccf82538ff`, HTML `0aa16fb2d3c7f4b7984e9c66d6eda9c0ac2fdba0`, SW `b77fa2b576be907d5e81027c1ba4cb94ec2b4aef`, liaison catalogue `87ef7530ae53bc3262bd44049684eb1d73a145ea`, tests unitaires `01e9921e46d18d78c23e2a920813d2e26ac655b9`, Chromium `6e7293c9ef02f19c9a8af03404938db877292ade`, package `f77909e3df76dd47ec89ec090179d8da37a50468`, lockfile `e6751b2bb163ab2c989418d4e4b7292d5ed32252`.
 - **Avant fusion** : obtenir CI GitHub incluant npm ci/check/test/build et Playwright ; corriger échecs, actualiser branche depuis main en conservant PR37, valider disponibilité éventuelle des documents ; ne déclarer une V11.63.4 sur Render qu'après `/api/version` et `/api/health`. Après Carrodrain : Bette visuels/versions, Hidrobox visuels, Zucchetti et Lefroy Brooks.
+
+
+### Fusion des développements parallèles — 28/10/2026
+- La PR #37 (continuité Hidrobox / médias Lefroy Brooks et Zucchetti) a été fusionnée dans `main` : `106866ca40db34033d110ffd996d1d5816fff402`. Son numéro applicatif est déjà V11.63.4. **Cette intégration documentaire Carrodrain reprend donc V11.63.5.**
+- `public/brand-configurators.js`, `package.json`, `package-lock.json` et ce journal ont été fusionnés à partir des versions de la PR #37 et non remplacés par les anciennes versions de la PR #38. L'arbre final doit conserver `public/manufacturer-guide.js`, `public/brand-guide-collections.json` et les deux suites de test PR37.
+- Contrôle CI complet et Render V11.63.5 toujours à réaliser ; aucune garantie de livraison avant leur réussite.
