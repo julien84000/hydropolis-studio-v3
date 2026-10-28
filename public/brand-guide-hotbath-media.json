@@ -3376,5 +3376,240 @@
       "verifiedImage": "https://hotbath.it/documents/ProdCateg/4136/RARV135-3_1.jpg",
       "match": "exact supplier filename"
     }
+  },
+  "modernImageOverrides": {
+    "Guy": {
+      "GY003D": {
+        "url": "https://hotbath.com/images/compano/GY003D/GY003DTB_02.png?resolution=600x600&quality=85&isLogo=true",
+        "sourcePage": "https://hotbath.com/en-gb/collections/guy-diamond/",
+        "model": "GY003D",
+        "verifiedBy": "exact code in official collection"
+      },
+      "GY003HD": {
+        "url": "https://hotbath.com/images/compano/GY003HD/GY003HDTB_02.png?resolution=600x600&quality=85&isLogo=true",
+        "sourcePage": "https://hotbath.com/en-gb/collections/guy-diamond/",
+        "model": "GY003HD",
+        "verifiedBy": "exact code in official collection"
+      },
+      "GY004D": {
+        "url": "https://hotbath.com/images/compano/GY004D/GY004DTB_02.png?resolution=600x600&quality=85&isLogo=true",
+        "sourcePage": "https://hotbath.com/en-gb/collections/guy-diamond/",
+        "model": "GY004D",
+        "verifiedBy": "exact code in official collection"
+      },
+      "GY023D": {
+        "url": "https://hotbath.com/images/compano/GY023D/GY023DTB_02.png?resolution=600x600&quality=85&isLogo=true",
+        "sourcePage": "https://hotbath.com/en-gb/collections/guy-diamond/",
+        "model": "GY023D",
+        "verifiedBy": "exact code in official collection"
+      },
+      "GY023HD": {
+        "url": "https://hotbath.com/images/compano/GY023HD/GY023HDTB_02.png?resolution=600x600&quality=85&isLogo=true",
+        "sourcePage": "https://hotbath.com/en-gb/collections/guy-diamond/",
+        "model": "GY023HD",
+        "verifiedBy": "exact code in official collection"
+      },
+      "GY095": {
+        "url": "https://hotbath.com/images/compano/GY095/GY095-20TB_02.png?resolution=600x600&quality=85&isLogo=true",
+        "sourcePage": "https://hotbath.com/en-gb/collections/guy-diamond/",
+        "model": "GY095",
+        "verifiedBy": "exact code in official collection"
+      },
+      "GY005D-20": {
+        "url": "https://hotbath.com/images/compano/GY005D.20/GY005D-20TB_02.png?resolution=600x600&quality=85&isLogo=true",
+        "sourcePage": "https://hotbath.com/en-gb/collections/guy-diamond/",
+        "model": "GY005D-20",
+        "verifiedBy": "exact code in official collection"
+      },
+      "GY005D-25": {
+        "url": "https://hotbath.com/images/compano/GY005D.25/GY005D-25TB_02.png?resolution=600x600&quality=85&isLogo=true",
+        "sourcePage": "https://hotbath.com/en-gb/collections/guy-diamond/",
+        "model": "GY005D-25",
+        "verifiedBy": "exact code in official collection"
+      },
+      "GY011D": {
+        "url": "https://hotbath.com/images/compano/GY011D/GY011DTB_02.png?resolution=600x600&quality=85&isLogo=true",
+        "sourcePage": "https://hotbath.com/en-gb/collections/guy-diamond/",
+        "model": "GY011D",
+        "verifiedBy": "exact code in official collection"
+      },
+      "GY031D": {
+        "url": "https://hotbath.com/images/compano/GY031D/GY031DTB_02.png?resolution=600x600&quality=85&isLogo=true",
+        "sourcePage": "https://hotbath.com/en-gb/collections/guy-diamond/",
+        "model": "GY031D",
+        "verifiedBy": "exact code in official collection"
+      },
+      "GY7009D": {
+        "url": "https://hotbath.com/images/compano/GY7009D/GY7009DTB_02.png?resolution=600x600&quality=85&isLogo=true",
+        "sourcePage": "https://hotbath.com/en-gb/collections/guy-diamond/",
+        "model": "GY7009D",
+        "verifiedBy": "exact code in official collection"
+      },
+      "GY7067D": {
+        "url": "https://hotbath.com/images/compano/GY7067D/GY7067DTB_02.png?resolution=600x600&quality=85&isLogo=true",
+        "sourcePage": "https://hotbath.com/en-gb/collections/guy-diamond/",
+        "model": "GY7067D",
+        "verifiedBy": "exact code in official collection"
+      },
+      "GY7070D": {
+        "url": "https://hotbath.com/images/compano/GY7070D/GY7070DTB_02.png?resolution=600x600&quality=85&isLogo=true",
+        "sourcePage": "https://hotbath.com/en-gb/collections/guy-diamond/",
+        "model": "GY7070D",
+        "verifiedBy": "exact code in official collection"
+      },
+      "GY7071D": {
+        "url": "https://hotbath.com/images/compano/GY7071D/GY7071DTB_01.png?resolution=600x600&quality=85&isLogo=true",
+        "sourcePage": "https://hotbath.com/en-gb/collections/guy-diamond/",
+        "model": "GY7071D",
+        "verifiedBy": "exact code in official collection"
+      },
+      "GY073D": {
+        "url": "https://hotbath.com/images/compano/GY073D/GY073DTB_02.png?resolution=600x600&quality=85&isLogo=true",
+        "sourcePage": "https://hotbath.com/en-gb/collections/guy-diamond/",
+        "model": "GY073D",
+        "verifiedBy": "exact code in official collection"
+      },
+      "GY075D": {
+        "url": "https://hotbath.com/images/compano/GY075D/GY075DTB_02.png?resolution=600x600&quality=85&isLogo=true",
+        "sourcePage": "https://hotbath.com/en-gb/collections/guy-diamond/",
+        "model": "GY075D",
+        "verifiedBy": "exact code in official collection"
+      },
+      "GY7072D": {
+        "url": "https://hotbath.com/images/compano/GY7072D/GY7072DTB_01.png?resolution=600x600&quality=85&isLogo=true",
+        "sourcePage": "https://hotbath.com/en-gb/collections/guy-diamond/",
+        "model": "GY7072D",
+        "verifiedBy": "exact code in official collection"
+      },
+      "GY176": {
+        "url": "https://hotbath.com/images/compano/GY176/GY176TB_02.png?resolution=600x600&quality=85&isLogo=true",
+        "sourcePage": "https://hotbath.com/en-gb/collections/guy-diamond/",
+        "model": "GY176",
+        "verifiedBy": "exact code in official collection"
+      },
+      "GY177D": {
+        "url": "https://hotbath.com/images/compano/GY177D/GY177DTB_02.png?resolution=600x600&quality=85&isLogo=true",
+        "sourcePage": "https://hotbath.com/en-gb/collections/guy-diamond/",
+        "model": "GY177D",
+        "verifiedBy": "exact code in official collection"
+      },
+      "GY018D": {
+        "url": "https://hotbath.com/images/compano/GY018D/GY018DTB_02.png?resolution=600x600&quality=85&isLogo=true",
+        "sourcePage": "https://hotbath.com/en-gb/collections/guy-diamond/",
+        "model": "GY018D",
+        "verifiedBy": "exact code in official collection"
+      },
+      "GY003R": {
+        "url": "https://hotbath.com/images/compano/GY003R/GY003RTB_02.png?resolution=600x600&quality=85&isLogo=true",
+        "sourcePage": "https://hotbath.com/en-gb/collections/guy-row/",
+        "model": "GY003R",
+        "verifiedBy": "exact code in official collection"
+      },
+      "GY003HR": {
+        "url": "https://hotbath.com/images/compano/GY003HR/GY003HRTB_02.png?resolution=600x600&quality=85&isLogo=true",
+        "sourcePage": "https://hotbath.com/en-gb/collections/guy-row/",
+        "model": "GY003HR",
+        "verifiedBy": "exact code in official collection"
+      },
+      "GY004R": {
+        "url": "https://hotbath.com/images/compano/GY004R/GY004RTB_01.png?resolution=600x600&quality=85&isLogo=true",
+        "sourcePage": "https://hotbath.com/en-gb/collections/guy-row/",
+        "model": "GY004R",
+        "verifiedBy": "exact code in official collection"
+      },
+      "GY018R": {
+        "url": "https://hotbath.com/images/compano/GY018R/GY018RTB_02.png?resolution=600x600&quality=85&isLogo=true",
+        "sourcePage": "https://hotbath.com/en-gb/collections/guy-row/",
+        "model": "GY018R",
+        "verifiedBy": "exact code in official collection"
+      },
+      "GY023R": {
+        "url": "https://hotbath.com/images/compano/GY023R/GY023RTB_02.png?resolution=600x600&quality=85&isLogo=true",
+        "sourcePage": "https://hotbath.com/en-gb/collections/guy-row/",
+        "model": "GY023R",
+        "verifiedBy": "exact code in official collection"
+      },
+      "GY023HR": {
+        "url": "https://hotbath.com/images/compano/GY023HR/GY023HRTB_02.png?resolution=600x600&quality=85&isLogo=true",
+        "sourcePage": "https://hotbath.com/en-gb/collections/guy-row/",
+        "model": "GY023HR",
+        "verifiedBy": "exact code in official collection"
+      },
+      "GY005R-20": {
+        "url": "https://hotbath.com/images/compano/GY005R.20/GY005R-20TB_02.png?resolution=600x600&quality=85&isLogo=true",
+        "sourcePage": "https://hotbath.com/en-gb/collections/guy-row/",
+        "model": "GY005R-20",
+        "verifiedBy": "exact code in official collection"
+      },
+      "GY005R-25": {
+        "url": "https://hotbath.com/images/compano/GY005R.25/GY005R-25TB_02.png?resolution=600x600&quality=85&isLogo=true",
+        "sourcePage": "https://hotbath.com/en-gb/collections/guy-row/",
+        "model": "GY005R-25",
+        "verifiedBy": "exact code in official collection"
+      },
+      "GY031R": {
+        "url": "https://hotbath.com/images/compano/GY031R/GY031RTB_02.png?resolution=600x600&quality=85&isLogo=true",
+        "sourcePage": "https://hotbath.com/en-gb/collections/guy-row/",
+        "model": "GY031R",
+        "verifiedBy": "exact code in official collection"
+      },
+      "GY011R": {
+        "url": "https://hotbath.com/images/compano/GY011R/GY011RTB_02.png?resolution=600x600&quality=85&isLogo=true",
+        "sourcePage": "https://hotbath.com/en-gb/collections/guy-row/",
+        "model": "GY011R",
+        "verifiedBy": "exact code in official collection"
+      },
+      "GY177R": {
+        "url": "https://hotbath.com/images/compano/GY177R/GY177RTB_02.png?resolution=600x600&quality=85&isLogo=true",
+        "sourcePage": "https://hotbath.com/en-gb/collections/guy-row/",
+        "model": "GY177R",
+        "verifiedBy": "exact code in official collection"
+      },
+      "GY073R": {
+        "url": "https://hotbath.com/images/compano/GY073R/GY073RTB_02.png?resolution=600x600&quality=85&isLogo=true",
+        "sourcePage": "https://hotbath.com/en-gb/collections/guy-row/",
+        "model": "GY073R",
+        "verifiedBy": "exact code in official collection"
+      },
+      "GY075R": {
+        "url": "https://hotbath.com/images/compano/GY075R/GY075RTB_02.png?resolution=600x600&quality=85&isLogo=true",
+        "sourcePage": "https://hotbath.com/en-gb/collections/guy-row/",
+        "model": "GY075R",
+        "verifiedBy": "exact code in official collection"
+      },
+      "GY7009R": {
+        "url": "https://hotbath.com/images/compano/GY7009R/GY7009RTB_02.png?resolution=600x600&quality=85&isLogo=true",
+        "sourcePage": "https://hotbath.com/en-gb/collections/guy-row/",
+        "model": "GY7009R",
+        "verifiedBy": "exact code in official collection"
+      },
+      "GY7070R": {
+        "url": "https://hotbath.com/images/compano/GY7070R/GY7070RTB_02.png?resolution=600x600&quality=85&isLogo=true",
+        "sourcePage": "https://hotbath.com/en-gb/collections/guy-row/",
+        "model": "GY7070R",
+        "verifiedBy": "exact code in official collection"
+      },
+      "GY7067R": {
+        "url": "https://hotbath.com/images/compano/GY7067R/GY7067RTB_02.png?resolution=600x600&quality=85&isLogo=true",
+        "sourcePage": "https://hotbath.com/en-gb/collections/guy-row/",
+        "model": "GY7067R",
+        "verifiedBy": "exact code in official collection"
+      },
+      "GY7071R": {
+        "url": "https://hotbath.com/images/compano/GY7071R/GY7071RTB_01.png?resolution=600x600&quality=85&isLogo=true",
+        "sourcePage": "https://hotbath.com/en-gb/collections/guy-row/",
+        "model": "GY7071R",
+        "verifiedBy": "exact code in official collection"
+      },
+      "GY7072R": {
+        "url": "https://hotbath.com/images/compano/GY7072R/GY7072RTB_01.png?resolution=600x600&quality=85&isLogo=true",
+        "sourcePage": "https://hotbath.com/en-gb/collections/guy-row/",
+        "model": "GY7072R",
+        "verifiedBy": "exact code in official collection"
+      }
+    }
+  },
+  "modernCollectionImages": {
+    "Guy": "https://hotbath.com/images/compano/GY003D/GY003DTB_02.png?resolution=600x600&quality=85&isLogo=true"
   }
 }
