@@ -24,7 +24,7 @@ Ces valeurs proviennent **uniquement des données importées dans le dépôt**, 
 - Lorsqu'une photo précise n'existe pas, une image de collection peut être enregistrée **avec la mention non contractuelle** plutôt que présentée comme une photo exacte de finition.
 
 ### Carrodrain
-- **12 groupes tarifaires / 635 variantes**. La galerie dispose de **14 modèles de référence** : une présence dans la galerie ne signifie donc pas disponibilité dans le tarif.
+- **12 groupes tarifaires / 635 variantes**. La galerie dispose de **14 modèles de référence**. Les séries **Invisible Disco 125** et **Kerlox** ne figurent pas dans les groupes tarifés de la matrice importée : elles renvoient au site fabricant sans prix automatique. Aucune valeur n'est extrapolée.
 - Le choix d'une famille déjà liée à une référence conserve la version, la longueur et la finition quand c'est possible ; un changement réel de famille réinitialise ces options.
 - La remise d'achat demeure **50 %** et les prix source 2027 ne sont pas recalculés ou majorés.
 
