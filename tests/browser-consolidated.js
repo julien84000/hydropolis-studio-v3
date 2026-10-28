@@ -403,7 +403,7 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
       await page.locator('#manufacturerGuidedSelector').evaluate(x=>x.classList.contains('mg-hotbath-official')&&x.dataset.stage==='models'));
     const modelCard=page.locator('#manufacturerGuidedSelector [data-choose="model"][data-value="AR003"]');
     const srcAR003=await modelCard.locator('img').getAttribute('src');
-    check('Archie AR003 : photographie exacte historique retrouvée',srcAR003?.includes('hotbath.it/documents/')&&/AR003_1_2023/.test(srcAR003));
+    check('Archie AR003 : photographie réellement vérifiée sur le CDN actuel',srcAR003?.includes('hotbath.com/images/compano/AR003/')&&/AR003IX/.test(srcAR003));
     const productLoaded=await modelCard.locator('img').evaluate(async img=>{
       if(!img.complete)await Promise.race([new Promise(resolve=>{
         img.addEventListener('load',resolve,{once:true});img.addEventListener('error',resolve,{once:true});
