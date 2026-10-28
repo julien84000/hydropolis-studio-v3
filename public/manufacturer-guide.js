@@ -121,6 +121,11 @@ function findModelVisual(brand,p,base,media){
  // Supplier catalogues often share a generic base photo across finishes.
  // Prefer a verified official model photo, scoped to the current collection.
  const official=lookup(upper)||lookup(reduced)||lookup(reduced.replace(/^([A-Z]{2})(\d{4})$/,'$1-$2'));
+ // Curated product-page image must match the exact model + finish code.
+ // Never transfer an image between different product references or finishes.
+ const finish=String(p?.finishCode||'').trim().toUpperCase();
+ const exactOfficial=safeUrl(media.collections.finishModels?.[brand]?.[reduced]?.[finish]);
+ if(exactOfficial)return {image:exactOfficial,caption:'Photographie fabricant de la finition '+finish,match:'exact'};
  const owned=safeUrl(p?.image)||(Array.isArray(p?.images)?safeUrl(p.images[0]):'');
  const exactFlag=String(p?.imageSource||'').toLowerCase();
  const finishCode=String(p?.finishCode||'').replace(/[^a-z0-9]/gi,'');
@@ -197,7 +202,11 @@ function open(brand,rows,roomId,onAdd){
      selected=variants.find(p=>p.reference===finishRef)||first;
      const imageResult=findModelVisual(brand,selected,model.base,media);
      const official=findCollectionVisual(brand,collection.name,media);
-     const link=safeUrl(selected.manufacturerUrl)||official.url;
+     const sku=nrm(model.base);
+     const supplierPage=Object.entries(media.collections.modelPages?.[brand]||{})
+       .find(([candidate])=>nrm(candidate)===sku)?.[1];
+     // A verified model detail is more useful than the supplier homepage.
+     const link=safeUrl(supplierPage)||safeUrl(selected.manufacturerUrl)||official.url;
      content='<section class="mg-detail"><div class="mg-photo">'+
        (imageResult.image?'<img src="'+esc(imageResult.image)+'" alt="'+esc(model.base)+'" onerror="this.style.display=\'none\'">':'<div class="mg-noimage">Image de référence indisponible</div>')+
        '<small>'+esc(imageResult.caption)+'</small></div><div class="mg-config"><div class="mg-ref">Référence de base : '+esc(model.base)+'</div><h3>'+esc(selected.designation||model.base)+'</h3>'+
