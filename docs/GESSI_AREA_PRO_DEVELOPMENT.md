@@ -16,3 +16,19 @@ Terminé et sauvegardé :
 
 ## Prompt de reprise
 Reprends Hydropolis Studio sur la branche feat/gessi-official-resources-1164. Lis docs/GESSI_AREA_PRO_DEVELOPMENT.md puis docs/REPRISE_CHATGPT.md, les dernières PR et main. Préserve les PR #41/#42 Gessi et la PR Bette #43 ou ses successeurs. Les sources officielles du menu Gessi (9 univers, 79 entrées) sont sauvegardées, mais leur nouvelle intégration UI n'est pas encore réalisée. Continue réellement le configurateur visuel, références/finition/documents exacts et prix issus uniquement du tarif existant. Fais des checkpoints GitHub fréquents, ajoute les tests et vérifie CI, fusion puis Render avant d'annoncer un déploiement. Actualise ce document après chaque étape.
+
+## Sauvegarde 2 — interface visuelle et validations
+
+Base toujours main acd5bf3, version 11.63.8 (aucune nouvelle version déployée).
+
+Réalisé :
+- Le menu public officiel alimente désormais l'explorateur : 9 univers et 79 entrées, dont 18 collections Bathroom. Grandes photographies officielles de collections ; repli sur l'ancien menu si le nouveau fichier est indisponible.
+- Les collections sans tarif sont consultables et renvoient au fabricant ; aucune référence ni aucun prix ajouté artificiellement.
+- Le choix de finition utilise des boutons illustrés (photo exacte vérifiée ou nuancier), avec référence exacte, état sélectionné et une seule image principale.
+- Clavier : confinement du focus dans la fenêtre, fermeture Échap, retour au bouton d'ouverture.
+- 124 tests automatisés réussis via npm run build, y compris conservation des 16 211 objets tarifaires exactement une fois et des prix, provenance des 79 entrées et des images. Six tests Gessi historiques inchangés réussis.
+- Nouveau tests/gessi-visual-browser.js pour desktop/mobile, choix de finition, ajout de l'objet tarifaire original, collections non tarifées et clavier ; ajouté à npm run test:browser. NON exécuté localement : téléchargement Chromium Playwright invalide. La CI doit le confirmer avant fusion.
+
+Partiel : les sous-séries sont conservées dans les données mais pas encore navigables. Les listes d'articles officiels non tarifés, les nouvelles photos par finition et les documents techniques/BIM dynamiques ne sont pas encore intégrés. Les captures 66134 sont disponibles pour ces développements.
+
+Reprise courte : reprendre feat/gessi-official-resources-1164 ; lire ce document et docs/REPRISE_CHATGPT.md ; vérifier la PR de cette branche et la CI, puis le dernier main et PR Bette #43. Terminer/valider le test navigateur avant fusion. Continuer le chargement des articles et sous-séries officiels ainsi que leurs documents, sans modifier les tarifs existants. Faire des commits fréquents. Ne pas annoncer de déploiement sans vérification /api/version et /api/health.
