@@ -110,3 +110,12 @@ Branche de travail : `feat/v11.63.1-brands-pricing-integrity`. PR : https://gith
 - Les vérifications CI Node + Chromium du commit normalisé sont **en cours** à ce checkpoint : vérifier leur conclusion, corriger tout échec, puis fusionner la PR #35 uniquement si la révision finale est validée.
 - Production Render : dernier contrôle direct des endpoints `/api/version` et `/api/health` : **11.63.1**, `ok: true`, PostgreSQL. La 11.63.2 n'est pas déclarée déployée.
 - À poursuivre : contrôle navigateur des liens officiels `hotbath.it` et des visuels réellement décodables ; éviter les nouvelles correspondances inventées ; garder prix, finitions et corps techniques ; ensuite Hidrobox, Bette, Carrodrain, Zucchetti et Lefroy Brooks.
+
+
+### Correctif d'association collections Hotbath — PR #35
+
+- Le tarif source contient des lignes associées à plusieurs collections, par exemple `Ace / Fellow` et `Cobber / Mate`, ainsi que l'orthographe `Cobber-X`. L'ancien index de `public/hotbath-official-guide.js` exigeait `p.collection === nomOfficiel`, excluant silencieusement une partie des tarifs pourtant présents.
+- L'index lit désormais tous les libellés séparés par `/`, normalise l'orthographe contre les **12 collections officielles connues** et référence **la même ligne tarifaire**, sans en créer de copie ni modifier prix, finition, code interne, ou collection d'origine. Les familles n'appartenant pas aux 12 catégories du navigateur (ex. Sparky) restent dans le catalogue source sans être attribuées à une collection inventée.
+- Contrôle analytique du catalogue et des 647 références officielles : **385 modèles tarifés avant**, **611 modèles avec correspondance exacte après** (226 modèles supplémentaires, 36 modèles restant sans ligne tarifaire exacte). C'est une amélioration de liaison, **pas une importation de nouvelles références**. Les tests unitaires correspondants sont dans `tests/v11.63.2-hotbath-refs.test.js`.
+- Commits sur PR #35 : index `3221378c05f0889fd74e925c1e9a9b178c92062c`, tests `e1afdf86baec170a1a9afe67a0909c981b9fbc99`, ajustement de la vraie référence Cobber X `CX003C` au lieu de `CX003` dans le test `50b7ac69ee11cd7137b50ac5f3a818a4f830d7e9`. Le test sur `e1afdf8` avait échoué sur la référence factice du contrôle ; ce cas est corrigé et nécessite la CI du dernier SHA.
+- Continuité : le retrait du suffixe `.IT` et ses alias restent en place ; tests de sauvegarde des projets en production non exécutés ; la PR #35 n'est pas fusionnée et le déploiement Render reste à vérifier après une éventuelle fusion.
