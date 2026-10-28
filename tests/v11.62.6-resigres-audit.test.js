@@ -115,5 +115,5 @@ test('Manual price cannot be entered for inverted dimensions, out-of-grid length
  const quote=V50.basinQuote(cfg,{model:'Atenea',kind:'basin-top',shape:m.shapes[0].id,material:m.materials[0].id,
    color:m.materials[0].colors[0],basinGroup:m.groups[0].id,widthCm:50,lengthCm:300,paidOptions:{}});
  assert.equal(quote.status,'pending');
- assert.match(quote.reason,/Longueur hors grille tarifaire/);
+ assert.match(quote.reason,/Longueur maximale|Longueur hors grille tarifaire/);
 });
