@@ -118,6 +118,65 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     check('Gea SF : 627 € conservés dans la sélection projet',geaSfSaved?.price===627&&geaSfSaved.resigresConfiguration?.total===627);
     report.gea={cf:geaCfPrice.total,sf:geaSfPrice.total};
 
+
+    // Screenshot regression V11.62.9: Atenea must never ask for a manual price for an official priced cell.
+    const atenea=await page.evaluate(()=>{
+      const p=CATALOG.find(x=>x.manufacturer==='Resigres'&&x.resigresModel==='Atenea');
+      return p?{reference:p.reference,key:productKey(p)}:null;
+    });
+    check('Atenea visible dans le catalogue',!!atenea);
+    await page.evaluate(p=>addCatalogProduct(p.reference,state.rooms[0]?.id,p.key),atenea);
+    await page.waitForSelector('#resigresConfigurator .rg50-shape');
+    await page.locator('#resigresConfigurator .rg50-shape').first().click();
+    await page.locator('#rg50Mat').selectOption('solid-surface');
+    await page.locator('#rg50Color').selectOption('S-Blanco');
+    await page.locator('#rg50Group').selectOption('one');
+    await page.locator('#rg50Length').fill('140');
+    await page.locator('#rg50Width').fill('51');
+    await page.waitForFunction(()=>document.querySelector('#resigresConfigurator')?._q?.total===1098);
+    const ateneaQuote=await page.evaluate(()=>document.querySelector('#resigresConfigurator')._q);
+    check('Atenea 140 × 51 Standard S-Blanco = 1098 EUR HT / palier 141',ateneaQuote.total===1098&&ateneaQuote.pricedLength===141);
+    check('Atenea : prix HT 1098 visible sans saisie manuelle',
+      (await page.locator('#rg50Price').innerText()).includes('1 098')&&
+      await page.locator('#rg50ManualWrap').evaluate(el=>el.classList.contains('hidden')));
+    await page.locator('#rg50Length').fill('142');
+    check('Atenea : palier 161 => 1228 EUR HT',(await page.evaluate(()=>document.querySelector('#resigresConfigurator')._q)).total===1228);
+    await page.locator('#rg50Length').fill('140');
+    await page.locator('.rg50-confirm').click();
+    const ateneaSaved=await page.evaluate(()=>state.selected.filter(x=>x.manufacturer==='Resigres'&&x.resigresModel==='Atenea').at(-1));
+    check('Atenea : prix 1098 HT sauvegardé dans le projet',ateneaSaved?.price===1098&&ateneaSaved.resigresConfiguration?.total===1098);
+
+    // Exact-source fixed variants across basins and accessories, exercised in the actual dependent configurator.
+    const fixedChecks=[
+      {name:'Ares',kind:'basin',size:'se',material:'resin',color:'Ártico',expected:299},
+      {name:'Crono',kind:'basin',size:'mini',material:'resin',color:'Ártico',expected:199,extra:66},
+      {name:'Kos / Neo',kind:'basin',size:'kos',material:'resin',color:'Ártico',expected:295},
+      {name:'Gesto / Frame',kind:'basin',size:'gesto-recto',material:'resin',color:'Ártico',expected:376},
+      {name:'Urban',kind:'basin',size:'urban',material:'resin',color:'Ártico',expected:395},
+      {name:'Porte-serviettes',kind:'accessory',size:'frame',material:'wood',color:'Roble',expected:790},
+      {name:'Panneaux / étagères',kind:'accessory',size:'shelf-40',material:'resin',color:'Ártico',expected:140}
+    ];
+    for(const row of fixedChecks){
+      const p=await page.evaluate(item=>{
+        const x=CATALOG.find(x=>x.manufacturer==='Resigres'&&x.resigresModel===item.name&&x.resigresKind===item.kind);
+        return x?{reference:x.reference,key:productKey(x)}:null;
+      },row);
+      check('Catalogue variante Resigres '+row.name,!!p);
+      await page.evaluate(p=>addCatalogProduct(p.reference,state.rooms[0]?.id,p.key),p);
+      await page.waitForSelector('#resigresConfigurator #rg48Size');
+      await page.locator('#rg48Size').selectOption(row.size);
+      await page.locator('#rg48Material').selectOption(row.material);
+      await page.locator('#rg48Color').selectOption(row.color);
+      await page.waitForFunction(expected=>document.querySelector('#resigresConfigurator')?._rg48Quote?.total===expected,row.expected);
+      check('Prix fournisseur automatique '+row.name,(await page.evaluate(()=>document.querySelector('#resigresConfigurator')._rg48Quote)).total===row.expected);
+      if(row.extra){
+        await page.locator('[data-rg48-extra="colored-waste"]').check();
+        check('Supplément bonde '+row.name,(await page.evaluate(()=>document.querySelector('#resigresConfigurator')._rg48Quote)).total===row.expected+row.extra);
+      }
+      await page.locator('.rg-confirm').click();
+      const saved=await page.evaluate(item=>state.selected.filter(x=>x.manufacturer==='Resigres'&&x.resigresModel===item.name&&x.resigresKind===item.kind).at(-1),row);
+      check('Ajout au projet et prix conservé '+row.name,saved?.price===row.expected+(row.extra||0));
+    }
     const recor=await page.evaluate(()=>{const p=CATALOG.find(x=>isRecorBathRequiringFeet(x)&&recorCompatibleFeet(x).length);return {reference:p.reference,key:productKey(p)};});
     await page.evaluate(p=>addCatalogProduct(p.reference,state.rooms[0]?.id,p.key),recor);
     await page.waitForSelector('#recorConfigurator input[name="recorFeet"]');
