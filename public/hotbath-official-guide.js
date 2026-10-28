@@ -63,7 +63,7 @@ function openHotbath(rows,roomId,onAdd){
  const prices=tariffIndex(rows),ALL=48;
  let taxonomy=null,photos=null,loadFailed=false;
  const mount=()=>{
-   overlay=document.createElement('div');overlay.className='mg-overlay';overlay.id='manufacturerGuidedSelector';
+   overlay=document.createElement('div');overlay.className='mg-overlay mg-hotbath-official';overlay.id='manufacturerGuidedSelector';
    overlay.innerHTML='<div class="mg-dialog" role="dialog" aria-modal="true" aria-label="Catalogue Hotbath">'+
       '<div class="mg-header"><span class="mg-brand">Hotbath</span><button type="button" class="mg-close" aria-label="Fermer">×</button></div>'+
       '<div class="mg-content"></div></div>';
@@ -96,6 +96,7 @@ function openHotbath(rows,roomId,onAdd){
  const missing=(label)=>'<div class="mg-empty">'+esc(label)+'</div>';
  function render(){
    if(!overlay?.isConnected)return;
+   overlay.dataset.stage=phase;
    const target=overlay.querySelector('.mg-content');
    if(!taxonomy||!photos){
      target.innerHTML='<div class="mg-section-head"><h2>Catalogue Hotbath</h2></div>'+missing(loadFailed?'Index fabricant indisponible, réessayez plus tard.':'Chargement des collections et références du fabricant…');
@@ -125,9 +126,10 @@ function openHotbath(rows,roomId,onAdd){
      const all=models(),term=clean(search);
      const filtered=all.filter(x=>!term||clean(x.base+' '+String(repr(x)?.designation||'')).includes(term));
      const paged=filtered.slice(offset*ALL,(offset+1)*ALL);
-     body='<div class="mg-search"><label>Rechercher une référence<input id="hb-ref-search" type="search" placeholder="Référence ou désignation…" value="'+esc(search)+'"></label><span>'+filtered.length+' références fabricant</span></div>'+
+    const pictured=filtered.filter(x=>Boolean(photo(x,collection,photos))).length;
+     body='<div class="mg-search"><label>Rechercher une référence<input id="hb-ref-search" type="search" placeholder="Référence ou désignation…" value="'+esc(search)+'"></label><span>'+pictured+' photos / '+filtered.length+' références</span></div>'+
         cards(paged.map(m=>({name:m.base,id:m.base,action:'model',image:photo(m,collection,photos),priced:m.variants.some(v=>price(v)>0),note:m.variants.some(v=>price(v)>0)
-          ?'Prix disponible · '+String(repr(m)?.designation||'').slice(0,100)
+          ?'Tarif disponible · finition à choisir'
           :'Tarif non importé'})),'mg-products mg-official-gallery')+
         (filtered.length>ALL?'<div class="mg-pagination"><button type="button" id="hb-prev" '+(offset===0?'disabled':'')+'>Précédent</button><span>Page '+(offset+1)+' / '+Math.ceil(filtered.length/ALL)+'</span><button type="button" id="hb-next" '+((offset+1)*ALL>=filtered.length?'disabled':'')+'>Suivant</button></div>':'')+
         '<p class="mg-guide-note">Source : <a href="'+esc(supplierLink())+'" target="_blank" rel="noopener noreferrer">catalogue Hotbath · '+esc(category.label)+'</a>. Les articles absents du tarif restent consultables, sans prix estimé.</p>';
