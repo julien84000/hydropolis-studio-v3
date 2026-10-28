@@ -72,3 +72,14 @@ Branche de travail : `feat/v11.63.1-brands-pricing-integrity`. PR : https://gith
 - Tests de régression ajoutés à `tests/v11.63.1-brand-pricing.test.js`, disponibles dans `npm test`. Le rapport technique est dans `docs/BRAND_PRICING_AUDIT_V11.63.1.md`.
 - **Limites des preuves** : ce contrôle confirme l'intégrité des **fichiers importés**, pas leur exhaustivité face aux PDF constructeur ; les images des variantes et la vérification source par page restent à poursuivre. Aucune des anciennes règles Resigres, des ressources Sbordoni ni des catégories Hotbath n'a été modifiée.
 - **À la reprise** : lire la PR #34, son dernier SHA, CI Chromium et le journal technique ; distinguer « branche sauvegardée », « tests réussis », « fusion » et « Render ». Poursuivre la couverture photographique et documentaire Bette / Carrodrain, les collections Hidrobox, puis Zucchetti et Lefroy Brooks. Ne pas remplir des prix absents par estimation.
+
+## Livraison V11.63.1 vérifiée — 28 octobre 2026
+
+- **PR #34 fusionnée** : https://github.com/julien84000/hydropolis-studio-v3/pull/34 ; commit de livraison `d876107246a8b8f55d9061e31cac7c4e2eed6d0b`.
+- **CI sur la branche** : https://github.com/julien84000/hydropolis-studio-v3/actions/runs/40740598388 — tests unitaires, build et Chromium : succès.
+- **CI après fusion** : https://github.com/julien84000/hydropolis-studio-v3/actions/runs/40741003908 — tests unitaires, build et Chromium réalisés avec succès.
+- **Render en ligne** : `GET /api/version` = `11.63.1`, `GET /api/health` = `ok: true`, `version: 11.63.1`, `database: postgresql`. La version 11.63.0 relevée immédiatement après fusion était l'ancienne release pendant propagation.
+- **Livré** : audit exhaustif interne des données Bette (62 264 lignes), Hidrobox (4 479 lignes) et Carrodrain (635 lignes), sans zéro, doublon exact ni référence vide dans ces fichiers. Toutes les lignes Hidrobox respectent l'augmentation de 4 % exactement une fois. Contrôle du prix à la sauvegarde et conservation des références exactes à la réouverture Bette/Carrodrain.
+- **Carrodrain** : galerie 14 familles, **12 réellement tarifées** dans la matrice importée ; Invisible Disco et Kerlox sont proposés comme liens fournisseur, non tarifés automatiquement.
+- **À poursuivre** : comparer ces données importées directement aux tarifs source sur toutes les références (cohérence interne ≠ exhaustivité), compléter les documents et visuels exacts Bette/Hidrobox/Carrodrain, puis Zucchetti et Lefroy Brooks. Préserver Resigres, Sbordoni et Hotbath.
+- Rapport durable : `docs/BRAND_PRICING_AUDIT_V11.63.1.md`. Aucun projet utilisateur ancien n'a été manipulé en production lors de ces tests.
