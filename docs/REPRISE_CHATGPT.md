@@ -248,3 +248,11 @@ La PR #36 (Hidrobox CAO/BIM) a déjà été livrée sous **V11.63.3** et est en 
 - `tests/v11.63.6-gessi-areapro.test.js` (inclus dans `npm test`) : arborescence, 130 associations exactes, sauvegarde des objets tarifaires d'origine, liens fiches et intégration ; version package et lockfile 11.63.7.
 - Limites : ni téléchargement massif des photos Gessi (Area Pro peut résister aux extracteurs), ni validation de chaque visuel du catalogue en production. Les collections sans référence tarifée doivent être visibles mais non sélectionnables ; les références sans collection correspondante restent dans une section séparée, sans affectation fabriquée à une collection officielle. Les documents BIM/CAO sont consultables sur la page officielle : pas encore importés en fichiers.
 - **État non validé au moment de ce checkpoint** : vérifier GitHub Actions Node/Chromium, corriger les régressions éventuelles, puis seulement fusionner. Après fusion, confirmer `/api/version` et `/api/health` sur Render avant de dire « déployé ». Les autres branches en travail, notamment PR #38 Carrodrain, ne doivent pas être écrasées.
+
+
+## 2026-10-28 — Gessi V11.63.8 : correction des collections multi-univers
+
+- À la suite de la PR #41 V11.63.7, une collection Gessi peut être affichée dans plusieurs univers Area Pro. L'ancien index par nom de collection affichait les mêmes SKU partout, y compris des produits de cuisine dans Bathroom ou des produits non électroniques dans Sensor Taps.
+- `public/gessi-area-pro.js`: index par couple univers/collection et allocation univoque des objets tarifaires Gessi. Priorité à l'univers explicite (`universe`, `catalogue`, etc), puis aux familles/propriétés produit attestées (cuisine / électronique / wellness). Ambiguïtés par défaut dans Bathroom si présent; les références non associables restent listées séparément. Aucune modification des tarifs, remises, images 130 finitions certifiées ou des articles conservés.
+- `tests/v11.63.6-gessi-areapro.test.js`: régression multi-univers, comptage sans doublons, priorité des métadonnées explicites. Version 11.63.8 dans package+lock.
+- Validation CI Node/Chromium, fusion et vérification Render **à effectuer**. Les PRs et fonctionnalités précédentes, notamment Carrodrain, doivent rester intactes.
