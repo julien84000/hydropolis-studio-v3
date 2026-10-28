@@ -398,6 +398,28 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     await page.locator('#manufacturerGuidedSelector [data-step="categories"]').click();
     await page.locator('#manufacturerGuidedSelector [data-choose="category"][data-value="3521"]').click();
     await page.waitForSelector('#manufacturerGuidedSelector [data-choose="model"]');
+    // V11.63.1 — historical photos are keyed by exact reference, from the manufacturer's own gallery.
+    check('Hotbath : grille photographique spécifique, sans bandeau opaque',
+      await page.locator('#manufacturerGuidedSelector').evaluate(x=>x.classList.contains('mg-hotbath-official')&&x.dataset.stage==='models'));
+    const modelCard=page.locator('#manufacturerGuidedSelector [data-choose="model"][data-value="AR003"]');
+    const srcAR003=await modelCard.locator('img').getAttribute('src');
+    check('Archie AR003 : photographie exacte historique retrouvée',srcAR003?.includes('hotbath.it/documents/')&&/AR003_1_2023/.test(srcAR003));
+    const productLoaded=await modelCard.locator('img').evaluate(async img=>{
+      if(!img.complete)await Promise.race([new Promise(resolve=>{
+        img.addEventListener('load',resolve,{once:true});img.addEventListener('error',resolve,{once:true});
+      }),new Promise(resolve=>setTimeout(resolve,15000))]);
+      return img.complete&&img.naturalWidth>0;
+    });
+    check('Archie AR003 : photographie historique effectivement affichée',productLoaded);
+    const styleCheck=await modelCard.evaluate(el=>{
+      const meta=getComputedStyle(el.querySelector('.mg-tile-meta'));
+      const img=getComputedStyle(el.querySelector('.mg-tile-photo img'));
+      return meta.position==='static'&&img.objectFit==='contain';
+    });
+    check('Hotbath : référence sous image, objet non recadré',styleCheck);
+    check('Archie AR003M et AR014 illustrés sans permutation de référence',
+      await page.locator('#manufacturerGuidedSelector [data-choose="model"][data-value="AR003M"] img').count()===1&&
+      await page.locator('#manufacturerGuidedSelector [data-choose="model"][data-value="AR014"] img').count()===1);
     const pricedCards=await page.locator('#manufacturerGuidedSelector [data-choose="model"][data-priced="true"]').count();
     check('Au moins une référence Archie a un tarif importé',pricedCards>0);
     await page.locator('#manufacturerGuidedSelector [data-choose="model"][data-priced="true"]').first().click();
