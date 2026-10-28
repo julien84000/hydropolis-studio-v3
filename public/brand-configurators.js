@@ -31,6 +31,18 @@
     }
     return amount;
   }
+  // Official, model-scoped manufacturer photographs, checked on the matching
+  // Bette product pages; these NEVER prove a chosen dimension or finish.
+  // Every unverified family remains unpictured rather than borrowing a neighbour.
+  const verifiedModelPhotos={
+    Bette:{
+      'BetteOcean':'https://content.my-bette.com/produkt_bilder/BetteOcean-133427/185639/image-thumb__185639__ProductEntryThumbImage/BEMI_Ocean_8856_000_UB_Persp1_Website_content.0f5a05ff.png',
+      'BetteStarlet I':'https://content.my-bette.com/produkt_bilder/BetteStarlet-I-134599/186084/image-thumb__186084__ProductEntryThumbImage/BEMI_Starlet_I_8310_790_EB_Website_content.784ee395.png'
+    }
+  };
+  function verifiedModelPhoto(brand,modelName){
+    return trustedImage(verifiedModelPhotos[brand]?.[String(modelName||'').trim()]||'');
+  }
   function mediaFor(brand,p,g,v){
     const model=brand==='Carrodrain'?carrodrainVisual(g):null;
     const supplierDocs=model?root.HydroCarrodrainDocuments?.resolve(model.id,v?.version):null;
@@ -38,7 +50,7 @@
     const technicalSheetUrl=official(brand,v?.technicalSheetUrl)||supplierDocs?.technicalSheetUrl||official(brand,g?.technicalSheetUrl)||official(brand,p?.technicalSheetUrl)||'';
     const installationGuideUrl=supplierDocs?.installationGuideUrl||'';
     const image=trustedImage(v?.image);
-    const representativeImage=!image?trustedImage(model?.image||g?.image||p?.image):'';
+    const representativeImage=!image?trustedImage(model?.image||g?.image||verifiedModelPhoto(brand,g?.family||g?.collection||g?.model)||p?.image):'';
     return {manufacturerUrl,technicalSheetUrl,installationGuideUrl,technicalScope:supplierDocs?.technicalScope||'',installationScope:supplierDocs?.installationScope||'',image,representativeImage};
   }
   function mediaPreview(brand,p,g,v){
@@ -294,7 +306,7 @@
     return sets.flat();
   }
   function eligibleBrand(brand,p){return !!p&&String(p.manufacturer||'').toLowerCase()===brand.toLowerCase()&&String(p.configuratorType||'').toLowerCase()===brand.toLowerCase();}
-  root.HydroBrandCatalogs={load:loadCatalogs,verifiedPublicPrice,initialExactVariant,initialHidroboxDraft};
+  root.HydroBrandCatalogs={load:loadCatalogs,verifiedPublicPrice,initialExactVariant,initialHidroboxDraft,verifiedModelPhoto};
   root.HydroBetteConfigurator={eligible:p=>eligibleBrand('Bette',p),open:openBette,close};
   root.HydroCarrodrainConfigurator={eligible:p=>eligibleBrand('Carrodrain',p),open:openCarrodrain,close,models:CARRODRAIN_MODELS};
   root.HydroHidroboxConfigurator={eligible:p=>eligibleBrand('Hidrobox',p),open:openHidrobox,close,groups:async()=>((await loadJson(BRAND_META.Hidrobox)).groups||[])};
