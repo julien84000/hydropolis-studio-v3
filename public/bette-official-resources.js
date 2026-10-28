@@ -12,8 +12,10 @@ const configurator='https://www.my-bette.com/fr/service/configurateur';
 const downloads='https://www.my-bette.com/fr/service/downloads';
 const models={
   betteair:{page:'https://www.my-bette.com/fr/produits/autres-sujets-sur-les-produits/betteair'},
-  labette:{page:'https://www.my-bette.com/fr/produit/baignoires/labette',
-    technical:'https://content.my-bette.com/produkt_downloads/LaBette-133118/LaBette-1300-700-mm-133474/DS-LaBette-BW_0069-FR.pdf'},
+  // The manufacturer lists the LaBette datasheet under the model page;
+  // its direct media URL was not independently verified. Link the official
+  // product page rather than inventing a PDF asset path.
+  labette:{page:'https://www.my-bette.com/fr/produit/baignoires/labette'},
   bettefloor:{page:'https://www.my-bette.com/fr/produit/receveurs-de-douche-receveurs-ultra-plats/bettefloor'},
   betteflat:{page:'https://www.my-bette.com/fr/produit/receveurs-de-douche-receveurs-ultra-plats/betteflat'},
   bettestarlet:{page:'https://www.my-bette.com/fr/produit/baignoires/bettestarlet'},
