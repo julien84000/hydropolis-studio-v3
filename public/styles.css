@@ -3051,3 +3051,49 @@ main{background:transparent}
 @media(max-width:670px){.rg50-swap-hint,#hydroVersionUpdate{flex-wrap:wrap}#hydroVersionUpdate{top:10px}#hydroVersionReload{flex:1;}}
 
 .sbordoni-documents{width:min(780px,90vw);max-height:85vh;border:1px solid #ddd;border-radius:16px;padding:24px;color:#222}.sbordoni-documents::backdrop{background:rgb(0 0 0 / 45%)}.sbordoni-documents>button{float:right}.sbordoni-documents label{display:grid;gap:8px;margin:20px 0}.sbordoni-documents input{padding:12px}.sbordoni-document-list{display:grid;gap:12px}.sbordoni-document-list a{display:block;padding:10px;border-bottom:1px solid #eee}
+
+/* V11.63.1 — Hotbath product grids based on the manufacturer's collection tiles.
+   Scoped: do not change Zucchetti, Lefroy Brooks, Resigres or project photos. */
+.mg-hotbath-official .mg-section-head h2{font-size:clamp(20px,2.5vw,29px);font-weight:500;letter-spacing:-.025em;}
+.mg-hotbath-official[data-stage="models"] .mg-grid.mg-official-gallery{grid-template-columns:repeat(4,minmax(0,1fr));gap:20px 14px;}
+.mg-hotbath-official .mg-official-gallery .mg-tile{
+  display:flex;flex-direction:column;aspect-ratio:auto;min-height:0;border:0;border-radius:0;
+  box-shadow:none;background:transparent;overflow:visible;transform:none;
+}
+.mg-hotbath-official .mg-official-gallery .mg-tile-photo{
+  position:relative;inset:auto;display:block;width:100%;height:auto;aspect-ratio:1/1;
+  overflow:hidden;background:#f5f3f1;
+}
+.mg-hotbath-official .mg-official-gallery .mg-tile-photo img{
+  display:block;width:100%;height:100%;object-fit:contain;object-position:center;
+  background:transparent;padding:12px;transition:transform .2s ease;
+}
+.mg-hotbath-official .mg-official-gallery .mg-tile-meta{
+  position:static;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;
+  min-height:0;background:transparent;color:#282725;padding:10px 1px 0;text-align:left;
+}
+.mg-hotbath-official .mg-official-gallery .mg-tile-meta strong{
+  color:#282725;font-size:13px;font-weight:600;letter-spacing:.01em;line-height:1.4;
+}
+.mg-hotbath-official .mg-official-gallery .mg-tile-meta small{
+  display:block;color:#80786e;font-size:11px;line-height:1.5;font-weight:400;margin-top:2px;
+}
+.mg-hotbath-official .mg-official-gallery .mg-tile:hover,
+.mg-hotbath-official .mg-official-gallery .mg-tile:focus-visible{
+  border-color:transparent;box-shadow:none;outline-offset:4px;
+}
+.mg-hotbath-official .mg-official-gallery .mg-tile:hover img,
+.mg-hotbath-official .mg-official-gallery .mg-tile:focus-visible img{transform:scale(1.035);}
+.mg-hotbath-official .mg-official-gallery .mg-photo-unavailable{
+  padding:20px 15px;color:#7f7972;font-size:11px;background:#f5f3f1;
+}
+.mg-hotbath-official .mg-grid.mg-categories .mg-tile-photo{background:#f5f3f1;}
+.mg-hotbath-official .mg-grid.mg-categories .mg-tile-photo img{object-fit:contain;padding:15px;}
+@media(max-width:1024px){
+ .mg-hotbath-official[data-stage="models"] .mg-grid.mg-official-gallery{grid-template-columns:repeat(3,minmax(0,1fr));gap:15px 12px;}
+}
+@media(max-width:720px){
+ .mg-hotbath-official[data-stage="models"] .mg-grid.mg-official-gallery{grid-template-columns:repeat(2,minmax(0,1fr));gap:13px 10px;}
+ .mg-hotbath-official .mg-official-gallery .mg-tile-meta{padding-top:7px;}
+ .mg-hotbath-official .mg-official-gallery .mg-tile-photo img{padding:7px;}
+}
