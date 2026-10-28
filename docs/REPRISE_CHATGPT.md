@@ -119,3 +119,11 @@ Branche de travail : `feat/v11.63.1-brands-pricing-integrity`. PR : https://gith
 - Contrôle analytique du catalogue et des 647 références officielles : **385 modèles tarifés avant**, **611 modèles avec correspondance exacte après** (226 modèles supplémentaires, 36 modèles restant sans ligne tarifaire exacte). C'est une amélioration de liaison, **pas une importation de nouvelles références**. Les tests unitaires correspondants sont dans `tests/v11.63.2-hotbath-refs.test.js`.
 - Commits sur PR #35 : index `3221378c05f0889fd74e925c1e9a9b178c92062c`, tests `e1afdf86baec170a1a9afe67a0909c981b9fbc99`, ajustement de la vraie référence Cobber X `CX003C` au lieu de `CX003` dans le test `50b7ac69ee11cd7137b50ac5f3a818a4f830d7e9`. Le test sur `e1afdf8` avait échoué sur la référence factice du contrôle ; ce cas est corrigé et nécessite la CI du dernier SHA.
 - Continuité : le retrait du suffixe `.IT` et ses alias restent en place ; tests de sauvegarde des projets en production non exécutés ; la PR #35 n'est pas fusionnée et le déploiement Render reste à vérifier après une éventuelle fusion.
+
+
+### Qualification des photographies Hotbath (rectification des métriques)
+
+- Les **631/647** associations mentionnées au début de la PR #35 étaient un résultat de recherche de correspondances par nom de fichier sur les pages fournisseur, **pas une validation de disponibilité HTTP des images**. Ne pas reprendre ce chiffre comme couverture photographique réellement affichable.
+- Le contrôle HTTP et décodage raster ultérieur a examiné les **367 archives historiques**, récupéré **158 URL CDN modernes** et constaté **209 URL sans variante CDN prouvée**. L'application affiche maintenant **422 modèles sur 647 avec une URL photographique compatible et vérifiée par ce processus**, et **225 sans photographie fiable**. Source durable : `docs/HOTBATH_CDN_AUDIT.json` et `public/brand-guide-hotbath-media.json`.
+- Le fait qu'une fiche existe sur `hotbath.it` ne prouve pas que son JPEG `/documents/ProdCateg/...` existe encore (AR003 a répondu 404). La preuve photographique de la finition reste distincte du modèle et du prix exact.
+- **Validation nécessaire** : dernière exécution complète de GitHub Actions, images réelles et navigation Chromium avant fusion ; la couverture 422/647 ne doit pas être présentée comme 97,5 %.
