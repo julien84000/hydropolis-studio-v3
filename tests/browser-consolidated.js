@@ -190,11 +190,14 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     await page.locator('#rg50Width').fill('150');
     check('Selene : dimensions inversées ne sont pas tarifées',await page.locator('#rg50Price').innerText()==='—');
     check('Selene : saisie de prix manuel cachée sur dimension hors limite',await page.locator('#rg50ManualWrap').evaluate(x=>x.classList.contains('hidden')));
-    await page.locator('#rg50Width').fill('51');
-    await page.locator('#rg50Length').fill('150');
+    check('Selene : bouton de récupération visible pour les dimensions inversées',await page.locator('#rg50SwapButton').isVisible());
+    await page.locator('#rg50SwapButton').click();
+    check('Selene : inversion rétablit bien longueur 150 / profondeur 51',
+      await page.locator('#rg50Length').inputValue()==='150'&&await page.locator('#rg50Width').inputValue()==='51');
     const validPrice=await page.locator('#rg50Price').innerText();
     check('Selene : prix automatique 907 € HT en 51 × 150 cm',validPrice.includes('907'));
     check('Selene : aucun prix manuel demandé sur matrice certifiée',await page.locator('#rg50ManualWrap').evaluate(x=>x.classList.contains('hidden')));
+    check('Selene : bouton de permutation masqué après correction',!(await page.locator('#rg50SwapButton').isVisible()));
     await page.locator('#resigresConfigurator .rg50-close').click();
     check('aucune erreur JavaScript',report.errors.length===0);
     await page.evaluate(()=>{document.querySelector('#manufacturerFilter').value='Sira Concrete';document.querySelector('#manufacturerFilter').dispatchEvent(new Event('change'));});
