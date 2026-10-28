@@ -1,0 +1,88 @@
+name: Sbordoni HD compositions rebuild
+
+on:
+  push:
+    branches:
+      - work/sbordoni-after-resigres-116211
+    paths:
+      - .github/workflows/sbordoni-hd-rebuild.yml
+      - scripts/extract-sbordoni-compositions.py
+      - public/sbordoni/compositions/provenance.json
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sbordoni-hd-rebuild
+  cancel-in-progress: false
+
+jobs:
+  rebuild-images:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install PDF image tools
+        run: python -m pip install "PyMuPDF==1.26.4" "Pillow==11.3.0"
+      - name: Fetch exact manufacturer source PDF
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 --retry-all-errors \
+            --connect-timeout 25 --max-time 300 \
+            --output "$RUNNER_TEMP/Cat_SBORDONI.pdf" \
+            https://www.sbordoniceramica.com/download/Cat_SBORDONI.pdf
+          ls -lh "$RUNNER_TEMP/Cat_SBORDONI.pdf"
+      - name: Extract and verify all 99 compositions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/extract-sbordoni-compositions.py \
+            "$RUNNER_TEMP/Cat_SBORDONI.pdf" \
+            --contact-sheet sbordoni-hd-review.jpg
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          data=json.loads(Path("public/sbordoni/compositions/hd-manifest.json").read_text())
+          assert data["count"]==99
+          for name, rec in data["images"].items():
+              assert rec["pixelSize"][0]>=110 and rec["pixelSize"][1]>=70, name
+              assert rec["bytes"]>=2500, name
+          print(f"Validated {data['count']} verified Sbordoni HD files")
+          PY
+      - name: Upload image quality report and contact sheet
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbordoni-hd-99-contact-sheet
+          if-no-files-found: error
+          retention-days: 30
+          path: |
+            sbordoni-hd-review.jpg
+            public/sbordoni/compositions/hd-manifest.json
+      - name: Build and run non-browser tests
+        shell: bash
+        run: |
+          npm ci
+          npm run check
+          npm test
+          npm run build
+      - name: Commit verified manufacturer images to source branch
+        if: github.ref == 'refs/heads/work/sbordoni-after-resigres-116211'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add public/sbordoni/compositions/*.jpg public/sbordoni/compositions/hd-manifest.json
+          if git diff --cached --quiet; then
+            echo "No source asset changes"
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "Sbordoni: 99 HD manufacturer compositions (verified source PDF)"
+            git push origin "HEAD:refs/heads/work/sbordoni-after-resigres-116211"
+          fi
