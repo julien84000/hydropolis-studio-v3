@@ -33,11 +33,13 @@
   }
   function mediaFor(brand,p,g,v){
     const model=brand==='Carrodrain'?carrodrainVisual(g):null;
+    const supplierDocs=model?root.HydroCarrodrainDocuments?.resolve(model.id,v?.version):null;
     const manufacturerUrl=model?.url||official(brand,v?.manufacturerUrl)||official(brand,g?.manufacturerUrl)||official(brand,p?.manufacturerUrl)||OFFICIAL_HOME[brand];
-    const technicalSheetUrl=official(brand,v?.technicalSheetUrl)||official(brand,g?.technicalSheetUrl)||official(brand,p?.technicalSheetUrl)||'';
+    const technicalSheetUrl=official(brand,v?.technicalSheetUrl)||supplierDocs?.technicalSheetUrl||official(brand,g?.technicalSheetUrl)||official(brand,p?.technicalSheetUrl)||'';
+    const installationGuideUrl=supplierDocs?.installationGuideUrl||'';
     const image=trustedImage(v?.image);
     const representativeImage=!image?trustedImage(model?.image||g?.image||p?.image):'';
-    return {manufacturerUrl,technicalSheetUrl,image,representativeImage};
+    return {manufacturerUrl,technicalSheetUrl,installationGuideUrl,technicalScope:supplierDocs?.technicalScope||'',installationScope:supplierDocs?.installationScope||'',image,representativeImage};
   }
   function mediaPreview(brand,p,g,v){
     const m=mediaFor(brand,p,g,v),src=m.image||m.representativeImage;
@@ -45,8 +47,9 @@
       ?'<img src="'+esc(src)+'" alt="Visuel '+esc(g?.family||g?.collection||g?.model||brand)+'" loading="lazy" style="width:108px;height:108px;object-fit:contain;background:#fff;border:1px solid #e2e2e2;border-radius:8px">'
       :'<div style="display:flex;align-items:center;justify-content:center;max-width:130px;min-height:86px;padding:8px;text-align:center;border:1px solid #e2e2e2;border-radius:8px;font-size:12px">Visuel exact à rechercher</div>';
     const note=m.image?'Visuel de la référence sélectionnée':m.representativeImage?'Visuel de collection · finition non garantie':'La photo fabricant sera recherchée après ajout';
-    const tech=m.technicalSheetUrl?' · <a href="'+esc(m.technicalSheetUrl)+'" target="_blank" rel="noopener noreferrer">Fiche technique</a>':'';
-    return '<div class="brand-config-media" style="display:flex;flex-direction:column;align-items:center;gap:6px">'+photo+'<small style="font-size:11px;text-align:center">'+esc(note)+'<br><a href="'+esc(m.manufacturerUrl)+'" target="_blank" rel="noopener noreferrer">Voir le produit chez '+esc(brand)+'</a>'+tech+'</small></div>';
+    const tech=m.technicalSheetUrl?' · <a href="'+esc(m.technicalSheetUrl)+'" target="_blank" rel="noopener noreferrer">'+(m.technicalScope==='exact-version'?'Fiche technique '+esc(v?.version||''):'Fiche technique fabricant · famille')+'</a>':'';
+    const install=m.installationGuideUrl?' · <a href="'+esc(m.installationGuideUrl)+'" target="_blank" rel="noopener noreferrer">Notice de pose · famille</a>':'';
+    return '<div class="brand-config-media" style="display:flex;flex-direction:column;align-items:center;gap:6px">'+photo+'<small style="font-size:11px;text-align:center">'+esc(note)+'<br><a href="'+esc(m.manufacturerUrl)+'" target="_blank" rel="noopener noreferrer">Voir le produit chez '+esc(brand)+'</a>'+tech+install+'</small></div>';
   }
 
   // Official Carrodrain storefront model images (collection illustrations).
@@ -232,7 +235,7 @@
         const selected=rows.find(v=>v.reference===draft.reference)||exact;if(!selected)throw new Error('Référence Carrodrain introuvable.');
         const price=verifiedPublicPrice('Carrodrain',selected);
         const media=mediaFor('Carrodrain',p,g,selected);
-        const configured={manufacturer:'Carrodrain',collection:g.model,reference:selected.reference,base:selected.reference,designation:[g.model,selected.version,selected.length,selected.finish].filter(Boolean).join(' · '),category:'Caniveau de douche',finish:selected.finish||'',price,totalPrice:price,currency:'€',vat:'HT',source:'CD.L2027.pdf',sourceYear:2027,manufacturerUrl:media.manufacturerUrl,image:media.image||media.representativeImage,imageSource:media.image?'Visuel exact fabricant':'Visuel de collection Carrodrain · finition illustrative',imageFinishMatch:media.image?'exact':'collection',technicalSheetUrl:media.technicalSheetUrl,purchaseDiscount:50,configuratorType:'carrodrain-configured'};
+        const configured={manufacturer:'Carrodrain',collection:g.model,reference:selected.reference,base:selected.reference,designation:[g.model,selected.version,selected.length,selected.finish].filter(Boolean).join(' · '),category:'Caniveau de douche',finish:selected.finish||'',price,totalPrice:price,currency:'€',vat:'HT',source:'CD.L2027.pdf',sourceYear:2027,manufacturerUrl:media.manufacturerUrl,image:media.image||media.representativeImage,imageSource:media.image?'Visuel exact fabricant':'Visuel de collection Carrodrain · finition illustrative',imageFinishMatch:media.image?'exact':'collection',technicalSheetUrl:media.technicalSheetUrl,technicalSheetLabel:media.technicalScope==='exact-version'?'Fiche technique Carrodrain '+selected.version:'Fiche technique Carrodrain · famille',installationGuideUrl:media.installationGuideUrl,installationGuideLabel:'Notice de pose Carrodrain · famille',purchaseDiscount:50,configuratorType:'carrodrain-configured'};
         commitConfigured(configured,roomId,'carrodrainConfiguration',{group:g.id,model:g.model,version:selected.version,length:selected.length,finish:selected.finish,reference:selected.reference});
       }catch(e){overlay.querySelector('.recor-config-error').textContent=e.message||String(e)}};
     };
