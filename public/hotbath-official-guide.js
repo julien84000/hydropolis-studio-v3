@@ -43,11 +43,23 @@ function officialModels(collection,category,index){
  return (category?.refs||[]).map(base=>({base,variants:priced.get(clean(base))||[],source:'official'}));
 }
 function photo(model,collection,photos){
+ // Always select by collection AND exact catalogue model code.
+ // Older official Hotbath imagery is served from hotbath.it; the historical
+ // filename must still identify the requested model. No generic fallback.
  const dict=photos?.byCollection?.[collection]||{};
- const key=clean(model.base);
- let url='';
- for(const [ref,pic] of Object.entries(dict))if(clean(ref)===key){url=pic;break}
- return /^https:\/\/hotbath\.com\/images\/compano\//.test(url)?url:'';
+ const key=clean(model?.base);
+ if(!key)return '';
+ for(const [ref,url] of Object.entries(dict)){
+  if(clean(ref)!==key||typeof url!=='string')continue;
+  const current=url.match(/^https:\/\/hotbath\.com\/images\/compano\/([^/?#]+)\//i);
+  if(current&&clean(current[1])===key)return url;
+  const historical=url.match(/^https:\/\/(?:www\.)?hotbath\.it\/documents\/ProdCateg\/\d+\/([^/?#]+\.(?:jpe?g|png))(?:\?.*)?$/i);
+  if(historical){
+   const code=decodeURIComponent(historical[1]).replace(/\.[^.]+$/,'').split('_')[0];
+   if(clean(code)===key)return url;
+  }
+ }
+ return '';
 }
 function categories(collection,taxonomy,index){
  const items=(taxonomy?.collections?.[collection]||[]).filter(x=>Array.isArray(x.refs));
