@@ -1,5 +1,5 @@
 {
-  "version": "2026-FR-v9",
+  "version": "2026-FR-v10",
   "source": "Tarif_FR_2026.pdf",
   "pricingPolicy": "V11.51: grilles standard/sur mesure = palier supérieur; receveurs Contract = surface réelle × tarif €/m² avec minimum de facturation; plans vasque Contract = tarif au cm + intégration vasque + options.",
   "global": {
@@ -422,7 +422,13 @@
             "Pizarra sur mesure",
             "Lisa",
             "Solid Surface"
-          ]
+          ],
+          "pricingRuleByFinish": {
+            "Pizarra standard": "quarter-pizarra-standard",
+            "Pizarra sur mesure": "quarter-pizarra-custom",
+            "Lisa": "quarter-lisa",
+            "Solid Surface": "quarter-solid"
+          }
         }
       ],
       "supplements": [
@@ -481,7 +487,146 @@
           ]
         },
         "rule": "ceil-upper-tier"
-      }
+      },
+      "pricingRules": [
+        {
+          "id": "quarter-pizarra-standard",
+          "label": "1/4 rond Pizarra standard",
+          "type": "matrix",
+          "sourcePage": "4",
+          "widths": [
+            80,
+            90,
+            100
+          ],
+          "lengths": [
+            80,
+            90,
+            100
+          ],
+          "intermediateRule": "standard-only",
+          "matrix": [
+            [
+              310,
+              null,
+              null
+            ],
+            [
+              null,
+              381,
+              null
+            ],
+            [
+              null,
+              null,
+              448
+            ]
+          ]
+        },
+        {
+          "id": "quarter-pizarra-custom",
+          "label": "1/4 rond Pizarra sur mesure",
+          "type": "matrix",
+          "sourcePage": "4",
+          "widths": [
+            80,
+            90,
+            100
+          ],
+          "lengths": [
+            80,
+            90,
+            100
+          ],
+          "intermediateRule": "standard-only",
+          "matrix": [
+            [
+              340,
+              null,
+              null
+            ],
+            [
+              null,
+              416,
+              null
+            ],
+            [
+              null,
+              null,
+              489
+            ]
+          ]
+        },
+        {
+          "id": "quarter-lisa",
+          "label": "1/4 rond Lisa",
+          "type": "matrix",
+          "sourcePage": "4",
+          "widths": [
+            80,
+            90,
+            100
+          ],
+          "lengths": [
+            80,
+            90,
+            100
+          ],
+          "intermediateRule": "standard-only",
+          "matrix": [
+            [
+              436,
+              null,
+              null
+            ],
+            [
+              null,
+              508,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ]
+          ]
+        },
+        {
+          "id": "quarter-solid",
+          "label": "1/4 rond Solid Surface",
+          "type": "matrix",
+          "sourcePage": "4",
+          "widths": [
+            80,
+            90,
+            100
+          ],
+          "lengths": [
+            80,
+            90,
+            100
+          ],
+          "intermediateRule": "standard-only",
+          "matrix": [
+            [
+              680,
+              null,
+              null
+            ],
+            [
+              null,
+              714,
+              null
+            ],
+            [
+              null,
+              null,
+              859
+            ]
+          ]
+        }
+      ],
+      "pricingCoverage": "1/4 rond 80×80,90×90,100×100; other central configurations still pending"
     },
     {
       "name": "Extraplano Contract",
@@ -4980,7 +5125,147 @@
         "color",
         "options"
       ],
-      "dependencyMode": "safe-manual"
+      "dependencyMode": "partial-exact-2026",
+      "dependencyMatrix": {
+        "type": "dependent-combinations",
+        "sourcePage": "38",
+        "steps": [
+          "size",
+          "material",
+          "color"
+        ],
+        "pricingScope": "Tarif_FR_2026.pdf imprimé p38: uniquement variantes et matières déchiffrées; pas de substitution entre ensembles.",
+        "sizes": [
+          {
+            "id": "axis-free",
+            "label": "Vasque Axis seule · Ø 39 × H 20 cm",
+            "materials": [
+              {
+                "id": "lisa",
+                "label": "Lisa/Pizarra",
+                "finish": "Lisa",
+                "colors": [
+                  {
+                    "id": "Gris 7015",
+                    "label": "Gris 7015",
+                    "price": 390
+                  },
+                  {
+                    "id": "Ártico",
+                    "label": "Ártico",
+                    "price": 390
+                  },
+                  {
+                    "id": "Lino",
+                    "label": "Lino",
+                    "price": 390
+                  },
+                  {
+                    "id": "Antracita",
+                    "label": "Antracita",
+                    "price": 390
+                  },
+                  {
+                    "id": "Moka",
+                    "label": "Moka",
+                    "price": 390
+                  },
+                  {
+                    "id": "Piedra",
+                    "label": "Piedra",
+                    "price": 390
+                  },
+                  {
+                    "id": "Arena",
+                    "label": "Arena",
+                    "price": 390
+                  },
+                  {
+                    "id": "Negro",
+                    "label": "Negro",
+                    "price": 390
+                  },
+                  {
+                    "id": "Basalto",
+                    "label": "Basalto",
+                    "price": 390
+                  },
+                  {
+                    "id": "RAL/NCS",
+                    "label": "RAL/NCS",
+                    "customCode": true,
+                    "price": 455
+                  }
+                ]
+              },
+              {
+                "id": "solid",
+                "label": "Solid Surface",
+                "finish": "Solid Surface",
+                "colors": [
+                  {
+                    "id": "S-Blanco",
+                    "label": "S-Blanco",
+                    "price": 470
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "axis-wall",
+            "label": "Vasque Axis avec support mural · Ø39 × H30 cm",
+            "materials": [
+              {
+                "id": "solid",
+                "label": "Solid Surface",
+                "finish": "Solid Surface",
+                "colors": [
+                  {
+                    "id": "S-Blanco",
+                    "label": "S-Blanco",
+                    "price": 780
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "axis-floor",
+            "label": "Axis avec pied au sol · Ø39 × H90 cm",
+            "materials": [
+              {
+                "id": "solid",
+                "label": "Solid Surface",
+                "finish": "Solid Surface",
+                "colors": [
+                  {
+                    "id": "S-Blanco",
+                    "label": "S-Blanco",
+                    "price": 1763
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "supplements": [
+        {
+          "id": "colored-waste",
+          "label": "Bonde clic colorée",
+          "amount": 55,
+          "type": "fixed",
+          "sourcePage": "38"
+        },
+        {
+          "id": "jointless",
+          "label": "Assemblage sans joints (version avec pied)",
+          "amount": 90,
+          "type": "fixed",
+          "sourcePage": "38"
+        }
+      ]
     },
     {
       "name": "Ares",
@@ -7552,10 +7837,55 @@
             "unit": "ud"
           }
         ],
-        "pricingMode": "manual-safe",
+        "pricingMode": "partial-automatic",
         "notes": [
-          "Les disponibilités de tiroirs intérieurs dépendent de la largeur et de la configuration."
-        ]
+          "Les disponibilités de tiroirs intérieurs dépendent de la largeur et de la configuration.",
+          "Prix automatiques uniquement type H45 1 tiroir + plan 1 vasque jusqu'à 140 cm, matières et finitions tarifées page 60 ; autres compositions à compléter."
+        ],
+        "priceTablesByType": {
+          "h45-1d-1b": {
+            "minLengthCm": 60,
+            "lengthTiers": [
+              60,
+              80,
+              100,
+              120,
+              140
+            ],
+            "prices": {
+              "lacquer:lisa": [
+                1889,
+                2160,
+                2380,
+                2829,
+                3052
+              ],
+              "wood:lisa": [
+                1998,
+                2268,
+                2595,
+                2978,
+                3209
+              ],
+              "lacquer:gpc": [
+                3998,
+                4029,
+                4431,
+                4819,
+                5063
+              ],
+              "wood:gpc": [
+                4060,
+                4104,
+                4500,
+                4908,
+                5257
+              ]
+            },
+            "sourcePage": "60",
+            "priceIncludesTop": true
+          }
+        }
       }
     },
     {
@@ -7576,8 +7906,31 @@
         "mode": "collection",
         "types": [
           {
-            "id": "gesto",
-            "label": "Meuble Gesto sur mesure"
+            "id": "h30",
+            "label": "H30 · meuble Gesto",
+            "heightCm": 30,
+            "widthRange": [
+              1,
+              51
+            ]
+          },
+          {
+            "id": "h60",
+            "label": "H60 · meuble Gesto",
+            "heightCm": 60,
+            "widthRange": [
+              1,
+              51
+            ]
+          },
+          {
+            "id": "h75",
+            "label": "H75 · meuble Gesto",
+            "heightCm": 75,
+            "widthRange": [
+              1,
+              51
+            ]
           }
         ],
         "dimensionRules": {
@@ -7654,10 +8007,85 @@
             "unit": "forfait"
           }
         ],
-        "pricingMode": "manual-safe",
+        "pricingMode": "partial-automatic",
         "notes": [
-          "Top intégré et tops meubles disponibles selon configuration."
-        ]
+          "Top intégré et tops meubles disponibles selon configuration.",
+          "H30/H60/H75 : dimensions et prix explicites p62, cinq paliers restent sous revue si cellule non lisible; tops additionnels non inclus au prix du meuble."
+        ],
+        "priceTablesByType": {
+          "h30": {
+            "minLengthCm": 40,
+            "lengthTiers": [
+              60,
+              80,
+              100,
+              120,
+              140
+            ],
+            "prices": {
+              "lacquer": [
+                1130,
+                1198,
+                1272,
+                1482,
+                1579
+              ],
+              "wood": [
+                1221,
+                1279,
+                1343,
+                1582,
+                null
+              ]
+            },
+            "sourcePage": "62"
+          },
+          "h60": {
+            "minLengthCm": 40,
+            "lengthTiers": [
+              60,
+              80,
+              100,
+              120,
+              140
+            ],
+            "prices": {
+              "lacquer": [
+                1520,
+                1579,
+                null,
+                1898,
+                2017
+              ],
+              "wood": [
+                1575,
+                1633,
+                1685,
+                1917,
+                2030
+              ]
+            },
+            "sourcePage": "62"
+          },
+          "h75": {
+            "minLengthCm": 40,
+            "lengthTiers": [
+              50,
+              60
+            ],
+            "prices": {
+              "lacquer": [
+                1536,
+                1599
+              ],
+              "wood": [
+                1625,
+                1687
+              ]
+            },
+            "sourcePage": "62"
+          }
+        }
       }
     },
     {
@@ -8133,7 +8561,7 @@
         "color",
         "options"
       ],
-      "dependencyMode": "partial-fixed-variants-2026",
+      "dependencyMode": "partial-dynamic-area-and-fixed-shelf",
       "dependencyMatrix": {
         "type": "dependent-combinations",
         "steps": [
@@ -8446,10 +8874,201 @@
                 ]
               }
             ]
+          },
+          {
+            "id": "panel-area",
+            "label": "Panneau sur mesure · épaisseur 2,5 cm · longueur ≤240 cm",
+            "dynamicArea": true,
+            "dimensionLabels": [
+              "Largeur du panneau",
+              "Longueur du panneau"
+            ],
+            "widthRange": [
+              1,
+              120
+            ],
+            "lengthRange": [
+              1,
+              240
+            ],
+            "minSqm": 0.3,
+            "sourcePage": "71",
+            "materials": [
+              {
+                "id": "resin",
+                "label": "Pizarra / Lisa",
+                "finish": "Lisa/Pizarra",
+                "colors": [
+                  {
+                    "id": "Gris 7015",
+                    "label": "Gris 7015",
+                    "pricePerSqm": 290
+                  },
+                  {
+                    "id": "Ártico",
+                    "label": "Ártico",
+                    "pricePerSqm": 290
+                  },
+                  {
+                    "id": "Lino",
+                    "label": "Lino",
+                    "pricePerSqm": 290
+                  },
+                  {
+                    "id": "Antracita",
+                    "label": "Antracita",
+                    "pricePerSqm": 290
+                  },
+                  {
+                    "id": "Moka",
+                    "label": "Moka",
+                    "pricePerSqm": 290
+                  },
+                  {
+                    "id": "Piedra",
+                    "label": "Piedra",
+                    "pricePerSqm": 290
+                  },
+                  {
+                    "id": "Arena",
+                    "label": "Arena",
+                    "pricePerSqm": 290
+                  },
+                  {
+                    "id": "Negro",
+                    "label": "Negro",
+                    "pricePerSqm": 290
+                  },
+                  {
+                    "id": "Basalto",
+                    "label": "Basalto",
+                    "pricePerSqm": 290
+                  },
+                  {
+                    "id": "RAL/NCS",
+                    "label": "RAL/NCS",
+                    "customCode": true,
+                    "pricePerSqm": 325
+                  }
+                ]
+              },
+              {
+                "id": "solid",
+                "label": "Solid Surface",
+                "finish": "Solid Surface",
+                "colors": [
+                  {
+                    "id": "S-Blanco",
+                    "label": "S-Blanco",
+                    "pricePerSqm": 395
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "plinth-area",
+            "label": "Socle sur mesure · épaisseur 0,4 cm · longueur ≤240 cm",
+            "dynamicArea": true,
+            "dimensionLabels": [
+              "Hauteur du socle",
+              "Longueur du socle"
+            ],
+            "widthRange": [
+              1,
+              20
+            ],
+            "lengthRange": [
+              1,
+              240
+            ],
+            "minSqm": 0.3,
+            "sourcePage": "71",
+            "materials": [
+              {
+                "id": "resin",
+                "label": "Pizarra / Lisa",
+                "finish": "Lisa/Pizarra",
+                "colors": [
+                  {
+                    "id": "Gris 7015",
+                    "label": "Gris 7015",
+                    "pricePerSqm": 290
+                  },
+                  {
+                    "id": "Ártico",
+                    "label": "Ártico",
+                    "pricePerSqm": 290
+                  },
+                  {
+                    "id": "Lino",
+                    "label": "Lino",
+                    "pricePerSqm": 290
+                  },
+                  {
+                    "id": "Antracita",
+                    "label": "Antracita",
+                    "pricePerSqm": 290
+                  },
+                  {
+                    "id": "Moka",
+                    "label": "Moka",
+                    "pricePerSqm": 290
+                  },
+                  {
+                    "id": "Piedra",
+                    "label": "Piedra",
+                    "pricePerSqm": 290
+                  },
+                  {
+                    "id": "Arena",
+                    "label": "Arena",
+                    "pricePerSqm": 290
+                  },
+                  {
+                    "id": "Negro",
+                    "label": "Negro",
+                    "pricePerSqm": 290
+                  },
+                  {
+                    "id": "Basalto",
+                    "label": "Basalto",
+                    "pricePerSqm": 290
+                  },
+                  {
+                    "id": "RAL/NCS",
+                    "label": "RAL/NCS",
+                    "customCode": true,
+                    "pricePerSqm": 325
+                  }
+                ]
+              },
+              {
+                "id": "solid",
+                "label": "Solid Surface",
+                "finish": "Solid Surface",
+                "colors": [
+                  {
+                    "id": "S-Blanco",
+                    "label": "S-Blanco",
+                    "pricePerSqm": 395
+                  }
+                ]
+              }
+            ]
           }
         ],
-        "pricingScope": "Exact variants explicitly listed in the manufacturer 2026 price sheet; no interpolation or extrapolation; other versions remain to import."
-      }
+        "pricingScope": "Étagères avec 4 longueurs fixes et panneaux/socles au m² (surface réelle avec minimum de 0,3 m²), finition et dimensions selon page 71; autres prestations non extrapolées."
+      },
+      "supplements": [
+        {
+          "id": "finished-edge",
+          "label": "Bords finis",
+          "type": "fixed",
+          "amount": 60,
+          "sourcePage": "71"
+        }
+      ]
     }
   ],
   "spareParts": {

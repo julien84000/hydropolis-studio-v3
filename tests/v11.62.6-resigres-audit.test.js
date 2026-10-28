@@ -17,8 +17,8 @@ function engine(name){
 }
 const V49=engine('v1149-pricing'),V50=engine('v1150-pricing');
 const categoryCounts={'Receveur':7,'Plan de vasque':6,'Plan de vasque pour meuble':6,'Vasque':6,'Baignoire':4,'Meuble':4,'Miroir':3,'Complément':2};
-const knownAuto=new Set(['Extraplano Contract|shower-tray','Vento / Vento Contract|shower-tray','Cosmo / Cosmo Contract|shower-tray','Urban|shower-tray','Nix / Nix Contract|shower-tray','Vento CF|basin-top','Cosmo CF|basin-top','Gea CF|basin-top','Urban CF|basin-top','Contract CF|basin-top','Atenea|basin-top','Selene|furniture-basin-top','Vento SF|furniture-basin-top','Cosmo SF|furniture-basin-top','Gea SF|furniture-basin-top','Urban SF|furniture-basin-top','Contract SF|furniture-basin-top','Tiroirs sur mesure|furniture','Nalu|bath','Delia|bath','RD / SQ|mirror','FS / FL|mirror','Nesta|bath','Vento|bath','Ares|basin','Crono|basin','Kos / Neo|basin','Gesto / Frame|basin','Urban|basin','Porte-serviettes|accessory','Panneaux / étagères|accessory']);
-const pendingMatrix=new Set(['Extraplano Latéral|shower-tray','Extraplano Central / 1/4 rond|shower-tray','Portes, vides et colonnes|furniture','Frame|furniture','Gesto|furniture']);
+const knownAuto=new Set(['Extraplano Central / 1/4 rond|shower-tray','Extraplano Contract|shower-tray','Vento / Vento Contract|shower-tray','Cosmo / Cosmo Contract|shower-tray','Urban|shower-tray','Nix / Nix Contract|shower-tray','Vento CF|basin-top','Cosmo CF|basin-top','Gea CF|basin-top','Urban CF|basin-top','Contract CF|basin-top','Atenea|basin-top','Selene|furniture-basin-top','Vento SF|furniture-basin-top','Cosmo SF|furniture-basin-top','Gea SF|furniture-basin-top','Urban SF|furniture-basin-top','Contract SF|furniture-basin-top','Tiroirs sur mesure|furniture','Frame|furniture','Gesto|furniture','Nalu|bath','Delia|bath','RD / SQ|mirror','FS / FL|mirror','Nesta|bath','Vento|bath','Axis|basin','Ares|basin','Crono|basin','Kos / Neo|basin','Gesto / Frame|basin','Urban|basin','Porte-serviettes|accessory','Panneaux / étagères|accessory']);
+const pendingMatrix=new Set(['Extraplano Latéral|shower-tray','Portes, vides et colonnes|furniture']);
 const key=m=>m.name+'|'+m.kind;
 test('Resigres: 38 model configurations match every imported catalogue article and all 8 categories',()=>{
  assert.equal(cfg.models.length,38);
@@ -28,18 +28,18 @@ test('Resigres: 38 model configurations match every imported catalogue article a
  assert.deepEqual([...productNames].sort(),[...configNames].sort());
  const counts={};for(const m of cfg.models)counts[m.category]=(counts[m.category]||0)+1;
  assert.deepEqual(counts,categoryCounts);
- assert.equal(cfg.version,'2026-FR-v9');
+ assert.equal(cfg.version,'2026-FR-v10');
  assert.ok(cfg.models.every(m=>/^\d{1,2}(?:-\d{1,2})?$/.test(String(m.sourcePage||''))));
 });
 test('Resigres: classify all 38 models by pricing evidence, never assume missing matrices are priced',()=>{
  const uncoded=cfg.models.filter(m=>!knownAuto.has(key(m))&&!pendingMatrix.has(key(m)));
- assert.equal(knownAuto.size,31);
- assert.equal(pendingMatrix.size,5);
- assert.equal(uncoded.length,2);
+ assert.equal(knownAuto.size,35);
+ assert.equal(pendingMatrix.size,2);
+ assert.equal(uncoded.length,1);
  for(const model of cfg.models){
    const name=key(model);
    if(knownAuto.has(name)){
-     assert.ok((model.pricingRules||[]).length||model.v50BasinTop?.pricingMode?.startsWith('automatic')||model.v50Furniture?.pricingMode==='automatic'||model.dependencyMatrix?.type==='dependent-combinations','Expected a pricing rule for '+name);
+     assert.ok((model.pricingRules||[]).length||model.v50BasinTop?.pricingMode?.startsWith('automatic')||['automatic','partial-automatic'].includes(model.v50Furniture?.pricingMode)||model.dependencyMatrix?.type==='dependent-combinations','Expected a pricing rule for '+name);
    }
    if(pendingMatrix.has(name)&&model.v50BasinTop){
      assert.equal(model.v50BasinTop.pricingMode,'manual-safe',name);
@@ -102,7 +102,7 @@ test('Other Resigres families: fixed certified examples and rules remain functio
  assert.equal(drawers.status,'automatic');assert.equal(drawers.basePrice,406);
  const pending=V50.furnitureQuote(cfg,{model:'Frame',type:'h45-1d-1b',material:'lacquer',
    color:'Arena',widthCm:48,lengthCm:100,heightCm:45,depthCm:48,paidOptions:{}});
- assert.equal(pending.status,'pending');assert.match(pending.reason,/page 60/);
+ assert.equal(pending.status,'pending');assert.match(pending.reason,/finition et le coloris du plan vasque/);
 });
 test('Manual price cannot be entered for inverted dimensions, out-of-grid lengths or incomplete furniture/shower details',()=>{
  assert.match(app,/Longueur du plan \(cm\)<input id="rg50Length"/);
@@ -248,4 +248,64 @@ test('V11.62.9: cross-category supplier variant tariffs and commercial options, 
  assert.equal(waste.total,265);
  assert.equal(V48.dependentQuote(cfg,{model:'Ares',kind:'basin',size:'h90',material:'resin',color:'Ártico'}).status,'pending');
  assert.equal(V48.dependentQuote(cfg,{model:'Panneaux / étagères',kind:'accessory',size:'shelf-80',material:'resin',color:'RAL/NCS'}).total,226);
+});
+
+test('V11.62.10: source p4 receveur Extraplano 1/4 rond uniquement aux dimensions standards',()=>{
+ const config=(w,l,finish)=>({model:'Extraplano Central / 1/4 rond',kind:'shower-tray',variant:'quarter',finish,color:'Ártico',widthCm:w,lengthCm:l,options:[]});
+ assert.equal(V49.showerQuote(cfg,config(80,80,'Pizarra standard')).total,310);
+ assert.equal(V49.showerQuote(cfg,config(90,90,'Pizarra standard')).total,381);
+ assert.equal(V49.showerQuote(cfg,config(100,100,'Solid Surface')).total,859);
+ assert.equal(V49.showerQuote(cfg,config(90,90,'Pizarra sur mesure')).total,416);
+ assert.equal(V49.showerQuote(cfg,config(85,85,'Pizarra standard')).status,'pending');
+ assert.equal(V49.showerQuote(cfg,config(90,100,'Pizarra standard')).status,'pending');
+ assert.equal(V49.showerQuote(cfg,config(100,100,'Lisa')).status,'pending');
+});
+test('V11.62.10: Frame H45 avec plan et Gesto par hauteur : grilles fabricant et protections',()=>{
+ const frame={model:'Frame',kind:'furniture',type:'h45-1d-1b',material:'lacquer',color:'Arena',topFinish:'lisa',topColor:'Ártico',widthCm:48,depthCm:48,heightCm:45,lengthCm:100,paidOptions:{}};
+ const q=V50.furnitureQuote(cfg,frame);
+ assert.equal(q.status,'automatic');assert.equal(q.total,2380);assert.equal(q.pricedLength,100);
+ assert.equal(V50.furnitureQuote(cfg,{...frame,material:'wood',color:'Nogal US'}).total,2595);
+ assert.equal(V50.furnitureQuote(cfg,{...frame,topFinish:'gpc',topColor:'Onix'}).total,4431);
+ assert.equal(V50.furnitureQuote(cfg,{...frame,topColor:'RAL/NCS'}).status,'pending');
+ assert.equal(V50.furnitureQuote(cfg,{...frame,heightCm:60}).status,'pending');
+ assert.equal(V50.furnitureQuote(cfg,{...frame,lengthCm:210}).status,'pending');
+ assert.equal(V50.furnitureQuote(cfg,{...frame,type:'h90-doors-1b'}).status,'pending');
+ const gesto={model:'Gesto',kind:'furniture',type:'h30',material:'lacquer',color:'Arena',widthCm:50,depthCm:50,heightCm:30,lengthCm:80,paidOptions:{}};
+ assert.equal(V50.furnitureQuote(cfg,gesto).total,1198);
+ assert.equal(V50.furnitureQuote(cfg,{...gesto,type:'h60',heightCm:60}).total,1579);
+ assert.equal(V50.furnitureQuote(cfg,{...gesto,type:'h75',heightCm:75,lengthCm:50}).total,1536);
+ assert.equal(V50.furnitureQuote(cfg,{...gesto,type:'h60',heightCm:60,lengthCm:100}).status,'pending');
+ assert.equal(V50.furnitureQuote(cfg,{...gesto,widthCm:52}).status,'pending');
+});
+test('V11.62.10: Axis source p38 and panels/socles source p71 use exact finish/size prices',()=>{
+ const linked={module:{exports:{}},window:{}};
+ for(const part of ['v1146-pricing','v1148-pricing']){
+  const begin=app.indexOf('/* SOURCE public/'+part+'.js */'),end=app.indexOf('/* SOURCE public/',begin+12);
+  assert(begin>=0&&end>begin);linked.module={exports:{}};vm.runInNewContext(app.slice(begin,end),linked);
+ }
+ const V48=linked.module.exports;
+ const axis=(size,material,color,options=[])=>V48.dependentQuote(cfg,{model:'Axis',kind:'basin',size,material,color,options});
+ assert.equal(axis('axis-free','lisa','Ártico').total,390);
+ assert.equal(axis('axis-free','solid','S-Blanco').total,470);
+ assert.equal(axis('axis-wall','solid','S-Blanco').total,780);
+ assert.equal(axis('axis-floor','solid','S-Blanco').total,1763);
+ assert.equal(axis('axis-free','lisa','Ártico',['colored-waste']).total,445);
+ assert.equal(axis('axis-wall','lisa','Ártico').status,'pending');
+ const panel=(size,material,color,w,l,opts=[])=>V48.dependentQuote(cfg,{model:'Panneaux / étagères',kind:'accessory',size,material,color,widthCm:w,lengthCm:l,options:opts});
+ assert.equal(panel('panel-area','resin','Ártico',120,200).total,696);
+ assert.equal(panel('panel-area','solid','S-Blanco',100,100).total,395);
+ assert.equal(panel('plinth-area','resin','RAL/NCS',20,50,['finished-edge']).total,157.5);
+ assert.equal(panel('panel-area','resin','Ártico',130,200).status,'pending');
+ assert.equal(panel('plinth-area','solid','S-Blanco',21,100).status,'pending');
+ assert.equal(panel('shelf-40','resin','Ártico',0,0).total,140);
+});
+test('V11.62.10: all new furniture price tables are dimensionally consistent and do not contain invented zero prices',()=>{
+ for(const m of cfg.models)for(const [type,table] of Object.entries(m.v50Furniture?.priceTablesByType||{})){
+  assert.ok(m.v50Furniture.types.some(t=>t.id===type));
+  assert.ok(table.lengthTiers.length);
+  for(const [key,prices]of Object.entries(table.prices)){
+   assert.equal(table.lengthTiers.length,prices.length,m.name+':'+key);
+   assert.ok(prices.every(x=>x===null||Number.isInteger(x)&&x>0),m.name+':'+key);
+  }
+ }
 });
