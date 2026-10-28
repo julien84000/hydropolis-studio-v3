@@ -1,3 +1,12 @@
+## Affinement V11.64.6 — sous-catégories Bette navigables — 29/10/2026
+
+- Après la sélection « Baignoires / Receveurs / Vasques », les rubriques **Type, Forme, Fonction** sont maintenant des étapes interactives internes (boutons) avant les familles tarifées, pas seulement des liens sortants.
+- Le filtrage d'une famille du tarif n'est activé que si son nom contient une indication probante (ex. « BetteAqua Vasque à encastrer » pour le type à encastrer, BetteLux pour la gamme). Si le tarif ne porte pas la propriété, le catalogue de la catégorie est affiché clairement **non filtré**, avec lien vers la sous-catégorie constructeur vérifiée. La correspondance tarif/référence/prix ne change pas.
+- La CI précédente PR #51 (run `40786016901`) passait avec 135 tests et Chromium, mais elle **précède** cette amélioration et la réconciliation finale avec la PR #50. La CI du dernier commit de la PR #51 est désormais **indispensable** avant fusion.
+- Les regroupements Bette du tarif source sont certifiés par `BETTE_OFFICIAL_TYPE_COVERAGE` : 51 groupes Baignoire, 20 Douche, 22 Lavabo, total 93, aucun orphelin. Ne pas inventer les propriétés de dimensions/forme au niveau des groupes.
+
+---
+
 ## Réconciliation avec Hidrobox V11.64.5 — 29 octobre 2026
 
 La PR #50 est fusionnée dans `main` (commit `368aa86d0ad33c9734fd22ffaf9a6e95465dc716`). Les tests Node, navigateur desktop/mobile, visuels et parcours privés d'Hidrobox livrés par #50 ont été **préservés**. Les développements Bette/Carrodrain et les nouveaux tests sont ajoutés à cette base et la version préparée reste **11.64.6**. Revalider la CI complète de la PR #51 après les commits de réconciliation. PR #43 Bette et PR #48 audit photo restent non fusionnées.
