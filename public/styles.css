@@ -3365,3 +3365,8 @@ main{background:transparent}
 #document .board-origin{font-size:6pt;color:#666}
 .dossier-page-size{display:flex;align-items:center;gap:6px;font-size:12px}
 .dossier-page-size select{width:55px;padding:5px}
+
+.dossier-designer-fields{margin-top:20px;border:1px solid #ddd4c7;border-radius:12px;padding:16px}
+.dossier-designer-fields legend{font-weight:600;padding:0 6px}
+.dossier-designer-fields p{font-size:12px;color:#666}
+.contact-address{white-space:pre-line}

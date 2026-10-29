@@ -1,8 +1,10 @@
-## Dossier client — pagination éditable, candidate 11.64.14 (29/10/2026)
+## Dossier client — pagination libre et coordonnées concepteur, candidate 11.64.14 (29/10/2026)
 
 Branche `feat/client-pages-six`, base `f8fe583`. Choix de 1 à 6 vignettes par page dans l’aperçu ; les dossiers anciens gardent 5 par défaut. En mode « Modifier la mise en page », chaque vignette propose « Déplacer vers… » (page existante non pleine ou nouvelle page). Le choix fonctionne au clic et au tactile. Déplacement entre pièces/espaces autorisé uniquement dans le dossier : origine affichée sur les articles déplacés, données et ordre du devis inchangés. Page pleine limitée à 6 ; page vidée retirée (récapitulatif conservé si sous-totaux activés).
 
 Les affectations sont conservées dans `presentationLayout.assignments` avec les sauvegardes existantes. Un transfert conserve la taille personnalisée de l’image ; la position est remise en haut à gauche pour pouvoir être ajustée. Les photos propres au dossier sont conservées. Changer globalement le nombre de vignettes demande confirmation avant réinitialisation des positions/tailles. Réinitialiser tout restaure la pagination automatique.
+
+Ajouts demandés : quatre articles peuvent rester ensemble ou être répartis en 2+2 ou 3+1 via « Nouvelle page », sans changer le nombre global de vignettes. Le bouton « Coordonnées du concepteur » ouvre des champs nom, fonction/agence, téléphone, e-mail et adresse, spécifiques au projet (`project.dossierDesigner`), sauvegardés dans le cloud/JSON. La page de contact les utilise ; le profil commercial et le devis restent inchangés. Retour aux coordonnées du profil possible. Tests de persistance et de réinitialisation ajoutés.
 
 Code : `public/dossier-pages.js`, intégration `app.js`, interface et grille six en CSS. Tests de pagination pure + scénario Chromium (5+3 → 6+2, nouvelle page, sérialisation, devis inchangé, grille sans chevauchement, contrôles masqués à l’impression). Build local : 163 tests réussis. Chromium local indisponible (échec de téléchargement) ; vérifier la CI GitHub avant fusion/déploiement. Les photos HD Sbordoni restent un chantier distinct : voir `docs/SBORDONI_HD_REPRISE.md`.
 

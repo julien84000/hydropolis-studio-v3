@@ -460,14 +460,32 @@ async function saveSalesProfile(){
   }
   if($("#view-preview")?.classList.contains("active"))buildDocument();
 }
+function dossierDesignerProfile(){
+  const saved=state.project?.dossierDesigner;
+  const source=saved&&typeof saved==='object'?saved:salespersonProfile();
+  return Object.fromEntries(['name','title','phone','email','address'].map(key=>[key,String(source[key]||'').trim()]));
+}
+function bindDossierDesigner(){
+  const profile=dossierDesignerProfile();
+  const fields={Name:'name',Title:'title',Phone:'phone',Email:'email',Address:'address'};
+  Object.entries(fields).forEach(([suffix,key])=>{
+    const input=$('#dossierDesigner'+suffix);if(!input)return;
+    input.value=profile[key];
+    input.oninput=()=>{
+      if(!state.project.dossierDesigner)state.project.dossierDesigner=dossierDesignerProfile();
+      state.project.dossierDesigner[key]=input.value;saveState();
+    };
+  });
+  const reset=$('#dossierDesignerReset');if(reset)reset.onclick=()=>{delete state.project.dossierDesigner;saveState();bindDossierDesigner();};
+}
 function salespersonContactPage(no){
-  const s=salespersonProfile();
+  const s=dossierDesignerProfile();
   return `<section class="page contact-page editorial-page">
     <div class="contact-topline"></div>
     <div class="contact-content">
       <div class="contact-thanks">MERCI</div>
       <div class="contact-rule"></div>
-      <div class="contact-copy">Pour toute question concernant cette sélection,<br>votre interlocuteur Hydropolis reste à votre disposition.</div>
+      <div class="contact-copy">Pour toute question concernant cette sélection,<br>votre concepteur reste à votre disposition.</div>
       <div class="contact-person">
         <div class="contact-monogram">H</div>
         <div>
@@ -475,6 +493,7 @@ function salespersonContactPage(no){
           ${s.title?`<div class="contact-title">${esc(s.title)}</div>`:""}
           ${s.phone?`<div class="contact-line">Tél. ${esc(s.phone)}</div>`:""}
           ${s.email?`<div class="contact-line">${esc(s.email)}</div>`:""}
+          ${s.address?`<div class="contact-line contact-address">${esc(s.address)}</div>`:""}
         </div>
       </div>
     </div>
@@ -3618,6 +3637,7 @@ function renderRooms(){
 
 
 function bindProject(){
+  bindDossierDesigner();
   [["projectName","name"],["clientName","client"],["projectLocation","location"],["projectDate","date"],["projectIntro","intro"]].forEach(([id,k])=>{
     $("#"+id).value=state.project[k]||"";
     $("#"+id).oninput=()=>{state.project[k]=$("#"+id).value;saveState();};
@@ -4472,6 +4492,8 @@ function bindPresentationLayoutToolbar(){
     presentationLayoutEditing=!presentationLayoutEditing;
     initPresentationLayoutEditor();
   };
+  const designerEdit=$("#dossierDesignerEditBtn");
+  if(designerEdit)designerEdit.onclick=()=>{showView('project');bindDossierDesigner();$('#dossierDesignerName')?.focus();};
   const pageSize=$("#dossierPageSize");
   if(pageSize){
     pageSize.value=String(ensurePresentationLayoutState().pageSize||5);

@@ -30,3 +30,10 @@ test('Moves across spaces preserve origin, hide empty pages and enforce six maxi
  assert(bad.pages.every(p=>p.items.length<=6));assert.equal(new Set(bad.pages.flatMap(p=>p.items.map(x=>x.id))).size,13);
  assert.deepEqual(plan(groups,{assignments:{a0:'unknown:999'}}).pages.map(p=>p.items.length),[5,5,3]);
 });
+
+test('Four articles can occupy one page or two pages in any split',()=>{
+ const g=[{key:'r:A',items:items(4)}];
+ assert.deepEqual(plan(g).pages.map(p=>p.items.length),[4]);
+ assert.deepEqual(plan(g,{assignments:{a2:'r:A:1',a3:'r:A:1'}}).pages.map(p=>p.items.length),[2,2]);
+ assert.deepEqual(plan(g,{assignments:{a3:'r:A:1'}}).pages.map(p=>p.items.length),[3,1]);
+});
