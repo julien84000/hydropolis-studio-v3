@@ -3318,3 +3318,27 @@ main{background:transparent}
  #brandConfigurator .brand-visual-choice{grid-template-columns:repeat(2,minmax(0,1fr))}
  #brandConfigurator .brand-official-links a{padding:10px}
 }
+
+
+/* V11.64.7 — verified Hidrobox official collection images.
+   Never present a collection photograph as a colour/size-exact SKU image. */
+#hidroboxGuided .hidrobox-photo-scope{
+ display:inline-block;align-self:flex-start;margin:11px 13px 0;padding:5px 8px;
+ background:#eaf1e9;color:#496349;border-radius:4px;
+ font-size:9px;font-weight:650;letter-spacing:.025em;
+}
+#hidroboxGuided .hidrobox-guide-tile:has(.hidrobox-photo-scope) img{
+ object-fit:contain;background:#fff;border-bottom:1px solid #f0f0eb;
+}
+#hidroboxGuided .hidrobox-unpriced-photo{display:grid;gap:7px;max-width:540px;}
+#hidroboxGuided .hidrobox-unpriced-photo img{
+ width:100%;height:300px;object-fit:contain;background:#fff;border:1px solid #e8ede5;border-radius:7px;
+}
+#hidroboxGuided .hidrobox-unpriced-photo small{
+ color:#6d796b;font-size:11px;line-height:1.45;
+}
+#hidroboxGuided .hidrobox-neo-hero img{object-fit:contain;background:#fff;}
+@media(max-width:700px){
+ #hidroboxGuided .hidrobox-photo-scope{font-size:9px;margin:8px 8px 0;}
+ #hidroboxGuided .hidrobox-unpriced-photo img{height:190px}
+}
