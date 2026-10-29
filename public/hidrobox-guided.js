@@ -281,7 +281,7 @@ function dimensionFields(selected){
   }
   return inputs.length?'<h4 class="hidrobox-universal-subtitle">Dimensions réelles de fabrication</h4><p class="hidrobox-guide-note">Les tranches servent au tarif ; les dimensions réelles sont conservées pour la commande.</p><div class="hidrobox-fields">'+inputs.join('')+'</div>':'';
 }
-let tariffExtrasPromise=null,programDraft=null,programFamily='',spaceDraft=null,spaceModelPromise=null;
+let tariffExtrasPromise=null,programDraft=null,programFamily='',spaceDraft=null,spaceModelPromise=null,betaEvoqueDraft=null,betaEvoqueModelPromise=null;
 function loadTariffExtras(){
  if(!tariffExtrasPromise)tariffExtrasPromise=Promise.all(['hidrobox-program-data.js','hidrobox-tariff-pictures.js','hidrobox-program-2026.js'].map(file=>new Promise((resolve,reject)=>{
   const script=document.createElement('script');script.src='/'+file;script.onload=resolve;script.onerror=()=>reject(Error('Chargement du tarif Program impossible'));document.head.appendChild(script);
@@ -410,9 +410,100 @@ function spacePage(g){
  });
 }
 
+
+function loadBetaEvoqueModel(){
+ if(root.HydroBetaEvoque2026)return Promise.resolve();
+ if(!betaEvoqueModelPromise)betaEvoqueModelPromise=new Promise((resolve,reject)=>{
+  const script=document.createElement('script');script.src='/hidrobox-beta-evoque-2026.js';
+  script.onload=resolve;script.onerror=()=>reject(Error('Chargement de la matrice Beta Evoque impossible'));
+  document.head.appendChild(script);
+ }).catch(e=>{betaEvoqueModelPromise=null;throw e});
+ return betaEvoqueModelPromise;
+}
+function betaEvoquePage(g){
+ stage='group';chosenGroup=g;
+ if(!root.HydroBetaEvoque2026){
+  const token=navigationToken;
+  shell('Beta Evoque','<p role="status">Chargement des six références tarifées Beta Evoque…</p>',true);
+  loadBetaEvoqueModel().then(()=>{if(overlay&&token===navigationToken&&chosenGroup===g)betaEvoquePage(g)})
+   .catch(e=>{if(overlay&&token===navigationToken)shell('Beta Evoque','<p role="alert">'+escape(e.message)+'</p>',true)});
+  return;
+ }
+ if(!document.querySelector('#hidroboxProgramStyles')){
+  const link=document.createElement('link');link.id='hidroboxProgramStyles';link.rel='stylesheet';link.href='/hidrobox-program.css';document.head.appendChild(link);
+ }
+ const model=root.HydroBetaEvoque2026;
+ if(!betaEvoqueDraft){
+  const previous=model.VARIANTS.find(v=>v.reference===original?.reference);
+  betaEvoqueDraft=previous?{...model.defaults(),position:previous.position,overflow:previous.overflow}:model.defaults();
+ }
+ const draft=betaEvoqueDraft;
+ if(!model.drains(draft.overflow===true).includes(draft.drain))draft.drain='OPBT0001';
+ const quote=model.quote(draft),hero=officialImage(officialCollectionMedia('beta-evoque')?.image);
+ const card=(key,value,title,note='',diagram='')=>'<button type="button" class="hp-choice'+(diagram?' hbev-position-card':'')+'" data-hbev="'+escape(key)+'" data-value="'+escape(value)+'" aria-pressed="'+(String(draft[key])===String(value))+'">'+
+  (diagram?'<span class="hbev-diagram hbev-diagram-'+escape(diagram)+'" aria-hidden="true"><i></i><em></em></span>':'')+
+  '<b>'+escape(title)+'</b><small>'+escape(note)+'</small></button>';
+ const opts=(key,title,list)=>'<label>'+escape(title)+'<select data-hbev-select="'+escape(key)+'">'+list.map(([value,label])=>'<option value="'+escape(value)+'"'+(draft[key]===value?' selected':'')+'>'+escape(label)+'</option>').join('')+'</select></label>';
+ const option=ref=>[ref,model.OPTIONS[ref].label+(model.OPTIONS[ref].rawPrice===null?' · tarif à confirmer':model.OPTIONS[ref].rawPrice?' · +'+eu(model.OPTIONS[ref].rawPrice)+' HT':' · inclus')];
+ const html='<button type="button" class="hidrobox-back">← Collections</button>'+
+ '<div class="hidrobox-neo-hero">'+(hero?'<img src="'+escape(hero)+'" alt="Collection Beta Evoque" loading="lazy">':'')+
+ '<div><div class="eyebrow">Baignoire · Hidrobox</div><h3>Beta Evoque · adossement L / C / R</h3>'+
+ '<p>170 × 90 × 56 cm · Scene Solid Surface blanc lisse. Trois orientations tarifées : gauche, centrée, droite.</p>'+
+ '<div class="hidrobox-downloads"><a href="'+escape(HIDROBOX_DOCUMENTS['beta evoque'].technical)+'" target="_blank" rel="noopener noreferrer">Fiche technique</a>'+
+ '<a href="'+escape(HIDROBOX_DOCUMENTS['beta evoque'].manual)+'" target="_blank" rel="noopener noreferrer">Notice d’installation</a></div>'+
+ '<small>Photo fabricant de collection non contractuelle pour l’orientation, la finition et les dimensions. Schémas d’implantation indicatifs.</small></div></div>'+
+ '<div class="hidrobox-program hidrobox-beta-evoque"><h4>1 · Position de la baignoire</h4>'+
+ '<div class="hp-grid">'+model.POSITIONS.map(v=>card('position',v.id,'Version '+v.id+' · '+v.label,'Position d’adossement · schéma indicatif',v.id)).join('')+'</div>'+
+ '<h4>2 · Trop-plein</h4><div class="hp-grid">'+card('overflow','false','Sans trop-plein','Référence propre au modèle')+
+ card('overflow','true','Trop-plein intégré','Référence propre au modèle')+'</div>'+
+ '<h4>3 · Bonde et options</h4><div class="hp-options">'+opts('drain','Bonde',[...model.drains(draft.overflow===true)].map(option))+
+ opts('exterior','Couleur extérieure',[['','Blanc Scene · sans supplément'],option('OPBT0008'),option('OPBT0009')])+
+ opts('headrest','Appuie-tête C12',[['','Sans appuie-tête'],option('OPBT0015'),option('OPBT0016')])+'</div>'+
+ '<p class="hidrobox-guide-note">Le supplément de couleur standard est affiché mais désactivé pour le devis : p. 139 = 650 €, tableau détaillé OPBT0008 p. 140 = 666 €. La finition intégrale Plus Colour n’a pas de référence Beta Evoque tarifée dans le document 2026 : aucune variante inventée.</p>'+
+ '<h4>4 · Référence exacte et décomposition</h4>'+
+ '<table class="hp-breakdown"><thead><tr><th>Élément</th><th>Référence</th><th>Prix source HT</th></tr></thead><tbody>'+
+ quote.components.map(c=>'<tr><td>'+escape(c.label)+'</td><td>'+escape(c.reference)+'</td><td>'+eu(c.rawPrice)+'</td></tr>').join('')+'</tbody></table>'+
+ (quote.errors.length?'<ul class="hp-errors" role="alert">'+quote.errors.map(e=>'<li>'+escape(e)+'</li>').join('')+'</ul>':'')+
+ '<div class="hidrobox-result"><div><b>'+(quote.ok?eu(quote.price)+' HT':'Tarif à confirmer')+'</b>'+
+ '<span>Réf. '+escape(quote.reference||'—')+' · 170 × 90 × 56 cm</span>'+
+ '<small>'+(quote.ok?'Prix du tarif '+eu(quote.rawPrice)+' HT, majoration +4 % une seule fois. Prix achat après remise −50 % : '+eu(quote.purchasePrice)+' HT.':'Impossible de chiffrer ou d’ajouter une configuration incompatible ou un supplément non vérifié.')+'</small></div>'+
+ '<button class="btn primary" type="button" id="huAdd"'+(quote.ok?'':' disabled')+'>Ajouter au projet</button></div></div>';
+ shell('Beta Evoque · configuration',html,true);
+ overlay.querySelector('.hidrobox-back').onclick=collections;
+ const refresh=()=>{const pos=overlay?.querySelector('.recor-configurator')?.scrollTop||0;betaEvoquePage(g);if(overlay?.querySelector('.recor-configurator'))overlay.querySelector('.recor-configurator').scrollTop=pos;};
+ overlay.querySelectorAll('[data-hbev]').forEach(b=>b.onclick=()=>{
+  draft[b.dataset.hbev]=b.dataset.hbev==='overflow'?b.dataset.value==='true':b.dataset.value;
+  refresh();
+ });
+ overlay.querySelectorAll('[data-hbev-select]').forEach(el=>el.onchange=()=>{draft[el.dataset.hbevSelect]=el.value;refresh()});
+ overlay.querySelector('#huAdd')?.addEventListener('click',()=>{
+  const result=model.quote(draft);if(!result.ok)return;
+  const v=result.variant,position=model.POSITIONS.find(p=>p.id===v.position);
+  const options=result.components.slice(1).map(c=>c.label).join(' · ');
+  const item={manufacturer:'Hidrobox',collection:'Beta Evoque',reference:result.reference,base:result.reference,
+   designation:'Beta Evoque '+v.position+' ('+position.label+') · 170 × 90 × 56 cm · Scene blanc lisse · '+(v.overflow?'Trop-plein intégré':'Sans trop-plein')+' · '+options,
+   category:'Baignoire',material:'Scene Solid Surface',finish:'Blanc lisse'+(draft.exterior?' · Couleur extérieure Special RAL/NCS':''),
+   price:result.price,totalPrice:result.price,rawTariffPrice:result.rawPrice,
+   purchaseDiscount:50,listPriceUpliftPct:4,currency:'€',vat:'HT',source:result.source,sourceYear:2026,
+   manufacturerUrl:HOUSE+'collections/beta-evoque/',technicalSheetUrl:HIDROBOX_DOCUMENTS['beta evoque'].technical,technicalSheetLabel:'Fiche technique Beta Evoque',
+   installationGuideUrl:HIDROBOX_DOCUMENTS['beta evoque'].manual,installationGuideLabel:'Notice de pose Beta Evoque',
+   image:hero,imageSource:'Photographie constructeur de collection Beta Evoque · variante illustrative',imageFinishMatch:'collection',
+   configuratorType:'hidrobox-configured'};
+  try{
+   const record=createSelectedProductRecord(item,room,'');if(!record)throw Error('Création du produit impossible');
+   Object.assign(record,item,{hidroboxConfiguration:{type:'beta-evoque-2026',group:g.id,...result.configuration,
+    dimensions:{length:170,width:90,height:56},components:result.components,reference:result.reference}});
+   const ids=commitSelectedRecords([record],{showProject:false});
+   if(!ids?.length)throw Error('La composition Beta Evoque n’a pas été enregistrée');
+   close();showView('project');
+  }catch(e){alert('Ajout Beta Evoque impossible : '+e.message)}
+ });
+}
+
 function universalPage(g){
  if(norm(g.collection||g.id)==='program')return programPage(g);
  if(norm(g.collection||g.id)==='space')return spacePage(g);
+ if(norm(g.collection||g.id)==='beta evoque')return betaEvoquePage(g);
  stage='group';chosenGroup=g;
  const name=g.collection||g.family||g.model||g.id;
  const {selected,fields,refs}=universalSelection(g);
@@ -587,7 +678,7 @@ function neoPage(){
 async function open(p,roomId,requestedCategory=''){
  close();
  const token=++navigationToken;
- room=roomId;original=p||{};programDraft=p?.hidroboxConfiguration?.type==='program-2026'?{...p.hidroboxConfiguration}:null;spaceDraft=p?.hidroboxConfiguration?.type==='space-2026'?{...p.hidroboxConfiguration}:null;programFamily='';groups=[];groupsLoading=true;groupsError='';
+ room=roomId;original=p||{};programDraft=p?.hidroboxConfiguration?.type==='program-2026'?{...p.hidroboxConfiguration}:null;spaceDraft=p?.hidroboxConfiguration?.type==='space-2026'?{...p.hidroboxConfiguration}:null;betaEvoqueDraft=p?.hidroboxConfiguration?.type==='beta-evoque-2026'?{...p.hidroboxConfiguration}:null;programFamily='';groups=[];groupsLoading=true;groupsError='';
  for(const key of Object.keys(universalDraft))delete universalDraft[key];
  const existing=HIDROBOX_ALL_OFFICIAL.find(x=>norm(x.name)===norm(p?.collection)||norm(x.key)===norm(p?.collection));
  const requested=CATEGORY.find(x=>x.key===requestedCategory);

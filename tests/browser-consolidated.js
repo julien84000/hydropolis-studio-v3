@@ -652,8 +652,37 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     check('Hidrobox official : Beta Evoque appears in the freestanding bath branch',
       await page.locator('#hidroboxGuided [data-kind="collection"][data-choice="beta-evoque"]').count()===1);
     await page.locator('#hidroboxGuided [data-kind="collection"][data-choice="beta-evoque"]').click();
-    check('Hidrobox Beta Evoque : one verified price matrix rather than new dummy variants',
-      await page.locator('#hidroboxGuided #huAdd').count()===1);
+    await page.waitForSelector('#hidroboxGuided .hidrobox-beta-evoque [data-hbev="position"]',{timeout:20000});
+    check('Hidrobox Beta Evoque : three visual positions, six published base refs',
+      await page.locator('#hidroboxGuided [data-hbev="position"]').count()===3&&
+      (await page.locator('#hidroboxGuided .hidrobox-result').innerText()).includes('BBEC0104')&&
+      await page.locator('#hidroboxGuided #huAdd').isEnabled());
+    await page.locator('[data-hbev="position"][data-value="C"]').click();
+    await page.locator('[data-hbev="overflow"][data-value="true"]').click();
+    await page.locator('#hidroboxGuided [data-hbev-select="exterior"]').selectOption('OPBT0008');
+    check('Hidrobox Beta Evoque : contradictory 650/666 source price blocks quoting',
+      await page.locator('#hidroboxGuided #huAdd').isDisabled()&&
+      (await page.locator('#hidroboxGuided .hp-errors').innerText()).includes('650')&&
+      (await page.locator('#hidroboxGuided .hp-errors').innerText()).includes('666'));
+    await page.locator('#hidroboxGuided [data-hbev-select="exterior"]').selectOption('OPBT0009');
+    await page.locator('#hidroboxGuided [data-hbev-select="headrest"]').selectOption('OPBT0016');
+    check('Hidrobox Beta Evoque : C with overflow plus Special colour and graphite headrest',
+      (await page.locator('#hidroboxGuided .hidrobox-result').innerText()).includes('BBEC0108')&&
+      (await page.locator('#hidroboxGuided .hidrobox-result b').innerText()).replace(/[\s\u202f\u00a0]/g,'').includes('5870,80')&&
+      await page.locator('#hidroboxGuided #huAdd').isEnabled());
+    await page.locator('#hidroboxGuided #huAdd').click();
+    const evoqueSaved=await page.evaluate(()=>JSON.parse(JSON.stringify(state.selected.findLast(p=>p.hidroboxConfiguration?.type==='beta-evoque-2026'))));
+    check('Hidrobox Beta Evoque : exact source reference, sum and options survive project save',
+      evoqueSaved.reference==='BBEC0108'&&evoqueSaved.price===5870.8&&
+      evoqueSaved.hidroboxConfiguration.position==='C'&&evoqueSaved.hidroboxConfiguration.overflow===true&&
+      evoqueSaved.hidroboxConfiguration.components.some(c=>c.reference==='OPBT0009'&&c.rawPrice===984));
+    await page.evaluate(p=>HydroHidroboxConfigurator.open(p,p.roomId),evoqueSaved);
+    await page.locator('#hidroboxGuided [data-kind="collection"][data-choice="beta-evoque"]').click();
+    await page.waitForSelector('#hidroboxGuided .hidrobox-beta-evoque');
+    check('Hidrobox Beta Evoque : saved C/overflow/Special colour restores correctly',
+      await page.locator('[data-hbev="position"][data-value="C"]').getAttribute('aria-pressed')==='true'&&
+      await page.locator('[data-hbev="overflow"][data-value="true"]').getAttribute('aria-pressed')==='true'&&
+      await page.locator('[data-hbev-select="exterior"]').inputValue()==='OPBT0009');
     await page.locator('#hidroboxGuided [data-hidrobox-home]').click();
     await page.locator('#hidroboxGuided [data-kind="family"][data-choice="bains-encastres"]').click();
     check('Hidrobox official : Beta Evoque also appears in built-in baths',
