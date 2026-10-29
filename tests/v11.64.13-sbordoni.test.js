@@ -35,7 +35,7 @@ test('Sbordoni : les 8 planches PDF sont décodables et les crops fonctionnent',
     const img=await loadImage(Buffer.from(b64,'base64'));
     assert(img.width>0&&img.height>0,`sheet ${n}`);
   }
-  for(const ref of ['MI1475COCR','9200/3','9065/1','SB143BT','FI137BCR']){
+  for(const ref of ['MI1475COCR','9200/3','9065/1','DP1PCR','FI137BCR']){
     const item=idx.items[ref];
     assert.ok(item,`mapping absent: ${ref}`);
     const [sheet,x,y,w,h]=item;
