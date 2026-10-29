@@ -546,6 +546,12 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     check('Hidrobox Neo Plus : retour à Kromat rétablit sa matrice de couleurs',
       (await page.locator('#hidroboxGuided #hnMaterial').inputValue())==='Kromat'&&
       (await page.locator('#hidroboxGuided #hnGroup').inputValue())==='BAS');
+    await page.locator('[data-hidrobox-target="hnForm"][data-hidrobox-value="angularL"]').click();
+    check('Neo Plus Angular L only offers the published Ardoise texture and exact reference',
+      await page.locator('#hnTexture').inputValue()==='Ardoise'&&
+      await page.locator('#hnTexture option').count()===1&&
+      (await page.locator('#hidroboxGuided .hidrobox-result').innerText()).includes('SNEC0181')&&
+      await page.locator('#hnAdd').isEnabled());
     await page.locator('#hidroboxGuided .hidrobox-back').click();
     await page.locator('#hidroboxGuided [data-kind="collection"]').filter({hasText:'Line'}).first().click();
     await page.waitForSelector('#hidroboxGuided a[href$="STL-Line-Hidrobox.zip"]');

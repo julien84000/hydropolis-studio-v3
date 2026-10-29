@@ -443,6 +443,8 @@ function neoPage(){
  const colors=catalogue.COLORS[neo.group]||[];
  if(!colors.includes(neo.color))neo.color=colors[0];
  const ranges=sizeRanges();
+ const textures=['Lisse','Ardoise'].filter(texture=>catalogue.lookup({...neo,texture,group:neo.material==='Scene'?'BLA':'BAS',color:neo.material==='Scene'?'Blanc':'Bianco'}).ok);
+ if(textures.length&&!textures.includes(neo.texture))neo.texture=textures[0];
  const line=catalogue.lookup(neo);
  const colorGroups=neo.material==='Scene'?['BLA']:['BAS','TRE','SPE'];
  const opts=(id,label,list,current,disabled=false)=>visualFacet(id,label,list,current,disabled?'disabled':'');
@@ -460,7 +462,7 @@ function neoPage(){
  opts('hnMaterial','Matière',['Kromat','Scene'],neo.material)+
  opts('hnWidth','Largeur exacte (cm)',values(ranges.widths),neo.width)+
  opts('hnLength','Longueur exacte (cm)',values(ranges.lengths),neo.length)+
- opts('hnTexture','Texture',['Lisse','Ardoise'],neo.texture)+
+ opts('hnTexture','Texture',textures.length?textures:[neo.texture],neo.texture)+
  opts('hnGroup','Groupe de couleurs',colorGroups,neo.group)+
  opts('hnColor','Couleur',colors,neo.color)+
  opts('hnGrille','Grille',['Point Inox','Point Basic','Point Trend','Point Special','Star Inox','Star Basic','Star Trend','Star Special','Radiance Steel','Radiance Gunmetal','Radiance Gold','Radiance Rame'],neo.grille)+
