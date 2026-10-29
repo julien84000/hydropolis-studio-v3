@@ -1,3 +1,13 @@
+## Devis — espaces non coupés et protection du pied de page — candidate 11.64.15
+
+Branche `fix/quote-space-pages`, base main `d98e5b0` (11.64.14). La capture client révèle le défaut du découpage fixe de huit articles : il ignorait la hauteur des titres de pièces/espaces et des descriptions. Plusieurs espaces peuvent partager une page : les groupes sont conservés entiers quand ils tiennent sur une page, sinon déplacés en bloc sur la suivante. Seul un espace plus long qu’une page est scindé. Les continuations répètent leurs en-têtes, sans limite arbitraire de nombre d’articles. Après rendu, les articles qui débordent sont déplacés entiers vers une continuation ; les totaux restent uniques à la fin. Les très longues lignes isolées sont ajustées à la place disponible, sans texte supprimé. La mesure est refaite avant impression après chargement des polices. La pagination des photos et les coordonnées concepteur de la PR #59 sont préservées.
+
+Tests Chromium : 17 descriptions longues réparties dans trois espaces, toutes les lignes et le total conservés, aucun contenu sous le pied de page, vérification en média print. Mettre à jour les anciennes attentes de tests qui exigeaient un titre d’espace unique sur plusieurs pages : la répétition devient intentionnelle.
+
+Reprise : vérifier CI de cette branche, fusionner si verte, contrôler Render 11.64.15 via /api/version et /api/health. Aucun changement aux prix, calculs ou données du client.
+
+---
+
 ## Dossier client — pagination libre et coordonnées concepteur, candidate 11.64.14 (29/10/2026)
 
 Branche `feat/client-pages-six`, base `f8fe583`. Choix de 1 à 6 vignettes par page dans l’aperçu ; les dossiers anciens gardent 5 par défaut. En mode « Modifier la mise en page », chaque vignette propose « Déplacer vers… » (page existante non pleine ou nouvelle page). Le choix fonctionne au clic et au tactile. Déplacement entre pièces/espaces autorisé uniquement dans le dossier : origine affichée sur les articles déplacés, données et ordre du devis inchangés. Page pleine limitée à 6 ; page vidée retirée (récapitulatif conservé si sous-totaux activés).
