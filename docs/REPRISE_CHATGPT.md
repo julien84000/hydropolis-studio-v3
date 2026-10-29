@@ -1,3 +1,17 @@
+## Checkpoint enrichissement PHOTOS + TOUS les fabricants — V11.64.7 (29/10/2026)
+
+**Utilisateur :** intégrer des photographies constructeur pour les produits Hidrobox, puis appliquer cette démarche à **TOUTES les marques**, avec leurs catégories et collections réelles, sans perdre les prix ni les fiches.
+
+**Branche enregistrée :** `feat/hidrobox-official-collection-photography-11647`, issue de `main` V11.64.6 `5dab52799233746a38469fdf70d90f5f177298af`. **Référence permanente :** `docs/MANUFACTURER_VISUAL_ROLLOUT.md`.
+
+**Livré en branche :** le fichier `public/manufacturer-official-media.js` fournit l'index photo multi-fabricants extensible ; **30/31 photos officielles de collections Hidrobox vérifiées par fichier GUID WordPress** et reliées au menu ; Falcon volontairement sans photo (source ambiguë). `public/hidrobox-guided.js` affiche la photo de la collection dans la galerie, le configurateur et l'article enregistré (avec libellé « collection, finition non contractuelle »), y compris Neo Plus et les produits non tarifés ; pas de photo substituée ni de changement des règles fournisseur **+4 % / -50 %**. Chargement dans `index.html`, CSS responsive et contrôles Node/Chromium ajoutés ; version V11.64.7.
+
+**À vérifier :** CI complete branch (tests métier, syntaxe, build, Chromium bureau/mobile), corriger les régressions éventuelles. Vérifier `main` et les PR ouvertes #48 audit photo et #43 Bette (ne pas les écraser) ; fusionner seulement après succès. Vérifier CI de `main` et la version vraiment servie par Render. Corriger tout problème de source image ou d'affichage avant publication.
+
+**Reprise automatique à copier :** Reprends Hydropolis Studio sur `julien84000/hydropolis-studio-v3`. Lis `docs/MANUFACTURER_VISUAL_ROLLOUT.md`, la PR de `feat/hidrobox-official-collection-photography-11647` et `docs/REPRISE_CHATGPT.md`. Termine la CI, corrige erreurs, fusionne si vert, contrôle Render. Ensuite applique le **même principe aux autres marques** par PR séparées : Bette, Carrodrain, Sbordoni, Hotbath, Zucchetti, Lefroy Brooks, Gessi, Dornbracht, Resigres et tous les fabricants listés dans le manifeste de catalogue. Utilise photos fabricant de la bonne collection puis variantes exactes quand la preuve existe ; ne jamais inventer dimensions, références, tarifs ni photos de finition. Préserve PR #48 et PR #43 et toutes les données client.
+
+---
+
 ## Affinement V11.64.6 — sous-catégories Bette navigables — 29/10/2026
 
 - Après la sélection « Baignoires / Receveurs / Vasques », les rubriques **Type, Forme, Fonction** sont maintenant des étapes interactives internes (boutons) avant les familles tarifées, pas seulement des liens sortants.
