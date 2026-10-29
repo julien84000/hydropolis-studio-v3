@@ -79,12 +79,22 @@ function shell(title,content,wide=false){
  overlay.querySelector('[data-hidrobox-home]')?.addEventListener('click',families);
  overlay.querySelector('[data-hidrobox-category]')?.addEventListener('click',collections);
 }
+/* Media is verified by official COLLECTION, never assumed exact for a SKU. */
+function officialCollectionMedia(slug){
+ const media=root.HydroManufacturerMediaIndex?.get('Hidrobox',slug);
+ return media&&media.scope==='collection'?media:null;
+}
+function officialGroupMedia(group){
+ if(!group)return null;
+ const entry=HIDROBOX_ALL_OFFICIAL.find(x=>groupFor(x)?.id===group.id);
+ return entry?officialCollectionMedia(entry.key):null;
+}
 function tiles(rows,kind){
  return '<div class="hidrobox-guide-grid">'+rows.map(x=>{
-  const picture=x.img?'<img src="'+escape(x.img)+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">':
+  const picture=x.img?'<img src="'+escape(x.img)+'" alt="" loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'"><div class="hidrobox-collection-identity" style="display:none"><span>'+escape(String(x.name||'H').slice(0,2).toUpperCase())+'</span><small>VISUEL INDISPONIBLE</small></div>':
    kind==='collection'?'<div class="hidrobox-collection-identity"><span>'+escape(String(x.name||'H').split(' ').map(p=>p[0]||'').join('').slice(0,2).toUpperCase())+'</span><small>COLLECTION HIDROBOX</small></div>':
    '<div class="hidrobox-guide-no-image">HIDROBOX</div>';
-  return '<button type="button" class="hidrobox-guide-tile" data-kind="'+escape(kind)+'" data-choice="'+escape(x.key)+'">'+picture+'<span class="hidrobox-guide-tile-name">'+escape(x.name)+'</span>'+(x.note?'<small>'+escape(x.note)+'</small>':'')+'</button>';
+  return '<button type="button" class="hidrobox-guide-tile" data-kind="'+escape(kind)+'" data-choice="'+escape(x.key)+'">'+picture+(x.collectionPhoto?'<span class="hidrobox-photo-scope">Photo fabricant · collection</span>':'')+'<span class="hidrobox-guide-tile-name">'+escape(x.name)+'</span>'+(x.note?'<small>'+escape(x.note)+'</small>':'')+'</button>';
  }).join('')+'</div>';
 }
 /* V11.64.4 — category tiles reuse the existing select and pricing logic. */
@@ -137,7 +147,10 @@ function collections(){
  const official=HIDROBOX_ALL_OFFICIAL.filter(x=>x.category===cat);
  const cards=official.map(entry=>{
   const g=groupFor(entry);
-  return {key:entry.key,name:entry.name,img:officialImage(g?.image)||'',note:entry.private?'Collection privée sur le site du fabricant':g?(g.variants?.length||0)+' lignes du tarif source · à configurer':'Collection officielle · tarif non importé'};
+  const media=officialCollectionMedia(entry.key);
+  return {key:entry.key,name:entry.name,img:officialImage(media?.image)||officialImage(g?.image)||'',
+   collectionPhoto:!!media,
+   note:entry.private?'Collection privée sur le site du fabricant':g?(g.variants?.length||0)+' lignes du tarif source · à configurer':'Collection officielle · tarif non importé'};
  });
  const orphans=unmappedGroups(cat);
  const extra=orphans.length?
@@ -145,7 +158,7 @@ function collections(){
   tiles(orphans.map(g=>({key:g.id,name:g.collection||g.family||g.model||g.id,img:'',note:(g.variants?.length||0)+' lignes tarifées · groupe transversal'})),'unmapped')+'</section>':'';
  shell(family?.name||'Collections','<button class="hidrobox-back" type="button">← Catégories</button>'+
   tiles(cards,'collection')+extra+
-  '<p class="hidrobox-guide-note">Collections et ordre issus de la rubrique Produits de Hidrobox. Une photo n’est affichée que si elle est associée au modèle ; aucun visuel de catégorie ne remplace une photographie de référence.</p>'+
+  '<p class="hidrobox-guide-note">Photographies constructeur associées aux collections, non à chaque référence tarifaire : couleur, dimensions et finition peuvent différer. Une image absente ou indisponible ne sera jamais remplacée par celle d’une autre collection.</p>'+
   '<a class="hidrobox-official-link" href="'+escape(family?.url||HOUSE)+'" target="_blank" rel="noopener noreferrer">Consulter cette catégorie chez Hidrobox</a>',true);
  overlay.querySelector('.hidrobox-back').onclick=families;
  overlay.querySelectorAll('[data-kind=collection]').forEach(button=>button.onclick=()=>{
@@ -168,8 +181,10 @@ function officialInfo(entry){
  const tech=officialPdf(assets.technical);
  const docs=tech?'<a class="hidrobox-official-link" href="'+escape(tech)+'" target="_blank" rel="noopener noreferrer">Fiche technique fabricant</a>':'';
  const url=entry.private?category?.url:entry.url;
+ const media=officialCollectionMedia(entry.key),photo=officialImage(media?.image);
+ const photoMarkup=photo?'<div class="hidrobox-unpriced-photo"><img src="'+escape(photo)+'" alt="Collection '+escape(entry.name)+'" loading="lazy"><small>Photo constructeur de collection · variantes non garanties</small></div>':'';
  const markup='<button class="hidrobox-back" type="button">← Collections</button>'+
-  '<section class="hidrobox-unpriced-collection"><div class="eyebrow">'+escape(category?.name||'Hidrobox')+'</div><h3>'+escape(entry.name)+'</h3>'+
+  '<section class="hidrobox-unpriced-collection">'+photoMarkup+'<div class="eyebrow">'+escape(category?.name||'Hidrobox')+'</div><h3>'+escape(entry.name)+'</h3>'+
   '<p>'+ (entry.private?'Cette collection est indiquée « Privé » dans le menu du fabricant.':"Cette collection figure au catalogue officiel, mais aucune référence et aucun tarif correspondants n’ont été importés.")+
   ' Vous pouvez consulter la documentation du fabricant, sans ajout automatique au devis.</p>'+
   '<div class="hidrobox-downloads"><a href="'+escape(url||HOUSE)+'" target="_blank" rel="noopener noreferrer">Voir sur Hidrobox</a>'+docs+'</div>'+
@@ -271,7 +286,11 @@ function universalPage(g){
  const family=CATEGORY.find(c=>c.key===groupCategory(g));
  const n=norm(name),assets=HIDROBOX_DOCUMENTS[n]||{};
  const url=officialCollection(g);
- const mainImage=officialImage(selected?.image)||officialImage(g.image)||family?.img||'';
+ const groupMedia=officialGroupMedia(g);
+ const exactSelectedImage=officialImage(selected?.image),exactGroupImage=officialImage(g.image);
+ const collectionImage=officialImage(groupMedia?.image);
+ const mainImage=exactSelectedImage||exactGroupImage||collectionImage||family?.img||'';
+ const imageScope=exactSelectedImage?'exact':collectionImage||exactGroupImage?'collection':'category';
  const opts=fields.filter(x=>!x.static).map(f=>visualFacet('huFacet'+f.key,f.label,f.options,f.chosen,'data-facet="'+escape(f.key)+'"')).join('');
  const flat=fields.filter(x=>x.static).map(f=>escape(f.label)+': '+escape(f.chosen)).join(' · ');
  const refsControl=refs.length>1?'<label>Référence finale<select id="huReference">'+choices(refs,universalDraft.reference)+'</select></label>':'';
@@ -289,7 +308,7 @@ function universalPage(g){
    '<div class="hidrobox-neo-hero">'+(mainImage?'<img src="'+escape(mainImage)+'" alt="'+escape(name)+'" loading="lazy" onerror="this.style.display=\'none\'">':'')+
    '<div><div class="eyebrow">'+escape(family?.name||'Hidrobox')+'</div><h3>'+escape(name)+'</h3>'+
    '<p>'+escape((g.variants||[]).length)+' variantes issues du tarif 2026. Configurez progressivement les caractéristiques, sans masquer les références restantes.</p>'+
-   docs+'<small>'+escape(mainImage?(selected?.image||g.image?'Visuel fabricant, variante à vérifier':'Visuel officiel de famille · variante non contractuelle'):'Visuel non disponible')+'</small></div></div>'+
+   docs+'<small>'+escape(mainImage?(imageScope==='exact'?'Visuel associé à la référence sélectionnée':imageScope==='collection'?'Photo constructeur de la collection · finition/dimensions non contractuelles':'Illustration de catégorie · modèle et finition non garantis'):'Visuel non disponible')+'</small></div></div>'+
    '<h4 class="hidrobox-universal-subtitle">Caractéristiques tarifaires</h4>'+
    (flat?'<p class="hidrobox-guide-note">'+flat+'</p>':'')+
    '<div class="hidrobox-fields">'+opts+refsControl+'</div>'+dimensionFields(selected)+
@@ -322,13 +341,16 @@ function universalPage(g){
    }
    const dimLabels=[dimInfo.widthCm?'Larg. '+dimInfo.widthCm+' cm':'',dimInfo.lengthCm?'Long. '+dimInfo.lengthCm+' cm':''].filter(Boolean);
    const designation=[row.designation||name,...dimLabels].join(' · ');
-   const exactImage=officialImage(row.image),representative=officialImage(g.image)||family?.img||'';
+   const exactImage=officialImage(row.image),groupCollectionImage=officialImage(officialGroupMedia(g)?.image),
+    representative=officialImage(g.image)||groupCollectionImage||family?.img||'';
    const item={manufacturer:'Hidrobox',collection:name,reference:row.reference,base:row.reference,designation,
       category:row.category||original?.category||family?.name||'Sanitaire',material:row.material||'',
       finish:row.finish||row.colorGroup||'',price:Number(row.price),totalPrice:Number(row.price),
       rawTariffPrice:Number(row.rawPrice)||0,listPriceUpliftPct:4,purchaseDiscount:50,currency:'€',vat:'HT',
       source:'HIDROBOX_TARIF_FR_V0226_19-02-2026.pdf',sourceYear:2026,manufacturerUrl:url,
-      image:exactImage||representative,imageSource:exactImage?'Visuel fabricant de la référence':'Illustration officielle de famille · finition non contractuelle',
+      image:exactImage||representative,
+      imageSource:exactImage?'Visuel fabricant de la référence':groupCollectionImage?'Photographie constructeur de la collection · variante illustrative':'Illustration de catégorie Hidrobox · modèle et finition non contractuels',
+      imageFinishMatch:exactImage?'exact':groupCollectionImage?'collection':'category',
       technicalSheetUrl:tech,technicalSheetLabel:'Fiche technique Hidrobox',installationGuideUrl:manual,
       installationGuideLabel:'Notice de pose Hidrobox',configuratorType:'hidrobox-configured'};
    try{
@@ -371,7 +393,7 @@ function neoPage(){
  const line=catalogue.lookup(neo);
  const colorGroups=neo.material==='Scene'?['BLA']:['BAS','TRE','SPE'];
  const opts=(id,label,list,current,disabled=false)=>visualFacet(id,label,list,current,disabled?'disabled':'');
- const pict=CATEGORY[0].img;
+ const pict=officialImage(officialCollectionMedia('neo-plus')?.image)||CATEGORY[0].img;
  const config='<button class="hidrobox-back" type="button">← Collections</button>'+
  '<div class="hidrobox-neo-hero"><img src="'+escape(pict)+'" alt="Illustration receveurs de douche Hidrobox" loading="lazy">'+
  '<div><div class="eyebrow">Receveur de douche · Neo Plus</div><h3>NEO PLUS</h3><p>Scene Solid Surface ou Kromat. Fabriqué au centimètre selon les plages du tarif 2026.</p>'+
@@ -380,7 +402,7 @@ function neoPage(){
  '<a href="'+MANUAL+'" target="_blank" rel="noopener noreferrer">Notice de pose PDF</a>'+
  '<a href="'+NEO_BIM+'" target="_blank" rel="noopener noreferrer">Objet BIM constructeur · Neo Plus</a>'+
  '<a href="'+NEO_3D+'" target="_blank" rel="noopener noreferrer">Modèle 3D constructeur · 80 × 140 × 3 cm</a></div>'+
- '<small>Illustration issue de la catégorie receveurs, non contractuelle pour ce modèle et sa finition.</small></div></div>'+
+ '<small>Photo constructeur de la collection Neo Plus · dimensions, grille, couleur et finition non contractuelles.</small></div></div>'+
  '<div class="hidrobox-fields">'+opts('hnForm','Forme',catalogue.FORMATS.map(f=>f.key),neo.form)+
  opts('hnMaterial','Matière',['Kromat','Scene'],neo.material)+
  opts('hnWidth','Largeur exacte (cm)',values(ranges.widths),neo.width)+
@@ -407,11 +429,11 @@ function neoPage(){
  wireVisualFacets();
   overlay.querySelector('#hnAdd')?.addEventListener('click',()=>{
    const chosen=catalogue.lookup(neo);if(!chosen.ok)return;
-   const image=CATEGORY[0].img;
+   const image=officialImage(officialCollectionMedia('neo-plus')?.image)||CATEGORY[0].img;
    const item={manufacturer:'Hidrobox',collection:'Neo Plus',reference:chosen.reference,base:chosen.reference,designation:'Neo Plus · '+catalogue.FORMATS.find(x=>x.key===neo.form).label+' · '+chosen.referenceDimensions+' · '+neo.material+' · '+neo.texture+' · '+neo.color+' · Grille '+neo.grille+' · Bonde '+neo.bonde,
      category:'Receveur de douche',finish:neo.color+' · '+neo.texture,price:chosen.price,totalPrice:chosen.price,rawTariffPrice:chosen.rawPrice,listPriceUpliftPct:4,
      purchaseDiscount:50,currency:'€',vat:'HT',source:chosen.source,sourceYear:2026,manufacturerUrl:HOUSE+'collections/neo-plus/',
-     image,imageSource:'Illustration de catégorie Hidrobox · finition non contractuelle',
+     image,imageSource:'Photographie constructeur de collection Neo Plus · dimensions et finition non contractuelles',imageFinishMatch:'collection',
      technicalSheetUrl:TECH,technicalSheetLabel:'Fiche technique Neo Plus',technicalSheetType:'application/pdf',
      installationGuideUrl:MANUAL,installationGuideLabel:"Notice d'installation Neo Plus",
      configuratorType:'hidrobox-configured'};
@@ -431,5 +453,5 @@ async function open(p,roomId){
  cat='receveurs';stage='families';chosenGroup=null;
  families();
 }
-root.HydroHidroboxConfigurator={...base,open,close,neoPlus:catalogue,officialCategories:CATEGORY,officialCollections:HIDROBOX_ALL_OFFICIAL,officialProductTree:HIDROBOX_PRODUCT_TREE,tariffGroupFor:groupFor};
+root.HydroHidroboxConfigurator={...base,open,close,neoPlus:catalogue,officialCategories:CATEGORY,officialCollections:HIDROBOX_ALL_OFFICIAL,officialProductTree:HIDROBOX_PRODUCT_TREE,tariffGroupFor:groupFor,officialCollectionMedia};
 })(window);
