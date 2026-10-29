@@ -162,8 +162,12 @@
     const update=(resetValue)=>{
       const success=persistPresentation(layout=>{
         layout[bucket]=layout[bucket]||{};
-        if(resetValue)delete layout[bucket][key];
-        else{
+        if(resetValue){
+          const remaining={...(layout[bucket][key]||{})};
+          controls.forEach(input=>{delete remaining[input.name];});
+          if(Object.keys(remaining).length)layout[bucket][key]=remaining;
+          else delete layout[bucket][key];
+        }else{
           const original=layout[bucket][key]||{};
           const next={...original};
           controls.forEach(input=>{next[input.name]=input.value.trim();});
