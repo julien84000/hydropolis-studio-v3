@@ -229,8 +229,10 @@
         "pdf-price-list-2023",
         "pdf-contact-sheet-images",
         "isolated-product-images",
-        "collection-navigation"
-      ]
+        "collection-navigation",
+        "purchase-discount-55"
+      ],
+      "purchaseDiscount": 55
     }
   ]
 }
