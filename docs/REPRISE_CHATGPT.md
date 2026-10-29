@@ -1,3 +1,23 @@
+## V11.64.12 — Hidrobox Beta Essential : 96 références du tarif 2026 (29/10/2026)
+
+**Point de départ** : `main` V11.64.11 commit `eb2fc81910e755b874fd363b1576b54d70822069`, CI et publication Render confirmées. Branche `feat/hidrobox-beta-essential-116412`.
+
+**Preuves primaires** : `HIDROBOX_TARIF_FR_V0226_19-02-2026.pdf` (fichier projet), pages imprimées **142–145** / PDF physiques **73–74**, vérifiées dans les tableaux fournisseur (et page 74 en image) :
+- **8 formes** : Ovale V1 (170×80×56), V2 (185×95×56), V3 (170×74×56), V4 (157×74×50) ; Circular V1 Ø140/Ø150×56, V3 140×127/150×140×56, V4 Ø127/Ø140×50, V5 Ø140/Ø150×56 cm. Les deux dimensions de chaque Circular sont des configurations distinctes.
+- **96 lignes de prix** : blanc Scene `BBEC0001–0024` (24), Plus Colour BAS `BBEC0032–0055` (24), TRE `BBEC0056–0079` (24), SPE `BBEC0080–0103` (24). **Ne jamais associer BBEC0025–0031 à Beta Essential** (ce sont des références Beta Fusion) ; BBEC0104–0109 appartiennent à Beta Evoque. Références et prix calculés uniquement à partir de la correspondance form/size/overflow/groupe du tableau.
+- Options `OPBT0001`/`0005` bonde incluse ; `OPBT0023`/`0024`/`0025` bonde couleur incluse uniquement pour groupe correspondant ; `OPBT0006` (231 €) / `0007` (194 €) H2 **seulement sans trop-plein** ; `OPBT0008` 666 € / `0009` 984 € pour **la couleur extérieure de la version blanche seulement** ; `OPBT0015`/`0016` appuie-tête 123 € ; `OPBT0029` perçage 68 € conditionné à un plan coté fourni. Plus Colour inclut déjà la couleur.
+- Les totems et étagères sont des produits à part, non assimilés à une option intégrée à la baignoire. Les teintes commerciales exactes / références RAL-NCS restent à préciser à la commande.
+
+**Code** : `public/hidrobox-beta-essential-2026.js` contient les 96 références uniques, les règles de prix, d'options et de compatibilités. `public/hidrobox-guided.js` permet **forme → dimensions réelles publiées → finition → trop-plein → options → chiffrage** et sauvegarde de `hidroboxConfiguration.type='beta-essential-2026'` ; restauration du produit et ancien article reconnu par référence BBEC. `public/hidrobox-program.css` ajoute des pictogrammes **schématiques** (sans prétendre représenter les huit formes au dessin exact). Le prix public est majoré de 4 % **une seule fois sur le total** ; remise d'achat 50 % sur prix public.
+- Tests Node dans `tests/hidrobox-beta-essential.test.js` : 96 SKU, 15 références limites, interdiction des formats libres, exactitude supplément, compatibilité, absence de double facturation. Navigateur Chromium : Circular V3 150×140×56, BAS, trop-plein intégré, appuie-tête graphite, **BBEC0047, 7 215 + 123 = 7 338 € source → 7 631,52 € prix public HT**, sauvegarde et réouverture.
+- `package.json` + `package-lock.json` V11.64.12 ; aucune modification du catalogue source b64 ni des autres marques, Program, Neo Plus, Space, Beta Evoque. PR #43, #48 indépendantes.
+
+**Validation et suite** : attendre et vérifier CI complète (syntax, Node tests, build, Chromium). Fusionner si succès et si base `main` stable, vérifier CI fusion et Render `/api/version=11.64.12`. Prochain audit prioritaire **Beta Fusion**, puis **Program Colour**, en vérifiant les dimensions, les options et tarifs contre les pages du PDF, sans combiner des références appartenant à des collections distinctes. Toujours conserver le journal de reprise.
+
+**Prompt de reprise** : Reprends `julien84000/hydropolis-studio-v3`, PR Beta Essential branche `feat/hidrobox-beta-essential-116412`, V11.64.12. Vérifie tests et base main, corrige erreurs, fusionne si vert, contrôle Render. Préserve les 96 références vérifiées Beta Essential et les configurateurs déjà déployés. Poursuis Beta Fusion/Program Colour à partir du tarif fournisseur et publie chaque changement validé.
+
+---
+
 ## V11.64.11 — Beta Evoque : configurateur exact, prix source et 3 orientations (29/10/2026)
 
 **Base de travail** : `main` V11.64.10 commit `1c05763388701332498fa1195078cd7e1d55a1cd`, CI succès ; branche `feat/hidrobox-beta-evoque-116411`.
