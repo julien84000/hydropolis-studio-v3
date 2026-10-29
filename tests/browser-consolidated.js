@@ -582,6 +582,22 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     check('Hidrobox Program : photo liée à la collection, sans fausse finition exacte',
       (await page.locator('#hidroboxGuided .hidrobox-neo-hero img').getAttribute('src'))?.includes('Washbasin_Program_Thumbnail')&&
       (await page.locator('#hidroboxGuided .hidrobox-neo-hero small').innerText()).includes('non contractuelles'));
+    await page.locator('#hidroboxGuided #huAdd').click();
+    const programSaved=await page.evaluate(()=>{
+      const p=state.selected.findLast(p=>p.hidroboxConfiguration?.type==='program-2026');
+      return JSON.parse(JSON.stringify(p));
+    });
+    check('Program composition preserves dimensions, source components, reference and total',
+      programSaved.reference==='WPRC0044'&&programSaved.price===1526.72&&
+      programSaved.hidroboxConfiguration.length===140&&programSaved.hidroboxConfiguration.depth===50&&
+      programSaved.hidroboxConfiguration.additional==='S25'&&programSaved.hidroboxConfiguration.curve==='LR'&&
+      programSaved.hidroboxConfiguration.components.some(c=>c.reference==='OPWB0001'&&c.rawPrice===215));
+    await page.evaluate(p=>HydroHidroboxConfigurator.open(p,p.roomId),programSaved);
+    await page.locator('#hidroboxGuided [data-kind="collection"][data-choice="program"]').click();
+    check('Saved Program configuration reopens without resetting dimensions or options',
+      await page.locator('[data-hp-number="length"]').inputValue()==='140'&&
+      await page.locator('[data-hp-select="additional"]').inputValue()==='S25'&&
+      await page.locator('[data-hp="curve"][data-value="LR"]').getAttribute('aria-pressed')==='true');
     await page.locator('#hidroboxGuided .hidrobox-back').click();
     await page.locator('#hidroboxGuided [data-kind="collection"][data-choice="intim"]').click();
     check('Hidrobox Intim : private site collection has no fictitious quote item',
