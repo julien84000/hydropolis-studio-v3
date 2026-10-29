@@ -683,6 +683,44 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
       await page.locator('[data-hbev="position"][data-value="C"]').getAttribute('aria-pressed')==='true'&&
       await page.locator('[data-hbev="overflow"][data-value="true"]').getAttribute('aria-pressed')==='true'&&
       await page.locator('[data-hbev-select="exterior"]').inputValue()==='OPBT0009');
+
+    // V11.64.12 — Beta Essential 96 verified variants, shape and dimensional selection.
+    await page.locator('#hidroboxGuided [data-hidrobox-home]').click();
+    await page.locator('#hidroboxGuided [data-kind="family"][data-choice="bains-ilot"]').click();
+    await page.locator('#hidroboxGuided [data-kind="collection"][data-choice="beta-essential"]').click();
+    await page.waitForSelector('#hidroboxGuided .hidrobox-beta-essential [data-hbess="form"]',{timeout:20000});
+    check('Hidrobox Beta Essential : eight official shapes and default oval V1 exact price',
+      await page.locator('#hidroboxGuided [data-hbess="form"]').count()===8&&
+      (await page.locator('#hidroboxGuided .hidrobox-result').innerText()).includes('BBEC0001'));
+    await page.locator('[data-hbess="form"][data-value="circle-v3"]').click();
+    check('Beta Essential : circular V3 has only two supplier-published dimensions',
+      JSON.stringify(await page.locator('#hidroboxGuided [data-hbess="sizeId"]').evaluateAll(xs=>xs.map(x=>x.dataset.value)))===
+      JSON.stringify(['127x140','140x150']));
+    await page.locator('[data-hbess="sizeId"][data-value="140x150"]').click();
+    await page.locator('[data-hbess="colour"][data-value="BAS"]').click();
+    await page.locator('[data-hbess="overflow"][data-value="true"]').click();
+    await page.locator('#hidroboxGuided [data-hbess-select="headrest"]').selectOption('OPBT0016');
+    check('Beta Essential : exact circular V3 140x150 Basics with overflow and graphite headrest',
+      (await page.locator('#hidroboxGuided .hidrobox-result').innerText()).includes('BBEC0047')&&
+      (await page.locator('#hidroboxGuided .hidrobox-result b').innerText()).replace(/[\s\u202f\u00a0]/g,'').includes('7631,52')&&
+      await page.locator('#hidroboxGuided #huAdd').isEnabled());
+    check('Beta Essential : Plus Colour already includes its colour',
+      await page.locator('#hidroboxGuided [data-hbess-select="exterior"]').count()===0);
+    await page.locator('#hidroboxGuided #huAdd').click();
+    const essentialSaved=await page.evaluate(()=>JSON.parse(JSON.stringify(state.selected.findLast(p=>p.hidroboxConfiguration?.type==='beta-essential-2026'))));
+    check('Beta Essential : precise price and dimension saved with one supplier reference',
+      essentialSaved.reference==='BBEC0047'&&essentialSaved.price===7631.52&&
+      essentialSaved.hidroboxConfiguration.sizeId==='140x150'&&essentialSaved.hidroboxConfiguration.form==='circle-v3'&&
+      essentialSaved.hidroboxConfiguration.components.some(c=>c.reference==='OPBT0016'&&c.rawPrice===123));
+    await page.evaluate(p=>HydroHidroboxConfigurator.open(p,p.roomId),essentialSaved);
+    await page.locator('#hidroboxGuided [data-kind="collection"][data-choice="beta-essential"]').click();
+    await page.waitForSelector('#hidroboxGuided .hidrobox-beta-essential');
+    check('Beta Essential : form, dimensions, Basics finish, overflow and headrest are restored',
+      await page.locator('[data-hbess="form"][data-value="circle-v3"]').getAttribute('aria-pressed')==='true'&&
+      await page.locator('[data-hbess="sizeId"][data-value="140x150"]').getAttribute('aria-pressed')==='true'&&
+      await page.locator('[data-hbess="colour"][data-value="BAS"]').getAttribute('aria-pressed')==='true'&&
+      await page.locator('[data-hbess="overflow"][data-value="true"]').getAttribute('aria-pressed')==='true'&&
+      await page.locator('#hidroboxGuided [data-hbess-select="headrest"]').inputValue()==='OPBT0016');
     await page.locator('#hidroboxGuided [data-hidrobox-home]').click();
     await page.locator('#hidroboxGuided [data-kind="family"][data-choice="bains-encastres"]').click();
     check('Hidrobox official : Beta Evoque also appears in built-in baths',
