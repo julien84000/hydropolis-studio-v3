@@ -489,12 +489,24 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     check('Hidrobox official : 11 shower collections and real site order',
       JSON.stringify(await page.locator('#hidroboxGuided [data-kind="collection"]').evaluateAll(xs=>xs.map(x=>x.dataset.choice)))===
       JSON.stringify(['neo-plus','line','twins','one','pure','quadro','arq','unique','iconik','loovers','falcon']));
+    // V11.64.7 — each photograph belongs to one verified official collection, never all SKUs.
+    check('Hidrobox 30 photos officielles vérifiées, Falcon en repli neutre',
+      await page.evaluate(()=>Object.keys(HydroManufacturerMediaIndex.files.Hidrobox).length)===30&&
+      await page.locator('#hidroboxGuided [data-kind="collection"] img').count()===10&&
+      await page.locator('#hidroboxGuided [data-kind="collection"][data-choice="falcon"] img').count()===0);
+    check('Hidrobox Neo Plus et Line : deux photos constructeur distinctes',
+      (await page.locator('#hidroboxGuided [data-kind="collection"][data-choice="neo-plus"] img').getAttribute('src'))?.includes('Neo-Plus_Thumbnail')&&
+      (await page.locator('#hidroboxGuided [data-kind="collection"][data-choice="line"] img').getAttribute('src'))?.includes('Line_Thumbnail')&&
+      await page.locator('#hidroboxGuided .hidrobox-photo-scope').count()===10);
     await page.locator('#hidroboxGuided [data-kind="collection"]').filter({hasText:'Neo Plus'}).first().click();
     await page.waitForSelector('#hidroboxGuided a[href$="BIMobject-Shower-tray-Neo-Plus.zip"]');
     check('Hidrobox Neo Plus : lien BIM officiel visible',
       await page.locator('#hidroboxGuided a[href$="BIMobject-Shower-tray-Neo-Plus.zip"]').getAttribute('target')==='_blank');
     check('Hidrobox Neo Plus : exemple 3D de la bonne taille identifié',
       await page.locator('#hidroboxGuided a[href$="Neo-Plus-80x140x3-1.zip"]').innerText().then(s=>s.includes('80 × 140 × 3 cm')));
+    check('Hidrobox Neo Plus : photo de collection et non catégorie',
+      (await page.locator('#hidroboxGuided .hidrobox-neo-hero img').getAttribute('src'))?.includes('Neo-Plus_Thumbnail')&&
+      (await page.locator('#hidroboxGuided .hidrobox-neo-hero small').innerText()).includes('non contractuelles'));
     // V11.64.4 visual choice controls: real DOM and existing Neo Plus tariff engine.
     const neoMaterial=page.locator('#hidroboxGuided [data-hidrobox-target="hnMaterial"]');
     check('Hidrobox Neo Plus : matière par cartes visuelles',await neoMaterial.count()===2);
@@ -527,10 +539,16 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
       await page.locator('#hidroboxGuided [data-facet]').count()>0&&
       await page.locator('#hidroboxGuided #huAdd').isEnabled()&&
       (await page.locator('#hidroboxGuided .hidrobox-tree-path').innerText()).includes('Program'));
+    check('Hidrobox Program : photo liée à la collection, sans fausse finition exacte',
+      (await page.locator('#hidroboxGuided .hidrobox-neo-hero img').getAttribute('src'))?.includes('Washbasin_Program_Thumbnail')&&
+      (await page.locator('#hidroboxGuided .hidrobox-neo-hero small').innerText()).includes('non contractuelles'));
     await page.locator('#hidroboxGuided .hidrobox-back').click();
     await page.locator('#hidroboxGuided [data-kind="collection"][data-choice="intim"]').click();
     check('Hidrobox Intim : private site collection has no fictitious quote item',
       await page.locator('#hidroboxGuided .hidrobox-unpriced-collection').count()===1&&
+      await page.locator('#hidroboxGuided #huAdd').count()===0);
+    check('Hidrobox Intim : photo officielle conservée malgré tarif non importé',
+      (await page.locator('#hidroboxGuided .hidrobox-unpriced-photo img').getAttribute('src'))?.includes('Washbasin_Intim_Thumbnail')&&
       await page.locator('#hidroboxGuided #huAdd').count()===0);
     await page.locator('#hidroboxGuided [data-hidrobox-home]').click();
     await page.locator('#hidroboxGuided [data-kind="family"][data-choice="bains-ilot"]').click();
