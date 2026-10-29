@@ -623,13 +623,13 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
       await page.locator('#hidroboxGuided [data-hs="sizeId"]').count()===3);
     check('Hidrobox Space : exact white 155 × 78 × 50, no overflow reference',
       (await page.locator('#hidroboxGuided .hidrobox-result').innerText()).includes('BSPC0001')&&
-      (await page.locator('#hidroboxGuided .hidrobox-result').innerText()).includes('3 616'));
+      (await page.locator('#hidroboxGuided .hidrobox-result').innerText()).replace(/[\s\u202f\u00a0]/g,'').includes('3616,08'));
     await page.locator('[data-hs="sizeId"][data-value="170"]').click();
     await page.locator('[data-hs="colour"][data-value="BAS"]').click();
     await page.locator('[data-hs="overflow"][data-value="true"]').click();
     check('Hidrobox Space : 170 Plus Colour Basics with overflow price and ref',
       (await page.locator('#hidroboxGuided .hidrobox-result').innerText()).includes('BSPC0010')&&
-      (await page.locator('#hidroboxGuided .hidrobox-result').innerText()).includes('5 784'));
+      (await page.locator('#hidroboxGuided .hidrobox-result').innerText()).replace(/[\s\u202f\u00a0]/g,'').includes('5784,48'));
     check('Hidrobox Space : no additional exterior colour on Plus Colour',
       await page.locator('#hidroboxGuided [data-hs-select="exterior"]').count()===0);
     await page.locator('#hidroboxGuided #huAdd').click();
