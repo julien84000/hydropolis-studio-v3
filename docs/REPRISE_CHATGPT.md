@@ -1,3 +1,20 @@
+## Correctif d’accès aux familles Hidrobox — V11.64.8 (29/10/2026)
+
+**Retour utilisateur :** en production V11.64.7, impossible de parcourir facilement les différents types de produits Hidrobox. Vérification directe Render /api/version : **11.64.7 effectivement déployée** ; la présence du code arborescent ne garantit pas son accès dans le catalogue. Le configurateur de références reste accessible via les cartes produits, mais aucun lanceur catalogue Hidrobox dédié n’était affiché.
+
+**Travail sauvé en branche** `fix/hidrobox-category-navigation-11648` à partir de `main` `633fd4c4506f07e81e04bccee6ef1a918cf880d3` :
+- `public/app.js` : lors du filtrage fabricant Hidrobox (ou recherche « Hidrobox »), bandeau toujours visible avec **les neuf familles officielles cliquables**, ainsi qu’un accès à l’arborescence complète. Ces boutons ouvrent `HydroHidroboxConfigurator.open(null,roomId,category)`, sans sélection de référence préalable.
+- `public/hidrobox-guided.js` : affiche les catégories/collections **avant** de charger les 4 479 lignes tarifaires ; si le tarif est indisponible, la navigation officielle reste accessible, sans prix ni ajout fictif ; restauration de l’étape en cours quand le chargement aboutit. Un produit choisi depuis le catalogue ouvre sa catégorie d’origine.
+- `public/styles.css` : grille de catégories, adaptation 720/410 px.
+- `tests/v11.64.8-hidrobox-entry.test.js` : test de navigation même en chargement différé/indisponible ; `tests/browser-consolidated.js` : chemin réel dans le catalogue de Vasques à poser → Baignoires encastrées, en conservant les tests historiques Neo Plus/Program/Intim/Beta Evoque.
+- Version candidate **11.64.8** dans package et lock. **Aucune modification** aux sources de tarifs, remises, fiches ni devis ; conserver PR #43, #48 et toutes les autres marques.
+
+**Étapes de validation :** vérifier CI de la tête de branche, notamment `npm run build` et `npm run test:browser`. En cas d’échec, corriger avant fusion. Vérifier que la branche n’écrase pas un main avancé ; fusionner uniquement sur CI verte, puis contrôler Render `/api/version` et une navigation Hidrobox authentifiée si possible. Une version GitHub ne suffit pas à prouver la publication Render.
+
+**Prompt de reprise :** Reprendre Hydropolis Studio, dépôt julien84000/hydropolis-studio-v3, correctif `fix/hidrobox-category-navigation-11648` (V11.64.8). Vérifier la PR, les dernières Actions, tester le lanceur 9 catégories Hidrobox depuis le filtre catalogue et la navigation entre types/collections, sans chargement obligatoire du tarif ; préserver 4 479 tarifs +4% et remise 50%, les photos V11.64.7 et toutes les marques. Puis fusionner seulement avec CI verte, vérifier Render et corriger tout écart réel.
+
+---
+
 ## Checkpoint enrichissement PHOTOS + TOUS les fabricants — V11.64.7 (29/10/2026)
 
 **Utilisateur :** intégrer des photographies constructeur pour les produits Hidrobox, puis appliquer cette démarche à **TOUTES les marques**, avec leurs catégories et collections réelles, sans perdre les prix ni les fiches.
