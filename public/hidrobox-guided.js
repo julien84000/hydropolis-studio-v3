@@ -281,7 +281,7 @@ function dimensionFields(selected){
   }
   return inputs.length?'<h4 class="hidrobox-universal-subtitle">Dimensions réelles de fabrication</h4><p class="hidrobox-guide-note">Les tranches servent au tarif ; les dimensions réelles sont conservées pour la commande.</p><div class="hidrobox-fields">'+inputs.join('')+'</div>':'';
 }
-let tariffExtrasPromise=null,programDraft=null,programFamily='',spaceDraft=null,spaceModelPromise=null,betaEvoqueDraft=null,betaEvoqueModelPromise=null;
+let tariffExtrasPromise=null,programDraft=null,programFamily='',spaceDraft=null,spaceModelPromise=null,betaEvoqueDraft=null,betaEvoqueModelPromise=null,betaEssentialDraft=null,betaEssentialModelPromise=null;
 function loadTariffExtras(){
  if(!tariffExtrasPromise)tariffExtrasPromise=Promise.all(['hidrobox-program-data.js','hidrobox-tariff-pictures.js','hidrobox-program-2026.js'].map(file=>new Promise((resolve,reject)=>{
   const script=document.createElement('script');script.src='/'+file;script.onload=resolve;script.onerror=()=>reject(Error('Chargement du tarif Program impossible'));document.head.appendChild(script);
@@ -500,10 +500,121 @@ function betaEvoquePage(g){
  });
 }
 
+
+function loadBetaEssentialModel(){
+ if(root.HydroBetaEssential2026)return Promise.resolve();
+ if(!betaEssentialModelPromise)betaEssentialModelPromise=new Promise((resolve,reject)=>{
+  const js=document.createElement('script');js.src='/hidrobox-beta-essential-2026.js';
+  js.onload=resolve;js.onerror=()=>reject(Error('Le tarif Beta Essential n’a pas pu être chargé'));
+  document.head.appendChild(js);
+ }).catch(err=>{betaEssentialModelPromise=null;throw err});
+ return betaEssentialModelPromise;
+}
+function betaEssentialPage(g){
+ stage='group';chosenGroup=g;
+ if(!root.HydroBetaEssential2026){
+  const token=navigationToken;shell('Beta Essential','<p role="status">Chargement des 96 références Beta Essential du tarif 2026…</p>',true);
+  loadBetaEssentialModel().then(()=>{if(overlay&&token===navigationToken&&chosenGroup===g)betaEssentialPage(g)})
+   .catch(e=>{if(overlay&&token===navigationToken)shell('Beta Essential','<p role="alert">'+escape(e.message)+'</p>',true)});
+  return;
+ }
+ if(!document.querySelector('#hidroboxProgramStyles')){
+  const link=document.createElement('link');link.id='hidroboxProgramStyles';link.rel='stylesheet';link.href='/hidrobox-program.css';document.head.appendChild(link);
+ }
+ const model=root.HydroBetaEssential2026;
+ if(!betaEssentialDraft){
+  const old=model.VARIANTS.find(v=>v.reference===original?.reference);
+  betaEssentialDraft=old?{...model.defaults(),form:old.form,sizeId:old.sizeId,colour:old.colour,overflow:old.overflow}:model.defaults();
+ }
+ const state=betaEssentialDraft;
+ const selectedForm=model.FORMS.find(f=>f.key===state.form)||model.FORMS[0];
+ if(!selectedForm.sizes.some(x=>x.id===state.sizeId))state.sizeId=selectedForm.sizes[0].id;
+ if(!model.availableDrains(state.colour,state.overflow===true).includes(state.drain))state.drain='OPBT0001';
+ if(state.colour!=='BLA')state.exterior='';
+ const q=model.quote(state);
+ const hero=officialImage(officialCollectionMedia('beta-essential')?.image);
+ const card=(key,value,title,note='',diagram='')=>
+  '<button type="button" class="hp-choice hbess-choice" data-hbess="'+escape(key)+'" data-value="'+escape(value)+'" aria-pressed="'+(String(state[key])===String(value))+'">'+
+  (diagram?'<span class="hbess-pictogram hbess-pictogram-'+escape(diagram)+'" aria-hidden="true"><span></span></span>':'')+
+  '<b>'+escape(title)+'</b><small>'+escape(note)+'</small></button>';
+ const options=(key,label,rows)=>'<label>'+escape(label)+'<select data-hbess-select="'+escape(key)+'">'+rows.map(([val,name])=>
+  '<option value="'+escape(val)+'"'+(state[key]===val?' selected':'')+'>'+escape(name)+'</option>').join('')+'</select></label>';
+ const opt=ref=>[ref,model.OPTIONS[ref].label+(model.OPTIONS[ref].price?' · +'+eu(model.OPTIONS[ref].price)+' HT':' · inclus')];
+ const html='<button class="hidrobox-back" type="button">← Collections</button>'+
+  '<div class="hidrobox-neo-hero">'+(hero?'<img src="'+escape(hero)+'" alt="Collection Beta Essential" loading="lazy">':'')+
+  '<div><div class="eyebrow">Baignoires îlot · Hidrobox</div><h3>Beta Essential · formes et dimensions du tarif</h3>'+
+  '<p>4 formes ovales et 4 formes circulaires, avec dimensions propres à chaque variante. Scene Solid Surface lisse.</p>'+
+  '<div class="hidrobox-downloads"><a href="'+escape(HIDROBOX_DOCUMENTS['beta essential'].technical)+'" target="_blank" rel="noopener noreferrer">Fiche technique fabricant</a>'+
+  '<a href="'+escape(HIDROBOX_DOCUMENTS['beta essential'].manual)+'" target="_blank" rel="noopener noreferrer">Notice d’installation</a></div>'+
+  '<small>Photo fabricant de collection, non contractuelle selon dimension et couleur. Les pictogrammes sont indicatifs, non des plans cotés.</small></div></div>'+
+  '<div class="hidrobox-program hidrobox-beta-essential"><h4>1 · Type et forme de la baignoire</h4><div class="hp-grid hbess-shapes">'+
+  model.FORMS.map(x=>card('form',x.key,x.name,x.sizes.map(z=>z.label).join(' / '),x.kind)).join('')+'</div>'+
+  '<h4>2 · Dimensions disponibles · '+escape(selectedForm.name)+'</h4><div class="hp-grid">'+
+  selectedForm.sizes.map(x=>card('sizeId',x.id,x.label,'L / P / H ou Ø / H en centimètres')).join('')+'</div>'+
+  '<h4>3 · Finition et couleur</h4><div class="hp-grid">'+model.FINISH.map(x=>card('colour',x.id,x.name,x.id==='SPE'?'Tarif couleur Special RAL/NCS inclus, teinte exacte à confirmer':'Référence du tarif publiée')).join('')+'</div>'+
+  '<h4>4 · Trop-plein</h4><div class="hp-grid">'+
+  card('overflow','false','Sans trop-plein','Référence fabricant spécifique')+
+  card('overflow','true','Avec trop-plein intégré','Référence fabricant spécifique')+'</div>'+
+  '<h4>5 · Bonde, coloris extérieur et accessoires</h4>'+
+  '<div class="hp-options">'+
+  options('drain','Bonde',[...model.availableDrains(state.colour,state.overflow===true)].map(opt))+
+  (state.colour==='BLA'?options('exterior','Coloration extérieure sur la version blanche',[['','Sans coloration extérieure'],opt('OPBT0008'),opt('OPBT0009')]):'<p>La couleur Plus Colour est déjà comprise dans le tarif de la référence BBEC. Aucun supplément de coloration ajouté.</p>')+
+  options('headrest','Appuie-tête C12',[['','Sans appuie-tête'],opt('OPBT0015'),opt('OPBT0016')])+
+  '<label><span>Préparation robinetterie · OPBT0029 (+68 € HT)</span><input type="checkbox" data-hbess-check="tapPrep"'+(state.tapPrep?' checked':'')+'></label>'+
+  (state.tapPrep?'<label><span>Je dispose d’un plan coté de perçage à transmettre à Hidrobox</span><input type="checkbox" data-hbess-check="technicalPlanProvided"'+(state.technicalPlanProvided?' checked':'')+'></label>':'')+
+  '</div>'+
+  '<p class="hidrobox-guide-note">Pas de dimension libre pour ces modèles. Les couleurs Specials doivent être précisées sur la commande. Les totems/étagères sont des articles séparés, non inclus.</p>'+
+  '<h4>6 · Référence et détail du chiffrage</h4>'+
+  '<table class="hp-breakdown"><thead><tr><th>Poste</th><th>Réf.</th><th>Prix source HT</th></tr></thead><tbody>'+
+  q.components.map(c=>'<tr><td>'+escape(c.label)+'</td><td>'+escape(c.reference)+'</td><td>'+eu(c.rawPrice)+'</td></tr>').join('')+'</tbody></table>'+
+  (q.errors.length?'<ul class="hp-errors" role="alert">'+q.errors.map(e=>'<li>'+escape(e)+'</li>').join('')+'</ul>':'')+
+  '<div class="hidrobox-result"><div><b>'+(q.ok?eu(q.price)+' HT':'Configuration à vérifier')+'</b>'+
+  '<span>Réf. '+escape(q.reference||'—')+' · '+escape(q.variant?.dimensions.label||'')+'</span>'+
+  '<small>'+(q.ok?'Source '+eu(q.rawPrice)+' HT · majoration +4 % une fois · achat fournisseur −50 % : '+eu(q.purchasePrice)+' HT.':'Aucun article chiffré si la combinaison est invalide.')+'</small></div>'+
+  '<button id="huAdd" class="btn primary" type="button"'+(q.ok?'':' disabled')+'>Ajouter au projet</button></div></div>';
+ shell('Beta Essential · configuration',html,true);
+ overlay.querySelector('.hidrobox-back').onclick=collections;
+ const refresh=()=>{const scroll=overlay.querySelector('.recor-configurator')?.scrollTop||0;betaEssentialPage(g);const pane=overlay?.querySelector('.recor-configurator');if(pane)pane.scrollTop=scroll};
+ overlay.querySelectorAll('[data-hbess]').forEach(b=>b.onclick=()=>{
+  const key=b.dataset.hbess;
+  state[key]=key==='overflow'?b.dataset.value==='true':b.dataset.value;
+  if(key==='form'){
+   state.sizeId=model.FORMS.find(x=>x.key===state.form)?.sizes[0]?.id||'';
+  }
+  refresh();
+ });
+ overlay.querySelectorAll('[data-hbess-select]').forEach(el=>el.onchange=()=>{state[el.dataset.hbessSelect]=el.value;refresh()});
+ overlay.querySelectorAll('[data-hbess-check]').forEach(el=>el.onchange=()=>{state[el.dataset.hbessCheck]=el.checked;refresh()});
+ overlay.querySelector('#huAdd')?.addEventListener('click',()=>{
+  const result=model.quote(state);if(!result.ok)return;
+  const v=result.variant,dim=v.dimensions;
+  const designation='Beta Essential '+v.shape+' · '+dim.label+' · '+v.finishLabel+' · '+(v.overflow?'Trop-plein intégré':'Sans trop-plein')+
+   ' · '+result.components.slice(1).map(c=>c.label).join(' · ');
+  const item={manufacturer:'Hidrobox',collection:'Beta Essential',reference:result.reference,base:result.reference,
+   designation,category:'Baignoire îlot',material:'Scene Solid Surface',finish:v.finishLabel,
+   price:result.price,totalPrice:result.price,rawTariffPrice:result.rawPrice,
+   purchaseDiscount:50,listPriceUpliftPct:4,currency:'€',vat:'HT',
+   source:result.source,sourceYear:2026,manufacturerUrl:HOUSE+'collections/beta-essential/',
+   technicalSheetUrl:HIDROBOX_DOCUMENTS['beta essential'].technical,technicalSheetLabel:'Fiche technique Beta Essential',
+   installationGuideUrl:HIDROBOX_DOCUMENTS['beta essential'].manual,installationGuideLabel:'Notice de pose Beta Essential',
+   image:hero,imageSource:'Photo constructeur de collection Beta Essential · variante illustrative',imageFinishMatch:'collection',
+   configuratorType:'hidrobox-configured'};
+  try{
+   const record=createSelectedProductRecord(item,room,'');if(!record)throw Error('Impossible de préparer le produit');
+   Object.assign(record,item,{hidroboxConfiguration:{type:'beta-essential-2026',group:g.id,...result.configuration,
+     dimensions:{...dim},components:result.components,reference:result.reference}});
+   const ids=commitSelectedRecords([record],{showProject:false});
+   if(!ids?.length)throw Error('Enregistrement Beta Essential non effectué');
+   close();showView('project');
+  }catch(e){alert('Ajout Beta Essential impossible : '+e.message)}
+ });
+}
+
 function universalPage(g){
  if(norm(g.collection||g.id)==='program')return programPage(g);
  if(norm(g.collection||g.id)==='space')return spacePage(g);
  if(norm(g.collection||g.id)==='beta evoque')return betaEvoquePage(g);
+ if(norm(g.collection||g.id)==='beta essential')return betaEssentialPage(g);
  stage='group';chosenGroup=g;
  const name=g.collection||g.family||g.model||g.id;
  const {selected,fields,refs}=universalSelection(g);
@@ -678,7 +789,7 @@ function neoPage(){
 async function open(p,roomId,requestedCategory=''){
  close();
  const token=++navigationToken;
- room=roomId;original=p||{};programDraft=p?.hidroboxConfiguration?.type==='program-2026'?{...p.hidroboxConfiguration}:null;spaceDraft=p?.hidroboxConfiguration?.type==='space-2026'?{...p.hidroboxConfiguration}:null;betaEvoqueDraft=p?.hidroboxConfiguration?.type==='beta-evoque-2026'?{...p.hidroboxConfiguration}:null;programFamily='';groups=[];groupsLoading=true;groupsError='';
+ room=roomId;original=p||{};programDraft=p?.hidroboxConfiguration?.type==='program-2026'?{...p.hidroboxConfiguration}:null;spaceDraft=p?.hidroboxConfiguration?.type==='space-2026'?{...p.hidroboxConfiguration}:null;betaEvoqueDraft=p?.hidroboxConfiguration?.type==='beta-evoque-2026'?{...p.hidroboxConfiguration}:null;betaEssentialDraft=p?.hidroboxConfiguration?.type==='beta-essential-2026'?{...p.hidroboxConfiguration}:null;programFamily='';groups=[];groupsLoading=true;groupsError='';
  for(const key of Object.keys(universalDraft))delete universalDraft[key];
  const existing=HIDROBOX_ALL_OFFICIAL.find(x=>norm(x.name)===norm(p?.collection)||norm(x.key)===norm(p?.collection));
  const requested=CATEGORY.find(x=>x.key===requestedCategory);
