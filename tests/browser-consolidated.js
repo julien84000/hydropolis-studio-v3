@@ -479,6 +479,32 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     }
     await page.setViewportSize({width:1440,height:1000});
 
+
+    // V11.64.8 — entrypoint visible in the catalogue, before choosing a priced SKU.
+    await page.evaluate(()=>{
+      const selector=document.querySelector('#manufacturerFilter');
+      selector.value='Hidrobox';
+      selector.dispatchEvent(new Event('change',{bubbles:true}));
+    });
+    await page.waitForSelector('.hidrobox-catalog-launcher .hidrobox-category-open',{timeout:20000});
+    check('Hidrobox visible catalogue launcher: nine clickable product types',
+      await page.locator('.hidrobox-catalog-categories .hidrobox-category-open').count()===9);
+    await page.locator('.hidrobox-catalog-categories [data-hidrobox-category="vasques-a-poser"]').click();
+    await page.waitForSelector('#hidroboxGuided [data-kind="collection"][data-choice="spot"]',{timeout:20000});
+    check('Hidrobox direct category opens the official Spot washbasin collection',
+      await page.locator('#hidroboxGuided [data-kind="collection"]').count()===1);
+    await page.locator('#hidroboxGuided [data-hidrobox-home]').click();
+    await page.locator('#hidroboxGuided [data-kind="family"][data-choice="bains-encastres"]').click();
+    check('Hidrobox navigation changes from washbasins to two built-in bathtub collections',
+      JSON.stringify(await page.locator('#hidroboxGuided [data-kind="collection"]').evaluateAll(xs=>xs.map(x=>x.dataset.choice)))===
+      JSON.stringify(['beta-fusion','beta-evoque']));
+    await page.locator('#hidroboxGuided .hidrobox-close').click();
+    await page.evaluate(()=>{
+      const selector=document.querySelector('#manufacturerFilter');
+      selector.value='';
+      selector.dispatchEvent(new Event('change',{bubbles:true}));
+    });
+
     // V11.63.3 — real Chromium navigation to the official manufacturer CAD links.
     await page.evaluate(()=>HydroHidroboxConfigurator.open({manufacturer:'Hidrobox'},state.rooms[0]?.id||''));
     await page.waitForSelector('#hidroboxGuided [data-kind="family"][data-choice="receveurs"]',{timeout:20000});
