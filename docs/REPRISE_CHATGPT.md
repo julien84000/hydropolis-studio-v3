@@ -1,3 +1,26 @@
+## V11.64.11 — Beta Evoque : configurateur exact, prix source et 3 orientations (29/10/2026)
+
+**Base de travail** : `main` V11.64.10 commit `1c05763388701332498fa1195078cd7e1d55a1cd`, CI succès ; branche `feat/hidrobox-beta-evoque-116411`.
+
+**Source primaire** : tarif fabricant `HIDROBOX_TARIF_FR_V0226_19-02-2026.pdf` (fichier du projet) :
+- Pages imprimées **138–139**, fichier PDF p.71 : **Beta Evoque L/C/R**, dimensions **90 × 170 × 56 cm**, sans trop-plein 4 266 € HT, avec trop-plein 4 538 € HT.
+- Pages imprimées **140–141**, fichier PDF p.72 : **six références exactes** `BBEC0104` (L sans trop-plein), `BBEC0105` (C sans), `BBEC0106` (R sans), `BBEC0107` (L avec), `BBEC0108` (C avec), `BBEC0109` (R avec), groupe BIA. Finition Scene blanc lisse et aucune référence Plus Colour complète publiée pour cette collection.
+- Options p.140 : bondes `OPBT0001`/`0005` incluses, `OPBT0006` 231 € et `0007` 194 € réservées aux modèles sans trop-plein ; `OPBT0015`/`0016` appuie-tête C12 à 123 €, `OPBT0009` couleur extérieure Special à 984 €.
+- **Conflit non résolu** pour `OPBT0008` couleur extérieure Standard : description commerciale p.139 = **650 €**, tableau chiffré p.140 = **666 €**. La variante est visible, mais son chiffrage et son ajout sont bloqués jusqu'à preuve fabricant (ne pas inventer une résolution).
+
+**Développement sauvegardé** :
+- `public/hidrobox-beta-evoque-2026.js` : moteur indépendant sur 6 références, calcul du total ligne par ligne, +4 % une fois puis remise achat 50 %. Rejette bonde H2 avec trop-plein, options inconnues et montant contradictoire ; conserve les dimensions exactes.
+- `public/hidrobox-guided.js` : écran visuel positions L/C/R, trop-plein, bondes, coloration extérieure et appuie-tête. Parcours accessible depuis les deux familles du menu Hidrobox (îlot et encastrées). Réouverture d'une composition `hidroboxConfiguration.type='beta-evoque-2026'`, y compris reprise d'un article ancien par sa référence publiée.
+- `public/hidrobox-program.css` : petits pictogrammes d'orientation **schématiques**, pas des images fabricant exactes.
+- `tests/hidrobox-beta-evoque.test.js` : audit 6 SKU, restrictions, chiffrage et conflit ; `tests/browser-consolidated.js` : parcours C avec trop-plein + couleur Special + appuie-tête graphite `BBEC0108`, source 5 645 € → **5 870,80 € public HT**, sauvegarde et restauration.
+- Version candidate `11.64.11` dans package + lock, sans modification des tables originales, anciennes compositions et autres marques.
+
+**Suite** : faire passer la CI entière de la nouvelle PR (Node, build, Chromium). Fusionner seulement si `main` identique à sa base, CI verte, et vérifier Render via `/api/version`. Surveiller les autres collections encore traitées par la grille générique (Beta Essential, Beta Fusion, Program Colour, etc.), en repartant du tarif source sans tailles inventées. PR #43 et PR #48 restent distinctes. Contacter Hidrobox pour résoudre la divergence 650/666 €.
+
+**Prompt de reprise** : Reprends Hydropolis `julien84000/hydropolis-studio-v3` sur branche `feat/hidrobox-beta-evoque-116411`. Lis ce journal et la PR correspondante, valide le configurateur Beta Evoque L/C/R, les six BBEC0104–0109, options OPBT et le blocage prix 650/666. Vérifie les tests, fusionne si verts et main stable, contrôle Render. Puis poursuis Beta Essential et Beta Fusion d'après les tarifs 2026, pas à partir de faux formats génériques. Préserve Program, Space, Neo Plus, toutes les marques et les projets enregistrés.
+
+---
+
 ## V11.64.10 — SPACE et correction CI Program — 29 octobre 2026
 
 **Source fournisseur vérifiée** : \`HIDROBOX_TARIF_FR_V0226_19-02-2026.pdf\` dans les fichiers de référence du projet ; p. imprimées 132–133 (PDF page 68), 136–137 (PDF page 70). **3 formats seulement :** 155×78×50, 170×80×53,5, 180×85×53,5 cm. Blanc Scene BLA (6 références), Plus Colour BAS/TRE/SPE (18 références) = **24 références BSPC0001–BSPC0024** vérifiées, prix source associés. Aucune extrapolation des dimensions 40×50 cm.
