@@ -1,3 +1,13 @@
+## V11.64.16 — sous-totaux devis / suppression de pages / textes du dossier photo (candidat 29/10/2026)
+
+Branche `feat/quote-subtotals-dossier-page-texts-116416`, base `bef3850` (11.64.15 déjà en production). Nouveau module `public/dossier-editor-v116416.js`, chargé avant app.js. Dans les bandeaux noirs du devis : sous-total HT des lignes de la pièce (net remisé × quantité), affiché uniquement au dernier bandeau répété quand la pièce occupe plusieurs pages. Les calculs du devis restent inchangés.
+
+En édition du dossier photo, bouton « Supprimer la page » pour chaque page de sélection, confirmation et réaffectation de toutes les vignettes (6 maximum par page ; page de repli si aucune destination disponible). Les articles, quantités, tarifs et l'ordre du devis ne sont jamais supprimés ni modifiés. Boutons ✎ sur en-tête, introduction et vignettes : personnalisation par projet, uniquement pour le dossier photo. Valeurs conservées dans `state.presentationLayout.pageTexts` (clé page) et `itemTexts` (id article), synchronisées par le mécanisme de sauvegarde du projet. Réinitialisation de texte possible dans la boîte de dialogue.
+
+Fichiers : `public/app.js`, `public/dossier-editor-v116416.js`, `public/styles.css`, `public/index.html`, `public/sw.js`, tests unitaires et Chromium. Préserver la V11.64.15, les photographies, le dossier six vignettes, toutes les marques et règles de tarification. Ne fusionner que si CI intégralement verte ; après fusion, vérifier `/api/version` = 11.64.16 et `/api/health` sur Render. Le traitement HD Sbordoni demeure séparé.
+
+---
+
 ## Devis — espaces non coupés et protection du pied de page — candidate 11.64.15
 
 Branche `fix/quote-space-pages`, base main `d98e5b0` (11.64.14). La capture client révèle le défaut du découpage fixe de huit articles : il ignorait la hauteur des titres de pièces/espaces et des descriptions. Plusieurs espaces peuvent partager une page : les groupes sont conservés entiers quand ils tiennent sur une page, sinon déplacés en bloc sur la suivante. Seul un espace plus long qu’une page est scindé. Les continuations répètent leurs en-têtes, sans limite arbitraire de nombre d’articles. Après rendu, les articles qui débordent sont déplacés entiers vers une continuation ; les totaux restent uniques à la fin. Les très longues lignes isolées sont ajustées à la place disponible, sans texte supprimé. La mesure est refaite avant impression après chargement des polices. La pagination des photos et les coordonnées concepteur de la PR #59 sont préservées.
