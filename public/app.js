@@ -1980,6 +1980,13 @@ function renderCatalog(){
    if(count)count.textContent=`${rows.length} résultat${rows.length>1?"s":""}${serverSearchRows.length?" · multi-sources":""}`;
    const room=roomById($("#targetRoom")?.value)||state.rooms[0];
    const sbordoniActive=/^Sbordoni$/i.test(fs.manufacturer) || (!fs.manufacturer && /^sbordoni\b/i.test(String(q).trim()));
+   const hidroboxActive=/^Hidrobox$/i.test(fs.manufacturer)||(!fs.manufacturer&&/^hidrobox\b/i.test(String(q).trim()));
+   const hidroboxCategories=window.HydroHidroboxConfigurator?.officialCategories||[];
+   const hidroboxLauncher=hidroboxActive?`<section class="manufacturer-guide-launcher hidrobox-catalog-launcher">
+     <div class="hidrobox-catalog-intro"><span class="eyebrow">HIDROBOX · NAVIGATION FABRICANT</span><h3>Parcourir les 9 familles de produits</h3><p>Choisissez une famille → collection → modèle et ses caractéristiques. Les prix restent ceux du tarif fournisseur 2026 (+4 % ; remise achat 50 %).</p></div>
+     <button class="btn primary hidrobox-category-open hidrobox-catalog-all" type="button">Toutes les familles</button>
+     <div class="hidrobox-catalog-categories">${hidroboxCategories.map(c=>`<button type="button" class="hidrobox-category-open" data-hidrobox-category="${esc(c.key)}">${esc(c.name)}</button>`).join("")}</div>
+   </section>`:"";
    const sbordoniLauncher=sbordoniActive?`<section class="sbordoni-catalog-launcher">
      <div><span class="eyebrow">SBORDONI · CONFIGURATION GUIDÉE</span><h3>Composer directement le produit final</h3><p>Choisissez d’abord la collection et la dimension, puis uniquement les piètements compatibles montrés dans le catalogue.</p></div>
      <div class="sbordoni-launch-actions"><button type="button" class="btn primary sbordoni-launch-basin">Configurer un lavabo</button><button type="button" class="btn ghost sbordoni-launch-wc">Configurer un WC</button></div>
@@ -1998,7 +2005,13 @@ function renderCatalog(){
      <div><span class="eyebrow">${esc(fs.manufacturer)} · CATALOGUE VISUEL</span><h3>Parcourir les collections du fabricant</h3><p>${fs.manufacturer==="Gessi"?"Univers → collection → famille → produit → finition. Navigation inspirée de Gessi Area Pro.":"Collection → espace → modèle → finition. Références et prix du catalogue existant."}</p></div>
      <button class="btn primary manufacturer-guide-open" type="button">Explorer les collections</button>
    </section>`:"";
-   results.innerHTML=sbordoniLauncher+manufacturerGuideLauncher+(productCards||`<div class="empty">Aucun résultat.</div>`);
+   results.innerHTML=hidroboxLauncher+sbordoniLauncher+manufacturerGuideLauncher+(productCards||`<div class="empty">Aucun résultat.</div>`);
+   results.querySelectorAll(".hidrobox-category-open").forEach(button=>button.addEventListener("click",()=>{
+     const guide=window.HydroHidroboxConfigurator;
+     if(!guide?.open){toast("Configurateur Hidrobox indisponible");return;}
+     const roomId=$("#targetRoom")?.value||state.rooms[0]?.id||"";
+     guide.open(null,roomId,button.dataset.hidroboxCategory||"").catch(e=>{console.error("[Hidrobox navigation]",e);alert("Impossible d’ouvrir Hidrobox : "+(e.message||String(e)));});
+   }));
    results.querySelector(".manufacturer-guide-open")?.addEventListener("click",()=>{
      const brand=fs.manufacturer;
      const rows=[...catalogIndex.maker(brand)];
