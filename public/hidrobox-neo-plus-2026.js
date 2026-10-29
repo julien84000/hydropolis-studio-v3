@@ -64,7 +64,7 @@ function rowFor(form,width,length){
    let n=0;for(let i=0;i<w;i++)for(const x of K[i])if(x!=null)n++;
    for(let j=0;j<l;j++)if(K[w][j]!=null)n++;
    const lisse=n<74;
-   return {k:K[w][l],s:S[w][l],ref:{B:lisse?1+n:null,A:84+n,T:lisse?377+n:null,TA:460+n,P:lisse?565+n:null,PA:648+n,SB:lisse?189+n:null,SA:272+n},tier:W[w].join('-')+' × '+L[l].join('-')};
+   return {k:K[w][l],s:S[w][l],ref:{B:lisse?1+n:null,A:84+n,T:lisse?377+n:null,TA:460+n,P:lisse?565+n:null,PA:648+n,SB:lisse?189+n:null,SA:272+n},tier:W[w].join('-')+' × '+[(w>=6&&l===4)?120:(w>=4&&l===2)?100:L[l][0],L[l][1]].join('-')};
  }
  const x=SHAPES[form];if(!x)return null;
  let i=-1;
@@ -77,6 +77,7 @@ function rowFor(form,width,length){
 }
 function lookup({form='rectangle',width,length,material='Kromat',texture='Lisse',group='BAS',color='',grille='Point Inox',bonde='Horizontale standard'}){
  width=Number(width);length=Number(length);
+ if(!['Kromat','Scene'].includes(material)||!['Lisse','Ardoise'].includes(texture))return {ok:false,reason:'Matière ou texture non proposée'};
  const fmt=FORMATS.find(f=>f.key===form);
  if(!fmt)return {ok:false,reason:'Forme non disponible'};
  const validW=fmt.widths?fmt.widths.includes(width):width>=fmt.widthMin&&width<=fmt.widthMax;

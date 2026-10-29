@@ -546,6 +546,12 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     check('Hidrobox Neo Plus : retour à Kromat rétablit sa matrice de couleurs',
       (await page.locator('#hidroboxGuided #hnMaterial').inputValue())==='Kromat'&&
       (await page.locator('#hidroboxGuided #hnGroup').inputValue())==='BAS');
+    await page.locator('[data-hidrobox-target="hnForm"][data-hidrobox-value="angularL"]').click();
+    check('Neo Plus Angular L only offers the published Ardoise texture and exact reference',
+      await page.locator('#hnTexture').inputValue()==='Ardoise'&&
+      await page.locator('#hnTexture option').count()===1&&
+      (await page.locator('#hidroboxGuided .hidrobox-result').innerText()).includes('SNEC0181')&&
+      await page.locator('#hnAdd').isEnabled());
     await page.locator('#hidroboxGuided .hidrobox-back').click();
     await page.locator('#hidroboxGuided [data-kind="collection"]').filter({hasText:'Line'}).first().click();
     await page.waitForSelector('#hidroboxGuided a[href$="STL-Line-Hidrobox.zip"]');
@@ -561,13 +567,43 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     check('Hidrobox official : 9 wall-mounted washbasin collections',
       await page.locator('#hidroboxGuided [data-kind="collection"]').count()===9);
     await page.locator('#hidroboxGuided [data-kind="collection"][data-choice="program"]').click();
-    check('Hidrobox Program : exact imported tariff and configuration remain',
-      await page.locator('#hidroboxGuided [data-facet]').count()>0&&
+    check('Hidrobox Program : dedicated dimension-based tariff and options',
+      await page.locator('#hidroboxGuided [data-hp-number]').count()>0&&
       await page.locator('#hidroboxGuided #huAdd').isEnabled()&&
       (await page.locator('#hidroboxGuided .hidrobox-tree-path').innerText()).includes('Program'));
+    check('Program uses a plan reference, never a standalone option as the complete product',
+      (await page.locator('#hidroboxGuided .hp-breakdown').innerText()).includes('WPRC0043'));
+    await page.locator('[data-hp-number="length"]').fill('140');
+    await page.locator('[data-hp-number="length"]').press('Tab');
+    await page.locator('[data-hp-select="additional"]').selectOption('S25');
+    await page.locator('[data-hp="curve"][data-value="LR"]').click();
+    await page.locator('[data-hp-select="tap"]').selectOption('OPWB0007');
+    check('Program additive pricing and single uplift are visible',
+      (await page.locator('#hidroboxGuided .hidrobox-result b').innerText()).replace(/[\s\u202f\u00a0]/g,'').includes('1526,72'));
+    await page.locator('[data-hp-number="depth"]').fill('60');
+    await page.locator('[data-hp-number="depth"]').press('Tab');
+    check('Curve rejects an incompatible depth',await page.locator('#huAdd').isDisabled());
+    await page.locator('[data-hp-number="depth"]').fill('50');
+    await page.locator('[data-hp-number="depth"]').press('Tab');
     check('Hidrobox Program : photo liée à la collection, sans fausse finition exacte',
       (await page.locator('#hidroboxGuided .hidrobox-neo-hero img').getAttribute('src'))?.includes('Washbasin_Program_Thumbnail')&&
       (await page.locator('#hidroboxGuided .hidrobox-neo-hero small').innerText()).includes('non contractuelles'));
+    await page.locator('#hidroboxGuided #huAdd').click();
+    const programSaved=await page.evaluate(()=>{
+      const p=state.selected.findLast(p=>p.hidroboxConfiguration?.type==='program-2026');
+      return JSON.parse(JSON.stringify(p));
+    });
+    check('Program composition preserves dimensions, source components, reference and total',
+      programSaved.reference==='WPRC0044'&&programSaved.price===1526.72&&
+      programSaved.hidroboxConfiguration.length===140&&programSaved.hidroboxConfiguration.depth===50&&
+      programSaved.hidroboxConfiguration.additional==='S25'&&programSaved.hidroboxConfiguration.curve==='LR'&&
+      programSaved.hidroboxConfiguration.components.some(c=>c.reference==='OPWB0001'&&c.rawPrice===215));
+    await page.evaluate(p=>HydroHidroboxConfigurator.open(p,p.roomId),programSaved);
+    await page.locator('#hidroboxGuided [data-kind="collection"][data-choice="program"]').click();
+    check('Saved Program configuration reopens without resetting dimensions or options',
+      await page.locator('[data-hp-number="length"]').inputValue()==='140'&&
+      await page.locator('[data-hp-select="additional"]').inputValue()==='S25'&&
+      await page.locator('[data-hp="curve"][data-value="LR"]').getAttribute('aria-pressed')==='true');
     await page.locator('#hidroboxGuided .hidrobox-back').click();
     await page.locator('#hidroboxGuided [data-kind="collection"][data-choice="intim"]').click();
     check('Hidrobox Intim : private site collection has no fictitious quote item',

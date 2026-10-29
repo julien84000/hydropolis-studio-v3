@@ -1,3 +1,15 @@
+## Hidrobox Program et pictogrammes — PR #54 — candidate 11.64.9 (29/10/2026)
+
+Branche `fix/hidrobox-tariff-program`, base main 7a3b534 (11.64.8). Premier checkpoint a60160af75f61169d87efb32f9fd6889e189cf84 : **CI complète réussie**, run 40844986126, tests Node et navigateur compris. Voir **docs/HIDROBOX_PROGRAM_TARIFF.md** pour le diagnostic, les sources et les limites.
+
+Program ne traite plus un supplément OPWB comme un plan complet : moteur WPRC dédié, 56 tranches exactes, choix illustré de vasque, Curve, vasque additionnelle, options et dimensions exactes. Chiffrage détaillé, +4 % une seule fois, remise achat 50 %, composition conservée dans le projet. 31 images extraites du tarif (formes Neo Plus, vasques et formes Program). Les prix contradictoires p.80/81/83 ne sont pas arbitrairement validés.
+
+Dernière étape préparée : test navigateur de sauvegarde/réouverture de la composition et détails des options dans sa désignation ; version 11.64.9. **Attendre la CI de cette nouvelle tête avant fusion, puis vérifier Render.** Pas encore annoncé déployé. Les autres collections Hidrobox nécessitent encore un audit de leurs dimensions ; ne pas prétendre qu'elles sont toutes corrigées.
+
+Prompt : Reprends PR #54 et le dernier main, lis docs/HIDROBOX_PROGRAM_TARIFF.md. Vérifie CI/version/health. Poursuis les dimensions et pictogrammes depuis le tarif source et résous les prix incohérents avec preuve fabricant, sans perdre les anciens projets ni les autres marques. Sauvegarde fréquemment.
+
+---
+
 ## Correctif d’accès aux familles Hidrobox — V11.64.8 (29/10/2026)
 
 **Retour utilisateur :** en production V11.64.7, impossible de parcourir facilement les différents types de produits Hidrobox. Vérification directe Render /api/version : **11.64.7 effectivement déployée** ; la présence du code arborescent ne garantit pas son accès dans le catalogue. Le configurateur de références reste accessible via les cartes produits, mais aucun lanceur catalogue Hidrobox dédié n’était affiché.

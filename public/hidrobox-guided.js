@@ -105,7 +105,7 @@ function visualFacet(id,label,options,selected,attributes=''){
  if(!visual||options.length<2||options.length>18)return '<label>'+escape(label)+native+'</label>';
  return '<div class="hidrobox-visual-field"><strong>'+escape(label)+'</strong>'+native+
   '<div class="hidrobox-visual-options" role="group" aria-label="'+escape(label)+'">'+options.map(v=>
-   '<button type="button" class="hidrobox-visual-option" data-hidrobox-target="'+escape(id)+'" data-hidrobox-value="'+escape(v)+'" aria-pressed="'+(String(v)===String(selected))+'">'+escape(v)+'</button>').join('')+'</div></div>';
+   '<button type="button" class="hidrobox-visual-option" data-hidrobox-target="'+escape(id)+'" data-hidrobox-value="'+escape(v)+'" aria-pressed="'+(String(v)===String(selected))+'">'+(id==='hnForm'&&root.HydroTariffPictures?.['neo-'+v]?'<img src="'+root.HydroTariffPictures['neo-'+v]+'" alt="" width="120" height="100" style="display:block;object-fit:contain">':'')+escape(id==='hnForm'?(catalogue.FORMATS.find(f=>f.key===v)?.label||v):v)+'</button>').join('')+'</div></div>';
 }
 function wireVisualFacets(){
  overlay.querySelectorAll('[data-hidrobox-target]').forEach(button=>button.onclick=()=>{
@@ -281,7 +281,57 @@ function dimensionFields(selected){
   }
   return inputs.length?'<h4 class="hidrobox-universal-subtitle">Dimensions réelles de fabrication</h4><p class="hidrobox-guide-note">Les tranches servent au tarif ; les dimensions réelles sont conservées pour la commande.</p><div class="hidrobox-fields">'+inputs.join('')+'</div>':'';
 }
+let tariffExtrasPromise=null,programDraft=null,programFamily='';
+function loadTariffExtras(){
+ if(!tariffExtrasPromise)tariffExtrasPromise=Promise.all(['hidrobox-program-data.js','hidrobox-tariff-pictures.js','hidrobox-program-2026.js'].map(file=>new Promise((resolve,reject)=>{
+  const script=document.createElement('script');script.src='/'+file;script.onload=resolve;script.onerror=()=>reject(Error('Chargement du tarif Program impossible'));document.head.appendChild(script);
+ }))).catch(e=>{tariffExtrasPromise=null;throw e});
+ return tariffExtrasPromise;
+}
+function programPage(g){
+ stage='group';chosenGroup=g;
+ if(!root.HydroProgram2026||!root.HydroProgramData||!root.HydroTariffPictures){
+  const token=navigationToken;shell('Program','<p role="status">Chargement du tarif et des pictogrammes Program…</p>',true);
+  loadTariffExtras().then(()=>{if(overlay&&navigationToken===token&&chosenGroup===g)programPage(g)}).catch(e=>{if(overlay&&navigationToken===token)shell('Program','<p>'+escape(e.message)+'</p>',true)});return;
+ }
+ if(!document.querySelector('#hidroboxProgramStyles')){const link=document.createElement('link');link.id='hidroboxProgramStyles';link.rel='stylesheet';link.href='/hidrobox-program.css';document.head.appendChild(link)}
+ const model=root.HydroProgram2026,data=root.HydroProgramData,pics=root.HydroTariffPictures;
+ if(!programDraft)programDraft=model.defaults();
+ const s=programDraft,q=model.quote(s);
+ const card=(key,value,label,picture,note='')=>'<button type="button" class="hp-choice" data-hp="'+key+'" data-value="'+escape(value)+'" aria-pressed="'+(String(s[key])===String(value))+'">'+(picture?'<img src="'+escape(pics[picture])+'" alt="" loading="lazy">':'')+'<b>'+escape(label)+'</b><small>'+escape(note)+'</small></button>';
+ const select=(key,label,refs)=>'<label>'+label+'<select data-hp-select="'+key+'"><option value="">Sans</option>'+refs.map(ref=>{const o=data.options[ref];return '<option value="'+ref+'" '+(s[key]===ref?'selected':'')+'>'+escape(o.label)+(o.rawPrice===0?' · inclus':' · '+eu(o.rawPrice)+' source')+'</option>'}).join('')+'</select></label>';
+ const input=(key,label,min,max,step=1)=>'<label>'+label+'<input data-hp-number="'+key+'" type="number" min="'+min+'" max="'+max+'" step="'+step+'" value="'+escape(s[key])+'"></label>';
+ const check=(key,label)=>'<label><input data-hp-check="'+key+'" type="checkbox" '+(s[key]?'checked':'')+'>'+label+'</label>';
+ const families=[...new Set(data.basins.map(b=>b.picture))];
+ if(!programFamily)programFamily=q.basin?.picture||families[0];
+ const hero=officialImage(officialCollectionMedia('program')?.image);
+ const html='<button type="button" class="hidrobox-back">← Collections</button><div class="hidrobox-neo-hero">'+(hero?'<img src="'+escape(hero)+'" alt="Collection Program">':'')+'<div><h3>Program · plan vasque sur mesure</h3><p>Scene blanc lisse · tarif FR 2026, pages 76–83.</p><a href="'+HIDROBOX_DOCUMENTS.program.technical+'" target="_blank" rel="noopener noreferrer">Fiche technique PDF</a><small>Photo de collection · dimensions et options non contractuelles.</small></div></div>'+
+ '<div class="hidrobox-program"><h4>1 · Forme du plan et hauteur</h4><div class="hp-grid hp-form">'+[
+ ['1.2','Plan fin · 1,2 cm','flat'],['10','Jupe · 3–10 cm','apron'],['20','Jupe · 11–20 cm','high'],['40','Jupe · 21–40 cm','full']].map(([v,l,p])=>card('height',v,l,p)).join('')+'</div>'+
+ '<h4>2 · Forme et dimensions de la vasque principale</h4><div class="hp-families">'+families.map(f=>'<button type="button" data-hp-family="'+f+'" aria-pressed="'+(programFamily===f)+'"><img alt="" src="'+pics[f]+'" loading="lazy"><span>'+escape(f.replace('plus',' + ').replace('10',' 10').replace('14',' 14'))+'</span></button>').join('')+'</div><div class="hp-grid">'+data.basins.filter(b=>b.picture===programFamily).map(b=>card('basin',b.id,b.id+' · '+b.dimensionsLabel,b.picture,b.rawPrice?'+ '+eu(b.rawPrice)+' source':'Inclus')).join('')+'</div><p>Vasque choisie : <strong>'+escape(q.basin?.id||'')+' · '+escape(q.basin?.dimensionsLabel||'')+'</strong>. Visuels extraits du tarif : le dessin d’implantation reste à confirmer.</p>'+
+ '<h4>3 · Curve et vasque additionnelle</h4><div class="hp-grid">'+card('curve','none','Sans Curve','flat')+card('curve','L','Curve L','curveL','+123 € source')+card('curve','R','Curve R','curveR','+123 € source')+card('curve','LR','Curve L+R','curveLR','+123 € source')+'</div><label>Vasque additionnelle<select data-hp-select="additional"><option value="">Sans vasque additionnelle</option>'+data.basins.map(b=>'<option value="'+b.id+'" '+(s.additional===b.id?'selected':'')+'>'+escape(b.id+' · '+b.label.replace(/^Vasque Program S\d+ /,'')+' · '+b.dimensionsLabel)+'</option>').join('')+'</select></label>'+(q.extra?'<img class="hp-extra" src="'+pics[q.extra.picture]+'" alt="Type de vasque additionnelle">':'')+
+ '<h4>4 · Équipement et options</h4><div class="hp-options">'+select('tap','Préparation robinetterie',['OPWB0007','OPWB0008','OPWB0009','OPWB0010'])+select('overflow','Trop-plein',['OPWB0011','OPWB0012'])+select('drain','Bonde',['OPWB0050','OPWB0051','OPWB0052','OPWB0053','OPWB0054','OPWB0055'])+select('shelf','Étagère intégrée latérale',['OPWB0127','OPWB0128','OPWB0129'])+select('drawer','Tiroir extractible',['OPWB0130','OPWB0131','OPWB0132'])+select('towel','Porte-serviettes (prix divergents signalés)',Array.from({length:23},(_,i)=>'OPWB'+String(104+i).padStart(4,'0')))+input('backsplash','Crédence : hauteur en cm (0 = sans)',0,30)+check('backTap','Préparation robinetterie de crédence')+check('underShelf','Étagère sous plan')+check('visibleBrackets','Fixations visibles')+check('wallBacksplash','Crédence murale robinetterie · tarif à confirmer')+check('specialCut','Découpe spéciale · dessin et supplément à confirmer')+'</div>'+
+ '<h4>5 · Dimensions exactes du plan</h4><div class="hp-options">'+input('length','Longueur exacte (cm)',60,201)+input('depth','Profondeur exacte (cm)',40,60)+input('height','Hauteur exacte (cm)',1.2,40,.1)+'</div><p>Le tarif est calculé selon ces dimensions, puis les suppléments choisis. Formats hors grille ou implantation particulière : devis fabricant.</p>'+
+ '<h4>6 · Détail du chiffrage</h4><table class="hp-breakdown"><thead><tr><th>Élément</th><th>Référence</th><th>Prix source HT</th></tr></thead><tbody>'+q.components.map(c=>'<tr><td>'+escape(c.label)+'</td><td>'+escape(c.reference||'Voir tarif')+'</td><td>'+eu(c.rawPrice)+'</td></tr>').join('')+'</tbody></table>'+
+ (q.errors.length?'<ul class="hp-errors" role="alert">'+q.errors.map(e=>'<li>'+escape(e)+'</li>').join('')+'</ul>':'<p>Tranche du plan : '+q.tier.length.join('–')+' × '+q.tier.depth.join('–')+' cm · H '+q.tier.height.join('–')+' cm.</p>')+
+ '<div class="hidrobox-result"><div><b>'+(q.ok?eu(q.price)+' HT':'Configuration à confirmer')+'</b><small>'+(q.ok?'Total source '+eu(q.rawPrice)+' +4 % une seule fois. Achat −50 % : '+eu(q.purchasePrice)+' HT.':'Aucun prix final ni ajout tant que la configuration n’est pas vérifiée.')+'</small></div><button id="huAdd" class="btn primary" type="button" '+(q.ok?'':'disabled')+'>Ajouter au projet</button></div></div>';
+ shell('Program · configuration sur mesure',html,true);
+ overlay.querySelector('.hidrobox-back').onclick=collections;
+ function refresh(){const sc=overlay.querySelector('.recor-configurator'),pos=sc?.scrollTop;programPage(g);if(sc&&overlay)overlay.querySelector('.recor-configurator').scrollTop=pos}
+ overlay.querySelectorAll('[data-hp]').forEach(b=>b.onclick=()=>{s[b.dataset.hp]=b.dataset.hp==='height'?Number(b.dataset.value):b.dataset.value;refresh()});
+ overlay.querySelectorAll('[data-hp-family]').forEach(b=>b.onclick=()=>{programFamily=b.dataset.hpFamily;refresh()});
+ overlay.querySelectorAll('[data-hp-select]').forEach(e=>e.onchange=()=>{s[e.dataset.hpSelect]=e.value;refresh()});
+ overlay.querySelectorAll('[data-hp-number]').forEach(e=>e.onchange=()=>{s[e.dataset.hpNumber]=e.value===''?NaN:Number(e.value);refresh()});
+ overlay.querySelectorAll('[data-hp-check]').forEach(e=>e.onchange=()=>{s[e.dataset.hpCheck]=e.checked;refresh()});
+ overlay.querySelector('#huAdd').onclick=()=>{
+  const result=model.quote(s);if(!result.ok)return;
+  const item={manufacturer:'Hidrobox',collection:'Program',reference:result.reference,base:result.reference,category:'Lavabo',designation:'Program '+s.basin+(s.additional?' + '+s.additional:'')+' · '+s.length+' × '+s.depth+' × '+s.height+' cm · Curve '+s.curve+' · '+result.components.slice(2).map(c=>c.label).join(' · '),price:result.price,totalPrice:result.price,rawTariffPrice:result.rawPrice,purchaseDiscount:50,listPriceUpliftPct:4,currency:'€',vat:'HT',source:data.source,sourceYear:2026,manufacturerUrl:HOUSE+'collections/program/',technicalSheetUrl:HIDROBOX_DOCUMENTS.program.technical,technicalSheetLabel:'Fiche technique Program',installationGuideUrl:HIDROBOX_DOCUMENTS.program.manual,image:hero,imageSource:'Photographie de collection Program · composition non contractuelle',imageFinishMatch:'collection',configuratorType:'hidrobox-configured'};
+  try{const record=createSelectedProductRecord(item,room,'');if(!record)throw Error('Création impossible');Object.assign(record,item,{hidroboxConfiguration:{type:'program-2026',group:g.id,...result.configuration,components:result.components,tier:result.tier}});const ids=commitSelectedRecords([record],{showProject:false});if(!ids?.length)throw Error('Enregistrement impossible');close();showView('project')}catch(e){alert(e.message)}
+ };
+}
+
 function universalPage(g){
+ if(norm(g.collection||g.id)==='program')return programPage(g);
  stage='group';chosenGroup=g;
  const name=g.collection||g.family||g.model||g.id;
  const {selected,fields,refs}=universalSelection(g);
@@ -386,12 +436,15 @@ function sizeRanges(){
  return {widths,lengths:available};
 }
 function neoPage(){
+ if(!root.HydroTariffPictures)loadTariffExtras().then(()=>{if(overlay&&stage==='neo')neoPage()}).catch(()=>{});
  stage='neo';const d=catalogue.FORMATS.find(x=>x.key===neo.form)||catalogue.FORMATS[0];
  if(neo.material==='Scene'){neo.group='BLA';neo.color='Blanc';}
  if(neo.material==='Kromat'&&neo.group==='BLA')neo.group='BAS';
  const colors=catalogue.COLORS[neo.group]||[];
  if(!colors.includes(neo.color))neo.color=colors[0];
  const ranges=sizeRanges();
+ const textures=['Lisse','Ardoise'].filter(texture=>catalogue.lookup({...neo,texture,group:neo.material==='Scene'?'BLA':'BAS',color:neo.material==='Scene'?'Blanc':'Bianco'}).ok);
+ if(textures.length&&!textures.includes(neo.texture))neo.texture=textures[0];
  const line=catalogue.lookup(neo);
  const colorGroups=neo.material==='Scene'?['BLA']:['BAS','TRE','SPE'];
  const opts=(id,label,list,current,disabled=false)=>visualFacet(id,label,list,current,disabled?'disabled':'');
@@ -409,7 +462,7 @@ function neoPage(){
  opts('hnMaterial','Matière',['Kromat','Scene'],neo.material)+
  opts('hnWidth','Largeur exacte (cm)',values(ranges.widths),neo.width)+
  opts('hnLength','Longueur exacte (cm)',values(ranges.lengths),neo.length)+
- opts('hnTexture','Texture',['Lisse','Ardoise'],neo.texture)+
+ opts('hnTexture','Texture',textures.length?textures:[neo.texture],neo.texture)+
  opts('hnGroup','Groupe de couleurs',colorGroups,neo.group)+
  opts('hnColor','Couleur',colors,neo.color)+
  opts('hnGrille','Grille',['Point Inox','Point Basic','Point Trend','Point Special','Star Inox','Star Basic','Star Trend','Star Special','Radiance Steel','Radiance Gunmetal','Radiance Gold','Radiance Rame'],neo.grille)+
@@ -453,7 +506,7 @@ function neoPage(){
 async function open(p,roomId,requestedCategory=''){
  close();
  const token=++navigationToken;
- room=roomId;original=p||{};groups=[];groupsLoading=true;groupsError='';
+ room=roomId;original=p||{};programDraft=p?.hidroboxConfiguration?.type==='program-2026'?{...p.hidroboxConfiguration}:null;programFamily='';groups=[];groupsLoading=true;groupsError='';
  for(const key of Object.keys(universalDraft))delete universalDraft[key];
  const existing=HIDROBOX_ALL_OFFICIAL.find(x=>norm(x.name)===norm(p?.collection)||norm(x.key)===norm(p?.collection));
  const requested=CATEGORY.find(x=>x.key===requestedCategory);
