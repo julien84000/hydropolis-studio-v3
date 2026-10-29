@@ -3370,3 +3370,54 @@ main{background:transparent}
 .dossier-designer-fields legend{font-weight:600;padding:0 6px}
 .dossier-designer-fields p{font-size:12px;color:#666}
 .contact-address{white-space:pre-line}
+
+
+/* V11.64.16 — quote section subtotals and dossier photo page/text controls */
+#document .quote-table .quote-room-row .quote-room-line{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0;
+}
+#document .quote-table .quote-room-row .quote-room-title{
+  flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;
+}
+#document .quote-table .quote-room-row .quote-room-amount{
+  flex:0 0 auto;white-space:nowrap;font-size:8.5pt;letter-spacing:.02em;text-align:right;color:#fff;
+}
+#document .quote-table .quote-room-row .quote-room-amount[hidden]{display:none!important}
+#document .visual-board-page .layout-delete-page{
+  position:absolute;top:2mm;right:12mm;z-index:1000;
+  border:1px solid #9e6430;border-radius:5px;padding:5px 8px;
+  background:#fff;color:#8a411d;font-size:11px;line-height:1.2;cursor:pointer;
+  box-shadow:0 2px 6px #0002;
+}
+#document .visual-board-page .layout-delete-page:hover{background:#fff4ea}
+#document .layout-controls .layout-text-edit{font-size:17px;font-weight:700}
+.dossier-text-backdrop{
+  position:fixed;inset:0;z-index:25000;background:rgba(28,25,21,.55);
+  display:flex;align-items:center;justify-content:center;padding:18px;
+}
+.dossier-text-panel{
+  width:min(520px,100%);max-height:90vh;overflow:auto;display:grid;gap:12px;
+  padding:22px;border-radius:12px;background:white;color:#201e1b;
+  box-shadow:0 15px 55px rgba(0,0,0,.28);
+}
+.dossier-text-panel h3{font-size:20px;margin:0}
+.dossier-text-panel p{color:#69625b;margin:0;font-size:13px;line-height:1.5}
+.dossier-text-panel label{display:grid;gap:5px;font-size:12px;font-weight:650}
+.dossier-text-panel textarea{
+  display:block;width:100%;min-height:52px;resize:vertical;
+  border:1px solid #d8c7b2;border-radius:6px;padding:9px;
+  font:14px/1.4 system-ui,sans-serif;color:#201e1b;background:#fff;
+}
+.dossier-text-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+.dossier-text-actions button{
+  padding:9px 12px;background:#f7f3ee;border:1px solid #c7b8a6;
+  color:#31291e;border-radius:6px;cursor:pointer
+}
+.dossier-text-actions button.primary{background:#292725;color:white}
+#document .layout-delete-page:focus-visible,
+#document .layout-text-edit:focus-visible,
+.dossier-text-panel :focus-visible{outline:2px solid #8a5b24;outline-offset:2px}
+.pdf-exporting #document .layout-delete-page,.pdf-exporting .dossier-text-backdrop{display:none!important}
+@media print{
+  #document .layout-delete-page,.dossier-text-backdrop{display:none!important}
+}

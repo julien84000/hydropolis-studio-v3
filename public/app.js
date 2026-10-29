@@ -3111,6 +3111,7 @@ function fitQuotationPages(){
   const pages=[...host.querySelectorAll('.quote-page')];
   pages.forEach((page,index)=>{page.querySelector('.quote-head h2').textContent='Récapitulatif de la sélection'+(pages.length>1?' · '+(index+1)+'/'+pages.length:'');});
   [...host.querySelectorAll(':scope > .page')].forEach((page,index)=>{const n=page.querySelector('.page-no');if(n)n.textContent=String(index+1);});
+  window.HydroDossierEditor?.renderQuoteRoomSubtotals();
 }
 function quotePages(startNo){
   const rows=quoteRows();
@@ -4094,7 +4095,10 @@ function boardVisualWithRecorOptions(p){
 }
 function boardItemHtml(p,idx,originLabel=""){
  const isManual=!!p.manual && !p.isFreeArticle;
- const designation=isManual?String(p.designation||p.label||"Élément libre").trim():clientFacingDesignation(p);
+ const dossierText=ensurePresentationLayoutState().itemTexts?.[String(p.id)]||{};
+ const designation=Object.prototype.hasOwnProperty.call(dossierText,"designation")?dossierText.designation:(isManual?String(p.designation||p.label||"Élément libre").trim():clientFacingDesignation(p));
+ const dossierBrand=Object.prototype.hasOwnProperty.call(dossierText,"brand")?dossierText.brand:(isManual?"Sélection libre":(p.manufacturer||"Sélection"))+(!isManual&&p.collection?" · "+p.collection:"");
+ const dossierFinish=Object.prototype.hasOwnProperty.call(dossierText,"finish")?dossierText.finish:(p.finish||"");
  const visual=isManual && !p.dossierImage
    ?(p.image?`<figure class="board-single-image"><img src="${p.image}" alt="${designation}" loading="eager"></figure>`:`<div class="board-image-fallback manual-board-fallback">Élément libre</div>`)
    :boardVisualWithRecorOptions(p);
@@ -4104,11 +4108,11 @@ function boardItemHtml(p,idx,originLabel=""){
  return `<article class="board-item board-item-${idx+1}${makerClass}" data-layout-block="item:${layoutId}" data-dossier-item="${layoutId}">
    <div class="board-visual">${visual}</div>
    <div class="board-copy">
-     <div class="board-brand">${esc(isManual?"Sélection libre":(p.manufacturer||"Sélection"))}${!isManual&&p.collection?` · ${esc(p.collection)}`:""}</div>
+     <div class="board-brand">${esc(dossierBrand)}</div>
      ${originLabel?`<div class="board-origin">${esc(originLabel)}</div>`:""}
      <h3>${esc(designation)}</h3>
      ${p.isFreeArticle?`<div class="board-finish">Quantité : ${itemQuantity(p)}${p.leadTime?` · Délai : ${esc(p.leadTime)}`:""}</div>`:""}
-     ${p.finish?`<div class="board-finish">${esc(p.finish)}</div>`:""}
+     ${dossierFinish?`<div class="board-finish">${esc(dossierFinish)}</div>`:""}
      ${clientVisualNeedsDisclaimer(p)?`<div class="board-simulation-note">Visuel non contractuel</div>`:""}
      ${state.showSupplierReferences!==false && p.reference?`<div class="board-ref">Réf. ${esc(p.reference)}</div>`:""}
      ${state.showClientPrices!==false?`<div class="price commercial-price">${isManual?`${euro(priceValue)} HT`:commercialPriceHtml(p.totalPrice??p.price,p)}</div>`:""}
@@ -4579,6 +4583,7 @@ function initPresentationLayoutEditor(){
     $$(".board-item",page).forEach(presentationLayoutDecorate);
   });
 
+  window.HydroDossierEditor?.decorateDossierPages();
   bindPresentationLayoutToolbar();
 }
 
@@ -4638,10 +4643,14 @@ function buildDocument(){
      for(let i=0;i<groupPages.length;i++){
        const ch=groupPages[i].items;
        const continuation=i>0?" · suite":"";
+       const pageText=ensurePresentationLayoutState().pageTexts?.[groupPages[i].key]||{};
+       const pageKicker=Object.prototype.hasOwnProperty.call(pageText,"kicker")?pageText.kicker:r.title+continuation;
+       const pageTitle=Object.prototype.hasOwnProperty.call(pageText,"title")?pageText.title:group.label;
+       const pageIntro=Object.prototype.hasOwnProperty.call(pageText,"intro")?pageText.intro:group.intro;
        html+=`<section class="page editorial-page room-page visual-board-page board-${group.space.toLowerCase()}" data-parallax-page data-layout-page="${esc(groupPages[i].key)}">
          <div class="page-ambient page-ambient-a" data-parallax-layer="0.05"></div>
-         <div class="board-head" data-layout-block="head"><div><div class="section-kicker">${esc(r.title)}${continuation}</div><h2>${group.label}</h2></div><div class="board-heading-summary"><div class="editorial-brand">Hydropolis</div>${state.showSpaceSubtotals===true && i===groupPages.length-1?`<div class="board-space-subtotal" data-space="${esc(group.space)}">Sous-total de l’espace <strong>${euro(presentationGroupSubtotal(r.id,group,subtotalRows))} HT</strong><small>Sélection présentée et accessoires liés · après remises</small></div>`:""}</div></div>
-         <div class="board-intro" data-layout-block="intro">${group.intro}</div>
+         <div class="board-head" data-layout-block="head"><div><div class="section-kicker">${esc(pageKicker)}</div><h2>${esc(pageTitle)}</h2></div><div class="board-heading-summary"><div class="editorial-brand">Hydropolis</div>${state.showSpaceSubtotals===true && i===groupPages.length-1?`<div class="board-space-subtotal" data-space="${esc(group.space)}">Sous-total de l’espace <strong>${euro(presentationGroupSubtotal(r.id,group,subtotalRows))} HT</strong><small>Sélection présentée et accessoires liés · après remises</small></div>`:""}</div></div>
+         <div class="board-intro" data-layout-block="intro">${esc(pageIntro)}</div>
          <div class="visual-board count-${Math.max(1,ch.length)}">${ch.map((p,idx)=>{
            const origin=dossierGroups.find(g=>g.key===currentDossierPlan.origins.get(String(p.id)));
            return boardItemHtml(p,idx,origin&&origin.key!==group.key?origin.room.title+' · '+origin.label:'');

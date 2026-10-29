@@ -154,7 +154,7 @@ const check=(name,value)=>{assert.ok(value,name);report.checks.push(name);};
       showView('preview');
       host.innerHTML=quotePages(1).html;
       fitQuotationPages();
-      const roomTitles=[...host.querySelectorAll('.quote-room-row')].map(el=>el.textContent.trim());
+      const roomTitles=[...host.querySelectorAll('.quote-room-row')].map(el=>el.querySelector('.quote-room-title')?.textContent.trim()||el.textContent.trim());
       const wcRefs=rows.filter(row=>row.space==='WC').map(row=>row.reference);
       const manual=rows.find(row=>row.manual);
       const sameRows=rows.every((row,i)=>row.sourceIndex===editorRows[i].sourceIndex && row.manualIndex===editorRows[i].manualIndex && row.roomId===editorRows[i].roomId && row.space===editorRows[i].space);

@@ -868,6 +868,30 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     check('Dossier : création de page sans perte',await page.locator('#document .visual-board').count()===3&&await page.locator('#document .board-item').count()===8);
     await page.evaluate(()=>{applyProjectState(JSON.parse(JSON.stringify(state)));buildDocument();});
     check('Dossier : pages restaurées après sauvegarde',await page.locator('[data-layout-page="page-test:LAVABO:2"] [data-dossier-item="page-item-0"]').count()===1);
+
+    // V11.64.16 — delete a real page without losing any project or dossier products.
+    page.once('dialog',dialog=>dialog.accept());
+    await page.locator('[data-layout-page="page-test:LAVABO:2"] .layout-delete-page').click();
+    check('Dossier : supprimer la page redistribue toutes les vignettes',await page.locator('#document .visual-board-page').count()===2&&await page.locator('#document .board-item').count()===8);
+    check('Dossier : aucune donnée source supprimée',await page.evaluate(()=>state.selected.length===8&&state.selected.every((p,i)=>p.id==='page-item-'+i)));
+    await page.locator('[data-layout-page="page-test:LAVABO:0"] .board-head .layout-text-edit').click();
+    await page.locator('.dossier-text-panel textarea[name="title"]').fill('Espace lavabo personnalisé');
+    await page.locator('.dossier-text-panel button[type="submit"]').click();
+    check('Dossier : titre de page édité dans l’aperçu',await page.locator('[data-layout-page="page-test:LAVABO:0"] .board-head h2').innerText()==='Espace lavabo personnalisé');
+    await page.locator('[data-layout-page="page-test:LAVABO:0"] .board-intro .layout-text-edit').click();
+    await page.locator('.dossier-text-panel textarea[name="intro"]').fill('Sélection soignée pour le client.');
+    await page.locator('.dossier-text-panel button[type="submit"]').click();
+    check('Dossier : introduction personnalisée',(await page.locator('[data-layout-page="page-test:LAVABO:0"] .board-intro').innerText()).startsWith('Sélection soignée pour le client.'));
+    await page.locator('[data-dossier-item="page-item-1"] .layout-text-edit').click();
+    await page.locator('.dossier-text-panel textarea[name="designation"]').fill('Vasque sur mesure pour le dossier');
+    await page.locator('.dossier-text-panel button[type="submit"]').click();
+    check('Dossier : nom du produit personnalisé sans toucher au devis',await page.evaluate(()=>{
+      const p=state.selected.find(x=>x.id==='page-item-1');
+      return p.designation==='Lavabo 1'&&quoteRows().find(x=>x.sourceId==='page-item-1')?.designation==='Lavabo 1'&&state.presentationLayout.itemTexts['page-item-1'].designation==='Vasque sur mesure pour le dossier';
+    }));
+    await page.evaluate(()=>{applyProjectState(JSON.parse(JSON.stringify(compactStateForCloud())));showView('preview');buildDocument();});
+    check('Dossier : modifications sauvegardées et restaurées',await page.locator('[data-layout-page="page-test:LAVABO:0"] .board-head h2').innerText()==='Espace lavabo personnalisé'&&await page.locator('[data-dossier-item="page-item-1"] .board-copy h3').innerText()==='Vasque sur mesure pour le dossier');
+
     check('Dossier : ordre et pièces du devis inchangés',await page.evaluate(()=>state.selected.every((p,i)=>p.id==='page-item-'+i&&p.roomId==='page-test')));
     page.once('dialog',dialog=>dialog.accept());
     await page.locator('#dossierPageSize').selectOption('6');
@@ -907,6 +931,14 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
       fits:pages.every(p=>[p.querySelector('.quote-table'),p.querySelector('.quote-totals')].filter(Boolean).every(el=>el.getBoundingClientRect().bottom<p.querySelector('.quote-bottom').getBoundingClientRect().top-5))
     }));
     check('Devis : 17 lignes longues conservées, un seul total et aucun pied de page recouvert',quoteAudit.rows===17&&quoteAudit.totals===1&&quoteAudit.headers&&quoteAudit.fits);
+
+    check('Devis : sous-total HT dans le bandeau noir du dernier fragment uniquement',await page.evaluate(()=>{
+      const labels=[...document.querySelectorAll('#document .quote-page .quote-room-row .quote-room-amount')];
+      const visible=labels.filter(el=>!el.hidden);
+      const expected=euro(quoteRows().reduce((sum,row)=>sum+row.netUnit*row.qty,0));
+      return visible.length===1&&visible[0].textContent.includes(expected)&&labels.length>=1;
+    }));
+
     await page.emulateMedia({media:'print'});
     check('Devis impression : lignes au-dessus du pied de page',await page.locator('#document .quote-page').evaluateAll(pages=>pages.every(p=>[p.querySelector('.quote-table'),p.querySelector('.quote-totals')].filter(Boolean).every(el=>el.getBoundingClientRect().bottom<p.querySelector('.quote-bottom').getBoundingClientRect().top))));
     await page.emulateMedia({media:'screen'});
