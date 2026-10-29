@@ -668,7 +668,7 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     await page.locator('#hidroboxGuided [data-hbev-select="headrest"]').selectOption('OPBT0016');
     check('Hidrobox Beta Evoque : C with overflow plus Special colour and graphite headrest',
       (await page.locator('#hidroboxGuided .hidrobox-result').innerText()).includes('BBEC0108')&&
-      (await page.locator('#hidroboxGuided .hidrobox-result b').innerText()).replace(/[\\s\\u202f\\u00a0]/g,'').includes('5870,80')&&
+      (await page.locator('#hidroboxGuided .hidrobox-result b').innerText()).replace(/[\s\u202f\u00a0]/g,'').includes('5870,80')&&
       await page.locator('#hidroboxGuided #huAdd').isEnabled());
     await page.locator('#hidroboxGuided #huAdd').click();
     const evoqueSaved=await page.evaluate(()=>JSON.parse(JSON.stringify(state.selected.findLast(p=>p.hidroboxConfiguration?.type==='beta-evoque-2026'))));
