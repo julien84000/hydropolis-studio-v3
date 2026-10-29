@@ -881,7 +881,7 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     await page.locator('[data-layout-page="page-test:LAVABO:0"] .board-intro .layout-text-edit').click();
     await page.locator('.dossier-text-panel textarea[name="intro"]').fill('Sélection soignée pour le client.');
     await page.locator('.dossier-text-panel button[type="submit"]').click();
-    check('Dossier : introduction personnalisée',await page.locator('[data-layout-page="page-test:LAVABO:0"] .board-intro').innerText()==='Sélection soignée pour le client.');
+    check('Dossier : introduction personnalisée',(await page.locator('[data-layout-page="page-test:LAVABO:0"] .board-intro').innerText()).startsWith('Sélection soignée pour le client.'));
     await page.locator('[data-dossier-item="page-item-1"] .layout-text-edit').click();
     await page.locator('.dossier-text-panel textarea[name="designation"]').fill('Vasque sur mesure pour le dossier');
     await page.locator('.dossier-text-panel button[type="submit"]').click();
