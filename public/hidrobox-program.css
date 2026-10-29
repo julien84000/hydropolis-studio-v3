@@ -12,3 +12,14 @@
 .hbev-diagram::before{content:'VUE DE DESSUS';position:absolute;top:0;left:5px;z-index:1;color:#7d857b;font-size:8px;letter-spacing:.06em;}
 .hidrobox-beta-evoque .hp-choice[aria-pressed="true"] .hbev-diagram{border-color:#466e48;}
 @media(max-width:480px){.hbev-diagram{width:108px}.hbev-diagram i{left:12px}}
+
+
+/* Beta Essential — pictograms represent basic silhouette only, not manufacturer shape plan. */
+.hidrobox-beta-essential .hbess-shapes{grid-template-columns:repeat(auto-fit,minmax(155px,1fr))}
+.hidrobox-beta-essential .hbess-choice{min-height:96px;justify-content:center}
+.hidrobox-beta-essential .hbess-shapes .hbess-choice{min-height:153px}
+.hbess-pictogram{position:relative;display:block;width:100%;height:72px;border:1px solid #dce2da;border-radius:6px;background:#f8faf7}
+.hbess-pictogram span{position:absolute;top:14px;left:50%;transform:translateX(-50%);display:block;width:88px;height:42px;background:linear-gradient(145deg,#fff,#dfe5dd);border:3px solid #78897b;box-sizing:border-box;border-radius:50%}
+.hbess-pictogram-circular span{width:57px;height:57px;top:7px}
+.hbess-pictogram::after{content:'SCHÉMA INDICATIF';position:absolute;bottom:2px;right:5px;color:#8a9388;font-size:8px;letter-spacing:.03em}
+@media(max-width:540px){.hidrobox-beta-essential .hbess-shapes{grid-template-columns:repeat(2,minmax(0,1fr))}.hbess-pictogram span{width:65px}.hbess-pictogram-circular span{width:57px}}
