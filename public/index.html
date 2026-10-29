@@ -272,6 +272,18 @@
           <label><input id="showSupplierReferences" type="checkbox" checked> Afficher les références fournisseur</label>
         </div>
       </div>
+      <fieldset class="dossier-designer-fields">
+        <legend>Concepteur du dossier photo</legend>
+        <p>Ces coordonnées sont enregistrées pour ce projet et apparaissent sur la page de contact du dossier.</p>
+        <div class="fields two">
+          <label>Nom<input id="dossierDesignerName" maxlength="160" autocomplete="name"></label>
+          <label>Fonction / agence<input id="dossierDesignerTitle" maxlength="160" placeholder="Architecte d’intérieur"></label>
+          <label>Téléphone<input id="dossierDesignerPhone" type="tel" maxlength="80" autocomplete="tel"></label>
+          <label>E-mail<input id="dossierDesignerEmail" type="email" maxlength="200" autocomplete="email"></label>
+        </div>
+        <label>Adresse<textarea id="dossierDesignerAddress" rows="2" maxlength="500" autocomplete="street-address"></textarea></label>
+        <button type="button" class="btn ghost" id="dossierDesignerReset">Reprendre les coordonnées de mon profil</button>
+      </fieldset>
     </div>
     <div class="card"><div class="eyebrow">Couverture</div><h2>Image principale</h2>
       <label id="coverDrop" class="drop"><input id="coverInput" type="file" accept="image/*" hidden><span>＋</span><b>Déposer l'image</b><small>ou cliquer pour parcourir</small></label>
@@ -339,6 +351,8 @@
       <span>Chaque page du dossier est verrouillée au format A4 297 × 210 mm.</span>
     </div>
     <div class="preview-layout-actions">
+      <label class="dossier-page-size">Vignettes par page <select id="dossierPageSize" aria-label="Nombre de vignettes par page"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5" selected>5</option><option value="6">6</option></select></label>
+      <button class="btn ghost" id="dossierDesignerEditBtn" type="button">Coordonnées du concepteur</button>
       <button class="btn ghost" id="layoutEditBtn" type="button">Modifier la mise en page</button>
       <button class="btn ghost" id="layoutResetPageBtn" type="button" disabled>Réinitialiser cette page</button>
       <button class="btn ghost" id="layoutResetAllBtn" type="button">Réinitialiser tout</button>
@@ -385,6 +399,7 @@
 <script src="gessi-area-pro.js?v=__APP_VERSION__"></script>
 <script src="manufacturer-guide.js?v=__APP_VERSION__"></script>
 <script src="hotbath-official-guide.js?v=__APP_VERSION__"></script>
+<script src="dossier-pages.js?v=__APP_VERSION__"></script>
 <script src="app.js?v=__APP_VERSION__"></script>
 <script src="sira-configurator.js?v=__APP_VERSION__"></script>
 </body></html>

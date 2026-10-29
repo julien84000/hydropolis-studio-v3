@@ -460,14 +460,32 @@ async function saveSalesProfile(){
   }
   if($("#view-preview")?.classList.contains("active"))buildDocument();
 }
+function dossierDesignerProfile(){
+  const saved=state.project?.dossierDesigner;
+  const source=saved&&typeof saved==='object'?saved:salespersonProfile();
+  return Object.fromEntries(['name','title','phone','email','address'].map(key=>[key,String(source[key]||'').trim()]));
+}
+function bindDossierDesigner(){
+  const profile=dossierDesignerProfile();
+  const fields={Name:'name',Title:'title',Phone:'phone',Email:'email',Address:'address'};
+  Object.entries(fields).forEach(([suffix,key])=>{
+    const input=$('#dossierDesigner'+suffix);if(!input)return;
+    input.value=profile[key];
+    input.oninput=()=>{
+      if(!state.project.dossierDesigner)state.project.dossierDesigner=dossierDesignerProfile();
+      state.project.dossierDesigner[key]=input.value;saveState();
+    };
+  });
+  const reset=$('#dossierDesignerReset');if(reset)reset.onclick=()=>{delete state.project.dossierDesigner;saveState();bindDossierDesigner();};
+}
 function salespersonContactPage(no){
-  const s=salespersonProfile();
+  const s=dossierDesignerProfile();
   return `<section class="page contact-page editorial-page">
     <div class="contact-topline"></div>
     <div class="contact-content">
       <div class="contact-thanks">MERCI</div>
       <div class="contact-rule"></div>
-      <div class="contact-copy">Pour toute question concernant cette sélection,<br>votre interlocuteur Hydropolis reste à votre disposition.</div>
+      <div class="contact-copy">Pour toute question concernant cette sélection,<br>votre concepteur reste à votre disposition.</div>
       <div class="contact-person">
         <div class="contact-monogram">H</div>
         <div>
@@ -475,6 +493,7 @@ function salespersonContactPage(no){
           ${s.title?`<div class="contact-title">${esc(s.title)}</div>`:""}
           ${s.phone?`<div class="contact-line">Tél. ${esc(s.phone)}</div>`:""}
           ${s.email?`<div class="contact-line">${esc(s.email)}</div>`:""}
+          ${s.address?`<div class="contact-line contact-address">${esc(s.address)}</div>`:""}
         </div>
       </div>
     </div>
@@ -3618,6 +3637,7 @@ function renderRooms(){
 
 
 function bindProject(){
+  bindDossierDesigner();
   [["projectName","name"],["clientName","client"],["projectLocation","location"],["projectDate","date"],["projectIntro","intro"]].forEach(([id,k])=>{
     $("#"+id).value=state.project[k]||"";
     $("#"+id).oninput=()=>{state.project[k]=$("#"+id).value;saveState();};
@@ -4024,7 +4044,7 @@ function boardVisualWithRecorOptions(p){
   if(!rail)return base;
   return `<div class="recor-bath-composite"><div class="recor-bath-main">${base}</div>${rail}</div>`;
 }
-function boardItemHtml(p,idx){
+function boardItemHtml(p,idx,originLabel=""){
  const isManual=!!p.manual && !p.isFreeArticle;
  const designation=isManual?String(p.designation||p.label||"Élément libre").trim():clientFacingDesignation(p);
  const visual=isManual && !p.dossierImage
@@ -4037,6 +4057,7 @@ function boardItemHtml(p,idx){
    <div class="board-visual">${visual}</div>
    <div class="board-copy">
      <div class="board-brand">${esc(isManual?"Sélection libre":(p.manufacturer||"Sélection"))}${!isManual&&p.collection?` · ${esc(p.collection)}`:""}</div>
+     ${originLabel?`<div class="board-origin">${esc(originLabel)}</div>`:""}
      <h3>${esc(designation)}</h3>
      ${p.isFreeArticle?`<div class="board-finish">Quantité : ${itemQuantity(p)}${p.leadTime?` · Délai : ${esc(p.leadTime)}`:""}</div>`:""}
      ${p.finish?`<div class="board-finish">${esc(p.finish)}</div>`:""}
@@ -4122,6 +4143,45 @@ function hotbathDrawingProxyUrl(p){
 /* V11.44_PRESENTATION_LAYOUT */
 let presentationLayoutEditing=false;
 
+let currentDossierPlan={pages:[],origins:new Map()};
+function moveDossierItem(id,target){
+  const pages=currentDossierPlan.pages;
+  const source=pages.find(page=>page.items.some(item=>String(item.id)===String(id)));
+  const destination=pages.find(page=>page.key===target);
+  if(!source||source.key===target)return false;
+  if(destination&&destination.items.length>=6){toast("Cette page contient déjà 6 vignettes.");return false;}
+  const layout=ensurePresentationLayoutState();
+  const oldKey=source.key+'|item:'+id,newKey=target+'|item:'+id;
+  if(layout.blocks[oldKey]?.locked){toast("Déverrouillez cette vignette avant de changer de page.");return false;}
+  // Snapshot all visible placements so removing an item never shifts other pages.
+  layout.assignments={};
+  pages.forEach(page=>page.items.forEach(item=>{layout.assignments[String(item.id)]=page.key;}));
+  layout.assignments[String(id)]=target;
+  if(layout.blocks[oldKey]){layout.blocks[newKey]={...layout.blocks[oldKey],x:0,y:0};delete layout.blocks[oldKey];}
+  saveState();buildDocument();return true;
+}
+function bindDossierPageControls(el,controls){
+  const id=el.dataset.dossierItem;
+  const source=currentDossierPlan.pages.find(page=>page.items.some(item=>String(item.id)===id));
+  if(!source)return;
+  const select=document.createElement('select');select.className='layout-page-move';select.setAttribute('aria-label','Déplacer cet article vers une page');
+  select.innerHTML='<option value="">Déplacer vers…</option>'+currentDossierPlan.pages.map(page=>{
+    const node=[...document.querySelectorAll('#document [data-layout-page]')].find(n=>n.dataset.layoutPage===page.key);
+    const number=node?.querySelector('.page-no')?.textContent||'';
+    return '<option value="'+esc(page.key)+'" '+(page.key===source.key||page.items.length>=6?'disabled':'')+'>Page '+esc(number)+' · '+esc(page.group.room.title)+' · '+esc(page.group.label)+' ('+page.items.length+'/6)</option>';
+  }).join('')+'<option value="new">Nouvelle page</option>';
+  select.disabled=!!presentationLayoutRecord(el)?.locked;
+  select.onchange=()=>{
+    let target=select.value;if(!target)return;
+    if(target==='new'){
+      const prefix=source.group.key+':';
+      const indexes=currentDossierPlan.pages.filter(page=>page.group.key===source.group.key).map(page=>Number(page.key.slice(prefix.length)));
+      target=prefix+(Math.max(-1,...indexes)+1);
+    }
+    moveDossierItem(id,target);
+  };
+  controls.append(select);
+}
 function ensurePresentationLayoutState(){
   if(!state.presentationLayout||typeof state.presentationLayout!=="object")state.presentationLayout={blocks:{}};
   if(!state.presentationLayout.blocks||typeof state.presentationLayout.blocks!=="object")state.presentationLayout.blocks={};
@@ -4350,7 +4410,7 @@ function presentationLayoutDecorate(el){
   el.insertAdjacentHTML("beforeend",presentationLayoutControlHtml(!!rec?.locked));
 
   const controls=$(".layout-controls",el);
-  if(el.dataset.dossierItem)bindDossierPhotoControls(el,controls);
+  if(el.dataset.dossierItem){bindDossierPhotoControls(el,controls);bindDossierPageControls(el,controls);}
   const drag=$(".layout-drag-handle",controls);
   const resize=$(".layout-resize-handle",controls);
   const lock=$(".layout-lock-handle",controls);
@@ -4421,7 +4481,7 @@ function updatePresentationLayoutToolbar(){
   }
 
   if(page)page.disabled=!presentationLayoutEditing;
-  if(all)all.disabled=!Object.keys(ensurePresentationLayoutState().blocks).length;
+  if(all)all.disabled=!Object.keys(ensurePresentationLayoutState().blocks).length&&!Object.keys(ensurePresentationLayoutState().assignments||{}).length;
 
   document.body.classList.toggle("presentation-layout-editing",presentationLayoutEditing);
 }
@@ -4432,6 +4492,16 @@ function bindPresentationLayoutToolbar(){
     presentationLayoutEditing=!presentationLayoutEditing;
     initPresentationLayoutEditor();
   };
+  const designerEdit=$("#dossierDesignerEditBtn");
+  if(designerEdit)designerEdit.onclick=()=>{showView('project');bindDossierDesigner();$('#dossierDesignerName')?.focus();};
+  const pageSize=$("#dossierPageSize");
+  if(pageSize){
+    pageSize.value=String(ensurePresentationLayoutState().pageSize||5);
+    pageSize.onchange=()=>{
+      if(!confirm("Répartir les articles avec ce nombre de vignettes par page ? Les positions et tailles personnalisées seront réinitialisées ; les photos du dossier seront conservées.")){pageSize.value=String(ensurePresentationLayoutState().pageSize||5);return;}
+      state.presentationLayout={blocks:{},assignments:{},pageSize:Number(pageSize.value)};saveState();buildDocument();
+    };
+  }
   if(page)page.onclick=resetPresentationLayoutPage;
   if(all)all.onclick=resetPresentationLayoutAll;
 
@@ -4465,6 +4535,16 @@ function initPresentationLayoutEditor(){
 }
 
 function buildDocument(){
+ const dossierGroups=[];
+ state.rooms.forEach(room=>{
+   const products=selectedProductsForDocument(room.id).filter(p=>{
+     if(!(p.accessoryFor&&p.manufacturer==='Recor'))return true;
+     if(p.collection==='Pieds Recor')return false;
+     return p.collection!=='Accessoires Recor'||!/vidage|waste/.test(normalizeText(`${p.designation||''} ${p.originalDescription||''}`));
+   });
+   orderedPresentationGroups([...products,...manualItemsForDocument(room)]).forEach(group=>dossierGroups.push({...group,key:String(room.id)+':'+group.space,room}));
+ });
+ currentDossierPlan=HydroDossierPages.plan(dossierGroups,ensurePresentationLayoutState());
  let html=`<section class="page cover-page editorial-page" data-parallax-page>
   <div class="cover-ambient" data-parallax-layer="0.10"></div>
   <div class="coverimg editorial-cover-image" data-parallax-layer="0.18">${state.project.cover?`<img class="cover-image" src="${state.project.cover}" alt="Couverture du projet">`:moodboardCoverHtml()}</div>
@@ -4492,7 +4572,7 @@ function buildDocument(){
    });
    const items=[...visualProducts,...manualItemsForDocument(r)];
 
-   const groups=orderedPresentationGroups(items);
+   const groups=dossierGroups.filter(group=>group.room.id===r.id);
    if(!groups.length){
      html+=`<section class="page editorial-page room-page space-page" data-parallax-page>
        <div class="pagehead editorial-head"><div><div class="section-kicker">SÉLECTION</div><h2>${esc(r.title)}</h2><p>${esc(r.subtitle||"")}</p></div><div class="editorial-brand">Hydropolis</div></div>
@@ -4503,14 +4583,21 @@ function buildDocument(){
 
    const subtotalRows=state.showSpaceSubtotals===true?quoteRows():[];
    groups.forEach(group=>{
-     for(let i=0;i<Math.ceil(group.items.length/5);i++){
-       const ch=group.items.slice(i*5,i*5+5);
+     const groupPages=currentDossierPlan.pages.filter(page=>page.group.key===group.key);
+     if(!groupPages.length&&state.showSpaceSubtotals===true){
+       html+=`<section class="page editorial-page room-page"><div class="board-head"><h2>${esc(r.title)} · ${esc(group.label)}</h2></div><p>Les visuels de cet espace ont été déplacés vers d’autres pages du dossier.</p><div class="board-space-subtotal">Sous-total de l’espace <strong>${euro(presentationGroupSubtotal(r.id,group,subtotalRows))} HT</strong></div><div class="page-no">${no++}</div></section>`;
+     }
+     for(let i=0;i<groupPages.length;i++){
+       const ch=groupPages[i].items;
        const continuation=i>0?" · suite":"";
-       html+=`<section class="page editorial-page room-page visual-board-page board-${group.space.toLowerCase()}" data-parallax-page data-layout-page="${esc(String(r.id)+":"+group.space+":"+i)}">
+       html+=`<section class="page editorial-page room-page visual-board-page board-${group.space.toLowerCase()}" data-parallax-page data-layout-page="${esc(groupPages[i].key)}">
          <div class="page-ambient page-ambient-a" data-parallax-layer="0.05"></div>
-         <div class="board-head" data-layout-block="head"><div><div class="section-kicker">${esc(r.title)}${continuation}</div><h2>${group.label}</h2></div><div class="board-heading-summary"><div class="editorial-brand">Hydropolis</div>${state.showSpaceSubtotals===true && i===Math.ceil(group.items.length/5)-1?`<div class="board-space-subtotal" data-space="${esc(group.space)}">Sous-total de l’espace <strong>${euro(presentationGroupSubtotal(r.id,group,subtotalRows))} HT</strong><small>Sélection présentée et accessoires liés · après remises</small></div>`:""}</div></div>
+         <div class="board-head" data-layout-block="head"><div><div class="section-kicker">${esc(r.title)}${continuation}</div><h2>${group.label}</h2></div><div class="board-heading-summary"><div class="editorial-brand">Hydropolis</div>${state.showSpaceSubtotals===true && i===groupPages.length-1?`<div class="board-space-subtotal" data-space="${esc(group.space)}">Sous-total de l’espace <strong>${euro(presentationGroupSubtotal(r.id,group,subtotalRows))} HT</strong><small>Sélection présentée et accessoires liés · après remises</small></div>`:""}</div></div>
          <div class="board-intro" data-layout-block="intro">${group.intro}</div>
-         <div class="visual-board count-${Math.max(1,ch.length)}">${ch.map((p,idx)=>boardItemHtml(p,idx)).join("")}</div>
+         <div class="visual-board count-${Math.max(1,ch.length)}">${ch.map((p,idx)=>{
+           const origin=dossierGroups.find(g=>g.key===currentDossierPlan.origins.get(String(p.id)));
+           return boardItemHtml(p,idx,origin&&origin.key!==group.key?origin.room.title+' · '+origin.label:'');
+         }).join("")}</div>
          <div class="page-no">${no++}</div><div class="editorial-footer"><span>Maison Hydropolis</span><span>${esc(r.title)} · ${esc(group.label)}</span></div>
        </section>`;
      }
