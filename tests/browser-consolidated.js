@@ -894,6 +894,25 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     await page.locator('#dossierDesignerReset').click();
     check('Concepteur : retour au profil possible',await page.evaluate(()=>!state.project.dossierDesigner));
     await page.evaluate(snapshot=>{presentationLayoutEditing=false;applyProjectState(JSON.parse(snapshot));buildDocument();},dossierSnapshot);
+    const quoteSnapshot=await page.evaluate(()=>JSON.stringify(state));
+    await page.evaluate(()=>{
+      state.rooms=[{id:'quote-test',title:'Salle de bains',manual:[]}];
+      state.selected=Array.from({length:17},(_,i)=>({id:'quote-'+i,roomId:'quote-test',manufacturer:'Test',designation:(i<8?'Lavabo ':i<14?'Douche ':'WC ')+('Description longue avec dimensions et options fabricant. '.repeat(6))+i,reference:'Q-'+i,price:100,totalPrice:100,quantity:1,quoteDiscountOverride:20}));
+      showView('preview');buildDocument();
+    });
+    const quoteAudit=await page.locator('#document .quote-page').evaluateAll(pages=>({
+      rows:pages.reduce((n,p)=>n+p.querySelectorAll('.quote-product-row').length,0),
+      totals:pages.reduce((n,p)=>n+p.querySelectorAll('.quote-totals').length,0),
+      headers:pages.every(p=>[...p.querySelectorAll('tbody')].every(b=>b.querySelectorAll('.quote-space-row').length===1&&b.querySelectorAll('.quote-room-row').length===1)),
+      fits:pages.every(p=>[p.querySelector('.quote-table'),p.querySelector('.quote-totals')].filter(Boolean).every(el=>el.getBoundingClientRect().bottom<p.querySelector('.quote-bottom').getBoundingClientRect().top-5))
+    }));
+    check('Devis : 17 lignes longues conservées, un seul total et aucun pied de page recouvert',quoteAudit.rows===17&&quoteAudit.totals===1&&quoteAudit.headers&&quoteAudit.fits);
+    await page.emulateMedia({media:'print'});
+    check('Devis impression : lignes au-dessus du pied de page',await page.locator('#document .quote-page').evaluateAll(pages=>pages.every(p=>[p.querySelector('.quote-table'),p.querySelector('.quote-totals')].filter(Boolean).every(el=>el.getBoundingClientRect().bottom<p.querySelector('.quote-bottom').getBoundingClientRect().top))));
+    await page.emulateMedia({media:'screen'});
+    await page.evaluate(()=>{state.selected=[...state.selected.slice(0,2),...state.selected.slice(8,10)].map((p,i)=>({...p,designation:i<2?'Lavabo '+i:'Douche '+i}));buildDocument();});
+    check('Devis : deux petits espaces restent sur la même page',await page.locator('#document .quote-page').evaluateAll(pages=>pages.filter(p=>p.querySelector('.quote-product-row')).length===1&&pages[0].querySelectorAll('.quote-space-row').length===2));
+    await page.evaluate(snapshot=>{applyProjectState(JSON.parse(snapshot));buildDocument();},quoteSnapshot);
     check('aucune erreur JavaScript',report.errors.length===0);
     await page.evaluate(()=>{document.querySelector('#manufacturerFilter').value='Sira Concrete';document.querySelector('#manufacturerFilter').dispatchEvent(new Event('change'));});
     await page.evaluate(()=>{const p=CATALOG.find(x=>x.manufacturer==='Sira Concrete'&&x.collection==='Wall Collection');addCatalogProduct(p.reference,state.rooms[0]?.id,productKey(p));});

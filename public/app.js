@@ -3067,21 +3067,69 @@ function quoteRows(){
   }
   return groupQuoteRows(rows);
 }
+function quotePageChunks(rows){
+  // Real rendered heights decide page breaks, including group headings and totals.
+  return [rows];
+}
+function fitQuotationPages(){
+  const host=$('#document');if(!host||!host.getBoundingClientRect().width)return;
+  const queue=[...host.querySelectorAll('.quote-page')];
+  for(let i=0;i<queue.length;i++){
+    const page=queue[i];let continuation=null;
+    const overflow=()=>{
+      const bottom=page.querySelector('.quote-bottom').getBoundingClientRect().top-12;
+      return [page.querySelector('.quote-table'),page.querySelector('.quote-totals')].filter(Boolean).some(el=>el.getBoundingClientRect().bottom>bottom);
+    };
+    const nextPage=()=>{
+      if(continuation)return continuation;
+      continuation=page.cloneNode(true);
+      continuation.querySelectorAll('tbody,.quote-totals').forEach(el=>el.remove());
+      page.after(continuation);queue.splice(i+1,0,continuation);
+      return continuation;
+    };
+    while(overflow()){
+      const bodies=[...page.querySelectorAll('tbody')];
+      const totals=page.querySelector('.quote-totals');
+      if(totals){nextPage().querySelector('.quote-table').after(totals);continue;}
+      const body=bodies[bodies.length-1];if(!body)break;
+      const products=[...body.querySelectorAll('.quote-product-row')];
+      if(bodies.length>1){
+        const table=nextPage().querySelector('.quote-table');table.insertBefore(body,table.querySelector('tbody'));
+      }else if(products.length>1){
+        const table=nextPage().querySelector('.quote-table');
+        let target=table.querySelector('tbody');
+        if(!target||target.querySelector('.quote-room-row')?.textContent!==body.querySelector('.quote-room-row')?.textContent||target.querySelector('.quote-space-row')?.textContent!==body.querySelector('.quote-space-row')?.textContent){target=body.cloneNode(true);target.querySelectorAll('.quote-product-row').forEach(el=>el.remove());table.insertBefore(target,table.querySelector('tbody'));}
+        target.insertBefore(products[products.length-1],target.querySelector('.quote-product-row'));
+      }else{
+        const table=page.querySelector('.quote-table');
+        const available=page.querySelector('.quote-bottom').getBoundingClientRect().top-12-table.getBoundingClientRect().top;
+        if(available>0)table.style.zoom=String(Math.min(1,available/table.getBoundingClientRect().height)*0.98);
+        break;
+      }
+    }
+  }
+  const pages=[...host.querySelectorAll('.quote-page')];
+  pages.forEach((page,index)=>{page.querySelector('.quote-head h2').textContent='Récapitulatif de la sélection'+(pages.length>1?' · '+(index+1)+'/'+pages.length:'');});
+  [...host.querySelectorAll(':scope > .page')].forEach((page,index)=>{const n=page.querySelector('.page-no');if(n)n.textContent=String(index+1);});
+}
 function quotePages(startNo){
   const rows=quoteRows();
   const f=projectFinancials();
   const showDiscountColumn=rows.some(row=>Number(row.discount)>0.0001);
-  const perPage=8;
-  const pages=Math.max(1,Math.ceil(rows.length/perPage));
+  const chunks=quotePageChunks(rows);
+  const pages=chunks.length;
   let html="", no=startNo;
-  let previousRoom=null,previousSpace="";
+
   const columnCount=(state.showSupplierReferences!==false?1:0)+5+(showDiscountColumn?1:0);
 
   for(let pg=0;pg<pages;pg++){
-    const chunk=rows.slice(pg*perPage,(pg+1)*perPage);
+    const chunk=chunks[pg];
+    let previousRoom=null,previousSpace="";
     const last=pg===pages-1;
-    const quoteBody=chunk.map(row=>{
-      let prefix="";
+    const quoteBody=chunk.map((row,index)=>{
+      const newGroup=index>0&&(quoteRoomKey(row.room)!==previousRoom||row.space!==previousSpace);
+      let prefix=newGroup?'</tbody><tbody>':'';
+      if(newGroup)previousRoom=null;
       if(quoteRoomKey(row.room)!==previousRoom){
         prefix+=`<tr class="quote-room-row"><td colspan="${columnCount}">${esc(row.room)}</td></tr>`;
         previousRoom=quoteRoomKey(row.room);previousSpace="";
@@ -4666,6 +4714,7 @@ function buildDocument(){
  html+=quote.html;
  no=quote.nextNo;
  $("#document").innerHTML=html;
+ fitQuotationPages();
  initPresentationLayoutEditor();
  initPreviewParallax();
 }
@@ -4794,6 +4843,7 @@ async function exportClientPdf(){
 
     document.body.classList.add("pdf-exporting");
     await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+    fitQuotationPages();
     window.addEventListener("afterprint",restore,{once:true});
     printStarted=true;
     try{
