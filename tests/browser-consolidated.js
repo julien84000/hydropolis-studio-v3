@@ -561,10 +561,24 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     check('Hidrobox official : 9 wall-mounted washbasin collections',
       await page.locator('#hidroboxGuided [data-kind="collection"]').count()===9);
     await page.locator('#hidroboxGuided [data-kind="collection"][data-choice="program"]').click();
-    check('Hidrobox Program : exact imported tariff and configuration remain',
-      await page.locator('#hidroboxGuided [data-facet]').count()>0&&
+    check('Hidrobox Program : dedicated dimension-based tariff and options',
+      await page.locator('#hidroboxGuided [data-hp-number]').count()>0&&
       await page.locator('#hidroboxGuided #huAdd').isEnabled()&&
       (await page.locator('#hidroboxGuided .hidrobox-tree-path').innerText()).includes('Program'));
+    check('Program uses a plan reference, never a standalone option as the complete product',
+      (await page.locator('#hidroboxGuided .hp-breakdown').innerText()).includes('WPRC0043'));
+    await page.locator('[data-hp-number="length"]').fill('140');
+    await page.locator('[data-hp-number="length"]').press('Tab');
+    await page.locator('[data-hp-select="additional"]').selectOption('S25');
+    await page.locator('[data-hp="curve"][data-value="LR"]').click();
+    await page.locator('[data-hp-select="tap"]').selectOption('OPWB0007');
+    check('Program additive pricing and single uplift are visible',
+      (await page.locator('#hidroboxGuided .hidrobox-result b').innerText()).replace(/[\s\u202f\u00a0]/g,'').includes('1526,72'));
+    await page.locator('[data-hp-number="depth"]').fill('60');
+    await page.locator('[data-hp-number="depth"]').press('Tab');
+    check('Curve rejects an incompatible depth',await page.locator('#huAdd').isDisabled());
+    await page.locator('[data-hp-number="depth"]').fill('50');
+    await page.locator('[data-hp-number="depth"]').press('Tab');
     check('Hidrobox Program : photo liée à la collection, sans fausse finition exacte',
       (await page.locator('#hidroboxGuided .hidrobox-neo-hero img').getAttribute('src'))?.includes('Washbasin_Program_Thumbnail')&&
       (await page.locator('#hidroboxGuided .hidrobox-neo-hero small').innerText()).includes('non contractuelles'));
