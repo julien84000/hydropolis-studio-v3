@@ -1,3 +1,21 @@
+## V11.64.10 — SPACE et correction CI Program — 29 octobre 2026
+
+**Source fournisseur vérifiée** : \`HIDROBOX_TARIF_FR_V0226_19-02-2026.pdf\` dans les fichiers de référence du projet ; p. imprimées 132–133 (PDF page 68), 136–137 (PDF page 70). **3 formats seulement :** 155×78×50, 170×80×53,5, 180×85×53,5 cm. Blanc Scene BLA (6 références), Plus Colour BAS/TRE/SPE (18 références) = **24 références BSPC0001–BSPC0024** vérifiées, prix source associés. Aucune extrapolation des dimensions 40×50 cm.
+
+**Code en branche** \`fix/hidrobox-space-exact-pricing-116410\`, base \`main\` 1da5a1405fa63160ed6aa53159669a52bcc0f15c, version **11.64.10** :
+- \`public/hidrobox-space-2026.js\` : source 24 lignes + OPBT0001/0005/0023–25 (bonde incluse), OPBT0006/0007 (bonde H2 seulement sans trop-plein), OPBT0008/0009 (couleur extérieure seulement sur baignoire blanche), OPBT0015/0016 (appuie-tête). Plus Colour **inclut la couleur** : jamais doubler son supplément de peinture. Tarif +4 % une fois, achat −50 % ; les options sont chiffrées séparément.
+- \`public/hidrobox-guided.js\` : navigation Space dédiée dimensions → blanc/Plus Colour BAS/TRE/SPE → trop-plein → options → devis détaillé. Fiche technique et notice fabricant ; sauvegarde composition dans \`hidroboxConfiguration.type='space-2026'\` et restitution à la réouverture ; référence exacte et prix.
+- \`tests/hidrobox-space.test.js\` : audit des 24 références, 3 tailles, options et tarifs, non double-charge, interdiction des bonde H2 avec trop-plein.
+- \`tests/browser-consolidated.js\` : test Chromium choisissant Space Plus Colour BAS 170×80×53,5 avec trop-plein, BSPC0010 / 5 562 € source → **5 784,48 € public HT** ; sauvegarde et restauration. Résout aussi l'échec en CI de la fusion #54 (main run 40846051161) : le navigateur affirmait que Program avait chargé ses JS paresseux avant que les contrôles soient présents ; ajout attente explicite.
+
+**Limites** : groupe de couleur retenu, mais teinte exacte RAL/NCS/nom commercial à confirmer sur bon de commande (aucun code teinte supposé). Options des totems/étagères appartiennent à leurs articles distincts, non ajoutées artificiellement au prix Space. Leurs dimensions et options seront auditées séparément. Photos de collection seulement, pas un rendu fidèle de la finition.
+
+**Étapes de livraison** : vérifier CI complète de cette branche (Node + Chromium) ; corriger échecs, revalider la tête ; fusionner uniquement si verte et si \`main\` stable ; contrôler CI main et \`https://hydropolis-studio-v3.onrender.com/api/version\` réellement 11.64.10. Ne jamais déployer sans preuve. Préserver toutes les marques, les 4 479 variantes Hidrobox source et PR #43/#48.
+
+**Prompt de reprise** : Reprendre \`julien84000/hydropolis-studio-v3\`, branche \`fix/hidrobox-space-exact-pricing-116410\`, lire ce checkpoint et la PR associée, vérifier le dernier main, CI et Render. Finaliser Space tarif exact 24 BSPC, options OPBT, tests navigateur et restauration, conserver Program/Neo Plus et les corrections des 9 catégories. Puis continuer l'audit des autres baignoires et vasques Hidrobox sur le tarif PDF, sans dimensions fictives, avec PR et tests par marque.
+
+---
+
 ## Hidrobox Program et pictogrammes — PR #54 — candidate 11.64.9 (29/10/2026)
 
 Branche `fix/hidrobox-tariff-program`, base main 7a3b534 (11.64.8). Premier checkpoint a60160af75f61169d87efb32f9fd6889e189cf84 : **CI complète réussie**, run 40844986126, tests Node et navigateur compris. Voir **docs/HIDROBOX_PROGRAM_TARIFF.md** pour le diagnostic, les sources et les limites.

@@ -281,7 +281,7 @@ function dimensionFields(selected){
   }
   return inputs.length?'<h4 class="hidrobox-universal-subtitle">Dimensions réelles de fabrication</h4><p class="hidrobox-guide-note">Les tranches servent au tarif ; les dimensions réelles sont conservées pour la commande.</p><div class="hidrobox-fields">'+inputs.join('')+'</div>':'';
 }
-let tariffExtrasPromise=null,programDraft=null,programFamily='';
+let tariffExtrasPromise=null,programDraft=null,programFamily='',spaceDraft=null,spaceModelPromise=null;
 function loadTariffExtras(){
  if(!tariffExtrasPromise)tariffExtrasPromise=Promise.all(['hidrobox-program-data.js','hidrobox-tariff-pictures.js','hidrobox-program-2026.js'].map(file=>new Promise((resolve,reject)=>{
   const script=document.createElement('script');script.src='/'+file;script.onload=resolve;script.onerror=()=>reject(Error('Chargement du tarif Program impossible'));document.head.appendChild(script);
@@ -330,8 +330,89 @@ function programPage(g){
  };
 }
 
+
+function loadSpaceModel(){
+ if(root.HydroSpace2026)return Promise.resolve();
+ if(!spaceModelPromise)spaceModelPromise=new Promise((resolve,reject)=>{
+  const script=document.createElement('script');script.src='/hidrobox-space-2026.js';
+  script.onload=resolve;script.onerror=()=>reject(Error('Chargement du tarif Space impossible'));
+  document.head.appendChild(script);
+ }).catch(e=>{spaceModelPromise=null;throw e});
+ return spaceModelPromise;
+}
+function spacePage(g){
+ stage='group';chosenGroup=g;
+ if(!root.HydroSpace2026){
+  const token=navigationToken;
+  shell('Space','<p role="status">Chargement des 24 références Space et de leurs options tarifées…</p>',true);
+  loadSpaceModel().then(()=>{if(overlay&&token===navigationToken&&chosenGroup===g)spacePage(g)})
+   .catch(e=>{if(overlay&&token===navigationToken)shell('Space','<p role="alert">'+escape(e.message)+'</p>',true)});
+  return;
+ }
+ if(!document.querySelector('#hidroboxProgramStyles')){
+  const link=document.createElement('link');link.id='hidroboxProgramStyles';link.rel='stylesheet';link.href='/hidrobox-program.css';document.head.appendChild(link);
+ }
+ const model=root.HydroSpace2026;
+ if(!spaceDraft)spaceDraft=model.DEFAULT();
+ const s=spaceDraft;
+ if(!model.allowedDrain(s.colour,s.overflow===true).includes(s.drain))s.drain='OPBT0001';
+ if(s.colour!=='BLA')s.exterior='';
+ const q=model.quote(s),hero=officialImage(officialCollectionMedia('space')?.image);
+ const card=(key,value,title,note='')=>'<button type="button" class="hp-choice" data-hs="'+escape(key)+'" data-value="'+escape(value)+'" aria-pressed="'+(String(s[key])===String(value))+'"><b>'+escape(title)+'</b><small>'+escape(note)+'</small></button>';
+ const select=(key,label,options)=>'<label>'+escape(label)+'<select data-hs-select="'+escape(key)+'">'+options.map(([value,title])=>'<option value="'+escape(value)+'"'+(s[key]===value?' selected':'')+'>'+escape(title)+'</option>').join('')+'</select></label>';
+ const option=(ref)=>[ref,model.OPTIONS[ref].label+(model.OPTIONS[ref].price?' · +'+eu(model.OPTIONS[ref].price)+' HT':' · inclus')];
+ const html='<button class="hidrobox-back" type="button">← Collections</button>'+
+  '<div class="hidrobox-neo-hero">'+(hero?'<img src="'+escape(hero)+'" alt="Collection Space" loading="lazy">':'')+
+  '<div><div class="eyebrow">Baignoire îlot · Hidrobox</div><h3>Space · modèle exact</h3><p>Scene Solid Surface · finition Lisse · tarif France février 2026, pages 132–137.</p>'+
+  '<div class="hidrobox-downloads"><a href="'+escape(HIDROBOX_DOCUMENTS.space.technical)+'" target="_blank" rel="noopener noreferrer">Fiche technique</a>'+
+  '<a href="'+escape(HIDROBOX_DOCUMENTS.space.manual)+'" target="_blank" rel="noopener noreferrer">Notice d’installation</a></div>'+
+  '<small>Photographie de collection Space · configuration et couleur non contractuelles.</small></div></div>'+
+  '<div class="hidrobox-program hidrobox-space"><h4>1 · Dimensions de la baignoire</h4><div class="hp-grid">'+
+  model.SIZES.map(z=>card('sizeId',z.id,z.length+' × '+z.width+' × '+String(z.height).replace('.',',')+' cm','L × P × H fixes, tarif constructeur')).join('')+'</div>'+
+  '<h4>2 · Finition et groupe de couleur</h4><div class="hp-grid">'+
+  card('colour','BLA','Blanc Scene','Blanc lisse')+
+  card('colour','BAS','Plus Colour · Basics','Couleur incluse dans le tarif')+
+  card('colour','TRE','Plus Colour · Trends','Couleur incluse dans le tarif')+
+  card('colour','SPE','Plus Colour · Specials','Tarif RAL/NCS publié, couleur exacte à préciser à la commande')+'</div>'+
+  '<h4>3 · Trop-plein</h4><div class="hp-grid">'+card('overflow','false','Sans trop-plein')+card('overflow','true','Trop-plein intégré')+'</div>'+
+  '<h4>4 · Options compatibles</h4><div class="hp-options">'+
+  select('drain','Bonde',[...model.allowedDrain(s.colour,s.overflow===true)].map(option))+
+  (s.colour==='BLA'?select('exterior','Coloration extérieure sur baignoire blanche',[['','Sans coloration extérieure'],option('OPBT0008'),option('OPBT0009')]):'<p>Plus Colour : couleur déjà incluse dans la référence BSPC, sans supplément de peinture ajouté.</p>')+
+  select('headrest','Appuie-tête C12',[['','Sans appuie-tête'],option('OPBT0015'),option('OPBT0016')])+'</div>'+
+  '<h4>5 · Référence et détail du prix</h4><table class="hp-breakdown"><thead><tr><th>Désignation</th><th>Référence</th><th>Prix source HT</th></tr></thead><tbody>'+
+  q.components.map(c=>'<tr><td>'+escape(c.label)+'</td><td>'+escape(c.reference)+'</td><td>'+eu(c.rawPrice)+'</td></tr>').join('')+'</tbody></table>'+
+  (q.errors.length?'<ul class="hp-errors" role="alert">'+q.errors.map(e=>'<li>'+escape(e)+'</li>').join('')+'</ul>':'')+
+  '<div class="hidrobox-result"><div><b>'+(q.ok?eu(q.price)+' HT':'Configuration à confirmer')+'</b>'+
+  '<span>Référence '+escape(q.reference||'—')+'</span><small>'+(q.ok?'Prix source '+eu(q.rawPrice)+' HT · majoration +4 % une fois · achat fournisseur après remise 50 % : '+eu(q.purchasePrice)+' HT.':'Aucun prix extrapolé.')+'</small></div>'+
+  '<button id="huAdd" class="btn primary" type="button"'+(q.ok?'':' disabled')+'>Ajouter au projet</button></div></div>';
+ shell('Space · configuration',html,true);
+ overlay.querySelector('.hidrobox-back').onclick=collections;
+ const refresh=()=>{const previous=overlay.querySelector('.recor-configurator')?.scrollTop||0;spacePage(g);const current=overlay?.querySelector('.recor-configurator');if(current)current.scrollTop=previous};
+ overlay.querySelectorAll('[data-hs]').forEach(b=>b.onclick=()=>{
+  s[b.dataset.hs]=b.dataset.hs==='overflow'?b.dataset.value==='true':b.dataset.value;
+  refresh();
+ });
+ overlay.querySelectorAll('[data-hs-select]').forEach(e=>e.onchange=()=>{s[e.dataset.hsSelect]=e.value;refresh()});
+ overlay.querySelector('#huAdd')?.addEventListener('click',()=>{
+  const result=model.quote(s);if(!result.ok)return;
+  const dimensions=result.variant,finish=dimensions.colour==='BLA'?'Blanc Scene':'Plus Colour '+dimensions.colour;
+  const designation='Space '+dimensions.length+' × '+dimensions.width+' × '+String(dimensions.height).replace('.',',')+' cm · '+finish+
+    ' · '+(dimensions.overflow?'Trop-plein intégré':'Sans trop-plein')+' · '+result.components.slice(1).map(c=>c.label).join(' · ');
+  const item={manufacturer:'Hidrobox',collection:'Space',reference:result.reference,base:result.reference,designation,category:'Baignoire îlot',material:'Scene Solid Surface',finish,price:result.price,totalPrice:result.price,rawTariffPrice:result.rawPrice,purchaseDiscount:50,listPriceUpliftPct:4,currency:'€',vat:'HT',source:result.source,sourceYear:2026,manufacturerUrl:HOUSE+'collections/space/',technicalSheetUrl:HIDROBOX_DOCUMENTS.space.technical,technicalSheetLabel:'Fiche technique Space',installationGuideUrl:HIDROBOX_DOCUMENTS.space.manual,installationGuideLabel:'Notice de pose Space',image:hero,imageSource:'Photographie de collection Space · finition non contractuelle',imageFinishMatch:'collection',configuratorType:'hidrobox-configured'};
+  try{
+   const record=createSelectedProductRecord(item,room,'');
+   if(!record)throw Error('Impossible de créer la composition Space');
+   Object.assign(record,item,{hidroboxConfiguration:{type:'space-2026',group:g.id,...result.configuration,dimensions:{length:dimensions.length,width:dimensions.width,height:dimensions.height},components:result.components,reference:result.reference}});
+   const ids=commitSelectedRecords([record],{showProject:false});
+   if(!ids?.length)throw Error('Enregistrement impossible');
+   close();showView('project');
+  }catch(e){alert('Ajout Space impossible : '+e.message)}
+ });
+}
+
 function universalPage(g){
  if(norm(g.collection||g.id)==='program')return programPage(g);
+ if(norm(g.collection||g.id)==='space')return spacePage(g);
  stage='group';chosenGroup=g;
  const name=g.collection||g.family||g.model||g.id;
  const {selected,fields,refs}=universalSelection(g);
@@ -506,7 +587,7 @@ function neoPage(){
 async function open(p,roomId,requestedCategory=''){
  close();
  const token=++navigationToken;
- room=roomId;original=p||{};programDraft=p?.hidroboxConfiguration?.type==='program-2026'?{...p.hidroboxConfiguration}:null;programFamily='';groups=[];groupsLoading=true;groupsError='';
+ room=roomId;original=p||{};programDraft=p?.hidroboxConfiguration?.type==='program-2026'?{...p.hidroboxConfiguration}:null;spaceDraft=p?.hidroboxConfiguration?.type==='space-2026'?{...p.hidroboxConfiguration}:null;programFamily='';groups=[];groupsLoading=true;groupsError='';
  for(const key of Object.keys(universalDraft))delete universalDraft[key];
  const existing=HIDROBOX_ALL_OFFICIAL.find(x=>norm(x.name)===norm(p?.collection)||norm(x.key)===norm(p?.collection));
  const requested=CATEGORY.find(x=>x.key===requestedCategory);

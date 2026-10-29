@@ -567,6 +567,7 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     check('Hidrobox official : 9 wall-mounted washbasin collections',
       await page.locator('#hidroboxGuided [data-kind="collection"]').count()===9);
     await page.locator('#hidroboxGuided [data-kind="collection"][data-choice="program"]').click();
+    await page.waitForSelector('#hidroboxGuided [data-hp-number="length"]',{timeout:20000});
     check('Hidrobox Program : dedicated dimension-based tariff and options',
       await page.locator('#hidroboxGuided [data-hp-number]').count()>0&&
       await page.locator('#hidroboxGuided #huAdd').isEnabled()&&
@@ -614,6 +615,40 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
       await page.locator('#hidroboxGuided #huAdd').count()===0);
     await page.locator('#hidroboxGuided [data-hidrobox-home]').click();
     await page.locator('#hidroboxGuided [data-kind="family"][data-choice="bains-ilot"]').click();
+    await page.locator('#hidroboxGuided [data-kind="collection"][data-choice="space"]').click();
+    await page.waitForSelector('#hidroboxGuided .hidrobox-space [data-hs="sizeId"]',{timeout:20000});
+    check('Hidrobox Space : only three catalogue dimensions (not 40 × 50)',
+      JSON.stringify(await page.locator('#hidroboxGuided [data-hs="sizeId"]').evaluateAll(xs=>xs.map(x=>x.dataset.value)))===
+      JSON.stringify(['155','170','180'])&&
+      await page.locator('#hidroboxGuided [data-hs="sizeId"]').count()===3);
+    check('Hidrobox Space : exact white 155 × 78 × 50, no overflow reference',
+      (await page.locator('#hidroboxGuided .hidrobox-result').innerText()).includes('BSPC0001')&&
+      (await page.locator('#hidroboxGuided .hidrobox-result').innerText()).replace(/[\s\u202f\u00a0]/g,'').includes('3616,08'));
+    await page.locator('[data-hs="sizeId"][data-value="170"]').click();
+    await page.locator('[data-hs="colour"][data-value="BAS"]').click();
+    await page.locator('[data-hs="overflow"][data-value="true"]').click();
+    check('Hidrobox Space : 170 Plus Colour Basics with overflow price and ref',
+      (await page.locator('#hidroboxGuided .hidrobox-result').innerText()).includes('BSPC0010')&&
+      (await page.locator('#hidroboxGuided .hidrobox-result').innerText()).replace(/[\s\u202f\u00a0]/g,'').includes('5784,48'));
+    check('Hidrobox Space : no additional exterior colour on Plus Colour',
+      await page.locator('#hidroboxGuided [data-hs-select="exterior"]').count()===0);
+    await page.locator('#hidroboxGuided #huAdd').click();
+    const savedSpace=await page.evaluate(()=>JSON.parse(JSON.stringify(state.selected.findLast(p=>p.hidroboxConfiguration?.type==='space-2026'))));
+    check('Hidrobox Space : saves correct reference, dimensions and public tariff',
+      savedSpace.reference==='BSPC0010'&&savedSpace.rawTariffPrice===5562&&
+      savedSpace.price===5784.48&&savedSpace.hidroboxConfiguration.dimensions.length===170&&
+      savedSpace.hidroboxConfiguration.dimensions.width===80&&
+      savedSpace.hidroboxConfiguration.overflow===true);
+    await page.evaluate(p=>HydroHidroboxConfigurator.open(p,p.roomId),savedSpace);
+    await page.locator('#hidroboxGuided [data-kind="collection"][data-choice="space"]').click();
+    await page.waitForSelector('#hidroboxGuided [data-hs="sizeId"][data-value="170"]');
+    check('Hidrobox Space : saved composition reopens unchanged',
+      await page.locator('[data-hs="sizeId"][data-value="170"]').getAttribute('aria-pressed')==='true'&&
+      await page.locator('[data-hs="colour"][data-value="BAS"]').getAttribute('aria-pressed')==='true'&&
+      await page.locator('[data-hs="overflow"][data-value="true"]').getAttribute('aria-pressed')==='true');
+    await page.locator('#hidroboxGuided .hidrobox-back').click();
+    // Previously checked: Beta Evoque in freestanding category.
+
     check('Hidrobox official : Beta Evoque appears in the freestanding bath branch',
       await page.locator('#hidroboxGuided [data-kind="collection"][data-choice="beta-evoque"]').count()===1);
     await page.locator('#hidroboxGuided [data-kind="collection"][data-choice="beta-evoque"]').click();
