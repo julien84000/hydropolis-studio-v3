@@ -32,10 +32,10 @@ const FINISH=Object.freeze([
  {id:'SPE',name:'Plus Colour · Specials',kind:'special',offset:48}
 ]);
 const PRICES=Object.freeze({
- BLA:{oval:[[4266,4538]],circular:[[4709,4978],[5150,5421]]},
- BAS:{oval:[[5804,6075]],circular:[[6503,6772],[6943,7215]]},
- TRE:{oval:[[5804,6075]],circular:[[6503,6772],[6943,7215]]},
- SPE:{oval:[[6162,6434]],circular:[[6861,7131],[7302,7574]]}
+ BLA:{ovale:[[4266,4538]],circular:[[4709,4978],[5150,5421]]},
+ BAS:{ovale:[[5804,6075]],circular:[[6503,6772],[6943,7215]]},
+ TRE:{ovale:[[5804,6075]],circular:[[6503,6772],[6943,7215]]},
+ SPE:{ovale:[[6162,6434]],circular:[[6861,7131],[7302,7574]]}
 });
 const reference=n=>'BBEC'+String(n).padStart(4,'0');
 const rows=[];
