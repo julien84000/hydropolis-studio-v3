@@ -1,3 +1,20 @@
+## V11.64.30 — photos du configurateur officiel Hidrobox, formes Quadrant et pagination (30/10/2026)
+
+Départ : main V11.64.29, PR #82 fusionnée. Objectif confirmé par l'utilisateur : privilégier un visuel officiel correspondant au modèle et à la finition ; l'orientation gauche/droite et la taille exacte de la photo sont accessoires, mais les références et prix doivent rester exacts.
+
+Audit navigateur officiel https://hidrobox.com/configurator/en/ : photos réelles Neo Plus en texture Slate utilisent des fichiers /cfg-recursos/images/Hidrobox_Shower-tray_Neo-Plus_Per_Sla_Qua_{couleur}.png pour les formes Quadrant (photos réelles observées, ex. Terra). Le serveur utilisait uniquement le code 'ang' alors que le fabricant code 'Qua' ; les cartes résultats sont paginées au-delà de 48 produits, via l'API WordPress. Le site ne distingue pas l'orientation gauche/droite dans le nom des PNG. Le cas précis Neo Plus 80 × 120, Kromat, Slate, White/Bianco angulaire droit n'a PAS été observé directement ; ne pas prétendre qu'il est disponible.
+
+Modifications branche fix/hidrobox-quadrant-pagination-116430 :
+- SHAPE_CODES angular / angularR / angularL accepte 'qua' ou 'ang' ; conserve l'obligation de même fabricant, collection, texture et couleur.
+- Recherche dans les pages 0,48,96,144 (au plus 4 pages de 48) des résultats fournisseur réels. Si aucun résultat, retry sans filtre dimensions, sans retirer matière, modèle, texture ou couleur. Aucune URL image fabriquée.
+- Les images officielles de taille différente restent marquées 'illustration' ; le sens gauche/droite ne peut pas être certifié. Prix, nomenclature fournisseur et options restent inchangés.
+- Tests de régression sur la forme Qua, exclusion d'une autre forme et d'une autre couleur, et détection d'image à la deuxième page.
+- Bump package/lock à 11.64.30.
+
+Après validation CI y compris Playwright, fusionner PR puis vérifier /api/version, /api/health, l'endpoint image pour les cas Neo Plus connus et un cas Quadrant. Ne jamais affirmer que toutes les photos ont été trouvées si elles n'ont pas été testées.
+
+---
+
 ## V11.64.29 — images réelles du configurateur Hidrobox avec correspondance transparente (30/10/2026)
 
 Base : main V11.64.28 (fusion PR #80, commit 65d22aeb), CI et production vérifiées. Branche : fix/hidrobox-official-photo-116429. Travail isolé, PR non fusionnée tant que CI et navigateur ne sont pas verts.
