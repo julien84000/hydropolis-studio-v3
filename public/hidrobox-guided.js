@@ -109,6 +109,11 @@ function tiles(rows,kind){
 }
 /* V11.64.4 — category tiles reuse the existing select and pricing logic. */
 const VISUAL_OPTIONS=new Set(['model','type','shape','form','material','finish','colorGroup','color','option','installation','hnForm','hnMaterial','hnTexture','hnGroup','hnColor','hnBonde']);
+function hidroboxFixedAxes(material,texture,color){
+ const fact=(label,value)=>'<div class="hidrobox-fixed-attribute"><strong>'+escape(label)+'</strong><span>'+escape(value||'À confirmer au tarif fabricant')+'</span></div>';
+ return '<div class="hidrobox-fields hidrobox-workflow-axes">'+fact('Matière',material)+fact('Texture',texture)+
+   (color?fact('Couleur',color):'')+'</div>';
+}
 function visualFacet(id,label,options,selected,attributes=''){
  const visual=VISUAL_OPTIONS.has(id)||VISUAL_OPTIONS.has(String(id).replace(/^huFacet/,''));
  const native='<select id="'+escape(id)+'" '+attributes+(visual&&options.length>=2&&options.length<=18?' hidden':'')+'>'+choices(options,selected)+'</select>';
@@ -248,9 +253,10 @@ const HIDROBOX_DOCUMENTS={
 };
 const FACE_KEYS=[
  ['model','Modèle'],['type','Type'],['shape','Forme'],['form','Forme'],
- ['material','Matière'],['width','Largeur / tranche tarifaire'],['length','Longueur / tranche tarifaire'],
- ['height','Hauteur'],['diameter','Diamètre'],['finish','Finition / texture'],
- ['colorGroup','Groupe de couleur'],['color','Couleur'],['option','Option'],['installation','Pose']
+ ['material','Matière'],['finish','Finition / texture'],
+ ['colorGroup','Groupe de couleur'],['color','Couleur'],
+ ['width','Largeur / tranche tarifaire'],['length','Longueur / tranche tarifaire'],
+ ['height','Hauteur'],['diameter','Diamètre'],['option','Option'],['installation','Pose']
 ];
 const universalDraft={};
 const cleanVal=v=>String(v??'');
@@ -416,19 +422,21 @@ function spacePage(g){
   '<div class="hidrobox-downloads"><a href="'+escape(HIDROBOX_DOCUMENTS.space.technical)+'" target="_blank" rel="noopener noreferrer">Fiche technique</a>'+
   '<a href="'+escape(HIDROBOX_DOCUMENTS.space.manual)+'" target="_blank" rel="noopener noreferrer">Notice d’installation</a></div>'+
   '<small>Photographie de collection Space · configuration et couleur non contractuelles.</small></div></div>'+
-  '<div class="hidrobox-program hidrobox-space"><h4>1 · Dimensions de la baignoire</h4><div class="hp-grid">'+
-  model.SIZES.map(z=>card('sizeId',z.id,z.length+' × '+z.width+' × '+String(z.height).replace('.',',')+' cm','L × P × H fixes, tarif constructeur')).join('')+'</div>'+
-  '<h4>2 · Finition et groupe de couleur</h4><div class="hp-grid">'+
+  '<div class="hidrobox-program hidrobox-space"><h4>1 · Modèle</h4><div class="hidrobox-fixed-attribute"><strong>Space</strong><span>Baignoire îlot</span></div>'+
+  '<h4>2 · Matière et texture</h4>'+hidroboxFixedAxes('Scene','Lisse')+
+  '<h4>3 · Couleur</h4><div class="hp-grid">'+
   card('colour','BLA','Blanc Scene','Blanc lisse')+
   card('colour','BAS','Plus Colour · Basics','Couleur incluse dans le tarif')+
   card('colour','TRE','Plus Colour · Trends','Couleur incluse dans le tarif')+
   card('colour','SPE','Plus Colour · Specials','Tarif RAL/NCS publié, couleur exacte à préciser à la commande')+'</div>'+
-  '<h4>3 · Trop-plein</h4><div class="hp-grid">'+card('overflow','false','Sans trop-plein')+card('overflow','true','Trop-plein intégré')+'</div>'+
-  '<h4>4 · Options compatibles</h4><div class="hp-options">'+
+  '<h4>4 · Dimensions de la baignoire</h4><div class="hp-grid">'+
+  model.SIZES.map(z=>card('sizeId',z.id,z.length+' × '+z.width+' × '+String(z.height).replace('.',',')+' cm','L × P × H fixes, tarif constructeur')).join('')+'</div>'+
+  '<h4>5 · Trop-plein</h4><div class="hp-grid">'+card('overflow','false','Sans trop-plein')+card('overflow','true','Trop-plein intégré')+'</div>'+
+  '<h4>6 · Options compatibles</h4><div class="hp-options">'+
   select('drain','Bonde',[...model.allowedDrain(s.colour,s.overflow===true)].map(option))+
   (s.colour==='BLA'?select('exterior','Coloration extérieure sur baignoire blanche',[['','Sans coloration extérieure'],option('OPBT0008'),option('OPBT0009')]):'<p>Plus Colour : couleur déjà incluse dans la référence BSPC, sans supplément de peinture ajouté.</p>')+
   select('headrest','Appuie-tête C12',[['','Sans appuie-tête'],option('OPBT0015'),option('OPBT0016')])+'</div>'+
-  '<h4>5 · Référence et détail du prix</h4><table class="hp-breakdown"><thead><tr><th>Désignation</th><th>Référence</th><th>Prix source HT</th></tr></thead><tbody>'+
+  '<h4>7 · Référence et détail du prix</h4><table class="hp-breakdown"><thead><tr><th>Désignation</th><th>Référence</th><th>Prix source HT</th></tr></thead><tbody>'+
   q.components.map(c=>'<tr><td>'+escape(c.label)+'</td><td>'+escape(c.reference)+'</td><td>'+eu(c.rawPrice)+'</td></tr>').join('')+'</tbody></table>'+
   (q.errors.length?'<ul class="hp-errors" role="alert">'+q.errors.map(e=>'<li>'+escape(e)+'</li>').join('')+'</ul>':'')+
   '<div class="hidrobox-result"><div><b>'+(q.ok?eu(q.price)+' HT':'Configuration à confirmer')+'</b>'+
@@ -598,13 +606,14 @@ function betaEssentialPage(g){
   '<small>Photo fabricant de collection, non contractuelle selon dimension et couleur. Les pictogrammes sont indicatifs, non des plans cotés.</small></div></div>'+
   '<div class="hidrobox-program hidrobox-beta-essential"><h4>1 · Type et forme de la baignoire</h4><div class="hp-grid hbess-shapes">'+
   model.FORMS.map(x=>card('form',x.key,x.name,x.sizes.map(z=>z.label).join(' / '),x.kind)).join('')+'</div>'+
-  '<h4>2 · Dimensions disponibles · '+escape(selectedForm.name)+'</h4><div class="hp-grid">'+
+  '<h4>2 · Matière et texture</h4>'+hidroboxFixedAxes('Scene','Lisse')+
+  '<h4>3 · Couleur</h4><div class="hp-grid">'+model.FINISH.map(x=>card('colour',x.id,x.name,x.id==='SPE'?'Tarif couleur Special RAL/NCS inclus, teinte exacte à confirmer':'Référence du tarif publiée')).join('')+'</div>'+
+  '<h4>4 · Dimensions disponibles · '+escape(selectedForm.name)+'</h4><div class="hp-grid">'+
   selectedForm.sizes.map(x=>card('sizeId',x.id,x.label,'L / P / H ou Ø / H en centimètres')).join('')+'</div>'+
-  '<h4>3 · Finition et couleur</h4><div class="hp-grid">'+model.FINISH.map(x=>card('colour',x.id,x.name,x.id==='SPE'?'Tarif couleur Special RAL/NCS inclus, teinte exacte à confirmer':'Référence du tarif publiée')).join('')+'</div>'+
-  '<h4>4 · Trop-plein</h4><div class="hp-grid">'+
+  '<h4>5 · Trop-plein</h4><div class="hp-grid">'+
   card('overflow','false','Sans trop-plein','Référence fabricant spécifique')+
   card('overflow','true','Avec trop-plein intégré','Référence fabricant spécifique')+'</div>'+
-  '<h4>5 · Bonde, coloris extérieur et accessoires</h4>'+
+  '<h4>6 · Bonde, coloris extérieur et accessoires</h4>'+
   '<div class="hp-options">'+
   options('drain','Bonde',[...model.availableDrains(state.colour,state.overflow===true)].map(opt))+
   (state.colour==='BLA'?options('exterior','Coloration extérieure sur la version blanche',[['','Sans coloration extérieure'],opt('OPBT0008'),opt('OPBT0009')]):'<p>La couleur Plus Colour est déjà comprise dans le tarif de la référence BBEC. Aucun supplément de coloration ajouté.</p>')+
@@ -613,7 +622,7 @@ function betaEssentialPage(g){
   (state.tapPrep?'<label><span>Je dispose d’un plan coté de perçage à transmettre à Hidrobox</span><input type="checkbox" data-hbess-check="technicalPlanProvided"'+(state.technicalPlanProvided?' checked':'')+'></label>':'')+
   '</div>'+
   '<p class="hidrobox-guide-note">Pas de dimension libre pour ces modèles. Les couleurs Specials doivent être précisées sur la commande. Les totems/étagères sont des articles séparés, non inclus.</p>'+
-  '<h4>6 · Référence et détail du chiffrage</h4>'+
+  '<h4>7 · Référence et détail du chiffrage</h4>'+
   '<table class="hp-breakdown"><thead><tr><th>Poste</th><th>Réf.</th><th>Prix source HT</th></tr></thead><tbody>'+
   q.components.map(c=>'<tr><td>'+escape(c.label)+'</td><td>'+escape(c.reference)+'</td><td>'+eu(c.rawPrice)+'</td></tr>').join('')+'</tbody></table>'+
   (q.errors.length?'<ul class="hp-errors" role="alert">'+q.errors.map(e=>'<li>'+escape(e)+'</li>').join('')+'</ul>':'')+
@@ -762,7 +771,23 @@ function universalPage(g){
  const orderedShower=groupCategory(g)==='receveurs'&&selection.sourceBacked;
  const materialTexture=orderedShower?fields.filter(f=>['material','finish'].includes(f.key)).map(facetControl).join(''):'';
  const dimensionFacets=orderedShower&&!selection.dimensionResolution?fields.filter(f=>['width','length'].includes(f.key)).map(facetControl).join(''):'';
- const opts=orderedShower?'':(specialParts?fields:fields.filter(x=>!x.static)).map(facetControl).join('');
+ const genericWorkflow=(()=>{
+   if(orderedShower)return '';
+   const axes=[
+     {title:'1 · Modèle',keys:['model','type','shape','form']},
+     {title:'2 · Matière',keys:['material']},
+     {title:'3 · Texture',keys:['finish']},
+     {title:'4 · Couleur',keys:['colorGroup','color']},
+     {title:'5 · Dimensions',keys:['width','length','height','diameter']},
+     {title:'6 · Autres caractéristiques',keys:['option','installation']}
+   ];
+   return axes.map(axis=>{
+     const attributes=fields.filter(f=>axis.keys.includes(f.key));
+     if(!attributes.length)return '';
+     return '<h4 class="hidrobox-universal-subtitle">'+axis.title+'</h4><div class="hidrobox-fields">'+
+       attributes.map(facetControl).join('')+'</div>';
+   }).join('');
+ })();
  const shower=groupCategory(g)==='receveurs',visual=root.HydroHidroboxOfficialVisual;
  const liveSize=selection.dimensionResolution;
  const exactNumberInputs=liveSize?'<div class="hidrobox-fields">'+
@@ -807,7 +832,7 @@ function universalPage(g){
    universalDraft.exactwidth||selected?.width,universalDraft.exactlength||selected?.length);
  const imageLookup=eligibleSpec?'<div class="hidrobox-configured-photo"><img data-hb-config-image hidden alt="Visuel officiel correspondant à la configuration"><small data-hb-config-status>Recherche du visuel constructeur pour la combinaison exacte…</small></div>':'';
  const fixedMaterialTexture='';
- const flat=orderedShower?'':fields.filter(x=>x.static).map(f=>escape(f.label)+': '+escape(f.chosen)).join(' · ');
+ const flat='';
  const pricingWarning=selection.needsColorQuote?'La finition Scene choisie exige une confirmation du supplément tarifaire fabricant. Référence de base affichée, ajout désactivé.':
    selection.missingAttributes?.length?'Le tarif importé ne documente pas : '+selection.missingAttributes.join(', ')+'. Choisissez une autre référence tarifée ou vérifiez la fiche officielle.':'';
  const spareGroup=g.id==='hidrobox-spares-2026';
@@ -840,7 +865,9 @@ function universalPage(g){
       '<h4 class="hidrobox-universal-subtitle">4 · Dimensions</h4><div class="hidrobox-fields">'+dimensionFacets+'</div>'+
       dimensionMarkup+
       '<h4 class="hidrobox-universal-subtitle">5 · Référence finale</h4><div class="hidrobox-fields">'+refsControl+'</div>':
-      '<div class="hidrobox-fields">'+opts+refsControl+showerColor+specialColorMarkup+'</div>'+dimensionMarkup)+
+      genericWorkflow+
+      (showerColor||specialColorMarkup?'<h4 class="hidrobox-universal-subtitle">Couleur fabricant</h4><div class="hidrobox-fields">'+showerColor+specialColorMarkup+'</div>':'')+
+      dimensionMarkup+'<div class="hidrobox-fields">'+refsControl+'</div>')+
    (pricingWarning?'<p class="hidrobox-guide-note" role="status">'+escape(pricingWarning)+'</p>':'')+
    trayOptsMarkup+imageLookup+
    '<div class="hidrobox-result"><div><b>'+(canAdd?eu(price)+' HT':'Tarif indisponible')+'</b>'+
@@ -1012,13 +1039,19 @@ function neoPage(){
  '<a href="'+NEO_BIM+'" target="_blank" rel="noopener noreferrer">Objet BIM constructeur · Neo Plus</a>'+
  '<a href="'+NEO_3D+'" target="_blank" rel="noopener noreferrer">Modèle 3D constructeur · 80 × 140 × 3 cm</a></div>'+
  '<small>Photo constructeur de la collection Neo Plus · dimensions, grille, couleur et finition non contractuelles.</small></div></div>'+
- '<div class="hidrobox-fields">'+opts('hnForm','Forme',catalogue.FORMATS.map(f=>f.key),neo.form)+
+ '<div class="hidrobox-fields"><h4 class="hidrobox-universal-subtitle">1 · Modèle / forme</h4>'+
+ opts('hnForm','Modèle et forme',catalogue.FORMATS.map(f=>f.key),neo.form)+
+ '<h4 class="hidrobox-universal-subtitle">2 · Matière</h4>'+
  opts('hnMaterial','Matière',['Kromat','Scene'],neo.material)+
- opts('hnWidth','Largeur exacte (cm)',values(ranges.widths),neo.width)+
- opts('hnLength','Longueur exacte (cm)',values(ranges.lengths),neo.length)+
+ '<h4 class="hidrobox-universal-subtitle">3 · Texture</h4>'+
  opts('hnTexture','Texture',textures.length?textures:[neo.texture],neo.texture)+
+ '<h4 class="hidrobox-universal-subtitle">4 · Couleur</h4>'+
  opts('hnGroup','Groupe de couleurs',colorGroups,neo.group)+
  opts('hnColor','Couleur',colors,neo.color)+
+ '<h4 class="hidrobox-universal-subtitle">5 · Dimensions</h4>'+
+ opts('hnWidth','Largeur exacte (cm)',values(ranges.widths),neo.width)+
+ opts('hnLength','Longueur exacte (cm)',values(ranges.lengths),neo.length)+
+ '<h4 class="hidrobox-universal-subtitle">6 · Accessoires et options</h4>'+
  opts('hnGrille','Grille',['Point Inox','Point Basic','Point Trend','Point Special','Star Inox','Star Basic','Star Trend','Star Special','Radiance Steel','Radiance Gunmetal','Radiance Gold','Radiance Rame'],neo.grille)+
  opts('hnBonde','Bonde',['Horizontale standard','Verticale','Horizontale extraplate','Horizontale Plus'],neo.bonde)+
  '<label class="hidrobox-cut-option"><input type="checkbox" id="hnSpecialCut"'+(neo.specialCut?' checked':'')+'> Découpe spéciale · OPSH0018 · +10 % du prix fabricant (plan technique requis)</label></div>'+previewMarkup+
