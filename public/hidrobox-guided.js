@@ -718,8 +718,13 @@ function universalPage(g){
       width:dimInfo.widthCm||0,length:dimInfo.lengthCm||0,color:pickedColor}):null;
    let officialResult=null;
    if(officialSelection&&visual.eligible(officialSelection)){
-     try{officialResult=await visual.lookup(officialSelection)}
-     catch(error){console.warn('[Hidrobox official configured image]',error?.message||error);}
+     try{
+       officialResult=await visual.lookup(officialSelection);
+       if(officialResult?.ok){
+         const quality=await visual.printQuality(officialResult);
+         officialResult={...officialResult,verifiedPrintQuality:quality.ok,width:quality.width||0,height:quality.height||0};
+       }
+     }catch(error){console.warn('[Hidrobox official configured image]',error?.message||error);}
    }
    const exactImage=officialImage(row.image),groupCollectionImage=officialImage(officialGroupMedia(g)?.image),
     representative=officialImage(g.image)||groupCollectionImage||family?.img||'';
@@ -834,8 +839,13 @@ function neoPage(){
      if(!record)throw Error('Impossible de préparer le produit');
      Object.assign(record,item,{hidroboxConfiguration:{...chosen,selectedShape:neo.form,selectedWidthCm:+neo.width,selectedLengthCm:+neo.length,selectedColour:neo.color,selectedGrille:neo.grille,selectedBonde:neo.bonde}});
      if(officialVisual&&spec){
-       try{const image=await officialVisual.lookup(spec);if(image.ok)officialVisual.apply(record,image,spec)}
-       catch(e){console.warn('[Neo Plus configured visual]',e?.message||e)}
+       try{
+         const image=await officialVisual.lookup(spec);
+         if(image.ok){
+           const quality=await officialVisual.printQuality(image);
+           if(quality.ok)officialVisual.apply(record,{...image,verifiedPrintQuality:true,width:quality.width,height:quality.height},spec);
+         }
+       }catch(e){console.warn('[Neo Plus configured visual]',e?.message||e)}
      }
      const ids=commitSelectedRecords([record],{showProject:false});if(!ids?.length)throw Error('Impossible d’ajouter le produit');
      close();showView('project');
