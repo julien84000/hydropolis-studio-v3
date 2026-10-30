@@ -47,7 +47,7 @@ test('Supplier PDF 2026 SKU inventory is available, with independent imported co
  const reportDir=path.join(root,'build-audit');
  fs.mkdirSync(reportDir,{recursive:true});
  fs.writeFileSync(path.join(reportDir,'hidrobox-2026-pdf-parity.json'),
-  JSON.stringify({...total,missingCodes:missing.map(([reference,page])=>({reference,pdfPage:page}))},null,2)+'\\n','utf8');
+  JSON.stringify({...total,missingCodes:missing.map(([reference,page])=>({reference,pdfPage:page}))},null,2)+'\n','utf8');
  // Diagnostic audit: do not claim all supplier codes are commercial SKUs or
  // block unrelated releases before the supplier-code classification is finished.
  assert(imported.size>4000,'Hidrobox supplier import unexpectedly shrunk');
