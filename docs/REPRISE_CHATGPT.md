@@ -1,3 +1,20 @@
+## V11.64.29 — Modifier Neo Plus depuis un projet sans créer de doublon (30/10/2026)
+
+Base main vérifiée : V11.64.28, fusion PR #80, commit `65d22aebf8fb8e084dd09d413852d13d05dd170c`. La production Render a bien renvoyé /api/version 11.64.28 et /api/health ok. Parcours live Neo Plus angulaire droit 80×120 Kromat Ardoise Bianco, grille Point Trend +25€, bonde verticale +51€, découpe OPSH0018 +10% du prix base 658€ : total 831,79€ HT avec +4% une fois, ajout au projet testé.
+
+Défaut trouvé en audit du code : `public/app.js` ne proposait pas de bouton de reconfiguration Neo Plus depuis le projet, et `commitSelectedRecords` ajoutait systématiquement un nouveau UUID au lieu de remplacer le produit existant. La restauration de sélection introduite en V11.64.28 était donc inaccessible depuis le projet et risquait de créer des doublons.
+
+Branche `fix/hidrobox-neo-plus-edit-in-place-116429` :
+- `public/app.js` : bouton « Modifier la configuration Neo Plus » sur les articles enregistrés et callback.
+- `public/hidrobox-guided.js` : ouverture directe du configurateur depuis un article existant ; fusion des valeurs recalculées en conservant l'ID, la pièce, les photographies personnalisées, la fiche technique propre au client, les réglages du dossier et la remise client ; réinitialisation du prix manuel pour appliquer le nouveau tarif constructeur.
+- Tests unitaires dans `tests/hidrobox-neo-plus-priced-options-2026.test.js` et navigateur dans `tests/browser-consolidated.js` : ajout, réouverture, changement de grille, absence de doublon, maintien ID/prix, second rechargement, reset d'un nouveau projet.
+- Version package et lockfile : 11.64.29 (invalidation du cache par version du serveur).
+- Aucune modification du PDF fournisseur, du tarif des accessoires ou des autres marques.
+
+Règle de déploiement : valider `npm ci`, `npm run check`, `npm test`, `npm run build`, Chromium sur la PR. Ne fusionner qu'après CI verte, puis vérifier `/api/version` et `/api/health` sur Render. En cas de CI rouge, corriger sur cette branche en conservant le reste de main.
+
+---
+
 ## V11.64.22 — Photos Galassia HD dans le projet et le dossier client (30/10/2026)
 
 Défaut signalé : les visuels apparaissent dans le configurateur Galassia mais la fiche projet puis le dossier client affichent « Photo indisponible » ; exemples Core 7305MT, 7353MT, 7354MT. Le catalogue utilise des miniatures Galassia 650×550 qui ne doivent pas être présentées comme des images HD.
