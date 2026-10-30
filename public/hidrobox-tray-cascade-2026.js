@@ -64,7 +64,7 @@
   const n=x=>Number(String(x).match(/^\d+/)?.[0]||0);
   return n(a)-n(b)||String(a).localeCompare(String(b),'fr');
  });
- function arrange(group,items,draft={},selector,official){
+ function arrange(group,items,draft={},selector,official,dimensions){
   const raw=items.filter(x=>belongs(group,x));
   const models=selector?.variants(group,raw,official)||[];
   const model=models.some(x=>x.id===draft.traySubmodel)?draft.traySubmodel:models[0]?.id||'';
@@ -85,11 +85,21 @@
   if(matchedGroup)rows=rows.filter(r=>String(r.colorGroup||'').toUpperCase()===matchedGroup);
   fields.push({key:'color',label:'Finition / couleur',options:available,chosen:selectedColor,
    static:available.length<=1,missing:!selectedColor});
-  for(const [key,label] of [['width','Largeur / tranche tarifaire'],['length','Longueur / tranche tarifaire']]){
-   const options=sortNumbers([...new Set(rows.map(r=>String(r[key]||'')).filter(Boolean))]);
-   const chosen=options.includes(draft[key])?draft[key]:options[0]||'';
-   if(chosen)rows=rows.filter(r=>String(r[key]||'')===chosen);
-   fields.push({key,label,options,chosen,static:options.length<=1,missing:!chosen});
+  let dimensionResolution=null;
+  if(dimensions?.resolve){
+   dimensionResolution=dimensions.resolve(rows,draft.exactwidth,draft.exactlength);
+   rows=dimensionResolution.ok?dimensionResolution.matches:[];
+   for(const [key,label] of [['width','Largeur réelle (cm)'],['length','Longueur réelle (cm)']]){
+     const chosen=dimensionResolution[key]==null?'':String(dimensionResolution[key]);
+     fields.push({key,label,options:chosen?[chosen]:[],chosen,static:true,missing:!dimensionResolution.ok});
+   }
+  }else{
+   for(const [key,label] of [['width','Largeur / tranche tarifaire'],['length','Longueur / tranche tarifaire']]){
+    const options=sortNumbers([...new Set(rows.map(r=>String(r[key]||'')).filter(Boolean))]);
+    const chosen=options.includes(draft[key])?draft[key]:options[0]||'';
+    if(chosen)rows=rows.filter(r=>String(r[key]||'')===chosen);
+    fields.push({key,label,options,chosen,static:options.length<=1,missing:!chosen});
+   }
   }
   const refs=[...new Set(rows.map(r=>String(r.reference||'')).filter(Boolean))];
   const reference=refs.includes(draft.reference)?draft.reference:refs[0]||'';
@@ -99,8 +109,8 @@
   // A colour upgrade without a supplier price MUST be quoted before adding it.
   const needsColorQuote=material==='Scene'&&selectedColor&&selectedColor!=='Blanc';
   const missingAttributes=fields.filter(f=>f.missing).map(f=>f.label);
-  return {model,models,fields,rows,refs,selected,reference,color:selectedColor,
-    needsColorQuote,missingAttributes,ready:!!(selected&&!missingAttributes.length&&!needsColorQuote)};
+  return {model,models,fields,rows,refs,selected,reference,color:selectedColor,dimensionResolution,
+    needsColorQuote,missingAttributes,ready:!!(selected&&!missingAttributes.length&&!needsColorQuote&&(!dimensions||dimensionResolution?.ok))};
  }
  return {BASE,TRENDS,SINGLE,FIXED,enrich,belongs,colorsForGroup,groupForColor,arrange};
 });
