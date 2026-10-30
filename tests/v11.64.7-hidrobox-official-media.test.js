@@ -38,7 +38,8 @@ test('V11.64.7 Hidrobox manufacturer media is loaded before configurators and ne
  assert(html.indexOf('manufacturer-official-media.js')<html.indexOf('hidrobox-guided.js'));
  assert.match(guide,/officialCollectionMedia\(entry\.key\)/);
  assert.match(guide,/officialGroupMedia\(g\)/);
- assert.match(guide,/imageFinishMatch:exactImage\?'exact'/);
+ assert.match(guide,/imageFinishMatch:fallbackScope/);
+ assert.match(guide,/const fallbackImage=productImage\|\|representative/);
  assert.match(guide,/imageFinishMatch:'collection'/);
  assert.match(guide,/imageScope==='collection'/);
  assert.match(guide,/couleur, dimensions et finition peuvent différer/i);
