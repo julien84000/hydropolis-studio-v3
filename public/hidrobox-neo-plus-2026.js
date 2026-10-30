@@ -83,8 +83,8 @@ function lookup({form='rectangle',width,length,material='Kromat',texture='Lisse'
  const validW=fmt.widths?fmt.widths.includes(width):width>=fmt.widthMin&&width<=fmt.widthMax;
  const validL=fmt.lengths?fmt.lengths.includes(length):length>=fmt.lengthMin&&length<=fmt.lengthMax;
  if(!validW||!validL||!Number.isInteger(width)||!Number.isInteger(length))return {ok:false,reason:'Dimensions hors plage fabricant'};
- const c=(material==='Scene'?'BLA':group);
- if(material==='Scene'&&group!=='BLA')return {ok:false,reason:'Scene est proposé en blanc'};
+ const c=group;
+ // Scene is available in additional colors; the white tariff alone cannot price color upgrades.
  if(!COLORS[c]?.includes(color))return {ok:false,reason:'Couleur à préciser'};
  const row=rowFor(form,width,length);if(!row)return {ok:false,reason:'Format sans tarif publié pour ces dimensions'};
  const key=material==='Scene'?(texture==='Ardoise'?'SA':'SB'):(c==='BAS'?(texture==='Ardoise'?'A':'B'):c==='TRE'?(texture==='Ardoise'?'TA':'T'):(texture==='Ardoise'?'PA':'P'));
@@ -93,6 +93,7 @@ function lookup({form='rectangle',width,length,material='Kromat',texture='Lisse'
  // For Specials the PDF has independently rounded row amounts. Do not infer
  // a value from ×1.25 when the source uses a different half-cent rounding.
  const rawBase=material==='Scene'?row.s:row.k;
+ if(material==='Scene'&&c!=='BLA')return {ok:false,reference,rawBase,reason:'Supplément de couleur Scene à confirmer dans le tarif fournisseur. La référence de base ne certifie pas le prix de la couleur choisie.'};
  if(c==='SPE')return {ok:false,reference,reason:'Tarif exact couleur Special à confirmer dans la ligne de prix fournisseur'};
  const grilleOptions={'Point Inox':0,'Point Basic':0,'Point Trend':25,'Point Special':36,'Star Inox':0,'Star Basic':0,'Star Trend':25,'Star Special':36,'Radiance Steel':62,'Radiance Gunmetal':62,'Radiance Gold':62,'Radiance Rame':62};
  const bondeOptions={'Horizontale standard':0,'Verticale':51,'Horizontale extraplate':26,'Horizontale Plus':38};
