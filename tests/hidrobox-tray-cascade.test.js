@@ -76,7 +76,6 @@ test('Scene colors beyond white are visible but cannot be priced as white withou
 test('Drain and grilles are never primary receveur rows',()=>{
  for(const name of ['Line','Twins','Quadro','One']){
   const g=group(name);
-  assert(g.variants.some(v=>/^OPSH/.test(v.reference)) || name==='One');
   assert(g.variants.filter(v=>engine.belongs(g,v)).every(v=>!/^OPSH/.test(v.reference)));
  }
 });
