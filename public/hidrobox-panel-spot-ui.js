@@ -233,8 +233,8 @@
       listPriceUpliftPct:4,purchaseDiscount:50,currency:'€',vat:'HT',
       source:'HIDROBOX_TARIF_FR_V0226_19-02-2026.pdf',sourceYear:2026,
       manufacturerUrl:'https://hidrobox.com/fr/collections/spot/',
-      image:'',imageSource:'Photographie spécifique du modèle non vérifiée ; aucune photo de collection présentée comme exacte',
-      imageFinishMatch:'unavailable'};
+      image:ctx.image||'',imageSource:ctx.image?'Photographie officielle de collection Hidrobox · variante illustrative':'Photographie indisponible',
+      imageFinishMatch:ctx.image?'collection':'unavailable'};
     const verifiedSpec=spotSelection(result,result.color);
     if(verifiedSpec&&official?.lookup&&official?.printQuality&&official?.apply){
       try{
