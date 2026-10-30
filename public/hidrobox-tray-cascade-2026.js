@@ -45,7 +45,7 @@
  })[section(g)]):false;
  function colorsForGroup(group){
   const key=norm(group);
-  if(key==='bla')return ['Blanc',...BASE,...TRENDS];
+  if(key==='bla')return ['Blanc'];
   if(key==='bas'||key==='basic')return BASE.slice();
   if(key==='tre'||key==='trend')return TRENDS.slice();
   if(key==='spe'||key==='special')return [SINGLE];
@@ -55,7 +55,7 @@
   if(color==='Blanc'&&allowedGroups.includes('BLA'))return 'BLA';
   if(color===SINGLE)return allowedGroups.includes('SPE')?'SPE':'';
   const base=BASE.includes(color),trend=TRENDS.includes(color);
-  if(norm(material)==='scene'&&allowedGroups.includes('BLA'))return 'BLA';
+  if(norm(material)==='scene')return color==='Blanc'&&allowedGroups.includes('BLA')?'BLA':'';
   if(base&&allowedGroups.includes('BAS'))return 'BAS';
   if(trend&&allowedGroups.includes('TRE'))return 'TRE';
   return '';
@@ -95,9 +95,8 @@
   const reference=refs.includes(draft.reference)?draft.reference:refs[0]||'';
   const original=rows.find(r=>r.reference===reference);
   const selected=original?enrich(group,original):null;
-  // Scene is physically available in more colours than the BLA-price-row describes.
-  // A colour upgrade without a supplier price MUST be quoted before adding it.
-  const needsColorQuote=material==='Scene'&&selectedColor&&selectedColor!=='Blanc';
+  // Standard Scene on imported shower trays is Blanc; Scene Plus Colour panels use separate SKUs.
+  const needsColorQuote=false;
   const missingAttributes=fields.filter(f=>f.missing).map(f=>f.label);
   return {model,models,fields,rows,refs,selected,reference,color:selectedColor,
     needsColorQuote,missingAttributes,ready:!!(selected&&!missingAttributes.length&&!needsColorQuote)};
