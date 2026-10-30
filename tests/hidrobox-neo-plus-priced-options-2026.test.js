@@ -26,3 +26,24 @@ test('Neo Plus added grid and drain surcharges must never change the 10% cut bas
  assert(b.components.some(c=>c.reference==='OPSH0013'&&c.rawPrice===62));
  assert(b.components.some(c=>c.reference==='OPSH0017'&&c.rawPrice===38));
 });
+
+test('Neo Plus existing supplier lookup already includes grille and bonde; quoted option cost is not duplicated',()=>{
+ const fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+ const ctx={window:{}};
+ vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../public/hidrobox-neo-plus-2026.js'),'utf8'),ctx);
+ const calc=ctx.window.HydroNeoPlus2026;
+ const chosen={form:'rectangle',material:'Kromat',group:'BAS',texture:'Lisse',
+   color:'Bianco',width:90,length:120,grille:'Point Trend',bonde:'Verticale'};
+ const row=calc.lookup(chosen);
+ assert.equal(row.ok,true,JSON.stringify(row));
+ assert.equal(row.grilleRawPrice,25);
+ assert.equal(row.bondeRawPrice,51);
+ assert.equal(row.rawPrice-row.rawBasePrice,76);
+ const price=opt.quote(row.rawBasePrice,opt.optionsFor({model:'neo-plus'}),{cover:'point-trend',drain:'v90',cut:'none'});
+ assert.equal(price.rawPrice,row.rawPrice,'Existing supplier-priced fittings cannot be counted twice');
+ assert.equal(price.price,row.price);
+ const cut=opt.quote(row.rawBasePrice,opt.optionsFor({model:'neo-plus'}),{cover:'point-trend',drain:'v90',cut:'special'});
+ const cutComponent=cut.components.find(x=>x.reference==='OPSH0018');
+ assert.equal(cutComponent.rawPrice,Math.round(row.rawBasePrice*10)/100);
+ assert.equal(cut.rawPrice,row.rawPrice+cutComponent.rawPrice);
+});
