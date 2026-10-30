@@ -557,7 +557,7 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     const neoPriceBefore=await page.locator('#hidroboxGuided .hidrobox-result b').innerText();
     await page.locator('#hidroboxGuided #hnSpecialCut').check();
     const neoPriceAfter=await page.locator('#hidroboxGuided .hidrobox-result b').innerText();
-    const toNeoPrice=v=>Number(v.replace(/[\\s\\u202f\\u00a0]/g,'').replace(/[^0-9,.-]/g,'').replace(/\\./g,'').replace(',','.'));
+    const toNeoPrice=v=>Number(v.replace(/[^0-9,.]/g,'').replace(/\./g,'').replace(',','.'));
     check('Neo Plus : 10 % recalculé depuis tarif fournisseur et exigence plan technique visible',
       toNeoPrice(neoPriceAfter)>toNeoPrice(neoPriceBefore)&&
       (await page.locator('#hidroboxGuided .hidrobox-result small').innerText()).includes('découpe')&&
