@@ -3421,3 +3421,12 @@ main{background:transparent}
 @media print{
   #document .layout-delete-page,.dossier-text-backdrop{display:none!important}
 }
+
+/* Native Sbordoni photographs, only selected for the client dossier. */
+#document .layout-controls .layout-photo-official{width:auto;padding:0 7px;white-space:nowrap;font-size:10px}
+.sbordoni-dossier-dialog{width:min(760px,94vw);max-height:90vh;overflow:auto;border:1px solid #ddd;border-radius:16px;padding:24px;background:#fff;color:#222}
+.sbordoni-dossier-dialog::backdrop{background:rgba(0,0,0,.5)}
+.sbordoni-dossier-choices article{display:grid;gap:12px;margin:15px 0}
+.sbordoni-dossier-choices img{width:100%;height:auto;max-height:55vh;object-fit:contain;background:#f5f2ee}
+.sbordoni-dossier-choices p{line-height:1.5}
+@media print{.sbordoni-dossier-dialog{display:none!important}}

@@ -1,3 +1,19 @@
+## V11.64.17 — Sbordoni, photos du dossier client uniquement — 30/10/2026
+
+Base main `c756df6`, PR #61 fusionnée, production 11.64.16 / PostgreSQL vérifiée. CI main 40906139809 et CI tête PR61 40905782226 réussies. PR ouvertes à préserver : #48 (audit photos), #43 (Bette), #22 (explorateurs anciens), #6 (moodboard). Les livraisons #59, #60, #61 sont en place : six vignettes, pagination libre, concepteur par projet, espaces du devis non coupés quand ils tiennent sur une page, sous-totaux des pièces dans les bandeaux noirs, suppression des pages et édition des textes. Attention : le sous-total noir actuel est celui de la pièce, pas une preuve d'un sous-total distinct par sous-espace.
+
+**Dernière instruction Julien : le configurateur Sbordoni convient ; améliorer seulement le dossier client.** Aucune des 99 compositions ni des 98 fiches techniques n'est remplacée.
+
+23 photos d'ambiance officielles extraites à leur résolution native (environ 910 × 1100 px) du catalogue fabricant. Source contrôlée SHA-256 `d0eb7aac8feb11888f3c50d78d580d3508dbd3d9f1dcbefc795d31c71d95645f`, URL et légendes exactes dans `public/sbordoni/dossier/manifest.json`. Aucun suréchantillonnage ; octets JPEG d'origine sauf correction de symétrie imposée par le PDF, sans changer les dimensions. Le script reproductible `scripts/extract-sbordoni-dossier-photos.py` vérifie les légendes, les pages, les dimensions et les transformations. Ce ne sont pas des images 4K et les 99 compositions ne disposent pas toutes d'une photo native plus définie.
+
+Dans Aperçu A4 → Modifier la mise en page → **Photo fabricant** sur un article Sbordoni : choix limité à sa composition exacte, finition/accessoires visibles précisés, puis application uniquement à `dossierImage` et `dossierPhotoSource`. Conservation dans le projet cloud/JSON, retour « Photo du projet ». Les visuels du configurateur et du projet, les prix et les documents restent inchangés. Les sources ne proposent pas toutes les finitions ; photos choisies explicitement et mention d'ambiance non contractuelle dans le dossier. Aucun modèle proche n'est substitué quand la photo manque.
+
+**Audit résolution** : les 93 petites compositions embarquées identifiées dans le PDF ne dépassent pas 405 px sur leur grand côté ; leur rendu à 3 pixels/point ne constitue donc pas une vraie source HD. Les PDF techniques séparés ne fournissent pas de packshots haute définition complets. Le communiqué presse Lulop annonce des fichiers plus grands, mais leur téléchargement n'a pas été possible ; ne pas prétendre les avoir intégrés.
+
+**Validation à terminer** : build et tests, CI Chromium du choix de photo (mobile, sauvegarde, photo projet inchangée, PDF, reset), puis fusion et preuve Render 11.64.17. Ne pas toucher aux autres PR. Prompt : reprendre la branche `fix/sbordoni-native-hd` et sa PR, vérifier le dernier main/CI, finaliser cette intégration réservée au dossier client ; préserver configurateurs, tarifs, documents et projets. Continuer la recherche des autres photos natives sans qualifier d'HD un agrandissement.
+
+---
+
 ## V11.64.16 — sous-totaux devis / suppression de pages / textes du dossier photo (candidat 29/10/2026)
 
 Branche `feat/quote-subtotals-dossier-page-texts-116416`, base `bef3850` (11.64.15 déjà en production). Nouveau module `public/dossier-editor-v116416.js`, chargé avant app.js. Dans les bandeaux noirs du devis : sous-total HT des lignes de la pièce (net remisé × quantité), affiché uniquement au dernier bandeau répété quand la pièce occupe plusieurs pages. Les calculs du devis restent inchangés.
