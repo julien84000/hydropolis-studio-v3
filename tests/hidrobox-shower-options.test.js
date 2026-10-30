@@ -10,7 +10,7 @@ test('LINE X outlet length and supplier option code follow exact official dimens
  assert.equal(group(a,'drain').options[1].rawPrice,36);
  const b=m.optionsFor({model:'line-x',width:98,material:'Kromat',texture:'Ardoise',colorGroup:'TRE'});
  assert.equal(group(b,'cover').options[0].reference,'OPSH0024');
- assert.equal(group(b,'cover').options[1].reference,'OPSH0048'); // L80 slate trend
+ assert.equal(group(b,'cover').options[1].reference,'OPSH0047'); // L80 slate trend
  const c=m.optionsFor({model:'line-y',width:80,material:'Scene',texture:'Lisse',colorGroup:'BLA'});
  assert.equal(group(c,'cover').options[0].reference,'OPSH0023');
  assert.equal(group(c,'cover').options[1].reference,'OPSH0026');
