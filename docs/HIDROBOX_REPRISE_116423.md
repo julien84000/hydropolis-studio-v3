@@ -1,3 +1,15 @@
+## V11.64.24 — Parcours pictogrammes Twins, 30/10/2026
+
+Constat constructeur depuis les planches tarifaires photographiées (pages 26–29) : TWINS est constitué exclusivement de **Twins YL** et **Twins YR**. Pour ces receveurs, seule la matière **Kromat** et la finition **Microtex** sont documentées. Il ne faut PAS proposer Scene, Lisse ou Ardoise dans cette famille. Couleurs autorisées : gammes Basic, Trend et Special selon la ligne de référence, dimensions 80 et 81–90 cm de largeur, longueurs 100–180 cm par tranches tarifaires.
+
+La navigation des sous-modèles utilise désormais le module `public/hidrobox-tray-models-2026.js`, à pictogrammes YL/YR (et Line X/Y/carré); le choix intervient **avant** le filtrage des SKU importés, et seules les lignes STWC correspondant à cette forme restent disponibles. Les dimensions exactes et variantes sont ensuite choisies sans inventer une référence. Les choix de grille/bonde sont indépendants. La sauvegarde conserve `hidroboxConfiguration.submodel` et la réouverture restaure le bon pictogramme. Les modèles des autres collections ne reçoivent pas de pictogrammes inventés s'ils ne sont pas séparables par références documentées.
+
+Tests nouveaux `tests/hidrobox-twins-pictogram-flow.test.js`: les deux seuls modèles, Kromat et Microtex pour tous les STWC, référence YL différente de YR, trois dessins de forme Line dont le carré. Vérifier la CI sur la PR #70 avant fusion, puis /api/health, /api/version et visuels après déploiement.
+
+**Ne pas généraliser les restrictions Twins à Line ou Neo Plus** ; ces collections ont des matériaux et textures différents, à vérifier dans leur grille tarifaire propre. Pour Scene Plus Colour (couleurs autres que blanc), les références BLA imprimées et les suppléments fabricant doivent rester explicitement distingués : ne pas remplacer BLA par BAS/TRE sans code/prix constructeur.
+
+---
+
 # Mise à jour finale de travail — 30 octobre 2026
 
 - Pull request #68 (brouillon) : https://github.com/julien84000/hydropolis-studio-v3/pull/68
