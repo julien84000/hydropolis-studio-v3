@@ -789,6 +789,9 @@ function universalPage(g){
    ];
    return axes.map(axis=>{
      const attributes=fields.filter(f=>axis.keys.includes(f.key));
+     if(!attributes.length&&axis.title==='1 · Modèle')
+       return '<h4 class="hidrobox-universal-subtitle">1 · Modèle</h4>'+
+         '<div class="hidrobox-fixed-attribute"><strong>Collection</strong><span>'+escape(name)+'</span></div>';
      if(!attributes.length)return '';
      return '<h4 class="hidrobox-universal-subtitle">'+axis.title+'</h4><div class="hidrobox-fields">'+
        attributes.map(facetControl).join('')+'</div>';
@@ -862,6 +865,7 @@ function universalPage(g){
    '<p>'+escape(pricedShowerVariants(g).length)+' références produit issues du tarif 2026. Configurez progressivement les caractéristiques, sans masquer les références restantes.</p>'+
    docs+'<small>'+escape(mainImage?(imageScope==='exact'?'Visuel associé à la référence sélectionnée':imageScope==='collection'?'Photo constructeur de la collection · finition/dimensions non contractuelles':'Illustration de catégorie · modèle et finition non garantis'):'Visuel non disponible')+'</small></div></div>'+
    submodelMarkup+
+   (orderedShower&&!submodels.length?'<h4 class="hidrobox-universal-subtitle">1 · Modèle</h4><div class="hidrobox-fixed-attribute"><strong>Modèle</strong><span>'+escape(name)+'</span></div>':'')+
    '<h4 class="hidrobox-universal-subtitle">Caractéristiques tarifaires</h4>'+
    fixedMaterialTexture+
    (flat?'<p class="hidrobox-guide-note">'+flat+'</p>':'')+
