@@ -80,6 +80,13 @@ function shell(title,content,wide=false){
  overlay.querySelector('[data-hidrobox-category]')?.addEventListener('click',collections);
 }
 /* Media is verified by official COLLECTION, never assumed exact for a SKU. */
+/* Brochure cover showing the Program Colour collection; illustrative, not the selected SKU.
+   Source: Hidrobox PROGRAM COLOUR booklet, mirrored by Edilportale/Archiproducts. */
+const PROGRAM_COLOUR_GENERIC_IMAGE='https://catalogs.edilportale.com/Program-Colour-washbasin-it-es-pt-Hidrobox-0-catfe87311d.jpg';
+function collectionImageFor(slug,src){
+ if(norm(slug)==='program colour'||norm(slug)==='program-colour')return PROGRAM_COLOUR_GENERIC_IMAGE;
+ return officialImage(src);
+}
 function officialCollectionMedia(slug){
  const media=root.HydroManufacturerMediaIndex?.get('Hidrobox',slug);
  return media&&media.scope==='collection'?media:null;
@@ -149,8 +156,9 @@ function collections(){
  const cards=official.map(entry=>{
   const g=groupFor(entry);
   const media=officialCollectionMedia(entry.key);
-  return {key:entry.key,name:entry.name,img:officialImage(media?.image)||officialImage(g?.image)||'',
-   collectionPhoto:!!media,
+  return {key:entry.key,name:entry.name,
+   img:collectionImageFor(entry.key,media?.image||g?.image)||'',
+   collectionPhoto:!!media||entry.key==='program-colour',
    note:entry.private?'Collection privée sur le site du fabricant':groupsLoading?'Chargement des tarifs · collection consultable':g?(g.variants?.length||0)+' lignes du tarif source · à configurer':groupsError?'Tarifs momentanément indisponibles':'Collection officielle · tarif non importé'};
  });
  const orphans=unmappedGroups(cat);
@@ -179,10 +187,12 @@ function officialInfo(entry){
  stage='official';chosenGroup=entry;
  const category=CATEGORY.find(c=>c.key===cat);
  const assets=HIDROBOX_DOCUMENTS[norm(entry.name)]||{};
- const tech=officialPdf(assets.technical);
- const docs=tech?'<a class="hidrobox-official-link" href="'+escape(tech)+'" target="_blank" rel="noopener noreferrer">Fiche technique fabricant</a>':'';
+ const tech=officialPdf(assets.technical),manual=officialPdf(assets.manual);
+ const docs=(tech?'<a class="hidrobox-official-link" href="'+escape(tech)+'" target="_blank" rel="noopener noreferrer">Fiche technique fabricant</a>':'')+
+   (manual?'<a class="hidrobox-official-link" href="'+escape(manual)+'" target="_blank" rel="noopener noreferrer">Notice d’installation et d’entretien</a>':'');
  const url=entry.private?category?.url:entry.url;
- const media=officialCollectionMedia(entry.key),photo=officialImage(media?.image);
+ const media=officialCollectionMedia(entry.key),
+  photo=collectionImageFor(entry.key,media?.image);
  const photoMarkup=photo?'<div class="hidrobox-unpriced-photo"><img src="'+escape(photo)+'" alt="Collection '+escape(entry.name)+'" loading="lazy"><small>Photo constructeur de collection · variantes non garanties</small></div>':'';
  const explanation=groupsLoading?'Les références tarifaires de la collection sont en cours de chargement. La navigation reste possible ; la configuration sera accessible dès la fin du chargement.':groupsError?'Le tarif est temporairement indisponible. La collection est consultable sur le site fabricant, mais aucun prix ni ajout au devis ne peut être proposé pour le moment.':entry.private?'Cette collection est indiquée « Privé » dans le menu du fabricant.':"Cette collection figure au catalogue officiel, mais aucune référence et aucun tarif correspondants n’ont été importés.";
  const markup='<button class="hidrobox-back" type="button">← Collections</button>'+
@@ -675,10 +685,15 @@ function sourcePanelSpotPage(g,type){
  if(!api)return null;
  stage='group';chosenGroup=g;
  const collection=type==='panel'?'Panneaux muraux':'Spot';
- const image=officialImage(officialGroupMedia(g)?.image||g.image)||'';
- const ctx={original,room,image,overlay:()=>overlay,
+ const docs=HIDROBOX_DOCUMENTS[norm(collection)]||HIDROBOX_DOCUMENTS[norm(g.collection)]||{};
+ const image=collectionImageFor(collection,officialGroupMedia(g)?.image||g.image)||'';
+ const ctx={original,room,image,
+  docs:{technical:officialPdf(docs.technical),manual:officialPdf(docs.manual)},
+  overlay:()=>overlay,
   back:collections,shell:(name,html)=>shell(name,html,true),
   save:(item,configuration)=>{
+   if(ctx.docs.technical){item.technicalSheetUrl=ctx.docs.technical;item.technicalSheetLabel='Fiche technique '+collection;}
+   if(ctx.docs.manual){item.installationGuideUrl=ctx.docs.manual;item.installationGuideLabel='Notice d’installation '+collection;}
    const record=createSelectedProductRecord(item,room,'');
    if(!record)throw Error('Impossible de créer le produit Hidrobox');
    Object.assign(record,item,{hidroboxConfiguration:{group:g.id,collection,...configuration}});
@@ -711,9 +726,12 @@ function universalPage(g){
  const n=norm(name),assets=HIDROBOX_DOCUMENTS[n]||{};
  const url=officialCollection(g);
  const groupMedia=officialGroupMedia(g);
- const exactSelectedImage=officialImage(selected?.image),exactGroupImage=officialImage(g.image);
- const collectionImage=officialImage(groupMedia?.image);
- const mainImage=exactSelectedImage||exactGroupImage||collectionImage||family?.img||'';
+ const isProgramColour=n==='program colour';
+ const exactSelectedImage=isProgramColour?'':officialImage(selected?.image),
+   exactGroupImage=isProgramColour?'':officialImage(g.image);
+ const collectionImage=collectionImageFor(name,groupMedia?.image||g.image);
+ const mainImage=isProgramColour?PROGRAM_COLOUR_GENERIC_IMAGE:
+   exactSelectedImage||exactGroupImage||collectionImage||family?.img||'';
  const imageScope=exactSelectedImage?'exact':collectionImage||exactGroupImage?'collection':'category';
  const facetControl=f=>f.static?
    '<div class="hidrobox-fixed-attribute"><strong>'+escape(f.label)+'</strong><span>'+escape(f.chosen||'À vérifier')+'</span></div>':
@@ -847,8 +865,11 @@ function universalPage(g){
        }
      }catch(error){console.warn('[Hidrobox official configured image]',error?.message||error);}
    }
-   const exactImage=officialImage(row.image),groupCollectionImage=officialImage(officialGroupMedia(g)?.image),
-    representative=officialImage(g.image)||groupCollectionImage||family?.img||'';
+   const isColourCollection=norm(name)==='program colour';
+   const exactImage=isColourCollection?'':officialImage(row.image),
+     groupCollectionImage=collectionImageFor(name,officialGroupMedia(g)?.image||g.image),
+    representative=isColourCollection?PROGRAM_COLOUR_GENERIC_IMAGE:
+      officialImage(g.image)||groupCollectionImage||family?.img||'';
    const item={manufacturer:'Hidrobox',collection:name,reference:row.reference,base:row.reference,designation,
       category:row.category||original?.category||family?.name||'Sanitaire',material:row.material||'',
       finish:[pickedColor,row.finish||row.colorGroup||''].filter(Boolean).join(' · '),
