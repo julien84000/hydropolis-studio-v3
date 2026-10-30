@@ -1002,7 +1002,7 @@ function neoPage(){
  const colorGroups=neo.material==='Scene'?['BLA']:['BAS','TRE','SPE'];
  const opts=(id,label,list,current,disabled=false)=>visualFacet(id,label,list,current,disabled?'disabled':'');
  const pict=officialImage(officialCollectionMedia('neo-plus')?.image)||CATEGORY[0].img;
- const previewMarkup='<div class="hidrobox-configured-photo"><img data-hb-config-image hidden alt="Rendu réel du configurateur Hidrobox Neo Plus"><small data-hb-config-status>Recherche du visuel officiel correspondant au modèle, à la couleur et aux dimensions.</small></div>';
+ const previewMarkup='<div class="hidrobox-configured-photo"><img data-hb-config-image hidden alt="Visuel fabricant Hidrobox Neo Plus ; dimensions et accessoires à vérifier"><small data-hb-config-status>Recherche du visuel officiel correspondant à la finition.</small><a data-hb-config-link hidden target="_blank" rel="noopener noreferrer">Voir cette sélection dans le configurateur officiel Hidrobox</a></div>';
  const config='<button class="hidrobox-back" type="button">← Collections</button>'+
  '<div class="hidrobox-neo-hero"><img src="'+escape(pict)+'" alt="Illustration receveurs de douche Hidrobox" loading="lazy">'+
  '<div><div class="eyebrow">Receveur de douche · Neo Plus</div><h3>NEO PLUS</h3><p>Scene Solid Surface ou Kromat. Fabriqué au centimètre selon les plages du tarif 2026.</p>'+
