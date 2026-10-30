@@ -6,7 +6,7 @@ const server=fs.readFileSync(path.join(__dirname,'../server.js'),'utf8');
 test('Program Colour uses generic branded brochure photo, never presented as precise SKU',()=>{
  assert.match(s,/const PROGRAM_COLOUR_GENERIC_IMAGE='?\/api\/image-proxy\?url=/);
  assert.match(s,/isProgramColour\?'':officialImage\(selected\?\.image\)/);
- assert.match(s,/isColourCollection\?'':officialImage\(row\.image\)/);
+ assert.match(s,/const productImage=isColourCollection\?'':officialImage\(row\.image\)/);
  assert.match(s,/collectionImageFor\(entry\.key/);
  assert.match(s,/collectionImageFor\(name,groupMedia/);
  assert.match(server,/"catalogs\.edilportale\.com"/);
