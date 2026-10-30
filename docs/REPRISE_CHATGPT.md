@@ -1,3 +1,21 @@
+## V11.64.22 — Photos Galassia HD dans le projet et le dossier client (30/10/2026)
+
+Défaut signalé : les visuels apparaissent dans le configurateur Galassia mais la fiche projet puis le dossier client affichent « Photo indisponible » ; exemples Core 7305MT, 7353MT, 7354MT. Le catalogue utilise des miniatures Galassia 650×550 qui ne doivent pas être présentées comme des images HD.
+
+Source fabricant vérifiée : la page officielle Core 7353 pointe sur https://www.ceramicagalassia.it/public/7353.jpg (image originale 1000×1000), alors que l'arborescence référence https://www.ceramicagalassia.it/public/_resized/7353_650X550_90_C.jpg. Il faut toujours tester l'original, sans supposer qu'il existe pour les autres références. La finition illustrée peut différer de la déclinaison tarifée.
+
+Changements : nouveau public/galassia-dossier-photos.js. Sur une correspondance fabricant strictement vérifiée, dérive l'URL originale depuis une miniature "_resized", teste réellement le chargement et les dimensions de l'image, accepte "original-hd" uniquement avec au moins 900 px de chaque côté, sinon identifie clairement la résolution limitée. Sert les images via /api/image-proxy pour affichage et export PDF. Aucune URL n'est fabriquée à partir d'une référence non vérifiée.
+
+server.js : ajoute strictement ceramicagalassia.it et ceramicagalassia.com à la liste blanche distante du proxy, avec la validation existante des destinations publiques. public/index.html + sw.js : chargement et mise en cache du module.
+
+public/app.js : les deux chemins d'ajout du configurateur Galassia (catalogue / projet) hydratent les photos avant de créer les lignes, y compris les accessoires associés. Les champs image/images/pdfImage/pdfImages sont synchronisés ; les anciens résultats de recherche fabricant ne peuvent plus remplacer une photo vérifiée. Le bouton « Actualiser photo + documents » utilise aussi l'index photographique officiel. Au chargement des projets, les articles Galassia sauvegardés sans bonne image sont repris sans modifier les images personnalisées ni l'option image propre au dossier. Aucun changement aux tarifs, remises, références, accessoires ni à la mise en page des dossiers.
+
+Tests nouveaux : tests/galassia-dossier-photos.test.js (original HD, repli image limitée, host non autorisé, photo personnalisée préservée, image introuvable) ; package.json inclut ces tests ; version 11.64.22.
+
+À valider par CI et parcours réel Render : sélection Galassia > projet > vignette visible > dossier client > PDF ; les images de grand format exigent une source réellement HD, ne jamais agrandir artificiellement une miniature. Vérifier aussi un projet existant contenant des articles Galassia.
+
+---
+
 ## V11.64.21 — Galassia : collections Core/Next complétées, finitions et accessoires sanitaires (30/10/2026)
 
 Branche fix/galassia-core-next-pricelist-116421, base V11.64.20 main 1370597ba33f695290b978d4afcdfd7e787a39fc.
