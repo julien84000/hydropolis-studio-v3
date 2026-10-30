@@ -652,6 +652,23 @@ function restoreHidroboxSelection(g){
  if(saved.color||saved.selectedColour)universalDraft.showerColor=saved.color||saved.selectedColour;
  for(const opt of saved.accessories||[])if(opt.group&&opt.id)universalDraft['tray_'+opt.group]=opt.id;
 }
+function officialSpecForGroup(g,row,colour,width,length){
+ const engine=root.HydroHidroboxOfficialVisual;
+ if(!engine?.selection||!row)return null;
+ const category=groupCategory(g);
+ const tax={'receveurs':'shower-tray','panneaux':'wall-panels',
+   'vasques-suspendues':'wall-hung-washbasins','vasques-a-poser':'vessel-washbasin',
+   'vasques-sur-pied':'floor-standing-basins','bains-ilot':'freestanding-bathtub',
+   'bains-encastres':'recessed-bathtub','accessoires':'accessories'};
+ const typology=tax[category];if(!typology)return null;
+ const collection=norm(g?.collection||g?.id).replaceAll(' ','-');
+ const model=collection==='paneles'?'wall-panels':
+   /^spot-[0-9]+$/.test(collection)?collection:
+   collection==='fs'?String(row?.model||'').toLowerCase().replaceAll(' ','-'):collection;
+ const spec=engine.selection(g,row,{model,typology,
+  color:colour||row.color||'',width:Number(width)||0,length:Number(length)||0});
+ return engine.eligible(spec)?spec:null;
+}
 function sourcePanelSpotPage(g,type){
  const api=root.HydroHidroboxPanelSpotUI;
  if(!api)return null;
@@ -726,7 +743,9 @@ function universalPage(g){
    }).join('')+'</div>':'';
  const trayQuote=accessories&&trayOpts.length?accessories.quote(selected?.rawPrice,trayOpts,Object.fromEntries(
     trayOpts.map(g=>[g.key,universalDraft['tray_'+g.key]]))):null;
- const imageLookup=shower?'<div class="hidrobox-configured-photo"><img data-hb-config-image hidden alt="Visuel officiel correspondant à la configuration"><small data-hb-config-status>Le configurateur officiel sera interrogé selon les choix exacts. Aucune photo approximative ne sera déclarée exacte.</small></div>':'';
+ const eligibleSpec=officialSpecForGroup(g,selected,universalDraft.showerColor||selected?.color,
+   universalDraft.exactwidth||selected?.width,universalDraft.exactlength||selected?.length);
+ const imageLookup=eligibleSpec?'<div class="hidrobox-configured-photo"><img data-hb-config-image hidden alt="Visuel officiel correspondant à la configuration"><small data-hb-config-status>Recherche du visuel constructeur pour la combinaison exacte…</small></div>':'';
  const fixedMaterialTexture='';
  const flat=orderedShower?'':fields.filter(x=>x.static).map(f=>escape(f.label)+': '+escape(f.chosen)).join(' · ');
  const pricingWarning=selection.needsColorQuote?'La finition Scene choisie exige une confirmation du supplément tarifaire fabricant. Référence de base affichée, ajout désactivé.':
@@ -787,11 +806,9 @@ function universalPage(g){
  overlay.querySelector('#huShowerColor')?.addEventListener('change',e=>{
    universalDraft.showerColor=e.target.value;universalPage(g);
  });
- if(shower&&visual){
-   const rangeW=centimeterRange(selected?.width),rangeL=centimeterRange(selected?.length);
-   const spec=visual.selection(g,selected||{},{color:universalDraft.showerColor||selected?.color||'',
-     width:rangeW?Number(universalDraft.exactwidth):0,length:rangeL?Number(universalDraft.exactlength):0});
-   void visual.preview(overlay.querySelector('.hidrobox-configured-photo'),spec).catch(e=>console.warn('[Hidrobox official visual]',e));
+ if(eligibleSpec&&visual?.preview){
+   void visual.preview(overlay.querySelector('.hidrobox-configured-photo'),eligibleSpec)
+     .catch(e=>console.warn('[Hidrobox official visual]',e));
  }
  overlay.querySelector('#huReference')?.addEventListener('change',e=>{universalDraft.reference=e.target.value;universalPage(g)});
  overlay.querySelector('#huExactwidth')?.addEventListener('change',e=>{universalDraft.exactwidth=Number(e.target.value);universalPage(g)});
@@ -817,8 +834,8 @@ function universalPage(g){
    if(selectedTrayQuote&&!selectedTrayQuote.ok){alert(selectedTrayQuote.reason);return;}
    const optionLabels=selectedTrayQuote?.components?.map(x=>x.label)||[];
    const designation=[row.designation||name,...dimLabels,pickedColor?'Couleur '+pickedColor:'',...optionLabels].filter(Boolean).join(' · ');
-   const officialSelection=shower&&visual?visual.selection(g,row,{
-      width:dimInfo.widthCm||0,length:dimInfo.lengthCm||0,color:pickedColor}):null;
+   const officialSelection=officialSpecForGroup(g,row,pickedColor,
+      dimInfo.widthCm||row.widthCm||0,dimInfo.lengthCm||row.lengthCm||0);
    let officialResult=null;
    if(officialSelection&&visual.eligible(officialSelection)){
      try{
