@@ -305,10 +305,10 @@ function universalSelection(g){
   return {selected,fields,refs,rows};
 }
 function centimeterRange(str){
-  const m=String(str||'').trim().replace(/[–—]/g,'-').match(/^(\d{2,3})(?:\s*-\s*(\d{2,3}))?$/);
+  const m=String(str||'').trim().replace(/[–—]/g,'-').match(/^(\d{1,3})(?:\s*-\s*(\d{1,3}))?$/);
   if(!m)return null;
   const first=Number(m[1]),last=Number(m[2]||m[1]);
-  return first>=40&&last<=230&&first<=last?{first,last}:null;
+  return first>=1&&last<=260&&first<=last?{first,last}:null;
 }
 function dimensionFields(selected){
   const vals={width:centimeterRange(selected?.width),length:centimeterRange(selected?.length)};
@@ -715,6 +715,13 @@ function sourcePanelSpotPage(g,type){
 }
 function universalPage(g){
  const familyName=norm(g.collection||g.id);
+ const specialParts=familyName==='niches etageres et pieces speciales'?root.HydroHidroboxSpecialParts2026:null;
+ if(specialParts){
+   // The compressed catalogue omits supplier SKUs from both special-piece matrices.
+   // Restore the exact 2026 source variants, retaining every other imported accessory.
+   const others=(g.variants||[]).filter(v=>!/^(?:SCOC|VCOC)\d{4}$/.test(String(v.reference||'')));
+   g={...g,variants:[...specialParts.rows,...others]};
+ }
  if(familyName==='panneaux muraux'||familyName==='paneles')return sourcePanelSpotPage(g,'panel');
  if(familyName==='spot')return sourcePanelSpotPage(g,'spot');
  if(familyName==='program')return programPage(g);
@@ -749,7 +756,7 @@ function universalPage(g){
  const orderedShower=groupCategory(g)==='receveurs'&&selection.sourceBacked;
  const materialTexture=orderedShower?fields.filter(f=>['material','finish'].includes(f.key)).map(facetControl).join(''):'';
  const dimensionFacets=orderedShower&&!selection.dimensionResolution?fields.filter(f=>['width','length'].includes(f.key)).map(facetControl).join(''):'';
- const opts=orderedShower?'':fields.filter(x=>!x.static).map(facetControl).join('');
+ const opts=orderedShower?'':(specialParts?fields:fields.filter(x=>!x.static)).map(facetControl).join('');
  const shower=groupCategory(g)==='receveurs',visual=root.HydroHidroboxOfficialVisual;
  const liveSize=selection.dimensionResolution;
  const exactNumberInputs=liveSize?'<div class="hidrobox-fields">'+
@@ -766,6 +773,15 @@ function universalPage(g){
  if(verifiedColors.length&&!verifiedColors.includes(universalDraft.showerColor))universalDraft.showerColor=verifiedColors[0];
  const showerColor=verifiedColors.length?'<div class="hidrobox-shower-colors"><h4>Couleur réelle du receveur</h4>'+
    visualFacet('huShowerColor','Couleur',verifiedColors,universalDraft.showerColor)+'</div>':'';
+
+ const specialTier=specialParts&&selected&&specialParts.byRef.has(selected.reference)?selected.colorGroup:'';
+ const specialChoices=specialTier==='BAS'?specialParts.COLOR_BAS:
+   specialTier==='TRE'?specialParts.COLOR_TRE:specialTier==='BLA'?['Blanc']:[];
+ if(specialChoices.length&&!specialChoices.includes(universalDraft.specialColor))universalDraft.specialColor=specialChoices[0];
+ if(specialTier==='SPE'&&(!universalDraft.specialColor||universalDraft.specialColor==='Blanc'))universalDraft.specialColor='';
+ const specialColorMarkup=specialTier==='SPE'?
+   '<label>Code couleur RAL / NCS exigé<input id="huSpecialColorCode" type="text" value="'+escape(universalDraft.specialColor||'')+'" placeholder="RAL 9001 / NCS S ..."></label>':
+   specialChoices.length?visualFacet('huSpecialColor','Couleur fabricant',specialChoices,universalDraft.specialColor):'';
  const accessories=root.HydroHidroboxShowerOptions2026;
  const trayModel=shower&&visual?visual.modelFor(g,selected||{}):'';
  const trayOpts=shower&&accessories?accessories.optionsFor({model:trayModel,material:selected?.material||'',
@@ -790,7 +806,7 @@ function universalPage(g){
    selection.missingAttributes?.length?'Le tarif importé ne documente pas : '+selection.missingAttributes.join(', ')+'. Choisissez une autre référence tarifée ou vérifiez la fiche officielle.':'';
  const refsControl=refs.length>1?'<label>Référence finale<select id="huReference">'+choices(refs,universalDraft.reference)+'</select></label>':'';
  const price=trayQuote?.ok?trayQuote.price:Number(selected?.price),raw=Number(selected?.rawPrice);
- const canAdd=selected&&Number.isFinite(price)&&price>0&&selected.reference&&(!orderedShower||selection.ready);
+ const canAdd=selected&&Number.isFinite(price)&&price>0&&selected.reference&&(!orderedShower||selection.ready)&&(!specialTier||specialTier!=='SPE'||String(universalDraft.specialColor||'').trim().length>=3);
  const tech=officialPdf(selected?.technicalSheetUrl||g.technicalSheetUrl||assets.technical);
  const manual=officialPdf(selected?.installationGuideUrl||g.installationGuideUrl||assets.manual);
  const bim=officialZip(assets.bim),model3D=officialZip(assets.model3D);
@@ -814,7 +830,7 @@ function universalPage(g){
       '<h4 class="hidrobox-universal-subtitle">4 · Dimensions</h4><div class="hidrobox-fields">'+dimensionFacets+'</div>'+
       dimensionMarkup+
       '<h4 class="hidrobox-universal-subtitle">5 · Référence finale</h4><div class="hidrobox-fields">'+refsControl+'</div>':
-      '<div class="hidrobox-fields">'+opts+refsControl+showerColor+'</div>'+dimensionMarkup)+
+      '<div class="hidrobox-fields">'+opts+refsControl+showerColor+specialColorMarkup+'</div>'+dimensionMarkup)+
    (pricingWarning?'<p class="hidrobox-guide-note" role="status">'+escape(pricingWarning)+'</p>':'')+
    trayOptsMarkup+imageLookup+
    '<div class="hidrobox-result"><div><b>'+(canAdd?eu(price)+' HT':'Tarif indisponible')+'</b>'+
@@ -844,13 +860,13 @@ function universalPage(g){
  overlay.querySelector('#huShowerColor')?.addEventListener('change',e=>{
    universalDraft.showerColor=e.target.value;universalPage(g);
  });
+ overlay.querySelector('#huSpecialColor')?.addEventListener('change',e=>{universalDraft.specialColor=e.target.value;universalPage(g)});
+ overlay.querySelector('#huSpecialColorCode')?.addEventListener('change',e=>{universalDraft.specialColor=e.target.value.trim();universalPage(g)});
  if(eligibleSpec&&visual?.preview){
    void visual.preview(overlay.querySelector('.hidrobox-configured-photo'),eligibleSpec)
      .catch(e=>console.warn('[Hidrobox official visual]',e));
  }
  overlay.querySelector('#huReference')?.addEventListener('change',e=>{universalDraft.reference=e.target.value;universalPage(g)});
- overlay.querySelector('#huExactwidth')?.addEventListener('change',e=>{universalDraft.exactwidth=Number(e.target.value);universalPage(g)});
- overlay.querySelector('#huExactlength')?.addEventListener('change',e=>{universalDraft.exactlength=Number(e.target.value);universalPage(g)});
  overlay.querySelector('#huExactwidth')?.addEventListener('change',e=>{universalDraft.exactwidth=Number(e.target.value);universalPage(g)});
  overlay.querySelector('#huExactlength')?.addEventListener('change',e=>{universalDraft.exactlength=Number(e.target.value);universalPage(g)});
  overlay.querySelector('#huAdd')?.addEventListener('click',async()=>{
@@ -868,7 +884,13 @@ function universalPage(g){
      }
    }
    const dimLabels=[dimInfo.widthCm?'Larg. '+dimInfo.widthCm+' cm':'',dimInfo.lengthCm?'Long. '+dimInfo.lengthCm+' cm':''].filter(Boolean);
-   const pickedColor=shower?(universalDraft.showerColor||row.color||''):(row.color||'');
+   const pickedColor=specialParts&&specialParts.byRef.has(row.reference)?String(universalDraft.specialColor||'').trim():(shower?(universalDraft.showerColor||row.color||''):(row.color||''));
+   if(specialParts&&specialParts.byRef.has(row.reference)){
+     const check=specialParts.resolve({kind:row.kind,material:row.material,finish:row.finish,
+       colorGroup:row.colorGroup,width:dimInfo.widthCm??row.width,length:dimInfo.lengthCm??row.length,height:row.height});
+     if(!check.ok||check.reference!==row.reference){alert('Dimensions / référence des pièces spéciales non vérifiées dans le tarif 2026.');return;}
+     if(row.colorGroup==='SPE'&&pickedColor.length<3){alert('Indiquer la référence RAL ou NCS.');return;}
+   }
    const selectedTrayQuote=accessories&&trayOpts.length?accessories.quote(row.rawPrice,trayOpts,
      Object.fromEntries(trayOpts.map(g=>[g.key,universalDraft['tray_'+g.key]]))):null;
    if(selectedTrayQuote&&!selectedTrayQuote.ok){alert(selectedTrayQuote.reason);return;}
