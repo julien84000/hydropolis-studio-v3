@@ -865,6 +865,16 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     check('Galassia : collections photographiques disponibles',await page.locator('.galassia-modal .galassia-family').count()>8);
     await page.locator('.galassia-family[data-family="R70"]').click();
     check('Galassia : famille R70 affichée',await page.locator('.galassia-modal').count()===1&&await page.locator('.galassia-family[data-family="R70"].active').count()===1);
+
+    check('Galassia : ordre original Lavabi / Mobili / Accessori',await page.locator('.galassia-section strong').allTextContents().then(x=>x.slice(0,3).join('|')==='LAVABI|Mobili|ACCESSORI'));
+    await page.locator('.galassia-section[data-section-index="1"]').click();
+    check('Galassia : les structures R70 sont classées dans Mobili',await page.locator('.galassia-model[data-model="7720"]').count()===1);
+    check('Galassia : ne mélange pas les vasques avec le mobilier',await page.locator('.galassia-model[data-model="7701"]').count()===0);
+    await page.locator('.galassia-section[data-section-index="0"]').click();
+    await page.locator('.galassia-family[data-family="Core Freestanding"]').click();
+    check('Galassia : Core Freestanding possède sa propre collection',await page.locator('.galassia-family[data-family="Core Freestanding"].active').count()===1);
+    await page.locator('.galassia-family[data-family="R70"]').click();
+
     await page.locator('.galassia-search').fill('7701');
     await page.locator('.galassia-model[data-model="7701"]').click();
     await page.locator('.galassia-variant').selectOption('7701MT');
