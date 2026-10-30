@@ -30,14 +30,18 @@
   const text=groupName+' '+haystack;
   const single=['neo plus','quadro','one','pure','arq','iconik','unique','loovers','falcon'];
   for(const s of single)if(groupName===s)return s.replaceAll(' ','-');
+  if(groupName==='line x')return 'line-x';
+  if(groupName==='line y')return 'line-y';
+  if(groupName==='twins yl'||groupName==='twin yl')return 'twins-yl';
+  if(groupName==='twins yr'||groupName==='twin yr')return 'twins-yr';
   if(groupName==='line'){
    if(/\bline\s*x\b|\bline-x\b|\bline x\b/.test(text))return 'line-x';
    if(/\bline\s*y\b|\bline-y\b/.test(text))return 'line-y';
    return '';
   }
   if(groupName==='twins'){
-   if(/\btwins\s*yl\b|\btwins yl\b/.test(text))return 'twins-yl';
-   if(/\btwins\s*yr\b|\btwins yr\b/.test(text))return 'twins-yr';
+   if(/\btwins?\s*yl\b|\btwins yl\b/.test(text))return 'twins-yl';
+   if(/\btwins?\s*yr\b|\btwins yr\b/.test(text))return 'twins-yr';
    return '';
   }
   return '';
