@@ -39,7 +39,7 @@ function register(app){
   const previous=cache.get(base);
   if(previous&&Date.now()-previous.at<6*60*60*1000)return previous.url?res.json({url:previous.url,source:'fiche officielle'}):res.status(404).json({error:'Fiche indisponible'});
   try{
-   const result=await axios.get(allowed.get(base),{timeout:10000,maxRedirects:2,maxContentLength:2e6,
+   const result=await axios.get(allowed.get(base),{timeout:10000,maxRedirects:0,maxContentLength:2e6,
     headers:{'User-Agent':'HydropolisStudio/1.0 (manufacturer document lookup)','Accept':'text/html'}});
    const url=fromPage(String(result.data||''),allowed.get(base));
    cache.set(base,{url,at:Date.now()});
