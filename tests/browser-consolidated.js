@@ -561,6 +561,21 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     check('Hidrobox Line : options de dimensions et de matière conservées',
       await page.locator('#hidroboxGuided [data-facet]').count()>0&&
       await page.locator('#hidroboxGuided .hidrobox-neo-hero img').count()<=1);
+    // Hidrobox 2026: supplier special pieces are not synthetic category refs.
+    await page.locator('#hidroboxGuided [data-hidrobox-home]').click();
+    await page.locator('#hidroboxGuided [data-kind="family"][data-choice="accessoires"]').click();
+    await page.waitForSelector('#hidroboxGuided [data-kind="unmapped"]',{timeout:20000});
+    await page.locator('#hidroboxGuided [data-kind="unmapped"]').first().click();
+    check('Hidrobox special pieces: all 1360 source SKU prices are registered',
+      await page.evaluate(()=>window.HydroHidroboxSpecialParts2026?.rows?.length===1360));
+    check('Hidrobox special pieces: real SKU and source price appear in the configurator',
+      (await page.locator('#hidroboxGuided .hidrobox-result').innerText()).includes('SCOC0001')&&
+      (await page.locator('#hidroboxGuided .hidrobox-result').innerText()).includes('247,52'));
+    check('Hidrobox special pieces: real centimeter fields, reference, price and project-add enabled',
+      await page.locator('#hidroboxGuided #huExactwidth').inputValue()==='20'&&
+      await page.locator('#hidroboxGuided #huExactlength').inputValue()==='70'&&
+      await page.locator('#hidroboxGuided #huAdd').isEnabled());
+    await page.locator('#hidroboxGuided .hidrobox-back').click();
     // Product tree must branch into actual supplier collections, not a flat tariff list.
     await page.locator('#hidroboxGuided [data-hidrobox-home]').click();
     await page.locator('#hidroboxGuided [data-kind="family"][data-choice="vasques-suspendues"]').click();
