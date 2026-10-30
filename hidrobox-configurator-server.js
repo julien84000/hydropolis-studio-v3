@@ -118,6 +118,9 @@ function matchCard(src,heading,selection){
  const matched=dimensions.some(x=>
    (Number(x[1])===selection.width&&Number(x[2])===selection.length)||
    (Number(x[1])===selection.length&&Number(x[2])===selection.width));
+ // Basins and baths retain their original exact-size rule. Only shower-tray
+ // imagery may be reused illustratively across listed sizes.
+ if(!matched&&selection.typology!=='shower-tray')return null;
  // Manufacturer filenames carry model, texture, shape and colour but usually
  // no size. Return an illustration when the listing's dimensions differ.
  return {...asset,title,selectionMatch:matched?'model-texture-color-shape-dimensions':'model-texture-color-shape',
