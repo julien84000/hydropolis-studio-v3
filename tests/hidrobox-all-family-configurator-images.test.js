@@ -11,7 +11,7 @@ const family=[
  ['beta-fusion','recessed-bathtub','1063'],
  ['shelves','accessories','1080']
 ];
-test('Official photos use the right manufacturer's typology for eight sanitary families',()=>{
+test("Official photos use the right manufacturer typology for eight sanitary families",()=>{
  for(const [model,typology,id] of family){
   const s=server.canonical({model,typology,material:'Scene',texture:'Lisse',color:'Blanc',width:100,length:120});
   assert(!s.unsupported,model+' should be supported');
