@@ -28,6 +28,19 @@
  };
  const finishName=p=>suffixFinish(p.reference,p.base)||p.finish||'Finition de référence';
  const technicalLink=p=>p?.technicalSheetUrl&&/^https:\/\//i.test(p.technicalSheetUrl)?p.technicalSheetUrl:'';
+ const technicalCache=new Map();
+ async function resolveTechnical(product){
+  if(technicalLink(product))return technicalLink(product);
+  if(!product?.manufacturerUrl||!/^https:\/\/www\.ceramicagalassia\.it\/catalogo\//.test(product.manufacturerUrl))return '';
+  const reference=product.reference;
+  if(!technicalCache.has(reference)){
+   technicalCache.set(reference,fetch('/api/galassia-technical?reference='+encodeURIComponent(reference))
+      .then(r=>r.ok?r.json():null).then(d=>d?.url||'').catch(()=>''));
+  }
+  const link=await technicalCache.get(reference);
+  if(link){product.technicalSheetUrl=link;product.technicalSheetLabel='Fiche technique officielle Galassia';}
+  return link;
+ }
  let indexJob;
  async function index(){
   if(!indexJob)indexJob=fetch('/galassia/official-index.json',{cache:'force-cache'}).then(r=>{
@@ -103,10 +116,18 @@
       (p.manufacturerUrl?'<a href="'+escape(p.manufacturerUrl)+'" target="_blank" rel="noopener noreferrer">Produit fabricant · fiche technique et CAO</a>':'')+
       '</div><p class="galassia-doc-warning">Seules les références portant un prix non ambigu ont été importées. Les accessoires ne sont pas inclus automatiquement.</p>'+
       '<button type="button" class="galassia-add">Ajouter cette référence au projet</button>';
+    if(!technicalLink(p))resolveTechnical(p).then(url=>{
+      if(!url||reference!==p.reference||!overlay.isConnected)return;
+      const docs=$('.galassia-docs');if(docs&&!docs.querySelector('.galassia-technical-pdf')){
+        const link=document.createElement('a');link.className='galassia-technical-pdf';
+        link.href=url;link.target='_blank';link.rel='noopener noreferrer';link.textContent='Fiche technique officielle PDF';
+        docs.append(link);
+      }
+    });
     $('.galassia-variant').onchange=e=>{reference=e.target.value;refresh();};
     $('.galassia-add').onclick=async()=>{
       if(pending)return;pending=true;const btn=$('.galassia-add');btn.disabled=true;btn.textContent='Ajout…';
-      try{await onAdd(p,roomId);close();}
+      try{await resolveTechnical(p);await onAdd(p,roomId);close();}
       catch(err){alert(err?.message||"L'article n'a pas pu être ajouté.");pending=false;btn.disabled=false;btn.textContent='Ajouter cette référence au projet';}
     };
    };
