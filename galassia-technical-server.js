@@ -14,6 +14,15 @@ for(const group of official.collections||[]){
   }
  }
 }
+// New Core furniture and Tabulae models are verified against their exact official product pages.
+const tree=JSON.parse(fs.readFileSync(path.join(__dirname,'public/galassia/official-tree.json'),'utf8'));
+for(const collection of tree.collections||[]){
+ for(const family of collection.groups||[])for(const model of family.items||[]){
+  if(!/^[0-9A-Z]{4,12}$/.test(model.base||''))continue;
+  if(!/^https:\/\/www\.ceramicagalassia\.(?:it\/catalogo|com\/catalogue)\/[^?#]+\.html$/i.test(model.url||''))continue;
+  if(!allowed.has(model.base))allowed.set(model.base,model.url);
+ }
+}
 const cache=new Map();
 function fromPage(html,pageUrl){
  const $=cheerio.load(html);let href='';
