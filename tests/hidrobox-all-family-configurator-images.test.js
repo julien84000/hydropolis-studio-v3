@@ -45,3 +45,18 @@ test('Fractional sizes in supplier collections are kept without rounding to adja
  assert.equal(s.length,52.5);
  assert.throws(()=>server.canonical({model:'spot-62',material:'Scene',texture:'Lisse',color:'Blanc',width:32,length:52.2}),/Dimensions/);
 });
+
+test('Customer dossiers retain official product/collection images when exact configurator image is absent',()=>{
+ const fs=require('node:fs'),path=require('node:path');
+ const guided=fs.readFileSync(path.join(__dirname,'../public/hidrobox-guided.js'),'utf8');
+ const spot=fs.readFileSync(path.join(__dirname,'../public/hidrobox-panel-spot-ui.js'),'utf8');
+ const image=fs.readFileSync(path.join(__dirname,'../public/hidrobox-official-render.js'),'utf8');
+ assert.match(guided,/const fallbackImage=productImage\|\|representative/);
+ assert.match(guided,/const fallbackScope=productImage\?'product'/);
+ assert.match(guided,/image:fallbackImage/);
+ assert.match(guided,/visual\.apply\(record,officialResult,officialSelection\)/);
+ assert.match(spot,/image:ctx\.image\|\|'',imageSource:ctx\.image\?/);
+ assert.match(spot,/imageFinishMatch:ctx\.image\?'collection':'unavailable'/);
+ assert.match(image,/record\.pdfImage=src;record\.pdfImages=\[src\]/);
+ assert.match(image,/record\.customImage\|\|record\.dossierImage/);
+});
