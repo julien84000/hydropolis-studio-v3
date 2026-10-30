@@ -562,6 +562,12 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
       toNeoPrice(neoPriceAfter)>toNeoPrice(neoPriceBefore)&&
       (await page.locator('#hidroboxGuided .hidrobox-result small').innerText()).includes('découpe')&&
       await page.locator('#hidroboxGuided #hnAdd').isEnabled());
+    await page.locator('#hidroboxGuided #hnGrille').selectOption('Point Trend');
+    await page.locator('#hidroboxGuided #hnBonde').selectOption('Verticale');
+    const neoOptionsPrice=toNeoPrice(await page.locator('#hidroboxGuided .hidrobox-result b').innerText());
+    check('Neo Plus : grille Point Trend +25 € et bonde verticale +51 €, une seule majoration de 4 %',
+      Math.abs(neoOptionsPrice-toNeoPrice(neoPriceAfter)-79.04)<0.011&&
+      (await page.locator('#hidroboxGuided .hidrobox-result small').innerText()).includes('Options'));
     await page.locator('#hidroboxGuided .hidrobox-back').click();
     await page.locator('#hidroboxGuided [data-kind="collection"]').filter({hasText:'Line'}).first().click();
     await page.waitForSelector('#hidroboxGuided a[href$="STL-Line-Hidrobox.zip"]');
