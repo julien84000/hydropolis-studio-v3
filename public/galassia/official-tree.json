@@ -672,6 +672,69 @@
               "section": "Accessori"
             }
           ]
+        },
+        {
+          "name": "Mobili e strutture",
+          "items": [
+            {
+              "base": "2062",
+              "name": "CONTENITORE 2 CASSETTI",
+              "url": "https://www.ceramicagalassia.it/catalogo/core/contenitore-2-cassetti.html",
+              "image": "https://www.ceramicagalassia.it/public/_resized/2062_650X550_90_C.jpg",
+              "section": "Mobili e strutture",
+              "verifiedSource": "https://www.ceramicagalassia.com/catalogue/core/"
+            },
+            {
+              "base": "2063",
+              "name": "Mobile 60x46",
+              "url": "https://www.ceramicagalassia.it/catalogo/core/mobile-60x46.html",
+              "image": "https://www.ceramicagalassia.it/public/_resized/2063_650X550_90_C.jpg",
+              "section": "Mobili e strutture",
+              "verifiedSource": "https://www.ceramicagalassia.com/catalogue/core/"
+            },
+            {
+              "base": "2064",
+              "name": "Mobile 90x46",
+              "url": "https://www.ceramicagalassia.it/catalogo/core/mobile-90x46.html",
+              "image": "https://www.ceramicagalassia.it/public/_resized/2064_650X550_90_C.jpg",
+              "section": "Mobili e strutture",
+              "verifiedSource": "https://www.ceramicagalassia.com/catalogue/core/"
+            },
+            {
+              "base": "7345",
+              "name": "Ceramic shelf 55x38 cm",
+              "url": "https://www.ceramicagalassia.com/catalogue/core-freestanding/structures/ceramic-shelf-55x38-cm.html",
+              "image": "https://www.ceramicagalassia.com/public/colori/7345/_resized/7345_650X550_90_C.jpg",
+              "section": "Mobili e strutture",
+              "verifiedSource": "https://www.ceramicagalassia.com/catalogue/core/"
+            },
+            {
+              "base": "2077",
+              "name": "Wall mounted structure 91x46",
+              "url": "https://www.ceramicagalassia.com/catalogue/core-freestanding/structures/wall-mounted-structure-91x46.html",
+              "image": "https://www.ceramicagalassia.com/public/colori/2077/_resized/2077ne_650X550_90_C.jpg",
+              "section": "Mobili e strutture",
+              "verifiedSource": "https://www.ceramicagalassia.com/catalogue/core/"
+            },
+            {
+              "base": "2078",
+              "name": "Wall mounted structure 111x46",
+              "url": "https://www.ceramicagalassia.com/catalogue/core-freestanding/structures/wall-mounted-structure-111x46.html",
+              "image": "https://www.ceramicagalassia.com/public/colori/2078/_resized/2078ne_650X550_90_C.jpg",
+              "section": "Mobili e strutture",
+              "verifiedSource": "https://www.ceramicagalassia.com/catalogue/core/"
+            },
+            {
+              "base": "2081NE",
+              "name": "Wall mounted structure 46x46",
+              "url": "https://www.ceramicagalassia.com/catalogue/core-freestanding/structures/wall-mounted-structure-46x46.html",
+              "image": "https://www.ceramicagalassia.com/public/colori/2081ne/_resized/2081ne_650X550_90_C.jpg",
+              "section": "Mobili e strutture",
+              "verifiedSource": "https://www.ceramicagalassia.com/catalogue/core/"
+            }
+          ],
+          "source": "https://www.ceramicagalassia.com/catalogue/core/",
+          "sourceLabel": "Furnitures and Structure"
         }
       ],
       "status": 200,
@@ -901,6 +964,101 @@
               "section": "Mobili"
             }
           ]
+        },
+        {
+          "name": "Top",
+          "items": [
+            {
+              "base": "2056",
+              "name": "Ceramic shelf with no hole 61x46",
+              "url": "https://www.ceramicagalassia.com/catalogue/tabule/top/ceramic-shelf-with-no-hole-61x46.html",
+              "image": "https://www.ceramicagalassia.com/public/colori/2056/_resized/2056_650X550_90_C.jpg",
+              "section": "Top",
+              "verifiedSource": "https://www.ceramicagalassia.com/catalogue/tabule/"
+            },
+            {
+              "base": "2050",
+              "name": "Ceramic shelf with SX-DX hole (reversible) 61x46",
+              "url": "https://www.ceramicagalassia.com/catalogue/tabule/top/ceramic-shelf-with-sx-dx-hole-reversible-81x46-(1).html",
+              "image": "https://www.ceramicagalassia.com/public/colori/2050/_resized/2050_650X550_90_C.jpg",
+              "section": "Top",
+              "verifiedSource": "https://www.ceramicagalassia.com/catalogue/tabule/"
+            },
+            {
+              "base": "2051",
+              "name": "Ceramic shelf (reversible) 81x46",
+              "url": "https://www.ceramicagalassia.com/catalogue/tabule/top/ceramic-shelf-reversible-81x46.html",
+              "image": "https://www.ceramicagalassia.com/public/colori/2051/_resized/2051_650X550_90_C.jpg",
+              "section": "Top",
+              "verifiedSource": "https://www.ceramicagalassia.com/catalogue/tabule/"
+            },
+            {
+              "base": "2057",
+              "name": "Ceramic shelf with no hole 81x46",
+              "url": "https://www.ceramicagalassia.com/catalogue/tabule/top/ceramic-shelf-with-no-hole-81x46.html",
+              "image": "https://www.ceramicagalassia.com/public/colori/2057/_resized/2057_650X550_90_C.jpg",
+              "section": "Top",
+              "verifiedSource": "https://www.ceramicagalassia.com/catalogue/tabule/"
+            },
+            {
+              "base": "2058",
+              "name": "Ceramic shelf with no hole 101x46",
+              "url": "https://www.ceramicagalassia.com/catalogue/tabule/top/ceramic-shelf-with-no-hole-101x46.html",
+              "image": "https://www.ceramicagalassia.com/public/colori/2058/_resized/2058_650X550_90_C.jpg",
+              "section": "Top",
+              "verifiedSource": "https://www.ceramicagalassia.com/catalogue/tabule/"
+            },
+            {
+              "base": "2053",
+              "name": "Ceramic shelf with SX hole 101x46",
+              "url": "https://www.ceramicagalassia.com/catalogue/tabule/top/ceramic-shelf-with-sx-hole-101x46.html",
+              "image": "https://www.ceramicagalassia.com/public/colori/2053/_resized/2053_650X550_90_C.jpg",
+              "section": "Top",
+              "verifiedSource": "https://www.ceramicagalassia.com/catalogue/tabule/"
+            },
+            {
+              "base": "2052",
+              "name": "Ceramic shelf with central hole 101x46",
+              "url": "https://www.ceramicagalassia.com/catalogue/tabule/top/ceramic-shelf-with-central-hole-101x46.html",
+              "image": "https://www.ceramicagalassia.com/public/colori/2052/_resized/2052_650X550_90_C.jpg",
+              "section": "Top",
+              "verifiedSource": "https://www.ceramicagalassia.com/catalogue/tabule/"
+            },
+            {
+              "base": "2060",
+              "name": "Ceramic shelf with Right hand side hole",
+              "url": "https://www.ceramicagalassia.com/catalogue/tabule/top/ceramic-shelf-with-right-hand-side-hole-(1).html",
+              "image": "https://www.ceramicagalassia.com/public/_resized/2060_650X550_90_C.jpg",
+              "section": "Top",
+              "verifiedSource": "https://www.ceramicagalassia.com/catalogue/tabule/"
+            },
+            {
+              "base": "2061",
+              "name": "Ceramic shelf with Right hand side hole",
+              "url": "https://www.ceramicagalassia.com/catalogue/tabule/top/ceramic-shelf-with-right-hand-side-hole.html",
+              "image": "https://www.ceramicagalassia.com/public/_resized/2061_650X550_90_C.jpg",
+              "section": "Top",
+              "verifiedSource": "https://www.ceramicagalassia.com/catalogue/tabule/"
+            },
+            {
+              "base": "2055",
+              "name": "Ceramic shelf with SX-DX hole (reversible) 121x46",
+              "url": "https://www.ceramicagalassia.com/catalogue/tabule/top/ceramic-shelf-with-sx-dx-hole-reversible.html",
+              "image": "https://www.ceramicagalassia.com/public/colori/2055/_resized/2055_650X550_90_C.jpg",
+              "section": "Top",
+              "verifiedSource": "https://www.ceramicagalassia.com/catalogue/tabule/"
+            },
+            {
+              "base": "2054",
+              "name": "Ceramic shelf with two holes 121x46",
+              "url": "https://www.ceramicagalassia.com/catalogue/tabule/top/ceramic-shelf-with-two-holes-121x46.html",
+              "image": "https://www.ceramicagalassia.com/public/colori/2054/_resized/2054_650X550_90_C.jpg",
+              "section": "Top",
+              "verifiedSource": "https://www.ceramicagalassia.com/catalogue/tabule/"
+            }
+          ],
+          "source": "https://www.ceramicagalassia.com/catalogue/tabule/",
+          "sourceLabel": "Top"
         }
       ],
       "status": 200,

@@ -1,3 +1,22 @@
+## V11.64.20 — Galassia : photos officielles et meubles Core (30/10/2026)
+
+Base main 48787780 (V11.64.19). Branche fix/galassia-core-furniture-photos-116420.
+
+Défaut signalé par capture utilisateur : galerie Core dépourvue de nombreuses photographies, meubles 2062/2063/2064 et structures 2077/2078 non rangés dans le fabricant. Le SKU 2051 n'est pas une vasque Core : c'est une mensola/plateau Tabulae.
+
+Vérification de sources primaires : catalogue anglais Core https://www.ceramicagalassia.com/catalogue/core/ contient une rubrique Furnitures and Structure absente de la page italienne /catalogo/core ; site italien Mobili https://www.ceramicagalassia.it/arredo-bagno/mobili/ a les photos et codes 2062, 2063, 2064. Source Tabulae Top https://www.ceramicagalassia.com/catalogue/tabule/ et /catalogo/tabulae/piani/ confirme 2051 et dix autres tops.
+
+public/galassia/official-tree.json étendu d'une rubrique Core 'Mobili e strutture' (7 modèles : 2062,2063,2064,7345,2077,2078,2081NE) et d'une rubrique Tabulae 'Top' (11 modèles : 2056,2050,2051,2057,2058,2053,2052,2060,2061,2055,2054). Images exactes du modèle récupérées du fabricant avec codes et URL correspondants. Total désormais 17 collections, 71 rubriques, 282 modèles.
+
+public/galassia-tree.js : méthode load() et enrich(p,tree) n'acceptant que codes de base officiels exacts, avec choix non ambigu, sans toucher aux prix et à la remise achat fournisseur de 50 %. public/app.js déclenche enrich() au chargement de catalog_galassia.json ; les rangements dans le catalogue général et dans le configurateur sont corrigés en mémoire (pas de réécriture non vérifiée du tarif volumineux). 2051 sera visible sous Tabulae/Top avec son image officielle. Les photos de plusieurs références encore non reliées restent explicitement absentes ; ne jamais substituer une image non vérifiée.
+
+public/galassia-configurator.js réutilise l'index de hiérarchie rafraîchi et accepte les pages officielles anglaises (.com/catalogue/) tout comme les pages italiennes. galassia-technical-server.js ajoute les pages fabricant vérifiées à sa liste blanche. Tests Node tests/galassia-core-photos.test.js + Chromium tests/browser-consolidated.js.
+
+Travaux non achevés : parmi les références non rapprochées, certains accessoires (par ex. 7329, abattant Dream) ou meubles 2096/2097 nécessitent une correspondance image/modèle fiable ; photographies de la pricelist source PDF encore à extraire dans le projet, et 33 tarifs contradictoires exclus. Conserver les autres marques et versions.
+
+CI puis, uniquement après validation, fusion et vérification /api/version 11.64.20 et /api/health.
+
+---
 ## V11.64.19 — Galassia : arborescence officielle par collection (30/10/2026)
 
 Branche feat/galassia-official-collections-116419, basée sur V11.64.18 (PR #63 fusionnée).

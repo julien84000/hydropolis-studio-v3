@@ -31,7 +31,7 @@
  const technicalCache=new Map();
  async function resolveTechnical(product){
   if(technicalLink(product))return technicalLink(product);
-  if(!product?.manufacturerUrl||!/^https:\/\/www\.ceramicagalassia\.it\/catalogo\//.test(product.manufacturerUrl))return '';
+  if(!product?.manufacturerUrl||!/^https:\/\/www\.ceramicagalassia\.(?:it\/catalogo|com\/catalogue)\//.test(product.manufacturerUrl))return '';
   const reference=product.reference;
   if(!technicalCache.has(reference)){
    technicalCache.set(reference,fetch('/api/galassia-technical?reference='+encodeURIComponent(reference))
@@ -43,9 +43,9 @@
  }
  let indexJob;
  async function index(){
-  if(!indexJob)indexJob=fetch('/galassia/official-tree.json',{cache:'force-cache'}).then(r=>{
+  if(!indexJob)indexJob=(window.HydroGalassiaTree?.load?.()||fetch('/galassia/official-tree.json',{cache:'no-cache'}).then(r=>{
    if(!r.ok)throw Error('Index photographique indisponible');return r.json();
-  }).catch(e=>{indexJob=null;return {collections:[]};});
+  })).catch(e=>{indexJob=null;console.error('[Galassia hierarchy]',e);return {collections:[]};});
   return indexJob;
  }
  function imageFor(p,official){
@@ -57,7 +57,7 @@
   const overlay=document.createElement('div');overlay.className='galassia-modal';
   overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');
   overlay.setAttribute('aria-label','Configurateur Galassia');
-  overlay.innerHTML='<div class="galassia-shell"><div class="galassia-top"><div><span class="galassia-eyebrow">GALASSIA · LA CERAMICA CONTEMPORANEA</span><h2>Configurer la sélection</h2><p>Collection → catégorie → modèle → finition et référence exacte</p></div><button type="button" class="galassia-close" aria-label="Fermer">×</button></div><div class="galassia-body"><aside class="galassia-collections" aria-label="Collections Galassia"></aside><div class="galassia-browser"><div class="galassia-filters"><div class="galassia-path">Collections → familles officielles → modèles → finitions</div><label>Rechercher<input class="galassia-search" placeholder="Modèle, dimension ou référence…" type="search" autocomplete="off"></label></div><div class="galassia-subfamilies" aria-label="Familles officielles du fabricant"></div><div class="galassia-models"></div></div><section class="galassia-selection" aria-label="Configuration sélectionnée"></section></div></div>';
+  overlay.innerHTML='<div class="galassia-shell"><div class="galassia-top"><div><span class="galassia-eyebrow">GALASSIA · LA CERAMICA CONTEMPORANEA</span><h2>Configurer la sélection</h2><p>Collection → famille fabricant → modèle → finition et référence exacte</p></div><button type="button" class="galassia-close" aria-label="Fermer">×</button></div><div class="galassia-body"><aside class="galassia-collections" aria-label="Collections Galassia"></aside><div class="galassia-browser"><div class="galassia-filters"><div class="galassia-path">Collections → familles officielles → modèles → finitions</div><label>Rechercher<input class="galassia-search" placeholder="Modèle, dimension ou référence…" type="search" autocomplete="off"></label></div><div class="galassia-subfamilies" aria-label="Familles officielles du fabricant"></div><div class="galassia-models"></div></div><section class="galassia-selection" aria-label="Configuration sélectionnée"></section></div></div>';
   document.body.append(overlay);
   return overlay;
  }
@@ -128,7 +128,7 @@
       const hasPrice=m.variants.length>0;
       const photo=m.image||m.variants[0]?.image||'';
       const shared='<span class="galassia-model-photo">'+(photo?'<img src="'+escape(photo)+'" alt="" loading="lazy">':'<span class="galassia-no-photo">Photo fabricant non disponible</span>')+'</span><strong>'+escape(m.name||m.base)+'</strong><span>'+escape(m.base)+(hasPrice?' · '+m.variants.length+' déclinaison(s)':'')+'</span>';
-      if(!hasPrice)return '<a class="galassia-model galassia-unpriced" href="'+escape(/^https:\/\/www\.ceramicagalassia\.it\/catalogo\//.test(m.url||'')?m.url:(collection?.url||'https://www.ceramicagalassia.it/catalogo/'))+'" target="_blank" rel="noopener noreferrer">'+shared+'<small>Modèle officiel · aucun prix importé</small></a>';
+      if(!hasPrice)return '<a class="galassia-model galassia-unpriced" href="'+escape(/^https:\/\/www\.ceramicagalassia\.(?:it\/catalogo|com\/catalogue)\//.test(m.url||'')?m.url:(collection?.url||'https://www.ceramicagalassia.it/catalogo/'))+'" target="_blank" rel="noopener noreferrer">'+shared+'<small>Modèle officiel · aucun prix importé</small></a>';
       return '<button type="button" class="galassia-model'+(m.base===model?' active':'')+'" data-model="'+escape(m.base)+'">'+shared+'<small>À partir de '+money(Math.min(...m.variants.map(v=>v.price)))+' HT</small></button>';
     }).join(''):'<p class="galassia-empty">Aucun modèle dans cette rubrique. Le site fabricant conserve cette famille dans son arborescence.</p>';
     $$('.galassia-model[data-model]').forEach(b=>b.onclick=()=>{model=b.dataset.model;reference='';refresh();});
@@ -149,7 +149,7 @@
       '<div class="galassia-summary"><div><span>Référence fabricant</span><b>'+escape(p.reference)+'</b></div><div><span>Prix public HT</span><b>'+money(p.price)+'</b></div><div><span>Remise d’achat fournisseur</span><b>50 %</b></div><div><span>Coût d’achat théorique HT</span><b>'+money(p.price*.5)+'</b></div></div>'+
       '<div class="galassia-docs"><span>'+(pdfSource?'Tarif Galassia · page '+pdfSource+' (dessin technique dans le PDF source)':'Page du tarif non identifiée')+'</span>'+
       (technicalLink(p)?'<a href="'+escape(technicalLink(p))+'" target="_blank" rel="noopener noreferrer">Fiche technique PDF officielle</a>':'')+
-      (/^https:\/\/www\.ceramicagalassia\.it\/catalogo\//.test(p.manufacturerUrl||'')?'<a href="'+escape(p.manufacturerUrl)+'" target="_blank" rel="noopener noreferrer">Fiche produit chez Galassia</a>':'')+'</div>'+
+      (/^https:\/\/www\.ceramicagalassia\.(?:it\/catalogo|com\/catalogue)\//.test(p.manufacturerUrl||'')?'<a href="'+escape(p.manufacturerUrl)+'" target="_blank" rel="noopener noreferrer">Fiche produit chez Galassia</a>':'')+'</div>'+
       (!p.officialStructureVerified?'<p class="galassia-doc-warning">Famille non confirmée sur le site fabricant : vérifier avant commande.</p>':'')+
       '<button type="button" class="galassia-add">Ajouter la référence exacte au projet</button>';
     if(!technicalLink(p))resolveTechnical(p).then(url=>{
