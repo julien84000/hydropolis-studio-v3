@@ -6,7 +6,14 @@ const axios=require('axios'),cheerio=require('cheerio');
 const ORIGIN='https://hidrobox.com/configurator/en/';
 const MODEL_IDS=Object.freeze({
  'neo-plus':827,'line-x':808,'line-y':809,'twins-yl':850,'twins-yr':851,
- 'arq':727,'iconik':801,'one':847,'pure':848,'quadro':849
+ 'arq':727,'iconik':801,'one':847,'pure':848,'quadro':849,
+ 'spot-1':938,'spot-2':1002,'spot-9':940,'spot-17':941,'spot-24':943,
+ 'spot-32':944,'spot-39':946,'spot-46':950,'spot-53':953,'spot-60':956,
+ 'spot-62':929,'spot-63':958,'spot-75':961,'spot-76':963,'spot-124':968,
+ 'spot-125':931,'spot-133':970,'spot-141':973,'spot-148':976,
+ 'spot-159':933,'spot-160':978,'spot-163':981,'spot-164':984,
+ 'spot-167':987,'spot-169':935,'spot-170':990,'spot-171':992,
+ 'spot-172':994,'spot-173':996,'spot-174':1000,'spot-186':936
 });
 const TEXTURE_IDS=Object.freeze({smooth:803,slate:813,microtex:725,cement:730});
 const MATERIAL_IDS=Object.freeze({kromat:729,scene:802});
@@ -44,7 +51,8 @@ function canonical(input){
  if(!color||color.length>50||!/^[\p{L}\p{N} .'-]+$/u.test(color))throw Error('Couleur Hidrobox requise');
  if(!(texture in TEXTURE_IDS))throw Error('Texture Hidrobox non vérifiée');
  if(!['scene','kromat'].includes(material))throw Error('Matière Hidrobox non vérifiée');
- if(!Number.isInteger(width)||width<40||width>240||!Number.isInteger(length)||length<40||length>260)throw Error('Dimensions Hidrobox requises');
+ const min= /^spot-[0-9]+$/.test(model)?30:40;
+ if(!Number.isInteger(width)||width<min||width>240||!Number.isInteger(length)||length<min||length>260)throw Error('Dimensions Hidrobox requises');
  if(!MODEL_IDS[model])return {...input,model,unsupported:true};
  return {model,texture,material,color,shape,width,length};
 }
@@ -52,6 +60,15 @@ function exactFilename(src,selection){
  let url;try{url=new URL(src);}catch{return null;}
  if(url.protocol!=='https:'||url.hostname!=='hidrobox.com'||!url.href.startsWith(IMAGE_ROOT))return null;
  const f=decodeURIComponent(url.pathname.split('/').pop()||'');
+ if(/^spot-[0-9]+$/.test(selection.model)){
+   // Vessel washbasins have a separate official asset naming scheme from shower trays.
+   // Example confirmed in the user's live browser: Hidrobox_Washbasin_Spot-62_Blush.png.
+   const wb=f.match(/^Hidrobox_Washbasin_Spot-([0-9]+)_([A-Za-z0-9-]+)\.(png|jpe?g|webp)$/i);
+   if(!wb||('spot-'+wb[1])!==selection.model)return null;
+   if(normalize(wb[2])!==normalize(selection.color)&&
+      COLOR_IDS[normalize(wb[2])]!==COLOR_IDS[normalize(selection.color)])return null;
+   return {url:url.href,file:f,shapeCode:'',assetType:'washbasin'};
+ }
  const m=f.match(/^Hidrobox_Shower[-_]tray_([A-Za-z0-9-]+)_Per_([A-Za-z]+)_([A-Za-z]+)_([A-Za-z0-9-]+)\.(png|jpe?g|webp)$/i);
  if(!m)return null;
  if(normalize(m[1])!==normalize(selection.model))return null;
@@ -83,7 +100,7 @@ function parse(html,selection){
  return matches.length===1?matches[0]:null; // Ambiguity is not an exact match.
 }
 function urlFor(s){
- const url=new URL(ORIGIN);url.searchParams.set('fltr-typology','1057');
+ const url=new URL(ORIGIN);url.searchParams.set('fltr-typology',String(/^spot-[0-9]+$/.test(s.model)?1180:1057));
  url.searchParams.set('fltr-collection',String(MODEL_IDS[s.model]));
  url.searchParams.set('fltr-material',String(MATERIAL_IDS[s.material]));
  url.searchParams.set('fltr-texture',String(TEXTURE_IDS[s.texture]));
@@ -102,7 +119,8 @@ async function lookup(raw,{get=axios.get,post=axios.post,sizeId=null}={}){
    if(!dimensionId)return {ok:false,source,reason:'Ces dimensions ne figurent pas dans le configurateur officiel'};
    const params=new URLSearchParams();
    params.set('action','_listado_results');
-   const filters={typology:1057,collection:MODEL_IDS[s.model],texture:TEXTURE_IDS[s.texture],
+   const filters={typology:/^spot-[0-9]+$/.test(s.model)?1180:1057,
+     collection:MODEL_IDS[s.model],texture:TEXTURE_IDS[s.texture],
      material:MATERIAL_IDS[s.material],color:colorId,size:dimensionId};
    for(const [key,value] of Object.entries(filters))params.append('fltr-'+key+'[]',String(value));
    params.set('offset','0');params.set('limit','48');
