@@ -659,7 +659,12 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     await page.locator('#hidroboxGuided [data-hidrobox-home]').click();
     await page.locator('#hidroboxGuided [data-kind="family"][data-choice="bains-ilot"]').click();
     await page.locator('#hidroboxGuided [data-kind="collection"][data-choice="space"]').click();
-    await page.waitForSelector('#hidroboxGuided .hidrobox-space [data-hs="sizeId"]',{timeout:20000});
+    try{
+      await page.waitForSelector('#hidroboxGuided .hidrobox-space [data-hs="sizeId"]',{timeout:20000});
+    }catch(err){
+      const diagnostic=await page.locator('#hidroboxGuided').innerText().catch(()=>'(overlay absent)');
+      throw new Error('Hidrobox Space navigation: '+String(err.message||err)+' | UI='+diagnostic.slice(0,1100));
+    }
     check('Hidrobox Space : only three catalogue dimensions (not 40 × 50)',
       JSON.stringify(await page.locator('#hidroboxGuided [data-hs="sizeId"]').evaluateAll(xs=>xs.map(x=>x.dataset.value)))===
       JSON.stringify(['155','170','180'])&&

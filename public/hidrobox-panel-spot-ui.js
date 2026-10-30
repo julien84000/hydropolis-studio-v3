@@ -194,13 +194,14 @@
     '<small>Les images des cartes illustrent le modèle dans sa couleur constructeur disponible ; le grand visuel correspond à la finition sélectionnée. Visuel indisponible si la correspondance ne peut pas être confirmée.</small></div></div>'+
     docsMarkup(ctx)+
     '<h4 class="hidrobox-universal-subtitle">1 · Modèle</h4><div class="hidrobox-tray-model-grid hb-spot-grid">'+tiles+'</div>'+
-    '<h4 class="hidrobox-universal-subtitle">2 · Matière et finition</h4><div class="hidrobox-fields">'+
-       select('Version du modèle','ref',variant.map(x=>x.reference),s.ref)+
-       '<div class="hidrobox-fixed-attribute"><strong>'+E(current.material)+'</strong><span>Texture Lisse</span></div></div>'+
-    '<h4 class="hidrobox-universal-subtitle">3 · Couleur</h4><div class="hidrobox-fields">'+select('Couleur','color',colors,s.color)+'</div>'+
-    '<h4 class="hidrobox-universal-subtitle">4 · Dimensions fabricant</h4><p>'+E(current.width+' × '+current.length+' × '+current.height)+' cm · modèle '+E(current.model)+'. Dimensions fixes correspondant à la référence choisie.</p>'+
-    '<h4 class="hidrobox-universal-subtitle">5 · Bondes, perçages et couleurs extérieures</h4><div class="hb-source-options">'+optionRows+'</div>'+
-    '<h4 class="hidrobox-universal-subtitle">6 · Références et chiffrage</h4>'+
+    '<h4 class="hidrobox-universal-subtitle">2 · Matière</h4><div class="hidrobox-fields">'+
+       select('Version du modèle et matière','ref',variant.map(x=>x.reference),s.ref)+
+       '<div class="hidrobox-fixed-attribute"><strong>Matière fabricant</strong><span>'+E(current.material)+'</span></div></div>'+
+    '<h4 class="hidrobox-universal-subtitle">3 · Texture</h4><div class="hidrobox-fixed-attribute"><strong>Finition</strong><span>Lisse · modèle Spot</span></div>'+
+    '<h4 class="hidrobox-universal-subtitle">4 · Couleur</h4><div class="hidrobox-fields">'+select('Couleur','color',colors,s.color)+'</div>'+
+    '<h4 class="hidrobox-universal-subtitle">5 · Dimensions fabricant</h4><p>'+E(current.width+' × '+current.length+' × '+current.height)+' cm · modèle '+E(current.model)+'. Dimensions fixes correspondant à la référence choisie.</p>'+
+    '<h4 class="hidrobox-universal-subtitle">6 · Bondes, perçages et couleurs extérieures</h4><div class="hb-source-options">'+optionRows+'</div>'+
+    '<h4 class="hidrobox-universal-subtitle">7 · Références et chiffrage</h4>'+
     (q.ok?'<table class="hp-breakdown"><thead><tr><th>Élément</th><th>Référence</th><th>Prix HT source</th></tr></thead><tbody>'+
     q.components.map(c=>'<tr><td>'+E(c.label)+'</td><td>'+E(c.reference)+'</td><td>'+EUR(c.rawPrice)+'</td></tr>').join('')+'</tbody></table>':
       '<p role="alert">'+E(q.reason)+'</p>')+
