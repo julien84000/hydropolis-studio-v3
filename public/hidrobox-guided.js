@@ -796,7 +796,7 @@ function universalPage(g){
       if(!ids.includes(universalDraft['tray_'+group.key]))universalDraft['tray_'+group.key]=ids[0];
       return '<label>'+escape(group.label)+'<select data-hb-tray-option="'+escape(group.key)+'">'+
         group.options.map(x=>'<option value="'+escape(x.id)+'"'+(x.id===universalDraft['tray_'+group.key]?' selected':'')+'>'+
-          escape(x.label)+' · '+(x.rawPrice?eu(x.rawPrice)+' HT':'inclus')+'</option>').join('')+'</select></label>';
+          escape(x.label)+' · '+(x.percent?'+'+x.percent+' % du prix de base HT':x.rawPrice?eu(x.rawPrice)+' HT':'inclus')+'</option>').join('')+'</select></label>';
    }).join('')+'</div>':'';
  const trayQuote=accessories&&trayOpts.length?accessories.quote(selected?.rawPrice,trayOpts,Object.fromEntries(
     trayOpts.map(g=>[g.key,universalDraft['tray_'+g.key]]))):null;
@@ -842,7 +842,7 @@ function universalPage(g){
    trayOptsMarkup+imageLookup+
    '<div class="hidrobox-result"><div><b>'+(canAdd?eu(price)+' HT':'Tarif indisponible')+'</b>'+
    '<span>Réf. '+escape(selected?.reference||'—')+' · '+escape(selected?.designation||'')+'</span>'+
-   '<small>'+(canAdd?(Number.isFinite(raw)&&raw>0?'Prix source '+eu(raw)+' HT +4 %. ':'')+'Remise achat 50 % en calcul de marge.':'Aucun prix extrapolé sans référence tarifaire.')+'</small></div>'+
+   '<small>'+(canAdd?(Number.isFinite(raw)&&raw>0?'Prix fabricant '+eu(raw)+' HT. ':'')+(trayQuote?.optionRawPrice?'Options fabricant '+eu(trayQuote.optionRawPrice)+' HT. ':'')+'Majoration 4 % appliquée une fois. Remise achat 50 % en calcul de marge.':'Aucun prix extrapolé sans référence tarifaire.')+'</small></div>'+
    '<button class="btn primary" id="huAdd" type="button"'+(canAdd?'':' disabled')+'>Ajouter au projet</button></div>';
  shell(String(name)+' · configuration',markup,true);
  overlay.querySelector('.hidrobox-back').onclick=collections;
