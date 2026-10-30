@@ -91,7 +91,9 @@
   const optionRows=Object.entries(m.extra).map(([ref,opt])=>
     '<label class="hb-source-option"><input type="checkbox" data-hb-extra="'+E(ref)+'"'+(s.extras.includes(ref)?' checked':'')+'>'+
     '<span>'+E(opt.label)+' · '+(opt.percent?'+'+opt.percent+' %':EUR(opt.rawPrice)+' HT source')+' <small>'+E(ref)+'</small></span></label>').join('');
-  const hero=ctx.image?'<img src="'+E(ctx.image)+'" alt="Photographie de la collection Panneaux Hidrobox, illustrative">':'';
+  const hero='<div class="hb-spot-photo-box">'+
+    '<img data-hb-config-image hidden alt="Rendu configurateur officiel du panneau Hidrobox">'+
+    '<small data-hb-config-status>Recherche du visuel officiel du panneau…</small></div>';
   const html='<button class="hidrobox-back" type="button">← Collections</button>'+
    '<div class="hidrobox-neo-hero">'+hero+'<div><h3>Panneaux muraux · tarif fabricant 2026</h3><p>Modèle panneau rectangulaire · Scene (matière fixe) · épaisseur constructeur 1 cm</p>'+
    '<small>Photographie de collection : texture et couleur exactes non garanties sur cette illustration.</small></div></div>'+
@@ -114,18 +116,23 @@
    '<span>Réf. '+E(q.reference||'—')+'</span><small>'+(q.ok?'Total du tarif source + 4 % une seule fois. Remise fournisseur de 50 % séparée.':'Aucun devis sans référence exacte.')+
    '</small></div><button id="huAdd" type="button" class="btn primary"'+(q.ok?'':' disabled')+'>Ajouter au projet</button></div>';
   const view=shell(ctx,'Panneaux muraux · configuration',html);
+  const official=root?.HydroHidroboxOfficialVisual;
+  const spec={model:'wall-panels',typology:'wall-panels',material:'Scene',
+    texture:s.texture,color:s.color,width:Number(s.width),length:Number(s.length),shape:'rectangle'};
+  if(q.ok&&official?.eligible?.(spec))void official.preview(view,spec);
   const refresh=()=>panel(g,ctx);
   view.querySelectorAll('[data-hb-texture]').forEach(b=>b.onclick=()=>{s.texture=b.dataset.hbTexture;refresh()});
   view.querySelectorAll('[data-hb-source-input]').forEach(e=>e.onchange=()=>{s[e.dataset.hbSourceInput]=e.value===''?'':Number(e.value);refresh()});
   view.querySelector('[data-hb-source-select="color"]').onchange=e=>{s.color=e.target.value;refresh()};
   view.querySelectorAll('[data-hb-extra]').forEach(e=>e.onchange=()=>{s.extras=e.checked?[...new Set([...s.extras,e.dataset.hbExtra])]:s.extras.filter(x=>x!==e.dataset.hbExtra);refresh()});
-  view.querySelector('#huAdd').onclick=()=>{
+  view.querySelector('#huAdd').onclick=async()=>{
     const result=m.quote({material:'Scene',texture:s.texture,color:s.color,width:Number(s.width),length:Number(s.length)},{accessories:s.extras});
     if(!result.ok)return;
+    const btn=view.querySelector('#huAdd');if(btn){btn.disabled=true;btn.textContent='Vérification du rendu officiel…';}
     const config={type:'panels-2026',reference:result.reference,widthCm:result.widthCm,lengthCm:result.lengthCm,
       material:'Scene',finish:result.finish,color:result.color,colorGroup:result.colorGroup,
       accessories:result.accessories,components:result.components};
-    closeAndAdd(ctx,{manufacturer:'Hidrobox',collection:'Panneaux muraux',
+    const item={manufacturer:'Hidrobox',collection:'Panneaux muraux',
       category:'Panneaux',reference:result.reference,base:result.reference,
       designation:'Panneau Scene · '+result.finish+' · '+result.color+' · '+result.widthCm+' × '+result.lengthCm+' cm'+
         (s.extras.length?' · options '+s.extras.join(', '):''),
@@ -133,7 +140,17 @@
       purchaseDiscount:50,listPriceUpliftPct:4,currency:'€',vat:'HT',
       source:result.source,sourceYear:2026,manufacturerUrl:'https://hidrobox.com/fr/collections/paneles/',
       image:ctx.image||'',imageSource:'Image de collection Hidrobox · panneau illustratif, pas la configuration exacte',
-      imageFinishMatch:'collection'},config);
+      imageFinishMatch:'collection'};
+    if(official?.eligible?.(spec)){
+      try{
+        const picture=await official.lookup(spec),resolution=await official.printQuality(picture);
+        if(picture?.ok&&resolution.ok){
+          official.apply(item,{...picture,verifiedPrintQuality:true,width:resolution.width,height:resolution.height},spec);
+          Object.assign(config,item.hidroboxConfiguration||{});
+        }
+      }catch(e){item.imageNote='Image exacte non confirmée : '+String(e?.message||e);}
+    }
+    closeAndAdd(ctx,item,config);
   };
   return true;
  }
