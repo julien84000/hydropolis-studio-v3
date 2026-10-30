@@ -1,3 +1,26 @@
+## V11.64.25 — rendu officiel Hidrobox, toutes les familles (30 octobre 2026)
+
+État de reprise: branche **feat/hidrobox-vanity-tariff-cascade-116425**, PR #71, à fusionner seulement après CI `npm run check`, `npm test`, `npm run build`, `npm run test:browser` vertes. Vérifier que /api/version production renvoie bien 11.64.25 après merge; PR #72 (dimensions receveurs) est **distincte et non automatiquement déployée** par cette PR.
+
+Demande utilisateur: reprendre le configurateur officiel https://hidrobox.com/configurator/en/ pour **toutes** les familles (receveurs, panneaux muraux, vasques à poser, vasques suspendues, vasques sur pied, baignoires, accessoires), sélectionner modèle, matière, texture, couleur, dimensions puis récupérer l'image exacte validée pour le dossier client.
+
+Fait :
+- Le navigateur connecté a confirmé 73 collections avec leurs vrais `fltr-collection` et huit catégories `fltr-typology` (1057 douche, 1059 panneaux, 1080 accessoires, 1069 vasques suspendues, 1180 vasques à poser, 1172 vasques sur pied, 1061 baignoires îlot, 1063 baignoires encastrées).
+- Image constructeur exacte Spot 62 Kromat Lisse Blush de la page ouverte: `https://hidrobox.com/configurator/wp-content/uploads/cfg-recursos/images/Hidrobox_Washbasin_Spot-62_Blush.png`, résultat portant `Spot-62 RECTANGULAR 32x52`. Collection 929, taille filtre 930, couleur 570, matériau Kromat 729, texture Lisse 803, catégorie 1180.
+- `hidrobox-configurator-server.js` utilise les 73 ID, la catégorie explicite et la photo correspondante au nom modèle/couleur et aux dimensions. Les noms d'images inconnus ne sont pas devinés. Une photo ambiguë ou lifestyle n'est jamais marquée correspondante.
+- `public/hidrobox-panel-spot-ui.js`: Spot propose les cartes de chacun des modèles, récupérées sur le configurateur constructeur (maximum 2 requêtes parallèles), grand rendu de la sélection et import dans dossier client uniquement si dimension naturelle ≥900px sur les deux axes. Les panneaux muraux font également la demande d'image officielle; un visuel de collection reste explicitement illustratif faute de concordance.
+- `public/hidrobox-guided.js`: parcours catalogue générique appelle également le service pour toutes les catégories disposant de modèles, dimensions et caractéristiques clairement validés. Ne remplace jamais une image chargée manuellement par le client.
+- `public/hidrobox-panels-2026.js` : 496 lignes de prix et tranches format 2026 et options séparées.
+- `public/hidrobox-spot-2026.js` : 48 SKU fabricant et prix avec accessoires.
+- Tests: `tests/hidrobox-spot-configurator-image.test.js`, `tests/hidrobox-all-family-configurator-images.test.js`, `tests/hidrobox-panel-audit.test.js`, `tests/hidrobox-vanity-matrix.test.js`.
+
+ATTENTION: disponibilité d'une collection dans le configurateur n'est PAS une preuve qu'une photo exacte existe pour chaque référence. Certaines gammes importées (Program Colour, Artop) ne possèdent pas d'ID officiel dans les 73 entrées et ne peuvent être qualifiées exactes sans nouveau travail fabricant. Les visuels officiels acceptés doivent avoir une correspondance non ambiguë du modèle/couleur/dimensions et une qualité photo validée. Les panneaux Scene Plus Colour constituent une exception réelle à Scene Blanc standard des receveurs.
+
+Prompt de reprise :
+« Reprends Hydropolis Studio repo julien84000/hydropolis-studio-v3, PR #71 sur branche feat/hidrobox-vanity-tariff-cascade-116425. Lis docs/HIDROBOX_REPRISE_116423.md. Vérifie le HEAD et la CI, puis fusionne et vérifie Render 11.64.25 si tout passe. Le service doit interroger le configurateur officiel Hidrobox par catégorie/modèle/matière/texture/couleur/dimensions et enregistrer seulement les photos strictement correspondantes. Spot 62 Blush a un fichier natif vérifié. Les gammes sans identifiant officiel n'ont PAS encore de rendu configuré garanti. PR #72 pour les dimensions receveurs est séparée et doit être reprise et vérifiée après cette release. Préserve tous les correctifs des autres marques. »
+
+---
+
 ## Checkpoint V11.64.24 — parcours commun des receveurs (30 octobre 2026)
 
 Dernière branche active : `fix/hidrobox-line-twins-series-116424`, PR #70 sur GitHub. Ne pas partir de main tant que la PR n'est pas fusionnée. Vérifier le dernier SHA, la CI, puis la version Render. Production avant cette PR : V11.64.23.
