@@ -1,0 +1,52 @@
+/* Galassia 11.64.18: responsive collection-first catalogue configuration */
+.galassia-modal{position:fixed;inset:0;z-index:31000;background:#0009;display:flex;align-items:center;justify-content:center;padding:16px}
+.galassia-shell{height:min(850px,94vh);width:min(1430px,98vw);background:#faf9f6;border-radius:16px;box-shadow:0 25px 60px #0005;display:flex;flex-direction:column;overflow:hidden;color:#21201e}
+.galassia-top{display:flex;justify-content:space-between;align-items:start;gap:20px;padding:17px 25px;background:#20201e;color:#fff}
+.galassia-eyebrow{font:700 10px/1.6 system-ui;letter-spacing:.13em;color:#b98a4d;text-transform:uppercase}
+.galassia-top h2{margin:1px 0;font:normal 28px/1.25 Georgia,serif;color:#fff}
+.galassia-top p{margin:0;color:#ccc;font-size:12px}
+.galassia-close{background:transparent;color:#fff;border:1px solid #777;border-radius:50%;width:36px;height:36px;cursor:pointer;font-size:27px;line-height:1}
+.galassia-body{display:grid;grid-template-columns:240px minmax(0,1fr) 345px;min-height:0;flex:1}
+.galassia-collections{background:#f0ede8;border-right:1px solid #d9d1c5;padding:12px;overflow:auto;display:flex;flex-direction:column;gap:5px}
+.galassia-family{display:flex;gap:9px;align-items:center;text-align:left;background:#fff;border:1px solid transparent;border-radius:7px;padding:6px;cursor:pointer;min-height:63px;font-size:12px;color:#29241f}
+.galassia-family.active{border-color:#ab7e46;background:#fffbf6;box-shadow:0 0 0 1px #ab7e46}
+.galassia-family img{width:65px;height:53px;object-fit:cover;border-radius:4px}
+.galassia-family span:not(.galassia-no-photo){font-weight:700;min-width:0}
+.galassia-family small{display:block;font-weight:400;color:#797067;margin-top:2px}
+.galassia-browser{display:flex;flex-direction:column;min-height:0;background:#fff}
+.galassia-filters{display:grid;grid-template-columns:1fr 1.2fr;gap:10px;padding:15px 17px;border-bottom:1px solid #eee}
+.galassia-filters label,.galassia-variant-label{display:grid;gap:5px;font-size:11px;font-weight:700;color:#665f55}
+.galassia-filters select,.galassia-filters input,.galassia-variant{width:100%;border:1px solid #d6d1c7;border-radius:5px;padding:9px;font:13px system-ui;color:#26221e;background:#fff}
+.galassia-models{padding:14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));align-content:start;gap:11px;overflow:auto}
+.galassia-model{background:#fbfaf8;border:1px solid #e4ded6;border-radius:9px;padding:8px;min-width:0;display:flex;flex-direction:column;text-align:left;gap:5px;cursor:pointer;color:#25211d}
+.galassia-model.active{border:2px solid #b98a4d;padding:7px;background:#fffaf4}
+.galassia-model img{display:block;width:100%;height:120px;object-fit:contain;background:#fff;border-radius:6px}
+.galassia-model strong{font:700 12px/1.3 system-ui;max-height:46px;overflow:hidden}
+.galassia-model span{font-size:11px;color:#666}
+.galassia-model small{margin-top:auto;font-size:11px;color:#7e5126;font-weight:650}
+.galassia-no-photo{background:#eeeae4;color:#918879;display:flex;align-items:center;justify-content:center;font-size:11px;min-height:50px}
+.galassia-model .galassia-no-photo{height:120px}
+.galassia-empty{font-size:13px;color:#776b5c}
+.galassia-selection{min-width:0;overflow:auto;border-left:1px solid #e2dbd3;padding:16px;display:flex;flex-direction:column;gap:12px}
+.galassia-photo{height:185px;background:#fff;display:flex;align-items:center;justify-content:center;border:1px solid #eee;overflow:hidden}
+.galassia-photo img{max-width:100%;max-height:100%;object-fit:contain}
+.galassia-photo>span{font-size:12px;color:#888}
+.galassia-image-note{font-size:10px;line-height:1.4;color:#776b5e}
+.galassia-selection h3{font:normal 19px/1.2 Georgia,serif;margin:0}
+.galassia-summary{display:grid;gap:6px;padding:10px;background:#f5f0e8;border-radius:8px}
+.galassia-summary>div{display:flex;align-items:start;justify-content:space-between;gap:7px;font-size:11px}
+.galassia-summary>div b{color:#27211a;font-size:12px;text-align:right}
+.galassia-docs{display:grid;gap:5px;font-size:11px;line-height:1.4}
+.galassia-docs span{color:#696159}
+.galassia-docs a{color:#956b3b;text-decoration:underline}
+.galassia-doc-warning{font-size:10px;line-height:1.45;color:#777}
+.galassia-add{background:#2a2926;color:#fff;border:0;border-radius:7px;padding:14px;font-weight:700;cursor:pointer;margin-top:auto}
+.galassia-add:disabled{opacity:.45}
+.galassia-launcher{display:flex;gap:16px;align-items:center;justify-content:space-between;border:1px solid #bfa989;border-radius:12px;padding:15px;margin-bottom:20px;background:linear-gradient(90deg,#fcf8f2,#fff)}
+.galassia-launcher h3{font:normal 21px Georgia,serif;margin:3px 0}
+.galassia-launcher p{font-size:12px;color:#72685c;margin:0}
+.galassia-launcher button{white-space:nowrap;background:#282621;color:white;border:0;padding:12px 16px;border-radius:6px;cursor:pointer}
+.pdf-exporting .galassia-modal{display:none!important}
+@media(max-width:1100px){.galassia-body{grid-template-columns:170px minmax(0,1fr) 270px}.galassia-family img{width:45px}.galassia-selection{padding:10px}}
+@media(max-width:780px){.galassia-modal{padding:0}.galassia-shell{width:100vw;height:100dvh;max-height:none;border-radius:0}.galassia-body{display:flex;flex-direction:column}.galassia-collections{display:flex;flex-direction:row;flex-shrink:0;overflow-x:auto;max-height:92px;border-bottom:1px solid #ddd}.galassia-family{min-width:140px}.galassia-browser{min-height:38vh}.galassia-models{grid-template-columns:repeat(2,minmax(0,1fr))}.galassia-selection{overflow:visible;border-left:0;border-top:1px solid #ddd}.galassia-body{overflow-y:auto}.galassia-photo{height:180px}.galassia-top h2{font-size:21px}.galassia-filters{padding:8px}.galassia-launcher{flex-direction:column;align-items:start}}
+@media print{.galassia-modal,.galassia-launcher{display:none!important}}

@@ -281,6 +281,23 @@
       ],
       "purchaseDiscount": 50,
       "manufacturerUrl": "https://carrodrain.com/en/"
+    },
+    {
+      "name": "Galassia",
+      "catalog": "catalog_galassia.json",
+      "purchaseDiscount": 50,
+      "manufacturerUrl": "https://www.ceramicagalassia.it/catalogo/",
+      "capabilities": [
+        "catalog",
+        "integrated-configurator",
+        "official-collection-navigation",
+        "exact-priced-reference",
+        "manufacturer-site-image-model-only",
+        "source-pricelist-page",
+        "official-technical-document-when-verified",
+        "purchase-discount-50",
+        "ambiguous-price-quarantine"
+      ]
     }
   ]
 }
