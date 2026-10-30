@@ -44,6 +44,10 @@ test('Supplier PDF 2026 SKU inventory is available, with independent imported co
    programmedPanelSkus:panelSourceRows.length,programDataReferences:programReferences.length,effectiveUniqueSkus:implemented.size,primaryShowerPdfSkus:pdfShowerCodes.length,primaryShowerMissing:missingShower.length,
    missingFromEffectiveCatalog:missing.length,missingByPrefix:Object.entries(summary).sort((a,b)=>b[1].count-a[1].count)};
  console.log('HIDROBOX_PDF_PARITY '+JSON.stringify(total));
+ const reportDir=path.join(root,'build-audit');
+ fs.mkdirSync(reportDir,{recursive:true});
+ fs.writeFileSync(path.join(reportDir,'hidrobox-2026-pdf-parity.json'),
+  JSON.stringify({...total,missingCodes:missing.map(([reference,page])=>({reference,pdfPage:page}))},null,2)+'\\n','utf8');
  // Diagnostic audit: do not claim all supplier codes are commercial SKUs or
  // block unrelated releases before the supplier-code classification is finished.
  assert(imported.size>4000,'Hidrobox supplier import unexpectedly shrunk');
