@@ -9,12 +9,17 @@ const card=(src=jpg,title='35987 - Twins-YR RECTANGULAR 90x100')=>'<div class="c
 test('Supplier URL must be the real configured product image, not the collection or a mismatched variant',()=>{
  const s=server.canonical(example);
  assert.equal(server.matchCard(jpg,'35987 - Twins-YR RECTANGULAR 90x100',s)?.url,jpg);
- assert.equal(server.matchCard(jpg,'35987 - Twins-YR RECTANGULAR 90x120',s),null);
+ const illustrative=server.matchCard(jpg,'35987 - Twins-YR RECTANGULAR 90x120',s);
+ assert.equal(illustrative?.dimensionsVerified,false,'same genuine image may illustrate other sizes');
+ assert.equal(illustrative?.selectionMatch,'model-texture-color-shape');
  assert.equal(server.matchCard(jpg.replace('Brownie','Cotta'),'35987 - Twins-YR RECTANGULAR 90x100',s),null);
  assert.equal(server.matchCard(jpg.replace('Twins-YR','Twins-YL'),'35987 - Twins-YR RECTANGULAR 90x100',s),null);
  assert.equal(server.matchCard(jpg.replace('_Mic_','_Smo_'),'35987 - Twins-YR RECTANGULAR 90x100',s),null);
  assert.equal(server.matchCard('https://evil.example.net/impostor.png','35987 - Twins-YR RECTANGULAR 90x100',s),null);
- assert.equal(server.parse(card() + card(),s),null,'ambiguous duplicate must not be accepted');
+ assert.equal(server.parse(card() + card(),s)?.url,jpg,'duplicate identical supplier image is unambiguous');
+ assert.equal(server.parse(card(jpg) + card(jpg.replace('Brownie','Brownie').replace('Twins-YR','Twins-YL')),s)?.url,jpg,'different model is excluded');
+ const alt=IMAGE+'Hidrobox_Shower-tray_Twins-YR_Per_Mic_Rec_Brownie.webp';
+ assert.equal(server.parse(card(jpg)+card(alt),s),null,'two distinct matching official images are ambiguous');
 });
 test('Safe color translation: manufacturer uses White for Bianco/Blanc and Sand-stone for Sandstone',()=>{
  const a={...example,model:'neo-plus',texture:'Smooth',color:'Bianco'};
@@ -29,6 +34,9 @@ test('Manufacturer AJAX must receive every selected term (not read unrelated sta
  }});
  assert.equal(source.ok,true);
  assert.equal(source.image,jpg);
+ assert.equal(source.match,'model-texture-color-shape-dimensions');
+ assert.equal(new URL(source.source).searchParams.get('fltr-size'),'817');
+ assert.equal(new URL(source.source).searchParams.get('fltr-color'),'571');
  assert.match(endpoint,/admin-ajax\.php$/);
  const p=new URLSearchParams(posted);
  for(const [key,val] of Object.entries({'action':'_listado_results','fltr-typology[]':'1057','fltr-collection[]':'851',
@@ -72,4 +80,32 @@ test('Native manufacturer print resolution is verified, never upscaled or descri
  assert.equal(low.ok,false);
  assert.match(low.reason,/insuffisante/);
  assert.equal(visual.apply({manufacturer:'Hidrobox'},{...result,verifiedPrintQuality:false},example),false);
+});
+
+
+test('Official Neo Plus non-dimensional images retain true texture/shape/color with honest illustrative status',()=>{
+ const config=server.canonical({model:'neo-plus',material:'Kromat',texture:'Slate',color:'Bianco',width:80,length:120,shape:'angularR'});
+ const angular=IMAGE+'Hidrobox_Shower-tray_Neo-Plus_Per_Sla_Ang_White.png';
+ const rectangular=IMAGE+'Hidrobox_Shower-tray_Neo-Plus_Per_Sla_Rec_White.png';
+ assert.equal(server.matchCard(rectangular,'Neo-Plus RECTANGULAR 80x120',config),null,
+  'angular right must not receive a rectangular tray image');
+ const result=server.matchCard(angular,'Neo-Plus ANGULAR 90x120',config);
+ assert.equal(result?.selectionMatch,'model-texture-color-shape');
+ assert.equal(result?.dimensionsVerified,false);
+ assert.equal(server.parse(card(angular,'Neo-Plus ANGULAR 90x120'),config)?.url,angular);
+ assert.equal(server.matchCard(angular.replace('White','Ocean'),'Neo-Plus ANGULAR 90x120',config),null);
+ const rec={manufacturer:'Hidrobox',collection:'Neo Plus'};
+ assert.equal(visual.apply(rec,{ok:true,image:angular,match:result.selectionMatch,disclaimer:'Dimensions non garanties'},config),true);
+ assert.equal(rec.imageFinishMatch,'configured-illustrative');
+ assert.match(rec.imageSource,/dimensions non garanties/);
+ assert.match(rec.imageNote,/Dimensions non garanties|dimensions finales/);
+ assert.equal(rec.pdfImage,rec.image);
+});
+test('Official configured photo UI must link to actual manufacturer filters, never a guessed file path',()=>{
+ const fs=require('node:fs'),path=require('node:path');
+ const guide=fs.readFileSync(path.join(__dirname,'../public/hidrobox-guided.js'),'utf8');
+ const visualSource=fs.readFileSync(path.join(__dirname,'../public/hidrobox-official-render.js'),'utf8');
+ assert.match(guide,/data-hb-config-link/);
+ assert.match(visualSource,/hostname==='hidrobox.com'/);
+ assert.match(visualSource,/configured-illustrative/);
 });
