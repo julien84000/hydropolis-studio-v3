@@ -7,7 +7,11 @@
 })(typeof window==='object'?window:null,function(){
  'use strict';
  const normalize=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
- const OPT=(id,label,rawPrice,reference)=>Object.freeze({id,label,rawPrice,reference});
+ const OPT=(id,label,rawPrice,reference,percent=0)=>Object.freeze({id,label,rawPrice,reference,percent});
+ const customCut={key:'cut',label:'Découpe spéciale (plan technique à confirmer)',options:[
+   OPT('none','Sans découpe spéciale',0,'INCLUS'),
+   OPT('special','Découpe spéciale +10 % du prix de base fabricant',0,'OPSH0018',10)
+ ]};
  const drain90=[
    OPT('h90','Horizontale Ø90 Viega Tempoplex',0,'OPSH0078'),
    OPT('v90','Verticale Ø90 Viega Tempoplex',51,'OPSH0077'),
@@ -58,19 +62,22 @@
    const drainage50={key:'drain',label:'Bonde',options:drain50};
    if(fmt==='line-x'||fmt==='line-y'){
      const cover=lineCover(config);
-     return cover.length?[{key:'cover',label:'Caniveau',options:cover},drainage50]:[];
+     return cover.length?[{key:'cover',label:'Caniveau',options:cover},drainage50,customCut]:[];
    }
    if(fmt==='twinsyl'||fmt==='twinsyr'){
      const group=normalize(colorGroup);
      const g=group==='bas'?51:group==='tre'?52:group==='spe'?53:null;
      const cover=g?[{key:'cover',label:'Cache-bonde',options:[OPT('matching','Cache-bonde TWINS assorti',0,'OPSH'+String(g).padStart(4,'0'))]}]:[];
-     return [...cover,drainage50];
+     return [...cover,drainage50,customCut];
    }
    if(fmt==='quadro')return [{key:'cover',label:'Grille',options:coverPointStar},drainage90];
    if(fmt==='one')return [{key:'cover',label:'Grille',options:[OPT('inox','Grille ONE inox',0,'OPSH0054'),OPT('basic','Grille ONE Basic assortie',14,'OPSH0055')]},drainage90];
-   if(fmt==='pure')return [{key:'cover',label:'Cache-bonde',options:[OPT('matching','Cache-bonde PURE assorti',0,'INCLUS')]},drainage90];
-   if(fmt==='arq')return [{key:'cover',label:'Cache-bonde',options:[OPT('matching','Cache-bonde ARQ assorti',0,'INCLUS')]},drainage50];
-   if(fmt==='iconik')return [{key:'cover',label:'Cache-bonde',options:[OPT('matching','Cache-bonde ICONIK assorti',0,'INCLUS')]},drainage90];
+   if(fmt==='pure')return [{key:'cover',label:'Cache-bonde',options:[OPT('matching','Cache-bonde PURE assorti',0,'OPSH0057')]},drainage90];
+   if(fmt==='arq')return [{key:'cover',label:'Cache-bonde',options:[OPT('matching','Cache-bonde ARQ assorti',0,'OPSH0056')]},drainage50,customCut];
+   if(fmt==='iconik')return [{key:'cover',label:'Cache-bonde',options:[OPT('matching','Cache-bonde ICONIK assorti',0,'OPSH0058')]},drainage90,
+   {key:'iconikColor',label:'Option Plus Colour ICONIK',options:[
+     OPT('standard','Sans Plus Colour',0,'INCLUS'),
+     OPT('plus','Plus Colour ICONIK +15 % du prix de base fabricant',0,'OPSH0073',15)]}];
    if(fmt==='loovers'){
      const r=String(outlet||'').match(/\b(?:50|90)\b/);
      if(!r)return []; // source supports BOTH Ø50 and Ø90, do not choose implicitly.
@@ -86,7 +93,8 @@
      const id=chosen[group.key]||group.options[0]?.id;
      const match=group.options.find(x=>x.id===id);
      if(!match)return {ok:false,reason:'Option fabricante indisponible : '+group.label};
-     extra+=match.rawPrice;components.push({...match,group:group.key});
+     const charge=match.rawPrice+(match.percent?Math.round(Number(baseRaw)*match.percent)/100:0);
+     extra+=charge;components.push({...match,rawPrice:charge,group:group.key});
    }
    const source=Number(baseRaw)+extra;
    return {ok:true,rawPrice:source,price:Math.round(source*104)/100,optionRawPrice:extra,components};
