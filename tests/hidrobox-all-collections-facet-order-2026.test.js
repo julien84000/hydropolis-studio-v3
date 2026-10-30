@@ -45,3 +45,14 @@ test('Panel and Spot explicitly show the same sequential axes and retain real ta
   assert.match(body,/\.quote\(/,'tariff still quoted for '+section);
  }
 });
+
+test('Space and Beta bath tariff modules are loaded before guided UI to avoid asynchronous opening stalls',()=>{
+ const html=fs.readFileSync(path.join(__dirname,'../public/index.html'),'utf8');
+ const sw=fs.readFileSync(path.join(__dirname,'../public/sw.js'),'utf8');
+ const guidedAt=html.indexOf('hidrobox-guided.js?v=__APP_VERSION__');
+ for(const file of ['hidrobox-space-2026.js','hidrobox-beta-essential-2026.js','hidrobox-beta-evoque-2026.js']){
+   assert(html.indexOf(file+'?v=__APP_VERSION__')>0);
+   assert(html.indexOf(file+'?v=__APP_VERSION__')<guidedAt);
+   assert(sw.includes('/'+file));
+ }
+});
