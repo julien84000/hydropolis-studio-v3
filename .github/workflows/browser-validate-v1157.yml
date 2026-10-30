@@ -24,6 +24,14 @@ jobs:
       - run: npm ci
       - run: npm run check
       - run: npm test
+      - name: Save Hidrobox PDF parity audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hidrobox-2026-pdf-parity
+          path: build-audit/hidrobox-2026-pdf-parity.json
+          if-no-files-found: ignore
+          retention-days: 30
       - run: npm run build
       - run: npm install --no-save --package-lock=false playwright@1.55.0
       - run: npx playwright install --with-deps chromium
