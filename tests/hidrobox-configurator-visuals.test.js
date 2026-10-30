@@ -109,3 +109,26 @@ test('Official configured photo UI must link to actual manufacturer filters, nev
  assert.match(visualSource,/hostname==='hidrobox.com'/);
  assert.match(visualSource,/configured-illustrative/);
 });
+
+test('Manufacturer retry without size still requires real Neo Plus image, exact finish, shape and colour',async()=>{
+ const selected={model:'neo-plus',material:'Kromat',texture:'Ardoise',color:'Bianco',
+   width:80,length:120,shape:'angularR'};
+ const angular=IMAGE+'Hidrobox_Shower-tray_Neo-Plus_Per_Sla_Ang_White.png';
+ const wrong=IMAGE+'Hidrobox_Shower-tray_Twins-YR_Per_Mic_Rec_Brownie.png';
+ const requests=[];
+ const result=await server.lookup(selected,{sizeId:'751',post:async(url,body)=>{
+   requests.push(new URLSearchParams(body));
+   return {data:{data:{grid:requests.length===1?card(wrong,'Twins-YR RECTANGULAR 90x100'):
+     card(angular,'Neo-Plus ANGULAR 90x120')}}};
+ }});
+ assert.equal(requests.length,2);
+ assert.equal(requests[0].get('fltr-size[]'),'751');
+ assert.equal(requests[1].get('fltr-size[]'),null);
+ for(const key of ['typology','collection','material','texture','color'])
+   assert.equal(requests[0].get('fltr-'+key+'[]'),requests[1].get('fltr-'+key+'[]'),key);
+ assert.equal(result.ok,true);
+ assert.equal(result.image,angular);
+ assert.equal(result.match,'model-texture-color-shape');
+ assert.match(result.disclaimer,/dimensions/);
+ assert.equal(new URL(result.source).searchParams.get('fltr-size'),'751');
+});
