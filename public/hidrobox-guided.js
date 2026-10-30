@@ -69,7 +69,10 @@ function groupCategory(g){
  return 'autres';
 }
 const SHOWER_CATALOG=['Neo Plus','Line','Twins','Quadro','One','Pure','Arq','Loovers','Unique','Iconik','Falcon'];
-let overlay=null,room='',groups=[],stage='families',cat='receveurs',chosenGroup=null,original=null,groupsLoading=false,groupsError='',navigationToken=0,neo={form:'rectangle',material:'Kromat',group:'BAS',width:90,length:120,texture:'Lisse',color:'Bianco',grille:'Point Inox',bonde:'Horizontale standard'};
+let overlay=null,room='',groups=[],stage='families',cat='receveurs',chosenGroup=null,original=null,groupsLoading=false,groupsError='',navigationToken=0;
+const NEO_DEFAULT=Object.freeze({form:'rectangle',material:'Kromat',group:'BAS',width:90,length:120,texture:'Lisse',
+ color:'Bianco',grille:'Point Inox',bonde:'Horizontale standard',specialCut:false});
+let neo={...NEO_DEFAULT};
 function close(){navigationToken++;overlay?.remove();overlay=null}
 function shell(title,content,wide=false){
  if(!overlay){overlay=document.createElement('div');overlay.id='hidroboxGuided';overlay.className='recor-configurator-overlay';document.body.appendChild(overlay);overlay.addEventListener('click',e=>{if(e.target===overlay)close()});}
@@ -1060,6 +1063,17 @@ function neoPage(){
 async function open(p,roomId,requestedCategory=''){
  close();
  const token=++navigationToken;
+ neo={...NEO_DEFAULT};
+ if(norm(p?.collection)==='neo plus'&&p?.hidroboxConfiguration){
+  const c=p.hidroboxConfiguration;
+  neo={...neo,form:c.selectedShape||c.form||neo.form,
+   material:c.material||neo.material,group:c.group||neo.group,texture:c.texture||neo.texture,
+   width:Number(c.selectedWidthCm??c.width??neo.width),
+   length:Number(c.selectedLengthCm??c.length??neo.length),
+   color:c.selectedColour||c.color||neo.color,grille:c.selectedGrille||c.grille||neo.grille,
+   bonde:c.selectedBonde||c.bonde||neo.bonde,
+   specialCut:!!(c.specialCut||c.options?.some(x=>x.reference==='OPSH0018'))};
+ }
  room=roomId;original=p||{};programDraft=p?.hidroboxConfiguration?.type==='program-2026'?{...p.hidroboxConfiguration}:null;spaceDraft=p?.hidroboxConfiguration?.type==='space-2026'?{...p.hidroboxConfiguration}:null;betaEvoqueDraft=p?.hidroboxConfiguration?.type==='beta-evoque-2026'?{...p.hidroboxConfiguration}:null;betaEssentialDraft=p?.hidroboxConfiguration?.type==='beta-essential-2026'?{...p.hidroboxConfiguration}:null;programFamily='';groups=[];groupsLoading=true;groupsError='';
  for(const key of Object.keys(universalDraft))delete universalDraft[key];
  root.HydroHidroboxPanelSpotUI?.reset?.();
