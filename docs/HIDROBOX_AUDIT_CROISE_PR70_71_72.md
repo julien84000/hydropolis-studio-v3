@@ -26,3 +26,14 @@ PR #70, #71, #72 modifient toutes `public/hidrobox-guided.js`, `public/hidrobox-
 
 ## Contraintes conservées
 Tarif Hidrobox 2026 majoré de 4 % une seule fois ; remise achat 50 % distincte de la remise client ; aucun SKU, photo exacte ni prix inventé. Aucun changement volontaire aux autres fabricants, devis, dossiers client ou tarifs tiers.
+
+## Exigence prioritaire confirmée : images du configurateur officiel, pas les catalogues
+L'image affichée dans le dossier client doit provenir du rendu de https://hidrobox.com/configurator/en/ après passage des paramètres exacts (typologie, collection/modèle, matière, texture, couleur, dimensions, orientation si applicable). Les cartes de collection ne sont qu'un repli explicitement illustratif.
+
+Code inspecté sur PR #71 :
+- `hidrobox-configurator-server.js` filtre `_listado_results` sur typology, collection, material, texture, color, size et vérifie la correspondance plutôt que de choisir la première image.
+- `public/hidrobox-official-render.js` appelle `/api/hidrobox-configurator-image` et `apply` synchronise `image/images/pdfImage/pdfImages`, en protégeant les images personnalisées.
+- `public/hidrobox-guided.js` utilise effectivement ce service pour le parcours universel et Neo Plus ; `public/hidrobox-panel-spot-ui.js` l'utilise pour les panneaux et Spot.
+- Ces preuves attestent du raccordement **dans le code de la branche**, pas du fonctionnement intégral sur Render ni de la correspondance pour chaque référence.
+
+Critères d'acceptation complémentaires : sélectionner une référence par famille, ouvrir la page fabricant correspondante, confronter côte à côte couleur/formes/texture/dimensions, enregistrer dans un projet, rouvrir le projet, générer dossier client et export PDF, confirmer le même visuel à chaque étape. En cas de réponse constructeur absente ou ambiguë, laisser l'image de collection marquée « illustrative » plutôt que prétendre à une photo configurée exacte. La qualité native d'impression doit être testée. Tester notamment Spot 62 Kromat Lisse Blush.
