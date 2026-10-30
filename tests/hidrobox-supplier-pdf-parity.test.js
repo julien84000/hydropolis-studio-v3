@@ -20,12 +20,17 @@ function prefix(code){return String(code).match(/^[A-Z]+/)?.[0]||'OTHER';}
 test('Supplier PDF 2026 SKU inventory is available, with independent imported coverage audit',()=>{
  assert.equal(source.pageCount,87);
  assert(sourceCodes.size>5000,'PDF extraction unexpectedly incomplete');
+ const coreShowerPrefixes=['SNEC','SLIC','STWC','SQUC','SONC','SPUC','SARC','SLOC','SUNC','SICC'];
+ const pdfShowerCodes=[...sourceCodes.keys()].filter(sku=>coreShowerPrefixes.some(p=>sku.startsWith(p)));
+ const missingShower=pdfShowerCodes.filter(sku=>!imported.has(sku));
+ assert.equal(pdfShowerCodes.length,2027,'Unexpected Hidrobox shower-tray manufacturer SKU count');
+ assert.deepEqual(missingShower,[],'Every primary shower-tray SKU printed in 2026 tariff must be imported');
  const missing=[...sourceCodes].filter(([sku])=>!imported.has(sku));
  const summary={};for(const [sku,page] of missing){const p=prefix(sku);if(!summary[p])summary[p]={count:0,samples:[],pages:[]};
   summary[p].count++;if(summary[p].samples.length<8)summary[p].samples.push(sku);
   if(summary[p].pages.length<8&&!summary[p].pages.includes(page))summary[p].pages.push(page);
  }
- const total={supplierPdfUniqueSkus:sourceCodes.size,importedUniqueSkus:imported.size,
+ const total={supplierPdfUniqueSkus:sourceCodes.size,importedUniqueSkus:imported.size,primaryShowerPdfSkus:pdfShowerCodes.length,primaryShowerMissing:missingShower.length,
    missingFromImported:missing.length,missingByPrefix:Object.entries(summary).sort((a,b)=>b[1].count-a[1].count)};
  console.log('HIDROBOX_PDF_PARITY '+JSON.stringify(total));
  // Diagnostic audit: do not claim all supplier codes are commercial SKUs or
