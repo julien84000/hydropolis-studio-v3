@@ -847,6 +847,35 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     check('Selene : aucun prix manuel demandé sur matrice certifiée',await page.locator('#rg50ManualWrap').evaluate(x=>x.classList.contains('hidden')));
     check('Selene : bouton de permutation masqué après correction',!(await page.locator('#rg50SwapButton').isVisible()));
     await page.locator('#resigresConfigurator .rg50-close').click();
+
+    // Galassia: guide 11.64.18, exact reference/pricing and client-project isolation.
+    await page.waitForFunction(()=>CATALOG.some(p=>p.manufacturer==='Galassia'&&p.reference==='7701MT'),{timeout:30000});
+    const galassiaSnapshot=await page.evaluate(()=>JSON.stringify(state));
+    await page.evaluate(()=>{
+      state.rooms=[{id:'galassia-test-room',title:'Galassia test',manual:[]}];
+      state.selected=[];
+      showView('catalog');
+      document.querySelector('#manufacturerFilter').value='Galassia';
+      updateDependentFilters(true,true,true);
+      renderCatalog();
+    });
+    check('Galassia : lancement du configurateur dans le catalogue',await page.locator('.galassia-open').count()===1);
+    await page.locator('.galassia-open').click();
+    check('Galassia : collections photographiques disponibles',await page.locator('.galassia-modal .galassia-family').count()>8);
+    await page.locator('.galassia-family[data-family="R70"]').click();
+    check('Galassia : famille R70 affichée',await page.locator('.galassia-modal').count()===1&&await page.locator('.galassia-family[data-family="R70"].active').count()===1);
+    await page.locator('.galassia-search').fill('7701');
+    await page.locator('.galassia-model[data-model="7701"]').click();
+    await page.locator('.galassia-variant').selectOption('7701MT');
+    check('Galassia : tarif public exact pour 7701MT',await page.locator('.galassia-summary').innerText().then(s=>s.includes('585')&&s.includes('50 %')));
+    await page.locator('.galassia-add').click();
+    await page.waitForFunction(()=>state.selected.some(p=>p.manufacturer==='Galassia'&&p.reference==='7701MT'),{timeout:20000});
+    check('Galassia : référence et achat 50 % indépendants du devis',await page.evaluate(()=>{
+      const p=state.selected.find(p=>p.manufacturer==='Galassia');
+      return p?.reference==='7701MT'&&p.price===585&&supplierDiscountRate('Galassia')===50&&Math.abs(purchaseCostFor(p)-292.5)<.01;
+    }));
+    await page.evaluate(snapshot=>{applyProjectState(JSON.parse(snapshot));buildDocument();},galassiaSnapshot);
+
     // Dossier pagination: real UI, persisted placement, geometry, print and project isolation.
     const dossierSnapshot=await page.evaluate(()=>JSON.stringify(state));
     await page.evaluate(()=>{
