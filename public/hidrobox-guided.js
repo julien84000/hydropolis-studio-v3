@@ -992,9 +992,10 @@ function neoPage(){
  const neoOpts=neoAccessories?.optionsFor({model:'neo-plus',material:neo.material,
    texture:neo.texture,colorGroup:neo.group,width:Number(neo.width)})||[];
  const neoQuote=line.ok&&neoOpts.length&&GRID_IDS[neo.grille]&&DRAIN_IDS[neo.bonde]?
-   neoAccessories.quote(line.rawPrice,neoOpts,{cover:GRID_IDS[neo.grille],
+   neoAccessories.quote(line.rawBasePrice,neoOpts,{cover:GRID_IDS[neo.grille],
      drain:DRAIN_IDS[neo.bonde],cut:neo.specialCut?'special':'none'}):null;
- const cutValid=!!neoQuote?.ok;
+ const fittingsMatch=!!neoQuote?.ok&&Math.abs((neoQuote.rawPrice-(neo.specialCut?neoQuote.components.find(x=>x.reference==='OPSH0018')?.rawPrice||0:0))-line.rawPrice)<0.011;
+ const cutValid=!!neoQuote?.ok&&fittingsMatch;
  const neoRawTotal=cutValid?neoQuote.rawPrice:0;
  const neoPublicTotal=cutValid?neoQuote.price:0;
  const neoCutRaw=cutValid?neoQuote.components.find(x=>x.reference==='OPSH0018')?.rawPrice||0:0;
@@ -1023,7 +1024,7 @@ function neoPage(){
  '<label class="hidrobox-cut-option"><input type="checkbox" id="hnSpecialCut"'+(neo.specialCut?' checked':'')+'> Découpe spéciale · OPSH0018 · +10 % du prix fabricant (plan technique requis)</label></div>'+previewMarkup+
  '<p class="hidrobox-guide-note">Formes : '+catalogue.FORMATS.map(f=>escape(f.label)).join(' · ')+'. Les finitions spéciales RAL/NCS nécessitent un contrôle du tarif exact.</p>'+
  '<div class="hidrobox-result"><div><b>'+(line.ok&&cutValid?eu(neoPublicTotal)+' HT':'Prix à confirmer')+'</b><span>'+(line.ok?'Réf. '+escape(line.reference)+' · Tranche '+escape(line.tier):escape(line.reason))+'</span>'+
- '<small>'+(line.ok&&cutValid?'Prix source '+eu(line.rawPrice)+' HT. Options '+eu(neoQuote.optionRawPrice)+' HT'+(neo.specialCut?' (dont découpe '+eu(neoCutRaw)+' HT)':'')+'. Total fabricant '+eu(neoRawTotal)+' HT, majoration 4 % appliquée une fois. Remise achat 50 % dans la marge.':'Aucun prix inventé : choisissez une configuration tarifée ou consultez Hidrobox.')+'</small></div>'+
+ '<small>'+(line.ok&&cutValid?'Prix receveur '+eu(line.rawBasePrice)+' HT. Grille/bonde/découpe '+eu(neoQuote.optionRawPrice)+' HT'+(neo.specialCut?' (dont découpe '+eu(neoCutRaw)+' HT)':'')+'. Total fabricant '+eu(neoRawTotal)+' HT, majoration 4 % appliquée une fois. Remise achat 50 % dans la marge.':'Aucun prix inventé : choisissez une configuration tarifée ou consultez Hidrobox.')+'</small></div>'+
  '<button class="btn primary" id="hnAdd" type="button"'+(line.ok&&cutValid?'':' disabled')+'>Ajouter la configuration</button></div>';
  shell('Neo Plus · configuration',config,true);
  overlay.querySelector('.hidrobox-back').onclick=collections;
@@ -1057,7 +1058,7 @@ function neoPage(){
      Object.assign(record,item,{hidroboxConfiguration:{...chosen,selectedShape:neo.form,selectedWidthCm:+neo.width,selectedLengthCm:+neo.length,selectedColour:neo.color,selectedGrille:neo.grille,selectedBonde:neo.bonde,
        specialCut:!!neo.specialCut,requiresSupplierDrawing:!!neo.specialCut,
        options:neoQuote.components.map(x=>({reference:x.reference,label:x.label,rawPrice:x.rawPrice,percent:x.percent||0})),
-       supplierRawBase:chosen.rawPrice,supplierOptionsRaw:neoQuote.optionRawPrice}});
+       supplierRawBase:chosen.rawBasePrice,supplierOptionsRaw:neoQuote.optionRawPrice}});
      if(officialVisual&&spec){
        try{
          const image=await officialVisual.lookup(spec);
