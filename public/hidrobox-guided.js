@@ -652,8 +652,29 @@ function restoreHidroboxSelection(g){
  if(saved.color||saved.selectedColour)universalDraft.showerColor=saved.color||saved.selectedColour;
  for(const opt of saved.accessories||[])if(opt.group&&opt.id)universalDraft['tray_'+opt.group]=opt.id;
 }
+function sourcePanelSpotPage(g,type){
+ const api=root.HydroHidroboxPanelSpotUI;
+ if(!api)return null;
+ stage='group';chosenGroup=g;
+ const collection=type==='panel'?'Panneaux muraux':'Spot';
+ const image=officialImage(officialGroupMedia(g)?.image||g.image)||'';
+ const ctx={original,room,image,overlay:()=>overlay,
+  back:collections,shell:(name,html)=>shell(name,html,true),
+  save:(item,configuration)=>{
+   const record=createSelectedProductRecord(item,room,'');
+   if(!record)throw Error('Impossible de créer le produit Hidrobox');
+   Object.assign(record,item,{hidroboxConfiguration:{group:g.id,collection,...configuration}});
+   const ids=commitSelectedRecords([record],{showProject:false});
+   if(!ids?.length)throw Error('Impossible de sauvegarder le produit');
+   close();showView('project');
+  }};
+ return type==='panel'?api.panel(g,ctx):api.spot(g,ctx);
+}
 function universalPage(g){
- if(norm(g.collection||g.id)==='program')return programPage(g);
+ const familyName=norm(g.collection||g.id);
+ if(familyName==='panneaux muraux'||familyName==='paneles')return sourcePanelSpotPage(g,'panel');
+ if(familyName==='spot')return sourcePanelSpotPage(g,'spot');
+ if(familyName==='program')return programPage(g);
  if(norm(g.collection||g.id)==='space')return spacePage(g);
  if(norm(g.collection||g.id)==='beta evoque')return betaEvoquePage(g);
  if(norm(g.collection||g.id)==='beta essential')return betaEssentialPage(g);
@@ -942,6 +963,7 @@ async function open(p,roomId,requestedCategory=''){
  const token=++navigationToken;
  room=roomId;original=p||{};programDraft=p?.hidroboxConfiguration?.type==='program-2026'?{...p.hidroboxConfiguration}:null;spaceDraft=p?.hidroboxConfiguration?.type==='space-2026'?{...p.hidroboxConfiguration}:null;betaEvoqueDraft=p?.hidroboxConfiguration?.type==='beta-evoque-2026'?{...p.hidroboxConfiguration}:null;betaEssentialDraft=p?.hidroboxConfiguration?.type==='beta-essential-2026'?{...p.hidroboxConfiguration}:null;programFamily='';groups=[];groupsLoading=true;groupsError='';
  for(const key of Object.keys(universalDraft))delete universalDraft[key];
+ root.HydroHidroboxPanelSpotUI?.reset?.();
  const existing=HIDROBOX_ALL_OFFICIAL.find(x=>norm(x.name)===norm(p?.collection)||norm(x.key)===norm(p?.collection));
  const requested=CATEGORY.find(x=>x.key===requestedCategory);
  cat=requested?.key||existing?.category||'receveurs';
