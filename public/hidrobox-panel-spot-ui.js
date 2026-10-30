@@ -10,6 +10,14 @@
  'use strict';
  const E=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const EUR=v=>Number(v).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
+ function docsMarkup(ctx){
+   const d=ctx?.docs||{};
+   const safe=u=>/^https:\/\/hidrobox\.com\/wp-content\/uploads\/[^#?<>"']+\.pdf$/i.test(String(u||''))?u:'';
+   const entries=[['technical','Fiche technique fabricant'],['manual','Notice d’installation et d’entretien']];
+   return '<div class="hidrobox-downloads">'+entries.map(([key,label])=>
+     safe(d[key])?'<a href="'+E(d[key])+'" target="_blank" rel="noopener noreferrer">'+label+' (PDF)</a>':''
+   ).join('')+'</div>';
+ }
  let kind='',state=null;
  const spotModelImages=new Map(); // sourced through the exact manufacturer configurator, not invented URLs
  function spotSelection(row,color){
@@ -96,7 +104,8 @@
     '<small data-hb-config-status>Recherche du visuel officiel du panneau…</small></div>';
   const html='<button class="hidrobox-back" type="button">← Collections</button>'+
    '<div class="hidrobox-neo-hero">'+hero+'<div><h3>Panneaux muraux · tarif fabricant 2026</h3><p>Modèle panneau rectangulaire · Scene (matière fixe) · épaisseur constructeur 1 cm</p>'+
-   '<small>Photographie de collection : texture et couleur exactes non garanties sur cette illustration.</small></div></div>'+
+   '<small>Le rendu constructeur est affiché uniquement si une correspondance exacte est disponible.</small></div></div>'+
+   docsMarkup(ctx)+
    '<h4 class="hidrobox-universal-subtitle">1 · Modèle</h4><p><strong>Panneau rectangulaire</strong> · découpe au cm dans la plage fabricant.</p>'+
    '<h4 class="hidrobox-universal-subtitle">2 · Matière</h4><div class="hidrobox-fixed-attribute"><strong>Scene</strong><span>Matière de ce tarif 2026</span></div>'+
    '<h4 class="hidrobox-universal-subtitle">3 · Texture</h4><div class="hidrobox-tray-model-grid">'+textures+'</div>'+
@@ -183,6 +192,7 @@
     '<p data-hb-config-status role="status">Recherche du visuel exact dans le configurateur officiel Hidrobox…</p></div>'+
     '<div><h3>Spot · modèles distincts</h3><p>Choisissez le modèle, puis sa matière, sa couleur et ses accessoires.</p>'+
     '<small>Les images des cartes illustrent le modèle dans sa couleur constructeur disponible ; le grand visuel correspond à la finition sélectionnée. Visuel indisponible si la correspondance ne peut pas être confirmée.</small></div></div>'+
+    docsMarkup(ctx)+
     '<h4 class="hidrobox-universal-subtitle">1 · Modèle</h4><div class="hidrobox-tray-model-grid hb-spot-grid">'+tiles+'</div>'+
     '<h4 class="hidrobox-universal-subtitle">2 · Matière et finition</h4><div class="hidrobox-fields">'+
        select('Version du modèle','ref',variant.map(x=>x.reference),s.ref)+
