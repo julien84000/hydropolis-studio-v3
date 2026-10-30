@@ -4965,6 +4965,20 @@ async function loadSupplierCatalogs(){
       }
       if(Array.isArray(rows)){
         for(const p of rows){
+          // Galassia: the manufacturer hierarchy always wins over inferred catalogue labels.
+          if(p.manufacturer==="Galassia"){
+            p.sourceCategory=p.sourceCategory||p.category;
+            if(p.officialStructureVerified===true && p.manufacturerFamily){
+              p.category=p.manufacturerFamily;
+              p.collection=p.manufacturerCollection||p.collection;
+            }else{
+              p.category="Références à rapprocher";
+              if(!p.manufacturerCollectionSlug){
+                p.sourceCollection=p.sourceCollection||p.collection;
+                p.collection="Références hors collections";
+              }
+            }
+          }
           if(/^Sbordoni$/i.test(String(p?.manufacturer||"")) && /^\/api\/sbordoni-image\?/.test(String(p?.image||"")) && !/[?&]v=11594(?:&|$)/.test(p.image)){
             p.image += (p.image.includes("?")?"&":"?")+"v=11594";
           }

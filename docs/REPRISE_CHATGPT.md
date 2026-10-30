@@ -1,3 +1,20 @@
+## V11.64.19 — Galassia : arborescence officielle par collection (30/10/2026)
+
+Branche feat/galassia-official-collections-116419, basée sur V11.64.18 (PR #63 fusionnée).
+
+Objectif utilisateur impératif : respecter strictement la navigation du fabricant — collections dans l'ordre original -> rubriques/familles exactes -> modèles et références -> variations tarifées ; ne jamais ranger arbitrairement un article dans une catégorie approchée.
+
+Source officielle : https://www.ceramicagalassia.it/catalogo/ et pages des 17 collections. Fichier public/galassia/official-tree.json : 17 collections, 69 rubriques, 264 modèles listés (dont rubriques officielles vides), avec intitulés et ordre du site. Next et Nextnarrow séparées, Core et Core Freestanding séparées, Meg11 Pro sous son nom exact. Les familles R70 sont LAVABI, Mobili, ACCESSORI ; SUSI : Sanitari a terra, Sanitari sospesi, Vasche ; Meg11 Pro : Lavabi appoggio sospesi, STRUTTURE, LAVATOI, LAVABI INCASSO, MONOLITE, SANITARI SOSPESI, SANITARI A TERRA, Monoblocco, Orinatoi, Vasche.
+
+Sur les 1090 références tarifées de V11.64.18, 619 se rapprochent par leur code de modèle officiel (code exact, sans déduction de nom) et ont été annotées manufacturerCollection, manufacturerFamily, manufacturerModelCode, officialStructureVerified, officialStructureSource. Les 471 autres ont classificationReviewRequired et restent visibles dans une section explicite de références à rapprocher, pas artificiellement injectées dans les familles certifiées.
+
+Le composant public/galassia-tree.js expose la navigation et les contrôles de couverture. public/galassia-configurator.js affiche d'abord les collections fabricant avec photos, puis les familles dans l'ordre officiel, puis les modèles avec variantes exactes. Les modèles présents sur le site mais sans tarif importé sont visibles en lecture, sans bouton d'ajout ni prix inventé. Les fiches techniques restent associées quand elles sont vérifiées ; le Listino fourni n'est toujours pas hébergé sur Render. La remise d'achat 50 % et la remise client du devis restent séparées. Les filtres du catalogue général réutilisent manufacturerFamily pour les 619 références vérifiées et signalent les autres comme à rapprocher.
+
+Fichiers : public/galassia/official-tree.json, public/galassia-tree.js, public/galassia-configurator.js, public/galassia-configurator.css, public/app.js (filtre Galassia uniquement), public/index.html, public/sw.js, versions package*.json, tests/galassia-official-tree.test.js et parcours Chromium. Conserver toutes les autres marques. Vérifier CI ; ne fusionner que si verte puis vérifier /api/version = 11.64.19, /api/health.
+
+Restant : compléter images absentes et 471 rapprochements manuels (prix source soumis à contrôle), intégrer localement les 291 pages de fiches/dessins du PDF lorsque stockage possible ; 33 refs aux prix contradictoires restent exclues. Ne pas déclarer couverture complète.
+
+---
 ## V11.64.18 — GALASSIA / Listino 32 / configurateur (30/10/2026)
 
 Branche feat/galassia-catalog-configurator, base main 7f9e8eac54f58d8e0f37ffcdff2284dbfe168c81 (version précédente 11.64.17).

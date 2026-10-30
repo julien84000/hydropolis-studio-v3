@@ -43,7 +43,7 @@
  }
  let indexJob;
  async function index(){
-  if(!indexJob)indexJob=fetch('/galassia/official-index.json',{cache:'force-cache'}).then(r=>{
+  if(!indexJob)indexJob=fetch('/galassia/official-tree.json',{cache:'force-cache'}).then(r=>{
    if(!r.ok)throw Error('Index photographique indisponible');return r.json();
   }).catch(e=>{indexJob=null;return {collections:[]};});
   return indexJob;
@@ -57,82 +57,123 @@
   const overlay=document.createElement('div');overlay.className='galassia-modal';
   overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');
   overlay.setAttribute('aria-label','Configurateur Galassia');
-  overlay.innerHTML='<div class="galassia-shell"><div class="galassia-top"><div><span class="galassia-eyebrow">GALASSIA · LA CERAMICA CONTEMPORANEA</span><h2>Configurer la sélection</h2><p>Collection → catégorie → modèle → finition et référence exacte</p></div><button type="button" class="galassia-close" aria-label="Fermer">×</button></div><div class="galassia-body"><aside class="galassia-collections" aria-label="Collections Galassia"></aside><div class="galassia-browser"><div class="galassia-filters"><label>Type de produit<select class="galassia-category"><option value="">Tous les types</option></select></label><label>Rechercher<input class="galassia-search" placeholder="Modèle, dimension ou référence…" type="search" autocomplete="off"></label></div><div class="galassia-models"></div></div><section class="galassia-selection" aria-label="Configuration sélectionnée"></section></div></div>';
+  overlay.innerHTML='<div class="galassia-shell"><div class="galassia-top"><div><span class="galassia-eyebrow">GALASSIA · LA CERAMICA CONTEMPORANEA</span><h2>Configurer la sélection</h2><p>Collection → catégorie → modèle → finition et référence exacte</p></div><button type="button" class="galassia-close" aria-label="Fermer">×</button></div><div class="galassia-body"><aside class="galassia-collections" aria-label="Collections Galassia"></aside><div class="galassia-browser"><div class="galassia-filters"><div class="galassia-path">Collections → familles officielles → modèles → finitions</div><label>Rechercher<input class="galassia-search" placeholder="Modèle, dimension ou référence…" type="search" autocomplete="off"></label></div><div class="galassia-subfamilies" aria-label="Familles officielles du fabricant"></div><div class="galassia-models"></div></div><section class="galassia-selection" aria-label="Configuration sélectionnée"></section></div></div>';
   document.body.append(overlay);
   return overlay;
  }
+
  function open(initial,roomId,rows,onAdd){
-  const dataset=(rows||[]).filter(eligible);if(!dataset.length)return Promise.resolve(false);
-  return index().then(official=>new Promise(resolve=>{
+  const all=(rows||[]).filter(eligible);
+  if(!all.length)return Promise.resolve(false);
+  return index().then(tree=>new Promise(resolve=>{
+   const source=window.HydroGalassiaTree;
+   if(!source||!Array.isArray(tree.collections)||!tree.collections.length)throw Error("Arborescence officielle Galassia indisponible");
    const overlay=buildOverlay(),prev=document.activeElement;
-   let collection=dataset.some(p=>p.collection===initial?.collection)?initial.collection:familyList(dataset)[0];
-   let category='',model=initial&&eligible(initial)?modelId(initial):'',reference=initial&&eligible(initial)?initial.reference:'';
-   let pending=false;
-   const $=selector=>overlay.querySelector(selector);
+   const official=source.collections(tree),unmatched=source.unmatchedRows(all);
+   const matchInitial=initial?.officialStructureVerified===true;
+   let slug=matchInitial?initial.manufacturerCollectionSlug:(initial?.manufacturerCollectionSlug||source.unknown);
+   if(!official.some(x=>x.slug===slug)&&slug!==source.unknown)slug=official[0].slug;
+   let sectionIndex=0,model=matchInitial?modelId(initial):'',reference=initial?.reference||'',pending=false;
+   const $=q=>overlay.querySelector(q), $$=q=>[...overlay.querySelectorAll(q)];
    const close=()=>{overlay.remove();document.removeEventListener('keydown',escListener);prev?.focus?.();resolve(true);};
    const escListener=e=>{if(e.key==='Escape'){e.preventDefault();close();}};
-   document.addEventListener('keydown',escListener);
-   $('.galassia-close').onclick=close;
+   document.addEventListener('keydown',escListener);$('.galassia-close').onclick=close;
    overlay.addEventListener('click',e=>{if(e.target===overlay)close();});
+   const collectionRef=()=>official.find(c=>c.slug===slug)||null;
+   const groupsFor=()=>{
+    if(slug===source.unknown)return [{name:'Autres références du tarif · non rapprochées',prices:unmatched.length,official:false,global:true,items:[]}];
+    return source.familySections(tree,collectionRef(),all);
+   };
+   const getModels=section=>{
+    if(!section)return[];
+    if(section.global){
+      const by=new Map();
+      for(const p of unmatched){
+       const key=String(p.base||p.reference);
+       if(!by.has(key))by.set(key,{base:key,name:p.productType||p.designation||key,image:p.image||'',url:p.manufacturerUrl||'',variants:[]});
+       by.get(key).variants.push(p);
+      }
+      return [...by.values()].sort((a,b)=>a.base.localeCompare(b.base,'fr',{numeric:true}));
+    }
+    return source.models(tree,collectionRef(),section,all);
+   };
    const refresh=()=>{
-    const here=dataset.filter(p=>p.collection===collection);
-    const families=familyList(dataset);
-    $('.galassia-collections').innerHTML=families.map(name=>{
-      const hero=official.collections?.find(c=>c.name===name)?.hero||'';
-      const count=dataset.filter(p=>p.collection===name).length;
-      return '<button type="button" class="galassia-family'+(name===collection?' active':'')+'" data-family="'+escape(name)+'">'+(hero?'<img loading="lazy" src="'+escape(hero)+'" alt="">':'<span class="galassia-no-photo">G</span>')+'<span>'+escape(name)+'<small>'+count+' références</small></span></button>';
-    }).join('');
-    overlay.querySelectorAll('.galassia-family').forEach(btn=>btn.onclick=()=>{
-      collection=btn.dataset.family;category='';model='';reference='';$('.galassia-search').value='';refresh();
+    const collection=collectionRef();
+    $('.galassia-collections').innerHTML=official.map(c=>{
+     const priced=all.filter(p=>p.officialStructureVerified===true&&p.manufacturerCollectionSlug===c.slug).length;
+     return '<button type="button" class="galassia-family'+(c.slug===slug?' active':'')+'" data-family="'+escape(c.name)+'" data-collection-slug="'+escape(c.slug)+'">'+
+       (c.hero?'<img src="'+escape(c.hero)+'" alt="" loading="lazy">':'<span class="galassia-no-photo">G</span>')+
+       '<span>'+escape(c.name)+'<small>'+priced+' références rapprochées</small></span></button>';
+    }).join('')+(unmatched.length?'<div class="galassia-unmatched-label">À VÉRIFIER</div><button type="button" class="galassia-family galassia-unmatched'+(slug===source.unknown?' active':'')+'" data-collection-slug="'+source.unknown+'"><span>Autres références du tarif<small>'+unmatched.length+' sans famille vérifiée</small></span></button>':'');
+    $$('.galassia-family').forEach(button=>button.onclick=()=>{
+      slug=button.dataset.collectionSlug;sectionIndex=0;model='';reference='';$('.galassia-search').value='';refresh();
     });
-    const cats=[...new Set(here.map(p=>p.category))].sort();
-    $('.galassia-category').innerHTML='<option value="">Tous les types</option>'+cats.map(x=>'<option value="'+escape(x)+'" '+(category===x?'selected':'')+'>'+escape(x)+'</option>').join('');
-    const models=modelList(dataset,collection,category,$('.galassia-search').value);
-    if(!models.some(p=>modelId(p)===model)){model=models[0]?modelId(models[0]):'';reference='';}
-    $('.galassia-models').innerHTML=models.length?models.map(p=>{
-     const im=imageFor(p,official),n=variantsFor(dataset,p);
-     const low=Math.min(...n.map(x=>x.price));
-     return '<button type="button" class="galassia-model'+(modelId(p)===model?' active':'')+'" data-model="'+escape(modelId(p))+'">'+(im?'<img src="'+escape(im)+'" alt="" loading="lazy">':'<div class="galassia-no-photo">Visuel indisponible</div>')+'<strong>'+escape(p.productType||p.base)+'</strong><span>'+escape(p.base)+' · '+n.length+' finition(s)</span><small>À partir de '+money(low)+' HT</small></button>';
-    }).join(''):'<p class="galassia-empty">Aucun modèle tarifé avec ces critères.</p>';
-    overlay.querySelectorAll('.galassia-model').forEach(btn=>btn.onclick=()=>{
-     model=btn.dataset.model;reference='';refresh();
+    const groups=groupsFor();
+    if(!groups.length)sectionIndex=0;
+    if(sectionIndex>=groups.length)sectionIndex=0;
+    const active=groups[sectionIndex];
+    $('.galassia-subfamilies').innerHTML=groups.map((g,i)=>
+      '<button type="button" class="galassia-section'+(i===sectionIndex?' active':'')+'" data-section-index="'+i+'"><strong>'+escape(g.name)+'</strong><small>'+(g.prices||0)+' réf. tarifées</small></button>'
+    ).join('');
+    $$('.galassia-section').forEach(b=>b.onclick=()=>{
+      sectionIndex=Number(b.dataset.sectionIndex);model='';reference='';$('.galassia-search').value='';refresh();
     });
-    const m=dataset.find(p=>p.collection===collection&&modelId(p)===model);
-    if(!m){$('.galassia-selection').innerHTML='<p>Sélectionnez une collection puis un modèle.</p>';return;}
-    const variants=variantsFor(dataset,m);
-    if(!variants.some(p=>p.reference===reference))reference=variants[0].reference;
-    const p=variants.find(x=>x.reference===reference)||variants[0],img=imageFor(p,official);
-    const title=p.productType||p.designation;
-    const sourcePage=p.sourcePage?'Page '+p.sourcePage+' du tarif PDF fourni':'Page source non identifiée';
+    const query=norm($('.galassia-search').value.trim());
+    const entries=getModels(active).filter(m=>!query||[m.base,m.name,...m.variants.map(x=>x.reference)].some(x=>norm(x).includes(query)));
+    if(!entries.some(m=>m.base===model)){
+      model=entries.find(m=>m.variants.length)?.base||entries[0]?.base||'';
+      reference='';
+    }
+    $('.galassia-models').innerHTML=entries.length?entries.map(m=>{
+      const hasPrice=m.variants.length>0;
+      const photo=m.image||m.variants[0]?.image||'';
+      const shared='<span class="galassia-model-photo">'+(photo?'<img src="'+escape(photo)+'" alt="" loading="lazy">':'<span class="galassia-no-photo">Photo fabricant non disponible</span>')+'</span><strong>'+escape(m.name||m.base)+'</strong><span>'+escape(m.base)+(hasPrice?' · '+m.variants.length+' déclinaison(s)':'')+'</span>';
+      if(!hasPrice)return '<a class="galassia-model galassia-unpriced" href="'+escape(/^https:\/\/www\.ceramicagalassia\.it\/catalogo\//.test(m.url||'')?m.url:(collection?.url||'https://www.ceramicagalassia.it/catalogo/'))+'" target="_blank" rel="noopener noreferrer">'+shared+'<small>Modèle officiel · aucun prix importé</small></a>';
+      return '<button type="button" class="galassia-model'+(m.base===model?' active':'')+'" data-model="'+escape(m.base)+'">'+shared+'<small>À partir de '+money(Math.min(...m.variants.map(v=>v.price)))+' HT</small></button>';
+    }).join(''):'<p class="galassia-empty">Aucun modèle dans cette rubrique. Le site fabricant conserve cette famille dans son arborescence.</p>';
+    $$('.galassia-model[data-model]').forEach(b=>b.onclick=()=>{model=b.dataset.model;reference='';refresh();});
+    const m=entries.find(x=>x.base===model&&x.variants.length);
+    if(!m){$('.galassia-selection').innerHTML='<p class="galassia-empty">Choisissez un modèle tarifé. Les produits non chiffrés restent accessibles sur le site Galassia, sans prix supposé.</p>';return;}
+    const variants=m.variants;
+    if(!variants.some(x=>x.reference===reference))reference=variants[0].reference;
+    const p=variants.find(x=>x.reference===reference)||variants[0];
+    const image=m.image||p.image||'';
+    const title=m.name||p.productType||p.designation;
+    const pdfSource=p.sourcePdfPage||p.sourcePage;
     $('.galassia-selection').innerHTML=
-      '<div class="galassia-photo">'+(img?'<img src="'+escape(img)+'" alt="'+escape(title)+'">':'<span>Photo de la référence indisponible</span>')+'</div>'+
-      '<div class="galassia-image-note">'+(p.image?'Photographie officielle du modèle · la finition peut différer':'Photo de collection illustrative · ne représente pas nécessairement le modèle')+'</div>'+
-      '<span class="galassia-eyebrow">'+escape(p.collection)+' · '+escape(p.category)+'</span><h3>'+escape(title)+'</h3>'+
+      '<div class="galassia-photo">'+(image?'<img src="'+escape(image)+'" alt="'+escape(title)+'">':'<span>Photo fabricant indisponible</span>')+'</div>'+
+      '<div class="galassia-image-note">'+(image?'Photographie du modèle · la finition illustrée peut différer':'Aucune photographie exacte du modèle vérifiée')+'</div>'+
+      '<span class="galassia-eyebrow">'+escape(p.manufacturerCollection||p.collection)+' · '+escape(p.manufacturerFamily||'Rubrique à rapprocher')+'</span><h3>'+escape(title)+'</h3>'+
       '<label class="galassia-variant-label">Référence et finition<select class="galassia-variant">'+variants.map(v=>
-         '<option value="'+escape(v.reference)+'" '+(v.reference===reference?'selected':'')+'>'+escape(v.reference)+' · '+escape(finishName(v))+' · '+money(v.price)+' HT</option>').join('')+'</select></label>'+
+       '<option value="'+escape(v.reference)+'" '+(v.reference===reference?'selected':'')+'>'+escape(v.reference)+' · '+escape(finishName(v))+' · '+money(v.price)+' HT</option>').join('')+'</select></label>'+
       '<div class="galassia-summary"><div><span>Référence fabricant</span><b>'+escape(p.reference)+'</b></div><div><span>Prix public HT</span><b>'+money(p.price)+'</b></div><div><span>Remise d’achat fournisseur</span><b>50 %</b></div><div><span>Coût d’achat théorique HT</span><b>'+money(p.price*.5)+'</b></div></div>'+
-      '<div class="galassia-docs"><span>'+escape(sourcePage)+' · dessins et dimensions dans le tarif source</span>'+
-      (technicalLink(p)?'<a href="'+escape(technicalLink(p))+'" target="_blank" rel="noopener noreferrer">Fiche technique officielle PDF</a>':'')+
-      (p.manufacturerUrl?'<a href="'+escape(p.manufacturerUrl)+'" target="_blank" rel="noopener noreferrer">Produit fabricant · fiche technique et CAO</a>':'')+
-      '</div><p class="galassia-doc-warning">Seules les références portant un prix non ambigu ont été importées. Les accessoires ne sont pas inclus automatiquement.</p>'+
-      '<button type="button" class="galassia-add">Ajouter cette référence au projet</button>';
+      '<div class="galassia-docs"><span>'+(pdfSource?'Tarif Galassia · page '+pdfSource+' (dessin technique dans le PDF source)':'Page du tarif non identifiée')+'</span>'+
+      (technicalLink(p)?'<a href="'+escape(technicalLink(p))+'" target="_blank" rel="noopener noreferrer">Fiche technique PDF officielle</a>':'')+
+      (/^https:\/\/www\.ceramicagalassia\.it\/catalogo\//.test(p.manufacturerUrl||'')?'<a href="'+escape(p.manufacturerUrl)+'" target="_blank" rel="noopener noreferrer">Fiche produit chez Galassia</a>':'')+'</div>'+
+      (!p.officialStructureVerified?'<p class="galassia-doc-warning">Famille non confirmée sur le site fabricant : vérifier avant commande.</p>':'')+
+      '<button type="button" class="galassia-add">Ajouter la référence exacte au projet</button>';
     if(!technicalLink(p))resolveTechnical(p).then(url=>{
       if(!url||reference!==p.reference||!overlay.isConnected)return;
-      const docs=$('.galassia-docs');if(docs&&!docs.querySelector('.galassia-technical-pdf')){
-        const link=document.createElement('a');link.className='galassia-technical-pdf';
-        link.href=url;link.target='_blank';link.rel='noopener noreferrer';link.textContent='Fiche technique officielle PDF';
-        docs.append(link);
+      const docs=$('.galassia-docs');
+      if(docs&&!docs.querySelector('.galassia-technical-pdf')){
+        const a=document.createElement('a');a.className='galassia-technical-pdf';a.href=url;a.target='_blank';a.rel='noopener noreferrer';a.textContent='Fiche technique PDF officielle';docs.append(a);
       }
     });
     $('.galassia-variant').onchange=e=>{reference=e.target.value;refresh();};
     $('.galassia-add').onclick=async()=>{
-      if(pending)return;pending=true;const btn=$('.galassia-add');btn.disabled=true;btn.textContent='Ajout…';
+      if(pending)return;pending=true;const button=$('.galassia-add');button.disabled=true;button.textContent='Ajout…';
       try{await resolveTechnical(p);await onAdd(p,roomId);close();}
-      catch(err){alert(err?.message||"L'article n'a pas pu être ajouté.");pending=false;btn.disabled=false;btn.textContent='Ajouter cette référence au projet';}
+      catch(error){alert(error?.message||"Impossible d'ajouter l'article.");pending=false;button.disabled=false;button.textContent='Ajouter la référence exacte au projet';}
     };
    };
-   $('.galassia-category').onchange=e=>{category=e.target.value;model='';reference='';refresh();};
    $('.galassia-search').oninput=()=>{model='';reference='';refresh();};
+   if(matchInitial&&initial.manufacturerFamily){
+    const found=groupsFor().findIndex(x=>x.name===initial.manufacturerFamily);
+    if(found>=0)sectionIndex=found;
+   }else if(!matchInitial){
+    const found=groupsFor().findIndex(x=>!x.official);
+    if(found>=0)sectionIndex=found;
+   }
    refresh();$('.galassia-search').focus();
   }));
  }

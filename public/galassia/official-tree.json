@@ -1,0 +1,2363 @@
+{
+  "source": "https://www.ceramicagalassia.it/catalogo/",
+  "capturedDate": "2026-10-30",
+  "collections": [
+    {
+      "name": "T65",
+      "slug": "t65",
+      "url": "https://www.ceramicagalassia.it/catalogo/t65/",
+      "groups": [
+        {
+          "name": "LAVABI",
+          "items": [
+            {
+              "base": "7732",
+              "name": "Asta porta salviette 47 cm",
+              "image": "https://www.ceramicagalassia.it/public/colori/7732/_resized/7732bm_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/t65/lavabi/asta-porta-salviette-47-cm.html",
+              "section": "LAVABI"
+            },
+            {
+              "base": "7702AP",
+              "name": "Lavabo appoggio cm 65x39 reversibile",
+              "image": "https://www.ceramicagalassia.it/public/colori/7702app/_resized/7702sf_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/t65/lavabi/lavabo-appoggio-cm-65x39-(1).html",
+              "section": "LAVABI"
+            },
+            {
+              "base": "7702",
+              "name": "Lavabo sospeso cm 65x39",
+              "image": "https://www.ceramicagalassia.it/public/colori/7702/_resized/7702_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/t65/lavabi/lavabo-sospeso-cm-65x39.html",
+              "section": "LAVABI"
+            },
+            {
+              "base": "7702SF",
+              "name": "Lavabo sospeso cm 65x39",
+              "image": "https://www.ceramicagalassia.it/public/colori/7702app/_resized/7702sf_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/t65/lavabi/lavabo-appoggio-cm-65x39.html",
+              "section": "LAVABI"
+            }
+          ]
+        },
+        {
+          "name": "Mobili",
+          "items": [
+            {
+              "base": "7705",
+              "name": "Cassetto sottolavabo ovale 65x38xh14 cm",
+              "image": "https://www.ceramicagalassia.it/public/colori/7705/_resized/7705bm_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/t65/mobili/cassetto-sottolavabo-ovale-65x38xh14-cm.html",
+              "section": "Mobili"
+            },
+            {
+              "base": "7703",
+              "name": "Struttura free standing per lavabo T65 1 porta",
+              "image": "https://www.ceramicagalassia.it/public/colori/7703/_resized/7703_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/t65/mobili/struttura-free-standing-per-lavabo-t65--1-porta.html",
+              "section": "Mobili"
+            },
+            {
+              "base": "7706",
+              "name": "Vassoio 33x54xh3 cm in ceramica",
+              "image": "https://www.ceramicagalassia.it/public/colori/7706/_resized/7706_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/t65/mobili/vassoio-33x54xh3-cm-in-ceramica.html",
+              "section": "Mobili"
+            }
+          ]
+        },
+        {
+          "name": "ACCESSORI",
+          "items": [
+            {
+              "base": "7731",
+              "name": "Asta porta salviette 32 cm",
+              "image": "https://www.ceramicagalassia.it/public/colori/7731/_resized/7731bm_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/t65/accessori/asta-porta-salviette-32-cm.html",
+              "section": "ACCESSORI"
+            },
+            {
+              "base": "7733",
+              "name": "Asta porta salviette 62 cm",
+              "image": "https://www.ceramicagalassia.it/public/colori/7733/_resized/7733bm_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/t65/accessori/asta-porta-salviette-62-cm.html",
+              "section": "ACCESSORI"
+            },
+            {
+              "base": "7734",
+              "name": "Porta accappatoio 3,7 cm",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7734bm_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/t65/accessori/porta-accappatoio-37-cm-(1).html",
+              "section": "ACCESSORI"
+            },
+            {
+              "base": "7736",
+              "name": "Porta scopino da appoggio h40 cm",
+              "image": "https://www.ceramicagalassia.it/public/colori/7736/_resized/7730bm_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/t65/accessori/porta-scopino-da-appoggio-h40-cm-(1).html",
+              "section": "ACCESSORI"
+            },
+            {
+              "base": "7735",
+              "name": "Portarotolo 13 cm",
+              "image": "https://www.ceramicagalassia.it/public/colori/7735/_resized/7735bm_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/t65/accessori/portarotolo-13-cm-(1).html",
+              "section": "ACCESSORI"
+            }
+          ]
+        }
+      ],
+      "status": 200,
+      "notAvailable": false,
+      "hero": "https://www.ceramicagalassia.it/public/T65-Galleria.jpg"
+    },
+    {
+      "name": "R70",
+      "slug": "r70",
+      "url": "https://www.ceramicagalassia.it/catalogo/r70/",
+      "groups": [
+        {
+          "name": "LAVABI",
+          "items": [
+            {
+              "base": "7701SF",
+              "name": "Lavabo appoggio o sospeso cm 70x46",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7701sf_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/r70/lavabo-appoggio-o-sospeso-cm-70x46-(1).html",
+              "section": "LAVABI"
+            },
+            {
+              "base": "7701",
+              "name": "Lavabo appoggio o sospeso cm 70x46",
+              "image": "https://www.ceramicagalassia.it/public/colori/7701/_resized/7701_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/r70/lavabo-appoggio-o-sospeso-cm-70x46.html",
+              "section": "LAVABI"
+            }
+          ]
+        },
+        {
+          "name": "Mobili",
+          "items": [
+            {
+              "base": "7720",
+              "name": "Struttura freestanding",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7720bi_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/r70/mobili/struttura-freestanding.html",
+              "section": "Mobili"
+            },
+            {
+              "base": "7721",
+              "name": "Struttura freestanding",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7721bi_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/r70/mobili/struttura-freestanding-(1).html",
+              "section": "Mobili"
+            },
+            {
+              "base": "7748",
+              "name": "Cassetto laccato 61x45 cm",
+              "image": "https://www.ceramicagalassia.it/public/colori/7748/_resized/7748ro_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/r70/mobili/cassetto-laccato-61x45-cm.html",
+              "section": "Mobili"
+            },
+            {
+              "base": "7749",
+              "name": "Cassetto laccato 111x45 cm",
+              "image": "https://www.ceramicagalassia.it/public/colori/7749/_resized/7749bm_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/r70/mobili/cassetto-laccato-111x45-cm.html",
+              "section": "Mobili"
+            },
+            {
+              "base": "7750",
+              "name": "Cassetto laccato 81x45 cm",
+              "image": "https://www.ceramicagalassia.it/public/colori/7750/_resized/7750bm_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/r70/mobili/cassetto-laccato-81x45-cm.html",
+              "section": "Mobili"
+            }
+          ]
+        },
+        {
+          "name": "ACCESSORI",
+          "items": [
+            {
+              "base": "7722",
+              "name": "1 cassetto rotante in metallo",
+              "image": "https://www.ceramicagalassia.it/public/colori/7722/_resized/7722bi_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/r70/1-cassetto-rotante-in-metallo.html",
+              "section": "ACCESSORI"
+            },
+            {
+              "base": "7724",
+              "name": "Asta porta salviette 33 cm.",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7724bm_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/r70/asta-porta-salviette-33-cm.html",
+              "section": "ACCESSORI"
+            },
+            {
+              "base": "7725",
+              "name": "Asta porta salviette 48 cm",
+              "image": "https://www.ceramicagalassia.it/public/colori/7725/_resized/7725bm_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/r70/asta-porta-salviette-48-cm.html",
+              "section": "ACCESSORI"
+            },
+            {
+              "base": "7726",
+              "name": "Asta porta salviette 63 cm",
+              "image": "https://www.ceramicagalassia.it/public/colori/7726/_resized/7726bm_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/r70/asta-porta-salviette-63-cm.html",
+              "section": "ACCESSORI"
+            },
+            {
+              "base": "7727",
+              "name": "Asta porta salviette 83 cm",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7727bm_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/r70/asta-porta-salviette-83-cm.html",
+              "section": "ACCESSORI"
+            },
+            {
+              "base": "7728",
+              "name": "Porta accappatoio 3,7 cm",
+              "image": "https://www.ceramicagalassia.it/public/colori/7728/_resized/7728bm_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/r70/porta-accappatoio-37-cm.html",
+              "section": "ACCESSORI"
+            },
+            {
+              "base": "7729",
+              "name": "Portarotolo 13 cm",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7729bm_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/r70/portarotolo-13-cm.html",
+              "section": "ACCESSORI"
+            },
+            {
+              "base": "7730",
+              "name": "Porta scopino da appoggio h40 cm",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7730bm_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/r70/porta-scopino-da-appoggio-h40-cm.html",
+              "section": "ACCESSORI"
+            }
+          ]
+        }
+      ],
+      "status": 200,
+      "notAvailable": false,
+      "hero": "https://www.ceramicagalassia.it/public/R70-Galleria.jpg"
+    },
+    {
+      "name": "SUSI",
+      "slug": "susi",
+      "url": "https://www.ceramicagalassia.it/catalogo/susi/",
+      "groups": [
+        {
+          "name": "Sanitari a terra",
+          "items": [
+            {
+              "base": "7811",
+              "name": "Vaso a terra senza brida 51x36",
+              "url": "https://www.ceramicagalassia.it/catalogo/susi/sanitari/vaso-a-terra-senza-brida-51x36.html",
+              "image": "https://www.ceramicagalassia.it/public/colori/7811/_resized/7811mt_650X550_90_C.jpg",
+              "section": "Sanitari a terra"
+            },
+            {
+              "base": "7812",
+              "name": "Bidet monoforo 51x36 cm",
+              "url": "https://www.ceramicagalassia.it/catalogo/susi/sanitari/bidet-monoforo-51x36-cm.html",
+              "image": "https://www.ceramicagalassia.it/public/colori/7812/_resized/7812_650X550_90_C.jpg",
+              "section": "Sanitari a terra"
+            }
+          ]
+        },
+        {
+          "name": "Sanitari sospesi",
+          "items": [
+            {
+              "base": "7813",
+              "name": "Vaso sospeso senza brida",
+              "url": "https://www.ceramicagalassia.it/catalogo/susi/vaso-sospeso-senza-brida-(1).html",
+              "image": "https://www.ceramicagalassia.it/public/colori/7813/_resized/7813_650X550_90_C.jpg",
+              "section": "Sanitari sospesi"
+            },
+            {
+              "base": "7814",
+              "name": "Bidet sospeso",
+              "url": "https://www.ceramicagalassia.it/catalogo/susi/bidet-sospeso-(4).html",
+              "image": "https://www.ceramicagalassia.it/public/colori/7814/_resized/7814_650X550_90_C.jpg",
+              "section": "Sanitari sospesi"
+            }
+          ]
+        },
+        {
+          "name": "Vasche",
+          "items": [
+            {
+              "base": "1220",
+              "name": "Vasca in Crystalplant 160x84,5xh50,5 cm",
+              "url": "https://www.ceramicagalassia.it/catalogo/susi/vasca-in-crystalplant-160x845xh505-cm.html",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7251-susi_650X550_90_C.jpg",
+              "section": "Vasche"
+            }
+          ]
+        }
+      ],
+      "notAvailable": false,
+      "sourceVerified": "manufacturer current webpage + direct product links",
+      "hero": "https://www.ceramicagalassia.it/public/SUSI%20SANITARI-Galleria.jpg"
+    },
+    {
+      "name": "Nextnarrow",
+      "slug": "next-narrow",
+      "url": "https://www.ceramicagalassia.it/catalogo/next-narrow/",
+      "groups": [
+        {
+          "name": "Lavabi",
+          "items": [
+            {
+              "base": "7505",
+              "name": "Lavabo appoggio o sospeso cm 100x37",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7505_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/next-narrow/lavabi/lavabo-appoggio-o-sospeso-cm-100x37.html",
+              "section": "Lavabi"
+            },
+            {
+              "base": "7502",
+              "name": "Lavabo appoggio o sospeso cm 100x48",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7502_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/next-narrow/lavabi/lavabo-appoggio-o-sospeso-cm-100x48.html",
+              "section": "Lavabi"
+            },
+            {
+              "base": "7504",
+              "name": "Lavabo appoggio o sospeso cm 70x48",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7504_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/next-narrow/lavabi/lavabo-appoggio-o-sospeso-cm-70x48.html",
+              "section": "Lavabi"
+            }
+          ]
+        },
+        {
+          "name": "Mobili",
+          "items": [
+            {
+              "base": "7533",
+              "name": "Cassetto sospeso cm 100x37xh20, collocabile lateralmente o sotto lavabo",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7533_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/next-narrow/mobili/cassetto-sospeso-cm-100x37xh20.html",
+              "section": "Mobili"
+            },
+            {
+              "base": "7531",
+              "name": "Cassetto sospeso cm 40x37xh20, collocabile lateralmente o sotto lavabo",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7531_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/next-narrow/mobili/cassetto-sospeso-cm-40x37xh20.html",
+              "section": "Mobili"
+            },
+            {
+              "base": "7532",
+              "name": "Cassetto sospeso cm 70x37xh20, collocabile lateralmente o sotto lavabo",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7532_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/next-narrow/mobili/cassetto-sospeso-cm-70x37xh20.html",
+              "section": "Mobili"
+            },
+            {
+              "base": "7534",
+              "name": "Cassetto sospeso con asola centrale per sifone cm 70x37xh20",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7534_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/next-narrow/mobili/cassetto-sospeso-con-asola-centrale-per-sifone-cm-70x37xh20.html",
+              "section": "Mobili"
+            },
+            {
+              "base": "7535",
+              "name": "Cassetto sospeso con asola decentrata per sifone cm 100x37xh20",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7535_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/next-narrow/mobili/cassetto-sospeso-con-asola-decentrata-per-sifone-cm-100x37xh20.html",
+              "section": "Mobili"
+            },
+            {
+              "base": "7538",
+              "name": "Mobile a giorno sospeso cm 100x37xh20, collocabile lateralmente o sotto lavabo",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7538_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/next-narrow/mobili/mobile-a-giorno-sospeso-cm-100x37xh20.html",
+              "section": "Mobili"
+            },
+            {
+              "base": "7536",
+              "name": "Mobile a giorno sospeso cm 40x37xh20, collocabile lateralmente o sotto lavabo",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7536_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/next-narrow/mobili/mobile-a-giorno-sospeso-cm-40x37xh20.html",
+              "section": "Mobili"
+            },
+            {
+              "base": "7537",
+              "name": "Mobile a giorno sospeso cm 70x37xh20, collocabile lateralmente o sotto lavabo",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7537_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/next-narrow/mobili/mobile-a-giorno-sospeso-cm-70x37xh20-collocabile-lateralmente-o-sotto-lavabo.html",
+              "section": "Mobili"
+            }
+          ]
+        }
+      ],
+      "status": 200,
+      "notAvailable": false,
+      "hero": "https://www.ceramicagalassia.it/public/NEXTnarrow%20.jpg"
+    },
+    {
+      "name": "Next",
+      "slug": "next",
+      "url": "https://www.ceramicagalassia.it/catalogo/next/",
+      "groups": [
+        {
+          "name": "Mobili",
+          "items": [
+            {
+              "base": "7522",
+              "name": "Cassetto sospeso cm 100x48xh20, collocabile lateralmente o sotto lavabo",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7522_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/next/mobili/cassetto-sospeso-cm-100x48xh20.html",
+              "section": "Mobili"
+            },
+            {
+              "base": "7523",
+              "name": "Cassetto sospeso cm 120x48xh20 collocabile lateralmente o sotto lavabo",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7523_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/next/mobili/cassetto-sospeso-cm-120x48xh20.html",
+              "section": "Mobili"
+            },
+            {
+              "base": "7520",
+              "name": "Cassetto sospeso cm 40x48xh20, collocabile lateralmente o sotto lavabo",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7520_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/next/mobili/cassetto-sospeso-cm-40x48xh20.html",
+              "section": "Mobili"
+            },
+            {
+              "base": "7521",
+              "name": "Cassetto sospeso cm 70x48xh20, collocabile lateralmente o sotto lavabo.",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7521_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/next/mobili/cassetto-sospeso-cm-70x48xh20.html",
+              "section": "Mobili"
+            },
+            {
+              "base": "7530",
+              "name": "Cassetto sospeso con asola centrale per sifone cm 100x48xh20",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7530_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/next/mobili/cassetto-sospeso-con-asola-centrale-per-sifone-cm-100x48xh20.html",
+              "section": "Mobili"
+            },
+            {
+              "base": "7528",
+              "name": "Cassetto sospeso con asola centrale per sifone cm 70x48xh20",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7528_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/next/mobili/cassetto-sospeso-con-asola-centrale-per-sifone-cm-70x48xh20.html",
+              "section": "Mobili"
+            },
+            {
+              "base": "7529",
+              "name": "Cassetto sospeso con asola decentrata per sifone cm 100x48xh20",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7529_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/next/mobili/cassetto-sospeso-con-asola-decentrata-per-sifone-cm-100x48xh20.html",
+              "section": "Mobili"
+            },
+            {
+              "base": "7526",
+              "name": "Mobile a giorno sospeso cm 100x48xh20, collocabile lateralmente o sotto lavabo",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7526_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/next/mobili/mobile-a-giorno-sospeso-cm-100x48xh20-(1).html",
+              "section": "Mobili"
+            },
+            {
+              "base": "7527",
+              "name": "Mobile a giorno sospeso cm 120x48xh20, collocabile lateralmente o sotto lavabo",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7527_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/next/mobili/mobile-a-giorno-sospeso-cm-120x48xh20.html",
+              "section": "Mobili"
+            },
+            {
+              "base": "7524",
+              "name": "Mobile a giorno sospeso cm 40x48xh20, collocabile lateralmente o sotto lavabo",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7524_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/next/mobili/mobile-a-giorno-sospeso-cm-40x48xh20-collocabile-lateralmente-o-sotto-lavabo.html",
+              "section": "Mobili"
+            },
+            {
+              "base": "7525",
+              "name": "Mobile a giorno sospeso cm 70x48xh20, collocabile lateralmente o sotto lavabo",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7525_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/next/mobili/mobile-a-giorno-sospeso-cm-70x48xh20.html",
+              "section": "Mobili"
+            }
+          ]
+        }
+      ],
+      "status": 200,
+      "notAvailable": false,
+      "hero": "https://www.ceramicagalassia.it/public/NEXT.jpg"
+    },
+    {
+      "name": "Lola",
+      "slug": "lola",
+      "url": "https://www.ceramicagalassia.it/catalogo/lola/",
+      "groups": [
+        {
+          "name": "Lavabi",
+          "items": [
+            {
+              "base": "7500",
+              "name": "Lavabo appoggio cm 50x40",
+              "image": "https://www.ceramicagalassia.it/public/LOLA%207.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/lola/lavabi/lavabo-appoggio-cm-50x40xh25.html",
+              "section": "Lavabi"
+            },
+            {
+              "base": "7501",
+              "name": "Lavabo sospeso cm 50x45,5",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7501_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/lola/lavabi/lavabo-sospeso-cm-50x455xh25.html",
+              "section": "Lavabi"
+            }
+          ]
+        },
+        {
+          "name": "Sanitari sospesi",
+          "items": [
+            {
+              "base": "7511",
+              "name": "Wc sospeso senza brida 58X40",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7511_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/lola/sanitari/wc-sospeso-senza-brida-58x36xh33-cm.html",
+              "section": "Sanitari sospesi"
+            },
+            {
+              "base": "7512",
+              "name": "Bidet sospeso 58x40",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7512_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/lola/sanitari/bidet-sospeso-monoforo-(1).html",
+              "section": "Sanitari sospesi"
+            },
+            {
+              "base": "7515",
+              "name": "Wc con scarico universale senza brida",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7515_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/lola/sanitari/wc-con-scarico-universale-senza-brida.html",
+              "section": "Sanitari sospesi"
+            },
+            {
+              "base": "7516",
+              "name": "Bidet sospeso monoforo",
+              "image": "https://www.ceramicagalassia.it/public/colori/7516/_resized/7516_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/lola/sanitari/bidet-sospeso-monoforo-(2).html",
+              "section": "Sanitari sospesi"
+            }
+          ]
+        }
+      ],
+      "status": 200,
+      "notAvailable": false,
+      "hero": "https://www.ceramicagalassia.it/public/lola.jpg"
+    },
+    {
+      "name": "Core",
+      "slug": "core",
+      "url": "https://www.ceramicagalassia.it/catalogo/core/",
+      "groups": [
+        {
+          "name": "Lavabi",
+          "items": [
+            {
+              "base": "7305",
+              "name": "Lavabo Ø37",
+              "image": "https://www.ceramicagalassia.it/public/colori/7305/_resized/7305_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/core/lavabi/lavabo-appoggio-cilindro-core.html",
+              "section": "Lavabi"
+            },
+            {
+              "base": "7336",
+              "name": "Lavabo da appoggio cm 55x36",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7336_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/core/lavabi/lavabo-da-appoggio-cm-55x36.html",
+              "section": "Lavabi"
+            },
+            {
+              "base": "7360",
+              "name": "Lavabo da appoggio cm ø25",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7360_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/core/lavabi/lavabo-da-appoggio-cm-25.html",
+              "section": "Lavabi"
+            },
+            {
+              "base": "7339",
+              "name": "Lavabo da appoggio cm ø45",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7339_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/core/lavabi/lavabo-da-appoggio-cm-45.html",
+              "section": "Lavabi"
+            },
+            {
+              "base": "7339SF",
+              "name": "Lavabo da appoggio cm ø45",
+              "image": "https://www.ceramicagalassia.it/public/colori/7339sf/_resized/7339sf_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/core/lavabi/lavabo-da-appoggio-cm-45-(1).html",
+              "section": "Lavabi"
+            }
+          ]
+        },
+        {
+          "name": "Sanitari a terra",
+          "items": [
+            {
+              "base": "7351",
+              "name": "Vaso a terra con scarico a VORTICE 54x36 cm",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7351_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/core/sanitari-a-terra/vaso-a-terra.html",
+              "section": "Sanitari a terra"
+            },
+            {
+              "base": "7352",
+              "name": "Bidet a terra",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7352_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/core/sanitari-a-terra/bidet-a-terra-(1).html",
+              "section": "Sanitari a terra"
+            }
+          ]
+        },
+        {
+          "name": "Sanitari sospesi",
+          "items": [
+            {
+              "base": "7353",
+              "name": "Vaso sospeso con scarico a VORTICE 54x36 cm",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7353_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/core/sanitari-sospesi/vaso-sospeso-(3).html",
+              "section": "Sanitari sospesi"
+            },
+            {
+              "base": "7354",
+              "name": "Bidet sospeso",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7354_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/core/sanitari-sospesi/bidet-sospeso-(3).html",
+              "section": "Sanitari sospesi"
+            }
+          ]
+        },
+        {
+          "name": "Staffe",
+          "items": [
+            {
+              "base": "2049",
+              "name": "Staffa per installazione per 7306",
+              "image": "",
+              "url": "https://www.ceramicagalassia.it/catalogo/core/staffa-per-installazione-per-7306.html",
+              "section": "Staffe"
+            },
+            {
+              "base": "2082",
+              "name": "Staffa per installazione per 7305",
+              "image": "",
+              "url": "https://www.ceramicagalassia.it/catalogo/core/staffa-per-installazione-per-7305.html",
+              "section": "Staffe"
+            }
+          ]
+        },
+        {
+          "name": "Accessori",
+          "items": [
+            {
+              "base": "7346",
+              "name": "Asta porta salviette 30 cm",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7346bm_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/core/asta-porta-salviette-30-cm.html",
+              "section": "Accessori"
+            },
+            {
+              "base": "2059",
+              "name": "Portasapone in acciaio verniciato nero",
+              "image": "",
+              "url": "https://www.ceramicagalassia.it/catalogo/core/portasapone-in-acciaio-verniciato-nero.html",
+              "section": "Accessori"
+            }
+          ]
+        }
+      ],
+      "status": 200,
+      "notAvailable": false,
+      "hero": "https://www.ceramicagalassia.it/public/CORE.jpg"
+    },
+    {
+      "name": "Core Freestanding",
+      "slug": "core-freestanding",
+      "url": "https://www.ceramicagalassia.it/catalogo/core-freestanding/",
+      "groups": [
+        {
+          "name": "Lavabi",
+          "items": [
+            {
+              "base": "7306",
+              "name": "Lavabo Ø40",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7306%20bianco%20lucido_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/core-freestanding/core-lavabo-h20.html",
+              "section": "Lavabi"
+            }
+          ]
+        },
+        {
+          "name": "Strutture",
+          "items": [
+            {
+              "base": "7343",
+              "name": "Mobile contenitore",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7343mt_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/core-freestanding/strutture/mobile-contenitore.html",
+              "section": "Strutture"
+            },
+            {
+              "base": "7341",
+              "name": "Mobile contenitore",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7341_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/core-freestanding/strutture/mobile-contenitore-(1).html",
+              "section": "Strutture"
+            },
+            {
+              "base": "7342",
+              "name": "Mobile contenitore",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7342_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/core-freestanding/strutture/mobile-contenitore-(2).html",
+              "section": "Strutture"
+            },
+            {
+              "base": "7344",
+              "name": "Mobile contenitore in rovere",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7344_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/core-freestanding/strutture/mobile-contenitore-in-rovere.html",
+              "section": "Strutture"
+            },
+            {
+              "base": "7340",
+              "name": "Carter in lamiera forata",
+              "image": "",
+              "url": "https://www.ceramicagalassia.it/catalogo/core-freestanding/strutture/carter-in-lamiera-forata.html",
+              "section": "Strutture"
+            }
+          ]
+        }
+      ],
+      "status": 200,
+      "notAvailable": false
+    },
+    {
+      "name": "Tabulae",
+      "slug": "tabulae",
+      "url": "https://www.ceramicagalassia.it/catalogo/tabulae/",
+      "groups": [
+        {
+          "name": "PIANI SOSPESI",
+          "items": [
+            {
+              "base": "2086",
+              "name": "Struttura sospesa 61x46",
+              "image": "https://www.ceramicagalassia.it/public/_resized/struttura%20cornice%2061_bianco_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/tabulae/struttura-sospesa-61x46.html",
+              "section": "PIANI SOSPESI"
+            },
+            {
+              "base": "2087",
+              "name": "Struttura sospesa 81x46",
+              "image": "https://www.ceramicagalassia.it/public/_resized/struttura%20cornice%20101_nera_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/tabulae/struttura-sospesa-81x46.html",
+              "section": "PIANI SOSPESI"
+            },
+            {
+              "base": "2088",
+              "name": "Struttura sospesa 101x46",
+              "image": "https://www.ceramicagalassia.it/public/_resized/struttura%20cornice%20101_ottanio_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/tabulae/struttura-sospesa-101x46.html",
+              "section": "PIANI SOSPESI"
+            },
+            {
+              "base": "2089",
+              "name": "Struttura sospesa 121x46",
+              "image": "https://www.ceramicagalassia.it/public/_resized/struttura%20cornice%20121_sabbia%20ergo_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/tabulae/struttura-sospesa-a-cornice.html",
+              "section": "PIANI SOSPESI"
+            }
+          ]
+        },
+        {
+          "name": "STRUTTURE SOSPESE",
+          "items": [
+            {
+              "base": "2074",
+              "name": "Struttura sospesa 91x46",
+              "image": "https://www.ceramicagalassia.it/public/colori/2074/_resized/2074ne_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/tabulae/strutture/struttura-sospesa-91x46.html",
+              "section": "STRUTTURE SOSPESE"
+            },
+            {
+              "base": "2075",
+              "name": "Struttura sospesa 111x46",
+              "image": "https://www.ceramicagalassia.it/public/colori/2075/_resized/2075ne_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/tabulae/strutture/struttura-sospesa-111x46.html",
+              "section": "STRUTTURE SOSPESE"
+            }
+          ]
+        },
+        {
+          "name": "strutture free-standing",
+          "items": [
+            {
+              "base": "8909",
+              "name": "Struttura per mobile 60x45,5",
+              "image": "",
+              "url": "https://www.ceramicagalassia.it/catalogo/tabulae/struttura-per-mobile-60x455.html",
+              "section": "strutture free-standing"
+            },
+            {
+              "base": "8910",
+              "name": "Struttura per mobile 80x45,5",
+              "image": "",
+              "url": "https://www.ceramicagalassia.it/catalogo/tabulae/struttura-per-mobile-80x455.html",
+              "section": "strutture free-standing"
+            },
+            {
+              "base": "8914",
+              "name": "Struttura a pavimento 120x46",
+              "image": "",
+              "url": "https://www.ceramicagalassia.it/catalogo/tabulae/struttura-a-pavimento-120x46.html",
+              "section": "strutture free-standing"
+            }
+          ]
+        },
+        {
+          "name": "strutture panche",
+          "items": [
+            {
+              "base": "2080NE",
+              "name": "Mobile 61x46",
+              "image": "https://www.ceramicagalassia.it/public/_resized/2080ne_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/tabulae/strutture-panche/mobile-61x46.html",
+              "section": "strutture panche"
+            },
+            {
+              "base": "2079",
+              "name": "Mobile 81x46",
+              "image": "https://www.ceramicagalassia.it/public/_resized/2079_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/tabulae/strutture-panche/mobile-81x46.html",
+              "section": "strutture panche"
+            }
+          ]
+        },
+        {
+          "name": "Mobili",
+          "items": [
+            {
+              "base": "2065",
+              "name": "Mobile Tabulae 61 cm",
+              "image": "https://www.ceramicagalassia.it/public/_resized/2065_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/tabulae/mobili/mobile-tabulae-61-cm.html",
+              "section": "Mobili"
+            },
+            {
+              "base": "2066",
+              "name": "Mobile Tabulae 81 cm",
+              "image": "https://www.ceramicagalassia.it/public/_resized/2066_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/tabulae/mobili/mobile-tabulae-81-cm.html",
+              "section": "Mobili"
+            },
+            {
+              "base": "2067",
+              "name": "Mobile Tabulae 101 cm",
+              "image": "https://www.ceramicagalassia.it/public/_resized/2067_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/tabulae/mobili/mobile-tabulae-101-cm.html",
+              "section": "Mobili"
+            },
+            {
+              "base": "2068",
+              "name": "Mobile Tabulae 121 cm",
+              "image": "https://www.ceramicagalassia.it/public/_resized/2068_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/tabulae/mobili/mobile-tabulae-121-cm.html",
+              "section": "Mobili"
+            },
+            {
+              "base": "2069",
+              "name": "Mobile Tabulae 121 cm dx",
+              "image": "https://www.ceramicagalassia.it/public/_resized/2069_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/tabulae/mobili/mobile-tabulae-121-cm-dx.html",
+              "section": "Mobili"
+            },
+            {
+              "base": "2085",
+              "name": "Mobile 60x45,5",
+              "image": "https://www.ceramicagalassia.it/public/_resized/2085_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/tabulae/mobili/mobile-60x455.html",
+              "section": "Mobili"
+            },
+            {
+              "base": "2084",
+              "name": "Mobile 80x45,5",
+              "image": "https://www.ceramicagalassia.it/public/_resized/2084_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/tabulae/mobili/mobile-80x455-1.html",
+              "section": "Mobili"
+            },
+            {
+              "base": "2083",
+              "name": "Mobile 120x45,5",
+              "image": "https://www.ceramicagalassia.it/public/_resized/2083_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/tabulae/mobili/mobile-120x455-1.html",
+              "section": "Mobili"
+            }
+          ]
+        }
+      ],
+      "status": 200,
+      "notAvailable": false,
+      "hero": "https://www.ceramicagalassia.it/public/tabulae.jpg"
+    },
+    {
+      "name": "Meg11 Pro",
+      "slug": "meg11",
+      "url": "https://www.ceramicagalassia.it/catalogo/meg11/",
+      "groups": [
+        {
+          "name": "Lavabi appoggio sospesi",
+          "items": [
+            {
+              "base": "8974",
+              "name": "Lavabo 61x46",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/lavabi/meg-pro-lavabo-61.html",
+              "image": "https://www.ceramicagalassia.it/public/meg11-(2).jpg",
+              "section": "Lavabi appoggio sospesi"
+            },
+            {
+              "base": "8968",
+              "name": "Lavabo 71x46",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/lavabi/meg-pro.html",
+              "image": "https://www.ceramicagalassia.it/public/01_meg.jpg",
+              "section": "Lavabi appoggio sospesi"
+            },
+            {
+              "base": "8973",
+              "name": "Lavabo 81x46",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/lavabi/meg-pro-lavabo-61-1.html",
+              "image": "https://www.ceramicagalassia.it/public/02_meg.jpg",
+              "section": "Lavabi appoggio sospesi"
+            },
+            {
+              "base": "8967",
+              "name": "Lavabo 91x46",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/lavabi/meg-pro-lavabo-90.html",
+              "image": "https://www.ceramicagalassia.it/public/03_meg.jpg",
+              "section": "Lavabi appoggio sospesi"
+            },
+            {
+              "base": "8937",
+              "name": "Lavabo 101x46",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/lavabi/meg-pro-lavabo-101.html",
+              "image": "https://www.ceramicagalassia.it/public/04_meg.jpg",
+              "section": "Lavabi appoggio sospesi"
+            },
+            {
+              "base": "8938",
+              "name": "Lavabo 121x46",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/lavabi/lavabo-121x46.html",
+              "image": "https://www.ceramicagalassia.it/public/05_meg.jpg",
+              "section": "Lavabi appoggio sospesi"
+            },
+            {
+              "base": "8966",
+              "name": "Lavabo 121x46",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/lavabi/meg-pro-lavabo-121.html",
+              "image": "https://www.ceramicagalassia.it/public/06_meg.jpg",
+              "section": "Lavabi appoggio sospesi"
+            },
+            {
+              "base": "8939",
+              "name": "Lavabo 141x46",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/lavabi/meg-pro-lavabo-141.html",
+              "image": "https://www.ceramicagalassia.it/public/07_meg.jpg",
+              "section": "Lavabi appoggio sospesi"
+            },
+            {
+              "base": "5488",
+              "name": "Lavabo da appoggio 25x25 cm",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/lavabi/lavabo-da-appoggio-25x25-cm.html",
+              "image": "https://www.ceramicagalassia.it/public/08_meg.jpg",
+              "section": "Lavabi appoggio sospesi"
+            }
+          ]
+        },
+        {
+          "name": "STRUTTURE",
+          "items": [
+            {
+              "base": "8912+8915",
+              "name": "Struttura a pavimento 70x46",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/strutture/struttura-a-pavimento-70x46.html",
+              "image": "https://www.ceramicagalassia.it/public/09_meg.jpg",
+              "section": "STRUTTURE"
+            },
+            {
+              "base": "8913+8916",
+              "name": "Struttura a pavimento 90x46",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/strutture/struttura-a-pavimento-90x46.html",
+              "image": "https://www.ceramicagalassia.it/public/10_meg.jpg",
+              "section": "STRUTTURE"
+            }
+          ]
+        },
+        {
+          "name": "LAVATOI",
+          "items": [
+            {
+              "base": "5407M",
+              "name": "Lavabo sospeso 45x40",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/lavabo-sospeso-45x40.html",
+              "image": "https://www.ceramicagalassia.it/public/11_meg.jpg",
+              "section": "LAVATOI"
+            },
+            {
+              "base": "5407SF",
+              "name": "Lavabo sospeso 45x40",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/lavabo-sospeso-45x40-1.html",
+              "image": "https://www.ceramicagalassia.it/public/12_meg.jpg",
+              "section": "LAVATOI"
+            },
+            {
+              "base": "5482",
+              "name": "Lavabo-lavatoio cm 55x47",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/lavabo-lavatoio-cm-55x47.html",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8968_650X550_90_C.jpg",
+              "section": "LAVATOI"
+            },
+            {
+              "base": "5403",
+              "name": "Lavabo-lavatoio cm 65x45",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/wall-hung-washbasin-washtub.html",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8967_650X550_90_C.jpg",
+              "section": "LAVATOI"
+            }
+          ]
+        },
+        {
+          "name": "LAVABI INCASSO",
+          "items": []
+        },
+        {
+          "name": "MONOLITE",
+          "items": [
+            {
+              "base": "5405P",
+              "name": "Lavabo monolite 50x40 cm",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/lavabo-monolite-50x40.html",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8938_650X550_90_C.jpg",
+              "section": "MONOLITE"
+            }
+          ]
+        },
+        {
+          "name": "SANITARI SOSPESI",
+          "items": [
+            {
+              "base": "5412",
+              "name": "Bidet monoforo",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/sanitari/bidet-monoforo-1.html",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8966_650X550_90_C.jpg",
+              "section": "SANITARI SOSPESI"
+            },
+            {
+              "base": "5411",
+              "name": "Vaso sospeso",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/sanitari/vaso-sospeso.html",
+              "image": "https://www.ceramicagalassia.it/public/_resized/5488_650X550_90_C.jpg",
+              "section": "SANITARI SOSPESI"
+            },
+            {
+              "base": "5486",
+              "name": "WC sospeso 55",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/sanitari/wc-a-terra-1.html",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8912_650X550_90_C.jpg",
+              "section": "SANITARI SOSPESI"
+            }
+          ]
+        },
+        {
+          "name": "SANITARI A TERRA",
+          "items": [
+            {
+              "base": "5480V2",
+              "name": "Bidet a terra",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/bidet-a-terra.html",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8913_650X550_90_C.jpg",
+              "section": "SANITARI A TERRA"
+            },
+            {
+              "base": "5481V2",
+              "name": "WC a terra 55",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/wc-a-terra.html",
+              "image": "https://www.ceramicagalassia.it/public/colori/5407m/_resized/5407m_650X550_90_C.jpg",
+              "section": "SANITARI A TERRA"
+            },
+            {
+              "base": "5419",
+              "name": "Vaso con scarico traslato",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/vaso-con-scarico-traslato-code-5419.html",
+              "image": "https://www.ceramicagalassia.it/public/colori/5407sf/_resized/5407sf_650X550_90_C.jpg",
+              "section": "SANITARI A TERRA"
+            },
+            {
+              "base": "5410",
+              "name": "Bidet a terra",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/bidet.html",
+              "image": "https://www.ceramicagalassia.it/public/_resized/5482_650X550_90_C.jpg",
+              "section": "SANITARI A TERRA"
+            }
+          ]
+        },
+        {
+          "name": "Monoblocco",
+          "items": [
+            {
+              "base": "5413",
+              "name": "Vaso monoblocco",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/vaso-monoblocco-3.html",
+              "image": "https://www.ceramicagalassia.it/public/_resized/5403-(2)_650X550_90_C.jpg",
+              "section": "Monoblocco"
+            }
+          ]
+        },
+        {
+          "name": "Orinatoi",
+          "items": [
+            {
+              "base": "5408",
+              "name": "Orinatoio sospeso",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/orinatoio-sospeso.html",
+              "image": "https://www.ceramicagalassia.it/public/colori/5405/_resized/5405_650X550_90_C.jpg",
+              "section": "Orinatoi"
+            }
+          ]
+        },
+        {
+          "name": "Vasche",
+          "items": []
+        }
+      ],
+      "notAvailable": false,
+      "sourceVerified": "manufacturer current webpage and listed model codes"
+    },
+    {
+      "name": "Dream",
+      "slug": "dream",
+      "url": "https://www.ceramicagalassia.it/catalogo/dream/",
+      "groups": [
+        {
+          "name": "LAVABI APPOGGIO",
+          "items": [
+            {
+              "base": "7307",
+              "name": "Lavabo da appoggio ø40 cm",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7307_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/dream/lavabi/lavabo-da-appoggio-40-cm.html",
+              "section": "LAVABI APPOGGIO"
+            },
+            {
+              "base": "7308",
+              "name": "Lavabo da appoggio 60x38 cm",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7308_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/dream/lavabi/lavabo-da-appoggio-60x38-cm.html",
+              "section": "LAVABI APPOGGIO"
+            },
+            {
+              "base": "7333",
+              "name": "Lavabo da appoggio ø48 cm",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7333_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/dream/lavabi/lavabo-da-appoggio-48-cm.html",
+              "section": "LAVABI APPOGGIO"
+            },
+            {
+              "base": "7301",
+              "name": "Lavabo cm 50",
+              "image": "https://www.ceramicagalassia.it/public/colori/7301/_resized/7301_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/dream/lavabi/lavabo-cm-50.html",
+              "section": "LAVABI APPOGGIO"
+            },
+            {
+              "base": "7300",
+              "name": "Lavabo cm 64",
+              "image": "https://www.ceramicagalassia.it/public/colori/7300/_resized/7300_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/dream/lavabi/lavabo-cm-64.html",
+              "section": "LAVABI APPOGGIO"
+            },
+            {
+              "base": "7370",
+              "name": "Lavabo da appoggio ø32 cm",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7370_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/dream/lavabi/lavabo-da-appoggio-32-cm.html",
+              "section": "LAVABI APPOGGIO"
+            }
+          ]
+        },
+        {
+          "name": "MONOLITE",
+          "items": [
+            {
+              "base": "7304",
+              "name": "Lavabo Monolite cm 60",
+              "image": "https://www.ceramicagalassia.it/public/colori/7304/_resized/7304_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/dream/lavabo-monolite-cm-60.html",
+              "section": "MONOLITE"
+            }
+          ]
+        },
+        {
+          "name": "SANITARI SOSPESI",
+          "items": [
+            {
+              "base": "7335",
+              "name": "Bidet sospeso monoforo",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7335_650X550_90_C.png",
+              "url": "https://www.ceramicagalassia.it/catalogo/dream/sanitari/bidet-sospeso-monoforo.html",
+              "section": "SANITARI SOSPESI"
+            },
+            {
+              "base": "7334",
+              "name": "Wc sospeso senza brida",
+              "image": "https://www.ceramicagalassia.it/public/colori/7334/_resized/7334_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/dream/sanitari/wc-sospeso-senza-brida.html",
+              "section": "SANITARI SOSPESI"
+            },
+            {
+              "base": "7317",
+              "name": "Vaso sospeso senza brida",
+              "image": "https://www.ceramicagalassia.it/public/colori/7317/_resized/7317_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/dream/sanitari/vaso-sospeso-senza-brida.html",
+              "section": "SANITARI SOSPESI"
+            },
+            {
+              "base": "7313",
+              "name": "Bidet sospeso",
+              "image": "https://www.ceramicagalassia.it/public/colori/7313/_resized/7313_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/dream/sanitari/bidet-sospeso-5.html",
+              "section": "SANITARI SOSPESI"
+            },
+            {
+              "base": "7349",
+              "name": "Bidet cm 52x35 cm",
+              "image": "https://www.ceramicagalassia.it/public/_resized/sanitario1_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/dream/sanitari/bidet-cm-52x35-cm.html",
+              "section": "SANITARI SOSPESI"
+            },
+            {
+              "base": "7338",
+              "name": "Vaso sospeso cm 52x35 cm",
+              "image": "https://www.ceramicagalassia.it/public/_resized/salvataggio-sanitario2_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/dream/sanitari/vaso-sospeso-cm-52x35-cm.html",
+              "section": "SANITARI SOSPESI"
+            }
+          ]
+        },
+        {
+          "name": "Sanitari A TERRA",
+          "items": [
+            {
+              "base": "7328",
+              "name": "Bidet",
+              "image": "",
+              "url": "https://www.ceramicagalassia.it/catalogo/dream/bidet-6.html",
+              "section": "Sanitari A TERRA"
+            },
+            {
+              "base": "7327",
+              "name": "Vaso a terra",
+              "image": "",
+              "url": "https://www.ceramicagalassia.it/catalogo/dream/vaso-a-terra-2.html",
+              "section": "Sanitari A TERRA"
+            },
+            {
+              "base": "7311",
+              "name": "Bidet",
+              "image": "https://www.ceramicagalassia.it/public/colori/7311/_resized/7311_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/dream/bidet-5.html",
+              "section": "Sanitari A TERRA"
+            },
+            {
+              "base": "7337",
+              "name": "Wc con scarico universale senza brida 56 x 36",
+              "image": "https://www.ceramicagalassia.it/public/colori/7337/_resized/7337_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/dream/wc-con-scarico-universale-senza-brida-56-x-36.html",
+              "section": "Sanitari A TERRA"
+            },
+            {
+              "base": "7310",
+              "name": "Vaso a terra",
+              "image": "https://www.ceramicagalassia.it/public/colori/7310/_resized/7310_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/dream/vaso-a-terra-1.html",
+              "section": "Sanitari A TERRA"
+            },
+            {
+              "base": "7332",
+              "name": "Bidet a terra 36x52",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7332_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/dream/bidet-a-terra-36x52.html",
+              "section": "Sanitari A TERRA"
+            },
+            {
+              "base": "7331",
+              "name": "Vaso a terra 36x52",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7331_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/dream/vaso-a-terra-36x52-1.html",
+              "section": "Sanitari A TERRA"
+            },
+            {
+              "base": "7309",
+              "name": "Vaso con scarico traslato",
+              "image": "https://www.ceramicagalassia.it/public/colori/7309/_resized/7309_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/dream/vaso-con-scarico-traslato-1.html",
+              "section": "Sanitari A TERRA"
+            }
+          ]
+        },
+        {
+          "name": "COPRIVASO MULTIFUNZIONE",
+          "items": [
+            {
+              "base": "7319",
+              "name": "Coprivaso elettronico",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7319_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/dream/coprivaso-elettronico.html",
+              "section": "COPRIVASO MULTIFUNZIONE"
+            },
+            {
+              "base": "7318",
+              "name": "Coprivaso elettronico",
+              "image": "https://www.ceramicagalassia.it/public/_resized/73183_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/dream/coprivaso-elettronico-1.html",
+              "section": "COPRIVASO MULTIFUNZIONE"
+            }
+          ]
+        },
+        {
+          "name": "vasche",
+          "items": [
+            {
+              "base": "7320",
+              "name": "Flow",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7320_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/dream/vasca-flow.html",
+              "section": "vasche"
+            }
+          ]
+        }
+      ],
+      "status": 200,
+      "notAvailable": false
+    },
+    {
+      "name": "Hygea",
+      "slug": "hygea",
+      "url": "https://www.ceramicagalassia.it/catalogo/hygea/",
+      "groups": [
+        {
+          "name": "Sanitari",
+          "items": [
+            {
+              "base": "6200",
+              "name": "Smart toilet",
+              "image": "https://www.ceramicagalassia.it/public/_resized/6200_650X550_90_C.png",
+              "url": "https://www.ceramicagalassia.it/catalogo/hygea/vaso-senza-birida-con-copriwater-multifunzione.html",
+              "section": "Sanitari"
+            }
+          ]
+        }
+      ],
+      "status": 200,
+      "notAvailable": false,
+      "hero": "https://www.ceramicagalassia.it/public/HIGEA.jpg"
+    },
+    {
+      "name": "SmartB",
+      "slug": "smartb",
+      "url": "https://www.ceramicagalassia.it/catalogo/smartb/",
+      "groups": [
+        {
+          "name": "Lavabi appoggio",
+          "items": [
+            {
+              "base": "7412",
+              "name": "Lavabo 45x45 cm",
+              "image": "https://www.ceramicagalassia.it/public/colori/7412/_resized/7412_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/smartb/lavabi/lavabo-45x45-cm-1.html",
+              "section": "Lavabi appoggio"
+            },
+            {
+              "base": "7403",
+              "name": "Lavabo 45x45 cm",
+              "image": "https://www.ceramicagalassia.it/public/colori/7403/_resized/7403_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/smartb/lavabi/lavabo-45x45-cm.html",
+              "section": "Lavabi appoggio"
+            },
+            {
+              "base": "7404",
+              "name": "Lavabo ø45 cm",
+              "image": "https://www.ceramicagalassia.it/public/colori/7404/_resized/7404_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/smartb/lavabi/lavabo-45-cm.html",
+              "section": "Lavabi appoggio"
+            },
+            {
+              "base": "7401",
+              "name": "Lavabo 45x55 cm",
+              "image": "https://www.ceramicagalassia.it/public/colori/7401/_resized/7401_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/smartb/lavabi/lavabo-45x55-cm.html",
+              "section": "Lavabi appoggio"
+            },
+            {
+              "base": "7400",
+              "name": "Lavabo 45x65 cm",
+              "image": "https://www.ceramicagalassia.it/public/colori/7400/_resized/7400_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/smartb/lavabi/lavabo-45x65-cm.html",
+              "section": "Lavabi appoggio"
+            },
+            {
+              "base": "7414",
+              "name": "Lavabo 38x45 cm",
+              "image": "https://www.ceramicagalassia.it/public/colori/7414/_resized/7414_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/smartb/lavabi/lavabo-38x45-cm-1.html",
+              "section": "Lavabi appoggio"
+            },
+            {
+              "base": "7406",
+              "name": "Lavabo 38x45 cm",
+              "image": "https://www.ceramicagalassia.it/public/colori/7406/_resized/7406_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/smartb/lavabi/lavabo-38x45-cm.html",
+              "section": "Lavabi appoggio"
+            },
+            {
+              "base": "7402",
+              "name": "Lavabo 38x55 cm",
+              "image": "https://www.ceramicagalassia.it/public/colori/7402/_resized/7402_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/smartb/lavabi/lavabo-38x55-cm.html",
+              "section": "Lavabi appoggio"
+            },
+            {
+              "base": "7407",
+              "name": "Lavabo 38x65 cm",
+              "image": "https://www.ceramicagalassia.it/public/colori/7407/_resized/7407_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/smartb/lavabi/lavabo-38x65-cm.html",
+              "section": "Lavabi appoggio"
+            },
+            {
+              "base": "7405",
+              "name": "Lavabo ø 38 cm",
+              "image": "https://www.ceramicagalassia.it/public/colori/7405/_resized/7405_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/smartb/lavabi/lavabo--38-cm.html",
+              "section": "Lavabi appoggio"
+            }
+          ]
+        }
+      ],
+      "status": 200,
+      "notAvailable": false,
+      "hero": "https://www.ceramicagalassia.it/public/4_smartb.jpg"
+    },
+    {
+      "name": "M2",
+      "slug": "m2",
+      "url": "https://www.ceramicagalassia.it/catalogo/m2/",
+      "groups": [
+        {
+          "name": "Lavabi sospesi",
+          "items": [
+            {
+              "base": "5202",
+              "name": "Lavabo angolare 45 cm",
+              "image": "https://www.ceramicagalassia.it/public/_resized/5202_650X550_90_C.png",
+              "url": "https://www.ceramicagalassia.it/catalogo/m2/lavabi/lavabo-45.html",
+              "section": "Lavabi sospesi"
+            },
+            {
+              "base": "5204",
+              "name": "Lavabo 50 cm",
+              "image": "https://www.ceramicagalassia.it/public/_resized/5204_650X550_90_C.png",
+              "url": "https://www.ceramicagalassia.it/catalogo/m2/lavabi/lavabo-a-colonna.html",
+              "section": "Lavabi sospesi"
+            },
+            {
+              "base": "5205",
+              "name": "Lavabo 60 cm",
+              "image": "https://www.ceramicagalassia.it/public/_resized/5205_650X550_90_C.png",
+              "url": "https://www.ceramicagalassia.it/catalogo/m2/lavabi/lavabo-a-colonna-60.html",
+              "section": "Lavabi sospesi"
+            },
+            {
+              "base": "5206",
+              "name": "Lavabo 70 cm",
+              "image": "https://www.ceramicagalassia.it/public/_resized/52060_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/m2/lavabi/lavabo-a-colonna-70.html",
+              "section": "Lavabi sospesi"
+            },
+            {
+              "base": "5230",
+              "name": "Lavabo sospeso 60 cm",
+              "image": "https://www.ceramicagalassia.it/public/_resized/52300_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/m2/lavabi/lavabo-bacino.html",
+              "section": "Lavabi sospesi"
+            },
+            {
+              "base": "5231",
+              "name": "Lavabo sospeso 75 cm",
+              "image": "https://www.ceramicagalassia.it/public/_resized/52310_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/m2/lavabi/lavabo-bacino-75.html",
+              "section": "Lavabi sospesi"
+            },
+            {
+              "base": "5232",
+              "name": "Lavabo sospeso 90 cm",
+              "image": "https://www.ceramicagalassia.it/public/_resized/52320_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/m2/lavabi/lavabo-bacino-90.html",
+              "section": "Lavabi sospesi"
+            },
+            {
+              "base": "5235",
+              "name": "Lavabo sospeso 85 cm",
+              "image": "https://www.ceramicagalassia.it/public/_resized/52350_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/m2/lavabi/lavabo-85.html",
+              "section": "Lavabi sospesi"
+            },
+            {
+              "base": "5236",
+              "name": "Lavabo sospeso 100 cm",
+              "image": "https://www.ceramicagalassia.it/public/_resized/52360_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/m2/lavabi/lavabo-100.html",
+              "section": "Lavabi sospesi"
+            }
+          ]
+        },
+        {
+          "name": "Lavabi appoggio",
+          "items": [
+            {
+              "base": "5203",
+              "name": "Lavabo 48x48",
+              "image": "https://www.ceramicagalassia.it/public/_resized/5203_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/m2/lavabo-48x48.html",
+              "section": "Lavabi appoggio"
+            },
+            {
+              "base": "5203M",
+              "name": "Lavabo Ø 48",
+              "image": "https://www.ceramicagalassia.it/public/_resized/5203m_650X550_90_C.png",
+              "url": "https://www.ceramicagalassia.it/catalogo/m2/lavabo-48.html",
+              "section": "Lavabi appoggio"
+            },
+            {
+              "base": "5234",
+              "name": "Lavabo 70x37",
+              "image": "https://www.ceramicagalassia.it/public/_resized/52340_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/m2/lavabo-ciotola-70.html",
+              "section": "Lavabi appoggio"
+            },
+            {
+              "base": "5234AR",
+              "name": "Lavabo 70x37",
+              "image": "https://www.ceramicagalassia.it/public/_resized/5234ar_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/m2/lavabo-appoggio-ciotola-70-ardesia-materia-code-5234ar.html",
+              "section": "Lavabi appoggio"
+            },
+            {
+              "base": "5234TR",
+              "name": "Lavabo 70x37",
+              "image": "https://www.ceramicagalassia.it/public/_resized/5234tr_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/m2/lavabo-appoggio-ciotola-70-travertino-materia-code-5234tr.html",
+              "section": "Lavabi appoggio"
+            },
+            {
+              "base": "5208",
+              "name": "Lavabo 60x48",
+              "image": "https://www.ceramicagalassia.it/public/_resized/52080_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/m2/lavabo-60.html",
+              "section": "Lavabi appoggio"
+            },
+            {
+              "base": "5209",
+              "name": "Lavabo 70x48",
+              "image": "https://www.ceramicagalassia.it/public/_resized/52090_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/m2/lavabo-70.html",
+              "section": "Lavabi appoggio"
+            }
+          ]
+        },
+        {
+          "name": "Lavabi Semincasso",
+          "items": [
+            {
+              "base": "5200",
+              "name": "Lavabo 50x43",
+              "image": "https://www.ceramicagalassia.it/public/_resized/52000_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/m2/lavabo-semincasso-50.html",
+              "section": "Lavabi Semincasso"
+            },
+            {
+              "base": "5201",
+              "name": "Lavabo 43x35",
+              "image": "https://www.ceramicagalassia.it/public/_resized/52010_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/m2/lavabo-semincasso-35.html",
+              "section": "Lavabi Semincasso"
+            }
+          ]
+        },
+        {
+          "name": "Colonne",
+          "items": [
+            {
+              "base": "5240",
+              "name": "Colonna per lavabi 5204, 5205, 5206 e 7202",
+              "image": "https://www.ceramicagalassia.it/public/_resized/5240_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/m2/colonna-per-lavabi-5204-5205-5206-e-7202.html",
+              "section": "Colonne"
+            }
+          ]
+        },
+        {
+          "name": "Mobili",
+          "items": [
+            {
+              "base": "5281",
+              "name": "Mobile sospeso 58x41 cm",
+              "image": "https://www.ceramicagalassia.it/public/_resized/art-52810_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/m2/mobile-sospeso-58x41-cm.html",
+              "section": "Mobili"
+            },
+            {
+              "base": "5282",
+              "name": "Mobile sospeso 73x44 cm",
+              "image": "https://www.ceramicagalassia.it/public/_resized/art-5282_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/m2/mobile-sospeso-73x44-cm-1.html",
+              "section": "Mobili"
+            }
+          ]
+        },
+        {
+          "name": "Strutture",
+          "items": [
+            {
+              "base": "7230BI/7230NE",
+              "name": "Struttura 79 cm",
+              "image": "https://www.ceramicagalassia.it/public/_resized/struttura-nera-eden-lav_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/m2/struttura-85-cm-1.html",
+              "section": "Strutture"
+            }
+          ]
+        },
+        {
+          "name": "Sanitari sospesi",
+          "items": [
+            {
+              "base": "5210",
+              "name": "Bidet sospeso 46 cm",
+              "image": "https://www.ceramicagalassia.it/public/_resized/52190_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/m2/sanitari/bidet-sospeso-46-cm-serie-m2-code-5210.html",
+              "section": "Sanitari sospesi"
+            },
+            {
+              "base": "5249",
+              "name": "Vaso sospeso 46 cm",
+              "image": "https://www.ceramicagalassia.it/public/_resized/52180_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/m2/sanitari/vaso-sospeso-46-cm-serie-m2-code-5249.html",
+              "section": "Sanitari sospesi"
+            }
+          ]
+        },
+        {
+          "name": "Sanitari a terra",
+          "items": [
+            {
+              "base": "5213",
+              "name": "Bidet a terra 45 cm",
+              "image": "https://www.ceramicagalassia.it/public/_resized/52131_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/m2/bidet.html",
+              "section": "Sanitari a terra"
+            },
+            {
+              "base": "5211U",
+              "name": "Vaso a terra 45 cm",
+              "image": "https://www.ceramicagalassia.it/public/_resized/52110_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/m2/vaso.html",
+              "section": "Sanitari a terra"
+            }
+          ]
+        },
+        {
+          "name": "Monoblocco",
+          "items": []
+        }
+      ],
+      "status": 200,
+      "notAvailable": false,
+      "hero": "https://www.ceramicagalassia.it/public/M2.jpg"
+    },
+    {
+      "name": "Eden",
+      "slug": "eden",
+      "url": "https://www.ceramicagalassia.it/catalogo/eden/",
+      "groups": [
+        {
+          "name": "Lavabi sospesi - semincasso",
+          "items": [
+            {
+              "base": "7202",
+              "name": "Lavabo 56x40",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7202_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/eden/lavabi/lavabo-56x40.html",
+              "section": "Lavabi sospesi - semincasso"
+            },
+            {
+              "base": "7221",
+              "name": "Lavabo 61x46",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7221_650X550_90_C.png",
+              "url": "https://www.ceramicagalassia.it/catalogo/eden/lavabi/lavabo-cm-61-eden-code-7221.html",
+              "section": "Lavabi sospesi - semincasso"
+            },
+            {
+              "base": "7222",
+              "name": "Lavabo 71x46",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7222_650X550_90_C.png",
+              "url": "https://www.ceramicagalassia.it/catalogo/eden/lavabi/lavabo-cm-71-eden-code-7222.html",
+              "section": "Lavabi sospesi - semincasso"
+            },
+            {
+              "base": "7223",
+              "name": "Lavabo 81x46",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7223_650X550_90_C.png",
+              "url": "https://www.ceramicagalassia.it/catalogo/eden/lavabi/lavabo-cm-81-eden-code-7223.html",
+              "section": "Lavabi sospesi - semincasso"
+            },
+            {
+              "base": "7224",
+              "name": "Lavabo 91x46",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7224_650X550_90_C.png",
+              "url": "https://www.ceramicagalassia.it/catalogo/eden/lavabi/lavabo-cm-91-eden-code-7224.html",
+              "section": "Lavabi sospesi - semincasso"
+            },
+            {
+              "base": "7225",
+              "name": "Lavabo 101x46",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7225_650X550_90_C.png",
+              "url": "https://www.ceramicagalassia.it/catalogo/eden/lavabi/lavabo-cm-101-eden-code-7225.html",
+              "section": "Lavabi sospesi - semincasso"
+            },
+            {
+              "base": "7226",
+              "name": "Lavabo 121x46",
+              "image": "https://www.ceramicagalassia.it/public/_resized/72262f_650X550_90_C.png",
+              "url": "https://www.ceramicagalassia.it/catalogo/eden/lavabi/lavabo-cm-121-eden-code-7226.html",
+              "section": "Lavabi sospesi - semincasso"
+            },
+            {
+              "base": "7227",
+              "name": "Lavabo 121x46",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7227_650X550_90_C.png",
+              "url": "https://www.ceramicagalassia.it/catalogo/eden/lavabi/lavabo-cm-121-eden-code-7227.html",
+              "section": "Lavabi sospesi - semincasso"
+            },
+            {
+              "base": "7228",
+              "name": "Lavabo 141x46",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7228_650X550_90_C.png",
+              "url": "https://www.ceramicagalassia.it/catalogo/eden/lavabi/lavabo--cm-141-eden-code-7228.html",
+              "section": "Lavabi sospesi - semincasso"
+            }
+          ]
+        },
+        {
+          "name": "Strutture",
+          "items": [
+            {
+              "base": "7235",
+              "name": "Struttura 85 cm",
+              "image": "https://www.ceramicagalassia.it/public/_resized/struttura-lavabo-eden3_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/eden/strutture/struttura-85-cm-2.html",
+              "section": "Strutture"
+            }
+          ]
+        },
+        {
+          "name": "sanitari sospesi",
+          "items": [
+            {
+              "base": "7216",
+              "name": "Bidet sospeso",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7216_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/eden/sanitari/bidet-sospeso-53-serie-eden.html",
+              "section": "sanitari sospesi"
+            },
+            {
+              "base": "7212",
+              "name": "Vaso sospeso senza brida",
+              "image": "https://www.ceramicagalassia.it/public/colori/7212/_resized/7212_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/eden/sanitari/vaso-sospeso-53-serie-eden.html",
+              "section": "sanitari sospesi"
+            }
+          ]
+        },
+        {
+          "name": "sanitari a terra",
+          "items": [
+            {
+              "base": "7213",
+              "name": "Vaso a terra",
+              "image": "https://www.ceramicagalassia.it/public/colori/7213/_resized/7213_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/eden/vaso-a-terra-53-serie-eden.html",
+              "section": "sanitari a terra"
+            },
+            {
+              "base": "7214",
+              "name": "Bidet",
+              "image": "",
+              "url": "https://www.ceramicagalassia.it/catalogo/eden/bidet-a-terra-53-serie-eden.html",
+              "section": "sanitari a terra"
+            },
+            {
+              "base": "7206",
+              "name": "Bidet a terra 50x36",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7206-bidet-eden_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/eden/bidet-monoforo-50x36.html",
+              "section": "sanitari a terra"
+            },
+            {
+              "base": "7205",
+              "name": "Vaso con scarico a terra",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7205--vaso_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/eden/vaso-con-scarico-a-terra.html",
+              "section": "sanitari a terra"
+            }
+          ]
+        },
+        {
+          "name": "Monoblocco",
+          "items": [
+            {
+              "base": "7217",
+              "name": "Vaso monoblocco",
+              "image": "https://www.ceramicagalassia.it/public/colori/7217/_resized/7217_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/eden/vaso-monoblocco-serie-eden.html",
+              "section": "Monoblocco"
+            }
+          ]
+        },
+        {
+          "name": "Vasche",
+          "items": [
+            {
+              "base": "7239",
+              "name": "Eden",
+              "image": "",
+              "url": "https://www.ceramicagalassia.it/catalogo/eden/vasche/vasca-eden-code-7239.html",
+              "section": "Vasche"
+            },
+            {
+              "base": "7251",
+              "name": "Eden",
+              "image": "",
+              "url": "https://www.ceramicagalassia.it/catalogo/eden/vasche/eden.html",
+              "section": "Vasche"
+            }
+          ]
+        },
+        {
+          "name": "Mobili",
+          "items": [
+            {
+              "base": "7240",
+              "name": "Mobile sospeso 59x45 cm",
+              "image": "https://www.ceramicagalassia.it/public/_resized/art-7240_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/eden/mobili/mobile-sospeso-59x45-cm.html",
+              "section": "Mobili"
+            },
+            {
+              "base": "7241",
+              "name": "Mobile sospeso 69x45 cm",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7241_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/eden/mobili/mobile-sospeso-5.html",
+              "section": "Mobili"
+            },
+            {
+              "base": "7242",
+              "name": "Mobile sospeso 79x45 cm",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7242_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/eden/mobili/meuble-suspendu-5.html",
+              "section": "Mobili"
+            },
+            {
+              "base": "7243",
+              "name": "Mobile sospeso 89x45 cm",
+              "image": "https://www.ceramicagalassia.it/public/_resized/art--7243_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/eden/mobili/mobile-sospeso-89x45-cm.html",
+              "section": "Mobili"
+            },
+            {
+              "base": "7244",
+              "name": "Mobile sospeso 100x45 cm",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7244_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/eden/mobili/mobile-sospeso-3.html",
+              "section": "Mobili"
+            },
+            {
+              "base": "7245",
+              "name": "Mobile sospeso 119x45 cm",
+              "image": "https://www.ceramicagalassia.it/public/_resized/_mobile-121_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/eden/mobili/mobile-sospeso-1.html",
+              "section": "Mobili"
+            },
+            {
+              "base": "7246",
+              "name": "Mobile sospeso 139x45 cm",
+              "image": "https://www.ceramicagalassia.it/public/_resized/art-7246_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/eden/mobili/mobile-sospeso-139x45-cm.html",
+              "section": "Mobili"
+            }
+          ]
+        },
+        {
+          "name": "Accessori",
+          "items": [
+            {
+              "base": "7238",
+              "name": "Attaccapanni-portasciugamani",
+              "image": "https://www.ceramicagalassia.it/public/_resized/appendino-piccolo_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/eden/accessori-bagno/attaccapanni-portasciugamani-eden-code-7238.html",
+              "section": "Accessori"
+            },
+            {
+              "base": "7236",
+              "name": "Struttura portasciugamani",
+              "image": "https://www.ceramicagalassia.it/public/_resized/scala-legno_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/eden/accessori-bagno/struttura-portasciugamani-eden-code-7236.html",
+              "section": "Accessori"
+            }
+          ]
+        }
+      ],
+      "status": 200,
+      "notAvailable": false,
+      "hero": "https://www.ceramicagalassia.it/public/edem.jpg"
+    },
+    {
+      "name": "Ethos",
+      "slug": "ethos",
+      "url": "https://www.ceramicagalassia.it/catalogo/ethos/",
+      "groups": [
+        {
+          "name": "Lavabi",
+          "items": [
+            {
+              "base": "8431M",
+              "name": "Lavabo 55x44",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8431m_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/ethos/lavabo-55-su-colonna-ethos-code-8431m.html",
+              "section": "Lavabi"
+            },
+            {
+              "base": "8432M",
+              "name": "Lavabo 65x44",
+              "image": "",
+              "url": "https://www.ceramicagalassia.it/catalogo/ethos/lavabo-65-su-colonna-ethos-code-8432m.html",
+              "section": "Lavabi"
+            },
+            {
+              "base": "8433M",
+              "name": "Lavabo 75x52",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8433m_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/ethos/lavabo-95-su-colonna-ethos-code-8433m.html",
+              "section": "Lavabi"
+            },
+            {
+              "base": "8434M",
+              "name": "Lavabo 95x54",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8434m_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/ethos/lavabo-95-su-colonna-ethos-code-8434m.html",
+              "section": "Lavabi"
+            },
+            {
+              "base": "8435M",
+              "name": "Lavabo 110x54",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8435m_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/ethos/lavabo-110-su-colonna-ethos-code-8435m.html",
+              "section": "Lavabi"
+            },
+            {
+              "base": "8417M",
+              "name": "Lavabo 60x51",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8400m_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/ethos/lavabo-60-cm-sospeso-o-per-colonna-serie-ethos-code-8417m-8417.html",
+              "section": "Lavabi"
+            },
+            {
+              "base": "8416M",
+              "name": "Lavabo 60x51",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8416_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/ethos/lavabo-su-colonna-60x51-1.html",
+              "section": "Lavabi"
+            },
+            {
+              "base": "8400M",
+              "name": "Lavabo 71x58",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8400m_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/ethos/lavabo-su-colonna-71x58-1.html",
+              "section": "Lavabi"
+            },
+            {
+              "base": "8401M",
+              "name": "Lavabo 71x58",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8401m_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/ethos/lavabo-su-colonna-71x58.html",
+              "section": "Lavabi"
+            }
+          ]
+        },
+        {
+          "name": "consolle",
+          "items": [
+            {
+              "base": "8444",
+              "name": "Struttura 110",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8444_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/ethos/struttura-sottolavabo-110-ethos-code-8444.html",
+              "section": "consolle"
+            },
+            {
+              "base": "8448",
+              "name": "Struttura 110",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8448_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/ethos/struttura-a-pavimento-110-ethos-code-8448.html",
+              "section": "consolle"
+            },
+            {
+              "base": "8451",
+              "name": "Struttura 95",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8451_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/ethos/struttura-sottolavabo-95-ethos-code-8451.html",
+              "section": "consolle"
+            },
+            {
+              "base": "8455",
+              "name": "Struttura 95",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8455_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/ethos/struttura-a-pavimento-95-ethos-code-8455.html",
+              "section": "consolle"
+            },
+            {
+              "base": "8458",
+              "name": "Struttura 75",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8458_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/ethos/struttura-sottolavabo-75-ethos-code-8458.html",
+              "section": "consolle"
+            },
+            {
+              "base": "8462",
+              "name": "Struttura 75",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8462_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/ethos/struttura-a-pavimento-75-ethos-code-8462.html",
+              "section": "consolle"
+            },
+            {
+              "base": "8465",
+              "name": "Struttura 65",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8465_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/ethos/struttura-sottolavabo-65-ethos-code-8465.html",
+              "section": "consolle"
+            },
+            {
+              "base": "8472",
+              "name": "Struttura 55",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8472_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/ethos/struttura-sottolavabo-55-ethos-code-8472.html",
+              "section": "consolle"
+            }
+          ]
+        },
+        {
+          "name": "Strutture sospese",
+          "items": [
+            {
+              "base": "8470",
+              "name": "Struttura 65",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8470_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/ethos/strutture-sospese/struttura-sottolavabo-sospesa-65-ethos-code-8470.html",
+              "section": "Strutture sospese"
+            },
+            {
+              "base": "8543",
+              "name": "Struttura 65",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8542_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/ethos/strutture-sospese/struttura-65-cm-1.html",
+              "section": "Strutture sospese"
+            },
+            {
+              "base": "8463",
+              "name": "Struttura 75",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8463_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/ethos/strutture-sospese/struttura-sottolavabo-sospesa-75-ethos-code-8463.html",
+              "section": "Strutture sospese"
+            },
+            {
+              "base": "8542",
+              "name": "Struttura 75",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8542_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/ethos/strutture-sospese/struttura-75-cm-1.html",
+              "section": "Strutture sospese"
+            },
+            {
+              "base": "8541",
+              "name": "Struttura 95",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8541_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/ethos/strutture-sospese/struttura-95-cm.html",
+              "section": "Strutture sospese"
+            },
+            {
+              "base": "8456",
+              "name": "Struttura 95",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8456_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/ethos/strutture-sospese/struttura-sottolavabo-sospesa-95-ethos-code-8456.html",
+              "section": "Strutture sospese"
+            },
+            {
+              "base": "8540",
+              "name": "Struttura 110",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8541_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/ethos/strutture-sospese/struttura-110-cm.html",
+              "section": "Strutture sospese"
+            },
+            {
+              "base": "8449",
+              "name": "Struttura 110",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8449_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/ethos/strutture-sospese/struttura-sottolavabo-sospesa-110-ethos-code-8449.html",
+              "section": "Strutture sospese"
+            }
+          ]
+        },
+        {
+          "name": "sanitari sospesi",
+          "items": [
+            {
+              "base": "8440M",
+              "name": "Bidet sospeso",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8440m0_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/ethos/bidet-sospeso-ethos-8440m.html",
+              "section": "sanitari sospesi"
+            },
+            {
+              "base": "8439",
+              "name": "Vaso sospeso",
+              "image": "https://www.ceramicagalassia.it/public/_resized/84390_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/ethos/vaso-sospeso-ethos-code-8439.html",
+              "section": "sanitari sospesi"
+            }
+          ]
+        },
+        {
+          "name": "sanitari a terra",
+          "items": [
+            {
+              "base": "8438M",
+              "name": "Bidet a terra",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8438m0_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/ethos/sanitari/bidet-a-terra-ethos-code-8438m.html",
+              "section": "sanitari a terra"
+            },
+            {
+              "base": "8437",
+              "name": "Vaso a terra",
+              "image": "https://www.ceramicagalassia.it/public/_resized/84370_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/ethos/sanitari/vaso-a-terra-ethos-code-8437.html",
+              "section": "sanitari a terra"
+            },
+            {
+              "base": "8428M",
+              "name": "Bidet",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8428_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/ethos/sanitari/bidet-59x38.html",
+              "section": "sanitari a terra"
+            },
+            {
+              "base": "8418",
+              "name": "Vaso a terra",
+              "image": "https://www.ceramicagalassia.it/public/_resized/84020_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/ethos/sanitari/vaso-56x38.html",
+              "section": "sanitari a terra"
+            },
+            {
+              "base": "8419",
+              "name": "Vaso a terra 38 x 56",
+              "image": "https://www.ceramicagalassia.it/public/_resized/84020_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/ethos/sanitari/wc.html",
+              "section": "sanitari a terra"
+            },
+            {
+              "base": "8412",
+              "name": "Vaso con cassetta a zaino",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8412_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/ethos/sanitari/vaso-con-cassetta-a-zaino.html",
+              "section": "sanitari a terra"
+            },
+            {
+              "base": "8410",
+              "name": "Cassetta alta",
+              "image": "https://www.ceramicagalassia.it/public/_resized/84100_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/ethos/sanitari/vaso-con-cassetta-alta.html",
+              "section": "sanitari a terra"
+            }
+          ]
+        },
+        {
+          "name": "monoblocco",
+          "items": [
+            {
+              "base": "8441",
+              "name": "Vaso monoblocco",
+              "image": "https://www.ceramicagalassia.it/public/_resized/ethos-monoblocco_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/ethos/monoblocco/vaso-monoblocco-ethos-code-8441.html",
+              "section": "monoblocco"
+            },
+            {
+              "base": "8426/8427/8406",
+              "name": "Vaso monoblocco",
+              "image": "https://www.ceramicagalassia.it/public/_resized/84040_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/ethos/monoblocco/vaso-monoblocco-68x38.html",
+              "section": "monoblocco"
+            }
+          ]
+        },
+        {
+          "name": "Vasche",
+          "items": [
+            {
+              "base": "8496",
+              "name": "Vasca",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8496_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/ethos/vasche/vasca.html",
+              "section": "Vasche"
+            },
+            {
+              "base": "8497",
+              "name": "Vasca",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8496ne_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/ethos/vasche/vasca-1.html",
+              "section": "Vasche"
+            }
+          ]
+        }
+      ],
+      "status": 200,
+      "notAvailable": false,
+      "hero": "https://www.ceramicagalassia.it/public/ethos.jpg"
+    },
+    {
+      "name": "Folia",
+      "slug": "folia",
+      "url": "https://www.ceramicagalassia.it/catalogo/folia/",
+      "groups": [
+        {
+          "name": "Piatti Doccia",
+          "items": [
+            {
+              "base": "1040",
+              "name": "Piatto Doccia 90x70 H3",
+              "image": "https://www.ceramicagalassia.it/public/colori/1040/_resized/1040_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/folia/piatto-doccia-90x70.html",
+              "section": "Piatti Doccia"
+            },
+            {
+              "base": "1041",
+              "name": "Piatto Doccia 100x70 H3",
+              "image": "https://www.ceramicagalassia.it/public/colori/1041/_resized/1041_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/folia/piatto-doccia-100x70.html",
+              "section": "Piatti Doccia"
+            },
+            {
+              "base": "1050",
+              "name": "Piatto Doccia 100x80 H3",
+              "image": "https://www.ceramicagalassia.it/public/colori/1050/_resized/1050_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/folia/piatto-doccia-100x80-2.html",
+              "section": "Piatti Doccia"
+            },
+            {
+              "base": "1090",
+              "name": "Piatto Doccia 100x90 H3",
+              "image": "https://www.ceramicagalassia.it/public/_resized/1090_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/folia/piatto-doccia-100x90-h3.html",
+              "section": "Piatti Doccia"
+            },
+            {
+              "base": "1042",
+              "name": "Piatto Doccia 120x70 H3",
+              "image": "https://www.ceramicagalassia.it/public/colori/1042/_resized/1042_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/folia/piatto-doccia-120x70.html",
+              "section": "Piatti Doccia"
+            },
+            {
+              "base": "1051",
+              "name": "Piatto Doccia 120x80 H3",
+              "image": "https://www.ceramicagalassia.it/public/colori/1051/_resized/1051_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/folia/piatto-doccia-120x80.html",
+              "section": "Piatti Doccia"
+            },
+            {
+              "base": "1091",
+              "name": "Piatto Doccia 120x90 H3",
+              "image": "https://www.ceramicagalassia.it/public/_resized/1091_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/folia/piatto-doccia-120x90-h3.html",
+              "section": "Piatti Doccia"
+            },
+            {
+              "base": "1043",
+              "name": "Piatto Doccia 140x70 H3",
+              "image": "https://www.ceramicagalassia.it/public/colori/1043/_resized/1043_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/folia/piatto-doccia-140x70.html",
+              "section": "Piatti Doccia"
+            },
+            {
+              "base": "1052",
+              "name": "Piatto Doccia 140x80 H3",
+              "image": "https://www.ceramicagalassia.it/public/colori/1052/_resized/1052_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/folia/piatto-doccia-140x80-1.html",
+              "section": "Piatti Doccia"
+            },
+            {
+              "base": "1092",
+              "name": "Piatto Doccia 140x90 H3",
+              "image": "https://www.ceramicagalassia.it/public/_resized/1092_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/folia/piatto-doccia-140x90-h3.html",
+              "section": "Piatti Doccia"
+            },
+            {
+              "base": "1053",
+              "name": "Piatto Doccia 160x80 H3",
+              "image": "https://www.ceramicagalassia.it/public/colori/1053/_resized/1053_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/folia/piatto-doccia-160x780.html",
+              "section": "Piatti Doccia"
+            },
+            {
+              "base": "1093",
+              "name": "Piatto Doccia 160x90 H3",
+              "image": "https://www.ceramicagalassia.it/public/_resized/1093_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/folia/piatto-doccia-160x90-h3.html",
+              "section": "Piatti Doccia"
+            },
+            {
+              "base": "1046",
+              "name": "Piatto Doccia 170x70 H3",
+              "image": "https://www.ceramicagalassia.it/public/colori/1046/_resized/1046_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/folia/piatto-doccia-in-ceramica-h3.html",
+              "section": "Piatti Doccia"
+            },
+            {
+              "base": "1094",
+              "name": "Piatto Doccia 180x90 H3",
+              "image": "https://www.ceramicagalassia.it/public/_resized/1094_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/folia/piatto-doccia-180x90-h3.html",
+              "section": "Piatti Doccia"
+            }
+          ]
+        }
+      ],
+      "status": 200,
+      "notAvailable": false,
+      "hero": "https://www.ceramicagalassia.it/public/follia.jpg"
+    }
+  ]
+}
