@@ -48,3 +48,13 @@ test('Spot exact manufacturer image match declines unrelated collections',()=>{
  assert.equal(x.parse(html,check),null);
  assert.equal(x.canonical({...input,model:'spot-999'}).unsupported,true);
 });
+
+// Regression: a missing official configured photo must not leave Spot blank if
+// an official collection photograph was supplied by the guided catalogue.
+test('Spot dossier fallback preserves official collection imagery',()=>{
+ const fs=require('node:fs'),path=require('node:path');
+ const ui=fs.readFileSync(path.join(__dirname,'../public/hidrobox-panel-spot-ui.js'),'utf8');
+ assert.match(ui,/image:ctx\.image\|\|'',imageSource:ctx\.image\?/);
+ assert.match(ui,/imageFinishMatch:ctx\.image\?'collection':'unavailable'/);
+ assert.match(ui,/official\.apply\(item,enriched,verifiedSpec\)/);
+});
