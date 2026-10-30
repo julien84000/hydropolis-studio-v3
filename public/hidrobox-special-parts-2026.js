@@ -16,7 +16,8 @@ function add(prefix,n,meta){
  const rawPrice=priceFor(ref);
  if(!Number.isFinite(rawPrice)||rawPrice<=0)throw Error('Missing supplier source price '+ref);
  if(byRef.has(ref))throw Error('Duplicate supplier SKU '+ref);
- const row=Object.freeze({reference:ref,...meta,rawPrice,
+ const designation=meta.model+(meta.height==null?'':' · H '+meta.height+' cm')+' · '+meta.material+' · '+meta.finish;
+ const row=Object.freeze({reference:ref,...meta,designation,rawPrice,
   price:Math.round(rawPrice*104)/100,source:'HIDROBOX_TARIF_FR_V0226_19-02-2026.pdf',
   sourcePage:TARIFF[ref][1]});
  rows.push(row);byRef.set(ref,row);
