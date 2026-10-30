@@ -54,3 +54,22 @@ test('Explicit source color and invalid/missing selections cannot produce a purp
  assert.equal(visual.eligible({model:'quadro',material:'Kromat',texture:'Slate',color:'Blanc',width:90,length:120}),true);
  assert.equal(visual.eligible({model:'quadro',material:'Kromat',texture:'',color:'Blanc',width:90,length:120}),false);
 });
+
+
+test('Native manufacturer print resolution is verified, never upscaled or described as HD without pixels',async()=>{
+ class FakeHD{
+  get naturalWidth(){return 1600}get naturalHeight(){return 1100}
+  set src(v){this._src=v;queueMicrotask(()=>this.onload?.())}
+ }
+ class FakeLow{
+  get naturalWidth(){return 650}get naturalHeight(){return 550}
+  set src(v){this._src=v;queueMicrotask(()=>this.onload?.())}
+ }
+ const result={ok:true,image:jpg};
+ const hd=await visual.printQuality(result,{ImageClass:FakeHD});
+ assert.equal(hd.ok,true);assert.equal(hd.width,1600);
+ const low=await visual.printQuality(result,{ImageClass:FakeLow});
+ assert.equal(low.ok,false);
+ assert.match(low.reason,/insuffisante/);
+ assert.equal(visual.apply({manufacturer:'Hidrobox'},{...result,verifiedPrintQuality:false},example),false);
+});
