@@ -82,7 +82,7 @@ function shell(title,content,wide=false){
 /* Media is verified by official COLLECTION, never assumed exact for a SKU. */
 /* Brochure cover showing the Program Colour collection; illustrative, not the selected SKU.
    Source: Hidrobox PROGRAM COLOUR booklet, mirrored by Edilportale/Archiproducts. */
-const PROGRAM_COLOUR_GENERIC_IMAGE='https://catalogs.edilportale.com/Program-Colour-washbasin-it-es-pt-Hidrobox-0-catfe87311d.jpg';
+const PROGRAM_COLOUR_GENERIC_IMAGE='/api/image-proxy?url='+encodeURIComponent('https://catalogs.edilportale.com/Program-Colour-washbasin-it-es-pt-Hidrobox-0-catfe87311d.jpg');
 function collectionImageFor(slug,src){
  if(norm(slug)==='program colour'||norm(slug)==='program-colour')return PROGRAM_COLOUR_GENERIC_IMAGE;
  return officialImage(src);
