@@ -47,6 +47,7 @@ test('Supplier PDF 2026 SKU inventory is available, with independent imported co
    programmedPanelSkus:panelSourceRows.length,programDataReferences:programReferences.length,sparePartReferences:sparePricing.rows.length,effectiveUniqueSkus:implemented.size,primaryShowerPdfSkus:pdfShowerCodes.length,primaryShowerMissing:missingShower.length,
    missingFromEffectiveCatalog:missing.length,missingByPrefix:Object.entries(summary).sort((a,b)=>b[1].count-a[1].count)};
  console.log('HIDROBOX_PDF_PARITY '+JSON.stringify(total));
+ console.log('HIDROBOX_MISSING_2026_CODES '+JSON.stringify(missing.map(([reference,page])=>({reference,page}))));
  const reportDir=path.join(root,'build-audit');
  fs.mkdirSync(reportDir,{recursive:true});
  fs.writeFileSync(path.join(reportDir,'hidrobox-2026-pdf-parity.json'),
