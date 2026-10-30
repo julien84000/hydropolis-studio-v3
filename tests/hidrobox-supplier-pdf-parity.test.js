@@ -20,7 +20,8 @@ const config=load('hidrobox-config-01.b64'),catalog=load('hidrobox-catalog-01.b6
 const collect=data=>(Array.isArray(data)?data:(data.groups||data.items||data.products||[]))
  .flatMap(x=>x.variants?.length?x.variants:[x])
  .map(x=>String(x.reference||x.ref||'').toUpperCase()).filter(Boolean);
-const imported=new Set([...collect(config),...collect(catalog)]);
+const imported=new Set([...collect(config),...collect(catalog)]
+ .filter(code=>/^[A-Z]{3,6}\d{4}$/.test(code))); // Exclude 27 synthetic HBX-CFG navigation entries
 const panelSourceRows=panelPricing.mapped;
 const programReferences=[...(programData.rows||[]).map(r=>r.reference),...Object.keys(programData.options||{})];
 const implemented=new Set([...imported,...panelSourceRows.map(r=>r.reference),...programReferences]);
