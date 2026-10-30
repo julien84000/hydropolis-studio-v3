@@ -51,7 +51,7 @@ async function officialSizeIndex({get=axios.get}={}){
 const normalize=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
 const TEXTURES={lisse:'smooth',smooth:'smooth',liso:'smooth',ardoise:'slate',pizarra:'slate',slate:'slate',microtex:'microtex',cement:'cement',ciment:'cement'};
 const TEXTURE_CODES={smooth:['smo'],slate:['sla','slt'],microtex:['mic'],cement:['cem']};
-const SHAPE_CODES={rectangle:['rec'],rectangulaire:['rec'],rectangular:['rec'],square:['squ'],carre:['squ'],angular:['ang'],angulaire:['ang'],angularr:['ang'],angularl:['ang'],pentagonal:['pen'],pentagonalr:['pen'],pentagonall:['pen']};
+const SHAPE_CODES={rectangle:['rec'],rectangulaire:['rec'],rectangular:['rec'],square:['squ'],carre:['squ'],angular:['qua','ang'],angulaire:['qua','ang'],angularr:['qua','ang'],angularl:['qua','ang'],pentagonal:['pen'],pentagonalr:['pen'],pentagonall:['pen']};
 const cache=new Map();
 function canonical(input){
  const model=String(input.model||'').trim().toLowerCase().replace(/[\s_]+/g,'-');
@@ -173,23 +173,37 @@ async function lookup(raw,{get=axios.get,post=axios.post,sizeId=null}={}){
      material:MATERIAL_IDS[s.material],color:colorId,size:dimensionId};
    for(const [key,value] of Object.entries(filters))params.append('fltr-'+key+'[]',String(value));
    params.set('offset','0');params.set('limit','48');
-   const res=await post(AJAX,params.toString(),{timeout:15000,maxRedirects:2,maxContentLength:6*1024*1024,
-     headers:{'Content-Type':'application/x-www-form-urlencoded','Accept':'application/json'}});
-   const html=String(res?.data?.data?.grid||'');
-   let item=html?parse(html,s):null;
-   // The official manufacturer image may not be indexed under every
-   // custom size even when the same model/colour/texture/shape exists.
-   // Retry once without size, while keeping all identity and finish filters.
-   // Still accept only real image URLs extracted from manufacturer HTML.
+   // WordPress returns at most 48 cards per request; a collection may
+   // contain hundreds of colour/shape/size combinations. Search real cards
+   // across bounded pages, never extrapolating manufacturer image URLs.
+   const fetchPages=async(base,maxPages)=>{
+     let html='';
+     for(let page=0;page<maxPages;page++){
+       const query=new URLSearchParams(base.toString());
+       query.set('offset',String(page*48));
+       const res=await post(AJAX,query.toString(),{timeout:15000,maxRedirects:2,maxContentLength:6*1024*1024,
+         headers:{'Content-Type':'application/x-www-form-urlencoded','Accept':'application/json'}});
+       const grid=String(res?.data?.data?.grid||'');
+       if(!grid)break;
+       const count=cheerio.load(grid)('.configuratorpage__item').length;
+       if(!count)break;
+       html+=grid;
+       // Stop after a partial page, or when one unique dimension-exact image
+       // has been seen. Still reject multiple ambiguous images at that size.
+       const exact=parse(html,s);
+       if(exact?.dimensionsVerified)break;
+       if(count<48)break;
+     }
+     return html?parse(html,s):null;
+   };
+   let item=await fetchPages(params,4);
+   // With custom-size or shape variants, the manufacturer can index the
+   // photo under another base size. Retry a bounded page search without size,
+   // preserving typology, model, material, texture and colour filters.
    if(!item&&s.typology==='shower-tray'){
      const broader=new URLSearchParams(params.toString());
      broader.delete('fltr-size[]');
-     try{
-       const alternate=await post(AJAX,broader.toString(),{timeout:12000,maxRedirects:2,maxContentLength:6*1024*1024,
-         headers:{'Content-Type':'application/x-www-form-urlencoded','Accept':'application/json'}});
-       const alternativeHtml=String(alternate?.data?.data?.grid||'');
-       if(alternativeHtml)item=parse(alternativeHtml,s);
-     }catch{} // If unavailable, retain safe no-photo state.
+     try{item=await fetchPages(broader,4)}catch{}
    }
    const exact=item?.dimensionsVerified===true;
    const data=item?{ok:true,image:item.url,title:item.title,source:filteredSource,quality:'manufacturer-configurator',match:item.selectionMatch,
