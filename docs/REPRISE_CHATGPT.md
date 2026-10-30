@@ -1,3 +1,20 @@
+## V11.64.18 — GALASSIA / Listino 32 / configurateur (30/10/2026)
+
+Branche feat/galassia-catalog-configurator, base main 7f9e8eac54f58d8e0f37ffcdff2284dbfe168c81 (version précédente 11.64.17).
+
+Sources utilisateur : LISTINO-32-Export.pdf (tarif avec prix, schémas cotés et références), BATHROOM.pdf et BATHROOM-COLLECTIONS.pdf.
+
+1 123 codes candidats identifiés, 1 090 références à prix unique importées dans public/catalog_galassia.json. 33 références ayant des prix contradictoires sont exclues des devis, détails dans public/galassia/price-conflicts.json. Les 8 imports intermédiaires restent documentés avec la pagination.
+
+Index fabricant public/galassia/official-index.json : 231 pages produits relevées (15 collections avec photos). Lola et MEG11 demandent un enrichissement. La photo d'un modèle ne prouve pas la finition exacte de chaque variante.
+
+Configurateur public/galassia-configurator.js + CSS : collection -> type -> modèle -> finition/référence ; prix public HT inchangé et remise d'achat fournisseur 50 % distincte de la remise client. App intégrée via public/app.js et manifestes. Les anciennes marques et configurateurs ne sont pas modifiés.
+
+Dessins et fiches techniques : sourcePdfPage conserve la page dans LISTINO-32-Export.pdf. Le PDF volumineux fourni n'a pas été embarqué sur Render : ne pas affirmer que ses 291 pages sont téléchargeables. galassia-technical-server.js cherche les PDF officiels à partir des pages produits indexées et n'accepte aucune URL arbitraire. Lien R70 7701 PDF confirmé ; les fiches accessibles sont attachées aux produits. Vérifier les autres références.
+
+Tests : tests/galassia.test.js + scénario Chromium tests/browser-consolidated.js. À faire : CI, correction éventuelle, fusion contrôlée, preuve Render /api/version = 11.64.18 et /api/health, compléter les visuels Lola et MEG11 et les 33 prix litigieux.
+
+---
 ## V11.64.17 — Sbordoni, photos du dossier client uniquement — 30/10/2026
 
 Base main `c756df6`, PR #61 fusionnée, production 11.64.16 / PostgreSQL vérifiée. CI main 40906139809 et CI tête PR61 40905782226 réussies. PR ouvertes à préserver : #48 (audit photos), #43 (Bette), #22 (explorateurs anciens), #6 (moodboard). Les livraisons #59, #60, #61 sont en place : six vignettes, pagination libre, concepteur par projet, espaces du devis non coupés quand ils tiennent sur une page, sous-totaux des pièces dans les bandeaux noirs, suppression des pages et édition des textes. Attention : le sous-total noir actuel est celui de la pièce, pas une preuve d'un sous-total distinct par sous-espace.
