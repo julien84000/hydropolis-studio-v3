@@ -3,26 +3,23 @@ const {test}=require('node:test'),assert=require('node:assert/strict'),fs=requir
 const script=fs.readFileSync(path.join(__dirname,'../public/hidrobox-neo-plus-2026.js'),'utf8');
 const window={};vm.runInNewContext(script,{window});
 const neo=window.HydroNeoPlus2026;
-test('Neo Plus Scene also offers manufacturer color groups, not only white',()=>{
- const base={form:'rectangle',width:80,length:120,material:'Scene',texture:'Lisse'};
- const blanc=neo.lookup({...base,group:'BLA',color:'Blanc'});
- assert.equal(blanc.ok,true);
- const options=[['BAS','Bianco'],['TRE','Brownie'],['SPE','RAL / NCS — à préciser']];
- for(const [group,color] of options){
-   const res=neo.lookup({...base,group,color});
-   assert.equal(res.ok,false,group);
-   assert(res.reference?.startsWith('SNEC'),group+' must still resolve genuine Scene base reference');
-   assert.match(res.reason,/tarif|Supplément/i);
+test('Neo Plus Scene Blanc is available in Lisse and Ardoise',()=>{
+ const base={form:'rectangle',width:80,length:120,material:'Scene',group:'BLA',color:'Blanc'};
+ for(const texture of ['Lisse','Ardoise']){
+  const v=neo.lookup({...base,texture});assert.equal(v.ok,true,texture);assert(v.reference?.startsWith('SNEC'));
  }
- assert(neo.COLORS.BAS.includes('Bianco'));
- assert(neo.COLORS.TRE.includes('Brownie'));
 });
-test('Neo Plus Scene cannot be sold at white base tariff when non-white is selected',()=>{
- const base={form:'rectangle',width:90,length:120,material:'Scene',texture:'Ardoise'};
- const white=neo.lookup({...base,group:'BLA',color:'Blanc'});
- const other=neo.lookup({...base,group:'TRE',color:'Terra'});
- assert.equal(white.ok,true);
- assert.equal(other.ok,false);
- assert.equal(other.reference,white.reference);
- assert(other.reason.includes('Supplément'));
+test('Neo Plus Scene coloured variants are not offered without manufacturer SKU',()=>{
+ const base={form:'rectangle',width:80,length:120,material:'Scene',texture:'Lisse'};
+ for(const [group,color] of [['BAS','Bianco'],['TRE','Brownie'],['SPE','RAL / NCS — à préciser']]){
+  const v=neo.lookup({...base,group,color});assert.equal(v.ok,false,group);
+  assert.match(v.reason,/Blanc/);assert.equal(v.reference,undefined);
+ }
+});
+test('Neo Plus Kromat retains Basics and Trends, but not the Scene-only white tier',()=>{
+ const base={form:'rectangle',width:80,length:120,material:'Kromat',texture:'Lisse'};
+ for(const [group,color] of [['BAS','Bianco'],['TRE','Brownie']]){
+  assert.equal(neo.lookup({...base,group,color}).ok,true,group);
+ }
+ assert.equal(neo.lookup({...base,group:'BLA',color:'Blanc'}).ok,false);
 });

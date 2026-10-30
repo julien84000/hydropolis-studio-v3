@@ -53,10 +53,10 @@ test('Color groups retain actual supplier references and never fabricate a finis
  assert(engine.colorsForGroup('BAS').includes('Bianco'));
  assert(engine.colorsForGroup('TRE').includes('Brownie'));
  assert(engine.colorsForGroup('BLA').includes('Blanc'));
- assert(engine.colorsForGroup('BLA').includes('Ocean'),'Scene not restricted to white');
+ assert.deepEqual(engine.colorsForGroup('BLA'),['Blanc']);
  assert.equal(engine.groupForColor('Brownie','Kromat',['BAS','TRE','SPE']),'TRE');
  assert.equal(engine.groupForColor('Bianco','Kromat',['BAS','TRE','SPE']),'BAS');
- assert.equal(engine.groupForColor('Bianco','Scene',['BLA']),'BLA');
+ assert.equal(engine.groupForColor('Bianco','Scene',['BLA']),'');
  assert.equal(engine.groupForColor('Random unlisted','Kromat',['BAS','TRE']),'');
  const q=group('Quadro');
  const picture=engine.arrange(q,q.variants,{showerColor:'Brownie'},models,official);
@@ -64,12 +64,11 @@ test('Color groups retain actual supplier references and never fabricate a finis
  assert.equal(picture.selected.finish,'Ardoise');
  assert(picture.refs.every(ref=>q.variants.some(row=>row.reference===ref)));
 });
-test('Scene colors beyond white are visible but cannot be priced as white without source',()=>{
+test('Scene shower tray standard price permits only Blanc',()=>{
  const g=group('Loovers');
  const result=engine.arrange(g,g.variants,{showerColor:'Brownie'},models,official);
- assert.equal(result.fields.find(f=>f.key==='color').chosen,'Brownie');
- assert.equal(result.needsColorQuote,true);
- assert.equal(result.ready,false);
+ assert.equal(result.fields.find(f=>f.key==='color').chosen,'Blanc');
+ assert.equal(result.needsColorQuote,false);
  const white=engine.arrange(g,g.variants,{showerColor:'Blanc'},models,official);
  assert.equal(white.needsColorQuote,false);
 });
