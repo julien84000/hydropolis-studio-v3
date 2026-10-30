@@ -50,7 +50,8 @@
  sceneX.forEach((code,i)=>add(code,...xDimensions[i],'line-x','Scene','Lisse','BLA'));
  slateX.forEach((code,i)=>add(code,...xDimensions[i],'line-x','Scene','Ardoise','BLA'));
  // Scene LINE Y rectangular: smooth throughout, slate only first 18 length bands.
- const sceneY=[...Array.from({length:27},(_,i)=>43+i),...Array.from({length:8},(_,i)=>712+i)];
+ const sceneY=[...Array.from({length:18},(_,i)=>43+i),61,62,63,712,713,714,715,
+   64,65,66,716,717,718,719,67,68,69];
  const slateY=[116,117,103,119,105,121,107,123,109,125,126,127,128,129,130,131,132,133];
  const yDims=blocksY.flatMap(([width,lengths])=>lengths.map(length=>[width,length]));
  if(sceneY.length!==35||slateY.length!==18)throw Error('Scene Y source dimensions mismatch');
