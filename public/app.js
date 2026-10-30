@@ -1440,6 +1440,13 @@ async function lookupCatalogPhoto(reference,button,key=""){
 async function enrichSelectedPhoto(id,force=false){
   const p=state.selected.find(x=>x.id===id);
   if(!p)return;
+  if(p.manufacturer==="Galassia" && !p.customImage && window.HydroGalassiaDossierPhotos?.resolve){
+    const photo=await window.HydroGalassiaDossierPhotos.resolve(p);
+    if(photo?.src)Object.assign(p,window.HydroGalassiaDossierPhotos.fields(photo));
+    else p.imageStatus=p.image?"Photo existante conservée · source HD non confirmée":"Photo Galassia introuvable · aucun visuel inventé";
+    saveState();renderRooms();renderSelection();
+    return;
+  }
   p.imageStatus="Recherche du meilleur visuel…";
   renderRooms();
 
@@ -2031,11 +2038,15 @@ function renderCatalog(){
      const items=catalogIndex.maker("Galassia");
      const target=$("#targetRoom")?.value||state.rooms[0]?.id||"";
      window.HydroGalassiaConfigurator?.open?.(items[0],target,items,async (chosen,selectedRoom,accessories=[])=>{
-       const main=createSelectedProductRecord(chosen,selectedRoom);
+       const mainPhoto=await window.HydroGalassiaDossierPhotos?.resolve?.(chosen);
+       const mainData=mainPhoto?{...chosen,...window.HydroGalassiaDossierPhotos.fields(mainPhoto)}:chosen;
+       const main=createSelectedProductRecord(mainData,selectedRoom);
        if(!main)throw Error("Référence principale introuvable");
        const records=[main];
        for(const accessory of accessories){
-         const record=createSelectedProductRecord(accessory,selectedRoom,main.id);
+         const accessoryPhoto=await window.HydroGalassiaDossierPhotos?.resolve?.(accessory);
+         const accessoryData=accessoryPhoto?{...accessory,...window.HydroGalassiaDossierPhotos.fields(accessoryPhoto)}:accessory;
+         const record=createSelectedProductRecord(accessoryData,selectedRoom,main.id);
          if(!record)throw Error("Accessoire introuvable : "+accessory.reference);
          record.accessoryFor=main.id;
          record.galassiaLinkedAccessory=true;
@@ -2307,7 +2318,7 @@ function createSelectedProductRecord(p,roomId,parentId=""){
   if(!p)return null;
   p={...p,...(window.HydroSbordoniDocuments?.fields(p)||{})};
   const targetRoomId=normalizedRoomId(roomId);
-  const cached=cachedManufacturerImage(p);
+  const cached=(p.manufacturer==="Galassia"&&p.galassiaPhotoQuality)?null:cachedManufacturerImage(p);
   const embeddedRecorVisual=recorEmbeddedVisual(p);
   const gessiDirect="";
   const catalogImages=embeddedRecorVisual?[embeddedRecorVisual]:(Array.isArray(p.images)?p.images.filter(Boolean):[p.image].filter(Boolean));
@@ -2364,7 +2375,7 @@ function commitSelectedRecords(records,{showProject=false}={}){
     const isRitmonio=/^Ritmonio$/i.test(item.manufacturer||"");
     // A grouped Sbordoni result already owns its exact catalogue composition image.
     // Do not replace it with a generic manufacturer lookup.
-    if(!item.sbordoniGrouped && !item.sbordoniWCConfiguration && !item.sbordoniWCConfigurationAccessory && !(item.siraConfiguration && item.image))enqueueSelectedImageSearch(item);
+    if(!item.sbordoniGrouped && !item.sbordoniWCConfiguration && !item.sbordoniWCConfigurationAccessory && !(item.siraConfiguration && item.image) && !(item.manufacturer==="Galassia" && item.galassiaPhotoQuality))enqueueSelectedImageSearch(item);
     if(isRitmonio && !item.technicalSheetUrl){
       fetchRitmonioDocuments(item).then(docs=>{
         if(docs?.technicalSheet?.url){saveState();renderRooms();}
@@ -2503,11 +2514,15 @@ function addCatalogProduct(ref,roomId,key=""){
   if(window.HydroGalassiaConfigurator?.eligible?.(p)){
     const items=catalogIndex.maker("Galassia");
     HydroGalassiaConfigurator.open(p,targetRoomId,items,async (chosen,selectedRoom,accessories=[])=>{
-       const main=createSelectedProductRecord(chosen,selectedRoom);
+       const mainPhoto=await window.HydroGalassiaDossierPhotos?.resolve?.(chosen);
+       const mainData=mainPhoto?{...chosen,...window.HydroGalassiaDossierPhotos.fields(mainPhoto)}:chosen;
+       const main=createSelectedProductRecord(mainData,selectedRoom);
        if(!main)throw Error("Référence principale introuvable");
        const records=[main];
        for(const accessory of accessories){
-         const record=createSelectedProductRecord(accessory,selectedRoom,main.id);
+         const accessoryPhoto=await window.HydroGalassiaDossierPhotos?.resolve?.(accessory);
+         const accessoryData=accessoryPhoto?{...accessory,...window.HydroGalassiaDossierPhotos.fields(accessoryPhoto)}:accessory;
+         const record=createSelectedProductRecord(accessoryData,selectedRoom,main.id);
          if(!record)throw Error("Accessoire introuvable : "+accessory.reference);
          record.accessoryFor=main.id;
          record.galassiaLinkedAccessory=true;
@@ -5114,6 +5129,30 @@ function harmonizeSavedCatalogProducts(){
 
     Object.assign(p,c,runtime);
   }
+  if(typeof window!=="undefined" && window.HydroGalassiaDossierPhotos?.resolve){
+    void refreshLegacyGalassiaDossierPhotos().catch(e=>console.warn("[Galassia existing client photos]",e));
+  }
+}
+const galassiaPhotoRepairPending=new Set();
+async function refreshLegacyGalassiaDossierPhotos(){
+  const resolver=window.HydroGalassiaDossierPhotos;
+  if(!resolver?.resolve)return;
+  const pending=(state.selected||[]).filter(p=>p.manufacturer==="Galassia" && !p.customImage && !p.dossierImage &&
+    p.galassiaPhotoQuality!=="original-hd" && !galassiaPhotoRepairPending.has(p.id));
+  if(!pending.length)return;
+  let changed=false;
+  await Promise.all(pending.map(async product=>{
+    galassiaPhotoRepairPending.add(product.id);
+    try{
+      const photo=await resolver.resolve(product);
+      const live=state.selected.find(p=>p.id===product.id && p.reference===product.reference);
+      if(photo?.src && live && !live.customImage && !live.dossierImage && live.galassiaPhotoQuality!=="original-hd"){
+        Object.assign(live,resolver.fields(photo));changed=true;
+      }
+    }catch(error){console.warn("[Galassia dossier photo]",product.reference,error?.message||error);}
+    finally{galassiaPhotoRepairPending.delete(product.id);}
+  }));
+  if(changed){saveState();renderRooms();renderSelection();}
 }
 async function refreshLegacyRecorBathImages(){
   if(!navigator.onLine)return;
