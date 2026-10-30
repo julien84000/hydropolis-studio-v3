@@ -19,8 +19,6 @@
   lengths.forEach((length,i)=>add(prefix,start+i,width,length,model));
  }
  const range=(a,b)=>Array.from({length:b-a+1},(_,i)=>i+a);
- const length10=range(0,9).map(i=>(100+i*10)-(i===0?0:0)+''), // overwritten by canonical bands below
-       lengthBands=range(0,9).map(i=>i===0?'100-110':(101+i*10)+'-'+(110+i*10));
  const band=(lo,hi)=>lo===hi?String(lo):lo+'-'+hi;
  const L10=range(0,9).map(i=>band(i?101+i*10:100,110+i*10));
  const L8=L10.slice(0,8),L6=L10.slice(0,6);
@@ -52,7 +50,8 @@
  ];
  for(const [width,start,minLength] of uniqueGroups){
   const count=start===1||start===17||start===33?16:start===49?15:start===64?14:start===78?13:start===91?12:11;
-  const lengths=range(0,count-1).map(i=>band(i?minLength+1+i*10:minLength,minLength+10+i*10));
+  const firstEnd=minLength===70?80:Math.ceil(minLength/10)*10;
+  const lengths=range(0,count-1).map(i=>i?band(firstEnd+1+(i-1)*10,firstEnd+i*10):band(minLength,firstEnd));
   series('SUNC',start,width,lengths,'unique-rectangle');
  }
  // Iconik: manufacturer's 80/90 x 110/120/130/140 rectangles and 90/100 squares.
@@ -61,22 +60,23 @@
  // ONE: two surface texture blocks, with square/angle choices from source codes.
  const oneA=[
   [439,'70',range(90,200).filter(x=>x%10===0).map(String)],
-  [451,'71-75',range(90,200).filter(x=>x%10===0).map(String)],
-  [464,'76-80',range(80,200).filter(x=>x%10===0).map(String)],
-  [479,'81-90',range(90,200).filter(x=>x%10===0).map(String)],
-  [491,'91-100',range(100,200).filter(x=>x%10===0).map(String)],
-  [502,'101-110',range(110,200).filter(x=>x%10===0).map(String)]
+  [451,'75',range(90,200).filter(x=>x%10===0).map(String)],
+  [464,'80',range(80,200).filter(x=>x%10===0).map(String)],
+  [479,'90',range(90,200).filter(x=>x%10===0).map(String)],
+  [491,'100',range(100,200).filter(x=>x%10===0).map(String)],
+  [502,'110',range(110,200).filter(x=>x%10===0).map(String)]
  ];
  for(const [start,width,lengths] of oneA)series('SONC',start,width,lengths,'one-rectangle');
  // The 80×80 and 90×90 corner models are separate tariff SKUs.
  add('SONC',463,'80','80','one-square');
+ add('SONC',477,'90','90','one-rectangle');
  add('SONC',478,'90','90','one-square');
  for(const [start,width,lengths] of [
    [585,'70',range(90,200).filter(x=>x%10===0).map(String)],
-   [597,'71-75',range(90,200).filter(x=>x%10===0).map(String)],
-   [609,'76-80',range(90,200).filter(x=>x%10===0).map(String)],
-   [621,'81-90',range(90,200).filter(x=>x%10===0).map(String)],
-   [633,'91-100',range(100,200).filter(x=>x%10===0).map(String)]
+   [597,'75',range(90,200).filter(x=>x%10===0).map(String)],
+   [609,'80',range(90,200).filter(x=>x%10===0).map(String)],
+   [621,'90',range(90,200).filter(x=>x%10===0).map(String)],
+   [633,'100',range(100,200).filter(x=>x%10===0).map(String)]
  ])series('SONC',start,width,lengths,'one-rectangle');
  // Correct the two supplier angular variants, which otherwise overlap the
  // rectangular series. Their SKU and the manufacturer's format are preserved.
