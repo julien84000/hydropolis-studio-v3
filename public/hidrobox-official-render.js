@@ -96,10 +96,10 @@
   const material=normalizedMaterial(row,extra),texture=normalizedTexture(row,extra);
   const color=title(extra.color||row.color||'');
   const width=Number(extra.width||row.widthCm||''),length=Number(extra.length||row.lengthCm||'');
-  return {model,material,texture,color,width,length,shape:normalizedShape(row,extra)};
+  return {model,typology:extra.typology||'',material,texture,color,width,length,shape:normalizedShape(row,extra)};
  }
  function eligible(s){
-  const min=/^spot-\d+$/.test(String(s?.model||''))?30:40;
+  const min=s?.typology&&s.typology!=='shower-tray'?20:/^spot-\d+$/.test(String(s?.model||''))?30:40;
   return !!(s?.model&&s.material&&s.texture&&s.color&&Number.isInteger(s.width)&&s.width>=min&&
     Number.isInteger(s.length)&&s.length>=min);
  }
