@@ -727,7 +727,7 @@ function universalPage(g){
       category:row.category||original?.category||family?.name||'Sanitaire',material:row.material||'',
       finish:[pickedColor,row.finish||row.colorGroup||''].filter(Boolean).join(' · '),
       price:selectedTrayQuote?.price??Number(row.price),totalPrice:selectedTrayQuote?.price??Number(row.price),
-      rawTariffPrice:selectedTrayQuote?.rawPrice??Number(row.rawPrice)||0,listPriceUpliftPct:4,purchaseDiscount:50,currency:'€',vat:'HT',
+      rawTariffPrice:selectedTrayQuote?.rawPrice??(Number(row.rawPrice)||0),listPriceUpliftPct:4,purchaseDiscount:50,currency:'€',vat:'HT',
       source:'HIDROBOX_TARIF_FR_V0226_19-02-2026.pdf',sourceYear:2026,manufacturerUrl:url,
       image:exactImage||representative,
       imageSource:exactImage?'Visuel fabricant de la référence':groupCollectionImage?'Photographie constructeur de la collection · variante illustrative':'Illustration de catégorie Hidrobox · modèle et finition non contractuels',
