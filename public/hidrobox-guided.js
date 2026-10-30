@@ -662,7 +662,8 @@ function officialSpecForGroup(g,row,colour,width,length){
    'bains-encastres':'recessed-bathtub','accessoires':'accessories'};
  const typology=tax[category];if(!typology)return null;
  const collection=norm(g?.collection||g?.id).replaceAll(' ','-');
- const model=collection==='paneles'?'wall-panels':
+ const model=category==='receveurs'?(engine.modelFor(g,row)||collection):
+   collection==='paneles'?'wall-panels':
    /^spot-[0-9]+$/.test(collection)?collection:
    collection==='fs'?String(row?.model||'').toLowerCase().replaceAll(' ','-'):collection;
  const spec=engine.selection(g,row,{model,typology,
