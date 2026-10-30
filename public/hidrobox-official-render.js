@@ -98,7 +98,11 @@
   const width=Number(extra.width||row.widthCm||''),length=Number(extra.length||row.lengthCm||'');
   return {model,material,texture,color,width,length,shape:normalizedShape(row,extra)};
  }
- function eligible(s){return !!(s.model&&s.material&&s.texture&&s.color&&Number.isInteger(s.width)&&s.width>=40&&Number.isInteger(s.length)&&s.length>=40);}
+ function eligible(s){
+  const min=/^spot-\d+$/.test(String(s?.model||''))?30:40;
+  return !!(s?.model&&s.material&&s.texture&&s.color&&Number.isInteger(s.width)&&s.width>=min&&
+    Number.isInteger(s.length)&&s.length>=min);
+ }
  async function lookup(s,{fetcher=root?.fetch}={}){
   if(!eligible(s)||!fetcher)return {ok:false,reason:'Les choix exacts de matière, texture, couleur ou dimension sont incomplets.'};
   const url='/api/hidrobox-configurator-image?'+Object.entries(s).map(([k,v])=>encodeURIComponent(k)+'='+encodeURIComponent(v)).join('&');
