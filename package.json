@@ -1,6 +1,6 @@
 {
   "name": "hydropolis-studio-v3",
-  "version": "11.64.18",
+  "version": "11.64.19",
   "private": true,
   "description": "Hydropolis Studio — catalogue, projets et visuels fabricants",
   "main": "server.js",
