@@ -3515,12 +3515,12 @@ function renderRoomsCore(){
    const product=state.selected.find(x=>x.id===b.dataset.id);
    if(!product||!window.HydroSbordoniConfigurator)return;
    HydroSbordoniConfigurator.open(product,b.dataset.room||product.roomId);
- });$(".hidrobox-edit-config").forEach(b=>b.onclick=()=>{
+ });$$(".hidrobox-edit-config").forEach(b=>b.onclick=()=>{
    const product=state.selected.find(p=>p.id===b.dataset.id);
    if(!product||!window.HydroHidroboxConfigurator?.open)return;
    window.HydroHidroboxConfigurator.open(product,b.dataset.room||product.roomId)
      .catch(e=>{console.error("[Neo Plus edit]",e);alert("Impossible de modifier Neo Plus : "+(e.message||String(e)))});
- });$(".fallback-btn").forEach(b=>b.onclick=()=>useCatalogueFallback(b.dataset.id));$$(".enrich-btn").forEach(b=>b.onclick=()=>enrichSelectedPhoto(b.dataset.id,true));$$(".ritmonio-tech-refresh").forEach(b=>b.onclick=async()=>{
+ });$$(".fallback-btn").forEach(b=>b.onclick=()=>useCatalogueFallback(b.dataset.id));$$(".enrich-btn").forEach(b=>b.onclick=()=>enrichSelectedPhoto(b.dataset.id,true));$$(".ritmonio-tech-refresh").forEach(b=>b.onclick=async()=>{
    const p=state.selected.find(x=>x.id===b.dataset.id);if(!p)return;
    b.disabled=true;b.textContent="Récupération…";
    try{
