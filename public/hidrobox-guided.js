@@ -254,13 +254,15 @@ function pricedShowerVariants(g){
  const rows=g?.variants||[];
  // OPSH drain/grille options live separately: never pretend these are tray SKU variants.
  const products=prefix?rows.filter(v=>String(v?.reference||'').startsWith(prefix)):rows;
- const line=root.HydroHidroboxLineBands2026;
- return prefix==='SLIC'&&line?.fill?products.map(v=>line.fill(v)||v):products;
+ const source=prefix==='SLIC'?root.HydroHidroboxLineBands2026:root.HydroHidroboxShowerBands2026;
+ return source?.fill?products.map(v=>source.fill(v)||v):products;
 }
 function universalSelection(g){
   const cascade=root.HydroHidroboxTrayCascade2026;
   if(groupCategory(g)==='receveurs'&&cascade){
-    const exactDimensions=norm(g.collection||g.id)==='line'?root.HydroHidroboxTrayDimensions2026:null;
+    const c=norm(g.collection||g.id);
+    // Neo Plus keeps its dedicated supplier-tested algorithm.
+    const exactDimensions=c!=='neo plus'?root.HydroHidroboxTrayDimensions2026:null;
     const result=cascade.arrange(g,pricedShowerVariants(g),universalDraft,
       root.HydroHidroboxTrayModels2026,root.HydroHidroboxOfficialVisual,exactDimensions);
     if(result.dimensionResolution){
@@ -708,7 +710,8 @@ function universalPage(g){
  const showerColor=verifiedColors.length?'<div class="hidrobox-shower-colors"><h4>Couleur réelle du receveur</h4>'+
    visualFacet('huShowerColor','Couleur',verifiedColors,universalDraft.showerColor)+'</div>':'';
  const accessories=root.HydroHidroboxShowerOptions2026;
- const trayModel=selection.model|| (shower&&visual?visual.modelFor(g,selected||{}):'');
+ const trayModel=(selection.model==='line-square'?'line-x':selection.model)||
+   (shower&&visual?visual.modelFor(g,selected||{}):'');
  const trayOpts=shower&&accessories?accessories.optionsFor({model:trayModel,material:selected?.material||'',
    texture:selected?.finish||'',width:Number(universalDraft.exactwidth)||Number(centimeterRange(selected?.width)?.first)||0,
    colorGroup:selected?.colorGroup||'',outlet:selected?.outlet||selected?.drainDiameter||''}):[];
