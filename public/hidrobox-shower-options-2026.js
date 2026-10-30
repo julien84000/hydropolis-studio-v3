@@ -94,7 +94,8 @@
      const match=group.options.find(x=>x.id===id);
      if(!match)return {ok:false,reason:'Option fabricante indisponible : '+group.label};
      const charge=match.rawPrice+(match.percent?Math.round(Number(baseRaw)*match.percent)/100:0);
-     extra+=charge;components.push({...match,rawPrice:charge,group:group.key});
+     extra+=charge;
+     if(match.reference!=='INCLUS'||charge>0)components.push({...match,rawPrice:charge,group:group.key});
    }
    const source=Number(baseRaw)+extra;
    return {ok:true,rawPrice:source,price:Math.round(source*104)/100,optionRawPrice:extra,components};
