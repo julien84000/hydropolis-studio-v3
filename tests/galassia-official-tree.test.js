@@ -37,7 +37,7 @@ test('Galassia: subgroup displays only correctly classified product models, one 
 test('Galassia: 619 individually linked references, 471 visibly separated, no guessed maker groups',()=>{
  const data=tree.coverage(official,rows);
  assert.equal(data.collections,17);
- assert.equal(data.sections,71);
+ assert.equal(data.sections,73);
  assert.equal(data.matched,619);
  assert.equal(data.unmatched,471);
  assert.equal(data.matched+data.unmatched,rows.length);

@@ -57,6 +57,6 @@ test('Galassia Core and Core Freestanding furniture stay in separate official co
  assert(inFree.includes('7343'));assert(!inCore.includes('7343'));
  const coverage=tree.coverage(official,[]);
  assert.equal(coverage.collections,17);
- assert.equal(coverage.sections,71);
- assert.equal(coverage.models,282);
+ assert.equal(coverage.sections,73);
+ assert.equal(coverage.models,300);
 });

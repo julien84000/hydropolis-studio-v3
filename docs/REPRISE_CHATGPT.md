@@ -1,3 +1,26 @@
+## V11.64.21 — Galassia : collections Core/Next complétées, finitions et accessoires sanitaires (30/10/2026)
+
+Branche fix/galassia-core-next-pricelist-116421, base V11.64.20 main 1370597ba33f695290b978d4afcdfd7e787a39fc.
+
+Demandes utilisateur cumulées : meubles et structures Core supplémentaires 2083/2084/2085, 2088/2089, 2096/2097 et tops compatibles, collections Next/Nextnarrow et variantes couleur ; pour tous les WC : abattant de même finition, fixation et raccord de vidage ; pour bidets : bonde assortie et kit fixation si nécessaire ; urinoirs : toutes les options vérifiées (siphon, alimentation, fixation, bonde/vidage).
+
+public/galassia/pricelist-core-next-colors.json : 132 variantes tarifées et paginées sur 33 bases (Core / Next / Nextnarrow), extraites du LISTINO-32-Export.pdf utilisateur. Ne jamais écraser une référence déjà chiffrée dans le catalogue source ; ne compléter que les références exactes absentes.
+
+public/galassia/sanitary-accessory-prices.json : 95 tarifs d'accessoires de 37 familles extraits de la pricelist et documentés par page. public/galassia-accessories.js : ajout unique des références absentes au chargement, matrice de compatibilité des familles WC, bidets et urinoirs ; sélection des abattants et bondes STRICTEMENT dans la même couleur si tarif présent ; pas de finition de substitution proposée comme identique.
+
+Urinoir Core 7380 : 9088 siphon horizontal Ø50 (32 €), 9087 raccord alimentation 1/2 (82 €), 9086 kit de fixation (36 €) d'après page PDF 88. Meg11 Pro 5408 : robinet de chasse et fixation inclus, option bonde à grille 6069 (44 €) et siphon 6059 (33 €), p. 124. Dream 7116 : alimentation incluse, bonde 6069 en option p. 143. Autres urinoirs non associés sans preuve, jamais d'option supposée.
+
+WC : abattants adaptés par famille et modèle (Core 7330; SUSI 7815; Lola 7513; Meg11 5455 / 5478 et spécial monobloc 5451; Dream 7330/7314; Eden 7220/7256; M2 5223; Ethos 8482/8495; Comfort 4023/4020). Le raccord mural 9053 et/ou coude sol 9052 sont en option d'après le chantier, sans cumul automatique. Fixations fournies explicitement affichées comme incluses et non facturées de nouveau. Bidet : bonde 9916 par suffixe (BI/BIMT/NEMT/SB/GM/SA/NE) et patte supplémentaire 9051 seulement pour les bidets suspendus, distincte du kit éventuellement inclus.
+
+public/galassia/official-tree.json : familles complémentaires de consultation dans Core et Next pour les modèles présents dans le tarif, sans réécrire leur collection fabricant officielle Tabulae/Nextnarrow. Catégorie Core annexes 2083/2084/2085/2096/2097/2088/2089 et plateaux, Next lavabos 7502/7504/7505. Total de l'arborescence 17 collections / 73 rubriques / 300 cartes-modèles (des cartes complémentaires sont des liens croisés).
+
+public/app.js : charge les suppléments avec l'index de collection, et l'ajout d'accessoires choisis s'effectue comme une transaction de records liés au sanitaire via accessoryFor ; chaque accessoire conserve prix public et remise d'achat fournisseur 50 % et apparaît au devis comme ligne distincte. Aucun kit non sélectionné n'est ajouté. public/galassia-configurator.js et CSS : menus accessoires par type de sanitaire.
+
+Tests : tests/galassia-accessories.test.js, tests/galassia-core-photos.test.js, tests/galassia-official-tree.test.js, parcours Chromium tests/browser-consolidated.js (WC 7353NEMT + abattant 7330NEMT, bidet 7354NEMT + bonde 9916NEMT). CI à valider avant fusion, puis vérifier /api/version=11.64.21 et /api/health sur Render.
+
+Limites : associations de certaines gammes anciennes non documentées => ne pas proposer d'accessoires non vérifiés ; accessoires de WC non universels : vérifier implantation/évacuation. Les images manquantes du tarif PDF ne sont pas toutes intégrées ; 33 références avec prix contradictoire restent hors catalogage automatique. Les autres marques ne doivent pas changer.
+
+---
 ## V11.64.20 — Galassia : photos officielles et meubles Core (30/10/2026)
 
 Base main 48787780 (V11.64.19). Branche fix/galassia-core-furniture-photos-116420.

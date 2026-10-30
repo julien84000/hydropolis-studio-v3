@@ -140,6 +140,13 @@
     const image=m.image||p.image||'';
     const title=m.name||p.productType||p.designation;
     const pdfSource=p.sourcePdfPage||p.sourcePage;
+    const optionSet=window.HydroGalassiaAccessories?.compatible?.(p,all)||{kind:'',groups:[],included:[]};
+    const extraMarkup=optionSet.kind?'<section class="galassia-accessories"><h4>'+({wc:'Accessoires du WC',bidet:'Accessoires du bidet',urinal:"Options de l’urinoir"}[optionSet.kind]||'Accessoires compatibles')+'</h4>'+
+      optionSet.included.map(note=>'<div class="galassia-included">'+escape(note)+'</div>').join('')+
+      optionSet.groups.map(group=>'<label class="galassia-accessory-row"><span>'+escape(group.title)+'</span><select class="galassia-option-select" data-option-group="'+escape(group.id)+'"><option value="">Ne pas ajouter</option>'+
+        group.options.map(x=>'<option value="'+escape(x.reference)+'">'+escape(x.designation.split(' · ')[0])+' · '+escape(x.reference)+' · '+money(x.price)+' HT</option>').join('')+
+      '</select>'+(group.notice?'<small>'+escape(group.notice)+'</small>':'')+'</label>').join('')+
+      '<p class="galassia-accessories-help">Les accessoires sélectionnés sont ajoutés séparément au projet et au devis ; aucun kit déjà inclus n’est facturé automatiquement.</p></section>':'';
     $('.galassia-selection').innerHTML=
       '<div class="galassia-photo">'+(image?'<img src="'+escape(image)+'" alt="'+escape(title)+'">':'<span>Photo fabricant indisponible</span>')+'</div>'+
       '<div class="galassia-image-note">'+(image?'Photographie du modèle · la finition illustrée peut différer':'Aucune photographie exacte du modèle vérifiée')+'</div>'+
@@ -151,7 +158,7 @@
       (technicalLink(p)?'<a href="'+escape(technicalLink(p))+'" target="_blank" rel="noopener noreferrer">Fiche technique PDF officielle</a>':'')+
       (/^https:\/\/www\.ceramicagalassia\.(?:it\/catalogo|com\/catalogue)\//.test(p.manufacturerUrl||'')?'<a href="'+escape(p.manufacturerUrl)+'" target="_blank" rel="noopener noreferrer">Fiche produit chez Galassia</a>':'')+'</div>'+
       (!p.officialStructureVerified?'<p class="galassia-doc-warning">Famille non confirmée sur le site fabricant : vérifier avant commande.</p>':'')+
-      '<button type="button" class="galassia-add">Ajouter la référence exacte au projet</button>';
+      extraMarkup+'<button type="button" class="galassia-add">Ajouter la référence exacte au projet</button>';
     if(!technicalLink(p))resolveTechnical(p).then(url=>{
       if(!url||reference!==p.reference||!overlay.isConnected)return;
       const docs=$('.galassia-docs');
@@ -162,7 +169,15 @@
     $('.galassia-variant').onchange=e=>{reference=e.target.value;refresh();};
     $('.galassia-add').onclick=async()=>{
       if(pending)return;pending=true;const button=$('.galassia-add');button.disabled=true;button.textContent='Ajout…';
-      try{await resolveTechnical(p);await onAdd(p,roomId);close();}
+      try{
+        const accessories=[...overlay.querySelectorAll('.galassia-option-select')].map(el=>{
+          const ref=el.value;
+          return ref?all.find(x=>x.manufacturer==='Galassia'&&x.reference===ref):null;
+        }).filter(Boolean);
+        await resolveTechnical(p);
+        await onAdd(p,roomId,accessories);
+        close();
+      }
       catch(error){alert(error?.message||"Impossible d'ajouter l'article.");pending=false;button.disabled=false;button.textContent='Ajouter la référence exacte au projet';}
     };
    };

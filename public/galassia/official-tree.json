@@ -484,6 +484,34 @@
               "section": "Mobili"
             }
           ]
+        },
+        {
+          "name": "Lavabos et associations compatibles · tarif Next",
+          "source": "LISTINO-32-Export.pdf pages 43-47",
+          "crossListed": true,
+          "items": [
+            {
+              "base": "7502",
+              "name": "Lavabo appoggio o sospeso cm 100x48",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7502_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/next-narrow/lavabi/lavabo-appoggio-o-sospeso-cm-100x48.html",
+              "crossListed": true
+            },
+            {
+              "base": "7504",
+              "name": "Lavabo appoggio o sospeso cm 70x48",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7504_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/next-narrow/lavabi/lavabo-appoggio-o-sospeso-cm-70x48.html",
+              "crossListed": true
+            },
+            {
+              "base": "7505",
+              "name": "Lavabo appoggio o sospeso cm 100x37",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7505_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/next-narrow/lavabi/lavabo-appoggio-o-sospeso-cm-100x37.html",
+              "crossListed": true
+            }
+          ]
         }
       ],
       "status": 200,
@@ -735,6 +763,133 @@
           ],
           "source": "https://www.ceramicagalassia.com/catalogue/core/",
           "sourceLabel": "Furnitures and Structure"
+        },
+        {
+          "name": "Meubles et éléments compatibles · tarif Core",
+          "source": "LISTINO-32-Export.pdf pages 81-84",
+          "crossListed": true,
+          "items": [
+            {
+              "base": "2085",
+              "name": "Mobile 60x45,5",
+              "image": "https://www.ceramicagalassia.it/public/_resized/2085_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/tabulae/mobili/mobile-60x455.html",
+              "crossListed": true,
+              "sourcePdfPage": 81
+            },
+            {
+              "base": "2084",
+              "name": "Mobile 80x45,5",
+              "image": "https://www.ceramicagalassia.it/public/_resized/2084_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/tabulae/mobili/mobile-80x455-1.html",
+              "crossListed": true,
+              "sourcePdfPage": 81
+            },
+            {
+              "base": "2083",
+              "name": "Mobile 120x45,5",
+              "image": "https://www.ceramicagalassia.it/public/_resized/2083_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/tabulae/mobili/mobile-120x455-1.html",
+              "crossListed": true,
+              "sourcePdfPage": 81
+            },
+            {
+              "base": "2096",
+              "name": "Meuble ou élément compatible 2096",
+              "image": "",
+              "url": "",
+              "crossListed": true,
+              "sourcePdfPage": 81
+            },
+            {
+              "base": "2097",
+              "name": "Meuble ou élément compatible 2097",
+              "image": "",
+              "url": "",
+              "crossListed": true,
+              "sourcePdfPage": 81
+            },
+            {
+              "base": "2088",
+              "name": "Struttura sospesa 101x46",
+              "image": "https://www.ceramicagalassia.it/public/_resized/struttura%20cornice%20101_ottanio_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/tabulae/struttura-sospesa-101x46.html",
+              "crossListed": true,
+              "sourcePdfPage": 81
+            },
+            {
+              "base": "2089",
+              "name": "Struttura sospesa 121x46",
+              "image": "https://www.ceramicagalassia.it/public/_resized/struttura%20cornice%20121_sabbia%20ergo_650X550_90_C.jpg",
+              "url": "https://www.ceramicagalassia.it/catalogo/tabulae/struttura-sospesa-a-cornice.html",
+              "crossListed": true,
+              "sourcePdfPage": 81
+            },
+            {
+              "base": "2050",
+              "name": "Meuble ou élément compatible 2050",
+              "image": "",
+              "url": "",
+              "crossListed": true,
+              "sourcePdfPage": 81
+            },
+            {
+              "base": "2051",
+              "name": "Meuble ou élément compatible 2051",
+              "image": "",
+              "url": "",
+              "crossListed": true,
+              "sourcePdfPage": 81
+            },
+            {
+              "base": "2052",
+              "name": "Meuble ou élément compatible 2052",
+              "image": "",
+              "url": "",
+              "crossListed": true,
+              "sourcePdfPage": 81
+            },
+            {
+              "base": "2053",
+              "name": "Meuble ou élément compatible 2053",
+              "image": "",
+              "url": "",
+              "crossListed": true,
+              "sourcePdfPage": 81
+            },
+            {
+              "base": "2054",
+              "name": "Meuble ou élément compatible 2054",
+              "image": "",
+              "url": "",
+              "crossListed": true,
+              "sourcePdfPage": 81
+            },
+            {
+              "base": "2055",
+              "name": "Meuble ou élément compatible 2055",
+              "image": "",
+              "url": "",
+              "crossListed": true,
+              "sourcePdfPage": 81
+            },
+            {
+              "base": "2060",
+              "name": "Meuble ou élément compatible 2060",
+              "image": "",
+              "url": "",
+              "crossListed": true,
+              "sourcePdfPage": 81
+            },
+            {
+              "base": "2061",
+              "name": "Meuble ou élément compatible 2061",
+              "image": "",
+              "url": "",
+              "crossListed": true,
+              "sourcePdfPage": 81
+            }
+          ]
         }
       ],
       "status": 200,

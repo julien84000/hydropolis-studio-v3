@@ -10,7 +10,7 @@
  }
  function familySections(tree,collection,rows){
    const official=collection?.groups||[];
-   const sections=official.map(group=>({name:group.name,items:group.items||[],prices:pricedInGroup(rows,collection,group).length,official:true}));
+   const sections=official.map(group=>({name:group.name,items:group.items||[],prices:group.crossListed?(rows||[]).filter(p=>(group.items||[]).some(m=>m.base===p.base)).length:pricedInGroup(rows,collection,group).length,official:true,crossListed:!!group.crossListed}));
    const unmatched=(rows||[]).filter(p=>p.officialStructureVerified!==true&&p.manufacturerCollectionSlug===collection?.slug);
    if(unmatched.length)sections.push({name:'Références du tarif à rapprocher',items:[],prices:unmatched.length,official:false});
    return sections;
@@ -29,7 +29,7 @@
      return [...grouped.values()].sort((a,b)=>a.base.localeCompare(b.base,'fr',{numeric:true}));
    }
    return section.items.map(item=>({
-    ...item,variants:array.filter(p=>p.officialStructureVerified===true&&p.manufacturerCollectionSlug===collection.slug&&p.manufacturerFamily===section.name&&p.manufacturerModelCode===item.base)
+    ...item,variants:array.filter(p=>section.crossListed?(p.manufacturer==='Galassia'&&p.base===item.base):(p.officialStructureVerified===true&&p.manufacturerCollectionSlug===collection.slug&&p.manufacturerFamily===section.name&&p.manufacturerModelCode===item.base))
    }));
  }
  let loadPromise=null;
@@ -53,11 +53,16 @@
     }
    }
   }
-  if(candidates.length===1)return candidates[0];
-  if(candidates.length>1){
-   const same=candidates.filter(c=>c.collection.slug===p.manufacturerCollectionSlug);
-   if(same.length===1)return same[0];
+  // A product may also appear on a compatible-combinations page in another
+  // collection. That supplementary cross-listing never changes its manufacturer
+  // collection or its official photo/family.
+  const canonical=candidates.filter(c=>!c.family.crossListed&&!c.item.crossListed);
+  if(canonical.length===1)return canonical[0];
+  if(canonical.length>1){
+   const same=canonical.filter(c=>c.collection.slug===p.manufacturerCollectionSlug);
+   return same.length===1?same[0]:null;
   }
+  if(candidates.length===1)return candidates[0];
   return null;
  }
  function enrich(p,tree){

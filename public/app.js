@@ -2030,7 +2030,20 @@ function renderCatalog(){
    results.querySelector(".galassia-open")?.addEventListener("click",()=>{
      const items=catalogIndex.maker("Galassia");
      const target=$("#targetRoom")?.value||state.rooms[0]?.id||"";
-     window.HydroGalassiaConfigurator?.open?.(items[0],target,items,p=>addProduct(p.reference,target,"",productKey(p))).catch(e=>alert("Galassia : "+(e.message||e)));
+     window.HydroGalassiaConfigurator?.open?.(items[0],target,items,async (chosen,selectedRoom,accessories=[])=>{
+       const main=createSelectedProductRecord(chosen,selectedRoom);
+       if(!main)throw Error("Référence principale introuvable");
+       const records=[main];
+       for(const accessory of accessories){
+         const record=createSelectedProductRecord(accessory,selectedRoom,main.id);
+         if(!record)throw Error("Accessoire introuvable : "+accessory.reference);
+         record.accessoryFor=main.id;
+         record.galassiaLinkedAccessory=true;
+         records.push(record);
+       }
+       commitSelectedRecords(records);
+       return main.id;
+     }).catch(e=>alert("Galassia : "+(e.message||e)));
    });
    results.querySelectorAll(".hidrobox-category-open").forEach(button=>button.addEventListener("click",()=>{
      const guide=window.HydroHidroboxConfigurator;
@@ -2489,7 +2502,20 @@ function addCatalogProduct(ref,roomId,key=""){
   const targetRoomId=normalizedRoomId(roomId);
   if(window.HydroGalassiaConfigurator?.eligible?.(p)){
     const items=catalogIndex.maker("Galassia");
-    HydroGalassiaConfigurator.open(p,targetRoomId,items,chosen=>addProduct(chosen.reference,targetRoomId,"",productKey(chosen))).catch(e=>alert("Galassia : "+(e.message||e)));
+    HydroGalassiaConfigurator.open(p,targetRoomId,items,async (chosen,selectedRoom,accessories=[])=>{
+       const main=createSelectedProductRecord(chosen,selectedRoom);
+       if(!main)throw Error("Référence principale introuvable");
+       const records=[main];
+       for(const accessory of accessories){
+         const record=createSelectedProductRecord(accessory,selectedRoom,main.id);
+         if(!record)throw Error("Accessoire introuvable : "+accessory.reference);
+         record.accessoryFor=main.id;
+         record.galassiaLinkedAccessory=true;
+         records.push(record);
+       }
+       commitSelectedRecords(records);
+       return main.id;
+     }).catch(e=>alert("Galassia : "+(e.message||e)));
     return;
   }
   if(window.HydroSbordoniWCConfigurator?.eligible?.(p)){HydroSbordoniWCConfigurator.open(p,targetRoomId);return;}
@@ -4968,6 +4994,17 @@ async function loadSupplierCatalogs(){
         if(chunk.file==="catalog_galassia.json" && window.HydroGalassiaTree?.load){
           try{galassiaOfficial=await window.HydroGalassiaTree.load();}
           catch(e){console.warn("[Galassia] Index officiel indisponible : l'ancien catalogue reste visible",e);}
+        }
+        if(chunk.file==="catalog_galassia.json"&&window.HydroGalassiaAccessories?.makeRows){
+          try{
+            const [accessoryResponse,colorResponse]=await Promise.all([
+              fetch("/galassia/sanitary-accessory-prices.json",{cache:"no-cache"}),
+              fetch("/galassia/pricelist-core-next-colors.json",{cache:"no-cache"})
+            ]);
+            if(!accessoryResponse.ok||!colorResponse.ok)throw Error("Suppléments Galassia indisponibles");
+            const [accessoryPrices,colorPrices]=await Promise.all([accessoryResponse.json(),colorResponse.json()]);
+            rows.push(...window.HydroGalassiaAccessories.makeRows(accessoryPrices,rows,galassiaOfficial,colorPrices));
+          }catch(err){console.warn("[Galassia] Accessoires et coloris complémentaires non chargés",err);}
         }
         for(const p of rows){
           if(p.manufacturer==="Galassia"&&galassiaOfficial){
