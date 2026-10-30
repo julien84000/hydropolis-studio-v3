@@ -10,6 +10,7 @@ const root=path.join(__dirname,'..');
 function load(file){return JSON.parse(zlib.gunzipSync(Buffer.from(
  fs.readFileSync(path.join(root,'public/brand-data',file),'utf8').trim(),'base64')).toString('utf8'));}
 const source=require('./fixtures/hidrobox/supplier-2026-pdf-skus.json');
+const specialSource=require('./fixtures/hidrobox/supplier-2026-special-parts-prices.json');
 const panelPricing=require('../public/hidrobox-panels-2026.js');
 const vm=require('node:vm');
 const programCtx={window:{}};
@@ -24,8 +25,9 @@ const imported=new Set([...collect(config),...collect(catalog)]
  .filter(code=>/^[A-Z]{3,6}\d{4}$/.test(code))); // Exclude 27 synthetic HBX-CFG navigation entries
 const panelSourceRows=panelPricing.mapped;
 const programReferences=[...(programData.rows||[]).map(r=>r.reference),...Object.keys(programData.options||{})];
-const implemented=new Set([...imported,...panelSourceRows.map(r=>r.reference),...programReferences]);
+const implemented=new Set([...imported,...panelSourceRows.map(r=>r.reference),...programReferences,...specialSource.rows.map(r=>r.reference)]);
 const sourceCodes=new Map(source.sourceSkus);
+const specialPriceIndex=new Map(specialSource.rows.map(x=>[x.reference,x]));
 function prefix(code){return String(code).match(/^[A-Z]+/)?.[0]||'OTHER';}
 test('Supplier PDF 2026 SKU inventory is available, with independent imported coverage audit',()=>{
  assert.equal(source.pageCount,87);
@@ -58,4 +60,20 @@ test('Supplier PDF 2026 SKU inventory is available, with independent imported co
  const panelAudit=panelPricing.verifyImported(g);
  assert.deepEqual(panelAudit.priceConflicts,[],'Panel tariff import conflicts with official 2026 matrix');
  assert.equal(panelAudit.missingFromImport.length,125,'Revisit audit if compressed import becomes more complete');
+});
+
+test('Hidrobox 2026 PDF: every SCOC/VCOC reference has a genuine manufacturer source price',()=>{
+ assert.equal(specialPriceIndex.size,1360);
+ const specialCodes=[...sourceCodes.keys()].filter(ref=>/^(SCOC|VCOC)\d{4}$/.test(ref));
+ assert.equal(specialCodes.length,1360);
+ assert.deepEqual(specialCodes.filter(ref=>!specialPriceIndex.has(ref)),[]);
+ assert(specialSource.rows.every(r=>Number.isFinite(r.rawPrice)&&r.rawPrice>0&&[36,37,38].includes(r.sourcePage)));
+ const variants=(config.groups||[]).flatMap(g=>g.variants||[]);
+ const conflicts=variants.filter(r=>specialPriceIndex.has(r.reference)&&Number(r.rawPrice)!==specialPriceIndex.get(r.reference).rawPrice)
+  .map(r=>({reference:r.reference,importedPrice:r.rawPrice,pdfPrice:specialPriceIndex.get(r.reference).rawPrice}));
+ assert.deepEqual(conflicts,[],'Original PDF price and imported source must match exactly, before 4% uplift');
+ const missing=specialSource.rows.filter(r=>!imported.has(r.reference));
+ console.log('HIDROBOX_SPECIAL_PARTS '+JSON.stringify({sourceSkus:specialPriceIndex.size,
+   imported:1360-missing.length,missingInCompressedImport:missing.length,
+   sampleMissing:missing.slice(0,15)}));
 });
