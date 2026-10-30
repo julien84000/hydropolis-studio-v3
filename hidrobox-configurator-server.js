@@ -176,8 +176,21 @@ async function lookup(raw,{get=axios.get,post=axios.post,sizeId=null}={}){
    const res=await post(AJAX,params.toString(),{timeout:15000,maxRedirects:2,maxContentLength:6*1024*1024,
      headers:{'Content-Type':'application/x-www-form-urlencoded','Accept':'application/json'}});
    const html=String(res?.data?.data?.grid||'');
-   if(!html)throw Error('Réponse AJAX fabricant sans résultats vérifiables');
-   const item=parse(html,s);
+   let item=html?parse(html,s):null;
+   // The official manufacturer image may not be indexed under every
+   // custom size even when the same model/colour/texture/shape exists.
+   // Retry once without size, while keeping all identity and finish filters.
+   // Still accept only real image URLs extracted from manufacturer HTML.
+   if(!item&&s.typology==='shower-tray'){
+     const broader=new URLSearchParams(params.toString());
+     broader.delete('fltr-size[]');
+     try{
+       const alternate=await post(AJAX,broader.toString(),{timeout:12000,maxRedirects:2,maxContentLength:6*1024*1024,
+         headers:{'Content-Type':'application/x-www-form-urlencoded','Accept':'application/json'}});
+       const alternativeHtml=String(alternate?.data?.data?.grid||'');
+       if(alternativeHtml)item=parse(alternativeHtml,s);
+     }catch{} // If unavailable, retain safe no-photo state.
+   }
    const exact=item?.dimensionsVerified===true;
    const data=item?{ok:true,image:item.url,title:item.title,source:filteredSource,quality:'manufacturer-configurator',match:item.selectionMatch,
      verifiedMaterial:false,disclaimer:exact?
