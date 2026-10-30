@@ -4964,7 +4964,15 @@ async function loadSupplierCatalogs(){
         rows=await r.json();
       }
       if(Array.isArray(rows)){
+        let galassiaOfficial=null;
+        if(chunk.file==="catalog_galassia.json" && window.HydroGalassiaTree?.load){
+          try{galassiaOfficial=await window.HydroGalassiaTree.load();}
+          catch(e){console.warn("[Galassia] Index officiel indisponible : l'ancien catalogue reste visible",e);}
+        }
         for(const p of rows){
+          if(p.manufacturer==="Galassia"&&galassiaOfficial){
+            window.HydroGalassiaTree.enrich(p,galassiaOfficial);
+          }
           // Galassia: the manufacturer hierarchy always wins over inferred catalogue labels.
           if(p.manufacturer==="Galassia"){
             p.sourceCategory=p.sourceCategory||p.category;
