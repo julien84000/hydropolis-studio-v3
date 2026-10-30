@@ -66,7 +66,8 @@ function finishCode(p){
 function makeRows(priceData,original=[],tree=null,colorsData=null){
  const existing=new Set((original||[]).filter(p=>p.manufacturer==='Galassia').map(p=>p.reference));
  const rows=[];
- const add=(p)=>{if(existing.has(p.reference))return;existing.add(p.reference);rows.push(p);};
+ const treeApi=typeof window==='object'?window.HydroGalassiaTree:(typeof require==='function'?require('./galassia-tree.js'):null);
+ const add=(p)=>{if(!p||existing.has(p.reference))return;existing.add(p.reference);rows.push(p);};
  const make=(base,suffix,price,page,name,collection)=>{
   const ref=base+suffix;
   if(!(Number(price)>0)||!Number.isInteger(page)||page<1)return null;
@@ -75,7 +76,7 @@ function makeRows(priceData,original=[],tree=null,colorsData=null){
    finishCode:suffix,finish:COLOR[suffix]||(!suffix?'Blanc / standard':'Finition selon référence'),
    purchaseDiscount:50,source:'LISTINO-32-Export.pdf · référence vérifiée',sourcePdf:'LISTINO-32-Export.pdf',sourcePage:page,sourcePdfPage:page,
    image:'',galassiaSupplement:true};
-  if(tree&&typeof window==='object'&&window.HydroGalassiaTree?.enrich)window.HydroGalassiaTree.enrich(row,tree);
+  if(tree&&treeApi?.enrich)treeApi.enrich(row,tree);
   return row;
  };
  for(const [base,variants] of Object.entries(priceData?.families||{})){
