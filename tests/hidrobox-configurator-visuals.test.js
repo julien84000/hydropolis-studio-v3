@@ -132,3 +132,35 @@ test('Manufacturer retry without size still requires real Neo Plus image, exact 
  assert.match(result.disclaimer,/dimensions/);
  assert.equal(new URL(result.source).searchParams.get('fltr-size'),'751');
 });
+
+test('Neo Plus Quadrant is encoded Qua, not Ang, in observed official images',()=>{
+ const angular='https://hidrobox.com/configurator/wp-content/uploads/cfg-recursos/images/Hidrobox_Shower-tray_Neo-Plus_Per_Sla_Qua_Terra.png';
+ const canonical=server.canonical({model:'neo-plus',material:'Kromat',texture:'Slate',
+   color:'Terra',width:80,length:120,shape:'angularR'});
+ const match=server.matchCard(angular,'32589 - Neo-Plus QUADRANT 80x120',canonical);
+ assert.equal(match?.url,angular,'actual supplier Quadrant image must be accepted');
+ assert.equal(match?.dimensionsVerified,true);
+ assert.equal(server.matchCard(angular.replace('_Qua_','_Rec_'),'32589 - Neo-Plus RECTANGULAR 80x120',canonical),null);
+ assert.equal(server.matchCard(angular.replace('Terra','Ocean'),'32589 - Neo-Plus QUADRANT 80x120',canonical),null);
+});
+test('Official Neo Plus images on later results pages are discovered with same supplier identity filters',async()=>{
+ const selected={model:'neo-plus',material:'Kromat',texture:'Slate',color:'Herbal',width:80,length:120,shape:'angular'};
+ const official='https://hidrobox.com/configurator/wp-content/uploads/cfg-recursos/images/Hidrobox_Shower-tray_Neo-Plus_Per_Sla_Qua_Herbal.png';
+ const distractor='https://hidrobox.com/configurator/wp-content/uploads/cfg-recursos/images/Hidrobox_Shower-tray_Neo-Plus_Per_Sla_Rec_Herbal.png';
+ const cards=Array.from({length:48},(_,i)=>card(distractor,'Neo-Plus RECTANGULAR 80x'+(130+i))).join('');
+ const calls=[];
+ const result=await server.lookup(selected,{sizeId:'751',post:async(_url,body)=>{
+   const params=new URLSearchParams(body);calls.push(params);
+   if(params.get('offset')==='0')return {data:{data:{grid:cards}}};
+   if(params.get('offset')==='48')return {data:{data:{grid:card(official,'Neo-Plus QUADRANT 80x120')}}};
+   throw Error('Pagination out of bounds');
+ }});
+ assert.equal(result.ok,true);
+ assert.equal(result.image,official);
+ assert.equal(result.match,'model-texture-color-shape-dimensions');
+ assert.equal(calls.length,2);
+ assert.deepEqual(calls.map(x=>x.get('offset')),['0','48']);
+ assert.equal(calls[1].get('fltr-collection[]'),'827');
+ assert.equal(calls[1].get('fltr-color[]'),'577');
+ assert.equal(calls[1].get('fltr-size[]'),'751');
+});
