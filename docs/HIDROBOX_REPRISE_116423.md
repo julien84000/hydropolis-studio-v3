@@ -1,3 +1,16 @@
+## Correction vérifiée Neo Plus — Scene blanc uniquement (30 octobre 2026)
+
+Les pages officielles actuelles du fabricant pour **Neo Plus** (https://hidrobox.com/fr/collections/neo-plus/) et la fiche produit historique associent **Scene à Blanc**, tandis que **Kromat** dispose de Basics, Trends et Special. Scene et Kromat ont tous deux les textures Lisse et Ardoise. Contrairement à des notes précédentes, **ne pas inventer Scene Basics/Trends sur Neo Plus**, même si certaines autres collections Hidrobox proposent Scene Plus Colour (elles ont leurs propres références et tarifs).
+
+Correctifs sur la branche active `fix/hidrobox-tray-measurement-pricing-116425` (PR #72) :
+- `public/hidrobox-neo-plus-2026.js`: rejet explicite des groupes colorés sur Neo Plus Scene ; pas de faux prix ni faux SKU.
+- `public/hidrobox-guided.js`: Scene affiche uniquement Blanc, Kromat ses palettes constructeur.
+- `tests/hidrobox-neo-scene-color.test.js`: teste Scene Blanc en Lisse/Ardoise et Kromat couleurs Basics/Trends.
+
+La version sur Render n'est pas validée par cette mise à jour ; **ne pas annoncer déployé avant CI verte, fusion et vérification `/api/version`**.
+
+---
+
 ## Checkpoint V11.64.24 — parcours commun des receveurs (30 octobre 2026)
 
 Dernière branche active : `fix/hidrobox-line-twins-series-116424`, PR #70 sur GitHub. Ne pas partir de main tant que la PR n'est pas fusionnée. Vérifier le dernier SHA, la CI, puis la version Render. Production avant cette PR : V11.64.23.

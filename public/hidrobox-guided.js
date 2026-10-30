@@ -253,12 +253,22 @@ function pricedShowerVariants(g){
  const prefix=TRAY_REF_PREFIX[norm(g?.collection||g?.id||'')];
  const rows=g?.variants||[];
  // OPSH drain/grille options live separately: never pretend these are tray SKU variants.
- return prefix?rows.filter(v=>String(v?.reference||'').startsWith(prefix)):rows;
+ const products=prefix?rows.filter(v=>String(v?.reference||'').startsWith(prefix)):rows;
+ const source=prefix==='SLIC'?root.HydroHidroboxLineBands2026:root.HydroHidroboxShowerBands2026;
+ return source?.fill?products.map(v=>source.fill(v)||v):products;
 }
 function universalSelection(g){
   const cascade=root.HydroHidroboxTrayCascade2026;
   if(groupCategory(g)==='receveurs'&&cascade){
-    const result=cascade.arrange(g,pricedShowerVariants(g),universalDraft,root.HydroHidroboxTrayModels2026,root.HydroHidroboxOfficialVisual);
+    const c=norm(g.collection||g.id);
+    // Neo Plus keeps its dedicated supplier-tested algorithm.
+    const exactDimensions=c!=='neo plus'?root.HydroHidroboxTrayDimensions2026:null;
+    const result=cascade.arrange(g,pricedShowerVariants(g),universalDraft,
+      root.HydroHidroboxTrayModels2026,root.HydroHidroboxOfficialVisual,exactDimensions);
+    if(result.dimensionResolution){
+      if(universalDraft.exactwidth==null)universalDraft.exactwidth=result.dimensionResolution.width;
+      if(universalDraft.exactlength==null)universalDraft.exactlength=result.dimensionResolution.length;
+    }
     universalDraft.traySubmodel=result.model;
     for(const f of result.fields)if(f.key!=='color'&&f.chosen)universalDraft[f.key]=f.chosen;
     if(result.color)universalDraft.showerColor=result.color;
@@ -681,17 +691,27 @@ function universalPage(g){
    visualFacet('huFacet'+f.key,f.label,f.options,f.chosen,'data-facet="'+escape(f.key)+'"');
  const orderedShower=groupCategory(g)==='receveurs'&&selection.sourceBacked;
  const materialTexture=orderedShower?fields.filter(f=>['material','finish'].includes(f.key)).map(facetControl).join(''):'';
- const dimensionFacets=orderedShower?fields.filter(f=>['width','length'].includes(f.key)).map(facetControl).join(''):'';
+ const dimensionFacets=orderedShower&&!selection.dimensionResolution?
+   fields.filter(f=>['width','length'].includes(f.key)).map(facetControl).join(''):'';
  const opts=orderedShower?'':fields.filter(x=>!x.static).map(facetControl).join('');
  const shower=groupCategory(g)==='receveurs',visual=root.HydroHidroboxOfficialVisual;
- const dimensionMarkup=dimensionFields(selected); // Validate selected centimeter ranges before deriving grille size.
+ const liveSize=selection.dimensionResolution;
+ const exactNumberInputs=liveSize?'<div class="hidrobox-fields">'+
+   [['width','Largeur réelle (cm)','widthBounds'],['length','Longueur réelle (cm)','lengthBounds']].map(([key,label,boundKey])=>{
+     const bounds=liveSize[boundKey];
+     return '<label>'+escape(label)+'<input type="number" id="huExact'+key+'" step="1"'+
+       (bounds?' min="'+bounds.first+'" max="'+bounds.last+'"':'')+
+       ' value="'+escape(String(liveSize[key]??''))+'" placeholder="cm" required></label>';
+   }).join('')+'</div><small>Référence et prix calculés à partir des tranches tarifaires du PDF fabricant, sans interpolation.</small>':'';
+ const dimensionMarkup=liveSize?exactNumberInputs:dimensionFields(selected);
  const verifiedColors=orderedShower?fields.find(f=>f.key==='color')?.options||[]:
    shower&&visual?visual.colorsFor(selected||{}):[];
  if(verifiedColors.length&&!verifiedColors.includes(universalDraft.showerColor))universalDraft.showerColor=verifiedColors[0];
  const showerColor=verifiedColors.length?'<div class="hidrobox-shower-colors"><h4>Couleur réelle du receveur</h4>'+
    visualFacet('huShowerColor','Couleur',verifiedColors,universalDraft.showerColor)+'</div>':'';
  const accessories=root.HydroHidroboxShowerOptions2026;
- const trayModel=shower&&visual?visual.modelFor(g,selected||{}):'';
+ const trayModel=(selection.model==='line-square'?'line-x':selection.model)||
+   (shower&&visual?visual.modelFor(g,selected||{}):'');
  const trayOpts=shower&&accessories?accessories.optionsFor({model:trayModel,material:selected?.material||'',
    texture:selected?.finish||'',width:Number(universalDraft.exactwidth)||Number(centimeterRange(selected?.width)?.first)||0,
    colorGroup:selected?.colorGroup||'',outlet:selected?.outlet||selected?.drainDiameter||''}):[];
@@ -708,7 +728,8 @@ function universalPage(g){
  const imageLookup=shower?'<div class="hidrobox-configured-photo"><img data-hb-config-image hidden alt="Visuel officiel correspondant à la configuration"><small data-hb-config-status>Le configurateur officiel sera interrogé selon les choix exacts. Aucune photo approximative ne sera déclarée exacte.</small></div>':'';
  const fixedMaterialTexture='';
  const flat=orderedShower?'':fields.filter(x=>x.static).map(f=>escape(f.label)+': '+escape(f.chosen)).join(' · ');
- const pricingWarning=selection.needsColorQuote?'La finition Scene choisie exige une confirmation du supplément tarifaire fabricant. Référence de base affichée, ajout désactivé.':
+ const pricingWarning=liveSize&&!liveSize.ok?liveSize.error:
+   selection.needsColorQuote?'La finition Scene choisie exige une confirmation du supplément tarifaire fabricant. Référence de base affichée, ajout désactivé.':
    selection.missingAttributes?.length?'Le tarif importé ne documente pas : '+selection.missingAttributes.join(', ')+'. Choisissez une autre référence tarifée ou vérifiez la fiche officielle.':'';
  const refsControl=refs.length>1?'<label>Référence finale<select id="huReference">'+choices(refs,universalDraft.reference)+'</select></label>':'';
  const price=trayQuote?.ok?trayQuote.price:Number(selected?.price),raw=Number(selected?.rawPrice);
@@ -859,14 +880,14 @@ function neoPage(){
  if(!root.HydroTariffPictures)loadTariffExtras().then(()=>{if(overlay&&stage==='neo')neoPage()}).catch(()=>{});
  stage='neo';const d=catalogue.FORMATS.find(x=>x.key===neo.form)||catalogue.FORMATS[0];
  if(neo.material==='Kromat'&&neo.group==='BLA')neo.group='BAS';
- if(neo.material==='Scene'&&!['BLA','BAS','TRE','SPE'].includes(neo.group))neo.group='BLA';
+ if(neo.material==='Scene'){neo.group='BLA';neo.color='Blanc';}
  const colors=catalogue.COLORS[neo.group]||[];
  if(!colors.includes(neo.color))neo.color=colors[0];
  const ranges=sizeRanges();
  const textures=['Lisse','Ardoise'].filter(texture=>catalogue.lookup({...neo,texture,group:neo.material==='Scene'?'BLA':'BAS',color:neo.material==='Scene'?'Blanc':'Bianco'}).ok);
  if(textures.length&&!textures.includes(neo.texture))neo.texture=textures[0];
  const line=catalogue.lookup(neo);
- const colorGroups=neo.material==='Scene'?['BLA','BAS','TRE','SPE']:['BAS','TRE','SPE'];
+ const colorGroups=neo.material==='Scene'?['BLA']:['BAS','TRE','SPE'];
  const opts=(id,label,list,current,disabled=false)=>visualFacet(id,label,list,current,disabled?'disabled':'');
  const pict=officialImage(officialCollectionMedia('neo-plus')?.image)||CATEGORY[0].img;
  const previewMarkup='<div class="hidrobox-configured-photo"><img data-hb-config-image hidden alt="Rendu réel du configurateur Hidrobox Neo Plus"><small data-hb-config-status>Recherche du visuel officiel correspondant au modèle, à la couleur et aux dimensions.</small></div>';
