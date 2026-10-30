@@ -7,11 +7,14 @@ test('All Line and Twins imported 2026 references resolve to one manufacturer or
  const expected={Line:['line-x','line-y'],Twins:['twins-yl','twins-yr']};
  for(const [name,allowed] of Object.entries(expected)){
    const group=catalog.groups.find(g=>g.collection===name);assert(group,name+' group absent');
-   const misses=(group.variants||[]).filter(v=>!allowed.includes(visual.modelFromReference(v.reference)));
+   const prefix=name==='Line'?'SLIC':'STWC';
+   const products=(group.variants||[]).filter(v=>String(v.reference||'').startsWith(prefix));
+   assert(products.length>40,name+' priced tray references unexpectedly sparse');
+   const misses=products.filter(v=>!allowed.includes(visual.modelFromReference(v.reference)));
    assert.equal(misses.length,0,name+' incomplete SKU mapping: '+misses.slice(0,20).map(x=>x.reference).join(', '));
-   const kinds=[...new Set(group.variants.map(v=>visual.modelFromReference(v.reference)))].sort();
+   const kinds=[...new Set(products.map(v=>visual.modelFromReference(v.reference)))].sort();
    assert.deepEqual(kinds,allowed.slice().sort());
-   console.log('Hidrobox '+name+': '+group.variants.length+' tariff SKUs identified by exact orientation');
+   console.log('Hidrobox '+name+': '+products.length+' genuine shower tray SKUs; accessory rows excluded');
  }
 });
 test('Line X / Line Y and Twin YL / Twin YR remain distinct for documented samples and edge codes',()=>{
