@@ -1,3 +1,15 @@
+# Mise à jour finale de travail — 30 octobre 2026
+
+- Pull request #68 (brouillon) : https://github.com/julien84000/hydropolis-studio-v3/pull/68
+- Les tests Node/syntax/build ont été contrôlés dans les exécutions de CI précédentes ; vérifier la dernière CI GitHub sur la tête actuelle avant toute fusion.
+- Nouveau `public/hidrobox-shower-options-2026.js`, chargé depuis `public/index.html`, préchargé dans `public/sw.js` : options fournisseur OPSH Line X/Y (bonde Ø50 0/36 €, caniveaux L60/L70/L80 0/38 €), Twins YL/YR (cache-bonde inclus, bonde Ø50 0/36 €), Quadro (Point/Star/Radiance et bonde Ø90), One (grille ONE 0/14 €), Pure/Arq/Iconik (cache-bonde et bonde), Loovers seulement si diamètre de bonde explicitement connu. Pour Unique/Falcon, aucune option non prouvée n'est inventée. Les grilles et options proviennent des pages du tarif source 2026.
+- Le configurateur `public/hidrobox-guided.js` affiche ces options et recalcule le prix public HT d'une ligne tarifaire comme `Math.round((prixBrutSource+optionsHT)*104)/100`, en gardant **la référence du receveur** et les références accessoires séparément dans `hidroboxConfiguration.accessories`.
+- `public/hidrobox-official-render.js` teste désormais la résolution native d'une photo officielle ; il faut 900 pixels ou plus pour chaque dimension pour l'enregistrer comme HD dans le dossier client. Le code garde la photo de collection illustrative si aucun fichier vérifié et assez grand n'est retourné.
+- `tests/hidrobox-shower-options.test.js` valide les options OPSH et le calcul 657 + 38 + 36 = 731 €, +4 % = 760,24 €. `tests/hidrobox-configurator-visuals.test.js` valide les filtres de recherche fabricante et la qualité HD.
+- Aucun déploiement de la V11.64.23 au moment de cette note. La V11.64.22 reste la dernière production vérifiée.
+- Point restant à auditer : les dix autres familles n'ont pas toutes une matrice tarifaire indépendante par forme/dimension comme Neo Plus ; le moteur universel existant sélectionne les références issues du PDF. Ne pas appeler leur couverture exhaustive sans tests numériques sur chaque famille. Sur le configurateur officiel, certains modèles historiques comme Unique, Loovers, Falcon ne figurent pas dans les filtres vérifiés ; ne pas leur fabriquer de visuel soi-disant exact.
+- Après fusion : contrôler `/api/version`, `/api/health`, GET `/api/hidrobox-configurator-image?model=twins-yr&material=Kromat&texture=Microtex&color=Brownie&shape=rectangle&width=90&length=100`, tester un projet client réel, ses aperçus et le PDF.
+
 # Reprise Hidrobox — 30 octobre 2026 — chantier V11.64.23
 
 ## État à reprendre sans perte
