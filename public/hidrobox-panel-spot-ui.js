@@ -148,8 +148,8 @@
       price:result.price,totalPrice:result.price,rawTariffPrice:result.rawPrice,
       purchaseDiscount:50,listPriceUpliftPct:4,currency:'€',vat:'HT',
       source:result.source,sourceYear:2026,manufacturerUrl:'https://hidrobox.com/fr/collections/paneles/',
-      image:ctx.image||'',imageSource:'Image de collection Hidrobox · panneau illustratif, pas la configuration exacte',
-      imageFinishMatch:'collection'};
+      image:ctx.image||'',imageSource:ctx.image?'Image officielle de collection Hidrobox · panneau illustratif, pas la configuration exacte':'Photographie indisponible',
+      imageFinishMatch:ctx.image?'collection':'unavailable'};
     if(official?.eligible?.(spec)){
       try{
         const picture=await official.lookup(spec),resolution=await official.printQuality(picture);
