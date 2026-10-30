@@ -978,6 +978,10 @@ function neoPage(){
  const textures=['Lisse','Ardoise'].filter(texture=>catalogue.lookup({...neo,texture,group:neo.material==='Scene'?'BLA':'BAS',color:neo.material==='Scene'?'Blanc':'Bianco'}).ok);
  if(textures.length&&!textures.includes(neo.texture))neo.texture=textures[0];
  const line=catalogue.lookup(neo);
+ const cutOption=line.ok&&neo.specialCut?root.HydroHidroboxAdditionalOptions2026?.quote('OPSH0018',line.rawPrice):null;
+ const cutValid=!neo.specialCut||!!cutOption?.ok;
+ const neoRawTotal=line.ok?Number(line.rawPrice)+(cutOption?.extraRawPrice||0):0;
+ const neoPublicTotal=line.ok&&cutValid?Math.round(neoRawTotal*104)/100:0;
  const colorGroups=neo.material==='Scene'?['BLA']:['BAS','TRE','SPE'];
  const opts=(id,label,list,current,disabled=false)=>visualFacet(id,label,list,current,disabled?'disabled':'');
  const pict=officialImage(officialCollectionMedia('neo-plus')?.image)||CATEGORY[0].img;
@@ -999,11 +1003,12 @@ function neoPage(){
  opts('hnGroup','Groupe de couleurs',colorGroups,neo.group)+
  opts('hnColor','Couleur',colors,neo.color)+
  opts('hnGrille','Grille',['Point Inox','Point Basic','Point Trend','Point Special','Star Inox','Star Basic','Star Trend','Star Special','Radiance Steel','Radiance Gunmetal','Radiance Gold','Radiance Rame'],neo.grille)+
- opts('hnBonde','Bonde',['Horizontale standard','Verticale','Horizontale extraplate','Horizontale Plus'],neo.bonde)+'</div>'+previewMarkup+
+ opts('hnBonde','Bonde',['Horizontale standard','Verticale','Horizontale extraplate','Horizontale Plus'],neo.bonde)+
+ '<label class="hidrobox-cut-option"><input type="checkbox" id="hnSpecialCut"'+(neo.specialCut?' checked':'')+'> Découpe spéciale · OPSH0018 · +10 % du prix fabricant (plan technique requis)</label></div>'+previewMarkup+
  '<p class="hidrobox-guide-note">Formes : '+catalogue.FORMATS.map(f=>escape(f.label)).join(' · ')+'. Les finitions spéciales RAL/NCS nécessitent un contrôle du tarif exact.</p>'+
- '<div class="hidrobox-result"><div><b>'+(line.ok?eu(line.price)+' HT':'Prix à confirmer')+'</b><span>'+(line.ok?'Réf. '+escape(line.reference)+' · Tranche '+escape(line.tier):escape(line.reason))+'</span>'+
- '<small>'+(line.ok?'Prix source '+eu(line.rawPrice)+' HT, majoration 4 %. Remise d’achat fournisseur 50 % appliquée dans la marge.':'Aucun prix inventé : choisissez une configuration tarifée ou consultez Hidrobox.')+'</small></div>'+
- '<button class="btn primary" id="hnAdd" type="button"'+(line.ok?'':' disabled')+'>Ajouter la configuration</button></div>';
+ '<div class="hidrobox-result"><div><b>'+(line.ok&&cutValid?eu(neoPublicTotal)+' HT':'Prix à confirmer')+'</b><span>'+(line.ok?'Réf. '+escape(line.reference)+' · Tranche '+escape(line.tier):escape(line.reason))+'</span>'+
+ '<small>'+(line.ok&&cutValid?'Prix source '+eu(neoRawTotal)+' HT'+(neo.specialCut?' (dont découpe '+eu(cutOption.extraRawPrice)+' HT)':'')+', majoration 4 % appliquée une fois. Remise achat 50 % dans la marge.':'Aucun prix inventé : choisissez une configuration tarifée ou consultez Hidrobox.')+'</small></div>'+
+ '<button class="btn primary" id="hnAdd" type="button"'+(line.ok&&cutValid?'':' disabled')+'>Ajouter la configuration</button></div>';
  shell('Neo Plus · configuration',config,true);
  overlay.querySelector('.hidrobox-back').onclick=collections;
  const keys={hnForm:'form',hnMaterial:'material',hnWidth:'width',hnLength:'length',hnTexture:'texture',hnGroup:'group',hnColor:'color',hnGrille:'grille',hnBonde:'bonde'};
@@ -1015,15 +1020,16 @@ function neoPage(){
    neoPage();
  }));
  wireVisualFacets();
+ overlay.querySelector('#hnSpecialCut')?.addEventListener('change',e=>{neo.specialCut=e.target.checked;neoPage()});
  const officialVisual=root.HydroHidroboxOfficialVisual;
  const spec=officialVisual?.selection({collection:'Neo Plus'},{...neo,collection:'Neo Plus'},
    {model:'neo-plus',material:neo.material,texture:neo.texture,color:neo.color,shape:neo.form,width:Number(neo.width),length:Number(neo.length)});
  if(spec)void officialVisual.preview(overlay.querySelector('.hidrobox-configured-photo'),spec).catch(e=>console.warn('[Hidrobox Neo image]',e));
  overlay.querySelector('#hnAdd')?.addEventListener('click',async()=>{
-   const chosen=catalogue.lookup(neo);if(!chosen.ok)return;
+   const chosen=catalogue.lookup(neo);if(!chosen.ok||!cutValid)return;
    const image=officialImage(officialCollectionMedia('neo-plus')?.image)||CATEGORY[0].img;
-   const item={manufacturer:'Hidrobox',collection:'Neo Plus',reference:chosen.reference,base:chosen.reference,designation:'Neo Plus · '+catalogue.FORMATS.find(x=>x.key===neo.form).label+' · '+chosen.referenceDimensions+' · '+neo.material+' · '+neo.texture+' · '+neo.color+' · Grille '+neo.grille+' · Bonde '+neo.bonde,
-     category:'Receveur de douche',finish:neo.color+' · '+neo.texture,price:chosen.price,totalPrice:chosen.price,rawTariffPrice:chosen.rawPrice,listPriceUpliftPct:4,
+   const item={manufacturer:'Hidrobox',collection:'Neo Plus',reference:chosen.reference,base:chosen.reference,designation:'Neo Plus · '+catalogue.FORMATS.find(x=>x.key===neo.form).label+' · '+chosen.referenceDimensions+' · '+neo.material+' · '+neo.texture+' · '+neo.color+' · Grille '+neo.grille+' · Bonde '+neo.bonde+(neo.specialCut?' · Découpe spéciale OPSH0018, dessin à valider':''),
+     category:'Receveur de douche',finish:neo.color+' · '+neo.texture,price:neoPublicTotal,totalPrice:neoPublicTotal,rawTariffPrice:neoRawTotal,listPriceUpliftPct:4,
      purchaseDiscount:50,currency:'€',vat:'HT',source:chosen.source,sourceYear:2026,manufacturerUrl:HOUSE+'collections/neo-plus/',
      image,imageSource:'Photographie constructeur de collection Neo Plus · dimensions et finition non contractuelles',imageFinishMatch:'collection',
      technicalSheetUrl:TECH,technicalSheetLabel:'Fiche technique Neo Plus',technicalSheetType:'application/pdf',
@@ -1032,7 +1038,9 @@ function neoPage(){
    try{
      const record=createSelectedProductRecord(item,room,'');
      if(!record)throw Error('Impossible de préparer le produit');
-     Object.assign(record,item,{hidroboxConfiguration:{...chosen,selectedShape:neo.form,selectedWidthCm:+neo.width,selectedLengthCm:+neo.length,selectedColour:neo.color,selectedGrille:neo.grille,selectedBonde:neo.bonde}});
+     Object.assign(record,item,{hidroboxConfiguration:{...chosen,selectedShape:neo.form,selectedWidthCm:+neo.width,selectedLengthCm:+neo.length,selectedColour:neo.color,selectedGrille:neo.grille,selectedBonde:neo.bonde,
+       specialCut:!!neo.specialCut,requiresSupplierDrawing:!!neo.specialCut,
+       options:neo.specialCut?[{reference:'OPSH0018',label:'Découpe spéciale',rawPrice:cutOption.extraRawPrice,percent:10}]:[]}});
      if(officialVisual&&spec){
        try{
          const image=await officialVisual.lookup(spec);
