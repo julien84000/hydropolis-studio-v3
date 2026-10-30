@@ -45,3 +45,13 @@ test('Fractional sizes in supplier collections are kept without rounding to adja
  assert.equal(s.length,52.5);
  assert.throws(()=>server.canonical({model:'spot-62',material:'Scene',texture:'Lisse',color:'Blanc',width:32,length:52.2}),/Dimensions/);
 });
+
+test('Guided client records prioritize product images over collection, and configured images over both',()=>{
+ const fs=require('node:fs'),path=require('node:path');
+ const code=fs.readFileSync(path.join(__dirname,'../public/hidrobox-guided.js'),'utf8');
+ assert.match(code,/const fallbackImage=productImage\|\|representative/);
+ assert.match(code,/const fallbackScope=productImage\?'product'/);
+ assert.match(code,/image:fallbackImage/);
+ assert.match(code,/visual\.apply\(record,officialResult,officialSelection\)/);
+ assert.match(code,/imageFinishMatch:fallbackScope/);
+});
