@@ -4113,7 +4113,7 @@ function boardItemHtml(p,idx,originLabel=""){
      <h3>${esc(designation)}</h3>
      ${p.isFreeArticle?`<div class="board-finish">Quantité : ${itemQuantity(p)}${p.leadTime?` · Délai : ${esc(p.leadTime)}`:""}</div>`:""}
      ${dossierFinish?`<div class="board-finish">${esc(dossierFinish)}</div>`:""}
-     ${clientVisualNeedsDisclaimer(p)?`<div class="board-simulation-note">Visuel non contractuel</div>`:""}
+     ${p.dossierPhotoSource?`<div class="board-simulation-note">Photo d’ambiance fabricant · finition et accessoires illustrés non contractuels</div>`:(clientVisualNeedsDisclaimer(p)?`<div class="board-simulation-note">Visuel non contractuel</div>`:"")}
      ${state.showSupplierReferences!==false && p.reference?`<div class="board-ref">Réf. ${esc(p.reference)}</div>`:""}
      ${state.showClientPrices!==false?`<div class="price commercial-price">${isManual?`${euro(priceValue)} HT`:commercialPriceHtml(p.totalPrice??p.price,p)}</div>`:""}
    </div>
@@ -4427,6 +4427,16 @@ function bindDossierPhotoControls(el,controls){
   const id=el.dataset.dossierItem,p=dossierItemById(id);
   if(!p)return;
   controls.insertAdjacentHTML('beforeend',`<button type="button" class="layout-photo-change" title="Changer le visuel uniquement dans le dossier photo">Photo du dossier</button><button type="button" class="layout-photo-reset" title="Reprendre le visuel du projet" ${p.dossierImage?'':'disabled'}>Photo du projet</button><input class="layout-photo-file" type="file" accept="image/*" hidden>`);
+  if(/^sbordoni$/i.test(p.manufacturer||'')&&window.HydroSbordoniDossierPhotos){
+    const official=document.createElement('button');official.type='button';official.className='layout-photo-official';official.textContent='Photo fabricant';
+    official.onclick=()=>HydroSbordoniDossierPhotos.open(p,photo=>{
+      if(dossierItemById(id)!==p)throw Error('Le projet a changé. Rouvrez le choix de photo.');
+      const old=p.dossierImage,oldSource=p.dossierPhotoSource;
+      p.dossierImage=photo.url;p.dossierPhotoSource={url:photo.source,page:photo.captionPage,caption:photo.caption,finishNote:photo.finishNote,width:photo.width,height:photo.height};
+      if(!saveState()){p.dossierImage=old;p.dossierPhotoSource=oldSource;throw Error('Sauvegarde impossible : espace de stockage insuffisant.');}
+      buildDocument();
+    });controls.append(official);
+  }
   const input=controls.querySelector('.layout-photo-file');
   controls.querySelector('.layout-photo-change').onclick=()=>input.click();
   input.onchange=async()=>{
@@ -4436,14 +4446,14 @@ function bindDossierPhotoControls(el,controls){
       const image=await normalizeImageFile(file,1600,1200,.9);
       // The project may have been switched while the image was decoding.
       if(dossierItemById(id)!==p)return;
-      const previous=p.dossierImage;p.dossierImage=image;
-      if(!saveState()){p.dossierImage=previous;throw Error('Sauvegarde impossible : espace de stockage insuffisant.');}
+      const previous=p.dossierImage,previousSource=p.dossierPhotoSource;p.dossierImage=image;delete p.dossierPhotoSource;
+      if(!saveState()){p.dossierImage=previous;p.dossierPhotoSource=previousSource;throw Error('Sauvegarde impossible : espace de stockage insuffisant.');}
       buildDocument();
     }catch(error){alert(error.message||'Image illisible.');}
     finally{button.disabled=false;input.value='';}
   };
   controls.querySelector('.layout-photo-reset').onclick=()=>{
-    delete p.dossierImage;saveState();buildDocument();
+    delete p.dossierImage;delete p.dossierPhotoSource;saveState();buildDocument();
   };
 }
 function presentationLayoutDecorate(el){
