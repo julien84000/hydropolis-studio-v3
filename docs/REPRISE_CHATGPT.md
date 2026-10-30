@@ -1,3 +1,21 @@
+## V11.64.29 — images réelles du configurateur Hidrobox avec correspondance transparente (30/10/2026)
+
+Base : main V11.64.28 (fusion PR #80, commit 65d22aeb), CI et production vérifiées. Branche : fix/hidrobox-official-photo-116429. Travail isolé, PR non fusionnée tant que CI et navigateur ne sont pas verts.
+
+Demande : récupérer le visuel du configurateur officiel https://hidrobox.com/configurator/en/ en conservant forme, texture et couleur de la configuration réelle. Exploration navigateur : le fabricant sert des images PNG/JPG préproduites, indexées par collection, texture, forme, couleur ; elles ne codent généralement pas les dimensions ni le sens gauche/droite. Le visuel Neo Plus Kromat Ardoise Bianco angulaire droit 80×120 n'a PAS été vérifié comme fichier réel : une URL prédite a retourné 404 ; ne jamais fabriquer cette URL. La page fabricant retourne parfois des résultats non filtrés (Twins), donc la vérification par nom exact reste obligatoire.
+
+Changements :
+- hidrobox-configurator-server.js : vérifie la provenance HTTPS/chemin image officiel, modèle, texture, forme, couleur ; conserve la priorité à un résultat ayant les dimensions vérifiées ; si une seule URL d'image réelle de la bonne forme/couleur/texture est trouvée, l'accepte comme ILLUSTRATION en indiquant que les dimensions ne sont pas vérifiées. Écarte les autres collections et couleurs ainsi que les résultats ambigus. Valide le code de forme angulaire gauche/droite sans prétendre vérifier l'orientation par la photo.
+- En réponse API, source officielle préfiltrée avec taille et couleur réellement résolues. Aucune URL d'image devinée.
+- public/hidrobox-official-render.js : mentionne honnêtement le périmètre vérifié (illustration de finition vs dimensions du résultat vérifiées), conserve photo personnelle/dossier, utilise le proxy et les contrôles HD existants.
+- public/hidrobox-guided.js : lien vers la sélection fabricant dès que disponible, même sans correspondance photo exploitable.
+- tests/hidrobox-configurator-visuals.test.js : non-régression de provenance, mauvaise forme/couleur, ambiguïtés, illustration dimensions distinctes, sauvegarde dans image et pdfImage.
+- package et lock version 11.64.29 ; cache service worker versionné déjà en place.
+
+À vérifier : CI Release validation (npm ci/check/test/build/browser), endpoint /api/version, /api/health, photos réelles configurateur et dossier client. Ne pas annoncer de photo exacte pour une configuration qui ne possède pas une correspondance vérifiable. Suite souhaitée après fusion : modifier Neo Plus déjà enregistré en remplaçant l'article et sans doublon (le projet ne possède pas encore de bouton dédié).
+
+---
+
 ## V11.64.22 — Photos Galassia HD dans le projet et le dossier client (30/10/2026)
 
 Défaut signalé : les visuels apparaissent dans le configurateur Galassia mais la fiche projet puis le dossier client affichent « Photo indisponible » ; exemples Core 7305MT, 7353MT, 7354MT. Le catalogue utilise des miniatures Galassia 650×550 qui ne doivent pas être présentées comme des images HD.

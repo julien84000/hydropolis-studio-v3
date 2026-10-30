@@ -51,7 +51,7 @@ async function officialSizeIndex({get=axios.get}={}){
 const normalize=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
 const TEXTURES={lisse:'smooth',smooth:'smooth',liso:'smooth',ardoise:'slate',pizarra:'slate',slate:'slate',microtex:'microtex',cement:'cement',ciment:'cement'};
 const TEXTURE_CODES={smooth:['smo'],slate:['sla','slt'],microtex:['mic'],cement:['cem']};
-const SHAPE_CODES={rectangle:['rec'],rectangulaire:['rec'],rectangular:['rec'],square:['squ'],carre:['squ'],angular:['ang'],angulaire:['ang'],pentagonal:['pen']};
+const SHAPE_CODES={rectangle:['rec'],rectangulaire:['rec'],rectangular:['rec'],square:['squ'],carre:['squ'],angular:['ang'],angulaire:['ang'],angularr:['ang'],angularl:['ang'],pentagonal:['pen'],pentagonalr:['pen'],pentagonall:['pen']};
 const cache=new Map();
 function canonical(input){
  const model=String(input.model||'').trim().toLowerCase().replace(/[\s_]+/g,'-');
@@ -115,28 +115,43 @@ function matchCard(src,heading,selection){
  const title=String(heading||'').trim();
  if(!title||!normalize(title).includes(normalize(selection.model)))return null;
  const dimensions=[...title.replace(/,/g,'.').matchAll(/(\d{2,3}(?:\.\d)?)\s*[x×]\s*(\d{2,3}(?:\.\d)?)/gi)];
- if(!dimensions.length)return null; // Never infer the pictured dimensions.
  const matched=dimensions.some(x=>
    (Number(x[1])===selection.width&&Number(x[2])===selection.length)||
    (Number(x[1])===selection.length&&Number(x[2])===selection.width));
- if(!matched)return null;
- return {...asset,title,selectionMatch:'model-texture-color-shape-dimensions',materialVerified:false};
+ // Basins and baths retain their original exact-size rule. Only shower-tray
+ // imagery may be reused illustratively across listed sizes.
+ if(!matched&&selection.typology!=='shower-tray')return null;
+ // Manufacturer filenames carry model, texture, shape and colour but usually
+ // no size. Return an illustration when the listing's dimensions differ.
+ return {...asset,title,selectionMatch:matched?'model-texture-color-shape-dimensions':'model-texture-color-shape',
+   dimensionsVerified:matched,materialVerified:false};
 }
 function parse(html,selection){
  const $=cheerio.load(html);const matches=[];
  $('.configuratorpage__item').each((_,node)=>{
    const element=$(node),anchor=element.find('a.modal-image-btn').first();
    const heading=element.find('h3.configuratorpage__item__title').first().text();
-   const match=matchCard(anchor.attr('href'),heading,selection);
+   const src=anchor.attr('href')||element.find('img').first().attr('data-src')||
+     element.find('img').first().attr('src');
+   const match=matchCard(src,heading,selection);
    if(match)matches.push(match);
  });
- return matches.length===1?matches[0]:null; // Ambiguity is not an exact match.
+ // Distinct source images indicate ambiguity. Identical genuine files may
+ // illustrate multiple dimensions, but never prove a dimensional match.
+ const unique=items=>[...new Map(items.map(x=>[x.url,x])).values()];
+ const exact=unique(matches.filter(x=>x.dimensionsVerified));
+ if(exact.length===1)return exact[0];
+ if(exact.length>1)return null;
+ const representative=unique(matches);
+ return representative.length===1?representative[0]:null;
 }
-function urlFor(s){
+function urlFor(s,{colorId,sizeId}={}){
  const url=new URL(ORIGIN);url.searchParams.set('fltr-typology',String(TYPOLOGY_IDS[s.typology]));
  url.searchParams.set('fltr-collection',String(MODEL_IDS[s.model]));
  url.searchParams.set('fltr-material',String(MATERIAL_IDS[s.material]));
  url.searchParams.set('fltr-texture',String(TEXTURE_IDS[s.texture]));
+ if(colorId)url.searchParams.set('fltr-color',String(colorId));
+ if(sizeId)url.searchParams.set('fltr-size',String(sizeId));
  return url.href;
 }
 async function lookup(raw,{get=axios.get,post=axios.post,sizeId=null}={}){
@@ -150,6 +165,7 @@ async function lookup(raw,{get=axios.get,post=axios.post,sizeId=null}={}){
    const dimensionId=sizeId || (await officialSizeIndex({get})).get(s.width+'x'+s.length) ||
      (await officialSizeIndex({get})).get(s.length+'x'+s.width);
    if(!dimensionId)return {ok:false,source,reason:'Ces dimensions ne figurent pas dans le configurateur officiel'};
+   const filteredSource=urlFor(s,{colorId,sizeId:dimensionId});
    const params=new URLSearchParams();
    params.set('action','_listado_results');
    const filters={typology:TYPOLOGY_IDS[s.typology],
@@ -160,11 +176,27 @@ async function lookup(raw,{get=axios.get,post=axios.post,sizeId=null}={}){
    const res=await post(AJAX,params.toString(),{timeout:15000,maxRedirects:2,maxContentLength:6*1024*1024,
      headers:{'Content-Type':'application/x-www-form-urlencoded','Accept':'application/json'}});
    const html=String(res?.data?.data?.grid||'');
-   if(!html)throw Error('Réponse AJAX fabricant sans résultats vérifiables');
-   const item=parse(html,s);
-   const data=item?{ok:true,image:item.url,title:item.title,source,quality:'manufacturer-configurator',match:item.selectionMatch,
-     verifiedMaterial:false,disclaimer:'Photo officielle correspondant aux filtres modèle, matière, texture, couleur et dimensions. La grille et la bonde peuvent ne pas être représentées.'}:
-     {ok:false,source,reason:'Aucun rendu unique du fabricant ne correspond à tous les filtres demandés.'};
+   let item=html?parse(html,s):null;
+   // The official manufacturer image may not be indexed under every
+   // custom size even when the same model/colour/texture/shape exists.
+   // Retry once without size, while keeping all identity and finish filters.
+   // Still accept only real image URLs extracted from manufacturer HTML.
+   if(!item&&s.typology==='shower-tray'){
+     const broader=new URLSearchParams(params.toString());
+     broader.delete('fltr-size[]');
+     try{
+       const alternate=await post(AJAX,broader.toString(),{timeout:12000,maxRedirects:2,maxContentLength:6*1024*1024,
+         headers:{'Content-Type':'application/x-www-form-urlencoded','Accept':'application/json'}});
+       const alternativeHtml=String(alternate?.data?.data?.grid||'');
+       if(alternativeHtml)item=parse(alternativeHtml,s);
+     }catch{} // If unavailable, retain safe no-photo state.
+   }
+   const exact=item?.dimensionsVerified===true;
+   const data=item?{ok:true,image:item.url,title:item.title,source:filteredSource,quality:'manufacturer-configurator',match:item.selectionMatch,
+     verifiedMaterial:false,disclaimer:exact?
+       'Image officielle : modèle, texture, forme, couleur et dimensions du résultat vérifiés. Matière, grille et bonde non garanties par le fichier image.':
+       'Image officielle illustrative : modèle, texture, forme et couleur identifiés ; dimensions, sens de l’angle, matière et accessoires non garantis.'}:
+     {ok:false,source:filteredSource,reason:'Aucune image officielle correspondant au modèle, à la texture, à la forme et à la couleur n’a été trouvée.'};
    cache.set(key,{expires:now+15*60*1000,data});if(cache.size>200)cache.delete(cache.keys().next().value);
    return data;
  }catch(e){return {ok:false,source,reason:'Le service officiel de rendu configuré est momentanément inaccessible'};}
