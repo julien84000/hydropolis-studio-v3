@@ -13,6 +13,7 @@ const source=require('./fixtures/hidrobox/supplier-2026-pdf-skus.json');
 const specialSource=require('./fixtures/hidrobox/supplier-2026-special-parts-prices.json');
 const panelPricing=require('../public/hidrobox-panels-2026.js');
 const sparePricing=require('../public/hidrobox-spares-2026.js');
+const extraOptionPricing=require('../public/hidrobox-additional-options-2026.js');
 const vm=require('node:vm');
 const programCtx={window:{}};
 vm.runInNewContext(fs.readFileSync(path.join(root,'public/hidrobox-program-data.js'),'utf8'),programCtx);
@@ -39,13 +40,18 @@ test('Supplier PDF 2026 SKU inventory is available, with independent imported co
  assert.equal(pdfShowerCodes.length,2027,'Unexpected Hidrobox shower-tray manufacturer SKU count');
  assert.deepEqual(missingShower,[],'Every primary shower-tray SKU printed in 2026 tariff must be imported');
  const missing=[...sourceCodes].filter(([sku])=>!implemented.has(sku));
+ const unclassified=missing.filter(([sku])=>!extraOptionPricing.byRef.has(sku));
+ assert.equal(extraOptionPricing.rows.length,29,'Final source option registry must list exactly 29 codes');
+ assert.deepEqual(unclassified,[],'Every remaining 2026 supplier reference must have explicit tariff handling');
+ assert.deepEqual(missing.map(([sku])=>sku).sort(),extraOptionPricing.rows.map(x=>x.reference).sort(),
+  'The additional-options registry may not hide real product SKU omissions');
  const summary={};for(const [sku,page] of missing){const p=prefix(sku);if(!summary[p])summary[p]={count:0,samples:[],pages:[]};
   summary[p].count++;if(summary[p].samples.length<8)summary[p].samples.push(sku);
   if(summary[p].pages.length<8&&!summary[p].pages.includes(page))summary[p].pages.push(page);
  }
  const total={supplierPdfUniqueSkus:sourceCodes.size,importedUniqueSkus:imported.size,
    programmedPanelSkus:panelSourceRows.length,programDataReferences:programReferences.length,sparePartReferences:sparePricing.rows.length,effectiveUniqueSkus:implemented.size,primaryShowerPdfSkus:pdfShowerCodes.length,primaryShowerMissing:missingShower.length,
-   missingFromEffectiveCatalog:missing.length,missingByPrefix:Object.entries(summary).sort((a,b)=>b[1].count-a[1].count)};
+   missingFromEffectiveCatalog:missing.length,classifiedNonProductOptions:extraOptionPricing.rows.length,unclassifiedSupplierCodes:unclassified.length,missingByPrefix:Object.entries(summary).sort((a,b)=>b[1].count-a[1].count)};
  console.log('HIDROBOX_PDF_PARITY '+JSON.stringify(total));
  console.log('HIDROBOX_MISSING_2026_CODES '+JSON.stringify(missing.map(([reference,page])=>({reference,page}))));
  const reportDir=path.join(root,'build-audit');
