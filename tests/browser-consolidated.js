@@ -561,6 +561,18 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     check('Hidrobox Line : options de dimensions et de matière conservées',
       await page.locator('#hidroboxGuided [data-facet]').count()>0&&
       await page.locator('#hidroboxGuided .hidrobox-neo-hero img').count()<=1);
+    // The manufacturer percentage surcharge must be offered and actually reprice the selected LINE SKU.
+    check('Hidrobox Line : découpes spéciales 10 % disponibles avec référence constructeur OPSH0018',
+      await page.locator('#hidroboxGuided [data-hb-tray-option="cut"] option[value="special"]').count()===1&&
+      (await page.locator('#hidroboxGuided [data-hb-tray-option="cut"] option[value="special"]').innerText()).includes('10 %'));
+    const linePriceBefore=(await page.locator('#hidroboxGuided .hidrobox-result b').innerText())
+      .replace(/[\s\u202f\u00a0]/g,'').replace(/[^0-9,.-]/g,'').replace(/\./g,'').replace(',','.');
+    await page.locator('#hidroboxGuided [data-hb-tray-option="cut"]').selectOption('special');
+    const linePriceAfter=(await page.locator('#hidroboxGuided .hidrobox-result b').innerText())
+      .replace(/[\s\u202f\u00a0]/g,'').replace(/[^0-9,.-]/g,'').replace(/\./g,'').replace(',','.');
+    check('Hidrobox Line : le supplément 10 % modifie effectivement le prix et le récapitulatif',
+      Number(linePriceAfter)>Number(linePriceBefore)&&
+      (await page.locator('#hidroboxGuided .hidrobox-result small').innerText()).includes('Options fabricant'));
     // Hidrobox 2026: supplier special pieces are not synthetic category refs.
     await page.locator('#hidroboxGuided [data-hidrobox-home]').click();
     await page.locator('#hidroboxGuided [data-kind="family"][data-choice="accessoires"]').click();
