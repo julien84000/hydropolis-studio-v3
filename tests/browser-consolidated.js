@@ -875,6 +875,22 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     check('Galassia : Core Freestanding possède sa propre collection',await page.locator('.galassia-family[data-family="Core Freestanding"].active').count()===1);
     await page.locator('.galassia-family[data-family="R70"]').click();
 
+
+    // Core furniture: manufacturer's exact collection family must be selectable with exact model photos.
+    await page.locator('.galassia-family[data-family="Core"]').click();
+    await page.locator('.galassia-section').filter({hasText:'Mobili e strutture'}).click();
+    check('Galassia Core : meubles visibles dans la collection',await page.locator('.galassia-model[data-model="2062"]').count()===1 && await page.locator('.galassia-model[data-model="2063"]').count()===1 && await page.locator('.galassia-model[data-model="2064"]').count()===1);
+    const coreImage=await page.locator('.galassia-model[data-model="2062"] img').getAttribute('src');
+    check('Galassia Core : photo réelle du meuble 2062',coreImage==='https://www.ceramicagalassia.it/public/_resized/2062_650X550_90_C.jpg');
+    await page.locator('.galassia-model[data-model="2062"]').click();
+    check('Galassia Core : photo dans fiche article',await page.locator('.galassia-selection .galassia-photo img').getAttribute('src')===coreImage);
+    await page.locator('.galassia-family[data-family="Tabulae"]').click();
+    await page.locator('.galassia-section').filter({hasText:/^Top/}).click();
+    await page.locator('.galassia-model[data-model="2051"]').click();
+    const topImg=await page.locator('.galassia-selection .galassia-photo img').getAttribute('src');
+    check('Galassia : plateau 2051 classé Tabulae et illustré',topImg?.includes('/colori/2051/_resized/2051_')===true);
+    await page.locator('.galassia-family[data-family="R70"]').click();
+
     await page.locator('.galassia-search').fill('7701');
     await page.locator('.galassia-model[data-model="7701"]').click();
     await page.locator('.galassia-variant').selectOption('7701MT');
