@@ -37,3 +37,12 @@ Code inspecté sur PR #71 :
 - Ces preuves attestent du raccordement **dans le code de la branche**, pas du fonctionnement intégral sur Render ni de la correspondance pour chaque référence.
 
 Critères d'acceptation complémentaires : sélectionner une référence par famille, ouvrir la page fabricant correspondante, confronter côte à côte couleur/formes/texture/dimensions, enregistrer dans un projet, rouvrir le projet, générer dossier client et export PDF, confirmer le même visuel à chaque étape. En cas de réponse constructeur absente ou ambiguë, laisser l'image de collection marquée « illustrative » plutôt que prétendre à une photo configurée exacte. La qualité native d'impression doit être testée. Tester notamment Spot 62 Kromat Lisse Blush.
+
+## Règle utilisateur de repli visuel — confirmée
+Priorité pour toute famille Hidrobox dans le configurateur Hydropolis et dans les dossiers clients/PDF :
+1. Visuel de la configuration exacte retourné par https://hidrobox.com/configurator/en/ (modèle, matière, texture, couleur, dimensions et orientation).
+2. Si absent : photographie officielle **du produit** dans le catalogue fabricant ou sa page produit sur hidrobox.com, même si la finition illustrée diffère ; ne pas l'étiqueter « finition exacte ».
+3. Si absent : photographie officielle **de la collection** sur hidrobox.com, explicitement illustrative.
+4. Si aucune image officielle disponible : afficher « image indisponible », sans photo fabriquée, extrapolée ou provenant d'un autre produit.
+
+Conserver la meilleure image trouvée dans le projet, le dossier client et le PDF, sans écraser une image personnalisée. Le repli doit s'appliquer même si le produit n'est pas répertorié dans le configurateur officiel et ne doit pas bloquer l'ajout d'un article tarifé. Vérifier les URL et le chargement réel. Ne pas supposer qu'une photo du catalogue correspond à la couleur configurée.
