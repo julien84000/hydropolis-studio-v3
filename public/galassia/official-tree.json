@@ -108,7 +108,8 @@
         }
       ],
       "status": 200,
-      "notAvailable": false
+      "notAvailable": false,
+      "hero": "https://www.ceramicagalassia.it/public/T65-Galleria.jpg"
     },
     {
       "name": "R70",
@@ -237,14 +238,68 @@
         }
       ],
       "status": 200,
-      "notAvailable": false
+      "notAvailable": false,
+      "hero": "https://www.ceramicagalassia.it/public/R70-Galleria.jpg"
     },
     {
       "name": "SUSI",
       "slug": "susi",
       "url": "https://www.ceramicagalassia.it/catalogo/susi/",
-      "groups": [],
-      "notAvailable": true
+      "groups": [
+        {
+          "name": "Sanitari a terra",
+          "items": [
+            {
+              "base": "7811",
+              "name": "Vaso a terra senza brida 51x36",
+              "url": "https://www.ceramicagalassia.it/catalogo/susi/sanitari/vaso-a-terra-senza-brida-51x36.html",
+              "image": "https://www.ceramicagalassia.it/public/colori/7811/_resized/7811mt_650X550_90_C.jpg",
+              "section": "Sanitari a terra"
+            },
+            {
+              "base": "7812",
+              "name": "Bidet monoforo 51x36 cm",
+              "url": "https://www.ceramicagalassia.it/catalogo/susi/sanitari/bidet-monoforo-51x36-cm.html",
+              "image": "https://www.ceramicagalassia.it/public/colori/7812/_resized/7812_650X550_90_C.jpg",
+              "section": "Sanitari a terra"
+            }
+          ]
+        },
+        {
+          "name": "Sanitari sospesi",
+          "items": [
+            {
+              "base": "7813",
+              "name": "Vaso sospeso senza brida",
+              "url": "https://www.ceramicagalassia.it/catalogo/susi/vaso-sospeso-senza-brida-(1).html",
+              "image": "https://www.ceramicagalassia.it/public/colori/7813/_resized/7813_650X550_90_C.jpg",
+              "section": "Sanitari sospesi"
+            },
+            {
+              "base": "7814",
+              "name": "Bidet sospeso",
+              "url": "https://www.ceramicagalassia.it/catalogo/susi/bidet-sospeso-(4).html",
+              "image": "https://www.ceramicagalassia.it/public/colori/7814/_resized/7814_650X550_90_C.jpg",
+              "section": "Sanitari sospesi"
+            }
+          ]
+        },
+        {
+          "name": "Vasche",
+          "items": [
+            {
+              "base": "1220",
+              "name": "Vasca in Crystalplant 160x84,5xh50,5 cm",
+              "url": "https://www.ceramicagalassia.it/catalogo/susi/vasca-in-crystalplant-160x845xh505-cm.html",
+              "image": "https://www.ceramicagalassia.it/public/_resized/7251-susi_650X550_90_C.jpg",
+              "section": "Vasche"
+            }
+          ]
+        }
+      ],
+      "notAvailable": false,
+      "sourceVerified": "manufacturer current webpage + direct product links",
+      "hero": "https://www.ceramicagalassia.it/public/SUSI%20SANITARI-Galleria.jpg"
     },
     {
       "name": "Nextnarrow",
@@ -340,7 +395,8 @@
         }
       ],
       "status": 200,
-      "notAvailable": false
+      "notAvailable": false,
+      "hero": "https://www.ceramicagalassia.it/public/NEXTnarrow%20.jpg"
     },
     {
       "name": "Next",
@@ -431,7 +487,8 @@
         }
       ],
       "status": 200,
-      "notAvailable": false
+      "notAvailable": false,
+      "hero": "https://www.ceramicagalassia.it/public/NEXT.jpg"
     },
     {
       "name": "Lola",
@@ -492,7 +549,8 @@
         }
       ],
       "status": 200,
-      "notAvailable": false
+      "notAvailable": false,
+      "hero": "https://www.ceramicagalassia.it/public/lola.jpg"
     },
     {
       "name": "Core",
@@ -617,7 +675,8 @@
         }
       ],
       "status": 200,
-      "notAvailable": false
+      "notAvailable": false,
+      "hero": "https://www.ceramicagalassia.it/public/CORE.jpg"
     },
     {
       "name": "Core Freestanding",
@@ -678,7 +737,8 @@
         }
       ],
       "status": 200,
-      "notAvailable": false
+      "notAvailable": false,
+      "hero": "https://www.ceramicagalassia.it/public/CORE%20FREE%20STANDING-Galleria-(2"
     },
     {
       "name": "Tabulae",
@@ -845,14 +905,240 @@
         }
       ],
       "status": 200,
-      "notAvailable": false
+      "notAvailable": false,
+      "hero": "https://www.ceramicagalassia.it/public/tabulae.jpg"
     },
     {
       "name": "Meg11 Pro",
       "slug": "meg11",
       "url": "https://www.ceramicagalassia.it/catalogo/meg11/",
-      "groups": [],
-      "notAvailable": true
+      "groups": [
+        {
+          "name": "Lavabi appoggio sospesi",
+          "items": [
+            {
+              "base": "8974",
+              "name": "Lavabo 61x46",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/lavabi/meg-pro-lavabo-61.html",
+              "image": "https://www.ceramicagalassia.it/public/meg11-(2).jpg",
+              "section": "Lavabi appoggio sospesi"
+            },
+            {
+              "base": "8968",
+              "name": "Lavabo 71x46",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/lavabi/meg-pro.html",
+              "image": "https://www.ceramicagalassia.it/public/01_meg.jpg",
+              "section": "Lavabi appoggio sospesi"
+            },
+            {
+              "base": "8973",
+              "name": "Lavabo 81x46",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/lavabi/meg-pro-lavabo-61-1.html",
+              "image": "https://www.ceramicagalassia.it/public/02_meg.jpg",
+              "section": "Lavabi appoggio sospesi"
+            },
+            {
+              "base": "8967",
+              "name": "Lavabo 91x46",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/lavabi/meg-pro-lavabo-90.html",
+              "image": "https://www.ceramicagalassia.it/public/03_meg.jpg",
+              "section": "Lavabi appoggio sospesi"
+            },
+            {
+              "base": "8937",
+              "name": "Lavabo 101x46",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/lavabi/meg-pro-lavabo-101.html",
+              "image": "https://www.ceramicagalassia.it/public/04_meg.jpg",
+              "section": "Lavabi appoggio sospesi"
+            },
+            {
+              "base": "8938",
+              "name": "Lavabo 121x46",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/lavabi/lavabo-121x46.html",
+              "image": "https://www.ceramicagalassia.it/public/05_meg.jpg",
+              "section": "Lavabi appoggio sospesi"
+            },
+            {
+              "base": "8966",
+              "name": "Lavabo 121x46",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/lavabi/meg-pro-lavabo-121.html",
+              "image": "https://www.ceramicagalassia.it/public/06_meg.jpg",
+              "section": "Lavabi appoggio sospesi"
+            },
+            {
+              "base": "8939",
+              "name": "Lavabo 141x46",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/lavabi/meg-pro-lavabo-141.html",
+              "image": "https://www.ceramicagalassia.it/public/07_meg.jpg",
+              "section": "Lavabi appoggio sospesi"
+            },
+            {
+              "base": "5488",
+              "name": "Lavabo da appoggio 25x25 cm",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/lavabi/lavabo-da-appoggio-25x25-cm.html",
+              "image": "https://www.ceramicagalassia.it/public/08_meg.jpg",
+              "section": "Lavabi appoggio sospesi"
+            }
+          ]
+        },
+        {
+          "name": "STRUTTURE",
+          "items": [
+            {
+              "base": "8912+8915",
+              "name": "Struttura a pavimento 70x46",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/strutture/struttura-a-pavimento-70x46.html",
+              "image": "https://www.ceramicagalassia.it/public/09_meg.jpg",
+              "section": "STRUTTURE"
+            },
+            {
+              "base": "8913+8916",
+              "name": "Struttura a pavimento 90x46",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/strutture/struttura-a-pavimento-90x46.html",
+              "image": "https://www.ceramicagalassia.it/public/10_meg.jpg",
+              "section": "STRUTTURE"
+            }
+          ]
+        },
+        {
+          "name": "LAVATOI",
+          "items": [
+            {
+              "base": "5407M",
+              "name": "Lavabo sospeso 45x40",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/lavabo-sospeso-45x40.html",
+              "image": "https://www.ceramicagalassia.it/public/11_meg.jpg",
+              "section": "LAVATOI"
+            },
+            {
+              "base": "5407SF",
+              "name": "Lavabo sospeso 45x40",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/lavabo-sospeso-45x40-1.html",
+              "image": "https://www.ceramicagalassia.it/public/12_meg.jpg",
+              "section": "LAVATOI"
+            },
+            {
+              "base": "5482",
+              "name": "Lavabo-lavatoio cm 55x47",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/lavabo-lavatoio-cm-55x47.html",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8968_650X550_90_C.jpg",
+              "section": "LAVATOI"
+            },
+            {
+              "base": "5403",
+              "name": "Lavabo-lavatoio cm 65x45",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/wall-hung-washbasin-washtub.html",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8967_650X550_90_C.jpg",
+              "section": "LAVATOI"
+            }
+          ]
+        },
+        {
+          "name": "LAVABI INCASSO",
+          "items": []
+        },
+        {
+          "name": "MONOLITE",
+          "items": [
+            {
+              "base": "5405P",
+              "name": "Lavabo monolite 50x40 cm",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/lavabo-monolite-50x40.html",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8938_650X550_90_C.jpg",
+              "section": "MONOLITE"
+            }
+          ]
+        },
+        {
+          "name": "SANITARI SOSPESI",
+          "items": [
+            {
+              "base": "5412",
+              "name": "Bidet monoforo",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/sanitari/bidet-monoforo-1.html",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8966_650X550_90_C.jpg",
+              "section": "SANITARI SOSPESI"
+            },
+            {
+              "base": "5411",
+              "name": "Vaso sospeso",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/sanitari/vaso-sospeso.html",
+              "image": "https://www.ceramicagalassia.it/public/_resized/5488_650X550_90_C.jpg",
+              "section": "SANITARI SOSPESI"
+            },
+            {
+              "base": "5486",
+              "name": "WC sospeso 55",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/sanitari/wc-a-terra-1.html",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8912_650X550_90_C.jpg",
+              "section": "SANITARI SOSPESI"
+            }
+          ]
+        },
+        {
+          "name": "SANITARI A TERRA",
+          "items": [
+            {
+              "base": "5480V2",
+              "name": "Bidet a terra",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/bidet-a-terra.html",
+              "image": "https://www.ceramicagalassia.it/public/_resized/8913_650X550_90_C.jpg",
+              "section": "SANITARI A TERRA"
+            },
+            {
+              "base": "5481V2",
+              "name": "WC a terra 55",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/wc-a-terra.html",
+              "image": "https://www.ceramicagalassia.it/public/colori/5407m/_resized/5407m_650X550_90_C.jpg",
+              "section": "SANITARI A TERRA"
+            },
+            {
+              "base": "5419",
+              "name": "Vaso con scarico traslato",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/vaso-con-scarico-traslato-code-5419.html",
+              "image": "https://www.ceramicagalassia.it/public/colori/5407sf/_resized/5407sf_650X550_90_C.jpg",
+              "section": "SANITARI A TERRA"
+            },
+            {
+              "base": "5410",
+              "name": "Bidet a terra",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/bidet.html",
+              "image": "https://www.ceramicagalassia.it/public/_resized/5482_650X550_90_C.jpg",
+              "section": "SANITARI A TERRA"
+            }
+          ]
+        },
+        {
+          "name": "Monoblocco",
+          "items": [
+            {
+              "base": "5413",
+              "name": "Vaso monoblocco",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/vaso-monoblocco-3.html",
+              "image": "https://www.ceramicagalassia.it/public/_resized/5403-(2)_650X550_90_C.jpg",
+              "section": "Monoblocco"
+            }
+          ]
+        },
+        {
+          "name": "Orinatoi",
+          "items": [
+            {
+              "base": "5408",
+              "name": "Orinatoio sospeso",
+              "url": "https://www.ceramicagalassia.it/catalogo/meg11/orinatoio-sospeso.html",
+              "image": "https://www.ceramicagalassia.it/public/colori/5405/_resized/5405_650X550_90_C.jpg",
+              "section": "Orinatoi"
+            }
+          ]
+        },
+        {
+          "name": "Vasche",
+          "items": []
+        }
+      ],
+      "notAvailable": false,
+      "sourceVerified": "manufacturer current webpage and listed model codes"
     },
     {
       "name": "Dream",
@@ -1059,7 +1345,8 @@
         }
       ],
       "status": 200,
-      "notAvailable": false
+      "notAvailable": false,
+      "hero": "https://www.ceramicagalassia.it/public/dream-(2"
     },
     {
       "name": "Hygea",
@@ -1080,7 +1367,8 @@
         }
       ],
       "status": 200,
-      "notAvailable": false
+      "notAvailable": false,
+      "hero": "https://www.ceramicagalassia.it/public/HIGEA.jpg"
     },
     {
       "name": "SmartB",
@@ -1164,7 +1452,8 @@
         }
       ],
       "status": 200,
-      "notAvailable": false
+      "notAvailable": false,
+      "hero": "https://www.ceramicagalassia.it/public/4_smartb.jpg"
     },
     {
       "name": "M2",
@@ -1399,7 +1688,8 @@
         }
       ],
       "status": 200,
-      "notAvailable": false
+      "notAvailable": false,
+      "hero": "https://www.ceramicagalassia.it/public/M2.jpg"
     },
     {
       "name": "Eden",
@@ -1644,7 +1934,8 @@
         }
       ],
       "status": 200,
-      "notAvailable": false
+      "notAvailable": false,
+      "hero": "https://www.ceramicagalassia.it/public/edem.jpg"
     },
     {
       "name": "Ethos",
@@ -1954,7 +2245,8 @@
         }
       ],
       "status": 200,
-      "notAvailable": false
+      "notAvailable": false,
+      "hero": "https://www.ceramicagalassia.it/public/ethos.jpg"
     },
     {
       "name": "Folia",
@@ -2066,7 +2358,8 @@
         }
       ],
       "status": 200,
-      "notAvailable": false
+      "notAvailable": false,
+      "hero": "https://www.ceramicagalassia.it/public/follia.jpg"
     }
   ]
 }
