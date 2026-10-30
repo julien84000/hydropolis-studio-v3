@@ -80,13 +80,28 @@
     return u.protocol==='https:'&&u.hostname==='hidrobox.com'&&u.pathname.startsWith('/configurator/wp-content/uploads/cfg-recursos/images/');
    }catch{return false;}
  };
+ function printQuality(imageResult,{ImageClass=root?.Image}={}){
+   if(!imageResult?.ok||!trusted(imageResult.image)||!ImageClass)return Promise.resolve({ok:false,reason:'Résolution impossible à vérifier'});
+   return new Promise(resolve=>{
+     const img=new ImageClass();let complete=false;
+     const timer=setTimeout(()=>end({ok:false,reason:'Chargement de la photo fabricant expiré'}),10000);
+     function end(v){if(complete)return;complete=true;clearTimeout(timer);img.onload=null;img.onerror=null;resolve(v);}
+     img.onload=()=>{
+       const width=img.naturalWidth||0,height=img.naturalHeight||0;
+       end({ok:Math.min(width,height)>=900,width,height,reason:Math.min(width,height)>=900?'Photo HD native vérifiée':
+        'Image officielle '+width+' × '+height+' px, résolution insuffisante pour un grand visuel imprimé'});
+     };
+     img.onerror=()=>end({ok:false,reason:'Image officielle indisponible'});
+     img.src='/api/image-proxy?url='+encodeURIComponent(imageResult.image);
+   });
+ }
  function apply(record,imageResult,config){
-  if(!record||record.customImage||record.dossierImage||!imageResult?.ok||!trusted(imageResult.image))return false;
+  if(!record||record.customImage||record.dossierImage||!imageResult?.ok||!trusted(imageResult.image)||imageResult.verifiedPrintQuality===false)return false;
   const src='/api/image-proxy?url='+encodeURIComponent(imageResult.image);
   record.image=src;record.images=[src];record.pdfImage=src;record.pdfImages=[src];
   record.remoteImageUrl=imageResult.image;record.remoteImages=[imageResult.image];
   record.imageFinishMatch='configured-verified';record.imageSource='Configurateur officiel Hidrobox · choix vérifiés';
-  record.imageStatus='Visuel configurateur Hidrobox';
+  record.imageStatus='Visuel configurateur Hidrobox'+(imageResult.width&&imageResult.height?' · '+imageResult.width+' × '+imageResult.height+' px':'');
   record.imageNote=(imageResult.disclaimer||'Photo du configurateur officiel.')+
     ' Certains accessoires (grille ou bonde) peuvent ne pas être visibles.';
   record.hidroboxConfiguration={...(record.hidroboxConfiguration||{}),officialConfiguratorImage:imageResult.image,
@@ -107,9 +122,13 @@
      img.src='/api/image-proxy?url='+encodeURIComponent(result.image);
      img.hidden=false;
      img.onerror=()=>{img.hidden=true;if(textNode)textNode.textContent='Image fabricante indisponible. Photo de collection conservée.'};
-     if(textNode)textNode.textContent='Photo officielle : modèle, forme, texture, couleur et dimensions contrôlés. Matière et accessoires à vérifier.';
+     const quality=await printQuality(result);
+     if(textNode)textNode.textContent=quality.ok?
+       'Photo constructeur HD '+quality.width+' × '+quality.height+' px · modèle, couleur, texture et dimensions contrôlés ; accessoires non garantis.':
+       quality.reason+' · non enregistrée automatiquement dans le dossier client.';
+     result.verifiedPrintQuality=quality.ok;result.width=quality.width;result.height=quality.height;
    }else if(textNode)textNode.textContent=result.reason||'Correspondance visuelle non démontrée : photo de collection illustrative.';
    return result;
  }
- return {COLOR_GROUPS,colorsFor,modelFor,normalizedTexture,normalizedMaterial,selection,eligible,lookup,trusted,apply,preview};
+ return {COLOR_GROUPS,colorsFor,modelFor,normalizedTexture,normalizedMaterial,selection,eligible,lookup,trusted,printQuality,apply,preview};
 });
