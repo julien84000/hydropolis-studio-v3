@@ -35,7 +35,7 @@ test('Space, Beta Essential, Beta Evoque and Program keep product-specific prici
  ]){
   const body=slice(start,end);
   order(body,steps);
-  assert.match(body,/\.quote\(/,'must preserve manufacturer's quote engine: '+start);
+  assert.match(body,/\.quote\(/,'must preserve the manufacturer quote engine: '+start);
  }
 });
 test('Panel and Spot explicitly show the same sequential axes and retain real tariffs',()=>{
