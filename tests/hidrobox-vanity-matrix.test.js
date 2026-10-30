@@ -18,6 +18,8 @@ test('Hidrobox imported vanity lines remain accessible and inspectable against s
       width:x.width,length:x.length,colorGroup:x.colorGroup,sourcePage:x.sourcePage}))});
  }
  console.log('HIDROBOX_VANITY_MATRIX '+JSON.stringify(matrix));
+ const spot=catalog.groups.find(x=>x.collection==='Spot');
+ console.log('HIDROBOX_SPOT_ROWS '+JSON.stringify(spot.variants.map(v=>({ref:v.reference,rawPrice:v.rawPrice,material:v.material,finish:v.finish,colorGroup:v.colorGroup,length:v.length,designation:v.designation,image:v.image})))));
  assert(matrix.find(x=>x.name==='Program Colour')?.primary>0);
  assert(matrix.find(x=>x.name==='Artop')?.primary>0);
 });
