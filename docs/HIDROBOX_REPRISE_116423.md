@@ -1,3 +1,24 @@
+## Checkpoint V11.64.24 — parcours commun des receveurs (30 octobre 2026)
+
+Dernière branche active : `fix/hidrobox-line-twins-series-116424`, PR #70 sur GitHub. Ne pas partir de main tant que la PR n'est pas fusionnée. Vérifier le dernier SHA, la CI, puis la version Render. Production avant cette PR : V11.64.23.
+
+Demande confirmée par l'utilisateur : **modèle (pictogrammes) → matière → texture → finition couleur → dimensions → référence finale**, puis grille/bonde/options et visuel officiel si le résultat fabricant est exact. Chaque collection conserve ses axes réels, avec les champs sans alternative affichés comme fixes. Interdiction de réutiliser les règles d'une famille dans une autre.
+
+Code sauvegardé :
+- `public/hidrobox-tray-models-2026.js` : pictos modèle Line X/Y/carré, Twins YL/YR, One (rectangulaire/carré/angulaire), Iconik (rectangulaire/carré), Loovers (To Share, Round C/L/R/Rect., Single L/R), et familles à forme unique si référence documentée.
+- `public/hidrobox-tray-cascade-2026.js` : moteur de filtrage tarifaire commun par étapes sur les références fournisseur importées ; caractéristiques fixes Twins Kromat/Microtex, Quadro Kromat/Ardoise, Pure Kromat/Microtex, Arq Kromat/Ciment, Loovers/Unique/Iconik Scene/Lisse. Attention : certaines lignes PDF importées omettent les champs matière et texture à cause des cellules fusionnées ; la correction s'appuie sur les fiches fournisseur, pas sur un défaut universel.
+- `public/hidrobox-guided.js` : ordonnancement visuel des cinq étapes, filtration, récapitulatif des références réelles, blocage de l'ajout lorsque le supplément d'une couleur Scene ne peut pas être confirmé. Les images officielles HD restent soumises à la validation des paramètres/dimensions réels.
+- Tests `tests/hidrobox-line-twins-series.test.js`, `tests/hidrobox-twins-pictogram-flow.test.js`, `tests/hidrobox-tray-cascade.test.js`, et test audit global `tests/hidrobox-shower-import-audit.test.js` dans npm test.
+
+Points prudents : un choix Scene autre que Blanc doit rester visible, mais son éventuelle plus-value doit être vérifiée dans les pages tarifaires ; ne jamais le vendre au prix BLA sans preuve. Dans les gammes avec champs largeur ou longueur manquants à l'import, ne jamais fabriquer une combinaison ou ajouter une référence incapable de prouver ses dimensions. Les pictogrammes sont des dessins de principe, non des images extraites officiellement du PDF.
+
+Avant fusion : vérifier que `npm ci`, `npm run check`, `npm test`, `npm run build`, `npm run test:browser` passent sur le *dernier commit*. Après fusion : vérifier Render /api/version et /api/health, puis valider à l'écran une configuration de chaque famille et le dossier client.
+
+Prompt de reprise :
+"Reprends le dépôt julien84000/hydropolis-studio-v3, PR #70 sur branche fix/hidrobox-line-twins-series-116424. Lis docs/HIDROBOX_REPRISE_116423.md. Vérifie CI et production, finalise le parcours fabricant modèle → matière → texture → couleur → dimensions → SKU pour chaque receveur. Ne généralise pas les matières/textures. Vérifie les vrais tableaux PDF et les images HD officielles. Les options sont séparées du receveur. Ne fusionne et ne déploie qu'avec CI verte et validation de la version Render. Conserve et consigne chaque correctif sur GitHub."
+
+---
+
 ## V11.64.24 — Parcours pictogrammes Twins, 30/10/2026
 
 Constat constructeur depuis les planches tarifaires photographiées (pages 26–29) : TWINS est constitué exclusivement de **Twins YL** et **Twins YR**. Pour ces receveurs, seule la matière **Kromat** et la finition **Microtex** sont documentées. Il ne faut PAS proposer Scene, Lisse ou Ardoise dans cette famille. Couleurs autorisées : gammes Basic, Trend et Special selon la ligne de référence, dimensions 80 et 81–90 cm de largeur, longueurs 100–180 cm par tranches tarifaires.
