@@ -866,19 +866,24 @@ function universalPage(g){
      }catch(error){console.warn('[Hidrobox official configured image]',error?.message||error);}
    }
    const isColourCollection=norm(name)==='program colour';
-   const exactImage=isColourCollection?'':officialImage(row.image),
-     groupCollectionImage=collectionImageFor(name,officialGroupMedia(g)?.image||g.image),
-    representative=isColourCollection?PROGRAM_COLOUR_GENERIC_IMAGE:
-      officialImage(g.image)||groupCollectionImage||family?.img||'';
+   // Priority: exact configured manufacturer image (applied below), then the
+   // manufacturer product photo, then the official collection photo.
+   // Never describe a catalogue/product photo as a verified colour match.
+   const productImage=isColourCollection?'':officialImage(row.image);
+   const groupCollectionImage=collectionImageFor(name,officialGroupMedia(g)?.image||g.image);
+   const representative=isColourCollection?PROGRAM_COLOUR_GENERIC_IMAGE:
+     groupCollectionImage||family?.img||'';
+   const fallbackImage=productImage||representative;
+   const fallbackScope=productImage?'product':(groupCollectionImage||isColourCollection?'collection':representative?'category':'unavailable');
    const item={manufacturer:'Hidrobox',collection:name,reference:row.reference,base:row.reference,designation,
       category:row.category||original?.category||family?.name||'Sanitaire',material:row.material||'',
       finish:[pickedColor,row.finish||row.colorGroup||''].filter(Boolean).join(' · '),
       price:selectedTrayQuote?.price??Number(row.price),totalPrice:selectedTrayQuote?.price??Number(row.price),
       rawTariffPrice:selectedTrayQuote?.rawPrice??(Number(row.rawPrice)||0),listPriceUpliftPct:4,purchaseDiscount:50,currency:'€',vat:'HT',
       source:'HIDROBOX_TARIF_FR_V0226_19-02-2026.pdf',sourceYear:2026,manufacturerUrl:url,
-      image:exactImage||representative,
-      imageSource:exactImage?'Visuel fabricant de la référence':groupCollectionImage?'Photographie constructeur de la collection · variante illustrative':'Illustration de catégorie Hidrobox · modèle et finition non contractuels',
-      imageFinishMatch:exactImage?'exact':groupCollectionImage?'collection':'category',
+      image:fallbackImage,
+      imageSource:fallbackScope==='product'?'Photo fabricant du produit · finition illustrée à vérifier':fallbackScope==='collection'?'Photographie officielle de collection · variante illustrative':fallbackScope==='category'?'Illustration de catégorie Hidrobox · modèle et finition non contractuels':'Photographie indisponible',
+      imageFinishMatch:fallbackScope,
       technicalSheetUrl:tech,technicalSheetLabel:'Fiche technique Hidrobox',installationGuideUrl:manual,
       installationGuideLabel:'Notice de pose Hidrobox',configuratorType:'hidrobox-configured'};
    try{
