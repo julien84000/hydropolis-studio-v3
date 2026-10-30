@@ -552,6 +552,16 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
       await page.locator('#hnTexture option').count()===1&&
       (await page.locator('#hidroboxGuided .hidrobox-result').innerText()).includes('SNEC0181')&&
       await page.locator('#hnAdd').isEnabled());
+    check('Neo Plus : option découpe spéciale +10 % source OPSH0018 visible',
+      await page.locator('#hidroboxGuided #hnSpecialCut').count()===1);
+    const neoPriceBefore=await page.locator('#hidroboxGuided .hidrobox-result b').innerText();
+    await page.locator('#hidroboxGuided #hnSpecialCut').check();
+    const neoPriceAfter=await page.locator('#hidroboxGuided .hidrobox-result b').innerText();
+    const toNeoPrice=v=>Number(v.replace(/[\\s\\u202f\\u00a0]/g,'').replace(/[^0-9,.-]/g,'').replace(/\\./g,'').replace(',','.'));
+    check('Neo Plus : 10 % recalculé depuis tarif fournisseur et exigence plan technique visible',
+      toNeoPrice(neoPriceAfter)>toNeoPrice(neoPriceBefore)&&
+      (await page.locator('#hidroboxGuided .hidrobox-result small').innerText()).includes('découpe')&&
+      await page.locator('#hidroboxGuided #hnAdd').isEnabled());
     await page.locator('#hidroboxGuided .hidrobox-back').click();
     await page.locator('#hidroboxGuided [data-kind="collection"]').filter({hasText:'Line'}).first().click();
     await page.waitForSelector('#hidroboxGuided a[href$="STL-Line-Hidrobox.zip"]');
