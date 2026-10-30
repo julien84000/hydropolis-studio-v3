@@ -861,6 +861,7 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     });
     check('Galassia : lancement du configurateur dans le catalogue',await page.locator('.galassia-open').count()===1);
     await page.locator('.galassia-open').click();
+    await page.waitForSelector('.galassia-modal .galassia-family',{timeout:20000});
     check('Galassia : collections photographiques disponibles',await page.locator('.galassia-modal .galassia-family').count()>8);
     await page.locator('.galassia-family[data-family="R70"]').click();
     check('Galassia : famille R70 affichée',await page.locator('.galassia-modal').count()===1&&await page.locator('.galassia-family[data-family="R70"].active').count()===1);
