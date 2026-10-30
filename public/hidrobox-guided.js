@@ -257,6 +257,12 @@ function pricedShowerVariants(g){
 }
 function universalSelection(g){
   let rows=pricedShowerVariants(g),fields=[];
+  const selector=root.HydroHidroboxTrayModels2026,verified=root.HydroHidroboxOfficialVisual;
+  const models=selector?.variants(g,rows,verified)||[];
+  if(models.length){
+    if(!models.some(x=>x.id===universalDraft.traySubmodel))universalDraft.traySubmodel=models[0].id;
+    rows=selector.filter(g,rows,universalDraft.traySubmodel,verified);
+  }
   for(const [key,label] of FACE_KEYS){
     const options=onlyValues(rows,key);
     if(options.length<2){if(options.length===1)fields.push({key,label,options,chosen:options[0],static:true});continue}
@@ -627,6 +633,9 @@ function restoreHidroboxSelection(g){
  if(!found)return;
  for(const [field] of FACE_KEYS)if(found[field]!==undefined&&found[field]!==null&&String(found[field]))universalDraft[field]=String(found[field]);
  universalDraft.reference=String(found.reference);
+ const supplierModel=root.HydroHidroboxTrayModels2026;
+ const selectedModel=supplierModel?.submodel(g,found,root.HydroHidroboxOfficialVisual);
+ if(selectedModel)universalDraft.traySubmodel=selectedModel;
  const saved=original?.hidroboxConfiguration||{};
  const width=Number(saved.widthCm||saved.selectedWidthCm),length=Number(saved.lengthCm||saved.selectedLengthCm);
  if(Number.isInteger(width)&&width>0)universalDraft.exactwidth=width;
@@ -643,6 +652,12 @@ function universalPage(g){
  stage='group';chosenGroup=g;
  const name=g.collection||g.family||g.model||g.id;
  const {selected,fields,refs}=universalSelection(g);
+ const traySubmodelSelector=root.HydroHidroboxTrayModels2026;
+ const submodels=traySubmodelSelector?.variants(g,pricedShowerVariants(g),root.HydroHidroboxOfficialVisual)||[];
+ const submodelMarkup=submodels.length?'<section class="hidrobox-tray-submodels"><h4 class="hidrobox-universal-subtitle">1 · Choisir la forme du receveur</h4>'+
+   '<div class="hidrobox-tray-model-grid">'+submodels.map(item=>'<button type="button" class="hidrobox-tray-model" data-hb-tray-model="'+escape(item.id)+'" aria-pressed="'+(item.id===universalDraft.traySubmodel?'true':'false')+'">'+
+     traySubmodelSelector.shapeSvg(item.id)+'<strong>'+escape(item.label)+'</strong></button>').join('')+'</div>'+
+   '<p class="hidrobox-guide-note">Les références et les plages de dimensions sont filtrées selon cette forme du tarif 2026.</p></section>':'';
  const family=CATEGORY.find(c=>c.key===groupCategory(g));
  const n=norm(name),assets=HIDROBOX_DOCUMENTS[n]||{};
  const url=officialCollection(g);
@@ -674,7 +689,9 @@ function universalPage(g){
  const trayQuote=accessories&&trayOpts.length?accessories.quote(selected?.rawPrice,trayOpts,Object.fromEntries(
     trayOpts.map(g=>[g.key,universalDraft['tray_'+g.key]]))):null;
  const imageLookup=shower?'<div class="hidrobox-configured-photo"><img data-hb-config-image hidden alt="Visuel officiel correspondant à la configuration"><small data-hb-config-status>Le configurateur officiel sera interrogé selon les choix exacts. Aucune photo approximative ne sera déclarée exacte.</small></div>':'';
- const flat=fields.filter(x=>x.static).map(f=>escape(f.label)+': '+escape(f.chosen)).join(' · ');
+ const fixedMaterialTexture=norm(name)==='twins'?
+   '<p class="hidrobox-guide-note"><strong>Matière : Kromat uniquement · Texture : Microtex uniquement.</strong> Ce sont les seules options publiées pour Twins dans le tarif 2026.</p>':'';
+ const flat=fields.filter(x=>x.static && !(norm(name)==='twins'&&['material','finish'].includes(x.key))).map(f=>escape(f.label)+': '+escape(f.chosen)).join(' · ');
  const refsControl=refs.length>1?'<label>Référence finale<select id="huReference">'+choices(refs,universalDraft.reference)+'</select></label>':'';
  const price=trayQuote?.ok?trayQuote.price:Number(selected?.price),raw=Number(selected?.rawPrice);
  const canAdd=selected&&Number.isFinite(price)&&price>0&&selected.reference;
@@ -691,7 +708,9 @@ function universalPage(g){
    '<div><div class="eyebrow">'+escape(family?.name||'Hidrobox')+'</div><h3>'+escape(name)+'</h3>'+
    '<p>'+escape(pricedShowerVariants(g).length)+' références produit issues du tarif 2026. Configurez progressivement les caractéristiques, sans masquer les références restantes.</p>'+
    docs+'<small>'+escape(mainImage?(imageScope==='exact'?'Visuel associé à la référence sélectionnée':imageScope==='collection'?'Photo constructeur de la collection · finition/dimensions non contractuelles':'Illustration de catégorie · modèle et finition non garantis'):'Visuel non disponible')+'</small></div></div>'+
+   submodelMarkup+
    '<h4 class="hidrobox-universal-subtitle">Caractéristiques tarifaires</h4>'+
+   fixedMaterialTexture+
    (flat?'<p class="hidrobox-guide-note">'+flat+'</p>':'')+
    '<div class="hidrobox-fields">'+opts+refsControl+showerColor+'</div>'+dimensionMarkup+trayOptsMarkup+imageLookup+
    '<div class="hidrobox-result"><div><b>'+(canAdd?eu(price)+' HT':'Tarif indisponible')+'</b>'+
@@ -700,6 +719,15 @@ function universalPage(g){
    '<button class="btn primary" id="huAdd" type="button"'+(canAdd?'':' disabled')+'>Ajouter au projet</button></div>';
  shell(String(name)+' · configuration',markup,true);
  overlay.querySelector('.hidrobox-back').onclick=collections;
+ overlay.querySelectorAll('[data-hb-tray-model]').forEach(button=>button.addEventListener('click',()=>{
+   if(button.dataset.hbTrayModel===universalDraft.traySubmodel)return;
+   universalDraft.traySubmodel=button.dataset.hbTrayModel;
+   for(const [key] of FACE_KEYS)delete universalDraft[key];
+   universalDraft.reference='';delete universalDraft.showerColor;
+   delete universalDraft.exactwidth;delete universalDraft.exactlength;
+   for(const k of Object.keys(universalDraft))if(k.startsWith('tray_'))delete universalDraft[k];
+   universalPage(g);
+ }));
  overlay.querySelectorAll('[data-facet]').forEach(e=>e.addEventListener('change',()=>{
    universalDraft[e.dataset.facet]=e.value;universalDraft.reference='';
    for(const key of ['exactwidth','exactlength'])delete universalDraft[key];
@@ -769,7 +797,8 @@ function universalPage(g){
      const record=createSelectedProductRecord(item,room,'');
      if(!record)throw Error('Création du produit impossible');
      Object.assign(record,item,{hidroboxConfiguration:{group:g.id,collection:name,reference:row.reference,
-       widthTier:row.width||'',lengthTier:row.length||'',...dimInfo,material:row.material||'',
+       widthTier:row.width||'',lengthTier:row.length||'',...dimInfo,submodel:universalDraft.traySubmodel||'',
+       material:row.material||'',
        finish:row.finish||'',colorGroup:row.colorGroup||'',color:pickedColor,
        shape:row.shape||row.form||'',accessories:selectedTrayQuote?.components||[],
        accessoriesSource:'Tarif Hidrobox 2026 · options OPSH',optionRawPrice:selectedTrayQuote?.optionRawPrice||0}});
