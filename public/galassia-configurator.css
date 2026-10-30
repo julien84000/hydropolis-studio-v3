@@ -89,3 +89,15 @@
  .galassia-section{min-width:115px}
  .galassia-model-photo{height:115px}
 }
+
+
+/* V11.64.21 — sanitary selection accessories, colored finish and installation options */
+.galassia-accessories{display:grid;gap:11px;padding:12px 0;border-top:1px solid #dfd7cd;border-bottom:1px solid #dfd7cd}
+.galassia-accessories h4{font:700 12px/1.35 system-ui;margin:0;color:#282421;letter-spacing:.03em}
+.galassia-accessory-row{display:grid;gap:5px;font:600 11px/1.4 system-ui;color:#4f483d}
+.galassia-accessory-row select{width:100%;min-width:0;background:#fff;color:#282421;border:1px solid #d5c8b7;border-radius:6px;padding:9px 7px;font:11px/1.35 system-ui}
+.galassia-accessory-row small{font:400 10px/1.4 system-ui;color:#726c62}
+.galassia-included{font:11px/1.4 system-ui;padding:8px;border-left:3px solid #aa8a60;background:#f8f5ef;color:#625746}
+.galassia-accessories-help{font:10px/1.5 system-ui;color:#74695e;margin:0}
+.galassia-selection .galassia-add{position:sticky;bottom:0;z-index:3;box-shadow:0 -6px 15px #fff9}
+@media(max-width:780px){.galassia-selection .galassia-add{position:sticky;bottom:0}}
