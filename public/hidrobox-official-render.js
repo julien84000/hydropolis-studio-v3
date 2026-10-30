@@ -136,10 +136,14 @@
   const src='/api/image-proxy?url='+encodeURIComponent(imageResult.image);
   record.image=src;record.images=[src];record.pdfImage=src;record.pdfImages=[src];
   record.remoteImageUrl=imageResult.image;record.remoteImages=[imageResult.image];
-  record.imageFinishMatch='configured-verified';record.imageSource='Configurateur officiel Hidrobox · choix vérifiés';
-  record.imageStatus='Visuel configurateur Hidrobox'+(imageResult.width&&imageResult.height?' · '+imageResult.width+' × '+imageResult.height+' px':'');
+  const exactSize=imageResult.match==='model-texture-color-shape-dimensions';
+  record.imageFinishMatch=exactSize?'configured-verified':'configured-illustrative';
+  record.imageSource=exactSize?'Configurateur officiel Hidrobox · dimensions du résultat vérifiées':
+    'Configurateur officiel Hidrobox · illustration de finition, dimensions non garanties';
+  record.imageStatus='Visuel configurateur Hidrobox'+(exactSize?' · dimensions vérifiées':' · dimensions illustratives')+
+    (imageResult.width&&imageResult.height?' · '+imageResult.width+' × '+imageResult.height+' px':'');
   record.imageNote=(imageResult.disclaimer||'Photo du configurateur officiel.')+
-    ' Certains accessoires (grille ou bonde) peuvent ne pas être visibles.';
+    ' La photographie ne prouve pas le sens gauche/droite, les accessoires ni les dimensions finales.';
   record.hidroboxConfiguration={...(record.hidroboxConfiguration||{}),officialConfiguratorImage:imageResult.image,
    officialImageConfig:{...config},officialImageMatch:imageResult.match||'',officialImageSource:imageResult.source||''};
   return true;
@@ -148,22 +152,34 @@
    if(!element)return;
    const textNode=element.querySelector('[data-hb-config-status]');
    const img=element.querySelector('[data-hb-config-image]');
+   const sourceLink=element.querySelector('[data-hb-config-link]');
    if(!img)return;
-   if(textNode)textNode.textContent='Recherche du visuel exact sur le configurateur Hidrobox…';
+   if(textNode)textNode.textContent='Recherche du visuel officiel correspondant au modèle et à la finition…';
    let result;
    try{result=await lookup(s,{fetcher});}
    catch{result={ok:false,reason:'Le configurateur officiel est momentanément inaccessible.'};}
    if(!element.isConnected)return;
+   if(sourceLink&&result.source){
+     try{
+       const u=new URL(result.source);
+       if(u.protocol==='https:'&&u.hostname==='hidrobox.com'&&u.pathname.startsWith('/configurator/en/')){
+         sourceLink.href=u.href;sourceLink.hidden=false;
+       }
+     }catch{}
+   }
    if(result.ok&&trusted(result.image)){
      img.src='/api/image-proxy?url='+encodeURIComponent(result.image);
      img.hidden=false;
-     img.onerror=()=>{img.hidden=true;if(textNode)textNode.textContent='Image fabricante indisponible. Photo de collection conservée.'};
+     img.onerror=()=>{img.hidden=true;if(textNode)textNode.textContent='Image fabricant indisponible. Photo de collection conservée.'};
      const quality=await printQuality(result);
      if(textNode)textNode.textContent=quality.ok?
-       'Photo constructeur HD '+quality.width+' × '+quality.height+' px · modèle, couleur, texture et dimensions contrôlés ; accessoires non garantis.':
+       ('Photo constructeur HD '+quality.width+' × '+quality.height+' px · '+
+         (result.match==='model-texture-color-shape-dimensions'?
+          'dimensions confirmées sur la fiche du résultat, matière et accessoires non garantis.':
+          'illustration du modèle et de la finition ; dimensions, orientation, matière et accessoires non garantis.')):
        quality.reason+' · non enregistrée automatiquement dans le dossier client.';
      result.verifiedPrintQuality=quality.ok;result.width=quality.width;result.height=quality.height;
-   }else if(textNode)textNode.textContent=result.reason||'Correspondance visuelle non démontrée : photo de collection illustrative.';
+   }else if(textNode)textNode.textContent=result.reason||'Aucune correspondance visuelle démontrée : photo de collection illustrative.';
    return result;
  }
  return {COLOR_GROUPS,colorsFor,modelFromReference,modelFor,normalizedTexture,normalizedMaterial,selection,eligible,lookup,trusted,printQuality,apply,preview};
