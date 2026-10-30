@@ -129,7 +129,10 @@ function groupFor(entry,allGroups=groups){
   norm(g.collection)===norm(entry.name));
 }
 function unmappedGroups(category){
- return groups.filter(g=>groupCategory(g)===category&&!HIDROBOX_ALL_OFFICIAL.some(entry=>groupFor(entry)?.id===g.id));
+ const others=groups.filter(g=>groupCategory(g)===category&&!HIDROBOX_ALL_OFFICIAL.some(entry=>groupFor(entry)?.id===g.id));
+ const spares=root.HydroHidroboxSpares2026;
+ if(category==='accessoires'&&spares?.rows?.length)others.push({id:'hidrobox-spares-2026',collection:'Pièces détachées 2026',category:'Accessoires',variants:spares.rows});
+ return others;
 }
 function treePath(){
  const parent=CATEGORY.find(x=>x.key===cat);
@@ -804,7 +807,11 @@ function universalPage(g){
  const flat=orderedShower?'':fields.filter(x=>x.static).map(f=>escape(f.label)+': '+escape(f.chosen)).join(' · ');
  const pricingWarning=selection.needsColorQuote?'La finition Scene choisie exige une confirmation du supplément tarifaire fabricant. Référence de base affichée, ajout désactivé.':
    selection.missingAttributes?.length?'Le tarif importé ne documente pas : '+selection.missingAttributes.join(', ')+'. Choisissez une autre référence tarifée ou vérifiez la fiche officielle.':'';
- const refsControl=refs.length>1?'<label>Référence finale<select id="huReference">'+choices(refs,universalDraft.reference)+'</select></label>':'';
+ const spareGroup=g.id==='hidrobox-spares-2026';
+ const refsControl=refs.length>1?'<label>'+(spareGroup?'Article et référence':'Référence finale')+'<select id="huReference">'+(spareGroup?refs.map(ref=>{
+    const item=(g.variants||[]).find(x=>x.reference===ref);
+    return '<option value="'+escape(ref)+'"'+(ref===universalDraft.reference?' selected':'')+'>'+escape(ref+' · '+(item?.designation||''))+'</option>';
+   }).join(''):choices(refs,universalDraft.reference))+'</select></label>':'';
  const price=trayQuote?.ok?trayQuote.price:Number(selected?.price),raw=Number(selected?.rawPrice);
  const canAdd=selected&&Number.isFinite(price)&&price>0&&selected.reference&&(!orderedShower||selection.ready)&&(!specialTier||specialTier!=='SPE'||String(universalDraft.specialColor||'').trim().length>=3);
  const tech=officialPdf(selected?.technicalSheetUrl||g.technicalSheetUrl||assets.technical);

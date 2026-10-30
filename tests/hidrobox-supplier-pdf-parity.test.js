@@ -12,6 +12,7 @@ function load(file){return JSON.parse(zlib.gunzipSync(Buffer.from(
 const source=require('./fixtures/hidrobox/supplier-2026-pdf-skus.json');
 const specialSource=require('./fixtures/hidrobox/supplier-2026-special-parts-prices.json');
 const panelPricing=require('../public/hidrobox-panels-2026.js');
+const sparePricing=require('../public/hidrobox-spares-2026.js');
 const vm=require('node:vm');
 const programCtx={window:{}};
 vm.runInNewContext(fs.readFileSync(path.join(root,'public/hidrobox-program-data.js'),'utf8'),programCtx);
@@ -25,7 +26,7 @@ const imported=new Set([...collect(config),...collect(catalog)]
  .filter(code=>/^[A-Z]{3,6}\d{4}$/.test(code))); // Exclude 27 synthetic HBX-CFG navigation entries
 const panelSourceRows=panelPricing.mapped;
 const programReferences=[...(programData.rows||[]).map(r=>r.reference),...Object.keys(programData.options||{})];
-const implemented=new Set([...imported,...panelSourceRows.map(r=>r.reference),...programReferences,...specialSource.rows.map(r=>r.reference)]);
+const implemented=new Set([...imported,...panelSourceRows.map(r=>r.reference),...programReferences,...specialSource.rows.map(r=>r.reference),...sparePricing.rows.map(r=>r.reference)]);
 const sourceCodes=new Map(source.sourceSkus);
 const specialPriceIndex=new Map(specialSource.rows.map(x=>[x.reference,x]));
 function prefix(code){return String(code).match(/^[A-Z]+/)?.[0]||'OTHER';}
@@ -43,7 +44,7 @@ test('Supplier PDF 2026 SKU inventory is available, with independent imported co
   if(summary[p].pages.length<8&&!summary[p].pages.includes(page))summary[p].pages.push(page);
  }
  const total={supplierPdfUniqueSkus:sourceCodes.size,importedUniqueSkus:imported.size,
-   programmedPanelSkus:panelSourceRows.length,programDataReferences:programReferences.length,effectiveUniqueSkus:implemented.size,primaryShowerPdfSkus:pdfShowerCodes.length,primaryShowerMissing:missingShower.length,
+   programmedPanelSkus:panelSourceRows.length,programDataReferences:programReferences.length,sparePartReferences:sparePricing.rows.length,effectiveUniqueSkus:implemented.size,primaryShowerPdfSkus:pdfShowerCodes.length,primaryShowerMissing:missingShower.length,
    missingFromEffectiveCatalog:missing.length,missingByPrefix:Object.entries(summary).sort((a,b)=>b[1].count-a[1].count)};
  console.log('HIDROBOX_PDF_PARITY '+JSON.stringify(total));
  const reportDir=path.join(root,'build-audit');
@@ -54,6 +55,8 @@ test('Supplier PDF 2026 SKU inventory is available, with independent imported co
  // block unrelated releases before the supplier-code classification is finished.
  assert(imported.size>4000,'Hidrobox supplier import unexpectedly shrunk');
  assert.equal(panelSourceRows.length,496,'All manufacturer wall panel codes must be accessible through the specific calculator');
+ assert.equal(sparePricing.rows.length,170,'All page 83 priced spare parts must be included');
+ assert(missing.length<=29,'More than the known 29 remaining unresolved tariff options are missing');
  assert(programReferences.length>=180,'Program supplier product/option references unexpectedly missing');
  for(const option of Object.values(programData.options||{}))assert(Number.isFinite(Number(option.rawPrice))&&Number(option.rawPrice)>=0,option.reference+' invalid price');
  const g=(config.groups||[]).flatMap(group=>group.variants||[]);
