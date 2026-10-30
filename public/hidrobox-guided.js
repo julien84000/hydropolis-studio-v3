@@ -628,6 +628,7 @@ function universalPage(g){
  const imageScope=exactSelectedImage?'exact':collectionImage||exactGroupImage?'collection':'category';
  const opts=fields.filter(x=>!x.static).map(f=>visualFacet('huFacet'+f.key,f.label,f.options,f.chosen,'data-facet="'+escape(f.key)+'"')).join('');
  const shower=groupCategory(g)==='receveurs',visual=root.HydroHidroboxOfficialVisual;
+ const dimensionMarkup=dimensionFields(selected); // Validate selected centimeter ranges before deriving grille size.
  const verifiedColors=shower&&visual?visual.colorsFor(selected||{}):[];
  if(verifiedColors.length&&!verifiedColors.includes(universalDraft.showerColor))universalDraft.showerColor=verifiedColors[0];
  const showerColor=verifiedColors.length?'<div class="hidrobox-shower-colors"><h4>Couleur réelle du receveur</h4>'+
@@ -667,7 +668,7 @@ function universalPage(g){
    docs+'<small>'+escape(mainImage?(imageScope==='exact'?'Visuel associé à la référence sélectionnée':imageScope==='collection'?'Photo constructeur de la collection · finition/dimensions non contractuelles':'Illustration de catégorie · modèle et finition non garantis'):'Visuel non disponible')+'</small></div></div>'+
    '<h4 class="hidrobox-universal-subtitle">Caractéristiques tarifaires</h4>'+
    (flat?'<p class="hidrobox-guide-note">'+flat+'</p>':'')+
-   '<div class="hidrobox-fields">'+opts+refsControl+showerColor+'</div>'+dimensionFields(selected)+trayOptsMarkup+imageLookup+
+   '<div class="hidrobox-fields">'+opts+refsControl+showerColor+'</div>'+dimensionMarkup+trayOptsMarkup+imageLookup+
    '<div class="hidrobox-result"><div><b>'+(canAdd?eu(price)+' HT':'Tarif indisponible')+'</b>'+
    '<span>Réf. '+escape(selected?.reference||'—')+' · '+escape(selected?.designation||'')+'</span>'+
    '<small>'+(canAdd?(Number.isFinite(raw)&&raw>0?'Prix source '+eu(raw)+' HT +4 %. ':'')+'Remise achat 50 % en calcul de marge.':'Aucun prix extrapolé sans référence tarifaire.')+'</small></div>'+
