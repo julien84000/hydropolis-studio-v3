@@ -10,7 +10,7 @@
  }
  function familySections(tree,collection,rows){
    const official=collection?.groups||[];
-   const sections=official.map(group=>({name:group.name,items:group.items||[],prices:pricedInGroup(rows,collection,group).length,official:true}));
+   const sections=official.map(group=>({name:group.name,items:group.items||[],prices:group.crossListed?(rows||[]).filter(p=>(group.items||[]).some(m=>m.base===p.base)).length:pricedInGroup(rows,collection,group).length,official:true,crossListed:!!group.crossListed}));
    const unmatched=(rows||[]).filter(p=>p.officialStructureVerified!==true&&p.manufacturerCollectionSlug===collection?.slug);
    if(unmatched.length)sections.push({name:'Références du tarif à rapprocher',items:[],prices:unmatched.length,official:false});
    return sections;
@@ -29,7 +29,7 @@
      return [...grouped.values()].sort((a,b)=>a.base.localeCompare(b.base,'fr',{numeric:true}));
    }
    return section.items.map(item=>({
-    ...item,variants:array.filter(p=>p.officialStructureVerified===true&&p.manufacturerCollectionSlug===collection.slug&&p.manufacturerFamily===section.name&&p.manufacturerModelCode===item.base)
+    ...item,variants:array.filter(p=>section.crossListed?(p.manufacturer==='Galassia'&&p.base===item.base):(p.officialStructureVerified===true&&p.manufacturerCollectionSlug===collection.slug&&p.manufacturerFamily===section.name&&p.manufacturerModelCode===item.base))
    }));
  }
  let loadPromise=null;
