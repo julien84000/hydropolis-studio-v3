@@ -256,6 +256,15 @@ function pricedShowerVariants(g){
  return prefix?rows.filter(v=>String(v?.reference||'').startsWith(prefix)):rows;
 }
 function universalSelection(g){
+  const cascade=root.HydroHidroboxTrayCascade2026;
+  if(groupCategory(g)==='receveurs'&&cascade){
+    const result=cascade.arrange(g,pricedShowerVariants(g),universalDraft,root.HydroHidroboxTrayModels2026,root.HydroHidroboxOfficialVisual);
+    universalDraft.traySubmodel=result.model;
+    for(const f of result.fields)if(f.key!=='color'&&f.chosen)universalDraft[f.key]=f.chosen;
+    if(result.color)universalDraft.showerColor=result.color;
+    universalDraft.reference=result.reference;
+    return {...result,sourceBacked:true};
+  }
   let rows=pricedShowerVariants(g),fields=[];
   const selector=root.HydroHidroboxTrayModels2026,verified=root.HydroHidroboxOfficialVisual;
   const models=selector?.variants(g,rows,verified)||[];
@@ -651,7 +660,8 @@ function universalPage(g){
  restoreHidroboxSelection(g);
  stage='group';chosenGroup=g;
  const name=g.collection||g.family||g.model||g.id;
- const {selected,fields,refs}=universalSelection(g);
+ const selection=universalSelection(g);
+ const {selected,fields,refs}=selection;
  const traySubmodelSelector=root.HydroHidroboxTrayModels2026;
  const submodels=traySubmodelSelector?.variants(g,pricedShowerVariants(g),root.HydroHidroboxOfficialVisual)||[];
  const submodelMarkup=submodels.length?'<section class="hidrobox-tray-submodels"><h4 class="hidrobox-universal-subtitle">1 · Choisir la forme du receveur</h4>'+
@@ -666,10 +676,17 @@ function universalPage(g){
  const collectionImage=officialImage(groupMedia?.image);
  const mainImage=exactSelectedImage||exactGroupImage||collectionImage||family?.img||'';
  const imageScope=exactSelectedImage?'exact':collectionImage||exactGroupImage?'collection':'category';
- const opts=fields.filter(x=>!x.static).map(f=>visualFacet('huFacet'+f.key,f.label,f.options,f.chosen,'data-facet="'+escape(f.key)+'"')).join('');
+ const facetControl=f=>f.static?
+   '<div class="hidrobox-fixed-attribute"><strong>'+escape(f.label)+'</strong><span>'+escape(f.chosen||'À vérifier')+'</span></div>':
+   visualFacet('huFacet'+f.key,f.label,f.options,f.chosen,'data-facet="'+escape(f.key)+'"');
+ const orderedShower=groupCategory(g)==='receveurs'&&selection.sourceBacked;
+ const materialTexture=orderedShower?fields.filter(f=>['material','finish'].includes(f.key)).map(facetControl).join(''):'';
+ const dimensionFacets=orderedShower?fields.filter(f=>['width','length'].includes(f.key)).map(facetControl).join(''):'';
+ const opts=orderedShower?'':fields.filter(x=>!x.static).map(facetControl).join('');
  const shower=groupCategory(g)==='receveurs',visual=root.HydroHidroboxOfficialVisual;
  const dimensionMarkup=dimensionFields(selected); // Validate selected centimeter ranges before deriving grille size.
- const verifiedColors=shower&&visual?visual.colorsFor(selected||{}):[];
+ const verifiedColors=orderedShower?fields.find(f=>f.key==='color')?.options||[]:
+   shower&&visual?visual.colorsFor(selected||{}):[];
  if(verifiedColors.length&&!verifiedColors.includes(universalDraft.showerColor))universalDraft.showerColor=verifiedColors[0];
  const showerColor=verifiedColors.length?'<div class="hidrobox-shower-colors"><h4>Couleur réelle du receveur</h4>'+
    visualFacet('huShowerColor','Couleur',verifiedColors,universalDraft.showerColor)+'</div>':'';
@@ -689,12 +706,13 @@ function universalPage(g){
  const trayQuote=accessories&&trayOpts.length?accessories.quote(selected?.rawPrice,trayOpts,Object.fromEntries(
     trayOpts.map(g=>[g.key,universalDraft['tray_'+g.key]]))):null;
  const imageLookup=shower?'<div class="hidrobox-configured-photo"><img data-hb-config-image hidden alt="Visuel officiel correspondant à la configuration"><small data-hb-config-status>Le configurateur officiel sera interrogé selon les choix exacts. Aucune photo approximative ne sera déclarée exacte.</small></div>':'';
- const fixedMaterialTexture=norm(name)==='twins'?
-   '<p class="hidrobox-guide-note"><strong>Matière : Kromat uniquement · Texture : Microtex uniquement.</strong> Ce sont les seules options publiées pour Twins dans le tarif 2026.</p>':'';
- const flat=fields.filter(x=>x.static && !(norm(name)==='twins'&&['material','finish'].includes(x.key))).map(f=>escape(f.label)+': '+escape(f.chosen)).join(' · ');
+ const fixedMaterialTexture='';
+ const flat=orderedShower?'':fields.filter(x=>x.static).map(f=>escape(f.label)+': '+escape(f.chosen)).join(' · ');
+ const pricingWarning=selection.needsColorQuote?'La finition Scene choisie exige une confirmation du supplément tarifaire fabricant. Référence de base affichée, ajout désactivé.':
+   selection.missingAttributes?.length?'Le tarif importé ne documente pas : '+selection.missingAttributes.join(', ')+'. Choisissez une autre référence tarifée ou vérifiez la fiche officielle.':'';
  const refsControl=refs.length>1?'<label>Référence finale<select id="huReference">'+choices(refs,universalDraft.reference)+'</select></label>':'';
  const price=trayQuote?.ok?trayQuote.price:Number(selected?.price),raw=Number(selected?.rawPrice);
- const canAdd=selected&&Number.isFinite(price)&&price>0&&selected.reference;
+ const canAdd=selected&&Number.isFinite(price)&&price>0&&selected.reference&&(!orderedShower||selection.ready);
  const tech=officialPdf(selected?.technicalSheetUrl||g.technicalSheetUrl||assets.technical);
  const manual=officialPdf(selected?.installationGuideUrl||g.installationGuideUrl||assets.manual);
  const bim=officialZip(assets.bim),model3D=officialZip(assets.model3D);
@@ -712,7 +730,15 @@ function universalPage(g){
    '<h4 class="hidrobox-universal-subtitle">Caractéristiques tarifaires</h4>'+
    fixedMaterialTexture+
    (flat?'<p class="hidrobox-guide-note">'+flat+'</p>':'')+
-   '<div class="hidrobox-fields">'+opts+refsControl+showerColor+'</div>'+dimensionMarkup+trayOptsMarkup+imageLookup+
+   (orderedShower?
+      '<h4 class="hidrobox-universal-subtitle">2 · Matière puis texture</h4><div class="hidrobox-fields">'+materialTexture+'</div>'+
+      '<h4 class="hidrobox-universal-subtitle">3 · Finition couleur</h4>'+showerColor+
+      '<h4 class="hidrobox-universal-subtitle">4 · Dimensions</h4><div class="hidrobox-fields">'+dimensionFacets+'</div>'+
+      dimensionMarkup+
+      '<h4 class="hidrobox-universal-subtitle">5 · Référence finale</h4><div class="hidrobox-fields">'+refsControl+'</div>':
+      '<div class="hidrobox-fields">'+opts+refsControl+showerColor+'</div>'+dimensionMarkup)+
+   (pricingWarning?'<p class="hidrobox-guide-note" role="status">'+escape(pricingWarning)+'</p>':'')+
+   trayOptsMarkup+imageLookup+
    '<div class="hidrobox-result"><div><b>'+(canAdd?eu(price)+' HT':'Tarif indisponible')+'</b>'+
    '<span>Réf. '+escape(selected?.reference||'—')+' · '+escape(selected?.designation||'')+'</span>'+
    '<small>'+(canAdd?(Number.isFinite(raw)&&raw>0?'Prix source '+eu(raw)+' HT +4 %. ':'')+'Remise achat 50 % en calcul de marge.':'Aucun prix extrapolé sans référence tarifaire.')+'</small></div>'+
@@ -750,7 +776,9 @@ function universalPage(g){
  overlay.querySelector('#huExactwidth')?.addEventListener('change',e=>{universalDraft.exactwidth=Number(e.target.value);universalPage(g)});
  overlay.querySelector('#huExactlength')?.addEventListener('change',e=>{universalDraft.exactlength=Number(e.target.value);universalPage(g)});
  overlay.querySelector('#huAdd')?.addEventListener('click',async()=>{
-   const {selected:row}=universalSelection(g);
+   const validation=universalSelection(g);
+   if(validation.sourceBacked&&!validation.ready){alert('Cette combinaison requiert une validation du tarif constructeur.');return;}
+   const {selected:row}=validation;
    if(!row||!Number.isFinite(Number(row.price))||Number(row.price)<=0)return;
    const dimInfo={};
    for(const key of ['width','length']){
