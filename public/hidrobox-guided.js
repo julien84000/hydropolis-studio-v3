@@ -247,8 +247,16 @@ function officialCollection(g){
   const found=HIDROBOX_ALL_OFFICIAL.find(x=>norm(x.name)===raw||norm(x.key)===raw);
   return found?.url||CATEGORY.find(c=>c.key===groupCategory(g))?.url||HOUSE;
 }
+const TRAY_REF_PREFIX={line:'SLIC',twins:'STWC',quadro:'SQUC',one:'SONC',pure:'SPUC',
+ arq:'SARC',loovers:'SLOC',unique:'SUNC',iconik:'SICC','neo plus':'SNEC'};
+function pricedShowerVariants(g){
+ const prefix=TRAY_REF_PREFIX[norm(g?.collection||g?.id||'')];
+ const rows=g?.variants||[];
+ // OPSH drain/grille options live separately: never pretend these are tray SKU variants.
+ return prefix?rows.filter(v=>String(v?.reference||'').startsWith(prefix)):rows;
+}
 function universalSelection(g){
-  let rows=g.variants||[],fields=[];
+  let rows=pricedShowerVariants(g),fields=[];
   for(const [key,label] of FACE_KEYS){
     const options=onlyValues(rows,key);
     if(options.length<2){if(options.length===1)fields.push({key,label,options,chosen:options[0],static:true});continue}
@@ -681,7 +689,7 @@ function universalPage(g){
  const markup='<button type="button" class="hidrobox-back">← Collections</button>'+
    '<div class="hidrobox-neo-hero">'+(mainImage?'<img src="'+escape(mainImage)+'" alt="'+escape(name)+'" loading="lazy" onerror="this.style.display=\'none\'">':'')+
    '<div><div class="eyebrow">'+escape(family?.name||'Hidrobox')+'</div><h3>'+escape(name)+'</h3>'+
-   '<p>'+escape((g.variants||[]).length)+' variantes issues du tarif 2026. Configurez progressivement les caractéristiques, sans masquer les références restantes.</p>'+
+   '<p>'+escape(pricedShowerVariants(g).length)+' références produit issues du tarif 2026. Configurez progressivement les caractéristiques, sans masquer les références restantes.</p>'+
    docs+'<small>'+escape(mainImage?(imageScope==='exact'?'Visuel associé à la référence sélectionnée':imageScope==='collection'?'Photo constructeur de la collection · finition/dimensions non contractuelles':'Illustration de catégorie · modèle et finition non garantis'):'Visuel non disponible')+'</small></div></div>'+
    '<h4 class="hidrobox-universal-subtitle">Caractéristiques tarifaires</h4>'+
    (flat?'<p class="hidrobox-guide-note">'+flat+'</p>':'')+
