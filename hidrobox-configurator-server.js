@@ -22,8 +22,8 @@ async function officialSizeIndex({get=axios.get}={}){
  const $=cheerio.load(response.data);
  const index=new Map();
  $('[data-fltrtype="size"][data-fltrid]').each((_,el)=>{
-   const txt=$(el).text().trim().replace(/\\s+/g,'').toLowerCase();
-   if(/^\\d{2,3}x\\d{2,3}$/.test(txt))index.set(txt,$(el).attr('data-fltrid'));
+   const txt=$(el).text().trim().replace(/\s+/g,'').toLowerCase();
+   if(/^\d{2,3}x\d{2,3}$/.test(txt))index.set(txt,$(el).attr('data-fltrid'));
  });
  if(!index.size)throw Error('Dimensions du configurateur Hidrobox non disponibles');
  sizeIndex=index;sizeIndexTime=Date.now();return index;
