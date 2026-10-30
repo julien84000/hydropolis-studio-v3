@@ -858,15 +858,15 @@ function sizeRanges(){
 function neoPage(){
  if(!root.HydroTariffPictures)loadTariffExtras().then(()=>{if(overlay&&stage==='neo')neoPage()}).catch(()=>{});
  stage='neo';const d=catalogue.FORMATS.find(x=>x.key===neo.form)||catalogue.FORMATS[0];
- if(neo.material==='Scene'){neo.group='BLA';neo.color='Blanc';}
  if(neo.material==='Kromat'&&neo.group==='BLA')neo.group='BAS';
+ if(neo.material==='Scene'&&!['BLA','BAS','TRE','SPE'].includes(neo.group))neo.group='BLA';
  const colors=catalogue.COLORS[neo.group]||[];
  if(!colors.includes(neo.color))neo.color=colors[0];
  const ranges=sizeRanges();
  const textures=['Lisse','Ardoise'].filter(texture=>catalogue.lookup({...neo,texture,group:neo.material==='Scene'?'BLA':'BAS',color:neo.material==='Scene'?'Blanc':'Bianco'}).ok);
  if(textures.length&&!textures.includes(neo.texture))neo.texture=textures[0];
  const line=catalogue.lookup(neo);
- const colorGroups=neo.material==='Scene'?['BLA']:['BAS','TRE','SPE'];
+ const colorGroups=neo.material==='Scene'?['BLA','BAS','TRE','SPE']:['BAS','TRE','SPE'];
  const opts=(id,label,list,current,disabled=false)=>visualFacet(id,label,list,current,disabled?'disabled':'');
  const pict=officialImage(officialCollectionMedia('neo-plus')?.image)||CATEGORY[0].img;
  const previewMarkup='<div class="hidrobox-configured-photo"><img data-hb-config-image hidden alt="Rendu réel du configurateur Hidrobox Neo Plus"><small data-hb-config-status>Recherche du visuel officiel correspondant au modèle, à la couleur et aux dimensions.</small></div>';
