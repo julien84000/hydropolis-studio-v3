@@ -901,6 +901,40 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
       const p=state.selected.find(p=>p.manufacturer==='Galassia');
       return p?.reference==='7701MT'&&p.price===585&&supplierDiscountRate('Galassia')===50&&Math.abs(purchaseCostFor(p)-292.5)<.01;
     }));
+
+    // V11.64.21: exact parent WC finish must offer one matching colored seat and link it to its quote line.
+    await page.evaluate(()=>{showView('catalog');renderCatalog();});
+    await page.locator('.galassia-open').click();
+    await page.locator('.galassia-family[data-family="Core"]').click();
+    await page.locator('.galassia-section').filter({hasText:'Sanitari sospesi'}).click();
+    await page.locator('.galassia-model[data-model="7353"]').click();
+    await page.locator('.galassia-variant').selectOption('7353NEMT');
+    check('Galassia WC : abattant de même finition proposée',await page.locator('.galassia-option-select[data-option-group="seat"] option[value="7330NEMT"]').count()===1);
+    await page.locator('.galassia-option-select[data-option-group="seat"]').selectOption('7330NEMT');
+    await page.locator('.galassia-add').click();
+    await page.waitForFunction(()=>state.selected.some(p=>p.reference==='7330NEMT'),{timeout:20000});
+    check('Galassia WC : abattant facturé séparément mais lié au WC',await page.evaluate(()=>{
+      const wc=state.selected.find(p=>p.reference==='7353NEMT');
+      const seat=state.selected.find(p=>p.reference==='7330NEMT');
+      return !!wc&&!!seat&&seat.accessoryFor===wc.id&&seat.price===278&&supplierDiscountRate('Galassia')===50;
+    }));
+    await page.evaluate(()=>{showView('catalog');renderCatalog();});
+    await page.locator('.galassia-open').click();
+    await page.locator('.galassia-family[data-family="Core"]').click();
+    await page.locator('.galassia-section').filter({hasText:'Sanitari sospesi'}).click();
+    await page.locator('.galassia-model[data-model="7354"]').click();
+    await page.locator('.galassia-variant').selectOption('7354NEMT');
+    check('Galassia bidet : bonde assortie et fixation proposées',await page.locator('.galassia-option-select[data-option-group="drain"] option[value="9916NEMT"]').count()===1
+      &&await page.locator('.galassia-option-select[data-option-group="bracket"] option[value="9051"]').count()===1);
+    await page.locator('.galassia-option-select[data-option-group="drain"]').selectOption('9916NEMT');
+    await page.locator('.galassia-add').click();
+    await page.waitForFunction(()=>state.selected.some(p=>p.reference==='9916NEMT'),{timeout:20000});
+    check('Galassia bidet : bonde assortie liée et aucun kit non choisi ajouté',await page.evaluate(()=>{
+      const bidet=state.selected.find(p=>p.reference==='7354NEMT');
+      const drain=state.selected.find(p=>p.reference==='9916NEMT');
+      return !!bidet&&!!drain&&drain.accessoryFor===bidet.id&&drain.price===91&&!state.selected.some(p=>p.reference==='9051');
+    }));
+
     await page.evaluate(snapshot=>{applyProjectState(JSON.parse(snapshot));buildDocument();},galassiaSnapshot);
 
     // Dossier pagination: real UI, persisted placement, geometry, print and project isolation.
