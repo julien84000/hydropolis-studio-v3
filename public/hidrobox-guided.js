@@ -610,11 +610,28 @@ function betaEssentialPage(g){
  });
 }
 
+function restoreHidroboxSelection(g){
+ const key=String(g?.id||g?.collection||'');
+ if(universalDraft.__group===key)return;
+ for(const k of Object.keys(universalDraft))delete universalDraft[k];
+ universalDraft.__group=key;
+ const found=(g?.variants||[]).find(v=>String(v.reference||'')===String(original?.reference||''));
+ if(!found)return;
+ for(const [field] of FACE_KEYS)if(found[field]!==undefined&&found[field]!==null&&String(found[field]))universalDraft[field]=String(found[field]);
+ universalDraft.reference=String(found.reference);
+ const saved=original?.hidroboxConfiguration||{};
+ const width=Number(saved.widthCm||saved.selectedWidthCm),length=Number(saved.lengthCm||saved.selectedLengthCm);
+ if(Number.isInteger(width)&&width>0)universalDraft.exactwidth=width;
+ if(Number.isInteger(length)&&length>0)universalDraft.exactlength=length;
+ if(saved.color||saved.selectedColour)universalDraft.showerColor=saved.color||saved.selectedColour;
+ for(const opt of saved.accessories||[])if(opt.group&&opt.id)universalDraft['tray_'+opt.group]=opt.id;
+}
 function universalPage(g){
  if(norm(g.collection||g.id)==='program')return programPage(g);
  if(norm(g.collection||g.id)==='space')return spacePage(g);
  if(norm(g.collection||g.id)==='beta evoque')return betaEvoquePage(g);
  if(norm(g.collection||g.id)==='beta essential')return betaEssentialPage(g);
+ restoreHidroboxSelection(g);
  stage='group';chosenGroup=g;
  const name=g.collection||g.family||g.model||g.id;
  const {selected,fields,refs}=universalSelection(g);
