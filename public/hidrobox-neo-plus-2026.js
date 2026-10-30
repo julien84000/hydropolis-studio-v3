@@ -100,7 +100,7 @@ function lookup({form='rectangle',width,length,material='Kromat',texture='Lisse'
  const bondeOptions={'Horizontale standard':0,'Verticale':51,'Horizontale extraplate':26,'Horizontale Plus':38};
  if(!(grille in grilleOptions)||!(bonde in bondeOptions))return {ok:false,reason:'Option non tarifée'};
  const rawPrice=rawBase+grilleOptions[grille]+bondeOptions[bonde];
- return {ok:true,reference,rawPrice,price:Math.round(rawPrice*104)/100,purchaseDiscount:50,referenceDimensions:width+' × '+length+' cm',tier:row.tier,material,texture,group:c,color,form,grille,bonde,source:'HIDROBOX_TARIF_FR_V0226_19-02-2026.pdf',priceYear:2026};
+ return {ok:true,reference,rawBasePrice:rawBase,grilleRawPrice:grilleOptions[grille],bondeRawPrice:bondeOptions[bonde],rawPrice,price:Math.round(rawPrice*104)/100,purchaseDiscount:50,referenceDimensions:width+' × '+length+' cm',tier:row.tier,material,texture,group:c,color,form,grille,bonde,source:'HIDROBOX_TARIF_FR_V0226_19-02-2026.pdf',priceYear:2026};
 }
 root.HydroNeoPlus2026={FORMATS,COLORS,lookup};
 })(window);
