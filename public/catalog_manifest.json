@@ -1,5 +1,5 @@
 {
-  "total": 108175,
+  "total": 109265,
   "chunks": [
     {
       "file": "alpi_catalog_2025.json",
@@ -180,6 +180,11 @@
       "file": "catalog_sbordoni_6.json",
       "label": "Sbordoni 2023 6/6",
       "count": 716
+    },
+    {
+      "file": "catalog_galassia.json",
+      "label": "Galassia · Listino 32",
+      "count": 1090
     }
   ],
   "manufacturersManifest": "manufacturers_manifest.json",
