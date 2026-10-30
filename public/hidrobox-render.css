@@ -1,0 +1,6 @@
+/* Configured Hidrobox manufacturer photograph, clear and printable. */
+.hidrobox-configured-photo{display:grid;place-items:center;gap:8px;margin:12px 0 20px;padding:12px;border:1px solid #e5e2dc;border-radius:10px;background:#f7f7f6}
+.hidrobox-configured-photo img{display:block;max-width:100%;width:560px;max-height:430px;object-fit:contain;background:white}
+.hidrobox-configured-photo img[hidden]{display:none}
+.hidrobox-configured-photo small{font-size:12px;color:#69635b;line-height:1.45;text-align:center}
+.hidrobox-shower-colors h4{font-size:12px;letter-spacing:.03em}
