@@ -24,6 +24,34 @@
   if(row.color&& !/standard|basics|trends|specials|ral|ncs/i.test(row.color))return [row.color];
   return [];
  }
+ /* Tariff-only groups lack a dedicated orientation field. The genuine 2026 supplier
+    references encode LINE X/Y and TWINS YL/YR; never infer side from dimensions. */
+ function modelFromReference(raw){
+  const ref=String(raw||'').toUpperCase().trim();
+  const match=ref.match(/^(SLIC|STWC)(\d{4})$/);
+  if(!match)return '';
+  const n=Number(match[2]),between=(a,b)=>n>=a&&n<=b;
+  if(match[1]==='STWC'){
+   if(between(97,112)||between(129,144)||between(33,48))return 'twins-yl';
+   if(between(113,128)||between(145,160)||between(81,96))return 'twins-yr';
+   return '';
+  }
+  // LINE X: Kromat BAS/TRE/SPE (Lisse and Ardoise).
+  if(between(533,588)||between(730,785)||between(895,950)||
+     between(624,679)||between(821,876)||between(986,1041))return 'line-x';
+  // LINE Y: Kromat BAS/TRE/SPE (Lisse and Ardoise).
+  if(between(589,623)||between(786,820)||between(951,985)||
+     between(680,697)||between(877,894)||between(1042,1059))return 'line-y';
+  // LINE Scene Lisse and special large formats, from source 2026 PDF pages 22-25.
+  if(between(1,42)||between(698,711))return 'line-x';
+  if(between(43,69)||between(712,719))return 'line-y';
+  // LINE Scene Ardoise uses non-contiguous codes from the printed table.
+  if(between(70,102)||[104,106,108,118,120,122,124].includes(n)||
+    between(110,115)||between(720,729))return 'line-x';
+  if([103,105,107,109,116,117,119,121,123].includes(n)||
+    between(125,133))return 'line-y';
+  return '';
+ }
  function modelFor(group,row={}){
   const groupName=slug(group?.collection||group?.family||group?.model||'');
   const haystack=slug([row.model,row.type,row.shape,row.form,row.designation,row.collection].filter(Boolean).join(' '));
@@ -37,12 +65,12 @@
   if(groupName==='line'){
    if(/\bline\s*x\b|\bline-x\b|\bline x\b/.test(text))return 'line-x';
    if(/\bline\s*y\b|\bline-y\b/.test(text))return 'line-y';
-   return '';
+   return modelFromReference(row.reference);
   }
   if(groupName==='twins'){
    if(/\btwins?\s*yl\b|\btwins yl\b/.test(text))return 'twins-yl';
    if(/\btwins?\s*yr\b|\btwins yr\b/.test(text))return 'twins-yr';
-   return '';
+   return modelFromReference(row.reference);
   }
   return '';
  }
@@ -134,5 +162,5 @@
    }else if(textNode)textNode.textContent=result.reason||'Correspondance visuelle non démontrée : photo de collection illustrative.';
    return result;
  }
- return {COLOR_GROUPS,colorsFor,modelFor,normalizedTexture,normalizedMaterial,selection,eligible,lookup,trusted,printQuality,apply,preview};
+ return {COLOR_GROUPS,colorsFor,modelFromReference,modelFor,normalizedTexture,normalizedMaterial,selection,eligible,lookup,trusted,printQuality,apply,preview};
 });

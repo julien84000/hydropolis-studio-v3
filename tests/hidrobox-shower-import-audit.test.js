@@ -7,12 +7,12 @@ const raw=fs.readFileSync(path.join(__dirname,'../public/brand-data/hidrobox-con
 const catalog=JSON.parse(zlib.gunzipSync(Buffer.from(raw,'base64')).toString('utf8'));
 const groups=catalog.groups||[];
 const rows=groups.flatMap(g=>(g.variants||[]).map(v=>({group:g.collection||g.family||g.model||g.id,...v})));
-const showerPrefixes=['SNEC','SLIC','STWC','SQUC','SONC','SPUC','SARC','SLOC','SUNC','SINC'];
+const showerPrefixes=['SNEC','SLIC','STWC','SQUC','SONC','SPUC','SARC','SLOC','SUNC','SICC'];
 const showers=rows.filter(v=>showerPrefixes.some(p=>String(v.reference||'').startsWith(p)));
 test('Hidrobox source is parseable and shower-tray price records are populated',()=>{
  assert(groups.length>0,'supplier catalog groups missing');
  assert(rows.length>100,'supplier tariff variants unexpectedly empty');
- assert(showers.length>200,'shower tray tariff entries unexpectedly few');
+ assert(showers.length>2020,'shower tray tariff entries unexpectedly few');
  console.log('Hidrobox catalogue audit: groups='+groups.length+' variants='+rows.length+' priced shower-tray refs='+showers.length);
  console.log('Hidrobox shower-tray sources: '+[...new Set(showers.map(x=>x.group))].join(', '));
 });
