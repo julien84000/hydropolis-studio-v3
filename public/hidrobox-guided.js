@@ -970,6 +970,33 @@ function sizeRanges(){
  if(!available.includes(Number(currentL)))neo.length=available[0];
  return {widths,lengths:available};
 }
+/* Keep a reconfigured Neo Plus in its original client-project slot.
+ * The caller manages persistence; this pure merger preserves client-specific
+ * presentation settings but deliberately recalculates the manufacturer price. */
+function mergeNeoPlusRecord(previous,next){
+ if(!previous?.id||previous.manufacturer!=='Hidrobox'||previous.collection!=='Neo Plus')
+   throw Error('Article Hidrobox Neo Plus existant introuvable');
+ const updated={...previous,...next,id:previous.id,roomId:previous.roomId,priceOverride:null};
+ if(previous.customImage){
+   for(const key of ['image','images','pdfImage','pdfImages','imageSource','imageStatus','customImage'])
+     updated[key]=previous[key];
+ }
+ if(previous.customTechnicalSheet){
+   for(const key of ['technicalSheetUrl','technicalSheetLabel','technicalSheetType','technicalSheetAsset','customTechnicalSheet'])
+     updated[key]=previous[key];
+ }
+ return updated;
+}
+function commitNeoPlusRecord(record){
+ if(!original?.id)return commitSelectedRecords([record],{showProject:false});
+ const index=state.selected.findIndex(p=>p.id===original.id&&p.manufacturer==='Hidrobox'&&p.collection==='Neo Plus');
+ if(index<0)throw Error('Article initial introuvable : aucun nouvel article créé');
+ const retainedId=state.selected[index].id;
+ state.selected[index]=mergeNeoPlusRecord(state.selected[index],record);
+ reconcileProjectRoughIns();
+ saveState();renderSelection();renderRooms();renderMarginDashboard();
+ return [retainedId];
+}
 function neoPage(){
  if(!root.HydroTariffPictures)loadTariffExtras().then(()=>{if(overlay&&stage==='neo')neoPage()}).catch(()=>{});
  stage='neo';const d=catalogue.FORMATS.find(x=>x.key===neo.form)||catalogue.FORMATS[0];
@@ -1068,7 +1095,7 @@ function neoPage(){
          }
        }catch(e){console.warn('[Neo Plus configured visual]',e?.message||e)}
      }
-     const ids=commitSelectedRecords([record],{showProject:false});if(!ids?.length)throw Error('Impossible d’ajouter le produit');
+     const ids=commitNeoPlusRecord(record);if(!ids?.length)throw Error('Impossible d’enregistrer Neo Plus');
      close();showView('project');
    }catch(e){alert('Configuration non ajoutée : '+e.message);}
  });
@@ -1096,6 +1123,7 @@ async function open(p,roomId,requestedCategory=''){
  const requested=CATEGORY.find(x=>x.key===requestedCategory);
  cat=requested?.key||existing?.category||'receveurs';
  stage='families';chosenGroup=null;
+ if(p?.id&&norm(p.collection)==='neo plus'&&p.hidroboxConfiguration){neoPage();return;}
  if(requested||existing)collections();else families();
  const refresh=()=>{
   if(stage==='families')families();
@@ -1119,5 +1147,5 @@ async function open(p,roomId,requestedCategory=''){
   refresh();
  }
 }
-root.HydroHidroboxConfigurator={...base,open,close,neoPlus:catalogue,officialCategories:CATEGORY,officialCollections:HIDROBOX_ALL_OFFICIAL,officialProductTree:HIDROBOX_PRODUCT_TREE,tariffGroupFor:groupFor,officialCollectionMedia};
+root.HydroHidroboxConfigurator={...base,open,close,neoPlus:catalogue,officialCategories:CATEGORY,officialCollections:HIDROBOX_ALL_OFFICIAL,officialProductTree:HIDROBOX_PRODUCT_TREE,tariffGroupFor:groupFor,officialCollectionMedia,mergeNeoPlusRecord};
 })(window);

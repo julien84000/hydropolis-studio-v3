@@ -1101,6 +1101,48 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     await page.locator('.layout-photo-reset').click();
     check('Sbordoni dossier : retour au visuel de composition',await page.evaluate(()=>!state.selected[0].dossierImage&&!state.selected[0].dossierPhotoSource));
     await page.evaluate(snapshot=>{presentationLayoutEditing=false;applyProjectState(JSON.parse(snapshot));buildDocument();},sbPhotoSnapshot);
+    // V11.64.29 — editing a saved Neo Plus is an in-place project update, not a second SKU.
+    const neoEditSnapshot=await page.evaluate(()=>JSON.stringify(state));
+    await page.evaluate(()=>{
+      state.rooms=[{id:'neo-edit-room',title:'SDB TEST',subtitle:'',manual:[]}];
+      state.selected=[];saveState();renderRooms();renderSelection();
+      showView('catalog');
+    });
+    await page.evaluate(()=>window.HydroHidroboxConfigurator.open(null,'neo-edit-room','receveurs'));
+    await page.locator('#hidroboxGuided [data-kind="collection"][data-choice="neo-plus"]').click();
+    await page.waitForSelector('#hidroboxGuided #hnGrille');
+    await page.locator('#hidroboxGuided #hnGrille').selectOption('Point Trend');
+    await page.locator('#hidroboxGuided [data-hidrobox-target="hnBonde"][data-hidrobox-value="Verticale"]').click();
+    await page.locator('#hidroboxGuided #hnAdd').click();
+    await page.waitForSelector('#roomsEditor .hidrobox-edit-config');
+    const neoEditStart=await page.evaluate(()=>({length:state.selected.length,id:state.selected[0]?.id,price:state.selected[0]?.price}));
+    check('Neo Plus saved project exposes reconfiguration',neoEditStart.length===1&&!!neoEditStart.id);
+    await page.locator('#roomsEditor .hidrobox-edit-config').click();
+    await page.waitForSelector('#hidroboxGuided #hnGrille');
+    check('Neo Plus editing restores original grille and drain',
+      await page.locator('#hidroboxGuided #hnGrille').inputValue()==='Point Trend'&&
+      await page.locator('#hidroboxGuided #hnBonde').inputValue()==='Verticale');
+    await page.locator('#hidroboxGuided #hnGrille').selectOption('Point Special');
+    await page.locator('#hidroboxGuided #hnAdd').click();
+    await page.waitForSelector('#roomsEditor .hidrobox-edit-config');
+    check('Neo Plus editing keeps product ID and updates supplier price without duplicate',
+      await page.evaluate(s=>state.selected.length===1&&state.selected[0].id===s.id&&
+        Math.abs(state.selected[0].price-s.price-11.44)<0.011&&
+        state.selected[0].hidroboxConfiguration?.selectedGrille==='Point Special',neoEditStart));
+    await page.locator('#roomsEditor .hidrobox-edit-config').click();
+    await page.waitForSelector('#hidroboxGuided #hnGrille');
+    check('Neo Plus saved configuration survives a second reopen',
+      await page.locator('#hidroboxGuided #hnGrille').inputValue()==='Point Special');
+    await page.evaluate(()=>window.HydroHidroboxConfigurator.open(null,'neo-edit-room','receveurs'));
+    await page.locator('#hidroboxGuided [data-kind="collection"][data-choice="neo-plus"]').click();
+    check('Neo Plus new project resets accessories instead of leaking old project choices',
+      await page.locator('#hidroboxGuided #hnGrille').inputValue()==='Point Inox'&&
+      await page.locator('#hidroboxGuided #hnBonde').inputValue()==='Horizontale standard'&&
+      !(await page.locator('#hidroboxGuided #hnSpecialCut').isChecked()));
+    await page.evaluate(snapshot=>{
+      window.HydroHidroboxConfigurator.close();applyProjectState(JSON.parse(snapshot));
+      renderRooms();renderSelection();renderMarginDashboard();
+    },neoEditSnapshot);
     check('aucune erreur JavaScript',report.errors.length===0);
     await page.evaluate(()=>{document.querySelector('#manufacturerFilter').value='Sira Concrete';document.querySelector('#manufacturerFilter').dispatchEvent(new Event('change'));});
     await page.evaluate(()=>{const p=CATALOG.find(x=>x.manufacturer==='Sira Concrete'&&x.collection==='Wall Collection');addCatalogProduct(p.reference,state.rooms[0]?.id,productKey(p));});
