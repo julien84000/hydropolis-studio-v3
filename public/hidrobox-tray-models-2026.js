@@ -38,6 +38,7 @@
  function submodel(group,row,official){
   const g=norm(typeof group==='string'?group:group?.collection||group?.id);
   const ref=String(row?.reference||'').toUpperCase();
+  if(g==='line'&&['line-x','line-y','line-square'].includes(row?.model))return row.model;
   if(g==='line'&&squareLine.has(ref))return 'line-square';
   if((g==='line'||g==='twins')&&official?.modelFromReference)return official.modelFromReference(ref);
   const m=ref.match(/^([A-Z]+)(\d{4})$/),n=m?Number(m[2]):NaN;
