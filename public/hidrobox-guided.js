@@ -69,7 +69,10 @@ function groupCategory(g){
  return 'autres';
 }
 const SHOWER_CATALOG=['Neo Plus','Line','Twins','Quadro','One','Pure','Arq','Loovers','Unique','Iconik','Falcon'];
-let overlay=null,room='',groups=[],stage='families',cat='receveurs',chosenGroup=null,original=null,groupsLoading=false,groupsError='',navigationToken=0,neo={form:'rectangle',material:'Kromat',group:'BAS',width:90,length:120,texture:'Lisse',color:'Bianco',grille:'Point Inox',bonde:'Horizontale standard'};
+let overlay=null,room='',groups=[],stage='families',cat='receveurs',chosenGroup=null,original=null,groupsLoading=false,groupsError='',navigationToken=0;
+const NEO_DEFAULT=Object.freeze({form:'rectangle',material:'Kromat',group:'BAS',width:90,length:120,texture:'Lisse',
+ color:'Bianco',grille:'Point Inox',bonde:'Horizontale standard',specialCut:false});
+let neo={...NEO_DEFAULT};
 function close(){navigationToken++;overlay?.remove();overlay=null}
 function shell(title,content,wide=false){
  if(!overlay){overlay=document.createElement('div');overlay.id='hidroboxGuided';overlay.className='recor-configurator-overlay';document.body.appendChild(overlay);overlay.addEventListener('click',e=>{if(e.target===overlay)close()});}
@@ -978,10 +981,24 @@ function neoPage(){
  const textures=['Lisse','Ardoise'].filter(texture=>catalogue.lookup({...neo,texture,group:neo.material==='Scene'?'BLA':'BAS',color:neo.material==='Scene'?'Blanc':'Bianco'}).ok);
  if(textures.length&&!textures.includes(neo.texture))neo.texture=textures[0];
  const line=catalogue.lookup(neo);
- const cutOption=line.ok&&neo.specialCut?root.HydroHidroboxAdditionalOptions2026?.quote('OPSH0018',line.rawPrice):null;
- const cutValid=!neo.specialCut||!!cutOption?.ok;
- const neoRawTotal=line.ok?Number(line.rawPrice)+(cutOption?.extraRawPrice||0):0;
- const neoPublicTotal=line.ok&&cutValid?Math.round(neoRawTotal*104)/100:0;
+ const neoAccessories=root.HydroHidroboxShowerOptions2026;
+ const GRID_IDS={'Point Inox':'point-inox','Point Basic':'point-basic','Point Trend':'point-trend',
+   'Point Special':'point-special','Star Inox':'star-inox','Star Basic':'star-basic',
+   'Star Trend':'star-trend','Star Special':'star-special',
+   'Radiance Steel':'radiance-steel','Radiance Gunmetal':'radiance-gunmetal',
+   'Radiance Gold':'radiance-gold','Radiance Rame':'radiance-rame'};
+ const DRAIN_IDS={'Horizontale standard':'h90','Verticale':'v90',
+   'Horizontale extraplate':'low90','Horizontale Plus':'plus90'};
+ const neoOpts=neoAccessories?.optionsFor({model:'neo-plus',material:neo.material,
+   texture:neo.texture,colorGroup:neo.group,width:Number(neo.width)})||[];
+ const neoQuote=line.ok&&neoOpts.length&&GRID_IDS[neo.grille]&&DRAIN_IDS[neo.bonde]?
+   neoAccessories.quote(line.rawBasePrice,neoOpts,{cover:GRID_IDS[neo.grille],
+     drain:DRAIN_IDS[neo.bonde],cut:neo.specialCut?'special':'none'}):null;
+ const fittingsMatch=!!neoQuote?.ok&&Math.abs((neoQuote.rawPrice-(neo.specialCut?neoQuote.components.find(x=>x.reference==='OPSH0018')?.rawPrice||0:0))-line.rawPrice)<0.011;
+ const cutValid=!!neoQuote?.ok&&fittingsMatch;
+ const neoRawTotal=cutValid?neoQuote.rawPrice:0;
+ const neoPublicTotal=cutValid?neoQuote.price:0;
+ const neoCutRaw=cutValid?neoQuote.components.find(x=>x.reference==='OPSH0018')?.rawPrice||0:0;
  const colorGroups=neo.material==='Scene'?['BLA']:['BAS','TRE','SPE'];
  const opts=(id,label,list,current,disabled=false)=>visualFacet(id,label,list,current,disabled?'disabled':'');
  const pict=officialImage(officialCollectionMedia('neo-plus')?.image)||CATEGORY[0].img;
@@ -1007,7 +1024,7 @@ function neoPage(){
  '<label class="hidrobox-cut-option"><input type="checkbox" id="hnSpecialCut"'+(neo.specialCut?' checked':'')+'> Découpe spéciale · OPSH0018 · +10 % du prix fabricant (plan technique requis)</label></div>'+previewMarkup+
  '<p class="hidrobox-guide-note">Formes : '+catalogue.FORMATS.map(f=>escape(f.label)).join(' · ')+'. Les finitions spéciales RAL/NCS nécessitent un contrôle du tarif exact.</p>'+
  '<div class="hidrobox-result"><div><b>'+(line.ok&&cutValid?eu(neoPublicTotal)+' HT':'Prix à confirmer')+'</b><span>'+(line.ok?'Réf. '+escape(line.reference)+' · Tranche '+escape(line.tier):escape(line.reason))+'</span>'+
- '<small>'+(line.ok&&cutValid?'Prix source '+eu(neoRawTotal)+' HT'+(neo.specialCut?' (dont découpe '+eu(cutOption.extraRawPrice)+' HT)':'')+', majoration 4 % appliquée une fois. Remise achat 50 % dans la marge.':'Aucun prix inventé : choisissez une configuration tarifée ou consultez Hidrobox.')+'</small></div>'+
+ '<small>'+(line.ok&&cutValid?'Prix receveur '+eu(line.rawBasePrice)+' HT. Grille/bonde/découpe '+eu(neoQuote.optionRawPrice)+' HT'+(neo.specialCut?' (dont découpe '+eu(neoCutRaw)+' HT)':'')+'. Total fabricant '+eu(neoRawTotal)+' HT, majoration 4 % appliquée une fois. Remise achat 50 % dans la marge.':'Aucun prix inventé : choisissez une configuration tarifée ou consultez Hidrobox.')+'</small></div>'+
  '<button class="btn primary" id="hnAdd" type="button"'+(line.ok&&cutValid?'':' disabled')+'>Ajouter la configuration</button></div>';
  shell('Neo Plus · configuration',config,true);
  overlay.querySelector('.hidrobox-back').onclick=collections;
@@ -1040,7 +1057,8 @@ function neoPage(){
      if(!record)throw Error('Impossible de préparer le produit');
      Object.assign(record,item,{hidroboxConfiguration:{...chosen,selectedShape:neo.form,selectedWidthCm:+neo.width,selectedLengthCm:+neo.length,selectedColour:neo.color,selectedGrille:neo.grille,selectedBonde:neo.bonde,
        specialCut:!!neo.specialCut,requiresSupplierDrawing:!!neo.specialCut,
-       options:neo.specialCut?[{reference:'OPSH0018',label:'Découpe spéciale',rawPrice:cutOption.extraRawPrice,percent:10}]:[]}});
+       options:neoQuote.components.map(x=>({reference:x.reference,label:x.label,rawPrice:x.rawPrice,percent:x.percent||0})),
+       supplierRawBase:chosen.rawBasePrice,supplierOptionsRaw:neoQuote.optionRawPrice}});
      if(officialVisual&&spec){
        try{
          const image=await officialVisual.lookup(spec);
@@ -1060,6 +1078,17 @@ function neoPage(){
 async function open(p,roomId,requestedCategory=''){
  close();
  const token=++navigationToken;
+ neo={...NEO_DEFAULT};
+ if(norm(p?.collection)==='neo plus'&&p?.hidroboxConfiguration){
+  const c=p.hidroboxConfiguration;
+  neo={...neo,form:c.selectedShape||c.form||neo.form,
+   material:c.material||neo.material,group:c.group||neo.group,texture:c.texture||neo.texture,
+   width:Number(c.selectedWidthCm??c.width??neo.width),
+   length:Number(c.selectedLengthCm??c.length??neo.length),
+   color:c.selectedColour||c.color||neo.color,grille:c.selectedGrille||c.grille||neo.grille,
+   bonde:c.selectedBonde||c.bonde||neo.bonde,
+   specialCut:!!(c.specialCut||c.options?.some(x=>x.reference==='OPSH0018'))};
+ }
  room=roomId;original=p||{};programDraft=p?.hidroboxConfiguration?.type==='program-2026'?{...p.hidroboxConfiguration}:null;spaceDraft=p?.hidroboxConfiguration?.type==='space-2026'?{...p.hidroboxConfiguration}:null;betaEvoqueDraft=p?.hidroboxConfiguration?.type==='beta-evoque-2026'?{...p.hidroboxConfiguration}:null;betaEssentialDraft=p?.hidroboxConfiguration?.type==='beta-essential-2026'?{...p.hidroboxConfiguration}:null;programFamily='';groups=[];groupsLoading=true;groupsError='';
  for(const key of Object.keys(universalDraft))delete universalDraft[key];
  root.HydroHidroboxPanelSpotUI?.reset?.();

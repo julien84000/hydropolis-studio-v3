@@ -60,6 +60,7 @@
    const config={model:fmt,material,texture,width:Number(width),colorGroup};
    const drainage90={key:'drain',label:'Bonde',options:drain90};
    const drainage50={key:'drain',label:'Bonde',options:drain50};
+   if(fmt==='neoplus')return [{key:'cover',label:'Grille Neo Plus',options:coverPointStar},drainage90,customCut];
    if(fmt==='line-x'||fmt==='line-y'){
      const cover=lineCover(config);
      return cover.length?[{key:'cover',label:'Caniveau',options:cover},drainage50,customCut]:[];
