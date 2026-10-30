@@ -17,6 +17,7 @@
  function colorsFor(row){
   const material=slug(row.material);
   const family=slug(row.colorGroup||row.group||'');
+  if(row.color && !/standard|basics|trends|specials|ral|ncs/i.test(row.color))return [row.color];
   if(/scene/.test(material))return COLOR_GROUPS.scene.slice();
   if(/bas|standard basic/.test(family))return COLOR_GROUPS.basics.slice();
   if(/trend/.test(family))return COLOR_GROUPS.trends.slice();
