@@ -86,6 +86,7 @@ require("./official-assets-server")(app,{...assets,assertPublic:assets.assertPub
 require("./gessi-technical-server")(app);
 require("./gessi-official-series-server")(app);
 require("./galassia-technical-server")(app);
+require("./hidrobox-configurator-server")(app);
 app.use(express.static(path.join(__dirname,"public")));
 require("./tariff-server")(app);
 
