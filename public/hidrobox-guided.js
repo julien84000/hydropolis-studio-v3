@@ -263,12 +263,22 @@ function pricedShowerVariants(g){
  const prefix=TRAY_REF_PREFIX[norm(g?.collection||g?.id||'')];
  const rows=g?.variants||[];
  // OPSH drain/grille options live separately: never pretend these are tray SKU variants.
- return prefix?rows.filter(v=>String(v?.reference||'').startsWith(prefix)):rows;
+ const products=prefix?rows.filter(v=>String(v?.reference||'').startsWith(prefix)):rows;
+ const source=prefix==='SLIC'?root.HydroHidroboxLineBands2026:root.HydroHidroboxShowerBands2026;
+ return source?.fill?products.map(v=>source.fill(v)||v):products;
 }
 function universalSelection(g){
   const cascade=root.HydroHidroboxTrayCascade2026;
   if(groupCategory(g)==='receveurs'&&cascade){
-    const result=cascade.arrange(g,pricedShowerVariants(g),universalDraft,root.HydroHidroboxTrayModels2026,root.HydroHidroboxOfficialVisual);
+    const c=norm(g.collection||g.id);
+    // Neo Plus keeps its dedicated supplier-tested algorithm.
+    const exactDimensions=c!=='neo plus'?root.HydroHidroboxTrayDimensions2026:null;
+    const result=cascade.arrange(g,pricedShowerVariants(g),universalDraft,
+      root.HydroHidroboxTrayModels2026,root.HydroHidroboxOfficialVisual,exactDimensions);
+    if(result.dimensionResolution){
+      if(universalDraft.exactwidth==null)universalDraft.exactwidth=result.dimensionResolution.width;
+      if(universalDraft.exactlength==null)universalDraft.exactlength=result.dimensionResolution.length;
+    }
     universalDraft.traySubmodel=result.model;
     for(const f of result.fields)if(f.key!=='color'&&f.chosen)universalDraft[f.key]=f.chosen;
     if(result.color)universalDraft.showerColor=result.color;
@@ -738,10 +748,19 @@ function universalPage(g){
    visualFacet('huFacet'+f.key,f.label,f.options,f.chosen,'data-facet="'+escape(f.key)+'"');
  const orderedShower=groupCategory(g)==='receveurs'&&selection.sourceBacked;
  const materialTexture=orderedShower?fields.filter(f=>['material','finish'].includes(f.key)).map(facetControl).join(''):'';
- const dimensionFacets=orderedShower?fields.filter(f=>['width','length'].includes(f.key)).map(facetControl).join(''):'';
+ const dimensionFacets=orderedShower&&!selection.dimensionResolution?fields.filter(f=>['width','length'].includes(f.key)).map(facetControl).join(''):'';
  const opts=orderedShower?'':fields.filter(x=>!x.static).map(facetControl).join('');
  const shower=groupCategory(g)==='receveurs',visual=root.HydroHidroboxOfficialVisual;
- const dimensionMarkup=dimensionFields(selected); // Validate selected centimeter ranges before deriving grille size.
+ const liveSize=selection.dimensionResolution;
+ const exactNumberInputs=liveSize?'<div class="hidrobox-fields">'+
+   [['width','Largeur réelle (cm)','widthBounds'],['length','Longueur réelle (cm)','lengthBounds']].map(([key,label,boundKey])=>{
+     const bounds=liveSize[boundKey];
+     return '<label>'+escape(label)+'<input type="number" id="huExact'+key+'" step="1"'+
+       (bounds?' min="'+bounds.first+'" max="'+bounds.last+'"':'')+
+       ' value="'+escape(String(liveSize[key]??''))+'" placeholder="cm" required></label>';
+   }).join('')+'</div><small>Référence et prix calculés à partir des tranches tarifaires du PDF fabricant, sans interpolation.</small>':'';
+ const dimensionMarkup=liveSize?exactNumberInputs:dimensionFields(selected);
+
  const verifiedColors=orderedShower?fields.find(f=>f.key==='color')?.options||[]:
    shower&&visual?visual.colorsFor(selected||{}):[];
  if(verifiedColors.length&&!verifiedColors.includes(universalDraft.showerColor))universalDraft.showerColor=verifiedColors[0];
@@ -830,6 +849,8 @@ function universalPage(g){
      .catch(e=>console.warn('[Hidrobox official visual]',e));
  }
  overlay.querySelector('#huReference')?.addEventListener('change',e=>{universalDraft.reference=e.target.value;universalPage(g)});
+ overlay.querySelector('#huExactwidth')?.addEventListener('change',e=>{universalDraft.exactwidth=Number(e.target.value);universalPage(g)});
+ overlay.querySelector('#huExactlength')?.addEventListener('change',e=>{universalDraft.exactlength=Number(e.target.value);universalPage(g)});
  overlay.querySelector('#huExactwidth')?.addEventListener('change',e=>{universalDraft.exactwidth=Number(e.target.value);universalPage(g)});
  overlay.querySelector('#huExactlength')?.addEventListener('change',e=>{universalDraft.exactlength=Number(e.target.value);universalPage(g)});
  overlay.querySelector('#huAdd')?.addEventListener('click',async()=>{
