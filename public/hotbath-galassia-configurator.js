@@ -55,15 +55,27 @@ function open(rows,roomId,onAdd){
   function flushImages(){
    while(pending.count<3&&queue.length){
     const task=queue.shift();pending.count++;
-    const url='/api/hotbath-live-media?collection='+encodeURIComponent(task.collection)+'&model='+
-     encodeURIComponent(task.model)+'&finish='+encodeURIComponent(task.finish);
-    fetch(url,{credentials:'same-origin'}).then(r=>r.ok?r.json():null).then(data=>{
-     const match=String(data?.image||'').match(/^https:\/\/hotbath\.com\/images\/compano\/([^/?#]+)\//i);
-     if(data?.ok&&match&&clean(match[1])===clean(task.model)&&
-       data.collection===task.collection&&clean(data.model)===clean(task.model)&&
-       (data.scope==='model'||data.scope==='exact')){
-       images.set(task.key,data);
-     }else failed.add(task.key);
+    const italianUrl='/api/hotbath-italian-media?collection='+encodeURIComponent(task.collection)+
+      '&model='+encodeURIComponent(task.model);
+    const modernUrl='/api/hotbath-live-media?collection='+encodeURIComponent(task.collection)+
+      '&model='+encodeURIComponent(task.model)+'&finish='+encodeURIComponent(task.finish);
+    // Prefer verified original Italian catalogue photography, except when a
+    // newly checked photo of the selected finish is available on hotbath.com.
+    const requestJson=url=>fetch(url,{credentials:'same-origin'}).then(r=>r.ok?r.json():null).catch(()=>null);
+    requestJson(task.finish?modernUrl:italianUrl).then(async first=>{
+      let data=first;
+      if(!data?.image)data=await requestJson(task.finish?italianUrl:modernUrl);
+      const matchItalian=String(data?.image||'').match(/^https:\/\/(?:www\.)?hotbath\.it\/documents\/+ProdCateg\/\d+\/([^/?#]+)$/i);
+      const matchModern=String(data?.image||'').match(/^https:\/\/hotbath\.com\/images\/compano\/([^/?#]+)\//i);
+      const italianValid=matchItalian&&data.verified===true&&
+        (matchItalian[1].toUpperCase().startsWith(task.model.toUpperCase()+'_')||
+         matchItalian[1].toUpperCase().startsWith(task.model.toUpperCase()+'-'));
+      const modernValid=matchModern&&clean(matchModern[1])===clean(task.model);
+      if(data?.ok&&(italianValid||modernValid)&&data.collection===task.collection&&
+        clean(data.model)===clean(task.model)&&
+        (data.scope==='model'||data.scope==='exact')){
+        images.set(task.key,data);
+      }else failed.add(task.key);
     }).catch(()=>failed.add(task.key)).finally(()=>{
       pending.count--;flushImages();
       if(!closed&&ov.isConnected&&collection===task.collection)render(false);
