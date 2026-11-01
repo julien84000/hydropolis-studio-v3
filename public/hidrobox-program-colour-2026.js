@@ -18,7 +18,7 @@ const GROUPS=['BAS','TRE','SPE'];
 const BAS=['Bianco','Beige','Pietra','Cement','Iron','Graphite'];
 const TRE=['Crema','Cappuccino','Terra','Brownie','Cotta','Golden','Sandstone','Blush','Ocean','Lake','Ombra','Dark Liquen','Metropoli','Herbal'];
 const COLORS={BAS,TRE,SPE:['RAL / NCS']};
-const SWATCHES={Bianco:'#f4f1e9',Beige:'#d6c6ae',Pietra:'#b4ad9c',Cement:'#adaeaa',Iron:'#646b69',Graphite:'#48494b',Crema:'#efe2c4',Cappuccino:'#a99479',Terra:'#b0775d',Brownie:'#775b4f',Cotta:'#be7455',Golden:'#c7a36a',Sandstone:'#cbb9a1',Blush:'#cc9b94',Ocean:'#58798e',Lake:'#879f96',Ombra:'#828185','Dark Liquen':'#626d5b',Metropoli:'#8c898a',Herbal:'#8d9882'};
+const SWATCHES={"Bianco":"#FFFFFF","Beige":"#E2D9C8","Pietra":"#E5E0DB","Cement":"#CBC7C7","Iron":"#807b78","Graphite":"#42413e","Crema":"#F3EBDA","Cappuccino":"#baa490","Terra":"#877d6e","Brownie":"#785f40","Cotta":"#823d28","Golden":"#bc934c","Sandstone":"#c1753f","Blush":"#c8816b","Ocean":"#6c7e82","Lake":"#708073","Ombra":"#56524d","Dark Liquen":"#3c5356","Metropoli":"#566D82","Herbal":"#727855"}; // Published CSS swatches from Hidrobox Program Colour official collection
 const money=n=>Math.round(n*100)/100;
 const SOURCE='HIDROBOX_TARIF_FR_V0226_19-02-2026.pdf · pages 84–89';
 const BASE_ROWS=Object.freeze(PRICES.flatMap((depths,bandIndex)=>depths.flatMap((prices,groupIndex)=>prices.map((rawPrice,lengthIndex)=>({
