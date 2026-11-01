@@ -1,0 +1,230 @@
+{
+  "source": "Pages produits officielles Naxani; images de collection et non visuels de finition",
+  "collections": {
+    "aalto": {
+      "image": "https://naxani.com/wp-content/uploads/2024/11/AALTO_130_ROBLE-913x1030.jpg",
+      "url": "https://naxani.com/producto/aalto/",
+      "title": "Aalto | Naxani"
+    },
+    "bacall": {
+      "image": "https://naxani.com/wp-content/uploads/2024/11/bacall-1c-122-nogal-e1770885791133.jpg",
+      "url": "https://naxani.com/producto/bacall/",
+      "title": "Bacall | Naxani"
+    },
+    "batz": {
+      "image": "https://naxani.com/wp-content/uploads/2026/02/Batz_1C_210.jpg",
+      "url": "https://naxani.com/producto/batz/",
+      "title": "Batz | Naxani"
+    },
+    "dumbo": {
+      "image": "https://naxani.com/wp-content/uploads/2024/11/dumbo-160-e1770895646787.jpg",
+      "url": "https://naxani.com/producto/dumbo/",
+      "title": "Dumbo | Naxani"
+    },
+    "gentle": {
+      "image": "https://naxani.com/wp-content/uploads/2024/12/gentle-roble-160.jpg",
+      "url": "https://naxani.com/producto/gentle/",
+      "title": "Gentle | Naxani"
+    },
+    "grid": {
+      "image": "https://naxani.com/wp-content/uploads/2024/11/grid-2c-108.jpg",
+      "url": "https://naxani.com/producto/grid/",
+      "title": "Grid | Naxani"
+    },
+    "igi": {
+      "image": "https://naxani.com/wp-content/uploads/2024/11/Igi_2C_180.jpg",
+      "url": "https://naxani.com/producto/igi/",
+      "title": "Igi | Naxani"
+    },
+    "linjer": {
+      "image": "https://naxani.com/wp-content/uploads/2026/02/Linjer_2C_140.jpg",
+      "url": "https://naxani.com/producto/linjer/",
+      "title": "Linjer | Naxani"
+    },
+    "materia": {
+      "image": "https://naxani.com/wp-content/uploads/2026/02/MATERIA_240_DARK.jpg",
+      "url": "https://naxani.com/producto/materia/",
+      "title": "Materia | Naxani"
+    },
+    "modul": {
+      "image": "https://naxani.com/wp-content/uploads/2024/11/MODUL_240_NOGAL.jpg",
+      "url": "https://naxani.com/producto/modul/",
+      "title": "Mòdul | Naxani"
+    },
+    "prenn": {
+      "image": "https://naxani.com/wp-content/uploads/2023/06/simenta-200-wevet-001.jpg",
+      "url": "https://naxani.com/producto/prenn/",
+      "title": "Muebles de baño de diseño | Naxani"
+    },
+    "puma": {
+      "image": "https://naxani.com/wp-content/uploads/2024/11/puma-130.jpg",
+      "url": "https://naxani.com/producto/puma/",
+      "title": "Puma mueble | Naxani"
+    },
+    "roten": {
+      "image": "https://naxani.com/wp-content/uploads/2026/02/ROTEN_150_FRESNO.jpg",
+      "url": "https://naxani.com/producto/roten/",
+      "title": "Roten madera | Naxani"
+    },
+    "shosuba": {
+      "image": "https://naxani.com/wp-content/uploads/2024/11/shosuba-140-fresno-blanco.jpg",
+      "url": "https://naxani.com/producto/shosuba/",
+      "title": "Shosuba | Naxani"
+    },
+    "slat-1c": {
+      "image": "https://naxani.com/wp-content/uploads/2024/11/slat-1c-140-nogal.jpg",
+      "url": "https://naxani.com/producto/slat-1c/",
+      "title": "Slat 1C | Naxani"
+    },
+    "slat-2c": {
+      "image": "https://naxani.com/wp-content/uploads/2026/02/Slat_2C_180_nogal.jpg",
+      "url": "https://naxani.com/producto/slat-2c/",
+      "title": "Slat 2C | Naxani"
+    },
+    "suro": {
+      "image": "https://naxani.com/wp-content/uploads/2023/06/simenta-200-wevet-001.jpg",
+      "url": "https://naxani.com/producto/suro/",
+      "title": "Muebles de baño de diseño | Naxani"
+    },
+    "taba": {
+      "image": "https://naxani.com/wp-content/uploads/2026/02/TABA_1C_180_ROBLE.jpg",
+      "url": "https://naxani.com/producto/taba/",
+      "title": "Taba | Naxani"
+    },
+    "unda": {
+      "image": "https://naxani.com/wp-content/uploads/2024/11/unda-140-fresno-daro.jpg",
+      "url": "https://naxani.com/producto/unda/",
+      "title": "Unda | Naxani"
+    },
+    "valnot": {
+      "image": "https://naxani.com/wp-content/uploads/2024/11/valnot-200-nogal-e1770892331290.jpg",
+      "url": "https://naxani.com/producto/valnot/",
+      "title": "Valnöt | Naxani"
+    },
+    "walden": {
+      "image": "https://naxani.com/wp-content/uploads/2026/02/WALDEN_180_BURNED.jpg",
+      "url": "https://naxani.com/producto/walden/",
+      "title": "Walden | Naxani"
+    },
+    "aran": {
+      "image": "https://naxani.com/wp-content/uploads/2024/11/aran_003-833x1030.jpg",
+      "url": "https://naxani.com/producto/aran/",
+      "title": "Aran | Naxani"
+    },
+    "banaavat": {
+      "image": "https://naxani.com/wp-content/uploads/2024/11/BANAAVAT_160_BETON_GRAFITO.jpg",
+      "url": "https://naxani.com/producto/banaavat/",
+      "title": "Banaavat | Naxani"
+    },
+    "bert": {
+      "image": "https://naxani.com/wp-content/uploads/2024/11/bert-140-fango-02.jpg",
+      "url": "https://naxani.com/producto/bert/",
+      "title": "Bert | Naxani"
+    },
+    "chic": {
+      "image": "https://naxani.com/wp-content/uploads/2024/11/chic-200-negro.jpg",
+      "url": "https://naxani.com/producto/chic/",
+      "title": "Chic | Naxani"
+    },
+    "ernie": {
+      "image": "https://naxani.com/wp-content/uploads/2024/11/enrie-200-wevet-2senos.jpg",
+      "url": "https://naxani.com/producto/ernie/",
+      "title": "Ernie | Naxani"
+    },
+    "memphis": {
+      "image": "https://naxani.com/wp-content/uploads/2024/11/memphis-002.jpg",
+      "url": "https://naxani.com/producto/memphis/",
+      "title": "Memphis | Naxani"
+    },
+    "nude": {
+      "image": "https://naxani.com/wp-content/uploads/2024/11/nude-160-snow.jpg",
+      "url": "https://naxani.com/producto/nude/",
+      "title": "Nude | Naxani"
+    },
+    "osnovan": {
+      "image": "https://naxani.com/wp-content/uploads/2024/11/osnovan-1c-160-blanco.jpg",
+      "url": "https://naxani.com/producto/osnovan/",
+      "title": "Osnovan | Naxani"
+    },
+    "simenta": {
+      "image": "https://naxani.com/wp-content/uploads/2026/02/SIMENTA_140_BETON_BRUT_SNOW-2.jpg",
+      "url": "https://naxani.com/producto/simenta/",
+      "title": "Simenta | Naxani"
+    },
+    "kondo": {
+      "image": "https://naxani.com/wp-content/uploads/2026/02/Kondo_columna_roble_01-copia-751x1030.jpg",
+      "url": "https://naxani.com/producto/kondo/",
+      "title": "Kondo | Naxani"
+    },
+    "bench": {
+      "image": "https://naxani.com/wp-content/uploads/2026/02/TABA_1C_ROBLE_04.jpg",
+      "url": "https://naxani.com/producto/bench/",
+      "title": "Bench | Naxani"
+    },
+    "cubo": {
+      "image": "https://naxani.com/wp-content/uploads/2026/02/cubo__.jpg",
+      "url": "https://naxani.com/producto/cubo/",
+      "title": "Cubo | Naxani"
+    },
+    "alma": {
+      "image": "https://naxani.com/wp-content/uploads/2023/06/simenta-200-wevet-001.jpg",
+      "url": "https://naxani.com/producto/alma/",
+      "title": "Muebles de baño de diseño | Naxani"
+    },
+    "ares": {
+      "image": "https://naxani.com/wp-content/uploads/2026/02/ARES.jpg",
+      "url": "https://naxani.com/producto/ares/",
+      "title": "Ares | Naxani"
+    },
+    "daro": {
+      "image": "https://naxani.com/wp-content/uploads/2023/06/simenta-200-wevet-001.jpg",
+      "url": "https://naxani.com/producto/daro/",
+      "title": "Muebles de baño de diseño | Naxani"
+    },
+    "forma-large": {
+      "image": "https://naxani.com/wp-content/uploads/2024/12/forma-large-04.jpg",
+      "url": "https://naxani.com/producto/forma-large/",
+      "title": "Forma Large | Naxani"
+    },
+    "forma-small": {
+      "image": "https://naxani.com/wp-content/uploads/2024/12/forma-small-01.jpg",
+      "url": "https://naxani.com/producto/forma-small/",
+      "title": "Forma Small | Naxani"
+    },
+    "latu": {
+      "image": "https://naxani.com/wp-content/uploads/2024/12/latu-03-e1770214932500.jpg",
+      "url": "https://naxani.com/producto/latu/",
+      "title": "Latu | Naxani"
+    },
+    "orbit": {
+      "image": "https://naxani.com/wp-content/uploads/2024/12/orbit-01-scaled-e1770215146238.jpg",
+      "url": "https://naxani.com/producto/orbit/",
+      "title": "Orbit | Naxani"
+    },
+    "patra": {
+      "image": "https://naxani.com/wp-content/uploads/2024/12/patra_01-scaled-e1770215232563.jpg",
+      "url": "https://naxani.com/producto/patra/",
+      "title": "Patra | Naxani"
+    },
+    "tulpan": {
+      "image": "https://naxani.com/wp-content/uploads/2024/12/tulip-002-e1770215456968.jpg",
+      "url": "https://naxani.com/producto/tulpan/",
+      "title": "Tulpan | Naxani"
+    },
+    "2r": {
+      "image": "https://naxani.com/wp-content/uploads/2023/06/simenta-200-wevet-001.jpg",
+      "url": "https://naxani.com/producto/2r/",
+      "title": "Muebles de baño de diseño | Naxani"
+    },
+    "hirga": {
+      "image": "https://naxani.com/wp-content/uploads/2024/11/hirga-01-scaled-e1770632295965.jpg",
+      "url": "https://naxani.com/producto/hirga/",
+      "title": "Hirga | Naxani"
+    },
+    "ovum": {
+      "image": "https://naxani.com/wp-content/uploads/2024/11/ovum-03-scaled-e1770632460553-760x1030.jpg",
+      "url": "https://naxani.com/producto/ovum/",
+      "title": "Ovum | Naxani"
+    }
+  }
+}
