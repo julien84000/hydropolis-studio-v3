@@ -1,3 +1,17 @@
+## V11.64.33 — Hidrobox Spot et FS: modèle/matière/couleur, visuels officiels (2026-11-01)
+
+Depuis main v11.64.32 (PR #85 déjà fusionnée et déployée), branche fix/hidrobox-spot-material-colors-116433.
+
+- Spot : sélection interactive matière Scene/Kromat et gamme Basics/Trends/Specials (uniquement les modèles disposant réellement des références WSPC/WSCC correspondantes). Une teinte exacte Kromat est choisie après la famille tarifaire ; couleurs Special exige une référence RAL/NCS écrite avant ajout. Le modèle Spot 62 conserve son matériau et la couleur exacte pour le visuel officiel ; la recherche des miniatures évite de systématiquement représenter la référence Scene blanche. Suppléments pour bondes et options conservent leurs codes fournisseurs.
+- FS : au lieu d'une galerie statique, parcours interactif forme/modèle FS → matière Scene/Kromat → lisse → couleur, avec 31 associations exactes entre références WFSC et les modèles officiels R/L, dimensions, prix du tarif importé vérifié. Photo officielle par combinaison demandée au service existant, miniature SVG constructeur en fallback, aucune photo générique présentée comme référence exacte.
+- FS Scene : supplément couleur EXTÉRIEURE autorisé uniquement sur les sources d'options existantes OPWB0230 = 492 € HT standard (Basics/Trends), OPWB0232 = 564 € HT Specials RAL/NCS ; sans double facturation ni modification du matériau Scene blanc du corps de vasque. Avant ajout, contrôle du tarif importé ; +4 % une fois après composantes, remise achat 50 % séparément. Le Kromat intégral n'accepte pas cette option extérieure.
+- Files : public/hidrobox-fs-2026.js, public/hidrobox-fs-ui.js, public/hidrobox-panel-spot-ui.js, public/hidrobox-guided.js, public/index.html, public/styles.css, public/sw.js ; test tests/hidrobox-spot-fs-materials-2026.test.js. Version 11.64.33.
+- Ne pas confondre le supplément Scene Plus Colour de certains RECEVEURS avec la couleur extérieure des vasques FS. Le site fabricant actuel Neo Plus affiche Scene blanc, Kromat Basics/Trends/Specials. Unique et Iconik acceptent Scene Plus Colour. La demande utilisateur d'un supplément universel 25 % pour les receveurs Scene n'a pas été confirmée dans le tarif 2026 ; Iconik possède même un supplément OPSH0073 +15 %. Ne pas inventer des prix ni ajouter automatiquement 25 % sur toutes les familles. La question doit être traitée sur un contrôle par collection, et peut nécessiter confirmation fabricant.
+
+Attendre CI Release Validation et Chromium avant fusion puis vérifier Render api/version et api/health. Les dimensions Program Colour/Lom/Artop restent à terminer.
+
+---
+
 ## V11.64.32 — correctifs visuels et dimensions Hidrobox + Galassia, préservation Bette (2026-11-01)
 
 Base : main 11.64.31, commit 50ed98c3 (PR #84 Bette), créé volontairement depuis main pour conserver le showroom Bette et son accès 3D. Récupère les changements de la branche ancienne et divergente fix/hidrobox-shower-dimension-limits-116431 sur une NOUVELLE branche work/hidrobette-galassia-continuation-116432. NE PAS merger l'ancienne branche directement car elle part de 11.64.30.
