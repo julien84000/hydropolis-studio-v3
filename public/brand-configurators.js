@@ -282,7 +282,7 @@
       const key=bettePictureKey(g,v);
       if(modelPhotos.has(key))return;
       modelPhotos.set(key,null);
-      void helper.lookup(category,name,g.family).then(result=>{
+      void helper.lookup(category,name,g.family,{slug:g.id}).then(result=>{
         if(!result)return;
         modelPhotos.set(key,result);
         if(step==='config'&&overlay?.isConnected&&draft.group===g.id&&draft.model===v.model)render();
