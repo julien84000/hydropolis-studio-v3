@@ -44,7 +44,7 @@ function supplementalSources(name){
  if(!rows.some(p=>p.category==='Accessoires')&&name!=='Accessori Vari'&&name!=='Ceramic Top')return [];
  return [...SUPPLEMENTARY_URLS.accessories,...SUPPLEMENTARY_URLS.frames];
 }
-const cache=new Map(),inflight=new Map(),TTL=6*60*60*1000;
+const TTL=6*60*60*1000;
 const seeds={
  '0519501001':'https://www.catalano.it/wp-content/uploads/2025/03/SFERA_bidet_terra_50x35_0519501001-600x600.webp',
  '0519501021':'https://www.catalano.it/wp-content/uploads/2025/03/SFERA_bidet_terra_50x35_0519501021-600x600.webp',
@@ -123,6 +123,8 @@ const merge=(a,b)=>({
  countModels:Object.keys({...a.models,...b.models}).length
 });
 function createService({get=axios.get,now=Date.now}={}){
+ // Per-service caches prevent different fetchers/deployments from sharing stale data.
+ const cache=new Map(),inflight=new Map();
  const pageCache=new Map(),pageInflight=new Map();
  async function readPage(url){
   const cached=pageCache.get(url);
