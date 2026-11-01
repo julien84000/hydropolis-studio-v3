@@ -427,6 +427,44 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     check('Hotbath Italie : tarif réel et référence tarif conservés',Boolean(chosenRef)&&selectionText.includes(chosenRef));
     await page.locator('#manufacturerGuidedSelector .galassia-close').click();
 
+    // Naxani 2026: exercise browser composition and the supplier-priced multi-line quote.
+    await page.waitForFunction(()=>CATALOG.filter(p=>p.manufacturer==='Naxani').length>=2200,{timeout:45000});
+    await page.evaluate(()=>{
+      showView('catalog');
+      const s=document.querySelector('#manufacturerFilter');
+      s.value='Naxani';s.dispatchEvent(new Event('change',{bubbles:true}));
+    });
+    await page.waitForSelector('.naxani-open');
+    await page.locator('.naxani-open').click();
+    await page.waitForSelector('.naxani-modal [data-sub="Bois massif"]');
+    await page.locator('.naxani-modal [data-sub="Bois massif"]').click();
+    await page.locator('.naxani-modal [data-model="Aalto"]').click();
+    await page.locator('.naxani-modal [data-field="ref"]').selectOption('504086');
+    const naxaniTops=await page.locator('.naxani-modal [data-field="top"] option').evaluateAll(options=>options.map(x=>x.value));
+    check('Naxani Aalto : Daro 80 autorisé',naxaniTops.includes('574743'));
+    check('Naxani Aalto : Alma 80 interdit par fabricant',!naxaniTops.includes('570738'));
+    await page.locator('.naxani-modal [data-field="top"]').selectOption('574743');
+    await page.locator('.naxani-modal [data-field="drain"]').selectOption('579861');
+    const naxaniQuote=await page.locator('.naxani-modal .naxani-side').innerText();
+    check('Naxani : meuble 2033 + plan 605 + bonde 73 = 2711 EUR HT',
+      naxaniQuote.replace(/[\s\u202f\u00a0]/g,'').includes('2711,00'));
+    check('Naxani : composition prête à ajouter',
+      await page.locator('.naxani-modal .naxani-confirm').isEnabled());
+    await page.locator('.naxani-modal .naxani-confirm').click();
+    await page.locator('.naxani-modal').waitFor({state:'detached'});
+    const naxaniSaved=await page.evaluate(()=>{
+      const main=state.selected.find(x=>x.manufacturer==='Naxani'&&x.reference==='504086');
+      const children=main?state.selected.filter(x=>x.accessoryFor===main.id):[];
+      return {main:!!main,parts:children.map(x=>x.reference),sum:Number(main?.price||0)+children.reduce((sum,x)=>sum+Number(x.price||0),0),group:main?.naxaniConfiguration};
+    });
+    check('Naxani : 3 lignes liées, prix HT et références exactes conservés',
+      naxaniSaved.main&&naxaniSaved.parts.includes('574743')&&naxaniSaved.parts.includes('579861')&&
+      naxaniSaved.parts.length===2&&naxaniSaved.sum===2711&&naxaniSaved.group?.references?.length===3);
+    await page.evaluate(()=>{
+      const p=state.selected.find(x=>x.manufacturer==='Naxani'&&x.reference==='504086');
+      if(p)removeProduct(p.id);
+    });
+
     // V11.64 — Gessi-inspired guide validation in a REAL Chromium DOM on desktop/mobile.
     // Synthetic tariff rows are used so the exact selected object and price can be asserted
     // without mutating a user project. Official finish imagery is resolved by existing assets.
