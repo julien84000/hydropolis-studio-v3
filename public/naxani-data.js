@@ -10,7 +10,7 @@
  'plan-integre':['Lavabos','Plans intégrés'],'vasque-poser':['Lavabos','Vasques à poser'],
  'suspendu':['Lavabos','Plans suspendus'],'plan-solid':['Lavabos','Plans de travail'],
  'plan-mdf':['Lavabos','Plans de travail'],'plan-marbre':['Lavabos','Plans de travail'],
- 'miroir':['Compléments','Miroirs']
+ 'miroir':['Compléments','Miroirs'],'bonde':['Accessoires','Bondes']
  };
  const kind=page=>page>=4&&page<=31?'bois-massif':page>=33&&page<=46?'laque':page>=48&&page<=51?'complement':
  page===53?'plan-marbre':page>=55&&page<=62?'plan-integre':page===63?'suspendu':page===64||page===65?'vasque-poser':
@@ -20,11 +20,11 @@
  const pageUrl=c=>/^https?:/i.test(c)?c:'https://naxani.com/producto/'+(slugByCollection[c]||normalize(c))+'/';
  const money=x=>Number(x||0).toLocaleString('fr-FR',{style:'currency',currency:'EUR'});
  const toRecords=data=>(data.rows||[]).map(([reference,price,page,model,width])=>{
-  const subtype=kind(page),labels=TYPES[subtype]||['Autres','Autres'];
+  const subtype=model==='Clic Clac'?'bonde':kind(page),labels=TYPES[subtype]||['Autres','Autres'];
   return {manufacturer:'Naxani',reference:String(reference),collection:model,base:model,
    designation:(subtype==='bois-massif'||subtype==='laque'?'Meuble':subtype==='complement'?'Complément':
    subtype==='plan-integre'?'Plan vasque intégré':subtype==='vasque-poser'?'Vasque à poser':
-   subtype==='suspendu'?'Plan vasque suspendu':subtype.includes('plan-')?'Plan de travail':'Miroir')+' '+model+
+   subtype==='suspendu'?'Plan vasque suspendu':subtype==='bonde'?'Bonde et siphon Clic-Clac':subtype.includes('plan-')?'Plan de travail':'Miroir')+' '+model+
    (Number.isFinite(width)?' · '+width+' cm':''),
    category:labels[0],productType:labels[1],naxaniKind:subtype,naxaniWidth:Number.isFinite(width)?width:null,
    price:Number(price),totalPrice:Number(price),currency:'EUR',vat:'HT',sourceYear:2026,
