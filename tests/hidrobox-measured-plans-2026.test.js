@@ -48,7 +48,7 @@ test('Guided interface displays measured fields and blocks adding when the suppl
  const guided=read('hidrobox-guided.js'),html=read('index.html');
  assert.match(guided,/const measuredApi=root\.HydroHidroboxMeasuredPlans2026/);
  assert.match(guided,/measuredApi\.resolve\(rows/);
- assert.match(guided,/Le prix et la référence sont recalculés exclusivement/);
+ assert.match(guided,/Matière, finition et les trois dimensions sont vérifiées ensemble/);
  assert.match(guided,/!measuredPlan\|\|selection\.ready/);
  assert.match(guided,/if\(measuredPlan&&!validation\.ready\)/);
  assert.match(html,/hidrobox-measured-plans-2026\.js\?v=__APP_VERSION__/);
