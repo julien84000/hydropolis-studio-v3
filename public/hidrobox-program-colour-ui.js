@@ -3,6 +3,8 @@
 'use strict';
 const E=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const EUR=n=>Number(n).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
+// Product thumbnail from the official Program Colour collection page. NOT a shade-specific SKU image.
+const COLLECTION_IMAGE='https://hidrobox.com/wp-content/uploads/2025/05/Hidrobox_Washbasin_Program-colour_Thumbnail.png';
 let state=null,key='';
 function reset(){state=null;key='';}
 const select=(id,label,opts,value)=>'<label>'+E(label)+'<select id="'+E(id)+'">'+opts.map(o=>'<option value="'+E(o[0])+'"'+(String(o[0])===String(value)?' selected':'')+'>'+E(o[1])+'</option>').join('')+'</select></label>';
@@ -38,10 +40,10 @@ function programColour(g,ctx){
  const qTable=quote.components.map(c=>'<tr><td>'+E(c.reference||'—')+'</td><td>'+E(c.label)+'</td><td>'+EUR(c.rawPrice)+'</td></tr>').join('');
  const html='<button class="hidrobox-back" type="button">← Collections</button>'+
   '<div class="hidrobox-neo-hero hb-pc-hero"><div class="hb-pc-photo">'+
-   (ctx.image?'<img class="hb-pc-collection" src="'+E(ctx.image)+'" alt="Photographie illustrative de la collection Program Colour" loading="lazy">':'')+
+   '<img class="hb-pc-collection" src="'+E(COLLECTION_IMAGE)+'" alt="Photo officielle de collection Program Colour, coloris non garanti" loading="lazy">'+
    preview(s,m)+
    '<img data-hb-config-image hidden alt="Photo officielle Hidrobox configurée">'+
-   '<small data-hb-config-status>Photo constructeur de la collection (non contractuelle). Le schéma coloré représente la forme et une teinte indicative, pas un rendu certifié.</small></div>'+
+   '<small data-hb-config-status>Photo officielle de collection (non liée à la teinte choisie). Le configurateur en ligne Hidrobox ne répertorie pas Program Colour comme collection filtrable ; le schéma coloré est seulement indicatif.</small></div>'+
    '<div><h3>Program Colour · plan vasque sur mesure Kromat</h3><p>Configuration : forme S41 ou S42 → couleur précise → dimensions → options → référence et prix fabricant.</p>'+
    '<a href="https://hidrobox.com/fr/collections/program-colour/" target="_blank" rel="noopener noreferrer">Collection officielle Hidrobox</a></div></div>'+
   '<div class="hidrobox-program hb-pc-config">'+
@@ -85,12 +87,6 @@ function programColour(g,ctx){
  view.querySelector('#pcSpecial')?.addEventListener('change',e=>{s.specialCode=e.target.value.trim();refresh()});
  view.querySelector('#pcOverflow').onchange=e=>{s.overflow=e.target.checked;refresh()};
  view.querySelector('#pcCut').onchange=e=>{s.specialCut=e.target.checked;refresh()};
- const official=root.HydroHidroboxOfficialVisual;
- if(quote.ok&&colour&&s.group!=='SPE'&&official?.preview){
-  const spec={model:'program-colour',typology:'wall-hung-washbasins',material:'Kromat',texture:'Lisse',
-   color:colour,width:Number(s.depth),length:Number(s.length),shape:s.basin.toLowerCase()};
-  void official.preview(view,spec).catch(()=>{});
- }
  view.querySelector('#pcAdd')?.addEventListener('click',async()=>{
   const q=m.quote(s,g.variants||[]);if(!q.ok)return;
   const chosen=q.configuration,config={...chosen,type:'program-colour-2026',reference:q.reference,
@@ -104,8 +100,8 @@ function programColour(g,ctx){
    material:'Kromat',finish:'Lisse · '+q.colour,price:q.price,totalPrice:q.price,rawTariffPrice:q.rawPrice,
    listPriceUpliftPct:4,purchaseDiscount:50,currency:'€',vat:'HT',source:q.source,sourceYear:2026,
    manufacturerUrl:'https://hidrobox.com/fr/collections/program-colour/',
-   image:ctx.image||'',imageSource:ctx.image?'Illustration officielle de la collection, couleur non contractuelle':'Image constructeur exacte non disponible',
-   imageFinishMatch:ctx.image?'collection':'unavailable'};
+   image:COLLECTION_IMAGE,imageSource:'Photo fabricant de collection Program Colour, coloris et implantation non contractuels',
+   imageFinishMatch:'collection'};
   ctx.save(item,config);
  });
  return true;
