@@ -97,7 +97,7 @@
    modal.innerHTML='<div class="naxani-shell"><div class="naxani-head"><div><small>NAXANI · TARIF FABRICANT 2026</small><h2>Configurer Naxani</h2><div>Collection → référence → plan vasque ou top + vasque → bonde</div></div><button class="naxani-close">×</button></div>' +
     '<div class="naxani-body"><aside class="naxani-left">'+Object.keys(TABS).map(k=>'<button class="naxani-btn '+(k===section?'active':'')+'" data-section="'+esc(k)+'">'+esc(k)+'</button>'+(k===section?TABS[k].map(v=>'<button class="naxani-btn naxani-sub '+(v===sub?'active':'')+'" data-sub="'+esc(v)+'">'+esc(v)+'</button>').join(''):'' )).join('')+
     '<p class="naxani-muted">Les visuels illustrent les collections, pas les variantes exactes.</p></aside><main class="naxani-main"><b>'+esc(sub)+'</b> · '+models().length+' collections · '+subRows().length+' références tarifées' +
-    '<div class="naxani-grid" style="margin-top:12px">'+models().map(m=>'<button class="naxani-tile '+(m===model?'active':'')+'" data-model="'+esc(m)+'"><div class="naxani-pic">'+esc(m)+'</div><b>'+esc(m)+'</b><small>'+subRows().filter(x=>x.collection===m).length+' références</small></button>').join('')+'</div></main>' +
+    '<div class="naxani-grid" style="margin-top:12px">'+models().map(m=>'<button class="naxani-tile '+(m===model?'active':'')+'" data-model="'+esc(m)+'"><div class="naxani-pic"><img loading="lazy" src="/api/naxani-collection-image?collection='+encodeURIComponent(m)+'" alt="Collection '+esc(m)+'"><span>'+esc(m)+'</span></div><b>'+esc(m)+'</b><small>'+subRows().filter(x=>x.collection===m).length+' références</small></button>').join('')+'</div></main>' +
     '<aside class="naxani-side"><div class="naxani-hero">'+esc(title)+'</div><p class="naxani-muted">Photo de collection illustrative, finition non contractuelle.</p><h3>'+esc(title)+'</h3>' +
     '<label>Référence, dimensions et prix public HT</label><select data-field="ref">'+options(variants(),ref)+'</select>' +
     (p&&isFurniture(p)?'<label>Composition à ajouter</label><div class="naxani-modes"><button data-mode="integrated" class="'+(mode==='integrated'?'active':'')+'">Plan intégré</button><button data-mode="countertop" class="'+(mode==='countertop'?'active':'')+'">Top + vasque à poser</button></div>' +
@@ -113,6 +113,7 @@
     '<button class="naxani-confirm" '+(busy||a.errors.length?'disabled':'')+'>'+(busy?'Ajout…':'Ajouter cette composition au projet')+'</button>' +
     '<p><a target="_blank" rel="noopener noreferrer" href="https://naxani.com/productos/muebles-de-bano/">Site officiel Naxani</a></p></aside></div></div>';
    modal.querySelector('.naxani-close').onclick=close;
+   modal.querySelectorAll('.naxani-tile img').forEach(img=>img.addEventListener('error',()=>img.remove(),{once:true}));
    modal.querySelectorAll('[data-section]').forEach(b=>b.onclick=()=>{section=b.dataset.section;sub=TABS[section][0];model='';ref='';top='';basin='';render()});
    modal.querySelectorAll('[data-sub]').forEach(b=>b.onclick=()=>{sub=b.dataset.sub;model='';ref='';top='';basin='';render()});
    modal.querySelectorAll('[data-model]').forEach(b=>b.onclick=()=>{model=b.dataset.model;ref='';top='';basin='';render()});
