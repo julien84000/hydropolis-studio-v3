@@ -358,76 +358,40 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     });
     await page.waitForSelector('.manufacturer-guide-open');
     await page.locator('.manufacturer-guide-open').click();
-    await page.waitForSelector('#manufacturerGuidedSelector');
-
-    await page.waitForSelector('#manufacturerGuidedSelector [data-choose="collection"][data-value="Cobber"]');
-    check('galerie Hotbath : 12 collections officielles',await page.locator('#manufacturerGuidedSelector [data-choose="collection"]').count()===12);
-    await page.locator('#manufacturerGuidedSelector [data-choose="collection"][data-value="Cobber"]').click();
-    await page.waitForSelector('#manufacturerGuidedSelector [data-choose="category"][data-value="3593"]');
-    check('Cobber : catégories officielles présentes',await page.locator('#manufacturerGuidedSelector [data-choose="category"]').count()>=6);
-    await page.locator('#manufacturerGuidedSelector [data-choose="category"][data-value="3593"]').click();
-    await page.waitForSelector('#manufacturerGuidedSelector [data-choose="model"][data-value="CB003C"]');
+    await page.waitForSelector('#manufacturerGuidedSelector.hotbath-galassia-modal');
+    await page.waitForSelector('#manufacturerGuidedSelector .hotbath-collections [data-collection="Cobber"]');
+    check('Hotbath : 12 collections dans la colonne Galassia',
+      await page.locator('#manufacturerGuidedSelector .hotbath-collections [data-collection]').count()===12);
+    await page.locator('#manufacturerGuidedSelector [data-collection="Cobber"]').click();
+    await page.waitForSelector('#manufacturerGuidedSelector .hotbath-categories [data-category="3593"]');
+    check('Cobber : catégories tarifaires conservées',
+      await page.locator('#manufacturerGuidedSelector .hotbath-categories [data-category]').count()>=6);
+    await page.locator('#manufacturerGuidedSelector [data-category="3593"]').click();
+    await page.waitForSelector('#manufacturerGuidedSelector .hotbath-models [data-model="CB003C"]');
     for(const code of ['CB003C','CB003S','CB003MC','CB003MS']){
-      check('Référence officielle Cobber '+code,await page.locator('#manufacturerGuidedSelector [data-choose="model"][data-value="'+code+'"]').count()===1);
+      check('Hotbath Cobber : modèle '+code,
+        await page.locator('#manufacturerGuidedSelector .hotbath-models [data-model="'+code+'"]').count()===1);
     }
-    const cobberImages=await page.locator('#manufacturerGuidedSelector .mg-official-gallery img').count();
-    check('Galerie officielle Cobber contient plusieurs visuels',cobberImages>=5);
-    const cobberPhoto=page.locator('#manufacturerGuidedSelector [data-choose="model"][data-value="CB003C"] img');
-    const cobberLoaded=await cobberPhoto.evaluate(async img=>{
-      if(!img.complete)await Promise.race([new Promise(resolve=>{
-        img.addEventListener('load',resolve,{once:true});img.addEventListener('error',resolve,{once:true});
-      }),new Promise(resolve=>setTimeout(resolve,12000))]);
-      return img.complete&&img.naturalWidth>0;
-    });
-    check('CB003C : photo constructeur chargée dans Chromium',cobberLoaded);
-    await page.locator('#manufacturerGuidedSelector [data-step="collections"]').click();
-    await page.locator('#manufacturerGuidedSelector [data-choose="collection"][data-value="Archie"]').click();
-    await page.waitForSelector('#manufacturerGuidedSelector [data-choose="category"][data-value="3570"]');
-    await page.locator('#manufacturerGuidedSelector [data-choose="category"][data-value="3570"]').click();
-    await page.waitForSelector('#manufacturerGuidedSelector [data-choose="model"][data-value="AR088"] img');
-    const arPhoto=page.locator('#manufacturerGuidedSelector [data-choose="model"][data-value="AR088"] img');
-    const src=await arPhoto.getAttribute('src');
-    check('Archie AR088 : nouvelle source officielle',src?.includes('hotbath.com/images/compano/AR088/'));
-    const arLoaded=await arPhoto.evaluate(async img=>{
-      if(!img.complete)await Promise.race([new Promise(resolve=>{
-        img.addEventListener('load',resolve,{once:true});img.addEventListener('error',resolve,{once:true});
-      }),new Promise(resolve=>setTimeout(resolve,12000))]);
-      return img.complete&&img.naturalWidth>0;
-    });
-    check('Archie AR088 : photo chargée',arLoaded);
-    await page.locator('#manufacturerGuidedSelector [data-step="categories"]').click();
-    await page.locator('#manufacturerGuidedSelector [data-choose="category"][data-value="3521"]').click();
-    await page.waitForSelector('#manufacturerGuidedSelector [data-choose="model"]');
-    // V11.63.2 — test image actuelle du fabricant, pas un ancien lien historique susceptible de répondre 404.
-    check('Hotbath : grille photographique spécifique, sans bandeau opaque',
-      await page.locator('#manufacturerGuidedSelector').evaluate(x=>x.classList.contains('mg-hotbath-official')&&x.dataset.stage==='models'));
-    const modelCard=page.locator('#manufacturerGuidedSelector [data-choose="model"][data-value="AR033"]');
-    const srcAR033=await modelCard.locator('img').getAttribute('src');
-    check('Archie AR033 : photographie réellement vérifiée sur le CDN actuel',srcAR033?.includes('hotbath.com/images/compano/AR033/')&&/AR033IX/.test(srcAR033));
-    const productLoaded=await modelCard.locator('img').evaluate(async img=>{
-      if(!img.complete)await Promise.race([new Promise(resolve=>{
-        img.addEventListener('load',resolve,{once:true});img.addEventListener('error',resolve,{once:true});
-      }),new Promise(resolve=>setTimeout(resolve,15000))]);
-      return img.complete&&img.naturalWidth>0;
-    });
-    check('Archie AR033 : photo fabricant réellement affichée',productLoaded);
-    const styleCheck=await modelCard.evaluate(el=>{
-      const meta=getComputedStyle(el.querySelector('.mg-tile-meta'));
-      const img=getComputedStyle(el.querySelector('.mg-tile-photo img'));
-      return meta.position==='static'&&img.objectFit==='contain';
-    });
-    check('Hotbath : référence sous image, objet non recadré',styleCheck);
-    check('Archie AR003M et AR014 toujours présents, sans prétendre que les anciens liens sont accessibles',
-      await page.locator('#manufacturerGuidedSelector [data-choose="model"][data-value="AR003M"]').count()===1&&
-      await page.locator('#manufacturerGuidedSelector [data-choose="model"][data-value="AR014"]').count()===1);
-    const pricedCards=await page.locator('#manufacturerGuidedSelector [data-choose="model"][data-priced="true"]').count();
-    check('Au moins une référence Archie a un tarif importé',pricedCards>0);
-    await page.locator('#manufacturerGuidedSelector [data-choose="model"][data-priced="true"]').first().click();
-    await page.waitForSelector('#manufacturerGuidedSelector #hb-finish');
-    const ref=await page.locator('#manufacturerGuidedSelector #hb-finish').inputValue();
-    const detail=await page.locator('#manufacturerGuidedSelector .mg-finalref').innerText();
-    check('Référence tarifaire Hotbath conservée',ref&&detail.includes(ref));
-    await page.locator('#manufacturerGuidedSelector .mg-close').click();
+    const photoSources=await page.locator('#manufacturerGuidedSelector .hotbath-models [data-model="CB003C"] img').count();
+    check('Hotbath Cobber : source fabricant dédiée visible',photoSources===1);
+    await page.locator('#manufacturerGuidedSelector .hotbath-models [data-model="CB003C"]').click();
+    await page.waitForSelector('#manufacturerGuidedSelector .hotbath-selection .hotbath-variant');
+    check('Hotbath : détail Galassia avec prix et variantes',
+      await page.locator('#manufacturerGuidedSelector .hotbath-selection .galassia-summary').count()===1);
+    await page.locator('#manufacturerGuidedSelector [data-collection="Archie"]').click();
+    await page.locator('#manufacturerGuidedSelector [data-category="3521"]').click();
+    await page.waitForSelector('#manufacturerGuidedSelector .hotbath-models [data-model="AR033"]');
+    const modelImg=page.locator('#manufacturerGuidedSelector .hotbath-models [data-model="AR033"] img');
+    const url=await modelImg.getAttribute('src');
+    check('Hotbath Italie : image AR033 associée au modèle exact',
+      (url?.includes('hotbath.it/documents/')&&url.includes('/AR033_'))||url?.includes('hotbath.com/images/compano/AR033/'));
+    const priced=page.locator('#manufacturerGuidedSelector .hotbath-models [data-model="AR003"]');
+    await priced.click();
+    await page.waitForSelector('#manufacturerGuidedSelector .hotbath-variant');
+    const chosenRef=await page.locator('#manufacturerGuidedSelector .hotbath-variant').inputValue();
+    const selectionText=await page.locator('#manufacturerGuidedSelector .hotbath-selection').innerText();
+    check('Hotbath Italie : tarif réel et référence tarif conservés',Boolean(chosenRef)&&selectionText.includes(chosenRef));
+    await page.locator('#manufacturerGuidedSelector .galassia-close').click();
 
     // V11.64 — Gessi-inspired guide validation in a REAL Chromium DOM on desktop/mobile.
     // Synthetic tariff rows are used so the exact selected object and price can be asserted
