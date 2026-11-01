@@ -1,0 +1,28 @@
+/* Hotbath 11.64.42 — follows Galassia visual and responsive grid system */
+.hotbath-galassia-modal .hotbath-galassia-shell{width:min(1460px,98vw);height:min(870px,95vh)}
+.hotbath-galassia-modal .hotbath-galassia-body{grid-template-columns:225px minmax(0,1fr) 355px}
+.hotbath-galassia-modal .hotbath-collections{background:#f0ede8}
+.hotbath-galassia-modal .hotbath-browser{min-width:0}
+.hotbath-galassia-modal .hotbath-categories{flex-shrink:0}
+.hotbath-galassia-modal .hotbath-models{grid-template-columns:repeat(auto-fill,minmax(155px,1fr));align-content:start}
+.hotbath-galassia-modal .hotbath-models .galassia-model-photo{background:#fff;height:145px}
+.hotbath-galassia-modal .hotbath-models .galassia-model-photo img{object-fit:contain;width:100%;height:100%}
+.hotbath-galassia-modal .hotbath-selection{gap:10px}
+.hotbath-galassia-modal .hotbath-selection .galassia-photo{height:205px}
+.hotbath-galassia-modal .hotbath-rough-in{display:grid;gap:7px;border-radius:8px;border:1px solid #b5bbab;background:#f0f3ed;padding:13px;font-size:12px;color:#28332b}
+.hotbath-galassia-modal .hotbath-rough-in strong{font-weight:700}
+.hotbath-galassia-modal .hotbath-rough-in small{font-size:11px;line-height:1.45;color:#526052}
+.hotbath-galassia-modal .hotbath-rough-in.missing{background:#faf4ed;border-color:#d5b99d;color:#62482d}
+.hotbath-galassia-modal .hotbath-rough-in.missing small{color:#715d49}
+.hotbath-galassia-modal .hotbath-add{background:#234938}
+@media(max-width:1100px){.hotbath-galassia-modal .hotbath-galassia-body{grid-template-columns:170px minmax(0,1fr) 285px}}
+@media(max-width:780px){
+ .hotbath-galassia-modal .hotbath-galassia-shell{height:100dvh;width:100vw}
+ .hotbath-galassia-modal .hotbath-galassia-body{display:flex;flex-direction:column}
+ .hotbath-galassia-modal .hotbath-collections{display:flex;flex-direction:row;max-height:95px;flex-shrink:0;overflow:auto}
+ .hotbath-galassia-modal .hotbath-collections .galassia-family{min-width:145px}
+ .hotbath-galassia-modal .hotbath-browser{min-height:40vh}
+ .hotbath-galassia-modal .hotbath-models{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .hotbath-galassia-modal .hotbath-selection{border-left:0;border-top:1px solid #ddd;overflow:visible}
+}
+@media print{.hotbath-galassia-modal{display:none!important}}
