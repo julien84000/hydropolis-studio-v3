@@ -10,6 +10,7 @@ const price=v=>Number(v).toLocaleString('fr-FR',{style:'currency',currency:'EUR'
 const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
 const eligible=p=>p?.manufacturer==='Catalano'&&!!p.reference&&Number(p.price)>0;
 const galleryApi=root?.HydroCatalanoGallery||(typeof require==='function'?require('./catalano-gallery.js'):null);
+const mediaApi=root?.HydroCatalanoProductMedia||(typeof require==='function'?require('./catalano-product-media.js'):null);
 const modelKey=p=>String(p.base||p.reference)+'|'+String(p.category||'');
 const groupCollections=rows=>[...new Set(rows.filter(eligible).map(p=>p.collection))].sort((a,b)=>a.localeCompare(b,'fr',{numeric:true}));
 const categories=rows=>[...new Set(rows.map(p=>p.category))].sort((a,b)=>['WC','Lavabo','Douche','Bain','Accessoires'].indexOf(a)-['WC','Lavabo','Douche','Bain','Accessoires'].indexOf(b));
@@ -31,7 +32,7 @@ function modelCards(rows,collection,category,query){
 }
 function imageFor(p){
  // Editorial collection photos are only permitted in the left navigation.
- return root?.HydroCatalanoProductMedia?.get?.(p)||{src:'',scope:'missing'};
+ return mediaApi?.get?.(p)||{src:'',scope:'missing'};
 }
 function open(initial,roomId,rows,onAdd,photoResolver,photoLoader){
  const all=(rows||[]).filter(eligible);
@@ -71,7 +72,7 @@ function open(initial,roomId,rows,onAdd,photoResolver,photoLoader){
   overlay.onclick=e=>{if(e.target===overlay)close()};
   const getImage=p=>imageFor(p);
   function ensureMedia(name){
-   const media=root?.HydroCatalanoProductMedia;
+   const media=mediaApi;
    if(!media?.load||mediaLoads.has(name))return;
    mediaLoads.add(name);
    void media.load(name).then(ok=>{
