@@ -2112,7 +2112,14 @@ function renderCatalog(){
      const keys=new Set(rows.map(productKey));
      for(const p of serverSearchRows)if(p.manufacturer===brand&&!keys.has(productKey(p))){rows.push(p);keys.add(productKey(p));}
      window.HydroManufacturerGuide?.open?.(brand,rows,$("#targetRoom")?.value||state.rooms[0]?.id||"",
-       p=>addCatalogProduct(p.reference,$("#targetRoom")?.value||state.rooms[0]?.id||"",productKey(p),p.hotbathSelectedCollection||''));
+       p=>{
+         const room=$("#targetRoom")?.value||state.rooms[0]?.id||"";
+         // Legacy Resigres/Vismara/TDA addCatalogProduct wrappers discard 4th argument.
+         // Preserve the configured Hotbath collection by using the canonical addProduct path.
+         return p.manufacturer==='Hotbath'
+           ?addProduct(p.reference,room,"",productKey(p),p.hotbathSelectedCollection||"")
+           :addCatalogProduct(p.reference,room,productKey(p));
+       });
    });
    if(results.querySelector('.sbordoni-launch-actions')){const docs=document.createElement('button');docs.type='button';docs.className='btn ghost';docs.textContent='Fiches techniques';docs.onclick=()=>window.HydroSbordoniDocuments?.open();results.querySelector('.sbordoni-launch-actions').appendChild(docs);}
    results.querySelector(".sbordoni-launch-basin")?.addEventListener("click",()=>window.HydroSbordoniConfigurator?.open?.({collection:fs.collection},$("#targetRoom")?.value||state.rooms[0]?.id||""));
@@ -2361,6 +2368,12 @@ function normalizedRoomId(roomId){
 function createSelectedProductRecord(p,roomId,parentId=""){
   if(!p)return null;
   p={...p,...(window.HydroSbordoniDocuments?.fields(p)||{})};
+  // The supplier pricelist carried the historical 50%; the signed contract
+  // supersedes it for every saved Hotbath line, including direct catalogue additions.
+  if(p.manufacturer==="Hotbath"){
+    const coll=String(p.hotbathSelectedCollection||p.collection||"").trim();
+    p.purchaseDiscount=/^Archie$/i.test(coll)?59.5:55;
+  }
   const targetRoomId=normalizedRoomId(roomId);
   const cached=(p.manufacturer==="Galassia"&&p.galassiaPhotoQuality)?null:cachedManufacturerImage(p);
   const embeddedRecorVisual=recorEmbeddedVisual(p);
