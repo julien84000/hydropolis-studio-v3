@@ -303,6 +303,8 @@ function universalSelection(g){
     return {...result,sourceBacked:true};
   }
   let rows=pricedShowerVariants(g),fields=[];
+  const measuredApi=root.HydroHidroboxMeasuredPlans2026;
+  const isMeasuredPlan=!!measuredApi?.applies(g.collection||g.id);
   const selector=root.HydroHidroboxTrayModels2026,verified=root.HydroHidroboxOfficialVisual;
   const models=selector?.variants(g,rows,verified)||[];
   if(models.length){
@@ -310,13 +312,20 @@ function universalSelection(g){
     rows=selector.filter(g,rows,universalDraft.traySubmodel,verified);
   }
   for(const [key,label] of FACE_KEYS){
+    if(isMeasuredPlan&&(key==='width'||key==='length'))continue;
     const options=onlyValues(rows,key);
     if(options.length<2){if(options.length===1)fields.push({key,label,options,chosen:options[0],static:true});continue}
     if(!options.includes(universalDraft[key]))universalDraft[key]=options[0];
     const chosen=universalDraft[key];rows=rows.filter(v=>cleanVal(v[key])===chosen);
     fields.push({key,label,options,chosen});
   }
-  const refs=[...new Set(rows.map(x=>String(x.reference||'')).filter(Boolean))];
+  if(isMeasuredPlan){
+     const m=measuredApi.resolve(rows,universalDraft.exactwidth,universalDraft.exactlength,universalDraft.reference);
+     if(m.available){universalDraft.exactwidth=m.width;universalDraft.exactlength=m.length;}
+     universalDraft.reference=m.selected?.reference||'';
+     return {selected:m.selected,fields,refs:m.matching.map(v=>v.reference),rows:m.rows,measured:m,ready:m.ready};
+   }
+   const refs=[...new Set(rows.map(x=>String(x.reference||'')).filter(Boolean))];
   if(!refs.includes(universalDraft.reference))universalDraft.reference=refs[0]||'';
   const selected=rows.find(x=>String(x.reference)===universalDraft.reference)||null;
   return {selected,fields,refs,rows};
@@ -781,6 +790,7 @@ function universalPage(g){
  const name=g.collection||g.family||g.model||g.id;
  const selection=universalSelection(g);
  const {selected,fields,refs}=selection;
+ const measuredPlan=root.HydroHidroboxMeasuredPlans2026?.applies(name)?selection.measured:null;
  const traySubmodelSelector=root.HydroHidroboxTrayModels2026;
  const submodels=traySubmodelSelector?.variants(g,pricedShowerVariants(g),root.HydroHidroboxOfficialVisual)||[];
  const fsMiniApi=root.HydroHidroboxOfficialMinis2026;
@@ -841,7 +851,13 @@ function universalPage(g){
        (bounds?' min="'+bounds.first+'" max="'+bounds.last+'"':'')+
        ' value="'+escape(String(liveSize[key]??''))+'" placeholder="cm" required></label>';
    }).join('')+'</div><small>Référence et prix calculés à partir des tranches tarifaires du PDF fabricant, sans interpolation.</small>':'';
- const dimensionMarkup=liveSize?exactNumberInputs:dimensionFields(selected);
+ const measuredMarkup=measuredPlan?'<h4 class="hidrobox-universal-subtitle">Dimensions réelles du plan · tarif fabricant 2026</h4>'+
+   (measuredPlan.available?'<p class="hidrobox-guide-note">Saisissez les mesures réelles en cm. Le prix et la référence sont recalculés exclusivement à partir d’une ligne tarifaire couvrant les DEUX dimensions.</p>'+
+    '<div class="hidrobox-fields">'+[['width','Largeur réelle (cm)'],['length','Longueur réelle (cm)']].map(([k,label])=>{
+      const b=measuredPlan.bounds[k];return '<label>'+escape(label)+'<input id="huExact'+k+'" type="number" required step="1" min="'+b.first+'" max="'+b.last+'" value="'+escape(String(universalDraft['exact'+k]??''))+'"></label>';
+    }).join('')+'</div>':'')+
+   (measuredPlan.reason?'<p class="hidrobox-guide-note" role="alert">'+escape(measuredPlan.reason)+'</p>':''):'';
+ const dimensionMarkup=measuredPlan?measuredMarkup:liveSize?exactNumberInputs:dimensionFields(selected);
  const sizeBoundsLabel=shower&&liveSize?.widthBounds&&liveSize?.lengthBounds?
    '<p class="hidrobox-guide-note" data-hb-dimension-limits>Dimensions fabricant pour cette collection, cette forme et cette finition : largeur '+
    liveSize.widthBounds.first+'–'+liveSize.widthBounds.last+' cm ; longueur '+
@@ -932,6 +948,7 @@ function universalPage(g){
  const price=Math.round(pricedRaw*104)/100;
  const sceneReady=!sceneSupported||!!sceneQuote?.ok;
  const canAdd=selected&&Number.isFinite(price)&&price>0&&selected.reference&&sceneReady&&
+  (!measuredPlan||selection.ready)&&
    (!orderedShower||selection.ready)&&(!specialTier||specialTier!=='SPE'||String(universalDraft.specialColor||'').trim().length>=3);
  const tech=officialPdf(selected?.technicalSheetUrl||g.technicalSheetUrl||assets.technical);
  const manual=officialPdf(selected?.installationGuideUrl||g.installationGuideUrl||assets.manual);
@@ -1010,16 +1027,17 @@ function universalPage(g){
      .catch(e=>console.warn('[Hidrobox official visual]',e));
  }
  overlay.querySelector('#huReference')?.addEventListener('change',e=>{universalDraft.reference=e.target.value;universalPage(g)});
- overlay.querySelector('#huExactwidth')?.addEventListener('change',e=>{universalDraft.exactwidth=Number(e.target.value);universalPage(g)});
- overlay.querySelector('#huExactlength')?.addEventListener('change',e=>{universalDraft.exactlength=Number(e.target.value);universalPage(g)});
+ overlay.querySelector('#huExactwidth')?.addEventListener('change',e=>{universalDraft.exactwidth=e.target.value===''?NaN:Number(e.target.value);if(measuredPlan)universalDraft.reference='';universalPage(g)});
+ overlay.querySelector('#huExactlength')?.addEventListener('change',e=>{universalDraft.exactlength=e.target.value===''?NaN:Number(e.target.value);if(measuredPlan)universalDraft.reference='';universalPage(g)});
  overlay.querySelector('#huAdd')?.addEventListener('click',async()=>{
    const validation=universalSelection(g);
    if(validation.sourceBacked&&!validation.ready){alert('Cette combinaison requiert une validation du tarif constructeur.');return;}
+   if(measuredPlan&&!validation.ready){alert(validation.measured?.reason||'Dimensions sans référence tarifée.');return;}
    const {selected:row}=validation;
    if(!row||!Number.isFinite(Number(row.price))||Number(row.price)<=0)return;
    const dimInfo={};
    for(const key of ['width','length']){
-     const range=centimeterRange(row[key]);
+     const range=measuredPlan?root.HydroHidroboxMeasuredPlans2026.band(row[key]):centimeterRange(row[key]);
      if(range){
        const exact=Number(universalDraft['exact'+key]);
        if(!Number.isInteger(exact)||exact<range.first||exact>range.last){alert('Dimension '+key+' invalide.');return;}
