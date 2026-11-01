@@ -420,9 +420,20 @@ function spacePage(g){
  const s=spaceDraft;
  if(!model.allowedDrain(s.colour,s.overflow===true).includes(s.drain))s.drain='OPBT0001';
  if(s.colour!=='BLA')s.exterior='';
+ const possibleColours=s.colour==='BLA'?['Blanc']:
+   s.colour==='BAS'?(root.HydroHidroboxOfficialVisual?.COLOR_GROUPS.basics||[]):
+   s.colour==='TRE'?(root.HydroHidroboxOfficialVisual?.COLOR_GROUPS.trends||[]):[];
+ if(possibleColours.length&&!possibleColours.includes(s.colourName))s.colourName=possibleColours[0];
+ if(s.colour==='SPE'&&s.colourName==='Blanc')s.colourName='';
+ const colourReady=s.colour==='SPE'?/^(?:RAL|NCS)\\s*[-\\w .]+$/i.test(String(s.colourName||'').trim()):
+   possibleColours.includes(s.colourName);
  const q=model.quote(s),hero=officialImage(officialCollectionMedia('space')?.image);
  const card=(key,value,title,note='')=>'<button type="button" class="hp-choice" data-hs="'+escape(key)+'" data-value="'+escape(value)+'" aria-pressed="'+(String(s[key])===String(value))+'"><b>'+escape(title)+'</b><small>'+escape(note)+'</small></button>';
  const select=(key,label,options)=>'<label>'+escape(label)+'<select data-hs-select="'+escape(key)+'">'+options.map(([value,title])=>'<option value="'+escape(value)+'"'+(s[key]===value?' selected':'')+'>'+escape(title)+'</option>').join('')+'</select></label>';
+ const colorInput=s.colour==='SPE'?
+   '<label class="hb-space-color-choice">Teinte spécifique RAL / NCS<input type="text" data-hs-color-name placeholder="RAL 9001 / NCS S 0500-N" value="'+escape(s.colourName||'')+'"></label>':
+   '<label class="hb-space-color-choice">Couleur exacte ('+escape(s.colour)+')<select data-hs-color-name>'+
+     possibleColours.map(c=>'<option value="'+escape(c)+'"'+(s.colourName===c?' selected':'')+'>'+escape(c)+'</option>').join('')+'</select></label>';
  const option=(ref)=>[ref,model.OPTIONS[ref].label+(model.OPTIONS[ref].price?' · +'+eu(model.OPTIONS[ref].price)+' HT':' · inclus')];
  const html='<button class="hidrobox-back" type="button">← Collections</button>'+
   '<div class="hidrobox-neo-hero">'+(hero?'<img src="'+escape(hero)+'" alt="Collection Space" loading="lazy">':'')+
@@ -436,7 +447,9 @@ function spacePage(g){
   card('colour','BLA','Blanc Scene','Blanc lisse')+
   card('colour','BAS','Plus Colour · Basics','Couleur incluse dans le tarif')+
   card('colour','TRE','Plus Colour · Trends','Couleur incluse dans le tarif')+
-  card('colour','SPE','Plus Colour · Specials','Tarif RAL/NCS publié, couleur exacte à préciser à la commande')+'</div>'+
+  card('colour','SPE','Plus Colour · Specials','Tarif RAL/NCS publié, code fabricant à préciser')+'</div>'+
+  '<div class="hb-space-colour-selection">'+colorInput+
+   '<p class="hidrobox-guide-note">Teinte retenue : <strong>'+escape(s.colourName||'À préciser')+'</strong>. La photographie de collection reste indicative ; seule la famille tarifaire influence le prix.</p></div>'+
   '<h4>4 · Dimensions de la baignoire</h4><div class="hp-grid">'+
   model.SIZES.map(z=>card('sizeId',z.id,z.length+' × '+z.width+' × '+String(z.height).replace('.',',')+' cm','L × P × H fixes, tarif constructeur')).join('')+'</div>'+
   '<h4>5 · Trop-plein</h4><div class="hp-grid">'+card('overflow','false','Sans trop-plein')+card('overflow','true','Trop-plein intégré')+'</div>'+
@@ -449,25 +462,28 @@ function spacePage(g){
   (q.errors.length?'<ul class="hp-errors" role="alert">'+q.errors.map(e=>'<li>'+escape(e)+'</li>').join('')+'</ul>':'')+
   '<div class="hidrobox-result"><div><b>'+(q.ok?eu(q.price)+' HT':'Configuration à confirmer')+'</b>'+
   '<span>Référence '+escape(q.reference||'—')+'</span><small>'+(q.ok?'Prix source '+eu(q.rawPrice)+' HT · majoration +4 % une fois · achat fournisseur après remise 50 % : '+eu(q.purchasePrice)+' HT.':'Aucun prix extrapolé.')+'</small></div>'+
-  '<button id="huAdd" class="btn primary" type="button"'+(q.ok?'':' disabled')+'>Ajouter au projet</button></div></div>';
+  '<button id="huAdd" class="btn primary" type="button"'+(q.ok&&colourReady?'':' disabled')+'>Ajouter au projet</button></div></div>';
  shell('Space · configuration',html,true);
  overlay.querySelector('.hidrobox-back').onclick=collections;
  const refresh=()=>{const previous=overlay.querySelector('.recor-configurator')?.scrollTop||0;spacePage(g);const current=overlay?.querySelector('.recor-configurator');if(current)current.scrollTop=previous};
  overlay.querySelectorAll('[data-hs]').forEach(b=>b.onclick=()=>{
+  const previous=s.colour;
   s[b.dataset.hs]=b.dataset.hs==='overflow'?b.dataset.value==='true':b.dataset.value;
+  if(b.dataset.hs==='colour'&&previous!==s.colour)s.colourName='';
   refresh();
  });
  overlay.querySelectorAll('[data-hs-select]').forEach(e=>e.onchange=()=>{s[e.dataset.hsSelect]=e.value;refresh()});
+ overlay.querySelector('[data-hs-color-name]')?.addEventListener('change',e=>{s.colourName=e.target.value.trim();refresh()});
  overlay.querySelector('#huAdd')?.addEventListener('click',()=>{
-  const result=model.quote(s);if(!result.ok)return;
+  const result=model.quote(s);if(!result.ok||!colourReady)return;
   const dimensions=result.variant,finish=dimensions.colour==='BLA'?'Blanc Scene':'Plus Colour '+dimensions.colour;
-  const designation='Space '+dimensions.length+' × '+dimensions.width+' × '+String(dimensions.height).replace('.',',')+' cm · '+finish+
+  const designation='Space '+dimensions.length+' × '+dimensions.width+' × '+String(dimensions.height).replace('.',',')+' cm · '+finish+' · '+s.colourName+
     ' · '+(dimensions.overflow?'Trop-plein intégré':'Sans trop-plein')+' · '+result.components.slice(1).map(c=>c.label).join(' · ');
-  const item={manufacturer:'Hidrobox',collection:'Space',reference:result.reference,base:result.reference,designation,category:'Baignoire îlot',material:'Scene Solid Surface',finish,price:result.price,totalPrice:result.price,rawTariffPrice:result.rawPrice,purchaseDiscount:50,listPriceUpliftPct:4,currency:'€',vat:'HT',source:result.source,sourceYear:2026,manufacturerUrl:HOUSE+'collections/space/',technicalSheetUrl:HIDROBOX_DOCUMENTS.space.technical,technicalSheetLabel:'Fiche technique Space',installationGuideUrl:HIDROBOX_DOCUMENTS.space.manual,installationGuideLabel:'Notice de pose Space',image:hero,imageSource:'Photographie de collection Space · finition non contractuelle',imageFinishMatch:'collection',configuratorType:'hidrobox-configured'};
+  const item={manufacturer:'Hidrobox',collection:'Space',selectedColor:s.colourName,reference:result.reference,base:result.reference,designation,category:'Baignoire îlot',material:'Scene Solid Surface',finish,price:result.price,totalPrice:result.price,rawTariffPrice:result.rawPrice,purchaseDiscount:50,listPriceUpliftPct:4,currency:'€',vat:'HT',source:result.source,sourceYear:2026,manufacturerUrl:HOUSE+'collections/space/',technicalSheetUrl:HIDROBOX_DOCUMENTS.space.technical,technicalSheetLabel:'Fiche technique Space',installationGuideUrl:HIDROBOX_DOCUMENTS.space.manual,installationGuideLabel:'Notice de pose Space',image:hero,imageSource:'Photographie de collection Space · finition non contractuelle',imageFinishMatch:'collection',configuratorType:'hidrobox-configured'};
   try{
    const record=createSelectedProductRecord(item,room,'');
    if(!record)throw Error('Impossible de créer la composition Space');
-   Object.assign(record,item,{hidroboxConfiguration:{type:'space-2026',group:g.id,...result.configuration,dimensions:{length:dimensions.length,width:dimensions.width,height:dimensions.height},components:result.components,reference:result.reference}});
+   Object.assign(record,item,{hidroboxConfiguration:{type:'space-2026',group:g.id,...result.configuration,colourName:s.colourName,dimensions:{length:dimensions.length,width:dimensions.width,height:dimensions.height},components:result.components,reference:result.reference}});
    const ids=commitSelectedRecords([record],{showProject:false});
    if(!ids?.length)throw Error('Enregistrement impossible');
    close();showView('project');
