@@ -26,6 +26,7 @@ function open(rows,roomId,onAdd){
  return new Promise(resolve=>{
   document.querySelector('.hotbath-galassia-modal')?.remove();
   const ov=document.createElement('div');
+  ov.id='manufacturerGuidedSelector';
   ov.className='galassia-modal hotbath-galassia-modal';
   ov.setAttribute('role','dialog');ov.setAttribute('aria-modal','true');ov.setAttribute('aria-label','Configurer Hotbath');
   ov.innerHTML='<div class="galassia-shell hotbath-galassia-shell">'+
