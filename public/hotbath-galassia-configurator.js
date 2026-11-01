@@ -204,6 +204,8 @@ function open(rows,roomId,onAdd){
    }
    if(!m.variants.some(x=>x.reference===ref))ref=m.variants[0].reference;
    const p=m.variants.find(v=>v.reference===ref)||m.variants[0],r=rough.resolve(p);
+   const negotiatedDiscount=rough.purchaseDiscount(p,collection);
+   const negotiatedCost=totalFor(p,r)*(1-negotiatedDiscount/100);
    const photo=selectedImage(m.base,p);
    const priceLines=r.verified&&r.priceAgrees?
     '<div><span>Produit apparent HT</span><b>'+money(p.price)+'</b></div>'+
@@ -229,8 +231,8 @@ function open(rows,roomId,onAdd){
       money(publicPrice(v))+' HT</option>').join('')+'</select></label>'+
     '<div class="galassia-summary"><div><span>Référence fabricant</span><b>'+esc(p.reference)+'</b></div>'+
       priceLines+'<div><span>Total public HT</span><b>'+money(totalFor(p,r))+'</b></div>'+
-      '<div><span>Remise d’achat fournisseur</span><b>50 %</b></div>'+
-      '<div><span>Coût d’achat théorique HT</span><b>'+money(totalFor(p,r)*.5)+'</b></div></div>'+
+      '<div><span>Remise d’achat fournisseur</span><b>'+esc(negotiatedDiscount===59.5?'50 % + 10 % + 10 % (59,5 %)':'55 %')+'</b></div>'+
+      '<div><span>Coût d’achat théorique HT</span><b>'+money(negotiatedCost)+'</b></div></div>'+
     bodyMarkup+
     '<div class="galassia-docs"><a href="'+esc(italian?.byCollection?.[collection]?.[m.base]?.officialProductPage||'https://hotbath.it/fr/prods/')+'" target="_blank" rel="noopener noreferrer">Voir le modèle sur Hotbath Italie</a>'+
     '<span>Tarifs : base importée 2026 · référence sans suffixe IT.</span></div>'+
@@ -248,7 +250,7 @@ function open(rows,roomId,onAdd){
      // createSelectedProductRecord and HydroRoughIn.reconcile already handle the
      // verified p.internalReference as a separate mandatory child of this line.
      // No second copy of the body may be inserted by this dialog.
-     await onAdd(p,roomId);
+     await onAdd({...p,hotbathSelectedCollection:collection,purchaseDiscount:negotiatedDiscount},roomId);
      close();
     }catch(e){
      busy=false;renderSelection();alert('Ajout Hotbath impossible : '+(e?.message||String(e)));
