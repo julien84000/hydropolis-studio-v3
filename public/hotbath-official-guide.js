@@ -88,6 +88,38 @@ function openHotbath(rows,roomId,onAdd){
  let overlay=null,phase='collections',collection='',category=null,current=null,chosen=null,search='',offset=0;
  const prices=tariffIndex(rows),ALL=48;
  let taxonomy=null,photos=null,loadFailed=false;
+ // Progressive lookups only for cards without a verified cached manufacturer photo.
+ // Limit parallel requests so opening 48 tiles does not overload Hotbath.
+ const live=new Map(),unavailable=new Set(),queued=new Set(),pending=[],running={count:0};
+ const mediaKey=(model,finish='')=>collection+'|'+clean(model?.base||model)+'|'+clean(finish);
+ const liveModel=(model)=>live.get(mediaKey(model))||null;
+ const photoFor=model=>liveModel(model)?.image||photo(model,collection,photos);
+ const selectedMedia=(model,variant)=>live.get(mediaKey(model,variant?.finishCode||''))||null;
+ function requestMedia(model,finish=''){
+   const key=mediaKey(model,finish);
+   if(!model||queued.has(key)||live.has(key)||unavailable.has(key))return;
+   queued.add(key);
+   pending.push({key,collection,model:String(model?.base||model),finish:String(finish||'')});
+   pumpMedia();
+ }
+ function pumpMedia(){
+   while(running.count<3&&pending.length){
+     const item=pending.shift();running.count++;
+     const url='/api/hotbath-live-media?collection='+encodeURIComponent(item.collection)+
+       '&model='+encodeURIComponent(item.model)+'&finish='+encodeURIComponent(item.finish);
+     fetch(url,{credentials:'same-origin'}).then(r=>r.ok?r.json():null).then(d=>{
+       const path=String(d?.image||'').match(/^https:\/\/hotbath\.com\/images\/compano\/([^/?#]+)\//i);
+       if(d?.ok===true&&path&&clean(path[1])===clean(item.model)&&
+          d.collection===item.collection&&clean(d.model)===clean(item.model)&&
+          (d.scope==='exact'||d.scope==='model')){
+         live.set(item.key,d);
+       }else unavailable.add(item.key);
+     }).catch(()=>unavailable.add(item.key)).finally(()=>{
+       running.count--;pumpMedia();
+       if(overlay?.isConnected&&collection===item.collection&&(phase==='models'||phase==='detail'||phase==='categories'))render();
+     });
+   }
+ }
  const mount=()=>{
    overlay=document.createElement('div');overlay.className='mg-overlay mg-hotbath-official';overlay.id='manufacturerGuidedSelector';
    overlay.innerHTML='<div class="mg-dialog" role="dialog" aria-modal="true" aria-label="Catalogue Hotbath">'+
@@ -109,8 +141,12 @@ function openHotbath(rows,roomId,onAdd){
  const list=()=>categories(collection,taxonomy,prices);
  const models=()=>officialModels(collection,category,prices);
  const repr=m=>m.variants?.find(p=>p.image)||m.variants?.[0]||null;
- const supplierLink=()=>/^https:\/\/hotbath\.it\/fr\/prods\//.test(String(category?.url||''))?category.url:'https://hotbath.it/fr/';
- const imageDetail=(model)=>photo(model,collection,photos); // Never show an unverified generic tariff thumbnail as an exact product.
+ const supplierLink=()=>selectedMedia(current||{},(current?.variants||[]).find(p=>p.reference===chosen))?.productUrl||'https://hotbath.com/fr-be/produits/';
+ const imageDetail=(model,p)=>{
+   const selected=selectedMedia(model,p);
+   if(selected?.scope==='exact')return selected.image;
+   return photoFor(model)||selected?.image||'';
+ }; // Exact finish photo preferred; model preview otherwise, never cross-model.
  const breadcrumb=()=>{
    const levels=[{title:'Hotbath',phase:'collections'}];
    if(collection)levels.push({title:collection,phase:'categories'});
@@ -143,7 +179,7 @@ function openHotbath(rows,roomId,onAdd){
      body='<p class="mg-guide-note">Les rubriques correspondent aux catégories réelles du site Hotbath, indépendamment du classement tarifaire Hydropolis.</p>'+
         cards(list().map(c=>{
          const model=officialModels(collection,c,prices);
-         const v=model.map(m=>photo(m,collection,photos)).find(Boolean);
+         const v=model.map(m=>photoFor(m)).find(Boolean);
          return {name:c.label,id:c.id||c.label,action:'category',image:v||photos?.collectionImages?.[collection]||'',
            note:model.length+' références'+(c.extra?' · tarif uniquement':' · fabricant')};
         }),'mg-categories');
@@ -152,9 +188,9 @@ function openHotbath(rows,roomId,onAdd){
      const all=models(),term=clean(search);
      const filtered=all.filter(x=>!term||clean(x.base+' '+String(repr(x)?.designation||'')).includes(term));
      const paged=filtered.slice(offset*ALL,(offset+1)*ALL);
-    const pictured=filtered.filter(x=>Boolean(photo(x,collection,photos))).length;
+    const pictured=filtered.filter(x=>Boolean(photoFor(x))).length;
      body='<div class="mg-search"><label>Rechercher une référence<input id="hb-ref-search" type="search" placeholder="Référence ou désignation…" value="'+esc(search)+'"></label><span>'+pictured+' photos / '+filtered.length+' références</span></div>'+
-        cards(paged.map(m=>({name:m.base,id:m.base,action:'model',image:photo(m,collection,photos),priced:m.variants.some(v=>price(v)>0),note:m.variants.some(v=>price(v)>0)
+        cards(paged.map(m=>({name:m.base,id:m.base,action:'model',image:photoFor(m),priced:m.variants.some(v=>price(v)>0),note:m.variants.some(v=>price(v)>0)
           ?'Tarif disponible · finition à choisir'
           :'Tarif non importé'})),'mg-products mg-official-gallery')+
         (filtered.length>ALL?'<div class="mg-pagination"><button type="button" id="hb-prev" '+(offset===0?'disabled':'')+'>Précédent</button><span>Page '+(offset+1)+' / '+Math.ceil(filtered.length/ALL)+'</span><button type="button" id="hb-next" '+((offset+1)*ALL>=filtered.length?'disabled':'')+'>Suivant</button></div>':'')+
@@ -167,7 +203,7 @@ function openHotbath(rows,roomId,onAdd){
      const url=imageDetail(current,p),hasPrice=Boolean(p&&price(p)>0&&Number.isFinite(price(p)));
      body='<section class="mg-detail"><div class="mg-photo">'+
        (url?'<img src="'+esc(url)+'" alt="'+esc(current.base)+'" onerror="this.style.display=\'none\'">':'<div class="mg-noimage">Image exacte indisponible</div>')+
-       '<small>'+(photo(current,collection,photos)?'Photo fabricant du modèle · finition illustrative':'Image non vérifiée pour la finition')+'</small></div>'+
+       '<small>'+(selectedMedia(current,p)?.scope==='exact'?'Photo fabricant de la référence et de la finition':imageDetail(current,p)?'Photo fabricant du modèle · finition illustrative':'Image non vérifiée pour la finition')+'</small></div>'+
        '<div class="mg-config"><div class="mg-ref">Référence : '+esc(current.base)+'</div>'+
        '<h3>'+esc(p?.designation||current.base)+'</h3>'+
        (variants.length?'<div class="hb-variant-select"><label class="mg-finishes">Référence et finition<select id="hb-finish">'+variants.map(v=>
@@ -183,6 +219,19 @@ function openHotbath(rows,roomId,onAdd){
        '</div></section>';
    }
    target.innerHTML='<div class="mg-section-head"><h2>'+esc(head)+'</h2><small>Catégories et articles du fabricant · prix issus du tarif Hydropolis</small></div>'+breadcrumb()+body;
+   // The current vendor site supplies exact model photos even where older
+   // archive URLs are dead. Request only visible, still-unillustrated models.
+   if(phase==='models'){
+     const term=clean(search);
+     const entries=models().filter(x=>!term||clean(x.base+' '+String(repr(x)?.designation||'')).includes(term));
+     for(const m of entries.slice(offset*ALL,(offset+1)*ALL)){
+       if(!photoFor(m))requestMedia(m);
+     }
+   }else if(phase==='detail'&&current){
+     const variant=(current.variants||[]).find(v=>v.reference===chosen)||current.variants?.[0];
+     if(variant?.finishCode)requestMedia(current,variant.finishCode);
+     if(!photoFor(current))requestMedia(current);
+   }
    target.querySelectorAll('[data-step]').forEach(button=>button.onclick=()=>{
      const stage=button.dataset.step;
      if(stage==='collections'){phase=stage;collection='';category=null;current=null;}
