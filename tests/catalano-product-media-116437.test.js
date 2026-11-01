@@ -112,3 +112,21 @@ test('Static manufacturer thumbnail is safe only if reference matches both tile 
  const wrong=server.parseCollection(markup.replace('71 4131 0021','71 4141 0021'),'H3 Solid');
  assert.equal(Object.keys(wrong.exact).length,0);
 });
+
+test('Catalano accessories are indexed from official category listing, not unrelated collection hero',async()=>{
+ assert(server.supplementalSources('Sfera').some(url=>url.endsWith('/accessories/seats-and-covers/')));
+ assert(server.supplementalSources('Zero').some(url=>url.endsWith('/accessories/towel-rail/')));
+ assert.deepEqual(server.supplementalSources('H3 Solid'),[]);
+ const seat='https://www.catalano.it/wp-content/uploads/2026/02/SEDILE_SFERA_0551250001-600x600.webp';
+ const towel='https://www.catalano.it/wp-content/uploads/2025/03/PORTASCIUGAMANI_ZERO_0160500061-600x600.webp';
+ const sourceHtml=(url)=>url.includes('seats-and-covers')?tile('05 5125 0001','seat-sfera',[seat]):
+  url.includes('towel-rail')?tile('01 6050 0061','towel-rail-zero',[towel]):'<main></main>';
+ const get=async url=>({data:sourceHtml(url).padEnd(600,' ')});
+ const service=server.createService({get});
+ const sfera=await service.collection('Sfera');
+ const zero=await service.collection('Zero');
+ assert.equal(sfera.exact['0551250001'].image,seat);
+ assert.equal(zero.exact['0160500061'].image,towel);
+ assert(!sfera.exact['0160500061'],'Never mix towel rail from another supplier collection');
+ assert(!zero.exact['0551250001'],'Never mix WC seat from another supplier collection');
+});

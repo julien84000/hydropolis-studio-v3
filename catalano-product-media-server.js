@@ -27,7 +27,24 @@ const COLLECTIONS=Object.fromEntries([...new Set(PRODUCTS.map(x=>x.collection))]
   name==='Accessori Vari'?ROOT+'/en/accessories/':'')];
 }));
 const BY_REF=new Map(PRODUCTS.map(p=>[p.reference,p]));
-const cache=new Map(),inflight=new Map(),TTL=6*60*60*1000;
+// Accessories and frames are listed by product type, not on the Sfera/Zero/etc.
+// collection pages. Index these *official product grids* as supplementary
+// sources and still require a literal SKU match in both card and photo URL.
+const SUPPLEMENTARY_URLS={
+ accessories:[
+  ROOT+'/en/accessories/seats-and-covers/',
+  ROOT+'/en/accessories/towel-rail/',
+  ROOT+'/en/accessories/drains/',
+  ROOT+'/en/accessories/various-accessories/'
+ ],
+ frames:[ROOT+'/en/structures/']
+};
+function supplementalSources(name){
+ const rows=PRODUCTS.filter(p=>p.collection===name);
+ if(!rows.some(p=>p.category==='Accessoires')&&name!=='Accessori Vari'&&name!=='Ceramic Top')return [];
+ return [...SUPPLEMENTARY_URLS.accessories,...SUPPLEMENTARY_URLS.frames];
+}
+const TTL=6*60*60*1000;
 const seeds={
  '0519501001':'https://www.catalano.it/wp-content/uploads/2025/03/SFERA_bidet_terra_50x35_0519501001-600x600.webp',
  '0519501021':'https://www.catalano.it/wp-content/uploads/2025/03/SFERA_bidet_terra_50x35_0519501021-600x600.webp',
@@ -106,19 +123,42 @@ const merge=(a,b)=>({
  countModels:Object.keys({...a.models,...b.models}).length
 });
 function createService({get=axios.get,now=Date.now}={}){
+ // Per-service caches prevent different fetchers/deployments from sharing stale data.
+ const cache=new Map(),inflight=new Map();
+ const pageCache=new Map(),pageInflight=new Map();
+ async function readPage(url){
+  const cached=pageCache.get(url);
+  if(cached&&now()-cached.at<TTL)return cached.html;
+  if(pageInflight.has(url))return pageInflight.get(url);
+  const task=(async()=>{
+   try{
+    const response=await get(url,{timeout:12000,maxRedirects:3,headers:{'User-Agent':'Mozilla/5.0','Accept-Language':'en-GB,en;q=0.9','Accept':'text/html'},maxContentLength:4*1024*1024});
+    const html=String(response.data||'');
+    if(html.length<500||html.length>4*1024*1024)return '';
+    pageCache.set(url,{at:now(),html});
+    return html;
+   }catch(err){console.warn('[Catalano media] source unavailable',url,String(err?.message||err));return ''}
+  })();
+  pageInflight.set(url,task);
+  try{return await task}finally{pageInflight.delete(url)}
+ }
  async function collection(name){
   if(!Object.hasOwn(COLLECTIONS,name))throw Error('Collection Catalano inconnue');
   const hit=cache.get(name);if(hit&&now()-hit.at<TTL)return hit.data;
   if(inflight.has(name))return inflight.get(name);
   const promise=(async()=>{
-   const base=seedsFor(name),url=COLLECTIONS[name];
-   if(!url)return base;
-   try{
-    const response=await get(url,{timeout:22000,maxRedirects:3,headers:{"User-Agent":"Mozilla/5.0","Accept-Language":"en-GB,en;q=0.9","Accept":"text/html"},maxContentLength:4*1024*1024});
-    const html=String(response.data||'');
-    if(html.length<500||html.length>4*1024*1024)return base;
-    return merge(base,parseCollection(html,name));
-   }catch(err){console.warn('[Catalano media] collection unavailable',name,String(err?.message||err));return base}
+   let data=seedsFor(name);
+   // Fetch all independent catalogue sources concurrently, with shared HTML
+   // cache: no 5x repeated network requests when browsing each collection.
+   const urls=[...supplementalSources(name),COLLECTIONS[name]].filter(Boolean);
+   const htmls=await Promise.all(urls.map(readPage));
+   for(let i=0;i<urls.length;i++){
+    if(!htmls[i])continue;
+    // The collection listing comes LAST so its exact model image takes
+    // precedence over shared accessory category duplicates if any.
+    data=merge(data,parseCollection(htmls[i],name));
+   }
+   return data;
   })();
   inflight.set(name,promise);
   try{const data=await promise;cache.set(name,{at:now(),data});return data}
@@ -137,4 +177,4 @@ function attach(app,{service=createService()}={}){
  });
 }
 module.exports=attach;
-Object.assign(module.exports,{allowedPhoto,photoReference,parseCollection,seedsFor,createService,COLLECTIONS});
+Object.assign(module.exports,{allowedPhoto,photoReference,parseCollection,seedsFor,createService,COLLECTIONS,supplementalSources});
