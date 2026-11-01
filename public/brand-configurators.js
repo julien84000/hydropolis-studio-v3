@@ -283,7 +283,7 @@
        'Le tarif ne contient pas de balise certifiant ce sous-filtre. Voici les familles de la catégorie principale, sans prétendre à un filtrage exact.';
       const content='<div class="brand-path"><button type="button" data-bette-back="sections">'+esc(cat.name)+'</button><span>›</span><b>'+esc(label)+'</b></div>'+
         '<p class="brand-note">'+esc(subtitle)+'</p><div class="brand-category-grid">'+shown.map(g=>
-        '<button type="button" data-bette-group="'+esc(g.id)+'"><b>'+esc(g.family||g.id)+'</b><small>'+g.variants.length+' variantes tarifées</small></button>').join('')+'</div>'+
+        betteGroupCard(g)).join('')+'</div>'+
         '<a class="brand-site-link" href="'+esc(cat.url+'/'+slug)+'" target="_blank" rel="noopener noreferrer">Voir cette sous-catégorie sur le site officiel</a>';
       overlay=overlay||mount(shell('Bette',content));overlay.innerHTML=shell('Bette',content);
       overlay.querySelector('.brand-config-close').onclick=close;overlay.querySelector('.brand-config-cancel').onclick=close;
@@ -301,9 +301,11 @@
       const sections=cat.sections.map(x=>'<section class="brand-official-facets"><h3>'+esc(x.name)+'</h3><div class="brand-official-links">'+x.items.map(([name,slug])=>
          '<button type="button" data-bette-facet="'+esc(slug)+'" data-bette-facet-group="'+esc(x.name)+'">'+esc(name)+'</button>').join('')+'</div></section>').join('');
       const content='<div class="brand-path"><button data-bette-back="families">Produits</button><span>›</span><b>'+esc(cat.name)+'</b></div>'+
-        '<p class="brand-note">Les filtres de type et de forme ci-dessous ouvrent les pages officielles. Le tarif importé ne contient pas toujours ces classifications : aucune correspondance n’est devinée.</p>'+sections+
+        '<div class="bette-section-heading">'+bettePhotoHtml(cat.id)+'<div><h3>'+esc(cat.name)+'</h3>'+
+        '<p class="brand-note">Parcours par type, forme et famille. Les classifications absentes du tarif ne sont pas déduites des photographies.</p>'+
+        '<a class="bette-3d-link" href="'+BETTE_3D_URL+'" target="_blank" rel="noopener noreferrer">Visualiser chez Bette en 3D</a></div></div>'+sections+
         '<div class="brand-official-facets"><h3>Familles tarifées disponibles</h3><p class="brand-note">'+dataGroups.length+' familles classées à partir de la catégorie fournisseur.</p><div class="brand-category-grid">'+dataGroups.map(g=>
-         '<button type="button" data-bette-group="'+esc(g.id)+'"><b>'+esc(g.family||g.id)+'</b><small>'+g.variants.length+' variantes tarifées</small></button>').join('')+
+         betteGroupCard(g)).join('')+
          '<button type="button" data-bette-unclassified><b>Autres références du tarif</b><small>Familles sans classement constructeur certifié</small></button></div></div>'+
          '<a class="brand-site-link" href="'+esc(cat.url)+'" target="_blank" rel="noopener noreferrer">Voir '+esc(cat.name)+' chez Bette</a>';
       overlay=overlay||mount(shell('Bette',content));overlay.innerHTML=shell('Bette',content);
@@ -330,18 +332,26 @@
       const colors=uniq(rows.map(v=>v.color||'Standard'));draft.color=chosen(draft.color,colors);rows=rows.filter(v=>(v.color||'Standard')===draft.color);
       const opts=uniq(rows.map(v=>v.option||'Standard'));draft.option=chosen(draft.option,opts);rows=rows.filter(v=>(v.option||'Standard')===draft.option);
       const refs=rows.map(v=>v.reference);draft.reference=chosen(draft.reference,refs);const exact=rows.find(v=>v.reference===draft.reference)||rows[0];
-      const body=`<div class="brand-path"><button class="bette-back-to-families" type="button">← Familles</button><span>›</span><b>${esc(g.family)}</b></div><div class="recor-config-section"><div class="recor-config-title"><b>1. Produit</b><span>Famille Bette</span></div><div class="v1146-field-grid">${field('bcGroup','Produit',groups.map(x=>x.id),g.id,id=>groups.find(x=>x.id===id)?.family||id)}${field('bcModel','Version',models,draft.model)}${field('bcDim','Dimensions',dims,draft.dim)}${field('bcColor','Couleur',colors,draft.color)}${field('bcOption','Option / équipement',opts,draft.option)}${field('bcRef','Référence finale',refs,draft.reference)}</div></div>
+      const body=`<div class="brand-path"><button class="bette-back-to-families" type="button">← Familles</button><span>›</span><b>${esc(g.family)}</b></div>
+      <div class="bette-config-header"><div><strong>${esc(g.family||g.id)}</strong><small>Modèle → dimensions → couleur → options → référence fabricant.</small></div>
+      <a class="bette-3d-link" href="${BETTE_3D_URL}" target="_blank" rel="noopener noreferrer">Voir le produit en 3D sur Bette</a></div>
+      <div class="recor-config-section"><div class="recor-config-title"><b>1. Produit</b><span>Famille Bette</span></div><div class="v1146-field-grid">${field('bcGroup','Produit',groups.map(x=>x.id),g.id,id=>groups.find(x=>x.id===id)?.family||id)}${field('bcModel','Version',models,draft.model)}${field('bcDim','Dimensions',dims,draft.dim)}${field('bcColor','Couleur',colors,draft.color)}${field('bcOption','Option / équipement',opts,draft.option)}${field('bcRef','Référence finale',refs,draft.reference)}</div></div>
       <div class="recor-config-summary">${mediaPreview('Bette',p,g,exact)}<div><b>${money(exact?.price)} HT</b><span>${esc(exact?.designation||g.family)}</span><small>Réf. ${esc(exact?.reference||'—')} · tarif Bette</small></div></div>`;
       overlay=overlay||mount(shell('Bette',body));if(overlay.innerHTML!==shell('Bette',body))overlay.innerHTML=shell('Bette',body);
       overlay.querySelector('.brand-config-close').onclick=close;overlay.querySelector('.brand-config-cancel').onclick=close;
-      overlay.querySelector('.bette-back-to-families').onclick=openFamilies;
+      overlay.querySelector('.bette-back-to-families').onclick=openSections;
+      const modelChoices=choiceTiles('bcModel',models,draft.model);
+      const colorChoices=choiceTiles('bcColor',colors,draft.color);
+      if(modelChoices)overlay.querySelector('#bcModel')?.closest('label')?.insertAdjacentHTML('afterend',modelChoices);
+      if(colorChoices)overlay.querySelector('#bcColor')?.closest('label')?.insertAdjacentHTML('afterend',colorChoices);
       const map={bcGroup:'group',bcModel:'model',bcDim:'dim',bcColor:'color',bcOption:'option',bcRef:'reference'};
       Object.entries(map).forEach(([id,key])=>{const el=overlay.querySelector('#'+id);if(el)el.onchange=()=>{draft[key]=el.value;if(key==='group'){draft.model=draft.dim=draft.color=draft.option=draft.reference=''}else if(key==='model'){draft.dim=draft.color=draft.option=draft.reference=''}else if(key==='dim'){draft.color=draft.option=draft.reference=''}else if(key==='color'){draft.option=draft.reference=''}else if(key==='option'){draft.reference=''}render()}});
+      wireChoices(overlay);
       overlay.querySelector('.brand-config-confirm').onclick=()=>{try{
         const selected=rows.find(v=>v.reference===draft.reference)||exact;if(!selected)throw new Error('Référence Bette introuvable.');
         const price=verifiedPublicPrice('Bette',selected);
         const media=mediaFor('Bette',p,g,selected);
-        const configured={manufacturer:'Bette',collection:g.family,reference:selected.reference,base:selected.reference,designation:selected.designation,category:selected.category,finish:[selected.color,selected.option].filter(Boolean).join(' · '),price,totalPrice:price,currency:'€',vat:'HT',source:'TARIF BETTE.csv',sourceYear:2026,manufacturerUrl:media.manufacturerUrl,image:media.image||media.representativeImage,imageSource:media.image?'Visuel exact fabricant':'Visuel de collection · finition illustrative',imageFinishMatch:media.image?'exact':media.representativeImage?'collection':'missing',technicalSheetUrl:media.technicalSheetUrl,purchaseDiscount:50,configuratorType:'bette-configured'};
+        const configured={manufacturer:'Bette',collection:g.family,reference:selected.reference,base:selected.reference,designation:selected.designation,category:selected.category,finish:[selected.color,selected.option].filter(Boolean).join(' · '),price,totalPrice:price,currency:'€',vat:'HT',source:'TARIF BETTE.csv',sourceYear:2026,manufacturerUrl:media.manufacturerUrl,image:media.image||media.representativeImage,imageSource:media.image?'Visuel exact fabricant':media.representativeScope==='category'?'Illustration de catégorie Bette · non contractuelle':'Visuel de collection · finition illustrative',imageFinishMatch:media.image?'exact':media.representativeScope==='category'?'category':media.representativeImage?'collection':'missing',technicalSheetUrl:media.technicalSheetUrl,purchaseDiscount:50,configuratorType:'bette-configured'};
         commitConfigured(configured,roomId,'betteConfiguration',{group:g.id,family:g.family,model:selected.model,lengthMm:selected.lengthMm,widthMm:selected.widthMm,heightMm:selected.heightMm,color:selected.color,option:selected.option,reference:selected.reference});
       }catch(e){overlay.querySelector('.recor-config-error').textContent=e.message||String(e)}};
     };
