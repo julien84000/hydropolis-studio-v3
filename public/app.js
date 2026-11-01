@@ -59,6 +59,9 @@ const catalogIndex=HydroCatalogIndex.create(CATALOG);
 const manufacturerRequests=new Map();
 const brokenCatalogImages=new Set();
 function reconcileProjectRoughIns(){
+  // Catalog is loaded incrementally. Recover all explicitly listed Hotbath concealed bodies
+  // before quoting, loading an old project or inserting a new catalogue line.
+  window.HydroHotbathRoughIn?.linkCatalog?.(catalogIndex.maker('Hotbath'));
   const result=HydroRoughIn.reconcile(state.selected,p=>catalogIndex.get(productKey(p)),createSelectedProductRecord);
   state.selected=result.records;return result;
 }
