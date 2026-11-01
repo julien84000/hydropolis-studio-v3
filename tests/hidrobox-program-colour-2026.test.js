@@ -68,5 +68,6 @@ test('Guided route, CSS and official-image disclaimers never pretend palette swa
  assert.match(guided,/root\.HydroProgramColourUI\?\.programColour\(g,ctx\)/);
  for(const field of ['pcGroup','pcLength','pcDepth','pcHeight','pcSpecial','pcPosition','pcAdd','pcDrain'])assert(ui.includes(field),field);
  assert.match(ui,/SCHÉMA INDICATIF/);assert.match(ui,/pastilles de couleur sont des approximations visuelles/);
- assert.match(ui,/HydroHidroboxOfficialVisual/);
+ assert.match(ui,/Hidrobox_Washbasin_Program-colour_Thumbnail\.png/);
+ assert.match(ui,/ne répertorie pas Program Colour comme collection filtrable/);
 });
