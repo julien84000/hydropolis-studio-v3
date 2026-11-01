@@ -464,8 +464,10 @@ function resolve(family,category){
  // Generic model for an unqualified tariff family, only if the model root matches.
  // Avoid picking a bath illustration for a shower or confusing Floor vs Floor Side.
  const sub=list.filter(r=>canonical(r.name).startsWith(key+' '));
- const distinct=new Set(sub.map(r=>canonical(r.name).split(' ').slice(0,2).join(' ')));
- if(sub.length&&distinct.size===1)return {...sub[0],scope:'family'};
+ // A published collection can have multiple manufacturer image cards by size
+ // (BetteDelta 800–900 mm vs 1000–1200 mm). Either is a family ILLUSTRATION,
+ // never a size-exact article photograph; keep scope strictly 'family'.
+ if(sub.length)return {...sub[0],scope:'family'};
  return null;
 }
 return {records:RECORDS,resolve,canonical};
