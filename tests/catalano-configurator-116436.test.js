@@ -90,8 +90,9 @@ test('Collection gallery only uses manufacturer URLs and never mislabels a colle
  assert.equal(gallery.verifiedPhoto('https://evil.example/image.webp'),false);
  const p={...get('0111460001'),image:''};
  const image=config.imageFor(p,()=>null);
- assert.equal(image.scope,'collection');
- assert.equal(image.src,gallery.family('Zero').image);
+ assert.equal(image.scope,'missing');
+ assert.equal(image.src,'','Product tiles must never reuse collection lifestyle photos');
+ assert(gallery.family('Zero').image,'Collection hero stays available in sidebar only');
 });
 test('Hydropolis hooks offer both direct internal launchers and save Catalano seat/kit linked to WC',()=>{
  const app=fs.readFileSync(path.join(root,'app.js'),'utf8'),html=fs.readFileSync(path.join(root,'index.html'),'utf8');
