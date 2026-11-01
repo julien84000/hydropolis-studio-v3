@@ -463,6 +463,7 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     await page.evaluate(()=>{
       const p=state.selected.find(x=>x.manufacturer==='Naxani'&&x.reference==='504086');
       if(p)removeProduct(p.id);
+      showView('catalog'); // The next legacy Hidrobox browser scenario needs the catalogue visible.
     });
 
     // V11.64 — Gessi-inspired guide validation in a REAL Chromium DOM on desktop/mobile.
