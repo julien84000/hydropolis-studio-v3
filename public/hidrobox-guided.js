@@ -205,9 +205,14 @@ function officialInfo(entry){
  const media=officialCollectionMedia(entry.key),
   photo=collectionImageFor(entry.key,media?.image);
  const photoMarkup=photo?'<div class="hidrobox-unpriced-photo"><img src="'+escape(photo)+'" alt="Collection '+escape(entry.name)+'" loading="lazy"><small>Photo constructeur de collection · variantes non garanties</small></div>':'';
+ const miniApi=root.HydroHidroboxOfficialMinis2026;
+ const browsable=miniApi?.list(entry.key)||[];
+ const manufacturerFormats=browsable.length?'<div class="hb-official-mini-gallery"><h4>Formats disponibles · miniatures officielles Hidrobox</h4>'+
+   '<div class="hp-grid">'+browsable.map(format=>'<div class="hp-choice hb-format-preview"><span class="hb-official-mini" aria-hidden="true">'+
+   miniApi.get(entry.key,format)+'</span><strong>'+escape(format)+'</strong><small>Schéma fabricant · dimensions à vérifier sur la fiche technique</small></div>').join('')+'</div></div>':'';
  const explanation=groupsLoading?'Les références tarifaires de la collection sont en cours de chargement. La navigation reste possible ; la configuration sera accessible dès la fin du chargement.':groupsError?'Le tarif est temporairement indisponible. La collection est consultable sur le site fabricant, mais aucun prix ni ajout au devis ne peut être proposé pour le moment.':entry.private?'Cette collection est indiquée « Privé » dans le menu du fabricant.':"Cette collection figure au catalogue officiel, mais aucune référence et aucun tarif correspondants n’ont été importés.";
  const markup='<button class="hidrobox-back" type="button">← Collections</button>'+
-  '<section class="hidrobox-unpriced-collection">'+photoMarkup+'<div class="eyebrow">'+escape(category?.name||'Hidrobox')+'</div><h3>'+escape(entry.name)+'</h3>'+
+  '<section class="hidrobox-unpriced-collection">'+photoMarkup+manufacturerFormats+'<div class="eyebrow">'+escape(category?.name||'Hidrobox')+'</div><h3>'+escape(entry.name)+'</h3>'+
   '<p>'+explanation+
   ' Vous pouvez consulter la documentation du fabricant, sans ajout automatique au devis.</p>'+
   '<div class="hidrobox-downloads"><a href="'+escape(url||HOUSE)+'" target="_blank" rel="noopener noreferrer">Voir sur Hidrobox</a>'+docs+'</div>'+
@@ -501,7 +506,7 @@ function betaEvoquePage(g){
  if(!model.drains(draft.overflow===true).includes(draft.drain))draft.drain='OPBT0001';
  const quote=model.quote(draft),hero=officialImage(officialCollectionMedia('beta-evoque')?.image);
  const card=(key,value,title,note='',diagram='')=>'<button type="button" class="hp-choice'+(diagram?' hbev-position-card':'')+'" data-hbev="'+escape(key)+'" data-value="'+escape(value)+'" aria-pressed="'+(String(draft[key])===String(value))+'">'+
-  (diagram?'<span class="hbev-diagram hbev-diagram-'+escape(diagram)+'" aria-hidden="true"><i></i><em></em></span>':'')+
+  (key==='position'&&root.HydroHidroboxOfficialMinis2026?.get('beta-evoque','Beta Evoque '+diagram)?'<span class="hb-official-mini" aria-hidden="true">'+root.HydroHidroboxOfficialMinis2026.get('beta-evoque','Beta Evoque '+diagram)+'</span>':diagram?'<span class="hbev-diagram hbev-diagram-'+escape(diagram)+'" aria-hidden="true"><i></i><em></em></span>':'')+
   '<b>'+escape(title)+'</b><small>'+escape(note)+'</small></button>';
  const opts=(key,title,list)=>'<label>'+escape(title)+'<select data-hbev-select="'+escape(key)+'">'+list.map(([value,label])=>'<option value="'+escape(value)+'"'+(draft[key]===value?' selected':'')+'>'+escape(label)+'</option>').join('')+'</select></label>';
  const option=ref=>[ref,model.OPTIONS[ref].label+(model.OPTIONS[ref].rawPrice===null?' · tarif à confirmer':model.OPTIONS[ref].rawPrice?' · +'+eu(model.OPTIONS[ref].rawPrice)+' HT':' · inclus')];
@@ -598,7 +603,7 @@ function betaEssentialPage(g){
  const hero=officialImage(officialCollectionMedia('beta-essential')?.image);
  const card=(key,value,title,note='',diagram='')=>
   '<button type="button" class="hp-choice hbess-choice" data-hbess="'+escape(key)+'" data-value="'+escape(value)+'" aria-pressed="'+(String(state[key])===String(value))+'">'+
-  (diagram?'<span class="hbess-pictogram hbess-pictogram-'+escape(diagram)+'" aria-hidden="true"><span></span></span>':'')+
+  (key==='form'&&root.HydroHidroboxOfficialMinis2026?.get('beta-essential',title.replace('Ovale ','Oval '))?'<span class="hb-official-mini" aria-hidden="true">'+root.HydroHidroboxOfficialMinis2026.get('beta-essential',title.replace('Ovale ','Oval '))+'</span>':diagram?'<span class="hbess-pictogram hbess-pictogram-'+escape(diagram)+'" aria-hidden="true"><span></span></span>':'')+
   '<b>'+escape(title)+'</b><small>'+escape(note)+'</small></button>';
  const options=(key,label,rows)=>'<label>'+escape(label)+'<select data-hbess-select="'+escape(key)+'">'+rows.map(([val,name])=>
   '<option value="'+escape(val)+'"'+(state[key]===val?' selected':'')+'>'+escape(name)+'</option>').join('')+'</select></label>';
