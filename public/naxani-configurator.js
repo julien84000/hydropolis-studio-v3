@@ -10,6 +10,14 @@
  const type={'Laqués':'laque','Bois massif':'bois-massif','Compléments':'complement','Plans intégrés':'plan-integre','Vasques à poser':'vasque-poser','Plans suspendus':'suspendu','Miroirs':'miroir'};
  const isTop=p=>['plan-solid','plan-mdf','plan-marbre'].includes(p?.naxaniKind);
  const isFurniture=p=>['laque','bois-massif'].includes(p?.naxaniKind);
+ const LACQUERS=[
+  ['011','Blanc satiné'],['010','Snow'],['092','Wevet'],['027','Arena'],['134','Fango'],
+  ['117','Gris Angora'],['132','Cuarzo'],['133','Niebla'],['111','Azil Insta'],
+  ['014','Océano'],['091','Grafito'],['019','Noir satiné'],['017','Topo'],
+  ['093','Blush'],['131','Teja'],['081','Cemento texturé'],['082','Terracota texturé'],
+  ['083','Smog texturé'],['084','Serena texturé']
+ ];
+ const BETON=[['041','Betón'],['042','Betón Brut']];
  const imageCache=new Map();
  function options(items,chosen){
   return '<option value="">Choisir une référence</option>'+items.map(p=>'<option value="'+esc(p.reference)+'"'+(p.reference===chosen?' selected':'')+'>'+esc(p.collection)+' · '+(p.naxaniWidth?p.naxaniWidth+' cm · ':'')+esc(p.reference)+' · '+eur(p.price)+'</option>').join('');
@@ -34,7 +42,7 @@
    '.naxani-modes{display:flex;gap:5px}.naxani-modes button{flex:1;background:#f5f2ef;border:1px solid #ccc;border-radius:5px;padding:9px;font-size:11px;cursor:pointer}.naxani-modes button.active{background:#e7d5b8;border-color:#aa824c}.naxani-line{display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid #eee;padding:7px 0}.naxani-confirm{width:100%;padding:14px;background:#20503d;color:white;border:0;border-radius:7px;margin-top:12px;font-weight:bold;cursor:pointer}.naxani-confirm:disabled{background:#a1a6a2;cursor:not-allowed}' +
    '@media(max-width:900px){.naxani-body{grid-template-columns:130px 1fr;overflow:auto}.naxani-side{grid-column:1/-1}.naxani-main{min-height:200px}}';
   document.head.appendChild(style);
-  let section='Meubles',sub='Laqués',model='',ref='',mode='integrated',top='',basin='',drain='',busy=false,closed=false;
+  let section='Meubles',sub='Laqués',model='',ref='',mode='integrated',top='',basin='',drain='',lacquerColor='011',busy=false,closed=false;
   if(initial){
    const p=rows.find(x=>x.reference===initial.reference)||initial;
    if(p?.manufacturer==='Naxani'){
@@ -100,6 +108,9 @@
     '<div class="naxani-grid" style="margin-top:12px">'+models().map(m=>'<button class="naxani-tile '+(m===model?'active':'')+'" data-model="'+esc(m)+'"><div class="naxani-pic"><img loading="lazy" src="/api/naxani-collection-image?collection='+encodeURIComponent(m)+'" alt="Collection '+esc(m)+'"><span>'+esc(m)+'</span></div><b>'+esc(m)+'</b><small>'+subRows().filter(x=>x.collection===m).length+' références</small></button>').join('')+'</div></main>' +
     '<aside class="naxani-side"><div class="naxani-hero">'+esc(title)+'</div><p class="naxani-muted">Photo de collection illustrative, finition non contractuelle.</p><h3>'+esc(title)+'</h3>' +
     '<label>Référence, dimensions et prix public HT</label><select data-field="ref">'+options(variants(),ref)+'</select>' +
+    (p?.naxaniKind==='laque'?'<label>Coloris souhaité (à confirmer sur la référence)</label><select data-field="lacquerColor">'+
+      ((['Simenta','Banaavat'].includes(p.collection)?BETON:LACQUERS).map(([code,label])=>'<option value="'+esc(code)+'"'+(lacquerColor===code?' selected':'')+'>'+esc(code)+' · '+esc(label)+'</option>').join(''))+'</select>'+
+      '<p class="naxani-muted">Coloris du nuancier Naxani p.46 ; la référence tarifée et sa finition exacte restent à confirmer avant commande. Surcoût RAL/NCS non proposé.</p>':'') +
     (p&&isFurniture(p)?'<label>Composition à ajouter</label><div class="naxani-modes"><button data-mode="integrated" class="'+(mode==='integrated'?'active':'')+'">Plan intégré</button><button data-mode="countertop" class="'+(mode==='countertop'?'active':'')+'">Top + vasque à poser</button></div>' +
     '<label>'+(mode==='integrated'?'Plan intégré compatible':'Plan de travail compatible')+'</label><select data-field="top">'+options(allowed,top)+'</select>' +
     (mode==='countertop'?'<label>Vasque à poser</label><select data-field="basin">'+options(rows.filter(x=>x.naxaniKind==='vasque-poser'),basin)+'</select>':'') +
@@ -118,8 +129,8 @@
    modal.querySelectorAll('[data-sub]').forEach(b=>b.onclick=()=>{sub=b.dataset.sub;model='';ref='';top='';basin='';render()});
    modal.querySelectorAll('[data-model]').forEach(b=>b.onclick=()=>{model=b.dataset.model;ref='';top='';basin='';render()});
    modal.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;top='';basin='';render()});
-   modal.querySelectorAll('[data-field]').forEach(s=>s.onchange=()=>{const k=s.dataset.field;({ref:v=>{ref=v;top='';basin=''},top:v=>{top=v},basin:v=>{basin=v},drain:v=>{drain=v}}[k])(s.value);render()});
-   modal.querySelector('.naxani-confirm').onclick=async()=>{const c=assembly();if(c.errors.length||busy)return;busy=true;render();try{await onAdd(c.out,roomId,{collection:model,mode,source:'Naxani 2026',image:imageCache.get(model)||''});close()}catch(e){busy=false;render();root.alert('Naxani : '+(e.message||e))}};
+   modal.querySelectorAll('[data-field]').forEach(s=>s.onchange=()=>{const k=s.dataset.field;({ref:v=>{ref=v;top='';basin=''},top:v=>{top=v},basin:v=>{basin=v},drain:v=>{drain=v},lacquerColor:v=>{lacquerColor=v}}[k])(s.value);render()});
+   modal.querySelector('.naxani-confirm').onclick=async()=>{const c=assembly();if(c.errors.length||busy)return;busy=true;render();try{await onAdd(c.out,roomId,{collection:model,mode,source:'Naxani 2026',image:imageCache.get(model)||'',finishCode:selected()?.naxaniKind==='laque'?lacquerColor:null,finish:(selected()?.naxaniKind==='laque'?(['Simenta','Banaavat'].includes(model)?BETON:LACQUERS).find(x=>x[0]===lacquerColor)?.[1]:null)||null});close()}catch(e){busy=false;render();root.alert('Naxani : '+(e.message||e))}};
    loadPhoto();
   }
   modal.addEventListener('click',e=>{if(e.target===modal)close()});
