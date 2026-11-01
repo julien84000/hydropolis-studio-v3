@@ -812,6 +812,12 @@ function universalPage(g){
        ' value="'+escape(String(liveSize[key]??''))+'" placeholder="cm" required></label>';
    }).join('')+'</div><small>Référence et prix calculés à partir des tranches tarifaires du PDF fabricant, sans interpolation.</small>':'';
  const dimensionMarkup=liveSize?exactNumberInputs:dimensionFields(selected);
+ const sizeBoundsLabel=shower&&liveSize?.widthBounds&&liveSize?.lengthBounds?
+   '<p class="hidrobox-guide-note" data-hb-dimension-limits>Dimensions fabricant pour cette collection, cette forme et cette finition : largeur '+
+   liveSize.widthBounds.first+'–'+liveSize.widthBounds.last+' cm ; longueur '+
+   liveSize.lengthBounds.first+'–'+liveSize.lengthBounds.last+
+   ' cm. Les deux maxima ne sont pas nécessairement compatibles : toute combinaison non tarifée reste refusée.</p>':
+   shower?'<p class="hidrobox-guide-note" data-hb-dimension-limits>Dimensions maximales non certifiables avec les références de cette sélection : choisir une référence tarifée ou consulter la fiche fabricant.</p>':'';
 
  const verifiedColors=orderedShower?fields.find(f=>f.key==='color')?.options||[]:
    shower&&visual?visual.colorsFor(selected||{}):[];
@@ -882,7 +888,7 @@ function universalPage(g){
       '<h4 class="hidrobox-universal-subtitle">5 · Référence finale</h4><div class="hidrobox-fields">'+refsControl+'</div>':
       genericWorkflow+
       (showerColor||specialColorMarkup?'<h4 class="hidrobox-universal-subtitle">Couleur fabricant</h4><div class="hidrobox-fields">'+showerColor+specialColorMarkup+'</div>':'')+
-      dimensionMarkup+'<div class="hidrobox-fields">'+refsControl+'</div>')+
+      dimensionMarkup+sizeBoundsLabel+'<div class="hidrobox-fields">'+refsControl+'</div>')+
    (pricingWarning?'<p class="hidrobox-guide-note" role="status">'+escape(pricingWarning)+'</p>':'')+
    trayOptsMarkup+imageLookup+
    '<div class="hidrobox-result"><div><b>'+(canAdd?eu(price)+' HT':'Tarif indisponible')+'</b>'+
@@ -999,18 +1005,19 @@ function values(arr){return arr.map(n=>String(n))}
 function choices(vals,selected){return vals.map(v=>'<option value="'+escape(v)+'"'+(String(v)===String(selected)?' selected':'')+'>'+escape(v)+'</option>').join('')}
 const NUMS=(a,b)=>Array.from({length:b-a+1},(_,i)=>a+i);
 function sizeRanges(){
- const f=catalogue.FORMATS.find(x=>x.key===neo.form);
- const widths=f.widths||NUMS(f.widthMin,f.widthMax);
- const lengths=f.lengths||NUMS(f.lengthMin,f.lengthMax);
- const currentW=Number(neo.width),currentL=Number(neo.length);
- if(!widths.includes(currentW))neo.width=widths[0];
- const available=lengths.filter(length=>{
-   if(neo.form==='rectangle'){if(neo.width>130)return length>=120&&length<=140;if(neo.width>110)return length>=120&&length<=180;if(neo.width>90)return length>=100;return length>=80;}
-   if(neo.form==='angular'||neo.form==='pentagonal')return length===Number(neo.width);
-   return true;
- });
- if(!available.includes(Number(currentL)))neo.length=available[0];
- return {widths,lengths:available};
+ // Only permit width/length combinations actually backed by the 2026
+ // supplier matrix for this shape, material, texture and colour group.
+ const allowed=catalogue.allowedSizes?.(neo);
+ if(allowed){
+   const widths=allowed.widths||[];
+   if(!widths.includes(Number(neo.width)))neo.width=widths[0]||0;
+   const lengths=allowed.lengthsByWidth?.[neo.width]||[];
+   if(!lengths.includes(Number(neo.length)))neo.length=lengths[0]||0;
+   return {widths,lengths,widthMin:allowed.widthMin,widthMax:allowed.widthMax,
+     lengthMin:allowed.lengthMin,lengthMax:allowed.lengthMax};
+ }
+ // Remain conservative if the dimensions module has not loaded.
+ return {widths:[],lengths:[],widthMin:null,widthMax:null,lengthMin:null,lengthMax:null};
 }
 function neoPage(){
  if(!root.HydroTariffPictures)loadTariffExtras().then(()=>{if(overlay&&stage==='neo')neoPage()}).catch(()=>{});
@@ -1022,6 +1029,11 @@ function neoPage(){
  const ranges=sizeRanges();
  const textures=['Lisse','Ardoise'].filter(texture=>catalogue.lookup({...neo,texture,group:neo.material==='Scene'?'BLA':'BAS',color:neo.material==='Scene'?'Blanc':'Bianco'}).ok);
  if(textures.length&&!textures.includes(neo.texture))neo.texture=textures[0];
+ const sizeLimitNotice=ranges.widthMax&&ranges.lengthMax?
+   '<p class="hidrobox-guide-note" data-hb-dimension-limits>Dimensions admises pour ce modèle et cette finition : largeur '+
+   ranges.widthMin+'–'+ranges.widthMax+' cm ; longueur '+
+   ranges.lengthMin+'–'+ranges.lengthMax+' cm maximum suivant largeur. Seuls les couples largeur × longueur effectivement tarifés sont proposés.</p>':
+   '<p class="hidrobox-guide-note" data-hb-dimension-limits role="alert">Aucune combinaison de dimensions confirmée par le tarif fabricant pour cette sélection.</p>';
  const line=catalogue.lookup(neo);
  const neoAccessories=root.HydroHidroboxShowerOptions2026;
  const GRID_IDS={'Point Inox':'point-inox','Point Basic':'point-basic','Point Trend':'point-trend',
@@ -1063,7 +1075,7 @@ function neoPage(){
  '<h4 class="hidrobox-universal-subtitle">4 · Couleur</h4>'+
  opts('hnGroup','Groupe de couleurs',colorGroups,neo.group)+
  opts('hnColor','Couleur',colors,neo.color)+
- '<h4 class="hidrobox-universal-subtitle">5 · Dimensions</h4>'+
+ '<h4 class="hidrobox-universal-subtitle">5 · Dimensions</h4>'+sizeLimitNotice+
  opts('hnWidth','Largeur exacte (cm)',values(ranges.widths),neo.width)+
  opts('hnLength','Longueur exacte (cm)',values(ranges.lengths),neo.length)+
  '<h4 class="hidrobox-universal-subtitle">6 · Accessoires et options</h4>'+
