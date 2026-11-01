@@ -1,0 +1,51 @@
+name: Bette 3D image capture (exact SKU only)
+
+on:
+  push:
+    branches:
+      - fix/hidrobox-measured-plans-bette-116434
+    paths:
+      - ".github/workflows/bette-render-import.yml"
+      - "bette-render-requests.json"
+      - "scripts/bette-capture-exact.js"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  capture:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - name: Install isolated Chromium for manufacturer 3D capture
+        run: |
+          npm install --no-save --package-lock=false playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Assert manufacturer SKU exists in the imported 2026 tariff
+        run: node --test tests/bette-render-source-match.test.js
+      - name: Capture and validate exact official WebGL product
+        run: node scripts/bette-capture-exact.js
+      - name: Preserve capture evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bette-exact-3d-images
+          path: public/bette-renders/
+          if-no-files-found: ignore
+          retention-days: 30
+      - name: Import only verified renders into the branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/bette-renders/
+          if ! git diff --cached --quiet; then
+            git commit -m "assets(bette): import verified 3D product image [skip ci]"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
