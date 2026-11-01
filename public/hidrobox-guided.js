@@ -1050,9 +1050,14 @@ function neoPage(){
  if(neo.material==='Scene'){neo.group='BLA';neo.color='Blanc';}
  const colors=catalogue.COLORS[neo.group]||[];
  if(!colors.includes(neo.color))neo.color=colors[0];
- const ranges=sizeRanges();
- const textures=['Lisse','Ardoise'].filter(texture=>catalogue.lookup({...neo,texture,group:neo.material==='Scene'?'BLA':'BAS',color:neo.material==='Scene'?'Blanc':'Bianco'}).ok);
+ // Resolve the permissible texture from manufacturer SKU size pairs BEFORE
+ // filtering the size fields. Angular L/R has no Smooth/Lisse tariff rows.
+ const textures=['Lisse','Ardoise'].filter(texture=>
+   catalogue.allowedSizes?.({...neo,texture,
+     group:neo.material==='Scene'?'BLA':'BAS',
+     color:neo.material==='Scene'?'Blanc':'Bianco'}).widths.length);
  if(textures.length&&!textures.includes(neo.texture))neo.texture=textures[0];
+ const ranges=sizeRanges();
  const sizeLimitNotice=ranges.widthMax&&ranges.lengthMax?
    '<p class="hidrobox-guide-note" data-hb-dimension-limits>Dimensions admises pour ce modèle et cette finition : largeur '+
    ranges.widthMin+'–'+ranges.widthMax+' cm ; longueur '+
