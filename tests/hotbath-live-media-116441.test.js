@@ -35,7 +35,7 @@ test('Hotbath source fallback, cache, and no substituted images when site has di
  const fetcher=async url=>{
   calls.push(url);
   if(url.endsWith('/bbp/'))throw Error('HTTP 404');
-  return {data:page('MATE M515',[exact])};
+  return {data:page('MATE M515',[exact]).padEnd(350,' ')};
  };
  const live=service.makeService({get:fetcher});
  const p=await live.resolve('Mate','M515','BBP');
