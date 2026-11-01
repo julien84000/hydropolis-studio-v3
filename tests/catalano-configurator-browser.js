@@ -61,7 +61,7 @@ const officialSfera=require('../catalano-product-media-server').seedsFor('Sfera'
   assert((await page.locator('.catalano-modal .galassia-image-note').innerText()).includes('référence 0519501001'));
   await page.locator('.catalano-modal .catalano-variant').selectOption('0519501021');
   const blushSrc=await page.locator('.catalano-modal .catalano-selection .galassia-photo img').getAttribute('src');
-  assert(blushSrc.includes('0519501021'),'Variant change must alter manufacturer's thumbnail');
+  assert(blushSrc.includes('0519501021'),'Variant must use the correct manufacturer thumbnail');
   await page.locator('.catalano-modal [data-catalano-model="051155|WC"]').click();
   const wcSrc=await page.locator('.catalano-modal .catalano-selection .galassia-photo img').getAttribute('src');
   assert(wcSrc.includes('SFERA_wc_sospeso_55x35_0511550001'),'WC must not reuse bidet image');
