@@ -14,7 +14,7 @@
  function options(items,chosen){
   return '<option value="">Choisir une référence</option>'+items.map(p=>'<option value="'+esc(p.reference)+'"'+(p.reference===chosen?' selected':'')+'>'+esc(p.collection)+' · '+(p.naxaniWidth?p.naxaniWidth+' cm · ':'')+esc(p.reference)+' · '+eur(p.price)+'</option>').join('');
  }
- function open(rows,roomId,onAdd){
+ function open(rows,roomId,onAdd,initial=null){
   if(!root?.HydroNaxani2026||!Array.isArray(rows)||typeof onAdd!=='function')return Promise.reject(Error('Naxani indisponible'));
   rows=rows.filter(p=>p.manufacturer==='Naxani');
   if(!rows.length)return Promise.reject(Error('Tarif Naxani 2026 non chargé'));
@@ -33,7 +33,17 @@
    '.naxani-side label{display:block;margin-top:12px;margin-bottom:5px;font-weight:bold}.naxani-side select{width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;background:white;font-size:12px}.naxani-muted{font-size:11px;color:#84796a;line-height:1.4;margin:7px 0}.naxani-error{color:#994c1f;background:#fff1e6;padding:8px;margin:6px 0;border-radius:5px}' +
    '.naxani-modes{display:flex;gap:5px}.naxani-modes button{flex:1;background:#f5f2ef;border:1px solid #ccc;border-radius:5px;padding:9px;font-size:11px;cursor:pointer}.naxani-modes button.active{background:#e7d5b8;border-color:#aa824c}.naxani-line{display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid #eee;padding:7px 0}.naxani-confirm{width:100%;padding:14px;background:#20503d;color:white;border:0;border-radius:7px;margin-top:12px;font-weight:bold;cursor:pointer}.naxani-confirm:disabled{background:#a1a6a2;cursor:not-allowed}' +
    '@media(max-width:900px){.naxani-body{grid-template-columns:130px 1fr;overflow:auto}.naxani-side{grid-column:1/-1}.naxani-main{min-height:200px}}';
+  document.head.appendChild(style);
   let section='Meubles',sub='Laqués',model='',ref='',mode='integrated',top='',basin='',drain='',busy=false,closed=false;
+  if(initial){
+   const p=rows.find(x=>x.reference===initial.reference)||initial;
+   if(p?.manufacturer==='Naxani'){
+    section=['bois-massif','laque','complement'].includes(p.naxaniKind)?'Meubles':'Lavabos';
+    sub=Object.keys(type).find(k=>type[k]===p.naxaniKind)||(isTop(p)?'Plans de travail':'Plans intégrés');
+    if(p.naxaniKind==='miroir'){section='Compléments';sub='Miroirs'}
+    model=p.collection;ref=p.reference;
+   }
+  }
   const get=r=>rows.find(p=>p.reference===r);
   const subRows=()=>rows.filter(p=>sub==='Plans de travail'?isTop(p):p.naxaniKind===type[sub]);
   const models=()=>[...new Set(subRows().map(p=>p.collection))].sort((a,b)=>a.localeCompare(b,'fr'));
@@ -60,7 +70,7 @@
    const d=get(drain);if(d?.collection==='Clic Clac')out.push(d);
    return {out,errors};
   }
-  function close(){if(closed)return;closed=true;modal.remove();root.removeEventListener('keydown',escClose)}
+  function close(){if(closed)return;closed=true;modal.remove();style.remove();root.removeEventListener('keydown',escClose)}
   function escClose(e){if(e.key==='Escape')close()}
   root.addEventListener('keydown',escClose);
   async function loadPhoto(){
@@ -108,7 +118,7 @@
    modal.querySelectorAll('[data-model]').forEach(b=>b.onclick=()=>{model=b.dataset.model;ref='';top='';basin='';render()});
    modal.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;top='';basin='';render()});
    modal.querySelectorAll('[data-field]').forEach(s=>s.onchange=()=>{const k=s.dataset.field;({ref:v=>{ref=v;top='';basin=''},top:v=>{top=v},basin:v=>{basin=v},drain:v=>{drain=v}}[k])(s.value);render()});
-   modal.querySelector('.naxani-confirm').onclick=async()=>{const c=assembly();if(c.errors.length||busy)return;busy=true;render();try{await onAdd(c.out,roomId,{collection:model,mode,source:'Naxani 2026'});close()}catch(e){busy=false;render();root.alert('Naxani : '+(e.message||e))}};
+   modal.querySelector('.naxani-confirm').onclick=async()=>{const c=assembly();if(c.errors.length||busy)return;busy=true;render();try{await onAdd(c.out,roomId,{collection:model,mode,source:'Naxani 2026',image:imageCache.get(model)||''});close()}catch(e){busy=false;render();root.alert('Naxani : '+(e.message||e))}};
    loadPhoto();
   }
   modal.addEventListener('click',e=>{if(e.target===modal)close()});
