@@ -8,12 +8,16 @@ test('Hotbath embedded products: every verified tariff body has an exact positiv
  assert.equal(bodies.length,188,'Preserve the 188 supplier-priced embedded technical-body lines');
  for(const p of bodies){
   const r=rough.resolve(p);
-  assert.equal(r.kind,'verified',p.reference);
-  assert.equal(r.reference,p.internalReference);
-  assert.equal(r.price,p.internalPrice);
-  assert.equal(r.required,true);
-  assert.equal(r.separateLine,true);
-  assert(Number.isFinite(r.price)&&r.price>0,p.reference);
+  if(Number(p.internalPrice)>0){
+   assert.equal(r.kind,'verified',p.reference);
+   assert.equal(r.reference,p.internalReference);
+   assert.equal(r.price,p.internalPrice);
+   assert.equal(r.required,true);
+   assert.equal(r.separateLine,true);
+   assert(Number.isFinite(r.price)&&r.price>0,p.reference);
+  }else{
+   assert.equal(r.kind,'unverified',p.reference+' must not invent a zero-priced body');
+  }
  }
 });
 test('Hotbath rough-in reconciliation makes one priced compulsory child and strips total-included amount',()=>{
