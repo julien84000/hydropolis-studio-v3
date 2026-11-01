@@ -302,7 +302,7 @@
          '<button type="button" data-bette-facet="'+esc(slug)+'" data-bette-facet-group="'+esc(x.name)+'">'+esc(name)+'</button>').join('')+'</div></section>').join('');
       const content='<div class="brand-path"><button data-bette-back="families">Produits</button><span>›</span><b>'+esc(cat.name)+'</b></div>'+
         '<div class="bette-section-heading">'+bettePhotoHtml(cat.id)+'<div><h3>'+esc(cat.name)+'</h3>'+
-        '<p class="brand-note">Parcours par type, forme et famille. Les classifications absentes du tarif ne sont pas déduites des photographies.</p>'+
+        '<p class="brand-note">Parcours par type, forme et famille. Si le tarif ne précise pas une classification, aucune correspondance non vérifiée n’est inventée à partir des photographies.</p>'+
         '<a class="bette-3d-link" href="'+BETTE_3D_URL+'" target="_blank" rel="noopener noreferrer">Visualiser chez Bette en 3D</a></div></div>'+sections+
         '<div class="brand-official-facets"><h3>Familles tarifées disponibles</h3><p class="brand-note">'+dataGroups.length+' familles classées à partir de la catégorie fournisseur.</p><div class="brand-category-grid">'+dataGroups.map(g=>
          betteGroupCard(g)).join('')+
