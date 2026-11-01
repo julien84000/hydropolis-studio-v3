@@ -130,3 +130,19 @@ test('Catalano accessories are indexed from official category listing, not unrel
  assert(!sfera.exact['0160500061'],'Never mix towel rail from another supplier collection');
  assert(!zero.exact['0551250001'],'Never mix WC seat from another supplier collection');
 });
+
+test('Temporary manufacturer primary-page failure does not cache an incomplete collection for six hours',async()=>{
+ let clock=1000,attempt=0;
+ const src='https://www.catalano.it/wp-content/uploads/2026/02/SFERA_wc_sospeso_55x35_0511750001.webp';
+ const mockHtml=tile('05 1175 0001','wc-sfera-new',[src]).padEnd(600,' ');
+ const service=server.createService({now:()=>clock,get:async url=>{
+  if(url===server.COLLECTIONS['Sfera']){attempt++;if(attempt===1)throw Error('temporary 429');return {data:mockHtml};}
+  return {data:'<main></main>'.padEnd(600,' ')};
+ }});
+ let first=await service.collection('Sfera');
+ assert(!first.exact['0511750001']);
+ clock+=61*1000;
+ let second=await service.collection('Sfera');
+ assert.equal(second.exact['0511750001'].image,src);
+ assert.equal(attempt,2,'Manufacturer collection page must be retried after 60 seconds');
+});
