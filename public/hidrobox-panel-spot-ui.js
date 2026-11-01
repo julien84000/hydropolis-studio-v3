@@ -211,6 +211,7 @@
     docsMarkup(ctx)+
     '<h4 class="hidrobox-universal-subtitle">1 · Modèle</h4><div class="hidrobox-tray-model-grid hb-spot-grid">'+tiles+'</div>'+
     '<h4 class="hidrobox-universal-subtitle">2 · Matière</h4><div class="hb-spot-material-grid">'+matCards+'</div>'+
+    '<p class="hidrobox-guide-note">Kromat coloré existe uniquement pour Spot 62, 125, 159, 169 et 186 (tarif France 2026). Les autres modèles Spot restent en Scene blanc, avec leurs éventuelles options de couleur extérieure. Aucun Kromat sans référence WSCC.</p>'+
     '<h4 class="hidrobox-universal-subtitle">3 · Texture</h4><div class="hidrobox-fixed-attribute"><strong>Finition</strong><span>Lisse · modèle Spot</span></div>'+
     '<h4 class="hidrobox-universal-subtitle">4 · Couleur</h4><div class="hb-spot-material-grid">'+tierCards+'</div>'+colorChoices+
     '<h4 class="hidrobox-universal-subtitle">5 · Dimensions fabricant</h4><p>'+E(current.width+' × '+current.length+' × '+current.height)+' cm · modèle '+E(current.model)+'. Dimensions fixes correspondant à la référence choisie.</p>'+
