@@ -9,6 +9,7 @@ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const price=v=>Number(v).toLocaleString('fr-FR',{style:'currency',currency:'EUR'});
 const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
 const eligible=p=>p?.manufacturer==='Catalano'&&!!p.reference&&Number(p.price)>0;
+const galleryApi=root?.HydroCatalanoGallery||(typeof require==='function'?require('./catalano-gallery.js'):null);
 const modelKey=p=>String(p.base||p.reference)+'|'+String(p.category||'');
 const groupCollections=rows=>[...new Set(rows.filter(eligible).map(p=>p.collection))].sort((a,b)=>a.localeCompare(b,'fr',{numeric:true}));
 const categories=rows=>[...new Set(rows.map(p=>p.category))].sort((a,b)=>['WC','Lavabo','Douche','Bain','Accessoires'].indexOf(a)-['WC','Lavabo','Douche','Bain','Accessoires'].indexOf(b));
