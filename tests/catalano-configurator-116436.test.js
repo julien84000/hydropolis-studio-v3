@@ -81,12 +81,12 @@ test('Catalano model selector keeps real manufacturer base + finish, preserves c
  assert(config.variantsFor(rows,selected).every(x=>x.base==='011175'));
 });
 test('Collection gallery only uses manufacturer URLs and never mislabels a collection as an exact SKU photo',()=>{
- for(const name of ['Zero','Sfera','Elice','Premium','Alvea','Italy','Comfort']){
+ for(const name of config.groupCollections(rows)){
   const item=gallery.family(name);
   assert(item&&gallery.verifiedPhoto(item.image),name);
   assert.equal(item.scope,'collection',name);
  }
- assert.equal(gallery.family('Accessori Vari'),null);
+ assert.equal(gallery.family('Accessori Vari').scope,'collection');
  assert.equal(gallery.verifiedPhoto('https://evil.example/image.webp'),false);
  const p={...get('0111460001'),image:''};
  const image=config.imageFor(p,()=>null);
