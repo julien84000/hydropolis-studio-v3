@@ -34,5 +34,33 @@ test('Hotbath Galassia UI prioritizes the Italian source without substituting a 
  assert.match(s,/function italianPhoto/);
  assert.match(s,/function onItalianError/);
  assert.match(s,/brokenItalian\.add/);
- assert.match(s,/source\.toUpperCase\(\)\.endsWith/);
+ assert.match(s,/item\?\.verified/);
+});
+
+test('Hotbath fallback catalogue includes exact model images without crossing collection or SKU',()=>{
+ const other=require('../public/hotbath-exact-alternative-media.json');
+ let matched=0;
+ for(const [collection,byModel] of Object.entries(other.byCollection)){
+  for(const [model,item] of Object.entries(byModel)){
+   matched++;
+   assert(index.byCollection[collection]?.[model],collection+' '+model+' is a real manufacturer model');
+   assert.equal(item.officialProductPage,index.byCollection[collection][model].officialProductPage);
+   assert.equal(item.status,'manufacturer-model-code-matched');
+   const filename=item.image.split('/').pop().toUpperCase();
+   assert(filename.startsWith('B_HOTBATH_'+collection.toUpperCase().replace(/\s+/g,'-')+'-'+model.toUpperCase()+'_'),collection+' '+model);
+   assert(item.image.startsWith('https://img.edilportale.com/product-thumbs/b_Hotbath_'));
+  }
+ }
+ assert(matched>=100,'Source is not a generic collection photo gallery');
+ for(const code of ['SDSCH9','C7066'])
+  assert(other.byCollection.Chap[code]?.image.includes('-'+code+'_'),'Missing Chap thumbnail '+code);
+ assert(other.byCollection.Archie.AR124?.image.includes('-AR124_'));
+ const js=fs.readFileSync(require('node:path').join(__dirname,'../public/hotbath-galassia-configurator.js'),'utf8');
+ assert.match(js,/hotbath-exact-alternative-media\.json/);
+ assert.match(js,/item\?\.verified/);
+ assert.match(js,/brokenUrls\.add\(url\)/);
+ assert.match(js,/function supplementalPhoto/);
+ assert.match(js,/manufacturer-model-code-matched/);
+ assert.match(js,/img\.edilportale\.com/);
+ assert.match(js,/italianPhoto\(c,m\)\|\|validUrl\(checked\)/);
 });
