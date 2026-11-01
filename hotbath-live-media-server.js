@@ -50,7 +50,7 @@ function extract(html,{collection,model,finish='',url}){
  const title=$('title').first().text();
  const expected=clean(model)+clean(finish);
  const titleCheck=clean(title+' '+heading);
- if(!titleCheck.includes(expected)||!titleCheck.includes(clean(collection)))return null;
+ if(!titleCheck.includes(clean(model))||!titleCheck.includes(clean(collection)))return null;
  const sources=[];
  $('main img[src], main source[srcset], img[src*="/images/compano/"]').each((_,el)=>{
    const src=$(el).attr('src')||$(el).attr('srcset')?.split(',')[0]?.trim()?.split(/\s+/)[0]||'';
@@ -64,7 +64,7 @@ function extract(html,{collection,model,finish='',url}){
  const discoveredFinish=imageFinish(image,model);
  // A finish-specific URL must actually exhibit the requested SKU in the
  // primary product image. Other finishes are only a model-level preview.
- const scope=finish&&discoveredFinish===clean(finish)?'exact':'model';
+ const scope=finish&&titleCheck.includes(expected)&&discoveredFinish===clean(finish)?'exact':'model';
  return {image,scope,collection,model,finish:discoveredFinish||'',productUrl:url,
   source:'hotbath.com official product page; model identity and photo filename'};
 }
