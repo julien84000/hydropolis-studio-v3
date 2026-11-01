@@ -26,7 +26,7 @@
   return {model:'spot-'+number,material:row.material,texture:'Lisse',
    color:color||'Blanc',width:Number(row.width),length:Number(row.length),shape:''};
  }
- async function loadSpotCards(view,rows){
+ async function loadSpotCards(view,rows,current,selectedColor){
   const official=root?.HydroHidroboxOfficialVisual;
   if(!official?.lookup)return;
   const nodes=[...view.querySelectorAll('[data-hb-spot-thumb]')];
@@ -34,11 +34,14 @@
   const worker=async()=>{
    while(index<nodes.length && view.isConnected){
     const img=nodes[index++],model=img.dataset.hbSpotThumb;
-    const row=rows.find(v=>v.model===model&&v.material==='Scene'&&v.colorGroup==='BLA')||
-      rows.find(v=>v.model===model);
+    const sameModel=rows.filter(v=>v.model===model);
+    const row=sameModel.find(v=>v.material===current.material&&v.colorGroup===current.colorGroup)||
+      sameModel.find(v=>v.material==='Scene'&&v.colorGroup==='BLA')||sameModel[0];
     if(!row)continue;
-    const color=row.material==='Scene'?'Blanc':'Bianco';
-    const selection=spotSelection(row,color);
+    const color=row.material==='Scene'?'Blanc':
+      row.colorGroup==='SPE'?'':row.colorGroup===current.colorGroup?selectedColor:
+      row.colorGroup==='BAS'?'Bianco':'Blush';
+    const selection=color?spotSelection(row,color):null;
     if(!selection)continue;
     const key=JSON.stringify(selection);
     let result=spotModelImages.get(key);
@@ -66,8 +69,8 @@
     texture:old.finish||'Lisse',color:old.color||'Blanc',width:old.widthCm||80,length:old.lengthCm||120,
     extras:[...(old.accessories||[])]}:{texture:'Lisse',color:'Blanc',width:80,length:120,extras:[]};
    else state=old.type==='spot-2026'?{
-     ref:old.reference||ctx.original.reference,color:old.color||'Blanc',extras:[...(old.accessories||[])]}:
-    {ref:'WSPC0001',color:'Blanc',extras:[]};
+     ref:old.reference||ctx.original.reference,color:old.color||'Blanc',specialCode:old.specialCode||'',extras:[...(old.accessories||[])]}:
+    {ref:'WSPC0001',color:'Blanc',specialCode:'',extras:[]};
  }
  function input(title,key,value,min,max){
   return '<label>'+E(title)+'<input class="hb-source-number" data-hb-source-input="'+key+
@@ -170,6 +173,8 @@
   if(!m.byRef.has(s.ref))s.ref=m.rows[0].reference;
   const current=m.byRef.get(s.ref);
   const colors=m.COLORS[current.colorGroup];if(!colors.includes(s.color))s.color=colors[0];
+  const specialCodeReady=current.colorGroup!=='SPE'||/^(?:RAL|NCS)\s*[-\w .]{2,25}$/i.test(String(s.specialCode||'').trim());
+  const colourName=current.colorGroup==='SPE'?(s.specialCode||'À préciser'):s.color;
   s.extras=s.extras.filter(x=>m.optionsFor(current).some(o=>o.reference===x));
   const q=m.quote({reference:s.ref,color:s.color},{accessories:s.extras});
   const models=[...new Set(m.rows.map(x=>x.model))].sort((a,b)=>Number(a.match(/\d+/)?.[0])-Number(b.match(/\d+/)?.[0]));
@@ -184,6 +189,16 @@
       '<strong>'+E(name)+'</strong><small>'+E(first.width+' × '+first.length+' × '+first.height+' cm')+'</small></button>';
   }).join('');
   const variant=m.rows.filter(x=>x.model===current.model);
+  const materials=[...new Set(variant.map(x=>x.material))];
+  const sameMaterial=variant.filter(x=>x.material===current.material);
+  const tiers=[...new Set(sameMaterial.map(x=>x.colorGroup))];
+  const matCards=materials.map(material=>'<button type="button" class="hb-spot-axis" data-hb-spot-material="'+E(material)+'" aria-pressed="'+(material===current.material)+'">'+
+     '<strong>'+E(material)+'</strong><small>'+(material==='Scene'?'Solid Surface blanc':'Kromat · teintes fabricant')+'</small></button>').join('');
+  const tierCards=tiers.map(tier=>'<button type="button" class="hb-spot-axis" data-hb-spot-tier="'+E(tier)+'" aria-pressed="'+(tier===current.colorGroup)+'">'+
+     '<strong>'+E({BLA:'Blanc',BAS:'Basics',TRE:'Trends',SPE:'Specials RAL / NCS'}[tier]||tier)+'</strong></button>').join('');
+  const colorChoices='<div class="hidrobox-fields">'+select('Teinte fabricant','color',colors,s.color)+'</div>'+
+    (current.colorGroup==='SPE'?'<label class="hb-spot-special-label">Référence de teinte RAL / NCS<input id="hbSpotSpecialCode" type="text" placeholder="RAL 9001 ou NCS S 0500-N" value="'+E(s.specialCode||'')+'"></label>':'');
+
   const optionRows=m.optionsFor(current).map(o=>
     '<label class="hb-source-option"><input type="checkbox" data-hb-extra="'+E(o.reference)+'"'+(s.extras.includes(o.reference)?' checked':'')+'>'+
     '<span>'+E(o.label)+' · '+EUR(o.rawPrice)+' <small>'+E(o.reference)+'</small></span></label>').join('');
@@ -195,11 +210,9 @@
     '<small>Les images des cartes illustrent le modèle dans sa couleur constructeur disponible ; le grand visuel correspond à la finition sélectionnée. Visuel indisponible si la correspondance ne peut pas être confirmée.</small></div></div>'+
     docsMarkup(ctx)+
     '<h4 class="hidrobox-universal-subtitle">1 · Modèle</h4><div class="hidrobox-tray-model-grid hb-spot-grid">'+tiles+'</div>'+
-    '<h4 class="hidrobox-universal-subtitle">2 · Matière</h4><div class="hidrobox-fields">'+
-       select('Version du modèle et matière','ref',variant.map(x=>x.reference),s.ref)+
-       '<div class="hidrobox-fixed-attribute"><strong>Matière fabricant</strong><span>'+E(current.material)+'</span></div></div>'+
+    '<h4 class="hidrobox-universal-subtitle">2 · Matière</h4><div class="hb-spot-material-grid">'+matCards+'</div>'+
     '<h4 class="hidrobox-universal-subtitle">3 · Texture</h4><div class="hidrobox-fixed-attribute"><strong>Finition</strong><span>Lisse · modèle Spot</span></div>'+
-    '<h4 class="hidrobox-universal-subtitle">4 · Couleur</h4><div class="hidrobox-fields">'+select('Couleur','color',colors,s.color)+'</div>'+
+    '<h4 class="hidrobox-universal-subtitle">4 · Couleur</h4><div class="hb-spot-material-grid">'+tierCards+'</div>'+colorChoices+
     '<h4 class="hidrobox-universal-subtitle">5 · Dimensions fabricant</h4><p>'+E(current.width+' × '+current.length+' × '+current.height)+' cm · modèle '+E(current.model)+'. Dimensions fixes correspondant à la référence choisie.</p>'+
     '<h4 class="hidrobox-universal-subtitle">6 · Bondes, perçages et couleurs extérieures</h4><div class="hb-source-options">'+optionRows+'</div>'+
     '<h4 class="hidrobox-universal-subtitle">7 · Références et chiffrage</h4>'+
@@ -208,28 +221,37 @@
       '<p role="alert">'+E(q.reason)+'</p>')+
     '<div class="hidrobox-result"><div><b>'+(q.ok?EUR(q.price)+' HT':'Prix indisponible')+'</b><span>Réf. '+E(q.reference||'—')+
     '</span><small>Référence exacte du tarif Spot 2026 ; majoration de 4 % appliquée une seule fois.</small></div>'+
-    '<button class="btn primary" id="huAdd" type="button"'+(q.ok?'':' disabled')+'>Ajouter au projet</button></div>';
+    '<button class="btn primary" id="huAdd" type="button"'+(q.ok&&specialCodeReady?'':' disabled')+'>Ajouter au projet</button></div>';
   const view=shell(ctx,'Spot · modèles et tarifs',html),refresh=()=>spot(g,ctx);
   const official=root?.HydroHidroboxOfficialVisual;
-  const spec=spotSelection(current,s.color);
+  const spec=current.colorGroup==='SPE'?null:spotSelection(current,s.color);
   if(spec&&official?.preview)void official.preview(view,spec);
-  void loadSpotCards(view,m.rows);
+  void loadSpotCards(view,m.rows,current,s.color);
   view.querySelectorAll('[data-hb-spot-model]').forEach(b=>b.onclick=()=>{
     const row=m.rows.find(x=>x.model===b.dataset.hbSpotModel);
     if(!row)return;s.ref=row.reference;s.color=m.COLORS[row.colorGroup][0];s.extras=[];refresh();
   });
-  view.querySelector('[data-hb-source-select="ref"]').onchange=e=>{s.ref=e.target.value;s.color=m.COLORS[m.byRef.get(s.ref).colorGroup][0];s.extras=[];refresh()};
+  view.querySelectorAll('[data-hb-spot-material]').forEach(b=>b.onclick=()=>{
+     const row=variant.find(x=>x.material===b.dataset.hbSpotMaterial);
+     if(!row)return;s.ref=row.reference;s.color=m.COLORS[row.colorGroup][0];s.specialCode='';s.extras=[];refresh();
+  });
+  view.querySelectorAll('[data-hb-spot-tier]').forEach(b=>b.onclick=()=>{
+     const row=sameMaterial.find(x=>x.colorGroup===b.dataset.hbSpotTier);
+     if(!row)return;s.ref=row.reference;s.color=m.COLORS[row.colorGroup][0];s.specialCode='';s.extras=[];refresh();
+  });
+  view.querySelector('#hbSpotSpecialCode')?.addEventListener('change',e=>{s.specialCode=e.target.value.trim();refresh()});
   view.querySelector('[data-hb-source-select="color"]').onchange=e=>{s.color=e.target.value;refresh()};
   view.querySelectorAll('[data-hb-extra]').forEach(e=>e.onchange=()=>{s.extras=e.checked?[...new Set([...s.extras,e.dataset.hbExtra])]:s.extras.filter(x=>x!==e.dataset.hbExtra);refresh()});
   view.querySelector('#huAdd').onclick=async()=>{
-    const result=m.quote({reference:s.ref,color:s.color},{accessories:s.extras});if(!result.ok)return;
+    const result=m.quote({reference:s.ref,color:s.color},{accessories:s.extras});
+    if(!result.ok||!specialCodeReady)return;
     const addButton=view.querySelector('#huAdd');if(addButton){addButton.disabled=true;addButton.textContent='Vérification de la photo constructeur…';}
     const config={type:'spot-2026',reference:result.reference,model:result.model,material:result.material,
-      finish:'Lisse',colorGroup:result.colorGroup,color:result.color,widthCm:result.width,lengthCm:result.length,
+      finish:'Lisse',colorGroup:result.colorGroup,color:result.color,specialCode:result.colorGroup==='SPE'?s.specialCode:'',widthCm:result.width,lengthCm:result.length,
       heightCm:result.height,accessories:result.accessories,components:result.components};
     const item={manufacturer:'Hidrobox',collection:'Spot',category:'Vasque à poser',
       reference:result.reference,base:result.reference,
-      designation:result.model+' · '+result.material+' · Lisse · '+result.color+' · '+
+      designation:result.model+' · '+result.material+' · Lisse · '+(result.colorGroup==='SPE'?s.specialCode:result.color)+' · '+
         result.width+' × '+result.length+' × '+result.height+' cm',
       price:result.price,totalPrice:result.price,rawTariffPrice:result.rawPrice,
       listPriceUpliftPct:4,purchaseDiscount:50,currency:'€',vat:'HT',
@@ -237,7 +259,7 @@
       manufacturerUrl:'https://hidrobox.com/fr/collections/spot/',
       image:ctx.image||'',imageSource:ctx.image?'Photographie officielle de collection Hidrobox · variante illustrative':'Photographie indisponible',
       imageFinishMatch:ctx.image?'collection':'unavailable'};
-    const verifiedSpec=spotSelection(result,result.color);
+    const verifiedSpec=result.colorGroup==='SPE'?null:spotSelection(result,result.color);
     if(verifiedSpec&&official?.lookup&&official?.printQuality&&official?.apply){
       try{
         const photo=await official.lookup(verifiedSpec);

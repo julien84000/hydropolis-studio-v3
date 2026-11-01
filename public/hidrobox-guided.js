@@ -712,6 +712,11 @@ function restoreHidroboxSelection(g){
  if(Number.isInteger(width)&&width>0)universalDraft.exactwidth=width;
  if(Number.isInteger(length)&&length>0)universalDraft.exactlength=length;
  if(saved.color||saved.selectedColour)universalDraft.showerColor=saved.color||saved.selectedColour;
+ if(saved.scenePlusColour){
+   universalDraft.scenePlusGroup=saved.scenePlusColour.group||'BLA';
+   universalDraft.scenePlusColor=saved.scenePlusColour.color||'Blanc';
+   universalDraft.scenePlusCode=saved.scenePlusColour.code||'';
+ }
  for(const opt of saved.accessories||[])if(opt.group&&opt.id)universalDraft['tray_'+opt.group]=opt.id;
 }
 function officialSpecForGroup(g,row,colour,width,length){
@@ -736,7 +741,7 @@ function sourcePanelSpotPage(g,type){
  const api=root.HydroHidroboxPanelSpotUI;
  if(!api)return null;
  stage='group';chosenGroup=g;
- const collection=type==='panel'?'Panneaux muraux':'Spot';
+ const collection=type==='panel'?'Panneaux muraux':type==='fs'?'FS':'Spot';
  const docs=HIDROBOX_DOCUMENTS[norm(collection)]||HIDROBOX_DOCUMENTS[norm(g.collection)]||{};
  const image=collectionImageFor(collection,officialGroupMedia(g)?.image||g.image)||'';
  const ctx={original,room,image,
@@ -753,7 +758,7 @@ function sourcePanelSpotPage(g,type){
    if(!ids?.length)throw Error('Impossible de sauvegarder le produit');
    close();showView('project');
   }};
- return type==='panel'?api.panel(g,ctx):api.spot(g,ctx);
+ return type==='panel'?api.panel(g,ctx):type==='fs'?root.HydroHidroboxFSUI?.fs(g,ctx):api.spot(g,ctx);
 }
 function universalPage(g){
  const familyName=norm(g.collection||g.id);
@@ -766,6 +771,7 @@ function universalPage(g){
  }
  if(familyName==='panneaux muraux'||familyName==='paneles')return sourcePanelSpotPage(g,'panel');
  if(familyName==='spot')return sourcePanelSpotPage(g,'spot');
+ if(familyName==='fs')return sourcePanelSpotPage(g,'fs');
  if(familyName==='program')return programPage(g);
  if(norm(g.collection||g.id)==='space')return spacePage(g);
  if(norm(g.collection||g.id)==='beta evoque')return betaEvoquePage(g);
@@ -857,13 +863,47 @@ function universalPage(g){
  const specialColorMarkup=specialTier==='SPE'?
    '<label>Code couleur RAL / NCS exigé<input id="huSpecialColorCode" type="text" value="'+escape(universalDraft.specialColor||'')+'" placeholder="RAL 9001 / NCS S ..."></label>':
    specialChoices.length?visualFacet('huSpecialColor','Couleur fabricant',specialChoices,universalDraft.specialColor):'';
+ const sceneEngine=root.HydroHidroboxSceneColour2026;
+ const sceneSupported=shower&&selected?.material==='Scene'&&
+   ['loovers','unique','iconik'].includes(familyName)&&!!sceneEngine;
+ const sceneGroups=sceneSupported?(familyName==='loovers'?['BLA','SPE']:['BLA','BAS','TRE','SPE']):[];
+ if(sceneSupported&&!sceneGroups.includes(universalDraft.scenePlusGroup))universalDraft.scenePlusGroup='BLA';
+ const sceneGroup=sceneSupported?universalDraft.scenePlusGroup:'BLA';
+ const sceneColors=sceneEngine?.COLORS[sceneGroup]||['Blanc'];
+ if(sceneSupported&&!sceneColors.includes(universalDraft.scenePlusColor))universalDraft.scenePlusColor=sceneColors[0];
+ const sceneQuote=sceneSupported?sceneEngine.quote({
+   collection:familyName,material:'Scene',group:sceneGroup,
+   color:universalDraft.scenePlusColor,code:universalDraft.scenePlusCode||'',
+   baseRawPrice:selected.rawPrice
+ }):null;
+ const sceneColourMarkup=sceneSupported?
+  '<section class="hb-scene-plus-colour"><h4 class="hidrobox-universal-subtitle">Scene Plus Colour · finition réelle</h4>'+
+  '<label>Finition Scene<select id="huScenePlusGroup">'+
+   sceneGroups.map(key=>'<option value="'+key+'"'+(sceneGroup===key?' selected':'')+'>'+
+     escape(key==='BLA'?'Blanc sans supplément':key==='BAS'?'Plus Colour Basics · +10/15 % selon collection':
+       key==='TRE'?'Plus Colour Trends · +10/15 % selon collection':
+       'Special RAL / NCS · +'+sceneEngine.RATES[familyName].SPE+' % du tarif de base')+'</option>').join('')+
+   '</select></label>'+
+   (sceneGroup==='SPE'?'<label>Teinte personnalisée RAL / NCS<input id="huScenePlusCode" type="text" value="'+
+     escape(universalDraft.scenePlusCode||'')+'" placeholder="RAL 9001 / NCS S 0500-N"></label>':
+    sceneGroup!=='BLA'?'<label>Couleur précise<select id="huScenePlusColor">'+
+     sceneColors.map(c=>'<option'+(c===universalDraft.scenePlusColor?' selected':'')+'>'+escape(c)+'</option>').join('')+
+     '</select></label>':'')+
+   '<p class="hidrobox-guide-note">'+(sceneQuote?.ok?
+     'Supplément fabricant vérifié pour '+escape(name)+' : '+sceneQuote.percent+' % du prix receveur HT'+
+        (sceneQuote.percent?' · +'+eu(sceneQuote.extraRaw)+' HT':'')+'. Code couleur conservé dans le projet.':
+     escape(sceneQuote?.reason||'Couleur Scene non disponible dans cette collection.'))+'</p></section>':'';
  const accessories=root.HydroHidroboxShowerOptions2026;
  const trayModel=shower&&visual?visual.modelFor(g,selected||{}):'';
  const trayOpts=shower&&accessories?accessories.optionsFor({model:trayModel,material:selected?.material||'',
    texture:selected?.finish||'',width:Number(universalDraft.exactwidth)||Number(centimeterRange(selected?.width)?.first)||0,
    colorGroup:selected?.colorGroup||'',outlet:selected?.outlet||selected?.drainDiameter||''}):[];
- const trayOptsMarkup=trayOpts.length?'<h4 class="hidrobox-universal-subtitle">Grille, cache-bonde et évacuation</h4>'+
-   '<div class="hidrobox-fields">'+trayOpts.map(group=>{
+ // ICONIK uses published OPSH0073 at +15% (do not charge Scene colour twice).
+ if(sceneSupported&&familyName==='iconik')
+   universalDraft.tray_iconikColor=sceneGroup==='BLA'?'standard':'plus';
+ const shownTrayOpts=trayOpts.filter(x=>!(sceneSupported&&x.key==='iconikColor'));
+ const trayOptsMarkup=shownTrayOpts.length?'<h4 class="hidrobox-universal-subtitle">Grille, cache-bonde et évacuation</h4>'+
+   '<div class="hidrobox-fields">'+shownTrayOpts.map(group=>{
       const ids=group.options.map(x=>x.id);
       if(!ids.includes(universalDraft['tray_'+group.key]))universalDraft['tray_'+group.key]=ids[0];
       return '<label>'+escape(group.label)+'<select data-hb-tray-option="'+escape(group.key)+'">'+
@@ -872,7 +912,9 @@ function universalPage(g){
    }).join('')+'</div>':'';
  const trayQuote=accessories&&trayOpts.length?accessories.quote(selected?.rawPrice,trayOpts,Object.fromEntries(
     trayOpts.map(g=>[g.key,universalDraft['tray_'+g.key]]))):null;
- const eligibleSpec=officialSpecForGroup(g,selected,universalDraft.showerColor||selected?.color,
+ const configuredSceneColour=sceneQuote?.ok&&sceneQuote.percent?sceneQuote.color:
+    universalDraft.showerColor||selected?.color;
+ const eligibleSpec=sceneQuote?.ok&&sceneGroup==='SPE'?null:officialSpecForGroup(g,selected,configuredSceneColour,
    universalDraft.exactwidth||selected?.width,universalDraft.exactlength||selected?.length);
  const imageLookup=eligibleSpec?'<div class="hidrobox-configured-photo"><img data-hb-config-image hidden alt="Visuel officiel correspondant à la configuration"><small data-hb-config-status>Recherche du visuel constructeur pour la combinaison exacte…</small></div>':'';
  const fixedMaterialTexture='';
@@ -884,8 +926,13 @@ function universalPage(g){
     const item=(g.variants||[]).find(x=>x.reference===ref);
     return '<option value="'+escape(ref)+'"'+(ref===universalDraft.reference?' selected':'')+'>'+escape(ref+' · '+(item?.designation||''))+'</option>';
    }).join(''):choices(refs,universalDraft.reference))+'</select></label>':'';
- const price=trayQuote?.ok?trayQuote.price:Number(selected?.price),raw=Number(selected?.rawPrice);
- const canAdd=selected&&Number.isFinite(price)&&price>0&&selected.reference&&(!orderedShower||selection.ready)&&(!specialTier||specialTier!=='SPE'||String(universalDraft.specialColor||'').trim().length>=3);
+ const raw=Number(selected?.rawPrice);
+ const sceneRawSupplement=sceneQuote?.ok&&!sceneQuote.alreadyInFittings?sceneQuote.extraRaw:0;
+ const pricedRaw=Number(trayQuote?.ok?trayQuote.rawPrice:raw)+sceneRawSupplement;
+ const price=Math.round(pricedRaw*104)/100;
+ const sceneReady=!sceneSupported||!!sceneQuote?.ok;
+ const canAdd=selected&&Number.isFinite(price)&&price>0&&selected.reference&&sceneReady&&
+   (!orderedShower||selection.ready)&&(!specialTier||specialTier!=='SPE'||String(universalDraft.specialColor||'').trim().length>=3);
  const tech=officialPdf(selected?.technicalSheetUrl||g.technicalSheetUrl||assets.technical);
  const manual=officialPdf(selected?.installationGuideUrl||g.installationGuideUrl||assets.manual);
  const bim=officialZip(assets.bim),model3D=officialZip(assets.model3D);
@@ -906,7 +953,7 @@ function universalPage(g){
    (flat?'<p class="hidrobox-guide-note">'+flat+'</p>':'')+
    (orderedShower?
       '<h4 class="hidrobox-universal-subtitle">2 · Matière puis texture</h4><div class="hidrobox-fields">'+materialTexture+'</div>'+
-      '<h4 class="hidrobox-universal-subtitle">3 · Finition couleur</h4>'+showerColor+
+      '<h4 class="hidrobox-universal-subtitle">3 · Finition couleur</h4>'+showerColor+sceneColourMarkup+
       '<h4 class="hidrobox-universal-subtitle">4 · Dimensions</h4><div class="hidrobox-fields">'+dimensionFacets+'</div>'+
       dimensionMarkup+sizeBoundsLabel+
       '<h4 class="hidrobox-universal-subtitle">5 · Référence finale</h4><div class="hidrobox-fields">'+refsControl+'</div>':
@@ -917,7 +964,9 @@ function universalPage(g){
    trayOptsMarkup+imageLookup+
    '<div class="hidrobox-result"><div><b>'+(canAdd?eu(price)+' HT':'Tarif indisponible')+'</b>'+
    '<span>Réf. '+escape(selected?.reference||'—')+' · '+escape(selected?.designation||'')+'</span>'+
-   '<small>'+(canAdd?(Number.isFinite(raw)&&raw>0?'Prix fabricant '+eu(raw)+' HT. ':'')+(trayQuote?.optionRawPrice?'Options fabricant '+eu(trayQuote.optionRawPrice)+' HT. ':'')+'Majoration 4 % appliquée une fois. Remise achat 50 % en calcul de marge.':'Aucun prix extrapolé sans référence tarifaire.')+'</small></div>'+
+   '<small>'+(canAdd?(Number.isFinite(raw)&&raw>0?'Prix fabricant '+eu(raw)+' HT. ':'')+(trayQuote?.optionRawPrice?'Options fabricant '+eu(trayQuote.optionRawPrice)+' HT. ':'')+
+   (sceneRawSupplement?'Scene Plus Colour '+eu(sceneRawSupplement)+' HT. ':'')+
+   'Majoration 4 % appliquée une fois. Remise achat 50 % en calcul de marge.':'Aucun prix extrapolé sans référence tarifaire.')+'</small></div>'+
    '<button class="btn primary" id="huAdd" type="button"'+(canAdd?'':' disabled')+'>Ajouter au projet</button></div>';
  shell(String(name)+' · configuration',markup,true);
  overlay.querySelector('.hidrobox-back').onclick=collections;
@@ -939,6 +988,18 @@ function universalPage(g){
  overlay.querySelectorAll('[data-hb-tray-option]').forEach(input=>input.addEventListener('change',()=>{
    universalDraft['tray_'+input.dataset.hbTrayOption]=input.value;universalPage(g);
  }));
+ overlay.querySelector('#huScenePlusGroup')?.addEventListener('change',e=>{
+   universalDraft.scenePlusGroup=e.target.value;
+   universalDraft.scenePlusColor='';
+   universalDraft.scenePlusCode='';
+   universalPage(g);
+ });
+ overlay.querySelector('#huScenePlusColor')?.addEventListener('change',e=>{
+   universalDraft.scenePlusColor=e.target.value;universalPage(g);
+ });
+ overlay.querySelector('#huScenePlusCode')?.addEventListener('change',e=>{
+   universalDraft.scenePlusCode=e.target.value.trim();universalPage(g);
+ });
  overlay.querySelector('#huShowerColor')?.addEventListener('change',e=>{
    universalDraft.showerColor=e.target.value;universalPage(g);
  });
@@ -966,7 +1027,15 @@ function universalPage(g){
      }
    }
    const dimLabels=[dimInfo.widthCm?'Larg. '+dimInfo.widthCm+' cm':'',dimInfo.lengthCm?'Long. '+dimInfo.lengthCm+' cm':''].filter(Boolean);
-   const pickedColor=specialParts&&specialParts.byRef.has(row.reference)?String(universalDraft.specialColor||'').trim():(shower?(universalDraft.showerColor||row.color||''):(row.color||''));
+   const addedSceneQuote=sceneSupported?sceneEngine.quote({
+     collection:familyName,material:'Scene',group:universalDraft.scenePlusGroup,
+     color:universalDraft.scenePlusColor,code:universalDraft.scenePlusCode||'',
+     baseRawPrice:row.rawPrice
+   }):null;
+   if(sceneSupported&&!addedSceneQuote?.ok){alert(addedSceneQuote?.reason||'Couleur Scene non tarifée');return;}
+   const pickedColor=specialParts&&specialParts.byRef.has(row.reference)?String(universalDraft.specialColor||'').trim():
+     sceneSupported&&addedSceneQuote?.percent?addedSceneQuote.color:
+     (shower?(universalDraft.showerColor||row.color||''):(row.color||''));
    if(specialParts&&specialParts.byRef.has(row.reference)){
      const check=specialParts.resolve({kind:row.kind,material:row.material,finish:row.finish,
        colorGroup:row.colorGroup,width:dimInfo.widthCm??row.width,length:dimInfo.lengthCm??row.length,height:row.height});
@@ -976,9 +1045,17 @@ function universalPage(g){
    const selectedTrayQuote=accessories&&trayOpts.length?accessories.quote(row.rawPrice,trayOpts,
      Object.fromEntries(trayOpts.map(g=>[g.key,universalDraft['tray_'+g.key]]))):null;
    if(selectedTrayQuote&&!selectedTrayQuote.ok){alert(selectedTrayQuote.reason);return;}
-   const optionLabels=selectedTrayQuote?.components?.map(x=>x.label)||[];
+   const sceneBaseSupplement=addedSceneQuote?.ok&&!addedSceneQuote.alreadyInFittings?addedSceneQuote.extraRaw:0;
+   const rowRawTotal=(selectedTrayQuote?.rawPrice??Number(row.rawPrice))+sceneBaseSupplement;
+   const rowPublicTotal=Math.round(rowRawTotal*104)/100;
+   const sceneExtraParts=sceneBaseSupplement?[{
+     reference:'',label:addedSceneQuote.label+' · supplément sans SKU distinct dans le tarif',
+     rawPrice:sceneBaseSupplement,percent:addedSceneQuote.percent,group:'scenePlusColour'}]:[];
+   const allSourceExtras=[...(selectedTrayQuote?.components||[]),...sceneExtraParts];
+   const optionLabels=[...allSourceExtras.map(x=>x.label)];
    const designation=[row.designation||name,...dimLabels,pickedColor?'Couleur '+pickedColor:'',...optionLabels].filter(Boolean).join(' · ');
-   const officialSelection=officialSpecForGroup(g,row,pickedColor,
+   const officialSelection=sceneSupported&&addedSceneQuote?.group==='SPE'?null:
+       officialSpecForGroup(g,row,pickedColor,
       dimInfo.widthCm||row.widthCm||0,dimInfo.lengthCm||row.lengthCm||0);
    let officialResult=null;
    if(officialSelection&&visual.eligible(officialSelection)){
@@ -1000,8 +1077,8 @@ function universalPage(g){
    const item={manufacturer:'Hidrobox',collection:name,reference:row.reference,base:row.reference,designation,
       category:row.category||original?.category||family?.name||'Sanitaire',material:row.material||'',
       finish:[pickedColor,row.finish||row.colorGroup||''].filter(Boolean).join(' · '),
-      price:selectedTrayQuote?.price??Number(row.price),totalPrice:selectedTrayQuote?.price??Number(row.price),
-      rawTariffPrice:selectedTrayQuote?.rawPrice??(Number(row.rawPrice)||0),listPriceUpliftPct:4,purchaseDiscount:50,currency:'€',vat:'HT',
+      price:rowPublicTotal,totalPrice:rowPublicTotal,
+      rawTariffPrice:rowRawTotal,listPriceUpliftPct:4,purchaseDiscount:50,currency:'€',vat:'HT',
       source:'HIDROBOX_TARIF_FR_V0226_19-02-2026.pdf',sourceYear:2026,manufacturerUrl:url,
       image:fallbackImage,
       imageSource:fallbackScope==='product'?'Photo fabricant du produit · finition illustrée à vérifier':fallbackScope==='collection'?'Photographie officielle de collection · variante illustrative':fallbackScope==='category'?'Illustration de catégorie Hidrobox · modèle et finition non contractuels':'Photographie indisponible',
@@ -1015,8 +1092,15 @@ function universalPage(g){
        widthTier:row.width||'',lengthTier:row.length||'',...dimInfo,submodel:universalDraft.traySubmodel||'',
        material:row.material||'',
        finish:row.finish||'',colorGroup:row.colorGroup||'',color:pickedColor,
-       shape:row.shape||row.form||'',accessories:selectedTrayQuote?.components||[],
-       accessoriesSource:'Tarif Hidrobox 2026 · options OPSH',optionRawPrice:selectedTrayQuote?.optionRawPrice||0}});
+       shape:row.shape||row.form||'',accessories:allSourceExtras,
+       scenePlusColour:addedSceneQuote?.ok?{
+         group:addedSceneQuote.group,color:addedSceneQuote.color,
+         code:addedSceneQuote.group==='SPE'?String(universalDraft.scenePlusCode||''):'',
+         percent:addedSceneQuote.percent,rawPrice:addedSceneQuote.extraRaw,
+         supplierOptionReference:addedSceneQuote.supplierOptionReference
+       }:null,
+       accessoriesSource:'Tarif Hidrobox FR 2026 · options OPSH et Scene Plus Colour',
+       optionRawPrice:(selectedTrayQuote?.optionRawPrice||0)+sceneBaseSupplement}});
      if(visual&&officialResult?.ok)visual.apply(record,officialResult,officialSelection);
      const ids=commitSelectedRecords([record],{showProject:false});
      if(!ids?.length)throw Error('Enregistrement impossible');
@@ -1181,6 +1265,7 @@ async function open(p,roomId,requestedCategory=''){
  room=roomId;original=p||{};programDraft=p?.hidroboxConfiguration?.type==='program-2026'?{...p.hidroboxConfiguration}:null;spaceDraft=p?.hidroboxConfiguration?.type==='space-2026'?{...p.hidroboxConfiguration}:null;betaEvoqueDraft=p?.hidroboxConfiguration?.type==='beta-evoque-2026'?{...p.hidroboxConfiguration}:null;betaEssentialDraft=p?.hidroboxConfiguration?.type==='beta-essential-2026'?{...p.hidroboxConfiguration}:null;programFamily='';groups=[];groupsLoading=true;groupsError='';
  for(const key of Object.keys(universalDraft))delete universalDraft[key];
  root.HydroHidroboxPanelSpotUI?.reset?.();
+ root.HydroHidroboxFSUI?.reset?.();
  const existing=HIDROBOX_ALL_OFFICIAL.find(x=>norm(x.name)===norm(p?.collection)||norm(x.key)===norm(p?.collection));
  const requested=CATEGORY.find(x=>x.key===requestedCategory);
  cat=requested?.key||existing?.category||'receveurs';
