@@ -26,7 +26,7 @@
   return {model:'spot-'+number,material:row.material,texture:'Lisse',
    color:color||'Blanc',width:Number(row.width),length:Number(row.length),shape:''};
  }
- async function loadSpotCards(view,rows){
+ async function loadSpotCards(view,rows,current,selectedColor){
   const official=root?.HydroHidroboxOfficialVisual;
   if(!official?.lookup)return;
   const nodes=[...view.querySelectorAll('[data-hb-spot-thumb]')];
@@ -34,11 +34,14 @@
   const worker=async()=>{
    while(index<nodes.length && view.isConnected){
     const img=nodes[index++],model=img.dataset.hbSpotThumb;
-    const row=rows.find(v=>v.model===model&&v.material==='Scene'&&v.colorGroup==='BLA')||
-      rows.find(v=>v.model===model);
+    const sameModel=rows.filter(v=>v.model===model);
+    const row=sameModel.find(v=>v.material===current.material&&v.colorGroup===current.colorGroup)||
+      sameModel.find(v=>v.material==='Scene'&&v.colorGroup==='BLA')||sameModel[0];
     if(!row)continue;
-    const color=row.material==='Scene'?'Blanc':'Bianco';
-    const selection=spotSelection(row,color);
+    const color=row.material==='Scene'?'Blanc':
+      row.colorGroup==='SPE'?'':row.colorGroup===current.colorGroup?selectedColor:
+      row.colorGroup==='BAS'?'Bianco':'Blush';
+    const selection=color?spotSelection(row,color):null;
     if(!selection)continue;
     const key=JSON.stringify(selection);
     let result=spotModelImages.get(key);
@@ -223,7 +226,7 @@
   const official=root?.HydroHidroboxOfficialVisual;
   const spec=current.colorGroup==='SPE'?null:spotSelection(current,s.color);
   if(spec&&official?.preview)void official.preview(view,spec);
-  void loadSpotCards(view,m.rows);
+  void loadSpotCards(view,m.rows,current,s.color);
   view.querySelectorAll('[data-hb-spot-model]').forEach(b=>b.onclick=()=>{
     const row=m.rows.find(x=>x.model===b.dataset.hbSpotModel);
     if(!row)return;s.ref=row.reference;s.color=m.COLORS[row.colorGroup][0];s.extras=[];refresh();
