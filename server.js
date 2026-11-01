@@ -91,6 +91,54 @@ require("./bette-official-media-server")(app);
 require("./hotbath-live-media-server")(app);
 require("./hotbath-italian-media-server")(app);
 require("./catalano-product-media-server")(app);
+/* Naxani: resolve one official COLLECTION image, never assert finish match. */
+const naxaniImageCache=new Map(),naxaniImageJobs=new Map();
+async function naxaniCollectionPhoto(collection){
+ const slug=String(collection||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase()
+   .replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,46);
+ if(!/^[a-z0-9][a-z0-9-]{0,45}$/.test(slug))return '';
+ const aliases={'slat':'slat-1c','prenn':'prenn-31','2r':'2r'};
+ const resolved=aliases[slug]||slug;
+ const previous=naxaniImageCache.get(resolved);
+ if(previous&&Date.now()-previous.time<(previous.image?86400000:3600000))return previous.image;
+ if(naxaniImageJobs.has(resolved))return naxaniImageJobs.get(resolved);
+ const work=(async()=>{
+  const url='https://naxani.com/producto/'+resolved+'/';
+  let image='';
+  try{
+   const resp=await axios.get(url,{timeout:10000,maxContentLength:3*1024*1024,
+    headers:{'User-Agent':'Mozilla/5.0 Hydropolis Studio Catalogue (Naxani collection illustration)'}});
+   const $=cheerio.load(String(resp.data||''));
+   const possibles=[
+    $('meta[property="og:image"]').attr('content'),
+    $('meta[property="og:image:secure_url"]').attr('content'),
+    $('.woocommerce-product-gallery img').first().attr('src'),
+    $('.elementor-widget-image img').first().attr('src'),
+    $('article img[src*="wp-content/uploads"]').first().attr('src')
+   ].filter(Boolean);
+   for(const raw of possibles){
+    const parsed=new URL(raw,url);
+    if(['naxani.com','www.naxani.com','naxani.net','www.naxani.net'].includes(parsed.hostname)&&
+      parsed.pathname.startsWith('/wp-content/uploads/')&&/\.(png|jpe?g|webp)$/i.test(parsed.pathname)){
+     image=parsed.href;break;
+    }
+   }
+  }catch(err){console.warn('[Naxani collection image]',resolved,err.message)}
+  naxaniImageCache.set(resolved,{image,time:Date.now()});return image;
+ })().finally(()=>naxaniImageJobs.delete(resolved));
+ naxaniImageJobs.set(resolved,work);return work;
+}
+app.get('/api/naxani-collection-photo',async(req,res)=>{
+ const image=await naxaniCollectionPhoto(req.query.collection);
+ res.set('Cache-Control','public,max-age=3600');
+ res.json({image,verified:!!image,scope:'collection',finishVerified:false,source:'Naxani official website'});
+});
+app.get('/api/naxani-collection-image',async(req,res)=>{
+ const image=await naxaniCollectionPhoto(req.query.collection);
+ res.set('Cache-Control','public,max-age=3600');
+ if(image)return res.redirect(302,image);
+ res.status(404).end();
+});
 app.use(express.static(path.join(__dirname,"public")));
 require("./tariff-server")(app);
 
