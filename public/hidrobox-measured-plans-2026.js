@@ -99,13 +99,21 @@ function resolveExact(name,rows,state={}){
  const w=Number(config.width),l=Number(config.length),h=Number(config.height);
  const special=collection==='artop'&&config.group==='SPE';
  const specialOK=!special||/^(RAL|NCS)\s*[-\w .]{2,25}$/i.test(String(config.specialCode||'').trim());
- const matching=matched.filter(row=>
-  row.material===config.material&&row.finish===config.finish&&row.colorGroup===config.group&&
-  w>=row.widthMin&&w<=row.widthMax&&l>=row.lengthMin&&l<=row.lengthMax&&h>=row.heightMin&&h<=row.heightMax);
+ const numericOK=Number.isFinite(w)&&Number.isFinite(l)&&Number.isFinite(h)&&
+   (collection==='lom'?[45.5,50.5].includes(w)&&LOM_LENGTHS.includes(l)&&LOM_HEIGHTS.includes(h):
+    Number.isInteger(w)&&Number.isInteger(l)&&(h===1.2||Number.isInteger(h)));
+ const colors=typeof window==='object'?window.HydroProgramColour2026?.COLORS:null;
+ const colorOK=config.group==='BLA'?config.color==='Blanc':
+   config.group==='SPE'?specialOK:
+   (colors?.[config.group]||['Bianco','Beige','Pietra','Cement','Iron','Graphite','Crema','Cappuccino','Terra','Brownie','Cotta','Golden','Sandstone','Blush','Ocean','Lake','Ombra','Dark Liquen','Metropoli','Herbal']).includes(config.color);
+ const matching=numericOK&&colorOK?matched.filter(row=>
+   row.material===config.material&&row.finish===config.finish&&row.colorGroup===config.group&&
+   w>=row.widthMin&&w<=row.widthMax&&l>=row.lengthMin&&l<=row.lengthMax&&h>=row.heightMin&&h<=row.heightMax):[];
  const selected=matching.length===1&&specialOK&&primary?matching[0]:null;
  let reason='';
  if(!primary)reason='Références tarifaires fabricant incomplètes : '+matched.length+'/'+required+' pour '+name+'.';
- else if(!specialOK)reason='Saisir la teinte RAL/NCS demandée.';
+ else if(!numericOK)reason='Dimensions invalides : LOM exige une taille fixe, ARTOP des centimètres entiers (hauteur 1,2 cm autorisée).';
+ else if(!colorOK||!specialOK)reason='Couleur fabricant non valide ou code RAL/NCS manquant.';
  else if(matching.length!==1)reason='Couple de dimensions / épaisseur / matière / texture non tarifé pour '+name+'.';
  return {ready:!!selected,available:primary,selected,matching,reason,
   width:w,length:l,height:h,config,price:selected?Number(selected.price):null,
