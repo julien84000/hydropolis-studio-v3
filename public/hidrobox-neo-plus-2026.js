@@ -102,5 +102,36 @@ function lookup({form='rectangle',width,length,material='Kromat',texture='Lisse'
  const rawPrice=rawBase+grilleOptions[grille]+bondeOptions[bonde];
  return {ok:true,reference,rawBasePrice:rawBase,grilleRawPrice:grilleOptions[grille],bondeRawPrice:bondeOptions[bonde],rawPrice,price:Math.round(rawPrice*104)/100,purchaseDiscount:50,referenceDimensions:width+' × '+length+' cm',tier:row.tier,material,texture,group:c,color,form,grille,bonde,source:'HIDROBOX_TARIF_FR_V0226_19-02-2026.pdf',priceYear:2026};
 }
-root.HydroNeoPlus2026={FORMATS,COLORS,lookup};
+// Derive admissible dimensions from exact 2026 matrix/reference rows.
+// The independent axis maxima do not imply every width/length pair is sold.
+const sizeCache=new Map();
+function allowedSizes(selection={}){
+ const form=selection.form||'rectangle',material=selection.material||'Kromat',
+   texture=selection.texture||'Lisse',group=selection.group||'BAS',
+   color=selection.color||COLORS[group]?.[0]||'';
+ const cacheKey=JSON.stringify([form,material,texture,group,color]);
+ if(sizeCache.has(cacheKey))return sizeCache.get(cacheKey);
+ const format=FORMATS.find(f=>f.key===form);
+ if(!format)return {widths:[],lengthsByWidth:{},widthMin:null,widthMax:null,lengthMin:null,lengthMax:null};
+ const widths=format.widths||Array.from({length:format.widthMax-format.widthMin+1},(_,i)=>format.widthMin+i);
+ const lengths=format.lengths||Array.from({length:format.lengthMax-format.lengthMin+1},(_,i)=>format.lengthMin+i);
+ const lengthsByWidth={},validWidths=[],allLengths=[];
+ for(const width of widths){
+   const valid=lengths.filter(length=>{
+     const quote=lookup({form,width,length,material,texture,group,color});
+     // Special finishes may have a valid manufacturer SKU but lack a
+     // confirmed price. They remain dimensionally eligible, NOT quotable.
+     return quote.ok || (group==='SPE'&&!!quote.reference&&/Tarif exact couleur Special/.test(quote.reason||''));
+   });
+   if(valid.length){validWidths.push(width);lengthsByWidth[width]=valid;allLengths.push(...valid);}
+ }
+ const data={widths:validWidths,lengthsByWidth,
+   widthMin:validWidths.length?validWidths[0]:null,
+   widthMax:validWidths.length?validWidths.at(-1):null,
+   lengthMin:allLengths.length?Math.min(...allLengths):null,
+   lengthMax:allLengths.length?Math.max(...allLengths):null};
+ sizeCache.set(cacheKey,data);
+ return data;
+}
+root.HydroNeoPlus2026={FORMATS,COLORS,lookup,allowedSizes};
 })(window);
