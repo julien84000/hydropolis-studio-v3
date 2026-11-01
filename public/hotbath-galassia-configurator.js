@@ -22,6 +22,7 @@ function open(rows,roomId,onAdd){
  const supplier=root?.HydroHotbathOfficialGuide,rough=root?.HydroHotbathRoughIn;
  if(!supplier||!rough||!Array.isArray(rows)||!rows.some(r=>r?.manufacturer==='Hotbath')||typeof onAdd!=='function')
   return Promise.reject(new Error('Données du configurateur Hotbath indisponibles'));
+ const linkAudit=rough.linkCatalog(rows);
  const indexed=supplier.tariffIndex(rows);
  return new Promise(resolve=>{
   document.querySelector('.hotbath-galassia-modal')?.remove();
@@ -203,6 +204,8 @@ function open(rows,roomId,onAdd){
    }
    if(!m.variants.some(x=>x.reference===ref))ref=m.variants[0].reference;
    const p=m.variants.find(v=>v.reference===ref)||m.variants[0],r=rough.resolve(p);
+   const negotiatedDiscount=rough.purchaseDiscount(p,collection);
+   const negotiatedCost=totalFor(p,r)*(1-negotiatedDiscount/100);
    const photo=selectedImage(m.base,p);
    const priceLines=r.verified&&r.priceAgrees?
     '<div><span>Produit apparent HT</span><b>'+money(p.price)+'</b></div>'+
@@ -211,11 +214,11 @@ function open(rows,roomId,onAdd){
    const bodyMarkup=r.kind==='verified'?
      '<div class="hotbath-rough-in verified"><b>Corps d’encastrement obligatoire</b>'+
        '<span>Référence fournisseur : '+esc(r.reference)+'</span><strong>'+money(r.price)+' HT</strong>'+
-       '<small>Ajout automatique en ligne distincte dans le projet et le devis. '+esc(r.note)+'</small></div>':
+       '<small>Remise d’achat sur corps : '+esc(String(r.bodyDiscount??p.purchaseDiscount??50))+' % · ajout automatique en ligne distincte au projet et devis. '+esc(r.note)+'</small></div>':
      r.kind==='unverified'?
        '<div class="hotbath-rough-in missing"><b>Corps d’encastrement à confirmer</b>'+
        '<span>'+(r.reference?'Référence non tarifée : '+esc(r.reference):
-       'Référence et prix non vérifiés')+'</span><small>'+esc(r.note)+'</small></div>':'';
+       'Référence et prix non vérifiés')+'</span><small>'+esc(r.note)+' · Référence extérieure exclue de l’ajout tant que le corps obligatoire n’est pas identifié.</small></div>':'';
    $('.hotbath-selection').innerHTML=
     '<div class="galassia-photo">'+(photo.url?'<img src="'+esc(photo.url)+'" alt="'+esc(p.reference)+'">':
      '<span>Photo produit indisponible</span>')+'</div>'+
@@ -228,26 +231,26 @@ function open(rows,roomId,onAdd){
       money(publicPrice(v))+' HT</option>').join('')+'</select></label>'+
     '<div class="galassia-summary"><div><span>Référence fabricant</span><b>'+esc(p.reference)+'</b></div>'+
       priceLines+'<div><span>Total public HT</span><b>'+money(totalFor(p,r))+'</b></div>'+
-      '<div><span>Remise d’achat fournisseur</span><b>50 %</b></div>'+
-      '<div><span>Coût d’achat théorique HT</span><b>'+money(totalFor(p,r)*.5)+'</b></div></div>'+
+      '<div><span>Remise d’achat fournisseur</span><b>'+esc(negotiatedDiscount===59.5?'50 % + 10 % + 10 % (59,5 %)':'55 %')+'</b></div>'+
+      '<div><span>Coût d’achat théorique HT</span><b>'+money(negotiatedCost)+'</b></div></div>'+
     bodyMarkup+
     '<div class="galassia-docs"><a href="'+esc(italian?.byCollection?.[collection]?.[m.base]?.officialProductPage||'https://hotbath.it/fr/prods/')+'" target="_blank" rel="noopener noreferrer">Voir le modèle sur Hotbath Italie</a>'+
     '<span>Tarifs : base importée 2026 · référence sans suffixe IT.</span></div>'+
-    '<button type="button" class="galassia-add hotbath-add"'+(busy?' disabled':'')+'>'+
-      (busy?'Ajout…':'Ajouter cette configuration au projet')+'</button>';
+    '<button type="button" class="galassia-add hotbath-add"'+(busy||r.required&&!r.verified?' disabled':'')+'>'+
+      (busy?'Ajout…':r.required&&!r.verified?'Corps d’encastrement à confirmer':'Ajouter cette configuration au projet')+'</button>';
    $('.hotbath-selection .galassia-photo img')?.addEventListener('error',e=>{
       onItalianError(collection,m.base,e.currentTarget?.getAttribute('src')||'');
       if(p.finishCode)requestImage(collection,m.base,p.finishCode);
     },{once:true});
    $('.hotbath-variant').onchange=e=>{ref=e.target.value;renderSelection()};
    $('.hotbath-add').onclick=async()=>{
-    if(busy)return;
+    if(busy||r.required&&!r.verified)return;
     busy=true;$('.hotbath-add').disabled=true;
     try{
      // createSelectedProductRecord and HydroRoughIn.reconcile already handle the
      // verified p.internalReference as a separate mandatory child of this line.
      // No second copy of the body may be inserted by this dialog.
-     await onAdd(p,roomId);
+     await onAdd({...p,hotbathSelectedCollection:collection,purchaseDiscount:negotiatedDiscount},roomId);
      close();
     }catch(e){
      busy=false;renderSelection();alert('Ajout Hotbath impossible : '+(e?.message||String(e)));

@@ -19,6 +19,13 @@
       // An unpriced or unverified component must never become a free quote line.
       if(!ref||!Number.isFinite(price)||price<=0)continue;
       const bodySource=lookup({manufacturer:p.manufacturer,reference:ref});
+      // Hotbath agreement follows the selected collection, not obsolete source-list discounts.
+      // Archie uses 50+10+10 successive = 59.5%; all other Hotbath collections 55%.
+      const hotbath=p.manufacturer==='Hotbath';
+      const chosenSeries=String(p.hotbathSelectedCollection||'');
+      const series=/^Archie$/i.test(chosenSeries||String(p.collection||''))?'Archie':'standard';
+      const bodyDiscount=hotbath?(series==='Archie'?59.5:55):
+        bodySource?.purchaseDiscount??source.internalPurchaseDiscount??source.purchaseDiscount??p.purchaseDiscount;
       if(/^alpi$/i.test(p.manufacturer||'')&&(!bodySource||Number(bodySource.price)!==price))continue;
       if(p.internalReference!==ref||p.internalPrice!==price){p.internalReference=ref;p.internalPrice=price;changed=true;}
       const base=Number(source.price),full=Number(source.totalPrice);
@@ -30,10 +37,11 @@
       const linked=records.filter(x=>x.accessoryFor===p.id&&(x.requiredRoughIn||norm(x.reference)===norm(ref)));
       let child=linked.find(x=>norm(x.reference)===norm(ref));
       for(const x of linked){if(x!==child){remove.add(x);changed=true;}}
-      if(!child){child=make({...bodySource,manufacturer:p.manufacturer,reference:ref,price,totalPrice:price,purchaseDiscount:source.purchaseDiscount??p.purchaseDiscount},p.roomId,p.id);add.push(child);changed=true;}
+      if(!child){child=make({...bodySource,manufacturer:p.manufacturer,reference:ref,price,totalPrice:price,purchaseDiscount:bodyDiscount,hotbathSelectedCollection:hotbath?series==='Archie'?'Archie':'':undefined},p.roomId,p.id);add.push(child);changed=true;}
       const fields={reference:ref,roomId:p.roomId,accessoryFor:p.id,requiredRoughIn:true,mandatoryAccessory:true,
-        quantity:qty(p.quantity),quantityPerParent:1,purchaseDiscount:source.purchaseDiscount??p.purchaseDiscount,
+        quantity:qty(p.quantity),quantityPerParent:1,purchaseDiscount:bodyDiscount,
         designation:`Corps d’encastrement obligatoire – réf. ${ref}`};
+      if(hotbath)fields.hotbathSelectedCollection=series==='Archie'?'Archie':'';
       for(const [k,v] of Object.entries(fields)){if(child[k]!==v){child[k]=v;changed=true;}}
     }
     return {records:records.filter(p=>!remove.has(p)).concat(add),added:add,changed};

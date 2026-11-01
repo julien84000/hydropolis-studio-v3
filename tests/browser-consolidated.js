@@ -574,7 +574,11 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     check('Hidrobox official : 9 wall-mounted washbasin collections',
       await page.locator('#hidroboxGuided [data-kind="collection"]').count()===9);
     await page.locator('#hidroboxGuided [data-kind="collection"][data-choice="program"]').click();
-    await page.waitForSelector('#hidroboxGuided [data-hp-number="length"]',{timeout:20000});
+    await page.waitForSelector('#hidroboxGuided [data-hp-number="length"]',{timeout:25000}).catch(async e=>{
+      const panel=(await page.locator('#hidroboxGuided').innerText().catch(()=>''));
+      const loaded=await page.evaluate(()=>({program:!!window.HydroProgram2026,data:!!window.HydroProgramData,pictures:!!window.HydroTariffPictures}));
+      throw new Error('Hidrobox Program readiness: '+JSON.stringify(loaded)+' · panel='+panel.slice(0,900)+' · '+e.message);
+    });
     check('Hidrobox Program : dedicated dimension-based tariff and options',
       await page.locator('#hidroboxGuided [data-hp-number]').count()>0&&
       await page.locator('#hidroboxGuided #huAdd').isEnabled()&&
