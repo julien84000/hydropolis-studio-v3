@@ -479,6 +479,9 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     await page.evaluate(()=>{
       const p=state.selected.find(x=>x.manufacturer==='Naxani'&&x.reference==='504086');
       if(p)removeProduct(p.id);
+      // The Naxani quote intentionally opens Project; restore the catalogue for
+      // the existing Hidrobox manufacturer-launcher browser checks.
+      showView('catalog');
     });
 
     // V11.64 — Gessi-inspired guide validation in a REAL Chromium DOM on desktop/mobile.
