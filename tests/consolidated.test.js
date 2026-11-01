@@ -8,7 +8,7 @@ const alpi=require('../public/alpi_catalog_2025.json');
 const models=require('../public/sira_models.json').models;
 const rawCatalog=()=>{
   const manifest=require('../public/catalog_manifest.json');const by=new Map();
-  const app=fs.readFileSync(path.join(root,'public/app.js'),'utf8'),start=app.indexOf('const CATALOG=')+14,end=app.indexOf(';\n',start);
+  const app=fs.readFileSync(path.join(root,'public/app.js'),'utf8'),start=app.indexOf('const CATALOG=')+14,end=app.indexOf('];',start)+1;
   for(const p of JSON.parse(app.slice(start,end)))by.set(index.key(p),p);
   for(const c of manifest.chunks){const b=fs.readFileSync(path.join(root,'public',c.file));const rows=JSON.parse(c.file.endsWith('.gz')?zlib.gunzipSync(b):b);for(const p of rows)by.set(index.key(p),p);}
   return [...by.values()];
