@@ -144,25 +144,31 @@ function createService({get=axios.get,now=Date.now}={}){
  }
  async function collection(name){
   if(!Object.hasOwn(COLLECTIONS,name))throw Error('Collection Catalano inconnue');
-  const hit=cache.get(name);if(hit&&now()-hit.at<TTL)return hit.data;
+  const hit=cache.get(name);if(hit&&now()-hit.at<(hit.ttl||TTL))return hit.data;
   if(inflight.has(name))return inflight.get(name);
   const promise=(async()=>{
-   let data=seedsFor(name);
-   // Fetch all independent catalogue sources concurrently, with shared HTML
-   // cache: no 5x repeated network requests when browsing each collection.
-   const urls=[...supplementalSources(name),COLLECTIONS[name]].filter(Boolean);
-   const htmls=await Promise.all(urls.map(readPage));
-   for(let i=0;i<urls.length;i++){
-    if(!htmls[i])continue;
-    // The collection listing comes LAST so its exact model image takes
-    // precedence over shared accessory category duplicates if any.
-    data=merge(data,parseCollection(htmls[i],name));
-   }
-   return data;
+   const primaryUrl=COLLECTIONS[name];
+   // Fetch the primary manufacturer collection before indexing supplemental
+   // categories. Throttling many parallel sources can otherwise drop it.
+   const primaryHtml=primaryUrl?await readPage(primaryUrl):'';
+   let main=seedsFor(name);
+   if(primaryHtml)main=merge(main,parseCollection(primaryHtml,name));
+   const extras=supplementalSources(name);
+   const htmls=await Promise.all(extras.map(readPage));
+   let supplemental=seedsFor(name);
+   for(const html of htmls){if(html)supplemental=merge(supplemental,parseCollection(html,name))}
+   // Give the exact photo on the main collection precedence over a duplicate
+   // on a category list, and never reduce coverage if an auxiliary page fails.
+   return {data:merge(supplemental,main),primaryLoaded:!!primaryHtml};
   })();
   inflight.set(name,promise);
-  try{const data=await promise;cache.set(name,{at:now(),data});return data}
-  finally{inflight.delete(name)}
+  try{
+   const {data,primaryLoaded}=await promise;
+   // A partial index must recover after a temporary manufacturer outage,
+   // rather than remaining cached for six hours.
+   cache.set(name,{at:now(),ttl:primaryLoaded?TTL:60*1000,data});
+   return data;
+  }finally{inflight.delete(name)}
  }
  return {collection};
 }
