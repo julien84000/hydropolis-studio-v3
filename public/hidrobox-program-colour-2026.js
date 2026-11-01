@@ -28,7 +28,7 @@ const BASE_ROWS=Object.freeze(PRICES.flatMap((depths,bandIndex)=>depths.flatMap(
  depthMin:DEPTHS[bandIndex][0],depthMax:DEPTHS[bandIndex][1],
  heightMin:HEIGHTS[bandIndex][0],heightMax:HEIGHTS[bandIndex][1]
 })))));
-const defaultState=()=>({length:120,depth:50,height:1.2,group:'BAS',color:'Beige',specialCode:'',basin:'S41',position:'center',tap:'none',overflow:false,drain:'none',towel:'none',backsplashHeight:0,specialCut:false});
+const defaultState=()=>({length:120,depth:50,height:1.2,group:'BAS',color:'Beige',specialCode:'',basin:'S41',position:'center',tap:'none',overflow:false,drain:'none',towel:'none',backsplashHeight:0,backsplashTap:false,supportsVisible:false,specialCut:false});
 const validCode=code=>/^(?:RAL|NCS)\s*[-\w .]{2,25}$/i.test(String(code||'').trim());
 const groupColors=group=>COLORS[group]||[];
 const inBand=(v,min,max)=>v>=min&&v<=max;
@@ -97,6 +97,15 @@ function quote(input,importedRows=[]){
      const priceRow=BACKSPLASH[group][rowIndex],ref='OPWB'+String(priceRow.first+lengthIndex).padStart(4,'0');
      components.push({reference:ref,label:'Crédence Kromat '+backsplash+' cm · '+group,rawPrice:priceRow.prices[lengthIndex]});
    }
+ }
+ if(s.backsplashTap){
+   if(!Number.isInteger(backsplash)||backsplash<15||backsplash>30)
+     errors.push('Préparation robinetterie en crédence uniquement pour une crédence de 15 à 30 cm.');
+   else components.push({reference:'OPWB0102',label:'Préparation robinetterie crédence',rawPrice:68});
+ }
+ if(s.supportsVisible){
+   // p.87, visible brackets are published at 110 EUR without a dedicated OPWB reference.
+   components.push({reference:'',label:'Fixations visibles · prix fabricant 2026 (sans SKU option)',rawPrice:110});
  }
  // Manufacturer quotes special cuts at +10%, no known stable line-item SKU for this geometry.
  if(s.specialCut)errors.push('Découpe spéciale +10% : dessin technique et base du supplément à valider par fabricant avant commande.');
