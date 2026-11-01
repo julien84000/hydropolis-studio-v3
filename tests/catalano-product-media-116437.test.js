@@ -8,7 +8,7 @@ const row=ref=>rows.find(p=>p.reference===ref);
 const ROOT='https://www.catalano.it/wp-content/uploads/2025/03/';
 const BIDET=ROOT+'SFERA_bidet_terra_50x35_0519501001-600x600.webp';
 const BIDET_COLOR=ROOT+'SFERA_bidet_terra_50x35_0519501021-600x600.webp';
-const WC=ROOT+'SFERA_wc_sospeso_55x35_0511550001-600x600.webp';
+const WC=ROOT+'SFERA_wc_sospeso_55x35_0511650001-600x600.webp';
 function tile(codes,href,photos){
  return '<div class="products-grid-item" data-codes="'+codes+'"><a href="https://www.catalano.it/en/products/wc-and-bidet/'+href+'/">'+
  '<div class="product-thumb" data-thumbs="'+JSON.stringify(photos.map(image_url=>({finish_id:227,image_url}))).replace(/"/g,'&quot;')+
@@ -27,10 +27,10 @@ test('Photo source: SKU extracted from manufacturer URL and validated with suppl
 });
 test('Catalogue HTML groups exact product thumbnails and never maps editorial scene or unrelated SKU',()=>{
  const parsed=server.parseCollection(html,'Sfera');
- assert.deepEqual(Object.keys(parsed.exact).sort(),['0511550001','0519501001','0519501021'].sort());
+ assert.deepEqual(Object.keys(parsed.exact).sort(),['0511650001','0519501001','0519501021'].sort());
  assert.equal(parsed.exact['0519501001'].image,BIDET);
  assert.equal(parsed.exact['0519501021'].image,BIDET_COLOR);
- assert.equal(parsed.exact['0511550001'].image,WC);
+ assert.equal(parsed.exact['0511650001'].image,WC);
  assert.equal(parsed.models['051950|WC'].image,BIDET);
  assert(!parsed.exact['0533010001'],'Do not attach an editorial bathroom to a cistern');
  const wrong=server.parseCollection(tile('05 1950 1001','bidet-sfera-50',[WC]),'Sfera');
