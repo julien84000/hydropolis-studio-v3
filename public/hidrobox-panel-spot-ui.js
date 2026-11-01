@@ -179,7 +179,8 @@
     const diameter=first.width===first.length;
     return '<button type="button" class="hidrobox-tray-model hb-spot-tile" data-hb-spot-model="'+E(name)+'" aria-pressed="'+selected+'">'+
       '<img class="hb-spot-thumb" data-hb-spot-thumb="'+E(name)+'" hidden alt="Photographie constructeur du modèle '+E(name)+' · couleur indicative" loading="lazy">'+
-      '<div class="hb-spot-diagram '+(diameter?'hb-spot-round':'')+'" aria-hidden="true"></div>'+
+      '<div class="hb-spot-diagram '+(diameter?'hb-spot-round':'')+'" aria-hidden="true">'+
+        (root?.HydroHidroboxOfficialMinis2026?.get('spot',name)||'')+'</div>'+
       '<strong>'+E(name)+'</strong><small>'+E(first.width+' × '+first.length+' × '+first.height+' cm')+'</small></button>';
   }).join('');
   const variant=m.rows.filter(x=>x.model===current.model);

@@ -1,3 +1,22 @@
+## V11.64.32 — correctifs visuels et dimensions Hidrobox + Galassia, préservation Bette (2026-11-01)
+
+Base : main 11.64.31, commit 50ed98c3 (PR #84 Bette), créé volontairement depuis main pour conserver le showroom Bette et son accès 3D. Récupère les changements de la branche ancienne et divergente fix/hidrobox-shower-dimension-limits-116431 sur une NOUVELLE branche work/hidrobette-galassia-continuation-116432. NE PAS merger l'ancienne branche directement car elle part de 11.64.30.
+
+Changements réellement effectués :
+- Hidrobox Neo Plus : allowedSizes() dans public/hidrobox-neo-plus-2026.js dérive les couples de largeur/longueur acceptés des véritables références et prix 2026, avec limites min/max par forme, matière, texture et gamme couleur. UI ne propose plus les couples hors tarif. Les autres receveurs affichent les limites documentées par les lignes tarifaires et continuent de refuser les couples sans SKU.
+- Miniatures vectorielles originales récupérées sur les pages de collection Hidrobox, intégrées à public/hidrobox-official-minis-2026.js : Beta Essential (8), Beta Evoque (3), Beta Fusion (6), FS (19 modèles uniques d'après la page), Spot (31). Les SVG représentent des FORMES et ne sont pas des photos de couleur précises. CSS pour contenir les miniatures en grille responsive.
+- Spot : remplace les vides pictogrammes génériques par les vrais SVG constructeur et corrige l'overflow/masquage des photos asynchrones. La photo spécifique constructeur reste prioritaire lorsqu'elle est réellement trouvée.
+- Space : sélection d'une teinte précise Basics/Trends, code RAL/NCS pour Specials, avec sauvegarde du libellé et validation préalable à ajout. La référence et le tarif restent basés sur le groupe BAS/TRE/SPE et les dimensions réelles fabricant, sans ajouter de supplément couleur en double. Photo de collection toujours explicitement illustrative ; pas de faux rendu couleur exact.
+- Galassia : bouton Explorer rendu visible sur layouts étroits avec styles responsives.
+- Bette : showroom et stylesheet 11.64.31 préservés et vérifiés dans tests/hidrobox-visual-size-2026.test.js. Les modifications Bette 11.64.31 déjà en production ne sont pas écrasées.
+- Tests additionnels pour couple dimensions Neo Plus, 31 miniatures Spot, palettes Space et continuité Bette. Version package.json/package-lock.json 11.64.32.
+
+NON terminé : saisie réelle complète et tarification Program Colour, Lom et Artop, visuel Space spécifique couleur, mapping Bette exact SKU→variant 3D. Ne pas prétendre que ces exigences sont couvertes par 11.64.32. Veille de déploiement existante ne doit notifier « tous les changements » qu'après ces compléments.
+
+Après CI: npm ci, check, test, build, Chromium. Fusion PR uniquement si verte, vérification Render /api/version et /api/health. Préserver les autres marques.
+
+---
+
 ## V11.64.31 — Bette : configurateur visuel mis en avant (2026-11-01)
 
 Base : main 11.64.30 au commit c0309c39 ; chantier séparé du travail Hidrobox/Spot/Space/Galassia restant sur la branche fix/hidrobox-shower-dimension-limits-116431. Objectif utilisateur : Bette doit être aussi visuellement mis en avant que Hidrobox, avec accès simple au configurateur constructeur et catégories illustrées.
