@@ -1,3 +1,20 @@
+## V11.64.31 — Bette : configurateur visuel mis en avant (2026-11-01)
+
+Base : main 11.64.30 au commit c0309c39 ; chantier séparé du travail Hidrobox/Spot/Space/Galassia restant sur la branche fix/hidrobox-shower-dimension-limits-116431. Objectif utilisateur : Bette doit être aussi visuellement mis en avant que Hidrobox, avec accès simple au configurateur constructeur et catégories illustrées.
+
+Recherche constructeur vérifiée : https://www.my-bette.com/fr/service/configurateur et https://www.my-bette.com/fr/configurator/products . La page officielle contient des images WebP pour six catégories et familles (baignoires, receveurs de douche, vasques, équipement, design, nouveautés). Les adresses exactes des images observées figurent dans BETTE_MEDIA dans public/brand-configurators.js. Elles sont des photos de catégorie/collection, PAS des photos certifiées de chaque référence choisie.
+
+Modifications :
+- public/brand-configurators.js : page Bette d'entrée avec photos catégories, grand hero "Ouvrir le configurateur 3D Bette", exploration structurée des sous-familles et galeries fournisseur, vue configuration avec lien Bette 3D explicite, choix plus visuels pour modèles/couleurs quand raisonnable.
+- Les vrais prix et références restent tirés de la base Bette importée ; aucune association inventée entre SKU Bette et les identifiants numériques du lien fourni (ex. product=10402&variant=10410). 3D fournisseur ouvert sur son portail officiel, non intégré en iframe et sans fausse revendication de rendu exact.
+- Image exacte v.image conservée en priorité ; puis image de modèle/import ; sinon photo catégorie officielle explicitement indiquée comme illustration non contractuelle, y compris dans le dossier client.
+- public/bette-showcase.css, index.html : styles et comportement responsive.
+- tests/bette-visual-showcase.test.js ajouté au script npm test. package/lock : 11.64.31.
+
+Validation : attendre Release Validation CI (npm ci, check, tests, build, Playwright). Ne fusionner et déployer que si la CI complète est verte ; vérifier ensuite Render /api/version /api/health et si possible parcourir visuellement Bette en production. L'accès direct au rendu exact d'une combinaison SKU/finition dans le configurateur Bette nécessite un mapping officiel des identifiants de produits/variants non établi à ce stade.
+
+---
+
 ### Complément V11.64.30 — règle métier applicable à TOUTES les collections Hidrobox
 
 Demande utilisateur ajoutée pendant PR #83 : ordre de configuration **modèle → matière → texture → couleur → dimensions**, puis les options/accessoires et enfin la référence et le prix. Ce n'est pas un correctif réservé à Neo Plus.
