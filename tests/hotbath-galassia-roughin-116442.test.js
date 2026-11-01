@@ -68,3 +68,74 @@ test('Hotbath Galassia-style configurator is installed after old guide, preservi
  assert.equal(registered('Galassia'),'original:Galassia');
  assert.equal(registered('Zucchetti'),'original:Zucchetti');
 });
+
+
+test('Hotbath 2026: independently listed bodies are linked to exact compatible exterior references',()=>{
+ const copy=rows.map(p=>({...p}));
+ const audit=rough.linkCatalog(copy);
+ assert(audit.linked>=200,'At least 200 missing supplier body links must be recovered');
+ for(const [external,reference,bodyPrice,trimPrice] of [
+  ['GT7009EXT.IX','HB.CB7009',655,715],
+  ['GT7066EXT.IX','HB.CB7066',732,975],
+  ['GT7070EXT.IX','HB.CB7070',938,1295]
+ ]){
+  const p=copy.find(x=>x.reference===external);
+  assert(p,external+' missing from price list');
+  assert.equal(p.internalReference,reference);
+  assert(!p.internalReference.endsWith('.IT'));
+  assert.equal(p.internalPrice,bodyPrice);
+  assert.equal(p.totalPrice,trimPrice+bodyPrice);
+  assert.equal(rough.resolve(p).kind,'verified');
+  const source={...p,id:'p1',roomId:'r1',catalogPrice:p.totalPrice,catalogTotalPrice:p.totalPrice};
+  const lookup=x=>copy.find(y=>y.reference===x.reference&&y.manufacturer===x.manufacturer);
+  const make=(v,roomId,accessoryFor)=>({...v,roomId,accessoryFor,id:'c1'});
+  let out=general.reconcile([source],lookup,make);
+  assert.equal(out.records.length,2);
+  const body=out.records.find(x=>x.requiredRoughIn);
+  assert.equal(body.reference,reference);
+  assert.equal(body.price,bodyPrice);
+  assert.equal(body.purchaseDiscount,55);
+  assert.equal(out.records.find(x=>x.id==='p1').price,trimPrice);
+  out=general.reconcile(out.records,lookup,make);
+  assert.equal(out.records.length,2,'No duplicated body on project reload');
+ }
+});
+test('Hotbath: negotiated discounts are 55% standard and sequential 50+10+10=59.5% Archie',()=>{
+ assert.equal(rough.purchaseDiscount({collection:'Gent'}),55);
+ assert.equal(rough.purchaseDiscount({collection:'Archie'}),59.5);
+ assert.equal(rough.purchaseDiscount({collection:'Archie / Gent'},'Gent'),55);
+ assert.equal(rough.purchaseDiscount({collection:'Archie / Gent'},'Archie'),59.5);
+ const rowsCopy=rows.map(p=>({...p}));
+ rough.linkCatalog(rowsCopy);
+ const p=rowsCopy.find(x=>x.reference==='GT7009EXT.IX');
+ p.hotbathSelectedCollection='Gent';
+ const bodySource=rowsCopy.find(x=>x.reference==='HB.CB7009');
+ const lookup=x=>rowsCopy.find(v=>v.reference===x.reference&&v.manufacturer===x.manufacturer);
+ const mk=(x,roomId,parentId)=>({...x,id:'child',roomId,accessoryFor:parentId});
+ const main={...p,id:'parent',roomId:'room',catalogPrice:p.totalPrice,catalogTotalPrice:p.totalPrice};
+ const linked=general.reconcile([main],lookup,mk);
+ const child=linked.records.find(x=>x.requiredRoughIn);
+ assert.equal(child.purchaseDiscount,55);
+ assert.equal(bodySource.reference,'HB.CB7009');
+ assert.equal(linked.records.find(x=>x.id==='parent').price,715);
+ const archie={...rowsCopy.find(x=>x.reference==='AR124EXT.IX'),id:'parent2',roomId:'room',hotbathSelectedCollection:'Archie'};
+ const linkedArchie=general.reconcile([archie],lookup,mk);
+ const childArchie=linkedArchie.records.find(x=>x.requiredRoughIn);
+ assert(childArchie);
+ assert.equal(childArchie.purchaseDiscount,59.5);
+ const js=fs.readFileSync(path.join(__dirname,'../public/hotbath-galassia-configurator.js'),'utf8');
+ assert.match(js,/negotiatedDiscount/);
+ assert.match(js,/hotbathSelectedCollection:collection/);
+ assert(!js.includes("Remise d’achat fournisseur</span><b>50 %</b>"));
+});
+test('Hotbath unresolved or ambiguous trim never silently receives an invented body',()=>{
+ const copy=rows.map(x=>({...x}));
+ rough.linkCatalog(copy);
+ const missing=copy.find(x=>x.reference==='AR078WEXT.IX');
+ assert(missing);
+ assert.equal(rough.resolve(missing).kind,'unverified');
+ assert.equal(rough.resolve(missing).required,true);
+ const ambiguous=copy.find(x=>x.reference==='GL7066EXT.CR');
+ assert(ambiguous);
+ assert.equal(rough.resolve(ambiguous).kind,'unverified');
+});
