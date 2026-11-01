@@ -1,0 +1,2456 @@
+{
+  "source": "https://www.hotbath.it/fr/home",
+  "sourcePolicy": "Exact Italian catalog model code in product detail link and image filename; image URLs require availability validation before display",
+  "version": 1,
+  "byCollection": {
+    "Archie": {
+      "AR003": {
+        "image": "https://hotbath.it/documents//ProdCateg/3522/AR003_1_2023.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/3522/AR003"
+      },
+      "AR003M": {
+        "image": "https://hotbath.it/documents//ProdCateg/3523/AR003M_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/3523/AR003M"
+      },
+      "AR003H": {
+        "image": "https://hotbath.it/documents//ProdCateg/3524/AR003H_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/3524/AR003H"
+      },
+      "AR014": {
+        "image": "https://hotbath.it/documents//ProdCateg/3525/AR014_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/3525/AR014"
+      },
+      "AR023": {
+        "image": "https://hotbath.it/documents//ProdCateg/3538/AR023_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/3538/AR023"
+      },
+      "AR033": {
+        "image": "https://hotbath.it/documents//ProdCateg/3539/AR033_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/3539/AR033"
+      },
+      "AR078W": {
+        "image": "https://hotbath.it/documents//ProdCateg/3540/AR078W_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/3540/AR078W"
+      },
+      "AR124": {
+        "image": "https://hotbath.it/documents//ProdCateg/3526/AR124_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/3526/AR124"
+      },
+      "AR018": {
+        "image": "https://hotbath.it/documents//ProdCateg/3533/AR018_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/3533/AR018"
+      },
+      "AR096-15": {
+        "image": "https://hotbath.it/documents//ProdCateg/3529/AR096-15_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/3529/AR096-15"
+      },
+      "AR096-25": {
+        "image": "https://hotbath.it/documents//ProdCateg/3531/AR096-25_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/3531/AR096-25"
+      },
+      "AR096-30": {
+        "image": "https://hotbath.it/documents//ProdCateg/3532/AR096-30_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/3532/AR096-30"
+      },
+      "AR183": {
+        "image": "https://hotbath.it/documents/ProdCateg/4025/AR183_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/4025/AR183"
+      },
+      "AR185": {
+        "image": "https://hotbath.it/documents/ProdCateg/4026/AR185_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/4026/AR185"
+      },
+      "AR187": {
+        "image": "https://hotbath.it/documents/ProdCateg/4027/AR187_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/4027/AR187"
+      },
+      "AR086": {
+        "image": "https://hotbath.it/documents//ProdCateg/3536/AR086_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/3536/AR086"
+      },
+      "SDS33": {
+        "image": "https://hotbath.it/documents/ProdCateg/4028/SDS33_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/4028/SDS33"
+      },
+      "AR7066": {
+        "image": "https://hotbath.it/documents//ProdCateg/3572/AR7066_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/3572/AR7066"
+      },
+      "AR7067": {
+        "image": "https://hotbath.it/documents//ProdCateg/3573/AR7067_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/3573/AR7067"
+      },
+      "AR7171": {
+        "image": "https://hotbath.it/documents/ProdCateg/4031/AR7171_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/4031/AR7171"
+      },
+      "AR7172": {
+        "image": "https://hotbath.it/documents/ProdCateg/4032/AR7172_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/4032/AR7172"
+      },
+      "ARHR1": {
+        "image": "https://hotbath.it/documents//ProdCateg/3576/ARHR1_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/3576/ARHR1"
+      },
+      "ARHR2": {
+        "image": "https://hotbath.it/documents//ProdCateg/3577/ARHR2_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/3577/ARHR2"
+      },
+      "ARHR3": {
+        "image": "https://hotbath.it/documents//ProdCateg/3578/ARHR3_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/3578/ARHR3"
+      },
+      "AR088": {
+        "image": "https://hotbath.it/documents//ProdCateg/3579/AR088_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/3579/AR088"
+      },
+      "AR318": {
+        "image": "https://hotbath.it/documents/ProdCateg/4034/AR318_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/4034/AR318"
+      },
+      "AR320": {
+        "image": "https://hotbath.it/documents/ProdCateg/4035/AR320_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/4035/AR320"
+      },
+      "AR306": {
+        "image": "https://hotbath.it/documents//ProdCateg/3450/AR306_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/3450/AR306"
+      },
+      "AR440": {
+        "image": "https://hotbath.it/documents/ProdCateg/4037/AR440_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/4037/AR440"
+      },
+      "AR443": {
+        "image": "https://hotbath.it/documents/ProdCateg/4038/AR443_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/4038/AR443"
+      },
+      "AR514": {
+        "image": "https://hotbath.it/documents/ProdCateg/3453/AR514_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/3453/AR514"
+      },
+      "AR515": {
+        "image": "https://hotbath.it/documents/ProdCateg/3454/AR515_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/3454/AR515"
+      },
+      "AR517": {
+        "image": "https://hotbath.it/documents/ProdCateg/2584/AR517_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/2584/AR517"
+      },
+      "AR500": {
+        "image": "https://hotbath.it/documents/ProdCateg/2587/AR500_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/2587/AR500"
+      },
+      "AR354": {
+        "image": "https://hotbath.it/documents/ProdCateg/4036/AR354_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/4036/AR354"
+      },
+      "AR015": {
+        "image": "https://hotbath.it/documents/ProdCateg/2589/AR015_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/2589/AR015"
+      },
+      "AR450": {
+        "image": "https://hotbath.it/documents//ProdCateg/4039/AR450_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/4039/AR450"
+      },
+      "AR452": {
+        "image": "https://hotbath.it/documents/ProdCateg/2591/AR452_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/2591/AR452"
+      },
+      "AR453": {
+        "image": "https://hotbath.it/documents/ProdCateg/2592/AR453_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/2592/AR453"
+      },
+      "AR454": {
+        "image": "https://hotbath.it/documents/ProdCateg/2593/AR454_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/2593/AR454"
+      },
+      "AR100": {
+        "image": "https://hotbath.it/documents/ProdCateg/2594/AR100_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/2594/AR100"
+      },
+      "AR106": {
+        "image": "https://hotbath.it/documents/ProdCateg/2595/AR106_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/2595/AR106"
+      },
+      "AR198": {
+        "image": "https://hotbath.it/documents/ProdCateg/2596/AR198_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/2596/AR198"
+      },
+      "AR199": {
+        "image": "https://hotbath.it/documents/ProdCateg/2597/AR199_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/2597/AR199"
+      },
+      "AR470": {
+        "image": "https://hotbath.it/documents/ProdCateg/2598/AR470_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/2598/AR470"
+      },
+      "AR471": {
+        "image": "https://hotbath.it/documents/ProdCateg/2599/AR471_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/2599/AR471"
+      },
+      "AR472": {
+        "image": "https://hotbath.it/documents/ProdCateg/2600/AR472_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/2600/AR472"
+      },
+      "AR110": {
+        "image": "https://hotbath.it/documents/ProdCateg/2601/AR110_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/2601/AR110"
+      },
+      "AR111": {
+        "image": "https://hotbath.it/documents/ProdCateg/2602/AR111_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/2602/AR111"
+      },
+      "AR142": {
+        "image": "https://hotbath.it/documents/ProdCateg/2603/AR142_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/2603/AR142"
+      },
+      "AR193": {
+        "image": "https://hotbath.it/documents/ProdCateg/2604/AR193_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/2604/AR193"
+      },
+      "AR160": {
+        "image": "https://hotbath.it/documents/ProdCateg/2605/AR160_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/2605/AR160"
+      },
+      "ARA321": {
+        "image": "https://hotbath.it/documents/ProdCateg/3456/ARA321_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/3456/ARA321"
+      },
+      "AR710": {
+        "image": "https://hotbath.it/documents/ProdCateg/2608/AR710_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/2608/AR710"
+      },
+      "AR035": {
+        "image": "https://hotbath.it/documents/ProdCateg/2609/AR035_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/2609/AR035"
+      },
+      "AR2002": {
+        "image": "https://hotbath.it/documents/ProdCateg/2610/AR2002_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/2610/AR2002"
+      },
+      "AR132": {
+        "image": "https://hotbath.it/documents/ProdCateg/2612/AR132_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/2612/AR132"
+      },
+      "AR133": {
+        "image": "https://hotbath.it/documents/ProdCateg/2613/AR133_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/2613/AR133"
+      },
+      "FKM11": {
+        "image": "https://hotbath.it/documents/ProdCateg/3334/FKM11_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/3334/FKM11"
+      },
+      "FKM30": {
+        "image": "https://hotbath.it/documents//ProdCateg/3332/FKM30_1.JPG",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/3332/FKM30"
+      },
+      "FKM31": {
+        "image": "https://hotbath.it/documents//ProdCateg/3333/FKM31_1.JPG",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/3333/FKM31"
+      },
+      "AR190": {
+        "image": "https://hotbath.it/documents/ProdCateg/4033/AR190_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/4033/AR190"
+      },
+      "AR091": {
+        "image": "https://hotbath.it/documents/ProdCateg/3447/AR091_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/3447/AR091"
+      },
+      "ARA01": {
+        "image": "https://hotbath.it/documents/ProdCateg/2615/ARA01_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/2615/ARA01"
+      },
+      "ARA03": {
+        "image": "https://hotbath.it/documents/ProdCateg/2616/ARA03_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/2616/ARA03"
+      },
+      "ARA04": {
+        "image": "https://hotbath.it/documents/ProdCateg/2617/ARA04_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/2617/ARA04"
+      },
+      "ARA08": {
+        "image": "https://hotbath.it/documents/ProdCateg/2618/ARA08_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/2618/ARA08"
+      },
+      "ARA06": {
+        "image": "https://hotbath.it/documents/ProdCateg/2619/ARA06_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/2619/ARA06"
+      },
+      "ARA07": {
+        "image": "https://hotbath.it/documents/ProdCateg/2620/ARA07_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/2620/ARA07"
+      },
+      "ARA09": {
+        "image": "https://hotbath.it/documents/ProdCateg/2621/ARA09_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/2621/ARA09"
+      },
+      "ARA10": {
+        "image": "https://hotbath.it/documents/ProdCateg/2622/ARA10_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/2622/ARA10"
+      },
+      "ARA11": {
+        "image": "https://hotbath.it/documents/ProdCateg/2623/ARA11_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/2623/ARA11"
+      },
+      "ARA12": {
+        "image": "https://hotbath.it/documents/ProdCateg/2624/ARA12_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/2624/ARA12"
+      },
+      "ARA20": {
+        "image": "https://hotbath.it/documents/ProdCateg/2627/ARA20_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/2627/ARA20"
+      },
+      "ARA21": {
+        "image": "https://hotbath.it/documents/ProdCateg/2628/ARA21_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/1471/-1/Archie",
+        "officialProductPage": "https://hotbath.it/fr/produits/2628/ARA21"
+      }
+    },
+    "Tron": {
+      "TR003": {
+        "image": "https://hotbath.it/documents/ProdCateg/2161/TR003_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/2157/-1/Tron",
+        "officialProductPage": "https://hotbath.it/fr/produits/2161/TR003"
+      }
+    },
+    "Ace": {
+      "AC003": {
+        "image": "https://hotbath.it/documents/ProdCateg/3008/AC003_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3008/AC003"
+      },
+      "AC003H": {
+        "image": "https://hotbath.it/documents/ProdCateg/3011/AC003H_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3011/AC003H"
+      },
+      "AC004": {
+        "image": "https://hotbath.it/documents/ProdCateg/3009/AC004_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3009/AC004"
+      },
+      "AC018": {
+        "image": "https://hotbath.it/documents/ProdCateg/3010/AC018_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3010/AC018"
+      },
+      "AC023": {
+        "image": "https://hotbath.it/documents//ProdCateg/3339/AC023_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3339/AC023"
+      },
+      "AC023H": {
+        "image": "https://hotbath.it/documents/ProdCateg/3019/AC023H_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3019/AC023H"
+      },
+      "AC105": {
+        "image": "https://hotbath.it/documents/ProdCateg/3012/AC105_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3012/AC105"
+      },
+      "AC131": {
+        "image": "https://hotbath.it/documents/ProdCateg/3013/AC131_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3013/AC131"
+      },
+      "AC111": {
+        "image": "https://hotbath.it/documents/ProdCateg/3020/AC111_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3020/AC111"
+      },
+      "AC129": {
+        "image": "https://hotbath.it/documents/ProdCateg/3021/AC129_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3021/AC129"
+      },
+      "AC177": {
+        "image": "https://hotbath.it/documents/ProdCateg/3014/AC177_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3014/AC177"
+      },
+      "AC073": {
+        "image": "https://hotbath.it/documents/ProdCateg/3016/AC073_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3016/AC073"
+      },
+      "AC075": {
+        "image": "https://hotbath.it/documents/ProdCateg/3017/AC075_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3017/AC075"
+      },
+      "AC009": {
+        "image": "https://hotbath.it/documents/ProdCateg/3023/AC009_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3023/AC009"
+      },
+      "AC039": {
+        "image": "https://hotbath.it/documents//ProdCateg/3328/AC039_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3328/AC039"
+      },
+      "AC071": {
+        "image": "https://hotbath.it/documents/ProdCateg/3024/AC071_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3024/AC071"
+      },
+      "AC072": {
+        "image": "https://hotbath.it/documents/ProdCateg/3025/AC072_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3025/AC072"
+      },
+      "SDSAC9": {
+        "image": "https://hotbath.it/documents//ProdCateg/4095/SDSAC9_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/4095/SDSAC9"
+      },
+      "M305": {
+        "image": "https://hotbath.it/documents/ProdCateg/3029/M305_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3029/M305"
+      },
+      "M306": {
+        "image": "https://hotbath.it/documents//ProdCateg/3329/M306_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3329/M306"
+      },
+      "M274": {
+        "image": "https://hotbath.it/documents/ProdCateg/3042/M274_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3042/M274"
+      },
+      "AC440": {
+        "image": "https://hotbath.it/documents/ProdCateg/3030/AC440_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3030/AC440"
+      },
+      "AC443": {
+        "image": "https://hotbath.it/documents/ProdCateg/3043/AC443_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3043/AC443"
+      },
+      "AC450": {
+        "image": "https://hotbath.it/documents/ProdCateg/3032/AC450_1.JPG",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3032/AC450"
+      },
+      "AC452": {
+        "image": "https://hotbath.it/documents/ProdCateg/3033/AC452_1.JPG",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3033/AC452"
+      },
+      "AC453": {
+        "image": "https://hotbath.it/documents/ProdCateg/3044/AC453_1.JPG",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3044/AC453"
+      },
+      "M100": {
+        "image": "https://hotbath.it/documents//ProdCateg/4108/M100_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/4108/M100"
+      },
+      "M106": {
+        "image": "https://hotbath.it/documents//ProdCateg/4109/M106_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/4109/M106"
+      },
+      "AC104": {
+        "image": "https://hotbath.it/documents/ProdCateg/3049/AC104_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3049/AC104"
+      },
+      "AC106": {
+        "image": "https://hotbath.it/documents/ProdCateg/3443/AC106_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3443/AC106"
+      },
+      "AC193": {
+        "image": "https://hotbath.it/documents/ProdCateg/3444/AC193_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3444/AC193"
+      },
+      "AC195": {
+        "image": "https://hotbath.it/documents/ProdCateg/3445/AC195_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3445/AC195"
+      },
+      "M354": {
+        "image": "https://hotbath.it/documents/ProdCateg/3050/M354_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3050/M354"
+      },
+      "AC370": {
+        "image": "https://hotbath.it/documents/ProdCateg/3045/AC370_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3045/AC370"
+      },
+      "M376": {
+        "image": "https://hotbath.it/documents/ProdCateg/3051/M376_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3051/M376"
+      },
+      "M015": {
+        "image": "https://hotbath.it/documents/ProdCateg/3038/M015_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3038/M015"
+      },
+      "M017": {
+        "image": "https://hotbath.it/documents/ProdCateg/3052/M017_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3052/M017"
+      },
+      "AC515": {
+        "image": "https://hotbath.it/documents/ProdCateg/3046/AC515_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3046/AC515"
+      },
+      "AC517": {
+        "image": "https://hotbath.it/documents/ProdCateg/3035/AC517_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3035/AC517"
+      },
+      "M161": {
+        "image": "https://hotbath.it/documents/ProdCateg/3053/M161_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3053/M161"
+      },
+      "M162": {
+        "image": "https://hotbath.it/documents/ProdCateg/3054/M162_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3054/M162"
+      },
+      "M111": {
+        "image": "https://hotbath.it/documents/ProdCateg/3055/M111_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3055/M111"
+      },
+      "AC148": {
+        "image": "https://hotbath.it/documents/ProdCateg/3056/AC148_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3056/AC148"
+      },
+      "AC146": {
+        "image": "https://hotbath.it/documents//ProdCateg/3330/AC146_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3330/AC146"
+      },
+      "KHDS3": {
+        "image": "https://hotbath.it/documents/ProdCateg/3446/KHDS3_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3446/KHDS3"
+      },
+      "GLA320": {
+        "image": "https://hotbath.it/documents/ProdCateg/3061/GLA320_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3061/GLA320"
+      },
+      "P708": {
+        "image": "https://hotbath.it/documents/ProdCateg/3065/P708_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3065/P708"
+      },
+      "P710": {
+        "image": "https://hotbath.it/documents/ProdCateg/3058/P710_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3058/P710"
+      },
+      "P035": {
+        "image": "https://hotbath.it/documents/ProdCateg/3059/P035_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3059/P035"
+      },
+      "P2002": {
+        "image": "https://hotbath.it/documents/ProdCateg/3060/P2002_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3060/P2002"
+      },
+      "P031": {
+        "image": "https://hotbath.it/documents/ProdCateg/3066/P031_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3066/P031"
+      },
+      "P032": {
+        "image": "https://hotbath.it/documents/ProdCateg/3062/P032_1.JPG",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3062/P032"
+      },
+      "P033": {
+        "image": "https://hotbath.it/documents/ProdCateg/3063/P033_1.JPG",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3063/P033"
+      },
+      "AC040": {
+        "image": "https://hotbath.it/documents/ProdCateg/3068/AC040_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3068/AC040"
+      },
+      "AC042": {
+        "image": "https://hotbath.it/documents/ProdCateg/3069/AC042_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3006/-1/Ace",
+        "officialProductPage": "https://hotbath.it/fr/produits/3069/AC042"
+      }
+    },
+    "Guy": {
+      "GY003R": {
+        "image": "https://hotbath.it/documents/ProdCateg/3359/GY003R_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3342/-1/Guy",
+        "officialProductPage": "https://hotbath.it/fr/produits/3359/GY003R"
+      },
+      "GY003D": {
+        "image": "https://hotbath.it/documents/ProdCateg/3372/GY003D_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3342/-1/Guy",
+        "officialProductPage": "https://hotbath.it/fr/produits/3372/GY003D"
+      },
+      "GY003HR": {
+        "image": "https://hotbath.it/documents/ProdCateg/3362/GY003HR_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3342/-1/Guy",
+        "officialProductPage": "https://hotbath.it/fr/produits/3362/GY003HR"
+      },
+      "GY003HD": {
+        "image": "https://hotbath.it/documents/ProdCateg/3373/GY003HD_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3342/-1/Guy",
+        "officialProductPage": "https://hotbath.it/fr/produits/3373/GY003HD"
+      },
+      "GY004R": {
+        "image": "https://hotbath.it/documents/ProdCateg/3374/GY004R_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3342/-1/Guy",
+        "officialProductPage": "https://hotbath.it/fr/produits/3374/GY004R"
+      },
+      "GY004D": {
+        "image": "https://hotbath.it/documents/ProdCateg/3375/GY004D_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3342/-1/Guy",
+        "officialProductPage": "https://hotbath.it/fr/produits/3375/GY004D"
+      },
+      "GY018R": {
+        "image": "https://hotbath.it/documents/ProdCateg/3361/GY018R_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3342/-1/Guy",
+        "officialProductPage": "https://hotbath.it/fr/produits/3361/GY018R"
+      },
+      "GY018D": {
+        "image": "https://hotbath.it/documents/ProdCateg/3376/GY018D_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3342/-1/Guy",
+        "officialProductPage": "https://hotbath.it/fr/produits/3376/GY018D"
+      },
+      "GY023R": {
+        "image": "https://hotbath.it/documents/ProdCateg/3371/GY023R_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3342/-1/Guy",
+        "officialProductPage": "https://hotbath.it/fr/produits/3371/GY023R"
+      },
+      "GY023D": {
+        "image": "https://hotbath.it/documents/ProdCateg/3377/GY023D_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3342/-1/Guy",
+        "officialProductPage": "https://hotbath.it/fr/produits/3377/GY023D"
+      },
+      "GY023HR": {
+        "image": "https://hotbath.it/documents/ProdCateg/3368/GY023HR_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3342/-1/Guy",
+        "officialProductPage": "https://hotbath.it/fr/produits/3368/GY023HR"
+      },
+      "GY023HD": {
+        "image": "https://hotbath.it/documents/ProdCateg/3378/GY023HD_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3342/-1/Guy",
+        "officialProductPage": "https://hotbath.it/fr/produits/3378/GY023HD"
+      },
+      "GY005R-20": {
+        "image": "https://hotbath.it/documents/ProdCateg/3363/GY005R-20_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3342/-1/Guy",
+        "officialProductPage": "https://hotbath.it/fr/produits/3363/GY005R-20"
+      },
+      "GY005D-20": {
+        "image": "https://hotbath.it/documents/ProdCateg/3379/GY005D-20_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3342/-1/Guy",
+        "officialProductPage": "https://hotbath.it/fr/produits/3379/GY005D-20"
+      },
+      "GY005R-25": {
+        "image": "https://hotbath.it/documents/ProdCateg/3380/GY005R-25_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3342/-1/Guy",
+        "officialProductPage": "https://hotbath.it/fr/produits/3380/GY005R-25"
+      },
+      "GY005D-25": {
+        "image": "https://hotbath.it/documents/ProdCateg/3381/GY005D-25_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3342/-1/Guy",
+        "officialProductPage": "https://hotbath.it/fr/produits/3381/GY005D-25"
+      },
+      "GY095-20": {
+        "image": "https://hotbath.it/documents/ProdCateg/3384/GY095-20_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3342/-1/Guy",
+        "officialProductPage": "https://hotbath.it/fr/produits/3384/GY095-20"
+      },
+      "GY095-25": {
+        "image": "https://hotbath.it/documents/ProdCateg/3385/GY095-25_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3342/-1/Guy",
+        "officialProductPage": "https://hotbath.it/fr/produits/3385/GY095-25"
+      },
+      "GY031R": {
+        "image": "https://hotbath.it/documents/ProdCateg/3364/GY031R_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3342/-1/Guy",
+        "officialProductPage": "https://hotbath.it/fr/produits/3364/GY031R"
+      },
+      "GY031D": {
+        "image": "https://hotbath.it/documents/ProdCateg/3382/GY031D_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3342/-1/Guy",
+        "officialProductPage": "https://hotbath.it/fr/produits/3382/GY031D"
+      },
+      "GY011R": {
+        "image": "https://hotbath.it/documents/ProdCateg/3369/GY011R_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3342/-1/Guy",
+        "officialProductPage": "https://hotbath.it/fr/produits/3369/GY011R"
+      },
+      "GY011D": {
+        "image": "https://hotbath.it/documents/ProdCateg/3383/GY011D_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3342/-1/Guy",
+        "officialProductPage": "https://hotbath.it/fr/produits/3383/GY011D"
+      },
+      "GY177R": {
+        "image": "https://hotbath.it/documents/ProdCateg/3365/GY177R_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3342/-1/Guy",
+        "officialProductPage": "https://hotbath.it/fr/produits/3365/GY177R"
+      },
+      "GY177D": {
+        "image": "https://hotbath.it/documents/ProdCateg/3386/GY177D_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3342/-1/Guy",
+        "officialProductPage": "https://hotbath.it/fr/produits/3386/GY177D"
+      },
+      "GY176": {
+        "image": "https://hotbath.it/documents/ProdCateg/4044/GY176_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3342/-1/Guy",
+        "officialProductPage": "https://hotbath.it/fr/produits/4044/GY176"
+      },
+      "GY073R": {
+        "image": "https://hotbath.it/documents/ProdCateg/3366/GY073R_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3342/-1/Guy",
+        "officialProductPage": "https://hotbath.it/fr/produits/3366/GY073R"
+      },
+      "GY073D": {
+        "image": "https://hotbath.it/documents/ProdCateg/3387/GY073D_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3342/-1/Guy",
+        "officialProductPage": "https://hotbath.it/fr/produits/3387/GY073D"
+      },
+      "GY075R": {
+        "image": "https://hotbath.it/documents/ProdCateg/3367/GY075R_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3342/-1/Guy",
+        "officialProductPage": "https://hotbath.it/fr/produits/3367/GY075R"
+      },
+      "GY075D": {
+        "image": "https://hotbath.it/documents/ProdCateg/3388/GY075D_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3342/-1/Guy",
+        "officialProductPage": "https://hotbath.it/fr/produits/3388/GY075D"
+      },
+      "GY7009R": {
+        "image": "https://hotbath.it/documents/ProdCateg/3390/GY7009R_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3342/-1/Guy",
+        "officialProductPage": "https://hotbath.it/fr/produits/3390/GY7009R"
+      },
+      "GY7009D": {
+        "image": "https://hotbath.it/documents/ProdCateg/3395/GY7009D_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3342/-1/Guy",
+        "officialProductPage": "https://hotbath.it/fr/produits/3395/GY7009D"
+      },
+      "GY7070R": {
+        "image": "https://hotbath.it/documents/ProdCateg/4045/GY7070R_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3342/-1/Guy",
+        "officialProductPage": "https://hotbath.it/fr/produits/4045/GY7070R"
+      },
+      "GY7070D": {
+        "image": "https://hotbath.it/documents/ProdCateg/4046/GY7070D_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3342/-1/Guy",
+        "officialProductPage": "https://hotbath.it/fr/produits/4046/GY7070D"
+      },
+      "GY7066R": {
+        "image": "https://hotbath.it/documents/ProdCateg/3391/GY7066R_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3342/-1/Guy",
+        "officialProductPage": "https://hotbath.it/fr/produits/3391/GY7066R"
+      },
+      "GY7066D": {
+        "image": "https://hotbath.it/documents/ProdCateg/3396/GY7066D_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3342/-1/Guy",
+        "officialProductPage": "https://hotbath.it/fr/produits/3396/GY7066D"
+      },
+      "GY7067R": {
+        "image": "https://hotbath.it/documents/ProdCateg/3392/GY7067R_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3342/-1/Guy",
+        "officialProductPage": "https://hotbath.it/fr/produits/3392/GY7067R"
+      },
+      "GY7067D": {
+        "image": "https://hotbath.it/documents/ProdCateg/3397/GY7067D_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3342/-1/Guy",
+        "officialProductPage": "https://hotbath.it/fr/produits/3397/GY7067D"
+      },
+      "GY7071R": {
+        "image": "https://hotbath.it/documents/ProdCateg/3393/GY7071R_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3342/-1/Guy",
+        "officialProductPage": "https://hotbath.it/fr/produits/3393/GY7071R"
+      },
+      "GY7071D": {
+        "image": "https://hotbath.it/documents/ProdCateg/3398/GY7071D_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3342/-1/Guy",
+        "officialProductPage": "https://hotbath.it/fr/produits/3398/GY7071D"
+      },
+      "GY7072R": {
+        "image": "https://hotbath.it/documents/ProdCateg/3394/GY7072R_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3342/-1/Guy",
+        "officialProductPage": "https://hotbath.it/fr/produits/3394/GY7072R"
+      },
+      "GY7072D": {
+        "image": "https://hotbath.it/documents/ProdCateg/3399/GY7072D_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3342/-1/Guy",
+        "officialProductPage": "https://hotbath.it/fr/produits/3399/GY7072D"
+      }
+    },
+    "Gal": {
+      "GL003": {
+        "image": "https://hotbath.it/documents/ProdCateg/3491/GL003_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3491/GL003"
+      },
+      "GL003H": {
+        "image": "https://hotbath.it/documents/ProdCateg/3494/GL003H_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3494/GL003H"
+      },
+      "GL004": {
+        "image": "https://hotbath.it/documents/ProdCateg/3492/GL004_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3492/GL004"
+      },
+      "GL005": {
+        "image": "https://hotbath.it/documents/ProdCateg/3495/GL005_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3495/GL005"
+      },
+      "GL002": {
+        "image": "https://hotbath.it/documents/ProdCateg/3498/GL002_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3498/GL002"
+      },
+      "GL018": {
+        "image": "https://hotbath.it/documents/ProdCateg/3493/GL018_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3493/GL018"
+      },
+      "GL031": {
+        "image": "https://hotbath.it/documents/ProdCateg/3496/GL031_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3496/GL031"
+      },
+      "GL073": {
+        "image": "https://hotbath.it/documents/ProdCateg/4042/GL073_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/4042/GL073"
+      },
+      "GL075": {
+        "image": "https://hotbath.it/documents/ProdCateg/3500/GL075_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3500/GL075"
+      },
+      "GL177": {
+        "image": "https://hotbath.it/documents/ProdCateg/4043/GL177_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/4043/GL177"
+      },
+      "GL008": {
+        "image": "https://hotbath.it/documents/ProdCateg/3502/GL008_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3502/GL008"
+      },
+      "GL020": {
+        "image": "https://hotbath.it/documents/ProdCateg/3503/GL020_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3503/GL020"
+      },
+      "SDSGL9": {
+        "image": "https://hotbath.it/documents/ProdCateg/3504/SDSGL9_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3504/SDSGL9"
+      },
+      "GL009": {
+        "image": "https://hotbath.it/documents/ProdCateg/3510/GL009_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3510/GL009"
+      },
+      "PB071": {
+        "image": "https://hotbath.it/documents/ProdCateg/3507/PB071_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3507/PB071"
+      },
+      "GL7066": {
+        "image": "https://hotbath.it/documents/ProdCateg/3509/GL7066_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3509/GL7066"
+      },
+      "GL7067": {
+        "image": "https://hotbath.it/documents/ProdCateg/3508/GL7067_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3508/GL7067"
+      },
+      "GL7071": {
+        "image": "https://hotbath.it/documents/ProdCateg/3505/GL7071_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3505/GL7071"
+      },
+      "GL7072": {
+        "image": "https://hotbath.it/documents/ProdCateg/3506/GL7072_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3506/GL7072"
+      },
+      "GLF011": {
+        "image": "https://hotbath.it/documents/ProdCateg/3511/GLF011_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3511/GLF011"
+      },
+      "GLF012": {
+        "image": "https://hotbath.it/documents/ProdCateg/3512/GLF012_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3512/GLF012"
+      },
+      "GLF013": {
+        "image": "https://hotbath.it/documents/ProdCateg/3513/GLF013_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3513/GLF013"
+      },
+      "GL307": {
+        "image": "https://hotbath.it/documents/ProdCateg/3477/GL307_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3477/GL307"
+      },
+      "GL309": {
+        "image": "https://hotbath.it/documents/ProdCateg/3484/GL309_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3484/GL309"
+      },
+      "GL311": {
+        "image": "https://hotbath.it/documents/ProdCateg/3485/GL311_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3485/GL311"
+      },
+      "GL440": {
+        "image": "https://hotbath.it/documents/ProdCateg/3478/GL440_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3478/GL440"
+      },
+      "GL350": {
+        "image": "https://hotbath.it/documents/ProdCateg/3479/GL350_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3479/GL350"
+      },
+      "GL515": {
+        "image": "https://hotbath.it/documents/ProdCateg/3482/GL515_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3482/GL515"
+      },
+      "GL517": {
+        "image": "https://hotbath.it/documents/ProdCateg/3483/GL517_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3483/GL517"
+      },
+      "GL450": {
+        "image": "https://hotbath.it/documents/ProdCateg/3480/GL450_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3480/GL450"
+      },
+      "GL452": {
+        "image": "https://hotbath.it/documents/ProdCateg/3481/GL452_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3481/GL452"
+      },
+      "GL100": {
+        "image": "https://hotbath.it/documents/ProdCateg/3487/GL100_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3487/GL100"
+      },
+      "GL106": {
+        "image": "https://hotbath.it/documents/ProdCateg/3488/GL106_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3488/GL106"
+      },
+      "M147": {
+        "image": "https://hotbath.it/documents/ProdCateg/3489/M147_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3489/M147"
+      },
+      "P710": {
+        "image": "https://hotbath.it/documents/ProdCateg/3515/P710_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3515/P710"
+      },
+      "P035": {
+        "image": "https://hotbath.it/documents/ProdCateg/3516/P035_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3516/P035"
+      },
+      "P2002": {
+        "image": "https://hotbath.it/documents/ProdCateg/3517/P2002_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3517/P2002"
+      },
+      "P032": {
+        "image": "https://hotbath.it/documents/ProdCateg/3519/P032_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3519/P032"
+      },
+      "P033": {
+        "image": "https://hotbath.it/documents/ProdCateg/3520/P033_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3520/P033"
+      },
+      "GLA320": {
+        "image": "https://hotbath.it/documents/ProdCateg/3518/GLA320_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3518/GLA320"
+      },
+      "GLA01": {
+        "image": "https://hotbath.it/documents/ProdCateg/3462/GLA01_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3462/GLA01"
+      },
+      "GLA02": {
+        "image": "https://hotbath.it/documents/ProdCateg/3463/GLA02_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3463/GLA02"
+      },
+      "GLA04": {
+        "image": "https://hotbath.it/documents/ProdCateg/3465/GLA04_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3465/GLA04"
+      },
+      "GLA05": {
+        "image": "https://hotbath.it/documents/ProdCateg/3466/GLA05_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3466/GLA05"
+      },
+      "GLA06": {
+        "image": "https://hotbath.it/documents/ProdCateg/3467/GLA06_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3467/GLA06"
+      },
+      "GLA07": {
+        "image": "https://hotbath.it/documents/ProdCateg/3468/GLA07_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3468/GLA07"
+      },
+      "GLA08": {
+        "image": "https://hotbath.it/documents/ProdCateg/3469/GLA08_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3469/GLA08"
+      },
+      "GLA03": {
+        "image": "https://hotbath.it/documents/ProdCateg/3464/GLA03_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3464/GLA03"
+      },
+      "GLA09": {
+        "image": "https://hotbath.it/documents/ProdCateg/3470/GLA09_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3470/GLA09"
+      },
+      "CBA10": {
+        "image": "https://hotbath.it/documents/ProdCateg/3471/CBA10_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3471/CBA10"
+      },
+      "GLA11": {
+        "image": "https://hotbath.it/documents/ProdCateg/3472/GLA11_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3472/GLA11"
+      },
+      "CBA12": {
+        "image": "https://hotbath.it/documents/ProdCateg/3473/CBA12_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3473/CBA12"
+      },
+      "GLA20": {
+        "image": "https://hotbath.it/documents/ProdCateg/3475/GLA20_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3475/GLA20"
+      },
+      "CBA22": {
+        "image": "https://hotbath.it/documents/ProdCateg/3474/CBA22_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3460/-1/Gal",
+        "officialProductPage": "https://hotbath.it/fr/produits/3474/CBA22"
+      }
+    },
+    "Cobber": {
+      "CB003C": {
+        "image": "https://hotbath.it/documents//ProdCateg/3594/CB003C_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3594/CB003C"
+      },
+      "CB003S": {
+        "image": "https://hotbath.it/documents//ProdCateg/3600/CB003S_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3600/CB003S"
+      },
+      "CB003MC": {
+        "image": "https://hotbath.it/documents//ProdCateg/3598/CB003MC_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3598/CB003MC"
+      },
+      "CB003MS": {
+        "image": "https://hotbath.it/documents//ProdCateg/3601/CB003MS_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3601/CB003MS"
+      },
+      "CB003HC": {
+        "image": "https://hotbath.it/documents//ProdCateg/3602/CB003HC_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3602/CB003HC"
+      },
+      "CB003HS": {
+        "image": "https://hotbath.it/documents//ProdCateg/3603/CB003HS_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3603/CB003HS"
+      },
+      "CB004": {
+        "image": "https://hotbath.it/documents//ProdCateg/3595/CB004_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3595/CB004"
+      },
+      "CB178W": {
+        "image": "https://hotbath.it/documents/ProdCateg/4040/CB178W_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/4040/CB178W"
+      },
+      "CB023": {
+        "image": "https://hotbath.it/documents//ProdCateg/3632/CB023_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3632/CB023"
+      },
+      "CB023H": {
+        "image": "https://hotbath.it/documents//ProdCateg/3633/CB023H_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3633/CB023H"
+      },
+      "CB033": {
+        "image": "https://hotbath.it/documents//ProdCateg/3608/CB033_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3608/CB033"
+      },
+      "CB018": {
+        "image": "https://hotbath.it/documents//ProdCateg/3597/CB018_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3597/CB018"
+      },
+      "E001": {
+        "image": "https://hotbath.it/documents//ProdCateg/3615/E001_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3615/E001"
+      },
+      "U001": {
+        "image": "https://hotbath.it/documents//ProdCateg/3616/U001_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3616/U001"
+      },
+      "UW001": {
+        "image": "https://hotbath.it/documents//ProdCateg/3617/UW001_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3617/UW001"
+      },
+      "CB105-18": {
+        "image": "https://hotbath.it/documents/ProdCateg/3604/CB105-18_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3604/CB105-18"
+      },
+      "CB105-25": {
+        "image": "https://hotbath.it/documents/ProdCateg/3623/CB105-25_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3623/CB105-25"
+      },
+      "CB095-15": {
+        "image": "https://hotbath.it/documents//ProdCateg/3620/CB095-15_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3620/CB095-15"
+      },
+      "CB095-18": {
+        "image": "https://hotbath.it/documents//ProdCateg/3612/CB095-18_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3612/CB095-18"
+      },
+      "CB095-22": {
+        "image": "https://hotbath.it/documents//ProdCateg/3622/CB095-22_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3622/CB095-22"
+      },
+      "CB095-25": {
+        "image": "https://hotbath.it/documents//ProdCateg/3619/CB095-25_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3619/CB095-25"
+      },
+      "CB095-30": {
+        "image": "https://hotbath.it/documents//ProdCateg/3618/CB095-30_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3618/CB095-30"
+      },
+      "CB131": {
+        "image": "https://hotbath.it/documents//ProdCateg/3606/CB131_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3606/CB131"
+      },
+      "CB111": {
+        "image": "https://hotbath.it/documents//ProdCateg/3609/CB111_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3609/CB111"
+      },
+      "CB010H": {
+        "image": "https://hotbath.it/documents//ProdCateg/3613/CB010H_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3613/CB010H"
+      },
+      "CB010C": {
+        "image": "https://hotbath.it/documents//ProdCateg/3614/CB010C_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3614/CB010C"
+      },
+      "CB129": {
+        "image": "https://hotbath.it/documents//ProdCateg/3634/CB129_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3634/CB129"
+      },
+      "CB127": {
+        "image": "https://hotbath.it/documents/ProdCateg/3610/CB127_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3610/CB127"
+      },
+      "CB187": {
+        "image": "https://hotbath.it/documents/ProdCateg/3607/CB187_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3607/CB187"
+      },
+      "CB176": {
+        "image": "https://hotbath.it/documents/ProdCateg/4041/CB176_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/4041/CB176"
+      },
+      "CB173": {
+        "image": "https://hotbath.it/documents/ProdCateg/3629/CB173_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3629/CB173"
+      },
+      "CB175": {
+        "image": "https://hotbath.it/documents/ProdCateg/3630/CB175_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3630/CB175"
+      },
+      "B008": {
+        "image": "https://hotbath.it/documents/ProdCateg/3638/B008_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3638/B008"
+      },
+      "B020": {
+        "image": "https://hotbath.it/documents//ProdCateg/3662/B020_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3662/B020"
+      },
+      "B021": {
+        "image": "https://hotbath.it/documents/ProdCateg/3641/B021_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3641/B021"
+      },
+      "SDSAC9": {
+        "image": "https://hotbath.it/documents//ProdCateg/4096/SDSAC9_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/4096/SDSAC9"
+      },
+      "SDSAC10": {
+        "image": "https://hotbath.it/documents//ProdCateg/4097/SDSAC10_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/4097/SDSAC10"
+      },
+      "CB007": {
+        "image": "https://hotbath.it/documents//ProdCateg/3637/CB007_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3637/CB007"
+      },
+      "CB009": {
+        "image": "https://hotbath.it/documents//ProdCateg/3636/CB009_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3636/CB009"
+      },
+      "CB7001H": {
+        "image": "https://hotbath.it/documents//ProdCateg/3642/CB7001H_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3642/CB7001H"
+      },
+      "CB7001V": {
+        "image": "https://hotbath.it/documents//ProdCateg/3643/CB7001V_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3643/CB7001V"
+      },
+      "CB7080": {
+        "image": "https://hotbath.it/documents//ProdCateg/3644/CB7080_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3644/CB7080"
+      },
+      "CB7083": {
+        "image": "https://hotbath.it/documents//ProdCateg/3656/CB7083_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3656/CB7083"
+      },
+      "CB7068": {
+        "image": "https://hotbath.it/documents//ProdCateg/3645/CB7068_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3645/CB7068"
+      },
+      "CB7069": {
+        "image": "https://hotbath.it/documents//ProdCateg/3646/CB7069_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3646/CB7069"
+      },
+      "CB7068PB": {
+        "image": "https://hotbath.it/documents//ProdCateg/3647/CB7068PB_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3647/CB7068PB"
+      },
+      "CB7069PB": {
+        "image": "https://hotbath.it/documents//ProdCateg/3648/CB7069PB_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3648/CB7069PB"
+      },
+      "CB7098": {
+        "image": "https://hotbath.it/documents//ProdCateg/3649/CB7098_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3649/CB7098"
+      },
+      "CB7502": {
+        "image": "https://hotbath.it/documents/ProdCateg/3650/CB7502_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3650/CB7502"
+      },
+      "CB7066": {
+        "image": "https://hotbath.it/documents//ProdCateg/3657/CB7066_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3657/CB7066"
+      },
+      "CB7067": {
+        "image": "https://hotbath.it/documents//ProdCateg/3658/CB7067_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3658/CB7067"
+      },
+      "CB7009": {
+        "image": "https://hotbath.it/documents/ProdCateg/3663/CB7009_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3663/CB7009"
+      },
+      "CB7070": {
+        "image": "https://hotbath.it/documents/ProdCateg/3665/CB7070_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3665/CB7070"
+      },
+      "CB7171": {
+        "image": "https://hotbath.it/documents/ProdCateg/3659/CB7171_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3659/CB7171"
+      },
+      "CB7172": {
+        "image": "https://hotbath.it/documents/ProdCateg/3660/CB7172_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3660/CB7172"
+      },
+      "PB066": {
+        "image": "https://hotbath.it/documents//ProdCateg/3652/PB066_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3652/PB066"
+      },
+      "PB050": {
+        "image": "https://hotbath.it/documents//ProdCateg/3651/PB050_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3651/PB050"
+      },
+      "PB009": {
+        "image": "https://hotbath.it/documents//ProdCateg/3653/PB009_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3653/PB009"
+      },
+      "PB009Q": {
+        "image": "https://hotbath.it/documents//ProdCateg/3654/PB009Q_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3654/PB009Q"
+      },
+      "M537": {
+        "image": "https://hotbath.it/documents//ProdCateg/4098/M537_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/4098/M537"
+      },
+      "M538": {
+        "image": "https://hotbath.it/documents//ProdCateg/4099/M538_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/4099/M538"
+      },
+      "M317": {
+        "image": "https://hotbath.it/documents/ProdCateg/3694/M317_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3694/M317"
+      },
+      "M318": {
+        "image": "https://hotbath.it/documents/ProdCateg/3695/M318_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3695/M318"
+      },
+      "M319": {
+        "image": "https://hotbath.it/documents/ProdCateg/3682/M319_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3682/M319"
+      },
+      "M321": {
+        "image": "https://hotbath.it/documents/ProdCateg/3683/M321_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3683/M321"
+      },
+      "M311": {
+        "image": "https://hotbath.it/documents//ProdCateg/3684/M311_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3684/M311"
+      },
+      "M354": {
+        "image": "https://hotbath.it/documents//ProdCateg/3692/M354_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3692/M354"
+      },
+      "M355": {
+        "image": "https://hotbath.it/documents/ProdCateg/3698/M355_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3698/M355"
+      },
+      "M015": {
+        "image": "https://hotbath.it/documents/ProdCateg/3686/M015_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3686/M015"
+      },
+      "M017": {
+        "image": "https://hotbath.it/documents//ProdCateg/3693/M017_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3693/M017"
+      },
+      "M445": {
+        "image": "https://hotbath.it/documents/ProdCateg/3696/M445_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3696/M445"
+      },
+      "M447": {
+        "image": "https://hotbath.it/documents/ProdCateg/3673/M447_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3673/M447"
+      },
+      "M446": {
+        "image": "https://hotbath.it/documents/ProdCateg/3697/M446_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3697/M446"
+      },
+      "M448": {
+        "image": "https://hotbath.it/documents/ProdCateg/3685/M448_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3685/M448"
+      },
+      "M514": {
+        "image": "https://hotbath.it/documents//ProdCateg/3677/M514_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3677/M514"
+      },
+      "M515": {
+        "image": "https://hotbath.it/documents//ProdCateg/3678/M515_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3678/M515"
+      },
+      "M517": {
+        "image": "https://hotbath.it/documents//ProdCateg/3679/M517_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3679/M517"
+      },
+      "M100": {
+        "image": "https://hotbath.it/documents//ProdCateg/4110/M100_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/4110/M100"
+      },
+      "M105": {
+        "image": "https://hotbath.it/documents//ProdCateg/4111/M105_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/4111/M105"
+      },
+      "M106": {
+        "image": "https://hotbath.it/documents//ProdCateg/4112/M106_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/4112/M106"
+      },
+      "CB450": {
+        "image": "https://hotbath.it/documents/ProdCateg/3699/CB450_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3699/CB450"
+      },
+      "CB452": {
+        "image": "https://hotbath.it/documents//ProdCateg/3700/CB452_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3700/CB452"
+      },
+      "CB453": {
+        "image": "https://hotbath.it/documents//ProdCateg/3701/CB453_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3701/CB453"
+      },
+      "M470": {
+        "image": "https://hotbath.it/documents/ProdCateg/3702/M470_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3702/M470"
+      },
+      "M471": {
+        "image": "https://hotbath.it/documents//ProdCateg/3691/M471_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3691/M471"
+      },
+      "M472": {
+        "image": "https://hotbath.it/documents//ProdCateg/3690/M472_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3690/M472"
+      },
+      "CBA321": {
+        "image": "https://hotbath.it/documents/ProdCateg/3714/CBA321_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3714/CBA321"
+      },
+      "CB040": {
+        "image": "https://hotbath.it/documents//ProdCateg/3916/CB040_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3916/CB040"
+      },
+      "CB041": {
+        "image": "https://hotbath.it/documents//ProdCateg/3719/CB041_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3719/CB041"
+      },
+      "CBA01": {
+        "image": "https://hotbath.it/documents//ProdCateg/3721/CBA01_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3721/CBA01"
+      },
+      "CBA02": {
+        "image": "https://hotbath.it/documents//ProdCateg/3722/CBA02_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3722/CBA02"
+      },
+      "CBA04": {
+        "image": "https://hotbath.it/documents//ProdCateg/3724/CBA04_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3724/CBA04"
+      },
+      "CBA05": {
+        "image": "https://hotbath.it/documents//ProdCateg/3725/CBA05_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3725/CBA05"
+      },
+      "CBA06": {
+        "image": "https://hotbath.it/documents//ProdCateg/3726/CBA06_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3726/CBA06"
+      },
+      "CBA07": {
+        "image": "https://hotbath.it/documents//ProdCateg/3727/CBA07_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3727/CBA07"
+      },
+      "CBA08": {
+        "image": "https://hotbath.it/documents//ProdCateg/3728/CBA08_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3728/CBA08"
+      },
+      "CBA03": {
+        "image": "https://hotbath.it/documents//ProdCateg/3723/CBA03_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3723/CBA03"
+      },
+      "CBA09": {
+        "image": "https://hotbath.it/documents//ProdCateg/3729/CBA09_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3729/CBA09"
+      },
+      "CBA10": {
+        "image": "https://hotbath.it/documents//ProdCateg/3730/CBA10_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3730/CBA10"
+      },
+      "CBA11": {
+        "image": "https://hotbath.it/documents//ProdCateg/3731/CBA11_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3731/CBA11"
+      },
+      "CBA12": {
+        "image": "https://hotbath.it/documents//ProdCateg/3732/CBA12_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3732/CBA12"
+      },
+      "CBA20": {
+        "image": "https://hotbath.it/documents//ProdCateg/3735/CBA20_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3735/CBA20"
+      },
+      "CBA22": {
+        "image": "https://hotbath.it/documents//ProdCateg/3736/CBA22_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3736/CBA22"
+      },
+      "CBA15": {
+        "image": "https://hotbath.it/documents//ProdCateg/3733/CBA15_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3733/CBA15"
+      },
+      "CBA25": {
+        "image": "https://hotbath.it/documents//ProdCateg/3737/CBA25_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3737/CBA25"
+      },
+      "CBA16": {
+        "image": "https://hotbath.it/documents//ProdCateg/3734/CBA16_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3592/-1/Cobber",
+        "officialProductPage": "https://hotbath.it/fr/produits/3734/CBA16"
+      }
+    },
+    "Cobber X": {
+      "CX003C": {
+        "image": "https://hotbath.it/documents//ProdCateg/3745/CX003C_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3738/-1/Cobber%20X",
+        "officialProductPage": "https://hotbath.it/fr/produits/3745/CX003C"
+      },
+      "CX003MC": {
+        "image": "https://hotbath.it/documents//ProdCateg/3746/CX003MC_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3738/-1/Cobber%20X",
+        "officialProductPage": "https://hotbath.it/fr/produits/3746/CX003MC"
+      },
+      "CX003HC": {
+        "image": "https://hotbath.it/documents//ProdCateg/3752/CX003HC_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3738/-1/Cobber%20X",
+        "officialProductPage": "https://hotbath.it/fr/produits/3752/CX003HC"
+      },
+      "CX004": {
+        "image": "https://hotbath.it/documents//ProdCateg/3747/CX004_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3738/-1/Cobber%20X",
+        "officialProductPage": "https://hotbath.it/fr/produits/3747/CX004"
+      },
+      "CX105-18": {
+        "image": "https://hotbath.it/documents/ProdCateg/3748/CX105-18_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3738/-1/Cobber%20X",
+        "officialProductPage": "https://hotbath.it/fr/produits/3748/CX105-18"
+      },
+      "CX105-25": {
+        "image": "https://hotbath.it/documents/ProdCateg/3755/CX105-25_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3738/-1/Cobber%20X",
+        "officialProductPage": "https://hotbath.it/fr/produits/3755/CX105-25"
+      },
+      "CX023": {
+        "image": "https://hotbath.it/documents//ProdCateg/3749/CX023_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3738/-1/Cobber%20X",
+        "officialProductPage": "https://hotbath.it/fr/produits/3749/CX023"
+      },
+      "CX023H": {
+        "image": "https://hotbath.it/documents//ProdCateg/3750/CX023H_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3738/-1/Cobber%20X",
+        "officialProductPage": "https://hotbath.it/fr/produits/3750/CX023H"
+      },
+      "CX018": {
+        "image": "https://hotbath.it/documents//ProdCateg/3751/CX018_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3738/-1/Cobber%20X",
+        "officialProductPage": "https://hotbath.it/fr/produits/3751/CX018"
+      },
+      "CX111": {
+        "image": "https://hotbath.it/documents//ProdCateg/3742/CX111_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3738/-1/Cobber%20X",
+        "officialProductPage": "https://hotbath.it/fr/produits/3742/CX111"
+      },
+      "CX127": {
+        "image": "https://hotbath.it/documents/ProdCateg/3743/CX127_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3738/-1/Cobber%20X",
+        "officialProductPage": "https://hotbath.it/fr/produits/3743/CX127"
+      },
+      "CX187": {
+        "image": "https://hotbath.it/documents/ProdCateg/3744/CX187_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3738/-1/Cobber%20X",
+        "officialProductPage": "https://hotbath.it/fr/produits/3744/CX187"
+      },
+      "CX008": {
+        "image": "https://hotbath.it/documents/ProdCateg/3757/CX008_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3738/-1/Cobber%20X",
+        "officialProductPage": "https://hotbath.it/fr/produits/3757/CX008"
+      },
+      "CX020": {
+        "image": "https://hotbath.it/documents/ProdCateg/3758/CX020_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3738/-1/Cobber%20X",
+        "officialProductPage": "https://hotbath.it/fr/produits/3758/CX020"
+      },
+      "SDSAX9": {
+        "image": "https://hotbath.it/documents//ProdCateg/4100/SDSAX9_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3738/-1/Cobber%20X",
+        "officialProductPage": "https://hotbath.it/fr/produits/4100/SDSAX9"
+      },
+      "SDSAX10": {
+        "image": "https://hotbath.it/documents//ProdCateg/4101/SDSAX10_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3738/-1/Cobber%20X",
+        "officialProductPage": "https://hotbath.it/fr/produits/4101/SDSAX10"
+      },
+      "CX7009": {
+        "image": "https://hotbath.it/documents/ProdCateg/4120/CX7009_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3738/-1/Cobber%20X",
+        "officialProductPage": "https://hotbath.it/fr/produits/4120/CX7009"
+      },
+      "CX7070": {
+        "image": "https://hotbath.it/documents/ProdCateg/4121/CX7070_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3738/-1/Cobber%20X",
+        "officialProductPage": "https://hotbath.it/fr/produits/4121/CX7070"
+      },
+      "CX7066": {
+        "image": "https://hotbath.it/documents//ProdCateg/3769/CX7066_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3738/-1/Cobber%20X",
+        "officialProductPage": "https://hotbath.it/fr/produits/3769/CX7066"
+      },
+      "CX7067": {
+        "image": "https://hotbath.it/documents//ProdCateg/3768/CX7067_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3738/-1/Cobber%20X",
+        "officialProductPage": "https://hotbath.it/fr/produits/3768/CX7067"
+      },
+      "CX7171": {
+        "image": "https://hotbath.it/documents/ProdCateg/3765/CX7171_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3738/-1/Cobber%20X",
+        "officialProductPage": "https://hotbath.it/fr/produits/3765/CX7171"
+      },
+      "CX7172": {
+        "image": "https://hotbath.it/documents/ProdCateg/3766/CX7172_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3738/-1/Cobber%20X",
+        "officialProductPage": "https://hotbath.it/fr/produits/3766/CX7172"
+      },
+      "CX040": {
+        "image": "https://hotbath.it/documents//ProdCateg/3772/CX040_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3738/-1/Cobber%20X",
+        "officialProductPage": "https://hotbath.it/fr/produits/3772/CX040"
+      },
+      "CX041": {
+        "image": "https://hotbath.it/documents//ProdCateg/3773/CX041_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3738/-1/Cobber%20X",
+        "officialProductPage": "https://hotbath.it/fr/produits/3773/CX041"
+      }
+    },
+    "Fellow": {
+      "CX040": {
+        "image": "https://hotbath.it/documents//ProdCateg/3811/CX040_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3806/-1/Fellow",
+        "officialProductPage": "https://hotbath.it/fr/produits/3811/CX040"
+      },
+      "CX041": {
+        "image": "https://hotbath.it/documents//ProdCateg/3812/CX041_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3806/-1/Fellow",
+        "officialProductPage": "https://hotbath.it/fr/produits/3812/CX041"
+      },
+      "AC040": {
+        "image": "https://hotbath.it/documents//ProdCateg/3817/AC040_1.JPG",
+        "sourcePage": "https://hotbath.it/fr/prods/3806/-1/Fellow",
+        "officialProductPage": "https://hotbath.it/fr/produits/3817/AC040"
+      },
+      "FKM23": {
+        "image": "https://hotbath.it/documents//ProdCateg/3815/FKM23_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3806/-1/Fellow",
+        "officialProductPage": "https://hotbath.it/fr/produits/3815/FKM23"
+      },
+      "FKM20": {
+        "image": "https://hotbath.it/documents//ProdCateg/3810/FKM20_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3806/-1/Fellow",
+        "officialProductPage": "https://hotbath.it/fr/produits/3810/FKM20"
+      },
+      "FKM19": {
+        "image": "https://hotbath.it/documents//ProdCateg/3825/FKM19_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3806/-1/Fellow",
+        "officialProductPage": "https://hotbath.it/fr/produits/3825/FKM19"
+      },
+      "FKM12": {
+        "image": "https://hotbath.it/documents//ProdCateg/3820/FKM12_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3806/-1/Fellow",
+        "officialProductPage": "https://hotbath.it/fr/produits/3820/FKM12"
+      },
+      "AC042": {
+        "image": "https://hotbath.it/documents//ProdCateg/3915/AC042_1.JPG",
+        "sourcePage": "https://hotbath.it/fr/prods/3806/-1/Fellow",
+        "officialProductPage": "https://hotbath.it/fr/produits/3915/AC042"
+      },
+      "FKM14": {
+        "image": "https://hotbath.it/documents//ProdCateg/3823/FKM14_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3806/-1/Fellow",
+        "officialProductPage": "https://hotbath.it/fr/produits/3823/FKM14"
+      },
+      "FKM15": {
+        "image": "https://hotbath.it/documents//ProdCateg/3824/FKM15_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3806/-1/Fellow",
+        "officialProductPage": "https://hotbath.it/fr/produits/3824/FKM15"
+      },
+      "FKM22": {
+        "image": "https://hotbath.it/documents//ProdCateg/3838/FKM22_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3806/-1/Fellow",
+        "officialProductPage": "https://hotbath.it/fr/produits/3838/FKM22"
+      },
+      "FKM13": {
+        "image": "https://hotbath.it/documents//ProdCateg/3821/FKM13_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3806/-1/Fellow",
+        "officialProductPage": "https://hotbath.it/fr/produits/3821/FKM13"
+      },
+      "FKM17": {
+        "image": "https://hotbath.it/documents//ProdCateg/3822/FKM17_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3806/-1/Fellow",
+        "officialProductPage": "https://hotbath.it/fr/produits/3822/FKM17"
+      },
+      "CBA21": {
+        "image": "https://hotbath.it/documents//ProdCateg/3826/CBA21_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3806/-1/Fellow",
+        "officialProductPage": "https://hotbath.it/fr/produits/3826/CBA21"
+      },
+      "FKM11": {
+        "image": "https://hotbath.it/documents//ProdCateg/3834/FKM11_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3806/-1/Fellow",
+        "officialProductPage": "https://hotbath.it/fr/produits/3834/FKM11"
+      },
+      "FKM30": {
+        "image": "https://hotbath.it/documents//ProdCateg/3833/FKM30_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3806/-1/Fellow",
+        "officialProductPage": "https://hotbath.it/fr/produits/3833/FKM30"
+      },
+      "FKM31": {
+        "image": "https://hotbath.it/documents//ProdCateg/3835/FKM31_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3806/-1/Fellow",
+        "officialProductPage": "https://hotbath.it/fr/produits/3835/FKM31"
+      }
+    },
+    "Mate": {
+      "M100": {
+        "image": "https://hotbath.it/documents//ProdCateg/4102/M100_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/4102/M100"
+      },
+      "M105": {
+        "image": "https://hotbath.it/documents//ProdCateg/4103/M105_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/4103/M105"
+      },
+      "M106": {
+        "image": "https://hotbath.it/documents//ProdCateg/4104/M106_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/4104/M106"
+      },
+      "AC104": {
+        "image": "https://hotbath.it/documents/ProdCateg/3908/AC104_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3908/AC104"
+      },
+      "AC106": {
+        "image": "https://hotbath.it/documents/ProdCateg/3909/AC106_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3909/AC106"
+      },
+      "AC193": {
+        "image": "https://hotbath.it/documents/ProdCateg/3910/AC193_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3910/AC193"
+      },
+      "AC195": {
+        "image": "https://hotbath.it/documents/ProdCateg/3911/AC195_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3911/AC195"
+      },
+      "M183": {
+        "image": "https://hotbath.it/documents//ProdCateg/3844/M183_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3844/M183"
+      },
+      "M193": {
+        "image": "https://hotbath.it/documents//ProdCateg/3845/M193_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3845/M193"
+      },
+      "M150": {
+        "image": "https://hotbath.it/documents//ProdCateg/3846/M150_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3846/M150"
+      },
+      "M161": {
+        "image": "https://hotbath.it/documents//ProdCateg/3847/M161_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3847/M161"
+      },
+      "M162": {
+        "image": "https://hotbath.it/documents//ProdCateg/3848/M162_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3848/M162"
+      },
+      "M108": {
+        "image": "https://hotbath.it/documents//ProdCateg/3850/M108_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3850/M108"
+      },
+      "M110": {
+        "image": "https://hotbath.it/documents//ProdCateg/3851/M110_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3851/M110"
+      },
+      "M194": {
+        "image": "https://hotbath.it/documents//ProdCateg/3852/M194_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3852/M194"
+      },
+      "M111": {
+        "image": "https://hotbath.it/documents//ProdCateg/3853/M111_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3853/M111"
+      },
+      "M142": {
+        "image": "https://hotbath.it/documents//ProdCateg/3854/M142_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3854/M142"
+      },
+      "M145": {
+        "image": "https://hotbath.it/documents//ProdCateg/3855/M145_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3855/M145"
+      },
+      "M143": {
+        "image": "https://hotbath.it/documents//ProdCateg/3856/M143_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3856/M143"
+      },
+      "M148": {
+        "image": "https://hotbath.it/documents//ProdCateg/3857/M148_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3857/M148"
+      },
+      "AC148": {
+        "image": "https://hotbath.it/documents/ProdCateg/3907/AC148_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3907/AC148"
+      },
+      "AC146": {
+        "image": "https://hotbath.it/documents/ProdCateg/3906/AC146_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3906/AC146"
+      },
+      "M146": {
+        "image": "https://hotbath.it/documents//ProdCateg/3858/M146_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3858/M146"
+      },
+      "M190": {
+        "image": "https://hotbath.it/documents//ProdCateg/3859/M190_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3859/M190"
+      },
+      "M173": {
+        "image": "https://hotbath.it/documents//ProdCateg/3860/M173_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3860/M173"
+      },
+      "M514": {
+        "image": "https://hotbath.it/documents//ProdCateg/3862/M514_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3862/M514"
+      },
+      "M515": {
+        "image": "https://hotbath.it/documents//ProdCateg/3863/M515_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3863/M515"
+      },
+      "M517": {
+        "image": "https://hotbath.it/documents//ProdCateg/3864/M517_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3864/M517"
+      },
+      "M010": {
+        "image": "https://hotbath.it/documents//ProdCateg/3876/M010_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3876/M010"
+      },
+      "M020": {
+        "image": "https://hotbath.it/documents//ProdCateg/3866/M020_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3866/M020"
+      },
+      "M354": {
+        "image": "https://hotbath.it/documents//ProdCateg/3870/M354_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3870/M354"
+      },
+      "M352": {
+        "image": "https://hotbath.it/documents//ProdCateg/3868/M352_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3868/M352"
+      },
+      "M353": {
+        "image": "https://hotbath.it/documents//ProdCateg/3905/M353_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3905/M353"
+      },
+      "M360": {
+        "image": "https://hotbath.it/documents/ProdCateg/3871/M360_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3871/M360"
+      },
+      "M376": {
+        "image": "https://hotbath.it/documents//ProdCateg/3872/M376_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3872/M376"
+      },
+      "M378": {
+        "image": "https://hotbath.it/documents/ProdCateg/4124/M378_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/4124/M378"
+      },
+      "CB450": {
+        "image": "https://hotbath.it/documents//ProdCateg/3873/CB450_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3873/CB450"
+      },
+      "CB452": {
+        "image": "https://hotbath.it/documents//ProdCateg/3874/CB452_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3874/CB452"
+      },
+      "CB453": {
+        "image": "https://hotbath.it/documents//ProdCateg/3875/CB453_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3875/CB453"
+      },
+      "M311": {
+        "image": "https://hotbath.it/documents//ProdCateg/3904/M311_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3904/M311"
+      },
+      "M305": {
+        "image": "https://hotbath.it/documents//ProdCateg/3879/M305_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3879/M305"
+      },
+      "M274": {
+        "image": "https://hotbath.it/documents//ProdCateg/3880/M274_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3880/M274"
+      },
+      "M179": {
+        "image": "https://hotbath.it/documents//ProdCateg/3890/M179_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3890/M179"
+      },
+      "M177": {
+        "image": "https://hotbath.it/documents//ProdCateg/3892/M177_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3892/M177"
+      },
+      "M130": {
+        "image": "https://hotbath.it/documents//ProdCateg/3917/M130_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3917/M130"
+      },
+      "M135": {
+        "image": "https://hotbath.it/documents//ProdCateg/3891/M135_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3891/M135"
+      },
+      "M122": {
+        "image": "https://hotbath.it/documents//ProdCateg/3887/M122_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3887/M122"
+      },
+      "M123": {
+        "image": "https://hotbath.it/documents//ProdCateg/3888/M123_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3888/M123"
+      },
+      "MHR1": {
+        "image": "https://hotbath.it/documents//ProdCateg/3894/MHR1_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3894/MHR1"
+      },
+      "MHR2": {
+        "image": "https://hotbath.it/documents//ProdCateg/3895/MHR2_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3895/MHR2"
+      },
+      "MHR3": {
+        "image": "https://hotbath.it/documents//ProdCateg/3896/MHR3_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3896/MHR3"
+      },
+      "MHR4": {
+        "image": "https://hotbath.it/documents//ProdCateg/3900/MHR4_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3900/MHR4"
+      },
+      "MHR5": {
+        "image": "https://hotbath.it/documents//ProdCateg/3902/MHR5_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3839/-1/Mate",
+        "officialProductPage": "https://hotbath.it/fr/produits/3902/MHR5"
+      }
+    },
+    "Gent": {
+      "GT003M": {
+        "image": "https://hotbath.it/documents/ProdCateg/3921/GT003M_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3918/-1/Gent",
+        "officialProductPage": "https://hotbath.it/fr/produits/3921/GT003M"
+      },
+      "GT003H": {
+        "image": "https://hotbath.it/documents/ProdCateg/3922/GT003H_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3918/-1/Gent",
+        "officialProductPage": "https://hotbath.it/fr/produits/3922/GT003H"
+      },
+      "GT004": {
+        "image": "https://hotbath.it/documents/ProdCateg/3923/GT004_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3918/-1/Gent",
+        "officialProductPage": "https://hotbath.it/fr/produits/3923/GT004"
+      },
+      "GT023": {
+        "image": "https://hotbath.it/documents/ProdCateg/3936/GT023_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3918/-1/Gent",
+        "officialProductPage": "https://hotbath.it/fr/produits/3936/GT023"
+      },
+      "GT023H": {
+        "image": "https://hotbath.it/documents/ProdCateg/4002/GT023H_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3918/-1/Gent",
+        "officialProductPage": "https://hotbath.it/fr/produits/4002/GT023H"
+      },
+      "GT033": {
+        "image": "https://hotbath.it/documents/ProdCateg/3937/GT033_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3918/-1/Gent",
+        "officialProductPage": "https://hotbath.it/fr/produits/3937/GT033"
+      },
+      "GT018": {
+        "image": "https://hotbath.it/documents/ProdCateg/3931/GT018_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3918/-1/Gent",
+        "officialProductPage": "https://hotbath.it/fr/produits/3931/GT018"
+      },
+      "GT105": {
+        "image": "https://hotbath.it/documents/ProdCateg/3924/GT105_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3918/-1/Gent",
+        "officialProductPage": "https://hotbath.it/fr/produits/3924/GT105"
+      },
+      "GT105T": {
+        "image": "https://hotbath.it/documents/ProdCateg/4003/GT105T_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3918/-1/Gent",
+        "officialProductPage": "https://hotbath.it/fr/produits/4003/GT105T"
+      },
+      "GT131": {
+        "image": "https://hotbath.it/documents/ProdCateg/3925/GT131_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3918/-1/Gent",
+        "officialProductPage": "https://hotbath.it/fr/produits/3925/GT131"
+      },
+      "GT129": {
+        "image": "https://hotbath.it/documents/ProdCateg/3926/GT129_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3918/-1/Gent",
+        "officialProductPage": "https://hotbath.it/fr/produits/3926/GT129"
+      },
+      "GT111": {
+        "image": "https://hotbath.it/documents/ProdCateg/4004/GT111_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3918/-1/Gent",
+        "officialProductPage": "https://hotbath.it/fr/produits/4004/GT111"
+      },
+      "GT095-20": {
+        "image": "https://hotbath.it/documents/ProdCateg/3928/GT095-20_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3918/-1/Gent",
+        "officialProductPage": "https://hotbath.it/fr/produits/3928/GT095-20"
+      },
+      "GT073": {
+        "image": "https://hotbath.it/documents/ProdCateg/3932/GT073_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3918/-1/Gent",
+        "officialProductPage": "https://hotbath.it/fr/produits/3932/GT073"
+      },
+      "GT075": {
+        "image": "https://hotbath.it/documents/ProdCateg/3933/GT075_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3918/-1/Gent",
+        "officialProductPage": "https://hotbath.it/fr/produits/3933/GT075"
+      },
+      "GT187": {
+        "image": "https://hotbath.it/documents/ProdCateg/3935/GT187_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3918/-1/Gent",
+        "officialProductPage": "https://hotbath.it/fr/produits/3935/GT187"
+      },
+      "GT7066": {
+        "image": "https://hotbath.it/documents/ProdCateg/3941/GT7066_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3918/-1/Gent",
+        "officialProductPage": "https://hotbath.it/fr/produits/3941/GT7066"
+      },
+      "GT7067": {
+        "image": "https://hotbath.it/documents/ProdCateg/3942/GT7067_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3918/-1/Gent",
+        "officialProductPage": "https://hotbath.it/fr/produits/3942/GT7067"
+      },
+      "GT7009": {
+        "image": "https://hotbath.it/documents/ProdCateg/4005/GT7009_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3918/-1/Gent",
+        "officialProductPage": "https://hotbath.it/fr/produits/4005/GT7009"
+      },
+      "GT7070": {
+        "image": "https://hotbath.it/documents/ProdCateg/4006/GT7070_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3918/-1/Gent",
+        "officialProductPage": "https://hotbath.it/fr/produits/4006/GT7070"
+      },
+      "GT7071": {
+        "image": "https://hotbath.it/documents/ProdCateg/3943/GT7071_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3918/-1/Gent",
+        "officialProductPage": "https://hotbath.it/fr/produits/3943/GT7071"
+      },
+      "GT7072": {
+        "image": "https://hotbath.it/documents/ProdCateg/3944/GT7072_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3918/-1/Gent",
+        "officialProductPage": "https://hotbath.it/fr/produits/3944/GT7072"
+      },
+      "GTA01": {
+        "image": "https://hotbath.it/documents/ProdCateg/3990/GTA01_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3918/-1/Gent",
+        "officialProductPage": "https://hotbath.it/fr/produits/3990/GTA01"
+      },
+      "GTA03": {
+        "image": "https://hotbath.it/documents/ProdCateg/3991/GTA03_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3918/-1/Gent",
+        "officialProductPage": "https://hotbath.it/fr/produits/3991/GTA03"
+      },
+      "GTA04": {
+        "image": "https://hotbath.it/documents/ProdCateg/3992/GTA04_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3918/-1/Gent",
+        "officialProductPage": "https://hotbath.it/fr/produits/3992/GTA04"
+      },
+      "GTA05": {
+        "image": "https://hotbath.it/documents/ProdCateg/4007/GTA05_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3918/-1/Gent",
+        "officialProductPage": "https://hotbath.it/fr/produits/4007/GTA05"
+      },
+      "GTA06": {
+        "image": "https://hotbath.it/documents/ProdCateg/3994/GTA06_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3918/-1/Gent",
+        "officialProductPage": "https://hotbath.it/fr/produits/3994/GTA06"
+      },
+      "GTA07": {
+        "image": "https://hotbath.it/documents/ProdCateg/3995/GTA07_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3918/-1/Gent",
+        "officialProductPage": "https://hotbath.it/fr/produits/3995/GTA07"
+      },
+      "GTA08": {
+        "image": "https://hotbath.it/documents/ProdCateg/3993/GTA08_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3918/-1/Gent",
+        "officialProductPage": "https://hotbath.it/fr/produits/3993/GTA08"
+      },
+      "GTA25": {
+        "image": "https://hotbath.it/documents/ProdCateg/4008/GTA25_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3918/-1/Gent",
+        "officialProductPage": "https://hotbath.it/fr/produits/4008/GTA25"
+      },
+      "GTA09": {
+        "image": "https://hotbath.it/documents/ProdCateg/3996/GTA09_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3918/-1/Gent",
+        "officialProductPage": "https://hotbath.it/fr/produits/3996/GTA09"
+      },
+      "GTA10": {
+        "image": "https://hotbath.it/documents/ProdCateg/3997/GTA10_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3918/-1/Gent",
+        "officialProductPage": "https://hotbath.it/fr/produits/3997/GTA10"
+      },
+      "GTA11": {
+        "image": "https://hotbath.it/documents/ProdCateg/3998/GTA11_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3918/-1/Gent",
+        "officialProductPage": "https://hotbath.it/fr/produits/3998/GTA11"
+      },
+      "GTA12": {
+        "image": "https://hotbath.it/documents/ProdCateg/3999/GTA12_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3918/-1/Gent",
+        "officialProductPage": "https://hotbath.it/fr/produits/3999/GTA12"
+      },
+      "GTA30": {
+        "image": "https://hotbath.it/documents/ProdCateg/4009/GTA30_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3918/-1/Gent",
+        "officialProductPage": "https://hotbath.it/fr/produits/4009/GTA30"
+      },
+      "GTA100": {
+        "image": "https://hotbath.it/documents/ProdCateg/4013/GTA100_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3918/-1/Gent",
+        "officialProductPage": "https://hotbath.it/fr/produits/4013/GTA100"
+      },
+      "GTA120": {
+        "image": "https://hotbath.it/documents/ProdCateg/4014/GTA120_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3918/-1/Gent",
+        "officialProductPage": "https://hotbath.it/fr/produits/4014/GTA120"
+      },
+      "MIR90-FR": {
+        "image": "https://hotbath.it/documents/ProdCateg/4016/MIR90-FR_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3918/-1/Gent",
+        "officialProductPage": "https://hotbath.it/fr/produits/4016/MIR90-FR"
+      },
+      "MIR90": {
+        "image": "https://hotbath.it/documents/ProdCateg/4015/MIR90_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3918/-1/Gent",
+        "officialProductPage": "https://hotbath.it/fr/produits/4015/MIR90"
+      },
+      "MIR100": {
+        "image": "https://hotbath.it/documents/ProdCateg/4017/MIR100_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3918/-1/Gent",
+        "officialProductPage": "https://hotbath.it/fr/produits/4017/MIR100"
+      },
+      "MIR120": {
+        "image": "https://hotbath.it/documents/ProdCateg/4020/MIR120_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/3918/-1/Gent",
+        "officialProductPage": "https://hotbath.it/fr/produits/4020/MIR120"
+      }
+    },
+    "Chap": {
+      "C104": {
+        "image": "https://hotbath.it/documents/ProdCateg/4054/C104_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/4049/-1/Chap",
+        "officialProductPage": "https://hotbath.it/fr/produits/4054/C104"
+      },
+      "C133": {
+        "image": "https://hotbath.it/documents/ProdCateg/4055/C133_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/4049/-1/Chap",
+        "officialProductPage": "https://hotbath.it/fr/produits/4055/C133"
+      },
+      "C105T": {
+        "image": "https://hotbath.it/documents/ProdCateg/4056/C105T_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/4049/-1/Chap",
+        "officialProductPage": "https://hotbath.it/fr/produits/4056/C105T"
+      },
+      "C173": {
+        "image": "https://hotbath.it/documents/ProdCateg/4057/C173_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/4049/-1/Chap",
+        "officialProductPage": "https://hotbath.it/fr/produits/4057/C173"
+      },
+      "C175": {
+        "image": "https://hotbath.it/documents/ProdCateg/4058/C175_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/4049/-1/Chap",
+        "officialProductPage": "https://hotbath.it/fr/produits/4058/C175"
+      },
+      "SDSCH9": {
+        "image": "https://hotbath.it/documents/ProdCateg/4059/SDSCH9_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/4049/-1/Chap",
+        "officialProductPage": "https://hotbath.it/fr/produits/4059/SDSCH9"
+      },
+      "C7009": {
+        "image": "https://hotbath.it/documents/ProdCateg/4060/C7009_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/4049/-1/Chap",
+        "officialProductPage": "https://hotbath.it/fr/produits/4060/C7009"
+      },
+      "C7070": {
+        "image": "https://hotbath.it/documents/ProdCateg/4061/C7070_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/4049/-1/Chap",
+        "officialProductPage": "https://hotbath.it/fr/produits/4061/C7070"
+      },
+      "C7066": {
+        "image": "https://hotbath.it/documents/ProdCateg/4062/C7066_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/4049/-1/Chap",
+        "officialProductPage": "https://hotbath.it/fr/produits/4062/C7066"
+      },
+      "C7067": {
+        "image": "https://hotbath.it/documents/ProdCateg/4063/C7067_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/4049/-1/Chap",
+        "officialProductPage": "https://hotbath.it/fr/produits/4063/C7067"
+      },
+      "C7071": {
+        "image": "https://hotbath.it/documents/ProdCateg/4064/C7071_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/4049/-1/Chap",
+        "officialProductPage": "https://hotbath.it/fr/produits/4064/C7071"
+      },
+      "C7072": {
+        "image": "https://hotbath.it/documents/ProdCateg/4065/C7072_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/4049/-1/Chap",
+        "officialProductPage": "https://hotbath.it/fr/produits/4065/C7072"
+      }
+    },
+    "Ray": {
+      "RARH50-1": {
+        "image": "https://hotbath.it/documents/ProdCateg/4129/RARH50-1_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/4126/-1/Ray",
+        "officialProductPage": "https://hotbath.it/fr/produits/4129/RARH50-1"
+      },
+      "RARH50-2": {
+        "image": "https://hotbath.it/documents/ProdCateg/4131/RARH50-2_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/4126/-1/Ray",
+        "officialProductPage": "https://hotbath.it/fr/produits/4131/RARH50-2"
+      },
+      "RARH50-3": {
+        "image": "https://hotbath.it/documents/ProdCateg/4132/RARH50-3_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/4126/-1/Ray",
+        "officialProductPage": "https://hotbath.it/fr/produits/4132/RARH50-3"
+      },
+      "RARV135-1": {
+        "image": "https://hotbath.it/documents/ProdCateg/4134/RARV135-1_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/4126/-1/Ray",
+        "officialProductPage": "https://hotbath.it/fr/produits/4134/RARV135-1"
+      },
+      "RARV135-2": {
+        "image": "https://hotbath.it/documents/ProdCateg/4135/RARV135-2_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/4126/-1/Ray",
+        "officialProductPage": "https://hotbath.it/fr/produits/4135/RARV135-2"
+      },
+      "RARV135-3": {
+        "image": "https://hotbath.it/documents/ProdCateg/4136/RARV135-3_1.jpg",
+        "sourcePage": "https://hotbath.it/fr/prods/4126/-1/Ray",
+        "officialProductPage": "https://hotbath.it/fr/produits/4136/RARV135-3"
+      }
+    }
+  }
+}
