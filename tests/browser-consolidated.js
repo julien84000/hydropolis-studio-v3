@@ -427,6 +427,63 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     check('Hotbath Italie : tarif réel et référence tarif conservés',Boolean(chosenRef)&&selectionText.includes(chosenRef));
     await page.locator('#manufacturerGuidedSelector .galassia-close').click();
 
+    // Naxani 2026 manufacturer PDF: exact reference, compatibility, linked quote items.
+    await page.evaluate(()=>{
+      HydroManufacturerGuide.open('Naxani',catalogIndex.maker('Naxani'),state.rooms[0]?.id,
+        p=>addNaxaniConfigured(p,state.rooms[0]?.id));
+    });
+    await page.waitForSelector('.nax-modal [data-collection="Aalto"]');
+    check('Naxani : sous-catégories visuelles bois, laqué, compléments et plans',
+      await page.locator('.nax-modal [data-family]').count()===7);
+    await page.locator('.nax-modal [data-collection="Aalto"]').click();
+    await page.locator('.nax-modal [data-input="width"]').selectOption('80');
+    await page.locator('.nax-modal [data-input="reference"]').selectOption('504086');
+    const excludedAlma=await page.locator('.nax-modal [data-input="plan"] option').evaluateAll(xs=>xs.some(x=>x.textContent.includes('Alma')));
+    check('Naxani : Aalto exclut plan Alma du PDF',!excludedAlma);
+    await page.locator('.nax-modal [data-input="plan"]').selectOption('572329');
+    await page.locator('.nax-modal [data-input="drain"]').selectOption('579861');
+    const naText=await page.locator('.nax-modal .nax-totals').innerText();
+    check('Naxani : composition Aalto + Aran + bonde tarifée',naText.includes('2 524')||naText.includes('2 524'));
+    await page.locator('.nax-modal .nax-add').click();
+    await page.waitForSelector('.nax-modal',{state:'detached'});
+    const firstNaxani=await page.evaluate(()=>{
+      const p=state.selected.find(x=>x.manufacturer==='Naxani'&&x.reference==='504086');
+      const linked=state.selected.filter(x=>x.accessoryFor===p?.id);
+      return {main:!!p,linked:linked.map(x=>x.reference).sort(),total:(Number(p?.price)||0)+linked.reduce((n,x)=>n+Number(x.price),0)};
+    });
+    check('Naxani : 3 lignes liées en projet, prix 2026 exact',
+      firstNaxani.main&&firstNaxani.linked.join(',')==='572329,579861'&&firstNaxani.total===2524);
+    await page.evaluate(()=>{
+      const p=state.selected.find(x=>x.manufacturer==='Naxani'&&x.reference==='504086');
+      if(p)removeProduct(p.id);
+    });
+    await page.evaluate(()=>{
+      HydroManufacturerGuide.open('Naxani',catalogIndex.maker('Naxani'),state.rooms[0]?.id,
+        p=>addNaxaniConfigured(p,state.rooms[0]?.id));
+    });
+    await page.waitForSelector('.nax-modal [data-collection="Aalto"]');
+    await page.locator('.nax-modal [data-collection="Aalto"]').click();
+    await page.locator('.nax-modal [data-input="reference"]').selectOption('504086');
+    await page.locator('.nax-modal [data-mode="separate"]').click();
+    await page.locator('.nax-modal [data-input="top"]').selectOption('515037');
+    await page.locator('.nax-modal [data-input="basin"]').selectOption('570011');
+    await page.locator('.nax-modal .nax-add').click();
+    await page.waitForSelector('.nax-modal',{state:'detached'});
+    const secondNaxani=await page.evaluate(()=>{
+      const p=state.selected.find(x=>x.manufacturer==='Naxani'&&x.reference==='504086');
+      const linked=state.selected.filter(x=>x.accessoryFor===p?.id);
+      return {main:!!p,refs:linked.map(x=>x.reference).sort(),total:(Number(p?.price)||0)+linked.reduce((n,x)=>n+Number(x.price),0)};
+    });
+    check('Naxani : plan 80 cm + vasque à poser sur lignes de devis séparées',
+      secondNaxani.main&&secondNaxani.refs.join(',')==='515037,570011'&&secondNaxani.total===2925);
+    await page.evaluate(()=>{
+      const p=state.selected.find(x=>x.manufacturer==='Naxani'&&x.reference==='504086');
+      if(p)removeProduct(p.id);
+      // The Naxani quote intentionally opens Project; restore the catalogue for
+      // the existing Hidrobox manufacturer-launcher browser checks.
+      showView('catalog');
+    });
+
     // V11.64 — Gessi-inspired guide validation in a REAL Chromium DOM on desktop/mobile.
     // Synthetic tariff rows are used so the exact selected object and price can be asserted
     // without mutating a user project. Official finish imagery is resolved by existing assets.
