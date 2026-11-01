@@ -29,12 +29,9 @@ function modelCards(rows,collection,category,query){
   String(a.designation||'').localeCompare(String(b.designation||''),'fr',{numeric:true})||
   String(a.base||'').localeCompare(String(b.base||''),'fr',{numeric:true}));
 }
-function imageFor(p,photoResolver){
- const photo=typeof photoResolver==='function'?photoResolver(p):'';
- if(typeof photo==='string'&&/^(?:https:\/\/|\/api\/|\/images\/)/.test(photo))return {src:photo,scope:'model'};
- if(typeof p?.image==='string'&&/^(?:https:\/\/|\/api\/|\/images\/)/.test(p.image))return {src:p.image,scope:'model'};
- const fallback=galleryApi?.family?.(p?.collection);
- return fallback?{src:fallback.image,scope:'collection'}:{src:'',scope:'missing'};
+function imageFor(p){
+ // Editorial collection photos are only permitted in the left navigation.
+ return root?.HydroCatalanoProductMedia?.get?.(p)||{src:'',scope:'missing'};
 }
 function open(initial,roomId,rows,onAdd,photoResolver,photoLoader){
  const all=(rows||[]).filter(eligible);
@@ -63,7 +60,7 @@ function open(initial,roomId,rows,onAdd,photoResolver,photoLoader){
   let model=initial?.manufacturer==='Catalano'?modelKey(initial):'';
   let reference=initial?.manufacturer==='Catalano'?String(initial.reference):'';
   let query='',extras={},pending=false,closed=false;
-  const photoCache=new Map(),photoPending=new Set();
+  const mediaLoads=new Set();
   const close=()=>{
    if(closed)return;closed=true;overlay.remove();document.removeEventListener('keydown',escapeClose);
    prev?.focus?.();resolve(true);
@@ -72,25 +69,14 @@ function open(initial,roomId,rows,onAdd,photoResolver,photoLoader){
   document.addEventListener('keydown',escapeClose);
   $('.galassia-close').onclick=close;
   overlay.onclick=e=>{if(e.target===overlay)close()};
-  const getImage=p=>photoCache.get(p.reference)||imageFor(p,photoResolver);
-  function loadExact(p){
-   if(typeof photoLoader!=='function'||photoPending.has(p.reference))return;
-   if(photoCache.get(p.reference)?.scope==='model')return;
-   photoPending.add(p.reference);
-   Promise.resolve().then(()=>photoLoader(p)).then(data=>{
-    const url=typeof data==='string'?data:(data?.src||'');
-    if(!url||!/^(https:\/\/|\/api\/|\/images\/)/.test(url)||closed)return;
-    photoCache.set(p.reference,{src:url,scope:'model'});
-    if(reference===p.reference){
-     const holder=$('.catalano-selection .galassia-photo');
-     if(holder){
-      const img=document.createElement('img');img.src=url;img.alt='Photo du produit Catalano '+p.reference;
-      holder.replaceChildren(img);
-      const note=$('.catalano-selection .galassia-image-note');
-      if(note)note.textContent='Photo fabricant du modèle. La finition exacte doit être contrôlée sur la fiche du produit.';
-     }
-    }
-   }).catch(()=>{}).finally(()=>photoPending.delete(p.reference));
+  const getImage=p=>imageFor(p);
+  function ensureMedia(name){
+   const media=root?.HydroCatalanoProductMedia;
+   if(!media?.load||mediaLoads.has(name))return;
+   mediaLoads.add(name);
+   void media.load(name).then(ok=>{
+    if(ok&&!closed&&collection===name)refresh();
+   }).catch(()=>{});
   }
   function resetSelection(){model='';reference='';extras={};}
   function selection(){
@@ -107,8 +93,8 @@ function open(initial,roomId,rows,onAdd,photoResolver,photoLoader){
    const p=variants.find(v=>v.reference===reference)||variants[0];
    const meta=root?.HydroCatalanoAccessories?.compatible?.(p,all)||{kind:'',groups:[],warnings:[],included:[]};
    const image=getImage(p),label=(p.designation||p.originalDescription||p.reference);
-   const sourceImage=image.src?'<img src="'+esc(image.src)+'" alt="Illustration Catalano '+esc(p.collection)+'" loading="lazy">':
-    '<span>Photographie fabricant non disponible</span>';
+   const sourceImage=image.src?'<img src="'+esc(image.src)+'" alt="Photo produit Catalano '+esc(p.reference)+'" loading="lazy">':
+    '<span class="catalano-no-product-photo">Visuel produit indisponible</span>';
    const accessoryUI=meta.kind==='wc'?'<div class="galassia-accessories catalano-accessories">'+
     '<h4>WC · abattant et fixation à prévoir</h4>'+
     (meta.included||[]).map(x=>'<p class="catalano-included">'+esc(x)+'</p>').join('')+
@@ -128,10 +114,10 @@ function open(initial,roomId,rows,onAdd,photoResolver,photoLoader){
    const accessories=accessoryRefs.map(ref=>all.find(x=>x.reference===ref)).filter(Boolean);
    const sum=accessories.reduce((n,a)=>n+Number(a.price),Number(p.price));
    $('.catalano-selection').innerHTML='<div class="galassia-photo">'+sourceImage+'</div>'+
-    '<div class="galassia-image-note">'+(image.scope==='model'?
-      'Photo fabricant du modèle · finition non contractuelle':
-      image.scope==='collection'?'Illustration officielle de la collection · pas une photographie de la référence':
-      'Illustration du modèle indisponible')+'</div>'+
+    '<div class="galassia-image-note">'+(image.scope==='exact'?
+      'Photo fabricant de la référence '+esc(p.reference):
+      image.scope==='model'?'Photo du même modèle '+esc(p.base)+' · finition indicative':
+      'Aucune photo correspondant à ce produit n’est vérifiée')+'</div>'+
     '<span class="galassia-eyebrow">'+esc(p.collection)+' · '+esc(p.category)+'</span>'+
     '<h3>'+esc(label)+'</h3>'+
     '<label class="galassia-variant-label">Référence et finition exactes<select class="catalano-variant">'+
@@ -170,10 +156,10 @@ function open(initial,roomId,rows,onAdd,photoResolver,photoLoader){
     catch(e){pending=false;button.disabled=false;button.textContent='Ajouter cette configuration au projet';
       alert('Catalano : '+(e?.message||String(e)));}
    };
-   loadExact(p);
   }
   function refresh(){
    if(closed)return;
+   ensureMedia(collection);
    $('.catalano-collections').innerHTML=collections.map(name=>{
      const hero=root?.HydroCatalanoGallery?.family?.(name),count=all.filter(p=>p.collection===name).length;
      return '<button type="button" class="galassia-family'+(name===collection?' active':'')+'" data-catalano-collection="'+esc(name)+'">'+
@@ -197,8 +183,8 @@ function open(initial,roomId,rows,onAdd,photoResolver,photoLoader){
    $('.catalano-models').innerHTML=entries.length?entries.slice(0,220).map(p=>{
     const id=modelKey(p),photo=getImage(p),variants=variantsFor(all,p),minimum=Math.min(...variants.map(v=>Number(v.price)));
     return '<button type="button" class="galassia-model'+(id===model?' active':'')+'" data-catalano-model="'+esc(id)+'">'+
-      '<span class="galassia-model-photo">'+(photo.src?'<img src="'+esc(photo.src)+'" alt="" loading="lazy">':
-      '<span class="galassia-no-photo">Photo à rechercher</span>')+'</span>'+
+      '<span class="galassia-model-photo">'+(photo.src?'<img src="'+esc(photo.src)+'" alt="Photo du modèle '+esc(p.base)+'" loading="lazy">':
+      '<span class="galassia-no-photo catalano-no-product-photo">Visuel produit indisponible</span>')+'</span>'+
       '<strong>'+esc(p.designation||p.originalDescription||p.base)+'</strong>'+
       '<span>'+esc(p.base||p.reference)+' · '+esc(p.category)+'</span>'+
       '<small>'+price(minimum)+' HT · '+variants.length+' finition(s)</small></button>';
