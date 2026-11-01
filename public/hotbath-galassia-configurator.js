@@ -42,15 +42,39 @@ function open(rows,roomId,onAdd){
   document.body.appendChild(ov);
   const $=q=>ov.querySelector(q),$$=q=>Array.from(ov.querySelectorAll(q));
   const previous=document.activeElement;
-  let taxonomy=null,media=null,collection='Gent',categoryKey='',base='',ref='',search='',closed=false,busy=false;
+  let taxonomy=null,media=null,italian=null,collection='Gent',categoryKey='',base='',ref='',search='',closed=false,busy=false;
   const images=new Map(),asked=new Set(),failed=new Set(),queue=[],pending={count:0};
   function mediaKey(c,m,finish=''){return c+'|'+clean(m)+'|'+clean(finish)}
-  function knownImage(c,m){return images.get(mediaKey(c,m))?.image||supplier.photo({base:m},c,media)||''}
+  // Every Italian card is tied to a supplier model and its official detail page.
+  // Some remote archives refuse automated HEAD checks, so validate the
+  // browser image itself and fall back on current manufacturer photo only if
+  // loading actually fails.
+  const brokenItalian=new Set();
+  function italianPhoto(c,m){
+   const item=italian?.byCollection?.[c]?.[m];
+   const filename=String(item?.image||'').split('/').pop()||'';
+   const source=String(item?.officialProductPage||'');
+   if(!item||brokenItalian.has(mediaKey(c,m))||
+      !source.toUpperCase().endsWith('/'+String(m).toUpperCase())||
+      !filename.toUpperCase().startsWith(String(m).toUpperCase()+'_')&&
+      !filename.toUpperCase().startsWith(String(m).toUpperCase()+'-'))return '';
+   return item.image;
+  }
+  function knownImage(c,m){
+   return italianPhoto(c,m)||images.get(mediaKey(c,m))?.image||supplier.photo({base:m},c,media)||'';
+  }
+  function onItalianError(c,m){
+   brokenItalian.add(mediaKey(c,m));
+   requestImage(c,m);
+   if(!closed&&ov.isConnected&&c===collection)render(false);
+  }
   function selectedImage(m,p){
    const variant=images.get(mediaKey(collection,m,p?.finishCode||''));
    if(variant?.scope==='exact')return {url:variant.image,caption:'Photo fabricant de la finition '+(p?.finishCode||'')};
-   return {url:knownImage(collection,m)||variant?.image||'',
-     caption:'Photo du modèle vérifié · la finition illustrée peut différer'};
+   const italian=italianPhoto(collection,m);
+   return {url:italian||knownImage(collection,m)||variant?.image||'',
+     caption:italian?'Photo du catalogue Hotbath Italie · finition illustrative':
+       'Photo du modèle fabricant · la finition illustrée peut différer'};
   }
   function flushImages(){
    while(pending.count<3&&queue.length){
@@ -151,7 +175,10 @@ function open(rows,roomId,onAdd){
    // Discover missing photos progressively, avoiding a fanout to all 647 models.
    models.slice(0,48).forEach(m=>{if(!knownImage(collection,m.base))requestImage(collection,m.base)});
    $$('.hotbath-models .galassia-model').forEach(button=>{
-    button.querySelector('img')?.addEventListener('error',()=>requestImage(collection,button.dataset.model),{once:true});
+    button.querySelector('img')?.addEventListener('error',()=>{
+     if(italianPhoto(collection,button.dataset.model))onItalianError(collection,button.dataset.model);
+     else requestImage(collection,button.dataset.model);
+    },{once:true});
    });
   }
   function renderSelection(){
@@ -194,6 +221,10 @@ function open(rows,roomId,onAdd){
     '<span>Tarifs : base importée 2026 · référence sans suffixe IT.</span></div>'+
     '<button type="button" class="galassia-add hotbath-add"'+(busy?' disabled':'')+'>'+
       (busy?'Ajout…':'Ajouter cette configuration au projet')+'</button>';
+   $('.hotbath-selection .galassia-photo img')?.addEventListener('error',()=>{
+      if(italianPhoto(collection,m.base))onItalianError(collection,m.base);
+      else requestImage(collection,m.base,p.finishCode||'');
+    },{once:true});
    $('.hotbath-variant').onchange=e=>{ref=e.target.value;renderSelection()};
    $('.hotbath-add').onclick=async()=>{
     if(busy)return;
@@ -222,8 +253,9 @@ function open(rows,roomId,onAdd){
   $('.galassia-search').oninput=e=>{search=e.target.value;base='';ref='';render(false)};
   Promise.all([
    fetch('/brand-guide-hotbath-taxonomy.json?v=__APP_VERSION__',{cache:'no-cache'}).then(r=>{if(!r.ok)throw Error('Taxonomy');return r.json()}),
-   fetch('/brand-guide-hotbath-media.json?v=__APP_VERSION__',{cache:'no-cache'}).then(r=>{if(!r.ok)throw Error('Photos');return r.json()})
-  ]).then(([a,b])=>{taxonomy=a;media=b;render()}).catch(e=>{
+   fetch('/brand-guide-hotbath-media.json?v=__APP_VERSION__',{cache:'no-cache'}).then(r=>{if(!r.ok)throw Error('Photos');return r.json()}),
+   fetch('/hotbath-italian-product-media.json?v=__APP_VERSION__',{cache:'no-cache'}).then(r=>{if(!r.ok)throw Error('Catalogue Italie');return r.json()})
+  ]).then(([a,b,c])=>{taxonomy=a;media=b;italian=c;render()}).catch(e=>{
    $('.hotbath-models').textContent='Catalogue Hotbath indisponible : '+(e.message||e);
   });
  });
