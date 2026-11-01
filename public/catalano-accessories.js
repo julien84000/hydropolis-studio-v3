@@ -92,18 +92,19 @@ function compatible(p,rows){
  const kits=findOptions(rows,mountingBases(p),p);
  const floor=/FLOORSTANDING|CLOSE COUPLED/i.test(p.originalDescription||'');
  const upfix=/UP.FIX/i.test(p.originalDescription||'');
+ const alreadyIncluded=/\b(?:INCLUDING|INCLUDES|INCLUDED)\b.{0,35}\b(?:SEAT|COVER|FIXING)\b/i.test(text(p));
  const groups=[
   {id:'seat',title:'Abattant assorti à la finition',options:seats,required:seats.length>0,
-   suggested:seats[0]?.reference||'',notice:seats.length?'Même suffixe de finition que le WC. Vérifier le profil du modèle sur la fiche fabricant.':'Aucun abattant de la finition exacte n’est identifié dans le tarif : aucun prix inventé.'},
+   suggested:alreadyIncluded?'':seats[0]?.reference||'',notice:seats.length?'Même suffixe de finition que le WC. Vérifier le profil du modèle sur la fiche fabricant.':'Aucun abattant de la finition exacte n’est identifié dans le tarif : aucun prix inventé.'},
   {id:'mount',title:'Kit de fixation',options:kits,required:true,
    // A floorstanding product may accept a hidden OR lateral kit: no automatic choice.
-   suggested:!floor&&kits.length===1?kits[0].reference:'',
+   suggested:alreadyIncluded?'':!floor&&kits.length===1?kits[0].reference:'',
    notice:floor?'Fixation latérale ou invisible : choisir seulement celle demandée par la notice de pose du modèle.':
       upfix?'Système Up-fix. Confirmer si le kit est déjà fourni avant de le facturer.':
       'Référence de kit proposée selon installation murale. Confirmer le montage et le contenu de la boîte avant commande.'}
  ];
  const included=[];
- if(/\b(?:INCLUDING|INCLUDES|INCLUDED)\b.{0,30}\b(?:SEAT|COVER|FIXING)\b/i.test(text(p))){
+ if(alreadyIncluded){
   included.push('Ce modèle mentionne un accessoire inclus : contrôler le colisage avant tout supplément.');
  }
  const warnings=[];
