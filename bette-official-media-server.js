@@ -13,6 +13,13 @@ const CATEGORIES=Object.freeze({
  showers:'/fr/produits/receveurs-de-douche',
  basins:'/fr/produits/vasques'
 });
+const PRODUCT_PATHS=Object.freeze({
+ baths:'/fr/produit/baignoires/',
+ showers:'/fr/produit/receveurs-de-douche-receveurs-ultra-plats/',
+ basins:'/fr/produit/vasques/'
+});
+const officialCandidate=(category,slug)=>CATEGORIES[category]&&/^[a-z0-9][a-z0-9-]{2,90}$/.test(String(slug||''))?
+  ORIGIN+PRODUCT_PATHS[category]+slug:'';
 const CACHE_MS=6*60*60*1000;
 const indexCache=new Map(),productCache=new Map();
 const clean=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
@@ -69,6 +76,7 @@ function parseProduct(html,entry){
  });
  const image=photos.find(x=>x.includes('ProductEntryThumbImage'))||
    photos.find(x=>x.includes('ProductEntryGalleryImage'))||entry.image;
+ if(!trustedPhoto(image))return null;
  const links=$('a[href*="/fr/configurator?"]').toArray().map(el=>trustedConfigurator($(el).attr('href'))).filter(Boolean);
  return {name:entry.name,category:entry.category,page:entry.page,image:trustedPhoto(image)||entry.image,
   // Manufacturer page supplies a default variant. Its SKU, dimensions and colour
@@ -90,8 +98,23 @@ function makeService({get=axios.get,now=Date.now}={}){
   }).finally(()=>pendingIndex.delete(category));
   pendingIndex.set(category,promise);return promise;
  }
- async function modelImage(category,model,family=''){
-  if(!CATEGORIES[category]||String(model).length>110||String(family).length>110)return {ok:false,reason:'Catégorie ou nom de modèle Bette invalide'};
+ async function modelImage(category,model,family='',slug=''){
+  if(!CATEGORIES[category]||String(model).length>110||String(family).length>110||String(slug).length>100)
+    return {ok:false,reason:'Catégorie ou nom de modèle Bette invalide'};
+  // The product slug comes from the supplier catalogue group ID, not from a
+  // guessed manufacturer product or variant number. This URL is ONLY exposed
+  // after the manufacturer H1 title and its image have been verified.
+  const candidate=officialCandidate(category,slug);
+  if(candidate){
+    const cached=productCache.get(candidate);
+    if(cached&&now()-cached.at<CACHE_MS)return {ok:true,...cached.value};
+    try{
+      const value=parseProduct(await retrieve(candidate),{name:family||model,category,page:candidate,image:''});
+      if(value&&([model,family].some(x=>clean(x)===clean(value.name)))){
+        productCache.set(candidate,{at:now(),value});return {ok:true,...value};
+      }
+    }catch{} // fallback to indexed official category; do not assert a match
+  }
   const entries=await listing(category),entry=matchModel(entries,model,family);
   if(!entry)return {ok:false,reason:'Aucune correspondance de nom de modèle exacte dans le catalogue officiel Bette'};
   const cached=productCache.get(entry.page);
@@ -113,14 +136,14 @@ function makeService({get=axios.get,now=Date.now}={}){
 }
 function attach(app,{service=makeService()}={}){
  app.get('/api/bette-model-media',async(req,res)=>{
-  const category=String(req.query.category||''),model=String(req.query.model||''),family=String(req.query.family||'');
-  if(!CATEGORIES[category]||!model||model.length>110||family.length>110)
+  const category=String(req.query.category||''),model=String(req.query.model||''),family=String(req.query.family||''),slug=String(req.query.slug||'');
+  if(!CATEGORIES[category]||!model||model.length>110||family.length>110||slug.length>100)
    return res.status(400).json({ok:false,reason:'Catégorie et modèle Bette requis'});
   try{
-   const result=await service.modelImage(category,model,family);
+   const result=await service.modelImage(category,model,family,slug);
    res.set('Cache-Control','private, max-age=900');return res.json(result);
   }catch{return res.status(503).json({ok:false,reason:'Catalogue Bette momentanément inaccessible'});}
  });
 }
 module.exports=attach;
-Object.assign(module.exports,{CATEGORIES,parseListing,matchModel,parseProduct,makeService,trustedConfigurator,trustedPhoto,trustedProductPage});
+Object.assign(module.exports,{CATEGORIES,PRODUCT_PATHS,officialCandidate,parseListing,matchModel,parseProduct,makeService,trustedConfigurator,trustedPhoto,trustedProductPage});
