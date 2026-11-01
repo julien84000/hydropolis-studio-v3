@@ -302,6 +302,22 @@ function universalSelection(g){
     universalDraft.reference=result.reference;
     return {...result,sourceBacked:true};
   }
+  const exactPlans=root.HydroHidroboxMeasuredPlans2026;
+  if(exactPlans?.appliesExact(g.collection||g.id)){
+    const rows=pricedShowerVariants(g);
+    const m=exactPlans.resolveExact(g.collection||g.id,rows,{
+      width:universalDraft.exactwidth,length:universalDraft.exactlength,
+      height:universalDraft.exactheight,material:universalDraft.material,
+      finish:universalDraft.finish,group:universalDraft.colorGroup,
+      color:universalDraft.customColor,specialCode:universalDraft.specialColorCode
+    });
+    universalDraft.exactwidth=m.width;universalDraft.exactlength=m.length;universalDraft.exactheight=m.height;
+    universalDraft.material=m.config.material;universalDraft.finish=m.config.finish;
+    universalDraft.colorGroup=m.config.group;universalDraft.customColor=m.config.color;
+    universalDraft.specialColorCode=m.config.specialCode||'';
+    universalDraft.reference=m.selected?.reference||'';
+    return {selected:m.selected,fields:[],refs:m.selected?[m.selected.reference]:[],rows:m.selected?[m.selected]:[],measured:m,ready:m.ready};
+  }
   let rows=pricedShowerVariants(g),fields=[];
   const measuredApi=root.HydroHidroboxMeasuredPlans2026;
   const isMeasuredPlan=!!measuredApi?.applies(g.collection||g.id);
@@ -791,7 +807,7 @@ function universalPage(g){
  const name=g.collection||g.family||g.model||g.id;
  const selection=universalSelection(g);
  const {selected,fields,refs}=selection;
- const measuredPlan=root.HydroHidroboxMeasuredPlans2026?.applies(name)?selection.measured:null;
+ const measuredPlan=root.HydroHidroboxMeasuredPlans2026?.appliesExact(name)?selection.measured:null;
  const traySubmodelSelector=root.HydroHidroboxTrayModels2026;
  const submodels=traySubmodelSelector?.variants(g,pricedShowerVariants(g),root.HydroHidroboxOfficialVisual)||[];
  const fsMiniApi=root.HydroHidroboxOfficialMinis2026;
@@ -852,12 +868,32 @@ function universalPage(g){
        (bounds?' min="'+bounds.first+'" max="'+bounds.last+'"':'')+
        ' value="'+escape(String(liveSize[key]??''))+'" placeholder="cm" required></label>';
    }).join('')+'</div><small>Référence et prix calculés à partir des tranches tarifaires du PDF fabricant, sans interpolation.</small>':'';
- const measuredMarkup=measuredPlan?'<h4 class="hidrobox-universal-subtitle">Dimensions réelles du plan · tarif fabricant 2026</h4>'+
-   (measuredPlan.available?'<p class="hidrobox-guide-note">Saisissez les mesures réelles en cm. Le prix et la référence sont recalculés exclusivement à partir d’une ligne tarifaire couvrant les DEUX dimensions.</p>'+
-    '<div class="hidrobox-fields">'+[['width','Largeur réelle (cm)'],['length','Longueur réelle (cm)']].map(([k,label])=>{
-      const b=measuredPlan.bounds[k];return '<label>'+escape(label)+'<input id="huExact'+k+'" type="number" required step="1" min="'+b.first+'" max="'+b.last+'" value="'+escape(String(universalDraft['exact'+k]??''))+'"></label>';
-    }).join('')+'</div>':'')+
-   (measuredPlan.reason?'<p class="hidrobox-guide-note" role="alert">'+escape(measuredPlan.reason)+'</p>':''):'';
+ const measuredMarkup=measuredPlan?(()=>{
+   const api=root.HydroHidroboxMeasuredPlans2026,artop=norm(name)==='artop';
+   const select=(id,label,values,chosen)=>'<label>'+escape(label)+'<select id="'+id+'">'+values.map(v=>'<option value="'+escape(String(v))+'"'+(String(v)===String(chosen)?' selected':'')+'>'+escape(String(v))+'</option>').join('')+'</select></label>';
+   const input=(id,label,value,min,max,step)=>'<label>'+escape(label)+'<input id="'+id+'" type="number" step="'+step+'" min="'+min+'" max="'+max+'" required value="'+escape(String(value))+'"></label>';
+   const materials=artop?['Kromat','Scene']:['Scene'];
+   const groups=artop&&universalDraft.material==='Kromat'?['BAS','TRE','SPE']:['BLA'];
+   const finishes=artop&&universalDraft.material==='Kromat'?['Lisse','Microtex']:['Lisse'];
+   const palette=root.HydroProgramColour2026,colors=palette?.COLORS?.[universalDraft.colorGroup]||[],swatches=palette?.SWATCHES||{};
+   const colorButtons=colors.length&&universalDraft.colorGroup!=='SPE'?'<div class="hb-pc-palette" role="group" aria-label="Couleurs Hidrobox">'+
+      colors.map(c=>'<button type="button" class="hb-pc-swatch" data-hb-plan-color="'+escape(c)+'" aria-pressed="'+(c===universalDraft.customColor)+'">'+
+      '<span class="hb-pc-colour" style="background:'+escape(swatches[c]||'#ccc')+'"></span><strong>'+escape(c)+'</strong></button>').join('')+'</div>':'';
+   return '<h4 class="hidrobox-universal-subtitle">'+(artop?'ARTOP · plan sur mesure':'LOM · dimensions fabricant fixes')+'</h4>'+
+     '<p class="hidrobox-guide-note">Matière, finition et les trois dimensions sont vérifiées ensemble contre les références du tarif France 2026, sans extrapolation.</p>'+
+     '<div class="hidrobox-fields">'+select('huPlanMaterial','Matière',materials,universalDraft.material)+
+     select('huPlanFinish','Texture',finishes,universalDraft.finish)+select('huPlanGroup','Groupe couleur',groups,universalDraft.colorGroup)+
+     (artop?input('huExactwidth','Largeur réelle (cm)',universalDraft.exactwidth,40,60,1)+
+       input('huExactlength','Longueur réelle (cm)',universalDraft.exactlength,60,201,1)+
+       input('huExactheight','Hauteur du plan (cm)',universalDraft.exactheight,1.2,40,0.1):
+       select('huExactwidth','Largeur réelle (cm)',api.LOM_WIDTHS,universalDraft.exactwidth)+
+       select('huExactlength','Longueur réelle (cm)',api.LOM_LENGTHS,universalDraft.exactlength)+
+       select('huExactheight','Hauteur du plan (cm)',api.LOM_HEIGHTS,universalDraft.exactheight))+
+     '</div>'+colorButtons+
+     (universalDraft.colorGroup==='SPE'?'<label>Couleur spéciale RAL / NCS<input id="huPlanSpecial" type="text" value="'+escape(universalDraft.specialColorCode||'')+'" placeholder="RAL 9010 / NCS S 0500-N"></label>':'')+
+     '<p class="hidrobox-guide-note">LOM : 20 tailles fixes · Scene blanc. ARTOP : largeur 40–60 cm, longueur 60–201 cm et hauteur 1,2 ou 3–40 cm. Microtex seulement en Kromat. Les références Specials incluent leur tarif couleur.</p>'+
+     (measuredPlan.reason?'<p class="hidrobox-guide-note" role="alert">'+escape(measuredPlan.reason)+'</p>':'');
+ })():'';
  const dimensionMarkup=measuredPlan?measuredMarkup:liveSize?exactNumberInputs:dimensionFields(selected);
  const sizeBoundsLabel=shower&&liveSize?.widthBounds&&liveSize?.lengthBounds?
    '<p class="hidrobox-guide-note" data-hb-dimension-limits>Dimensions fabricant pour cette collection, cette forme et cette finition : largeur '+
@@ -1028,6 +1064,19 @@ function universalPage(g){
      .catch(e=>console.warn('[Hidrobox official visual]',e));
  }
  overlay.querySelector('#huReference')?.addEventListener('change',e=>{universalDraft.reference=e.target.value;universalPage(g)});
+ for(const [id,key] of [['huPlanMaterial','material'],['huPlanFinish','finish'],['huPlanGroup','colorGroup']]){
+   overlay.querySelector('#'+id)?.addEventListener('change',e=>{
+     universalDraft[key]=e.target.value;
+     if(key==='material'){
+       universalDraft.finish='Lisse';universalDraft.colorGroup=e.target.value==='Scene'?'BLA':'BAS';
+       universalDraft.customColor=e.target.value==='Scene'?'Blanc':'Bianco';
+     }else if(key==='colorGroup')universalDraft.customColor=root.HydroProgramColour2026?.COLORS?.[e.target.value]?.[0]||'Blanc';
+     universalDraft.reference='';universalPage(g);
+   });
+ }
+ overlay.querySelector('#huExactheight')?.addEventListener('change',e=>{universalDraft.exactheight=e.target.value===''?NaN:Number(e.target.value);universalDraft.reference='';universalPage(g)});
+ overlay.querySelector('#huPlanSpecial')?.addEventListener('change',e=>{universalDraft.specialColorCode=e.target.value.trim();universalDraft.reference='';universalPage(g)});
+ overlay.querySelectorAll('[data-hb-plan-color]').forEach(b=>b.onclick=()=>{universalDraft.customColor=b.dataset.hbPlanColor;universalPage(g)});
  overlay.querySelector('#huExactwidth')?.addEventListener('change',e=>{universalDraft.exactwidth=e.target.value===''?NaN:Number(e.target.value);if(measuredPlan)universalDraft.reference='';universalPage(g)});
  overlay.querySelector('#huExactlength')?.addEventListener('change',e=>{universalDraft.exactlength=e.target.value===''?NaN:Number(e.target.value);if(measuredPlan)universalDraft.reference='';universalPage(g)});
  overlay.querySelector('#huAdd')?.addEventListener('click',async()=>{
@@ -1036,8 +1085,8 @@ function universalPage(g){
    if(measuredPlan&&!validation.ready){alert(validation.measured?.reason||'Dimensions sans référence tarifée.');return;}
    const {selected:row}=validation;
    if(!row||!Number.isFinite(Number(row.price))||Number(row.price)<=0)return;
-   const dimInfo={};
-   for(const key of ['width','length']){
+   const dimInfo=measuredPlan?{widthCm:Number(universalDraft.exactwidth),lengthCm:Number(universalDraft.exactlength),heightCm:Number(universalDraft.exactheight)}:{};
+   for(const key of (measuredPlan?[]:['width','length'])){
      const range=measuredPlan?root.HydroHidroboxMeasuredPlans2026.band(row[key]):centimeterRange(row[key]);
      if(range){
        const exact=Number(universalDraft['exact'+key]);
@@ -1045,7 +1094,7 @@ function universalPage(g){
        dimInfo[key+'Cm']=exact;
      }
    }
-   const dimLabels=[dimInfo.widthCm?'Larg. '+dimInfo.widthCm+' cm':'',dimInfo.lengthCm?'Long. '+dimInfo.lengthCm+' cm':''].filter(Boolean);
+   const dimLabels=[dimInfo.widthCm?'Larg. '+dimInfo.widthCm+' cm':'',dimInfo.lengthCm?'Long. '+dimInfo.lengthCm+' cm':'',dimInfo.heightCm?'Haut. '+dimInfo.heightCm+' cm':''].filter(Boolean);
    const addedSceneQuote=sceneSupported?sceneEngine.quote({
      collection:familyName,material:'Scene',group:universalDraft.scenePlusGroup,
      color:universalDraft.scenePlusColor,code:universalDraft.scenePlusCode||'',
@@ -1054,7 +1103,7 @@ function universalPage(g){
    if(sceneSupported&&!addedSceneQuote?.ok){alert(addedSceneQuote?.reason||'Couleur Scene non tarifée');return;}
    const pickedColor=specialParts&&specialParts.byRef.has(row.reference)?String(universalDraft.specialColor||'').trim():
      sceneSupported&&addedSceneQuote?.percent?addedSceneQuote.color:
-     (shower?(universalDraft.showerColor||row.color||''):(row.color||''));
+     (measuredPlan?(universalDraft.colorGroup==='SPE'?universalDraft.specialColorCode:universalDraft.customColor):shower?(universalDraft.showerColor||row.color||''):(row.color||''));
    if(specialParts&&specialParts.byRef.has(row.reference)){
      const check=specialParts.resolve({kind:row.kind,material:row.material,finish:row.finish,
        colorGroup:row.colorGroup,width:dimInfo.widthCm??row.width,length:dimInfo.lengthCm??row.length,height:row.height});
