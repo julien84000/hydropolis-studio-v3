@@ -378,6 +378,40 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     await page.waitForSelector('#manufacturerGuidedSelector .hotbath-selection .hotbath-variant');
     check('Hotbath : détail Galassia avec prix et variantes',
       await page.locator('#manufacturerGuidedSelector .hotbath-selection .galassia-summary').count()===1);
+    // Visual regression on the exact complaint: CB009EXT.BCP must show its
+    // compatible tariffed body HB009 and negotiated 55% supplier discount.
+    await page.locator('#manufacturerGuidedSelector [data-category="3635"]').click();
+    await page.locator('#manufacturerGuidedSelector .hotbath-models [data-model="CB009"]').click();
+    await page.locator('#manufacturerGuidedSelector .hotbath-variant').selectOption('CB009EXT.BCP');
+    const cb009Panel=await page.locator('#manufacturerGuidedSelector .hotbath-selection').innerText();
+    const cb009Number=cb009Panel.replace(/[\s\u00a0\u202f]/g,'');
+    check('Hotbath Cobber CB009 : corps HB009 et prix 540 € HT visibles',
+      cb009Panel.includes('HB009')&&cb009Number.includes('540,00'));
+    check('Hotbath Cobber CB009 : remise 55 % au lieu de 50 %',
+      cb009Panel.includes('55 %')&&!cb009Panel.includes('Remise d’achat fournisseur\n50 %'));
+    check('Hotbath CB009 : 676 + 540 = 1 216 € public et 547,20 € achat',
+      cb009Number.includes('1216,00')&&cb009Number.includes('547,20'));
+    check('Hotbath CB009 : configuration complète ajoutable',
+      await page.locator('#manufacturerGuidedSelector .hotbath-add').isEnabled());
+    await page.locator('#manufacturerGuidedSelector .hotbath-add').click();
+    await page.locator('#manufacturerGuidedSelector.hotbath-galassia-modal').waitFor({state:'detached'});
+    const cb009Quote=await page.evaluate(()=>{
+      const p=state.selected.find(x=>x.manufacturer==='Hotbath'&&x.reference==='CB009EXT.BCP');
+      const c=p?state.selected.find(x=>x.accessoryFor===p.id&&x.reference==='HB009'):null;
+      return {parent:!!p,body:!!c,public:(Number(p?.price)||0)+(Number(c?.price)||0),
+        purchase:(p?purchaseCostFor(p):0)+(c?purchaseCostFor(c):0),
+        discount:p?.purchaseDiscount,bodyDiscount:c?.purchaseDiscount};
+    });
+    check('Hotbath CB009 : deux lignes de devis, remises effectives et coût net',
+      cb009Quote.parent&&cb009Quote.body&&cb009Quote.public===1216&&
+      Math.abs(cb009Quote.purchase-547.2)<.02&&
+      cb009Quote.discount===55&&cb009Quote.bodyDiscount===55);
+    await page.evaluate(()=>{
+      const p=state.selected.find(x=>x.reference==='CB009EXT.BCP'&&x.manufacturer==='Hotbath');
+      if(p)removeProduct(p.id);
+    });
+    await page.locator('.manufacturer-guide-open').click();
+    await page.waitForSelector('#manufacturerGuidedSelector .hotbath-categories [data-category]');
     await page.locator('#manufacturerGuidedSelector [data-collection="Archie"]').click();
     await page.locator('#manufacturerGuidedSelector [data-category="3521"]').click();
     await page.waitForSelector('#manufacturerGuidedSelector .hotbath-models [data-model="AR033"]');
