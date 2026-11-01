@@ -302,7 +302,25 @@ function universalSelection(g){
     universalDraft.reference=result.reference;
     return {...result,sourceBacked:true};
   }
+  const exactPlans=root.HydroHidroboxMeasuredPlans2026;
+  if(exactPlans?.appliesExact(g.collection||g.id)){
+    const rows=pricedShowerVariants(g);
+    const m=exactPlans.resolveExact(g.collection||g.id,rows,{
+      width:universalDraft.exactwidth,length:universalDraft.exactlength,
+      height:universalDraft.exactheight,material:universalDraft.material,
+      finish:universalDraft.finish,group:universalDraft.colorGroup,
+      color:universalDraft.customColor,specialCode:universalDraft.specialColorCode
+    });
+    universalDraft.exactwidth=m.width;universalDraft.exactlength=m.length;universalDraft.exactheight=m.height;
+    universalDraft.material=m.config.material;universalDraft.finish=m.config.finish;
+    universalDraft.colorGroup=m.config.group;universalDraft.customColor=m.config.color;
+    universalDraft.specialColorCode=m.config.specialCode||'';
+    universalDraft.reference=m.selected?.reference||'';
+    return {selected:m.selected,fields:[],refs:m.selected?[m.selected.reference]:[],rows:m.selected?[m.selected]:[],measured:m,ready:m.ready};
+  }
   let rows=pricedShowerVariants(g),fields=[];
+  const measuredApi=root.HydroHidroboxMeasuredPlans2026;
+  const isMeasuredPlan=!!measuredApi?.applies(g.collection||g.id);
   const selector=root.HydroHidroboxTrayModels2026,verified=root.HydroHidroboxOfficialVisual;
   const models=selector?.variants(g,rows,verified)||[];
   if(models.length){
@@ -310,13 +328,20 @@ function universalSelection(g){
     rows=selector.filter(g,rows,universalDraft.traySubmodel,verified);
   }
   for(const [key,label] of FACE_KEYS){
+    if(isMeasuredPlan&&(key==='width'||key==='length'))continue;
     const options=onlyValues(rows,key);
     if(options.length<2){if(options.length===1)fields.push({key,label,options,chosen:options[0],static:true});continue}
     if(!options.includes(universalDraft[key]))universalDraft[key]=options[0];
     const chosen=universalDraft[key];rows=rows.filter(v=>cleanVal(v[key])===chosen);
     fields.push({key,label,options,chosen});
   }
-  const refs=[...new Set(rows.map(x=>String(x.reference||'')).filter(Boolean))];
+  if(isMeasuredPlan){
+     const m=measuredApi.resolve(rows,universalDraft.exactwidth,universalDraft.exactlength,universalDraft.reference);
+     if(m.available){universalDraft.exactwidth=m.width;universalDraft.exactlength=m.length;}
+     universalDraft.reference=m.selected?.reference||'';
+     return {selected:m.selected,fields,refs:m.matching.map(v=>v.reference),rows:m.rows,measured:m,ready:m.ready};
+   }
+   const refs=[...new Set(rows.map(x=>String(x.reference||'')).filter(Boolean))];
   if(!refs.includes(universalDraft.reference))universalDraft.reference=refs[0]||'';
   const selected=rows.find(x=>String(x.reference)===universalDraft.reference)||null;
   return {selected,fields,refs,rows};
@@ -709,8 +734,21 @@ function restoreHidroboxSelection(g){
  if(selectedModel)universalDraft.traySubmodel=selectedModel;
  const saved=original?.hidroboxConfiguration||{};
  const width=Number(saved.widthCm||saved.selectedWidthCm),length=Number(saved.lengthCm||saved.selectedLengthCm);
- if(Number.isInteger(width)&&width>0)universalDraft.exactwidth=width;
+ if(Number.isFinite(width)&&width>0)universalDraft.exactwidth=width;
  if(Number.isInteger(length)&&length>0)universalDraft.exactlength=length;
+ const planApi=root.HydroHidroboxMeasuredPlans2026;
+ if(planApi?.appliesExact(g.collection||g.id)){
+   const verified=planApi.detail(g.collection||g.id,found);
+   if(verified){
+     universalDraft.exactwidth=Number(saved.widthCm)||verified.widthMin;
+     universalDraft.exactlength=Number(saved.lengthCm)||verified.lengthMin;
+     universalDraft.exactheight=Number(saved.heightCm)||verified.heightMin;
+     universalDraft.material=verified.material;universalDraft.finish=verified.finish;
+     universalDraft.colorGroup=verified.colorGroup;
+     universalDraft.customColor=saved.color||saved.selectedColour||(verified.colorGroup==='BLA'?'Blanc':'Bianco');
+     universalDraft.specialColorCode=verified.colorGroup==='SPE'?(saved.color||''):'';
+   }
+ }
  if(saved.color||saved.selectedColour)universalDraft.showerColor=saved.color||saved.selectedColour;
  if(saved.scenePlusColour){
    universalDraft.scenePlusGroup=saved.scenePlusColour.group||'BLA';
@@ -741,7 +779,7 @@ function sourcePanelSpotPage(g,type){
  const api=root.HydroHidroboxPanelSpotUI;
  if(!api)return null;
  stage='group';chosenGroup=g;
- const collection=type==='panel'?'Panneaux muraux':type==='fs'?'FS':'Spot';
+ const collection=type==='panel'?'Panneaux muraux':type==='fs'?'FS':type==='programColour'?'Program Colour':'Spot';
  const docs=HIDROBOX_DOCUMENTS[norm(collection)]||HIDROBOX_DOCUMENTS[norm(g.collection)]||{};
  const image=collectionImageFor(collection,officialGroupMedia(g)?.image||g.image)||'';
  const ctx={original,room,image,
@@ -758,7 +796,7 @@ function sourcePanelSpotPage(g,type){
    if(!ids?.length)throw Error('Impossible de sauvegarder le produit');
    close();showView('project');
   }};
- return type==='panel'?api.panel(g,ctx):type==='fs'?root.HydroHidroboxFSUI?.fs(g,ctx):api.spot(g,ctx);
+ return type==='panel'?api.panel(g,ctx):type==='fs'?root.HydroHidroboxFSUI?.fs(g,ctx):type==='programColour'?root.HydroProgramColourUI?.programColour(g,ctx):api.spot(g,ctx);
 }
 function universalPage(g){
  const familyName=norm(g.collection||g.id);
@@ -772,6 +810,7 @@ function universalPage(g){
  if(familyName==='panneaux muraux'||familyName==='paneles')return sourcePanelSpotPage(g,'panel');
  if(familyName==='spot')return sourcePanelSpotPage(g,'spot');
  if(familyName==='fs')return sourcePanelSpotPage(g,'fs');
+ if(familyName==='program colour')return sourcePanelSpotPage(g,'programColour');
  if(familyName==='program')return programPage(g);
  if(norm(g.collection||g.id)==='space')return spacePage(g);
  if(norm(g.collection||g.id)==='beta evoque')return betaEvoquePage(g);
@@ -781,6 +820,7 @@ function universalPage(g){
  const name=g.collection||g.family||g.model||g.id;
  const selection=universalSelection(g);
  const {selected,fields,refs}=selection;
+ const measuredPlan=root.HydroHidroboxMeasuredPlans2026?.appliesExact(name)?selection.measured:null;
  const traySubmodelSelector=root.HydroHidroboxTrayModels2026;
  const submodels=traySubmodelSelector?.variants(g,pricedShowerVariants(g),root.HydroHidroboxOfficialVisual)||[];
  const fsMiniApi=root.HydroHidroboxOfficialMinis2026;
@@ -841,7 +881,33 @@ function universalPage(g){
        (bounds?' min="'+bounds.first+'" max="'+bounds.last+'"':'')+
        ' value="'+escape(String(liveSize[key]??''))+'" placeholder="cm" required></label>';
    }).join('')+'</div><small>Référence et prix calculés à partir des tranches tarifaires du PDF fabricant, sans interpolation.</small>':'';
- const dimensionMarkup=liveSize?exactNumberInputs:dimensionFields(selected);
+ const measuredMarkup=measuredPlan?(()=>{
+   const api=root.HydroHidroboxMeasuredPlans2026,artop=norm(name)==='artop';
+   const select=(id,label,values,chosen)=>'<label>'+escape(label)+'<select id="'+id+'">'+values.map(v=>'<option value="'+escape(String(v))+'"'+(String(v)===String(chosen)?' selected':'')+'>'+escape(String(v))+'</option>').join('')+'</select></label>';
+   const input=(id,label,value,min,max,step)=>'<label>'+escape(label)+'<input id="'+id+'" type="number" step="'+step+'" min="'+min+'" max="'+max+'" required value="'+escape(String(value))+'"></label>';
+   const materials=artop?['Kromat','Scene']:['Scene'];
+   const groups=artop&&universalDraft.material==='Kromat'?['BAS','TRE','SPE']:['BLA'];
+   const finishes=artop&&universalDraft.material==='Kromat'?['Lisse','Microtex']:['Lisse'];
+   const palette=root.HydroProgramColour2026,colors=palette?.COLORS?.[universalDraft.colorGroup]||[],swatches=palette?.SWATCHES||{};
+   const colorButtons=colors.length&&universalDraft.colorGroup!=='SPE'?'<div class="hb-pc-palette" role="group" aria-label="Couleurs Hidrobox">'+
+      colors.map(c=>'<button type="button" class="hb-pc-swatch" data-hb-plan-color="'+escape(c)+'" aria-pressed="'+(c===universalDraft.customColor)+'">'+
+      '<span class="hb-pc-colour" style="background:'+escape(swatches[c]||'#ccc')+'"></span><strong>'+escape(c)+'</strong></button>').join('')+'</div>':'';
+   return '<h4 class="hidrobox-universal-subtitle">'+(artop?'ARTOP · plan sur mesure':'LOM · dimensions fabricant fixes')+'</h4>'+
+     '<p class="hidrobox-guide-note">Matière, finition et les trois dimensions sont vérifiées ensemble contre les références du tarif France 2026, sans extrapolation.</p>'+
+     '<div class="hidrobox-fields">'+select('huPlanMaterial','Matière',materials,universalDraft.material)+
+     select('huPlanFinish','Texture',finishes,universalDraft.finish)+select('huPlanGroup','Groupe couleur',groups,universalDraft.colorGroup)+
+     (artop?input('huExactwidth','Largeur réelle (cm)',universalDraft.exactwidth,40,60,1)+
+       input('huExactlength','Longueur réelle (cm)',universalDraft.exactlength,60,201,1)+
+       input('huExactheight','Hauteur du plan (cm)',universalDraft.exactheight,1.2,40,0.1):
+       select('huExactwidth','Largeur réelle (cm)',api.LOM_WIDTHS,universalDraft.exactwidth)+
+       select('huExactlength','Longueur réelle (cm)',api.LOM_LENGTHS,universalDraft.exactlength)+
+       select('huExactheight','Hauteur du plan (cm)',api.LOM_HEIGHTS,universalDraft.exactheight))+
+     '</div>'+colorButtons+
+     (universalDraft.colorGroup==='SPE'?'<label>Couleur spéciale RAL / NCS<input id="huPlanSpecial" type="text" value="'+escape(universalDraft.specialColorCode||'')+'" placeholder="RAL 9010 / NCS S 0500-N"></label>':'')+
+     '<p class="hidrobox-guide-note">LOM : 20 tailles fixes · Scene blanc. ARTOP : largeur 40–60 cm, longueur 60–201 cm et hauteur 1,2 ou 3–40 cm. Microtex seulement en Kromat. Les références Specials incluent leur tarif couleur.</p>'+
+     (measuredPlan.reason?'<p class="hidrobox-guide-note" role="alert">'+escape(measuredPlan.reason)+'</p>':'');
+ })():'';
+ const dimensionMarkup=measuredPlan?measuredMarkup:liveSize?exactNumberInputs:dimensionFields(selected);
  const sizeBoundsLabel=shower&&liveSize?.widthBounds&&liveSize?.lengthBounds?
    '<p class="hidrobox-guide-note" data-hb-dimension-limits>Dimensions fabricant pour cette collection, cette forme et cette finition : largeur '+
    liveSize.widthBounds.first+'–'+liveSize.widthBounds.last+' cm ; longueur '+
@@ -932,6 +998,7 @@ function universalPage(g){
  const price=Math.round(pricedRaw*104)/100;
  const sceneReady=!sceneSupported||!!sceneQuote?.ok;
  const canAdd=selected&&Number.isFinite(price)&&price>0&&selected.reference&&sceneReady&&
+  (!measuredPlan||selection.ready)&&
    (!orderedShower||selection.ready)&&(!specialTier||specialTier!=='SPE'||String(universalDraft.specialColor||'').trim().length>=3);
  const tech=officialPdf(selected?.technicalSheetUrl||g.technicalSheetUrl||assets.technical);
  const manual=officialPdf(selected?.installationGuideUrl||g.installationGuideUrl||assets.manual);
@@ -1010,23 +1077,37 @@ function universalPage(g){
      .catch(e=>console.warn('[Hidrobox official visual]',e));
  }
  overlay.querySelector('#huReference')?.addEventListener('change',e=>{universalDraft.reference=e.target.value;universalPage(g)});
- overlay.querySelector('#huExactwidth')?.addEventListener('change',e=>{universalDraft.exactwidth=Number(e.target.value);universalPage(g)});
- overlay.querySelector('#huExactlength')?.addEventListener('change',e=>{universalDraft.exactlength=Number(e.target.value);universalPage(g)});
+ for(const [id,key] of [['huPlanMaterial','material'],['huPlanFinish','finish'],['huPlanGroup','colorGroup']]){
+   overlay.querySelector('#'+id)?.addEventListener('change',e=>{
+     universalDraft[key]=e.target.value;
+     if(key==='material'){
+       universalDraft.finish='Lisse';universalDraft.colorGroup=e.target.value==='Scene'?'BLA':'BAS';
+       universalDraft.customColor=e.target.value==='Scene'?'Blanc':'Bianco';
+     }else if(key==='colorGroup')universalDraft.customColor=root.HydroProgramColour2026?.COLORS?.[e.target.value]?.[0]||'Blanc';
+     universalDraft.reference='';universalPage(g);
+   });
+ }
+ overlay.querySelector('#huExactheight')?.addEventListener('change',e=>{universalDraft.exactheight=e.target.value===''?NaN:Number(e.target.value);universalDraft.reference='';universalPage(g)});
+ overlay.querySelector('#huPlanSpecial')?.addEventListener('change',e=>{universalDraft.specialColorCode=e.target.value.trim();universalDraft.reference='';universalPage(g)});
+ overlay.querySelectorAll('[data-hb-plan-color]').forEach(b=>b.onclick=()=>{universalDraft.customColor=b.dataset.hbPlanColor;universalPage(g)});
+ overlay.querySelector('#huExactwidth')?.addEventListener('change',e=>{universalDraft.exactwidth=e.target.value===''?NaN:Number(e.target.value);if(measuredPlan)universalDraft.reference='';universalPage(g)});
+ overlay.querySelector('#huExactlength')?.addEventListener('change',e=>{universalDraft.exactlength=e.target.value===''?NaN:Number(e.target.value);if(measuredPlan)universalDraft.reference='';universalPage(g)});
  overlay.querySelector('#huAdd')?.addEventListener('click',async()=>{
    const validation=universalSelection(g);
    if(validation.sourceBacked&&!validation.ready){alert('Cette combinaison requiert une validation du tarif constructeur.');return;}
+   if(measuredPlan&&!validation.ready){alert(validation.measured?.reason||'Dimensions sans référence tarifée.');return;}
    const {selected:row}=validation;
    if(!row||!Number.isFinite(Number(row.price))||Number(row.price)<=0)return;
-   const dimInfo={};
-   for(const key of ['width','length']){
-     const range=centimeterRange(row[key]);
+   const dimInfo=measuredPlan?{widthCm:Number(universalDraft.exactwidth),lengthCm:Number(universalDraft.exactlength),heightCm:Number(universalDraft.exactheight)}:{};
+   for(const key of (measuredPlan?[]:['width','length'])){
+     const range=measuredPlan?root.HydroHidroboxMeasuredPlans2026.band(row[key]):centimeterRange(row[key]);
      if(range){
        const exact=Number(universalDraft['exact'+key]);
        if(!Number.isInteger(exact)||exact<range.first||exact>range.last){alert('Dimension '+key+' invalide.');return;}
        dimInfo[key+'Cm']=exact;
      }
    }
-   const dimLabels=[dimInfo.widthCm?'Larg. '+dimInfo.widthCm+' cm':'',dimInfo.lengthCm?'Long. '+dimInfo.lengthCm+' cm':''].filter(Boolean);
+   const dimLabels=[dimInfo.widthCm?'Larg. '+dimInfo.widthCm+' cm':'',dimInfo.lengthCm?'Long. '+dimInfo.lengthCm+' cm':'',dimInfo.heightCm?'Haut. '+dimInfo.heightCm+' cm':''].filter(Boolean);
    const addedSceneQuote=sceneSupported?sceneEngine.quote({
      collection:familyName,material:'Scene',group:universalDraft.scenePlusGroup,
      color:universalDraft.scenePlusColor,code:universalDraft.scenePlusCode||'',
@@ -1035,7 +1116,7 @@ function universalPage(g){
    if(sceneSupported&&!addedSceneQuote?.ok){alert(addedSceneQuote?.reason||'Couleur Scene non tarifée');return;}
    const pickedColor=specialParts&&specialParts.byRef.has(row.reference)?String(universalDraft.specialColor||'').trim():
      sceneSupported&&addedSceneQuote?.percent?addedSceneQuote.color:
-     (shower?(universalDraft.showerColor||row.color||''):(row.color||''));
+     (measuredPlan?(universalDraft.colorGroup==='SPE'?universalDraft.specialColorCode:universalDraft.customColor):shower?(universalDraft.showerColor||row.color||''):(row.color||''));
    if(specialParts&&specialParts.byRef.has(row.reference)){
      const check=specialParts.resolve({kind:row.kind,material:row.material,finish:row.finish,
        colorGroup:row.colorGroup,width:dimInfo.widthCm??row.width,length:dimInfo.lengthCm??row.length,height:row.height});

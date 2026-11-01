@@ -22,17 +22,19 @@ test('Bette launches a prominent manufacturer photo-led, keyboard-accessible cat
  assert.match(css,/@media\(max-width:580px\)/);
  assert.match(html,/bette-showcase\.css\?v=__APP_VERSION__/);
 });
-test('Bette 3D button links to verified manufacturer configurator, never invents supplier product or variant ids',()=>{
- assert.match(js,/https:\/\/www\.my-bette\.com\/fr\/configurator\/products/);
- assert.match(js,/bette-3d-link/);
- assert.match(js,/target="_blank" rel="noopener noreferrer"/);
- assert.doesNotMatch(js,/product=10402|variant=10410/);
+test('Bette stays within Hydropolis and imports a manufacturer image without redirecting the client',()=>{
+ assert.match(js,/fetchExactBetteImage\(g,exact\)/);
+ assert.match(js,/officialBettePreview\(g,exact\)/);
+ assert.match(js,/exactRender\?\.image/);
+ assert.match(js,/exactRender\?\.scope/);
+ assert.doesNotMatch(js,/<a class="bette-3d-link"/);
+ assert.match(js,/Visuel constructeur importé automatiquement/);
 });
 test('Illustrative category images do not masquerade as exact configured SKU photographs',()=>{
  assert.match(js,/representativeScope:categoryRepresentative\?'category'/);
  assert.match(js,/Illustration Bette de catégorie · non contractuelle/);
  assert.match(js,/Illustration de catégorie Bette · non contractuelle/);
- assert.match(js,/media\.image\?'Visuel exact fabricant'/);
+ assert.match(js,/exactRender\?\.image\?'Capture vérifiée du configurateur 3D Bette/);
  assert.match(js,/verifiedPublicPrice\('Bette',selected\)/);
  assert.match(js,/commitConfigured\(configured,roomId,'betteConfiguration'/);
 });

@@ -60,9 +60,11 @@ test('V11.62.1 uses the filtered variant and preserves exact manufacturer media'
   const code=fs.readFileSync(path.join(root,'brand-configurators.js'),'utf8');
   assert.doesNotMatch(code,/const selected=\(g\.variants\|\|\[\]\)\.find/);
   assert.equal((code.match(/const selected=rows\.find\(v=>v\.reference===draft\.reference\)/g)||[]).length,3);
-  assert.equal((code.match(/mediaPreview\('(Bette|Carrodrain|Hidrobox)',p,g,exact\)/g)||[]).length,3);
+  assert.equal((code.match(/mediaPreview\('(Bette|Carrodrain|Hidrobox)',p,g,exact\)/g)||[]).length,2); // Bette now uses an explicit model-vs-SKU preview
+  assert.match(code,/officialBettePreview\(g,exact\)/);
   assert.equal((code.match(/technicalSheetUrl:media\.technicalSheetUrl/g)||[]).length,3);
-  assert.equal((code.match(/image:media\.image/g)||[]).length,3);
+  assert.equal((code.match(/image:media\.image/g)||[]).length,2); // Bette prioritises verified manufacturer 3D screenshot when exact SKU match
+  assert.match(code,/image:exactRender\?\.image\|\|media\.image/);
   assert.doesNotMatch(code,/image:'',purchaseDiscount:50/);
   assert.match(code,/cfgCache\.delete\(key\)/);
   const win={};
