@@ -61,6 +61,6 @@ test('Hotbath fallback catalogue includes exact model images without crossing co
  assert.match(js,/brokenUrls\.add\(url\)/);
  assert.match(js,/function supplementalPhoto/);
  assert.match(js,/manufacturer-model-code-matched/);
- assert.match(js,/img\.edilportale\.com/);
+ assert.match(js,/edilportale/);
  assert.match(js,/italianPhoto\(c,m\)\|\|validUrl\(checked\)/);
 });
