@@ -761,6 +761,14 @@ function universalPage(g){
  const {selected,fields,refs}=selection;
  const traySubmodelSelector=root.HydroHidroboxTrayModels2026;
  const submodels=traySubmodelSelector?.variants(g,pricedShowerVariants(g),root.HydroHidroboxOfficialVisual)||[];
+ const fsMiniApi=root.HydroHidroboxOfficialMinis2026;
+ const fsNames=familyName==='fs'?fsMiniApi?.list('fs')||[]:[];
+ const fsMiniGallery=fsNames.length?'<section class="hb-official-mini-gallery" data-hb-fs-gallery>'+
+    '<h4 class="hidrobox-universal-subtitle">Modèles FS · miniatures du fabricant</h4>'+
+    '<p class="hidrobox-guide-note">Les miniatures représentent les formes officielles FS. Référence, couleur et prix sont déterminés séparément par le tarif.</p>'+
+    '<div class="hp-grid">'+fsNames.map(format=>'<div class="hp-choice hb-format-preview">'+
+       '<span class="hb-official-mini" aria-hidden="true">'+fsMiniApi.get('fs',format)+'</span>'+
+       '<strong>'+escape(format)+'</strong></div>').join('')+'</div></section>':'';
  const submodelMarkup=submodels.length?'<section class="hidrobox-tray-submodels"><h4 class="hidrobox-universal-subtitle">1 · Choisir la forme du receveur</h4>'+
    '<div class="hidrobox-tray-model-grid">'+submodels.map(item=>'<button type="button" class="hidrobox-tray-model" data-hb-tray-model="'+escape(item.id)+'" aria-pressed="'+(item.id===universalDraft.traySubmodel?'true':'false')+'">'+
      traySubmodelSelector.shapeSvg(item.id)+'<strong>'+escape(item.label)+'</strong></button>').join('')+'</div>'+
@@ -875,7 +883,7 @@ function universalPage(g){
    '<div><div class="eyebrow">'+escape(family?.name||'Hidrobox')+'</div><h3>'+escape(name)+'</h3>'+
    '<p>'+escape(pricedShowerVariants(g).length)+' références produit issues du tarif 2026. Configurez progressivement les caractéristiques, sans masquer les références restantes.</p>'+
    docs+'<small>'+escape(mainImage?(imageScope==='exact'?'Visuel associé à la référence sélectionnée':imageScope==='collection'?'Photo constructeur de la collection · finition/dimensions non contractuelles':'Illustration de catégorie · modèle et finition non garantis'):'Visuel non disponible')+'</small></div></div>'+
-   submodelMarkup+
+   submodelMarkup+fsMiniGallery+
    (orderedShower&&!submodels.length?'<h4 class="hidrobox-universal-subtitle">1 · Modèle</h4><div class="hidrobox-fixed-attribute"><strong>Modèle</strong><span>'+escape(name)+'</span></div>':'')+
    '<h4 class="hidrobox-universal-subtitle">Caractéristiques tarifaires</h4>'+
    fixedMaterialTexture+
@@ -884,7 +892,7 @@ function universalPage(g){
       '<h4 class="hidrobox-universal-subtitle">2 · Matière puis texture</h4><div class="hidrobox-fields">'+materialTexture+'</div>'+
       '<h4 class="hidrobox-universal-subtitle">3 · Finition couleur</h4>'+showerColor+
       '<h4 class="hidrobox-universal-subtitle">4 · Dimensions</h4><div class="hidrobox-fields">'+dimensionFacets+'</div>'+
-      dimensionMarkup+
+      dimensionMarkup+sizeBoundsLabel+
       '<h4 class="hidrobox-universal-subtitle">5 · Référence finale</h4><div class="hidrobox-fields">'+refsControl+'</div>':
       genericWorkflow+
       (showerColor||specialColorMarkup?'<h4 class="hidrobox-universal-subtitle">Couleur fabricant</h4><div class="hidrobox-fields">'+showerColor+specialColorMarkup+'</div>':'')+
