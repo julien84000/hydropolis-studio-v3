@@ -25,7 +25,9 @@ function permitted(collection,model,finish=''){
  (!finish||/^[A-Z0-9]{1,5}$/i.test(String(finish)));
 }
 function productUrl(collection,model,finish=''){
- const col=SLUG[collection]||collection.toLowerCase().replace(/[^a-z0-9]+/g,'-');
+ const col=collection==='Guy'
+  ?(/D(?:-\\d+)?$/i.test(model)?'guy-diamond':/R(?:-\\d+)?$/i.test(model)?'guy-row':'guy')
+  :(SLUG[collection]||collection.toLowerCase().replace(/[^a-z0-9]+/g,'-'));
  return ORIGIN+'/fr-be/produit/'+col+'-'+String(model).toLowerCase()+'/'+(finish?String(finish).toLowerCase()+'/':'');
 }
 function trustedImage(source,model){
