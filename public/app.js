@@ -2047,6 +2047,8 @@ function renderCatalog(){
      <div class="hidrobox-catalog-categories">${hidroboxCategories.map(c=>`<button type="button" class="hidrobox-category-open" data-hidrobox-category="${esc(c.key)}">${esc(c.name)}</button>`).join("")}</div>
    </section>`:"";
    const galassiaActive=/^Galassia$/i.test(fs.manufacturer)||(!fs.manufacturer&&/^galassia\b/i.test(String(q).trim()));
+   const naxaniActive=fs.manufacturer==='Naxani'||(!fs.manufacturer&&/^naxani\b/i.test(String(q).trim()));
+   const naxaniLauncher=naxaniActive?'<section class="manufacturer-guide-launcher"><div><span class="eyebrow">NAXANI · TARIF 2026</span><h3>Configurer les meubles et les lavabos Naxani</h3><p>Laqués, bois massif, compléments, plans intégrés, vasques à poser et plans suspendus. Sélection des compositions compatibles, bonde optionnelle.</p></div><button class="btn primary naxani-open" type="button">Configurer Naxani</button></section>':'';
    const galassiaLauncher=galassiaActive?`<section class="galassia-launcher"><div><span class="eyebrow">GALASSIA · CONFIGURATEUR VISUEL</span><h3>Explorer les collections Galassia</h3><p>Collections → modèles → variantes · prix publics du tarif fourni · remise d’achat 50 %. Visuels de modèle et fiches techniques du fabricant.</p></div><button type="button" class="galassia-open">Configurer Galassia</button></section>`:"";
    const betteActive=/^Bette$/i.test(fs.manufacturer)||(!fs.manufacturer&&/^bette\b/i.test(String(q).trim()));
    const betteLauncher=betteActive?`<section class="galassia-launcher bette-direct-launcher"><div><span class="eyebrow">BETTE · CONFIGURATEUR DIRECT</span><h3>Configurer Bette</h3><p>Accès immédiat au configurateur Hydropolis : baignoires, receveurs, vasques, modèles, dimensions et finitions. Photos fabricant illustratives si la variante exacte n’est pas prouvée.</p></div><button type="button" class="bette-direct-open">Configurer Bette</button></section>`:"";
@@ -2070,7 +2072,11 @@ function renderCatalog(){
      <div><span class="eyebrow">${esc(fs.manufacturer)} · CATALOGUE VISUEL</span><h3>Parcourir les collections du fabricant</h3><p>${fs.manufacturer==="Gessi"?"Univers → collection → famille → produit → finition. Navigation inspirée de Gessi Area Pro.":"Collection → espace → modèle → finition. Références et prix du catalogue existant."}</p></div>
      <button class="btn primary manufacturer-guide-open" type="button">Explorer les collections</button>
    </section>`:"";
-   results.innerHTML=galassiaLauncher+betteLauncher+catalanoLauncher+hidroboxLauncher+sbordoniLauncher+manufacturerGuideLauncher+(productCards||`<div class="empty">Aucun résultat.</div>`);
+   results.innerHTML=naxaniLauncher+galassiaLauncher+betteLauncher+catalanoLauncher+hidroboxLauncher+sbordoniLauncher+manufacturerGuideLauncher+(productCards||`<div class="empty">Aucun résultat.</div>`);
+   results.querySelector('.naxani-open')?.addEventListener('click',()=>{
+      launchNaxaniConfigurator($('#targetRoom')?.value||state.rooms[0]?.id||'')
+       .catch(e=>alert('Naxani : '+(e.message||e)));
+   });
    results.querySelector(".galassia-open")?.addEventListener("click",()=>{
      const items=catalogIndex.maker("Galassia");
      const target=$("#targetRoom")?.value||state.rooms[0]?.id||"";
@@ -2432,7 +2438,7 @@ function commitSelectedRecords(records,{showProject=false}={}){
     const isRitmonio=/^Ritmonio$/i.test(item.manufacturer||"");
     // A grouped Sbordoni result already owns its exact catalogue composition image.
     // Do not replace it with a generic manufacturer lookup.
-    if(!item.sbordoniGrouped && !item.sbordoniWCConfiguration && !item.sbordoniWCConfigurationAccessory && !(item.siraConfiguration && item.image) && item.manufacturer!=="Galassia" && !(item.manufacturer==="Hidrobox" && item.hidroboxConfiguration?.officialConfiguratorImage))enqueueSelectedImageSearch(item);
+    if(!item.sbordoniGrouped && !item.sbordoniWCConfiguration && !item.sbordoniWCConfigurationAccessory && !(item.siraConfiguration && item.image) && item.manufacturer!=="Galassia" && item.manufacturer!=="Naxani" && !(item.manufacturer==="Hidrobox" && item.hidroboxConfiguration?.officialConfiguratorImage))enqueueSelectedImageSearch(item);
     if(isRitmonio && !item.technicalSheetUrl){
       fetchRitmonioDocuments(item).then(docs=>{
         if(docs?.technicalSheet?.url){saveState();renderRooms();}
@@ -2560,6 +2566,32 @@ function openRecorBathConfigurator(p,roomId){
 }
 
 
+function launchNaxaniConfigurator(roomId,initial=null){
+  const rows=catalogIndex.maker('Naxani');
+  return window.HydroNaxaniConfigurator.open(rows,normalizedRoomId(roomId),async(chosen,room,settings)=>{
+    if(!chosen?.length)throw Error('Aucune référence Naxani choisie');
+    const mainSrc=chosen[0];
+    const graphic=settings.image||mainSrc.image||'';
+    const leading={...mainSrc,image:graphic,
+      imageSource:'Visuel Naxani illustrant la collection, finition non contractuelle'};
+    const main=createSelectedProductRecord(leading,room);
+    if(!main)throw Error('Impossible de créer le meuble Naxani');
+    main.naxaniConfiguration={...settings,sourcePage:mainSrc.sourcePage,
+      references:chosen.map(p=>p.reference),totalPublicHT:chosen.reduce((sum,p)=>sum+Number(p.price),0)};
+    main.naxaniGroupMain=true;
+    const records=[main];
+    for(const p of chosen.slice(1)){
+      const record=createSelectedProductRecord(p,room,main.id);
+      if(!record)throw Error('Référence Naxani absente : '+p.reference);
+      record.accessoryFor=main.id;
+      record.naxaniLinkedAccessory=true;
+      record.naxaniConfiguration={...settings,reference:p.reference,sourcePage:p.sourcePage};
+      records.push(record);
+    }
+    commitSelectedRecords(records,{showProject:true});
+    return main.id;
+  },initial);
+}
 function addCatalogProduct(ref,roomId,key="",selectedCollection=""){
   const p=productFromCatalogSources(ref,key);
   if(!p){
@@ -2568,6 +2600,10 @@ function addCatalogProduct(ref,roomId,key="",selectedCollection=""){
     return;
   }
   const targetRoomId=normalizedRoomId(roomId);
+  if(p.manufacturer==='Naxani'){
+    launchNaxaniConfigurator(targetRoomId,p).catch(e=>alert('Naxani : '+(e.message||e)));
+    return;
+  }
   if(window.HydroGalassiaConfigurator?.eligible?.(p)){
     const items=catalogIndex.maker("Galassia");
     HydroGalassiaConfigurator.open(p,targetRoomId,items,async (chosen,selectedRoom,accessories=[])=>{
@@ -5257,6 +5293,17 @@ async function refreshLegacyNicolazziV1131Images(){
 async function startHydropolisWorkspace(){
   if(cloud.started)return;
   cloud.started=true;
+  // Naxani's user-supplied 2026 supplier tariff loads before filters and catalogue UI.
+  try{
+    const bundle=await window.HydroNaxani2026?.load?.();
+    if(bundle?.records?.length){
+      window.HydroNaxaniDataset=bundle.data;
+      const existing=new Set(CATALOG.filter(p=>p.manufacturer==='Naxani').map(p=>p.reference));
+      for(const p of bundle.records)if(!existing.has(p.reference)){CATALOG.push(p);existing.add(p.reference)}
+      catalogIndex.sync();
+    }
+  }catch(error){console.error('[Naxani PDF 2026]',error)}
+
 
   await loadCloudProjects();
 
