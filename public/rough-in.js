@@ -32,7 +32,7 @@
       for(const x of linked){if(x!==child){remove.add(x);changed=true;}}
       if(!child){child=make({...bodySource,manufacturer:p.manufacturer,reference:ref,price,totalPrice:price,purchaseDiscount:source.purchaseDiscount??p.purchaseDiscount},p.roomId,p.id);add.push(child);changed=true;}
       const fields={reference:ref,roomId:p.roomId,accessoryFor:p.id,requiredRoughIn:true,mandatoryAccessory:true,
-        quantity:qty(p.quantity),quantityPerParent:1,purchaseDiscount:source.purchaseDiscount??p.purchaseDiscount,
+        quantity:qty(p.quantity),quantityPerParent:1,purchaseDiscount:bodySource?.purchaseDiscount??source.internalPurchaseDiscount??source.purchaseDiscount??p.purchaseDiscount,
         designation:`Corps d’encastrement obligatoire – réf. ${ref}`};
       for(const [k,v] of Object.entries(fields)){if(child[k]!==v){child[k]=v;changed=true;}}
     }
