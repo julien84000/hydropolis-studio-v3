@@ -257,6 +257,37 @@
     const draft={group:original.group?.id||p?.configGroup||'',model:selected?.model||'',dim:selected?dimLabel(selected):'',color:selected?.color||'Standard',option:selected?.option||'Standard',reference:selected?.reference||''};
     if(!groups.some(g=>g.id===draft.group))draft.group=groups.find(g=>g.family===p?.collection)?.id||groups[0].id;
     let overlay,step='families',kind='showers',groupSection='all';
+    const modelPhotos=new Map();
+    const betteModelName=(g,v)=>{
+      const byVariant=String(v?.model||'').trim(),byFamily=String(g?.family||'').trim();
+      return /^bette/i.test(byVariant)?byVariant:/^bette/i.test(byFamily)?byFamily:'';
+    };
+    const betteModelCategory=g=>{
+      const v=betteType(g);
+      return ['baths','showers','basins'].includes(v)?v:
+        ['baths','showers','basins'].includes(kind)?kind:'';
+    };
+    const bettePictureKey=(g,v)=>[betteModelCategory(g),betteModelName(g,v),String(g?.family||'')].join('|');
+    const officialBettePreview=(g,v)=>{
+      const picture=modelPhotos.get(bettePictureKey(g,v));
+      if(v?.image||!picture)return mediaPreview('Bette',p,g,v);
+      return '<div class="brand-config-media bette-official-model-media">'+
+        '<img src="'+esc(picture.image)+'" alt="Photographie officielle du modèle '+esc(picture.name)+'" loading="lazy">'+
+        '<small>Photo du modèle '+esc(picture.name)+' · couleur, dimensions et options non vérifiées pour la référence sélectionnée.</small>'+
+        '<a href="'+esc(picture.page)+'" target="_blank" rel="noopener noreferrer">Fiche produit Bette vérifiée</a></div>';
+    };
+    const fetchBettePicture=(g,v)=>{
+      const helper=root.HydroBetteOfficialMedia,category=betteModelCategory(g),name=betteModelName(g,v);
+      if(!helper?.lookup||!category||!name)return;
+      const key=bettePictureKey(g,v);
+      if(modelPhotos.has(key))return;
+      modelPhotos.set(key,null);
+      void helper.lookup(category,name,g.family).then(result=>{
+        if(!result)return;
+        modelPhotos.set(key,result);
+        if(step==='config'&&overlay?.isConnected&&draft.group===g.id&&draft.model===v.model)render();
+      }).catch(()=>{});
+    };
     const category=(id)=>BETTE_TREE.find(x=>x.id===id)||BETTE_TREE[0];
     const openFamilies=()=>{
       step='families';
@@ -334,9 +365,9 @@
       const refs=rows.map(v=>v.reference);draft.reference=chosen(draft.reference,refs);const exact=rows.find(v=>v.reference===draft.reference)||rows[0];
       const body=`<div class="brand-path"><button class="bette-back-to-families" type="button">← Familles</button><span>›</span><b>${esc(g.family)}</b></div>
       <div class="bette-config-header"><div><strong>${esc(g.family||g.id)}</strong><small>Modèle → dimensions → couleur → options → référence fabricant.</small></div>
-      <a class="bette-3d-link" href="${BETTE_3D_URL}" target="_blank" rel="noopener noreferrer">Voir le produit en 3D sur Bette</a></div>
+      <a class="bette-3d-link" href="${esc(modelPhotos.get(bettePictureKey(g,exact))?.configurator||BETTE_3D_URL)}" target="_blank" rel="noopener noreferrer">${modelPhotos.get(bettePictureKey(g,exact))?.configurator?"Ouvrir ce modèle dans le configurateur 3D Bette":"Ouvrir le configurateur 3D Bette"}</a></div>
       <div class="recor-config-section"><div class="recor-config-title"><b>1. Produit</b><span>Famille Bette</span></div><div class="v1146-field-grid">${field('bcGroup','Produit',groups.map(x=>x.id),g.id,id=>groups.find(x=>x.id===id)?.family||id)}${field('bcModel','Version',models,draft.model)}${field('bcDim','Dimensions',dims,draft.dim)}${field('bcColor','Couleur',colors,draft.color)}${field('bcOption','Option / équipement',opts,draft.option)}${field('bcRef','Référence finale',refs,draft.reference)}</div></div>
-      <div class="recor-config-summary">${mediaPreview('Bette',p,g,exact)}<div><b>${money(exact?.price)} HT</b><span>${esc(exact?.designation||g.family)}</span><small>Réf. ${esc(exact?.reference||'—')} · tarif Bette</small></div></div>`;
+      <div class="recor-config-summary">${officialBettePreview(g,exact)}<div><b>${money(exact?.price)} HT</b><span>${esc(exact?.designation||g.family)}</span><small>Réf. ${esc(exact?.reference||'—')} · tarif Bette</small><small>La photo et la configuration Bette peuvent différer pour la couleur, la taille et les options. Choisir celles-ci sur le site officiel.</small></div></div>`;
       overlay=overlay||mount(shell('Bette',body));if(overlay.innerHTML!==shell('Bette',body))overlay.innerHTML=shell('Bette',body);
       overlay.querySelector('.brand-config-close').onclick=close;overlay.querySelector('.brand-config-cancel').onclick=close;
       overlay.querySelector('.bette-back-to-families').onclick=openSections;
@@ -347,12 +378,18 @@
       const map={bcGroup:'group',bcModel:'model',bcDim:'dim',bcColor:'color',bcOption:'option',bcRef:'reference'};
       Object.entries(map).forEach(([id,key])=>{const el=overlay.querySelector('#'+id);if(el)el.onchange=()=>{draft[key]=el.value;if(key==='group'){draft.model=draft.dim=draft.color=draft.option=draft.reference=''}else if(key==='model'){draft.dim=draft.color=draft.option=draft.reference=''}else if(key==='dim'){draft.color=draft.option=draft.reference=''}else if(key==='color'){draft.option=draft.reference=''}else if(key==='option'){draft.reference=''}render()}});
       wireChoices(overlay);
+      fetchBettePicture(g,exact);
       overlay.querySelector('.brand-config-confirm').onclick=()=>{try{
         const selected=rows.find(v=>v.reference===draft.reference)||exact;if(!selected)throw new Error('Référence Bette introuvable.');
         const price=verifiedPublicPrice('Bette',selected);
         const media=mediaFor('Bette',p,g,selected);
-        const configured={manufacturer:'Bette',collection:g.family,reference:selected.reference,base:selected.reference,designation:selected.designation,category:selected.category,finish:[selected.color,selected.option].filter(Boolean).join(' · '),price,totalPrice:price,currency:'€',vat:'HT',source:'TARIF BETTE.csv',sourceYear:2026,manufacturerUrl:media.manufacturerUrl,image:media.image||media.representativeImage,imageSource:media.image?'Visuel exact fabricant':media.representativeScope==='category'?'Illustration de catégorie Bette · non contractuelle':'Visuel de collection · finition illustrative',imageFinishMatch:media.image?'exact':media.representativeScope==='category'?'category':media.representativeImage?'collection':'missing',technicalSheetUrl:media.technicalSheetUrl,purchaseDiscount:50,configuratorType:'bette-configured'};
-        commitConfigured(configured,roomId,'betteConfiguration',{group:g.id,family:g.family,model:selected.model,lengthMm:selected.lengthMm,widthMm:selected.widthMm,heightMm:selected.heightMm,color:selected.color,option:selected.option,reference:selected.reference});
+        const officialModel=modelPhotos.get(bettePictureKey(g,selected));
+        const configured={manufacturer:'Bette',collection:g.family,reference:selected.reference,base:selected.reference,designation:selected.designation,category:selected.category,finish:[selected.color,selected.option].filter(Boolean).join(' · '),price,totalPrice:price,currency:'€',vat:'HT',source:'TARIF BETTE.csv',sourceYear:2026,manufacturerUrl:officialModel?.page||media.manufacturerUrl,image:media.image||officialModel?.image||media.representativeImage,
+          imageSource:media.image?'Visuel catalogue de la référence':officialModel?.image?'Photo officielle du modèle Bette · couleur, dimensions et options non vérifiées':media.representativeScope==='category'?'Illustration de catégorie Bette · non contractuelle':'Visuel de collection · finition illustrative',
+          imageFinishMatch:media.image?'exact':officialModel?.image?'model-only':media.representativeScope==='category'?'category':media.representativeImage?'collection':'missing',
+          technicalSheetUrl:media.technicalSheetUrl,purchaseDiscount:50,configuratorType:'bette-configured'};
+        commitConfigured(configured,roomId,'betteConfiguration',{group:g.id,family:g.family,model:selected.model,lengthMm:selected.lengthMm,widthMm:selected.widthMm,heightMm:selected.heightMm,color:selected.color,option:selected.option,reference:selected.reference,
+          officialModelPage:officialModel?.page||'',officialConfiguratorUrl:officialModel?.configurator||'',officialImageScope:officialModel?.scope||''});
       }catch(e){overlay.querySelector('.recor-config-error').textContent=e.message||String(e)}};
     };
     openFamilies();
