@@ -76,3 +76,20 @@ test('Spot and FS UIs show material choices, group colours and render exact offi
  assert.match(html,/hidrobox-fs-2026\.js\?v=__APP_VERSION__/);
  assert.match(html,/hidrobox-fs-ui\.js\?v=__APP_VERSION__/);
 });
+
+test('Scene FS exterior colours are separate supplier-priced options, not false Kromat variants',()=>{
+ const basic=fs2026.quote(fsRows,{reference:'WFSC0023',color:'Blanc',exterior:'standard',exteriorColor:'Blush'});
+ assert.equal(basic.ok,true,JSON.stringify(basic));
+ assert.equal(basic.components[1].reference,'OPWB0230');
+ assert.equal(basic.components[1].rawPrice,492);
+ assert.equal(basic.rawPrice,basic.baseRawPrice+492);
+ assert.equal(basic.price,Math.round((basic.baseRawPrice+492)*104)/100);
+ const special=fs2026.quote(fsRows,{reference:'WFSC0023',color:'Blanc',exterior:'special',exteriorCode:'RAL 9010'});
+ assert.equal(special.ok,true,JSON.stringify(special));
+ assert.equal(special.components[1].reference,'OPWB0232');
+ assert.equal(special.components[1].rawPrice,564);
+ assert.equal(fs2026.quote(fsRows,{reference:'WFSC0023',color:'Blanc',exterior:'special'}).ok,false);
+ assert.equal(fs2026.quote(fsRows,{reference:'WFSC0044',color:'Blush',exterior:'standard',exteriorColor:'Blush'}).ok,false);
+ const changed=fsRows.map(r=>r.reference==='OPWB0230'?{...r,rawPrice:493}:r);
+ assert.equal(fs2026.quote(changed,{reference:'WFSC0023',color:'Blanc',exterior:'standard',exteriorColor:'Blush'}).ok,false);
+});
