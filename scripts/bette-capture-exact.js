@@ -62,7 +62,7 @@ async function run(){
     await page.waitForFunction(({reference,model,colour,size})=>{
       const t=document.body.innerText.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
       return t.includes(reference.toLowerCase())&&t.includes(model.toLowerCase())&&t.includes(colour.toLowerCase())&&t.includes(size);
-    },{reference:request.reference,model:request.model,colour:request.color,size:String(request.lengthMm)}, {timeout:65000});
+    },{reference:request.reference,model:request.model,colour:request.color,size:String(request.lengthMm)}, {timeout:110000});
     // WebGL viewer stage: pick the largest visible canvas, never an icon or chart.
     const canvas=page.locator('canvas').filter({visible:true});
     await page.waitForFunction(()=>{
@@ -89,8 +89,18 @@ async function run(){
       sourceUrl:request.sourceUrl,verifiedAt:new Date().toISOString(),quality
     };
     results.push({reference:request.reference,ok:true,...quality});
-   }catch(e){throw Error('Bette '+request.reference+' image NOT imported: '+e.message)}
-   finally{await page.close()}
+   }catch(e){
+     const debug=path.join(root,'build-audit/bette-debug');
+     fs.mkdirSync(debug,{recursive:true});
+     const brief=await page.evaluate(()=>({url:location.href,title:document.title,
+       body:String(document.body?.innerText||'').slice(0,18000),
+       canvases:[...document.querySelectorAll('canvas')].map(x=>({width:x.clientWidth,height:x.clientHeight}))})).catch(err=>({error:String(err)}));
+     fs.writeFileSync(path.join(debug,request.reference+'.json'),JSON.stringify({...brief,error:String(e)},null,2));
+     try{await page.screenshot({path:path.join(debug,request.reference+'.png'),fullPage:false,timeout:10000})}catch{}
+     throw Error('Bette '+request.reference+' image NOT imported: '+e.message+
+       ' · Page: '+String(brief.url||'')+' · Title: '+String(brief.title||'')+
+       ' · Visible words: '+String(brief.body||'').slice(0,450).replace(/\s+/g,' '));
+   }finally{await page.close()}
   }
  }finally{await browser.close()}
  fs.mkdirSync(out,{recursive:true});
