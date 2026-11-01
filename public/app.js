@@ -2573,6 +2573,8 @@ function launchNaxaniConfigurator(roomId,initial=null){
     const mainSrc=chosen[0];
     const graphic=settings.image||mainSrc.image||'';
     const leading={...mainSrc,image:graphic,
+      finish:settings.finish||mainSrc.finish,
+      finishCode:settings.finishCode||mainSrc.finishCode||'',
       imageSource:'Visuel Naxani illustrant la collection, finition non contractuelle'};
     const main=createSelectedProductRecord(leading,room);
     if(!main)throw Error('Impossible de créer le meuble Naxani');
