@@ -62,6 +62,8 @@ function programColour(g,ctx){
    select('pcDrain','Bonde',Object.entries(m.OPTIONS.drain).filter(([k])=>!/(BAS|TRE|SPE)$/.test(k)||k.endsWith(s.group)).map(([k,v])=>[k,k==='none'?'Sans bonde':k+' · +'+v[1]+' €']),s.drain)+
    select('pcTowel','Porte-serviettes',opts(m.OPTIONS.towel).map(([k])=>[k,k==='none'?'Aucun':k+' · +'+m.OPTIONS.towel[k][1]+' €']),s.towel)+
    '<label>Hauteur crédence (cm, 0 = sans)<input id="pcBacksplash" type="number" min="0" max="30" step="1" value="'+E(s.backsplashHeight)+'"></label>'+
+   '<label class="hb-pc-check"><input id="pcBacksplashTap" type="checkbox"'+(s.backsplashTap?' checked':'')+'>Préparation robinetterie sur crédence 15–30 cm · +68 € HT</label>'+
+   '<label class="hb-pc-check"><input id="pcSupportsVisible" type="checkbox"'+(s.supportsVisible?' checked':'')+'>Fixations apparentes · +110 € HT</label>'+
    '<label class="hb-pc-check"><input id="pcOverflow" type="checkbox"'+(s.overflow?' checked':'')+'>Trop-plein chromé +62 € HT</label>'+
    '<label class="hb-pc-check"><input id="pcCut" type="checkbox"'+(s.specialCut?' checked':'')+'>Découpe spéciale (+10 %, validation technique obligatoire)</label>'+
   '</div>'+
@@ -85,6 +87,8 @@ function programColour(g,ctx){
  for(const [id,name] of [['pcLength','length'],['pcDepth','depth'],['pcHeight','height'],['pcBacksplash','backsplashHeight']])
   view.querySelector('#'+id)?.addEventListener('change',e=>{s[name]=e.target.value===''?NaN:Number(e.target.value);refresh()});
  view.querySelector('#pcSpecial')?.addEventListener('change',e=>{s.specialCode=e.target.value.trim();refresh()});
+ view.querySelector('#pcBacksplashTap').onchange=e=>{s.backsplashTap=e.target.checked;refresh()};
+ view.querySelector('#pcSupportsVisible').onchange=e=>{s.supportsVisible=e.target.checked;refresh()};
  view.querySelector('#pcOverflow').onchange=e=>{s.overflow=e.target.checked;refresh()};
  view.querySelector('#pcCut').onchange=e=>{s.specialCut=e.target.checked;refresh()};
  view.querySelector('#pcAdd')?.addEventListener('click',async()=>{
