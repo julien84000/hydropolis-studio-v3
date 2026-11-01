@@ -29,7 +29,9 @@ function fs(g,ctx){
  const uniqueGroups=[...new Set(groupRows.map(r=>r.colorGroup))];
  const svg=root.HydroHidroboxOfficialMinis2026?.get('fs',selected.thumbnail)||'';
  const swatches='<div class="hb-fs-swatches" role="group" aria-label="Teinte Hidrobox">'+
-   m.COLORS[selected.colorGroup].map(c=>'<button type="button" class="hb-fs-swatch" data-fs-color="'+E(c)+'" aria-pressed="'+(s.color===c)+'"><span class="hb-fs-swatch-chip '+(c==='Blanc'?'hb-fs-white':'')+'"></span><strong>'+E(c)+'</strong></button>').join('')+'</div>';
+   m.COLORS[selected.colorGroup].map(c=>'<button type="button" class="hb-fs-swatch" data-fs-color="'+E(c)+'" aria-pressed="'+(s.color===c)+'">'+
+     (c==='Blanc'?'<span class="hb-fs-swatch-chip hb-fs-white" aria-hidden="true"></span>':'')+
+     '<strong>'+E(c)+'</strong></button>').join('')+'</div>';
  const icon=name=>{const v=rows.find(r=>r.model===name);return root.HydroHidroboxOfficialMinis2026?.get('fs',v?.thumbnail)||'';};
  const cards=names.map(name=>'<button type="button" class="hb-fs-model-card" data-fs-model="'+E(name)+'" aria-pressed="'+(selected.model===name)+'">'+
    '<span class="hb-fs-icon" aria-hidden="true">'+icon(name)+'</span><strong>'+E(name)+'</strong><small>'+E(rows.find(r=>r.model===name)?.length||'')+' cm · '+E(rows.find(r=>r.model===name)?.material||'')+'</small></button>').join('');
