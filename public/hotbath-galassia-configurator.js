@@ -43,39 +43,52 @@ function open(rows,roomId,onAdd){
   document.body.appendChild(ov);
   const $=q=>ov.querySelector(q),$$=q=>Array.from(ov.querySelectorAll(q));
   const previous=document.activeElement;
-  let taxonomy=null,media=null,italian=null,collection='Gent',categoryKey='',base='',ref='',search='',closed=false,busy=false;
+  let taxonomy=null,media=null,italian=null,supplemental=null,collection='Gent',categoryKey='',base='',ref='',search='',closed=false,busy=false;
   const images=new Map(),asked=new Set(),failed=new Set(),queue=[],pending={count:0};
   function mediaKey(c,m,finish=''){return c+'|'+clean(m)+'|'+clean(finish)}
-  // Every Italian card is tied to a supplier model and its official detail page.
-  // Some remote archives refuse automated HEAD checks, so validate the
-  // browser image itself and fall back on current manufacturer photo only if
-  // loading actually fails.
-  const brokenItalian=new Set();
+  // The Italian index contains links copied from manufacturer HTML; it does
+  // NOT prove that remote JPG bytes exist (some return HTTP 404).
+  // Only the server-side byte-validated image may be presented as verified.
+  const brokenItalian=new Set(),brokenUrls=new Set();
+  const validUrl=url=>url&&!brokenUrls.has(url)?url:'';
   function italianPhoto(c,m){
-   const item=italian?.byCollection?.[c]?.[m];
-   const filename=String(item?.image||'').split('/').pop()||'';
-   const source=String(item?.officialProductPage||'');
-   if(!item||brokenItalian.has(mediaKey(c,m))||
-      !source.toUpperCase().endsWith('/'+String(m).toUpperCase())||
-      !filename.toUpperCase().startsWith(String(m).toUpperCase()+'_')&&
-      !filename.toUpperCase().startsWith(String(m).toUpperCase()+'-'))return '';
-   return item.image;
+   const item=images.get(mediaKey(c,m));
+   if(!item?.verified||!item?.image||item.source?.indexOf('Hotbath Italie')!==0||
+      brokenItalian.has(mediaKey(c,m)))return '';
+   return validUrl(item.image);
+  }
+  function supplementalPhoto(c,m){
+   const item=supplemental?.byCollection?.[c]?.[m];
+   const file=String(item?.image||'').split('/').pop();
+   const prefix='b_Hotbath_'+c.toUpperCase().replace(/\s+/g,'-')+'-'+String(m).toUpperCase()+'_';
+   if(!item||item.status!=='manufacturer-model-code-matched'||
+      !/^https:\/\/img\.edilportale\.com\/product-thumbs\/b_Hotbath_[A-Za-z0-9_-]+\.jpe?g$/i.test(item.image)||
+      !file.toUpperCase().startsWith(prefix.toUpperCase())||
+      !String(item.officialProductPage||'').toUpperCase().endsWith('/'+String(m).toUpperCase()))return '';
+   return validUrl(item.image);
   }
   function knownImage(c,m){
-   return italianPhoto(c,m)||images.get(mediaKey(c,m))?.image||supplier.photo({base:m},c,media)||'';
+   const key=mediaKey(c,m),checked=images.get(key)?.image||'';
+   const contemporary=supplier.photo({base:m},c,media)||'';
+   return italianPhoto(c,m)||validUrl(checked)||validUrl(contemporary)||supplementalPhoto(c,m)||'';
   }
-  function onItalianError(c,m){
-   brokenItalian.add(mediaKey(c,m));
-   requestImage(c,m);
+  function onItalianError(c,m,url=''){
+   const key=mediaKey(c,m);
+   brokenItalian.add(key);
+   if(url)brokenUrls.add(url);
+   if(!asked.has(key))requestImage(c,m);
    if(!closed&&ov.isConnected&&c===collection)render(false);
   }
   function selectedImage(m,p){
    const variant=images.get(mediaKey(collection,m,p?.finishCode||''));
-   if(variant?.scope==='exact')return {url:variant.image,caption:'Photo fabricant de la finition '+(p?.finishCode||'')};
-   const italian=italianPhoto(collection,m);
-   return {url:italian||knownImage(collection,m)||variant?.image||'',
-     caption:italian?'Photo du catalogue Hotbath Italie · finition illustrative':
-       'Photo du modèle fabricant · la finition illustrée peut différer'};
+   if(variant?.scope==='exact'&&validUrl(variant.image))
+    return {url:variant.image,caption:'Photo fabricant de la finition '+(p?.finishCode||'')};
+   const italianUrl=italianPhoto(collection,m);
+   if(italianUrl)return {url:italianUrl,caption:'Photo du modèle Hotbath Italie · finition illustrative'};
+   const modern=knownImage(collection,m);
+   return {url:modern,caption:modern===supplementalPhoto(collection,m)?
+      'Photo du même modèle publiée sur Archiproducts · finition illustrative':
+      'Photo du modèle fabricant · la finition illustrée peut différer'};
   }
   function flushImages(){
    while(pending.count<3&&queue.length){
@@ -174,11 +187,11 @@ function open(rows,roomId,onAdd){
      base=button.dataset.model;ref='';render(false);
    });
    // Discover missing photos progressively, avoiding a fanout to all 647 models.
-   models.slice(0,48).forEach(m=>{if(!knownImage(collection,m.base))requestImage(collection,m.base)});
+   models.slice(0,24).forEach(m=>{if(!italianPhoto(collection,m.base)&&!supplier.photo({base:m.base},collection,media))requestImage(collection,m.base)});
    $$('.hotbath-models .galassia-model').forEach(button=>{
-    button.querySelector('img')?.addEventListener('error',()=>{
-     if(italianPhoto(collection,button.dataset.model))onItalianError(collection,button.dataset.model);
-     else requestImage(collection,button.dataset.model);
+    button.querySelector('img')?.addEventListener('error',e=>{
+     const c=collection,m=button.dataset.model;
+     onItalianError(c,m,e.currentTarget?.getAttribute('src')||'');
     },{once:true});
    });
   }
@@ -218,13 +231,13 @@ function open(rows,roomId,onAdd){
       '<div><span>Remise d’achat fournisseur</span><b>50 %</b></div>'+
       '<div><span>Coût d’achat théorique HT</span><b>'+money(totalFor(p,r)*.5)+'</b></div></div>'+
     bodyMarkup+
-    '<div class="galassia-docs"><a href="https://hotbath.com/fr-be/produits/" target="_blank" rel="noopener noreferrer">Catalogue officiel Hotbath</a>'+
+    '<div class="galassia-docs"><a href="'+esc(italian?.byCollection?.[collection]?.[m.base]?.officialProductPage||'https://hotbath.it/fr/prods/')+'" target="_blank" rel="noopener noreferrer">Voir le modèle sur Hotbath Italie</a>'+
     '<span>Tarifs : base importée 2026 · référence sans suffixe IT.</span></div>'+
     '<button type="button" class="galassia-add hotbath-add"'+(busy?' disabled':'')+'>'+
       (busy?'Ajout…':'Ajouter cette configuration au projet')+'</button>';
-   $('.hotbath-selection .galassia-photo img')?.addEventListener('error',()=>{
-      if(italianPhoto(collection,m.base))onItalianError(collection,m.base);
-      else requestImage(collection,m.base,p.finishCode||'');
+   $('.hotbath-selection .galassia-photo img')?.addEventListener('error',e=>{
+      onItalianError(collection,m.base,e.currentTarget?.getAttribute('src')||'');
+      if(p.finishCode)requestImage(collection,m.base,p.finishCode);
     },{once:true});
    $('.hotbath-variant').onchange=e=>{ref=e.target.value;renderSelection()};
    $('.hotbath-add').onclick=async()=>{
@@ -255,8 +268,9 @@ function open(rows,roomId,onAdd){
   Promise.all([
    fetch('/brand-guide-hotbath-taxonomy.json?v=__APP_VERSION__',{cache:'no-cache'}).then(r=>{if(!r.ok)throw Error('Taxonomy');return r.json()}),
    fetch('/brand-guide-hotbath-media.json?v=__APP_VERSION__',{cache:'no-cache'}).then(r=>{if(!r.ok)throw Error('Photos');return r.json()}),
-   fetch('/hotbath-italian-product-media.json?v=__APP_VERSION__',{cache:'no-cache'}).then(r=>{if(!r.ok)throw Error('Catalogue Italie');return r.json()})
-  ]).then(([a,b,c])=>{taxonomy=a;media=b;italian=c;render()}).catch(e=>{
+   fetch('/hotbath-italian-product-media.json?v=__APP_VERSION__',{cache:'no-cache'}).then(r=>{if(!r.ok)throw Error('Catalogue Italie');return r.json()}),
+   fetch('/hotbath-exact-alternative-media.json?v=__APP_VERSION__',{cache:'no-cache'}).then(r=>r.ok?r.json():{byCollection:{}}).catch(()=>({byCollection:{}}))
+  ]).then(([a,b,c,d])=>{taxonomy=a;media=b;italian=c;supplemental=d;render()}).catch(e=>{
    $('.hotbath-models').textContent='Catalogue Hotbath indisponible : '+(e.message||e);
   });
  });
