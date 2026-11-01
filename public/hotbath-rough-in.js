@@ -42,6 +42,14 @@ function bodyIndex(rows){
  }
  return result;
 }
+// Commercial agreement: standard Hotbath 55%; Archie 50% + 10% + 10%
+// successively, i.e. 59.5% effective discount, not 70% additive.
+function purchaseDiscount(p,chosenCollection=''){
+ const selected=String(chosenCollection||p?.hotbathSelectedCollection||'').trim();
+ const scope=String(p?.collection||'').trim();
+ return /^Archie$/i.test(selected||scope)?59.5:55;
+}
+
 function linkCatalog(rows){
  const index=bodyIndex(rows),report={linked:0,already:0,ambiguous:0,unresolved:0};
  for(const p of rows||[]){
@@ -64,7 +72,7 @@ function linkCatalog(rows){
   p.internalReference=unique.reference;
   p.sourceInternalReference=unique.sourceReference||unique.reference;
   p.internalPrice=bodyPrice;
-  p.internalPurchaseDiscount=Number(unique.purchaseDiscount);
+  p.internalPurchaseDiscount=purchaseDiscount(p);
   p.totalPrice=Math.round((mainPrice+bodyPrice)*100)/100;
   p.roughInRequirement={required:true,reference:unique.reference,source:'supplier-2026',verified:true};
   p.supplierNote='Corps d’encastrement obligatoire '+unique.reference+' ('+
@@ -85,7 +93,7 @@ function resolve(p){
  if(ref&&Number.isFinite(amount)&&amount>0){
    const priceAgrees=Number.isFinite(base)&&Number.isFinite(declaredTotal)&&Math.abs(declaredTotal-base-amount)<0.03;
    return {kind:'verified',required:true,verified:true,reference:ref,price:amount,
-    mainPrice:base,declaredTotal:declaredTotal,priceAgrees,bodyDiscount:p.internalPurchaseDiscount,
+    mainPrice:base,declaredTotal:declaredTotal,priceAgrees,bodyDiscount:purchaseDiscount(p),
     separateLine:true,mandatory:true,
     note:priceAgrees?'Corps obligatoire sélectionné, ajouté automatiquement en ligne distincte.':
      'Corps identifié au tarif, vérifier la ventilation des prix avant commande.'};
@@ -102,5 +110,5 @@ function summary(p){
   total:r.verified&&r.priceAgrees?r.declaredTotal:Number(p?.totalPrice)||Number(p?.price)||0,
   reference:r.reference||'',mandatory:r.required};
 }
-return {resolve,summary,suggestsConcealed,linkCatalog,bodyIndex,bodyAliases,trim,modelCode};
+return {resolve,summary,suggestsConcealed,linkCatalog,bodyIndex,bodyAliases,trim,modelCode,purchaseDiscount};
 });
