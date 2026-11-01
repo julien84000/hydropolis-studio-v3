@@ -43,7 +43,7 @@ const norm=v=>String(v||'').trim().toUpperCase();
 const validRow=p=>p?.manufacturer==='Catalano'&&p.reference&&Number.isFinite(Number(p.price))&&Number(p.price)>0;
 const accessoryRow=(p)=>validRow(p)&&p.category==='Accessoires'&&
   (/\bSEAT\s*(?:&|AND)?\s*COVER\b|\bSEDILE\b/i.test(p.originalDescription||'')||
-   /^(?:HIDDEN|UP-FIX|LATERAL) FIXING SET\b/i.test(p.originalDescription||''));
+   /^(?:HIDDEN|UP-FIX\s+HIDDEN|LATERAL) FIXING SET\b/i.test(p.originalDescription||''));
 const finish=p=>norm(p?.finishCode||String(p?.reference||'').slice(-4));
 function seatBases(p){
  if(kind(p)!=='wc')return [];
