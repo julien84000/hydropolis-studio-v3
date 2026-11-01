@@ -56,15 +56,33 @@ function available(imported=[]){
      sourcePage:prices.get(r.reference).sourcePage||117}));
 }
 const names=available=>[...new Set(available.map(r=>r.model))];
-function quote(imported=[],{reference,color,code=''}={}){
+const EXTERIOR={
+  standard:{reference:'OPWB0230',rawPrice:492,label:'Couleur extérieure FS Scene · Basics/Trends'},
+  special:{reference:'OPWB0232',rawPrice:564,label:'Couleur extérieure FS Scene · Special RAL/NCS'}
+};
+function quote(imported=[],{reference,color,code='',exterior='none',exteriorColor='',exteriorCode=''}={}){
  const r=available(imported).find(x=>x.reference===reference);
  if(!r)return {ok:false,reason:'Référence FS non confirmée dans le tarif 2026.'};
  const possible=COLORS[r.colorGroup]||[];
  if(!possible.includes(color))return {ok:false,reason:'Couleur incompatible avec la référence FS.'};
  if(r.colorGroup==='SPE'&&!/^(?:RAL|NCS)\s*[-\w .]{2,25}$/i.test(String(code||'').trim()))
    return {ok:false,reason:'Saisir une référence RAL ou NCS vérifiable pour la finition Special.'};
+ if(r.material!=='Scene'&&exterior!=='none')return {ok:false,reason:'Couleur extérieure Scene non applicable au Kromat intégral.'};
+ if(!['none','standard','special'].includes(exterior))return {ok:false,reason:'Option extérieure FS inconnue.'};
+ if(exterior==='standard'&&![...COLORS.BAS,...COLORS.TRE].includes(exteriorColor))
+   return {ok:false,reason:'Choisir une teinte extérieure FS Basics ou Trends.'};
+ if(exterior==='special'&&!/^(?:RAL|NCS)\s*[-\w .]{2,25}$/i.test(String(exteriorCode||'').trim()))
+   return {ok:false,reason:'Préciser le RAL ou NCS de la couleur extérieure FS.'};
+ const extras=exterior==='none'?[]:[EXTERIOR[exterior]];
+ const importedExtras=new Map(imported.filter(v=>/^OPWB\d{4}$/.test(v.reference)).map(v=>[v.reference,v]));
+ for(const x of extras)if(Number(importedExtras.get(x.reference)?.rawPrice)!==x.rawPrice)
+   return {ok:false,reason:'Supplément couleur extérieure absent ou différent dans le tarif FS.'};
+ const rawPrice=r.rawPrice+extras.reduce((sum,x)=>sum+x.rawPrice,0);
  return {ok:true,...r,color,colorCode:r.colorGroup==='SPE'?code.trim():'',
-  price:Math.round(r.rawPrice*104)/100,purchasePrice:Math.round(r.rawPrice*104)/200,
+  exterior,exteriorColor:exterior==='standard'?exteriorColor:exterior==='special'?exteriorCode.trim():'',
+  components:[{reference:r.reference,label:r.model,rawPrice:r.rawPrice},...extras],
+  rawPrice,baseRawPrice:r.rawPrice,
+  price:Math.round(rawPrice*104)/100,purchasePrice:Math.round(rawPrice*104)/200,
   source:'HIDROBOX_TARIF_FR_V0226_19-02-2026.pdf'};
 }
 function spec(r,color){
@@ -72,5 +90,5 @@ function spec(r,color){
  return {model:'fs-'+r.model.match(/\d+/)?.[0],typology:'floor-standing-basins',
     material:r.material,texture:'Lisse',color,width:r.width,length:r.length,shape:''};
 }
-return {rows,BY_REF,COLORS,names,available,quote,spec};
+return {rows,BY_REF,COLORS,EXTERIOR,names,available,quote,spec};
 });
