@@ -37,6 +37,8 @@ test('Naxani furniture basin compatibility: width exact and published exclusions
  assert(!api.compatible(a,alma,data.incompatible));
  assert(!api.compatible(a,different,data.incompatible));
  assert(!api.compatible(a,byRef.get('570011'),data.incompatible));
+ assert.equal(byRef.get('579861').naxaniKind,'bonde');
+ assert(!api.compatible(a,byRef.get('579861'),data.incompatible));
 });
 test('Naxani collection images are explicitly illustrative, never SKU finish verified',()=>{
  const row=byRef.get('504086');
