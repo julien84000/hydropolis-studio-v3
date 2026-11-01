@@ -1,0 +1,216 @@
+{
+  "source": "Archiproducts – official Hotbath manufacturer listings, exact model SKU only",
+  "policy": "Fallback only when manufacturer's live images are unavailable. Same collection and exact SKU. Displayed finish is illustrative.",
+  "retrieved": "2026-11-01",
+  "byCollection": {
+    "Guy": {
+      "M317": {
+        "image": "https://img.edilportale.com/product-thumbs/b_Hotbath_GUY-M317_J1mgtaIpYE.jpeg",
+        "sourcePage": "https://www.archiproducts.com/en/hotbath/products/4",
+        "officialProductPage": "https://hotbath.it/fr/produits/3401/M317",
+        "scope": "model",
+        "status": "manufacturer-model-code-matched"
+      },
+      "M318": {
+        "image": "https://img.edilportale.com/product-thumbs/b_Hotbath_GUY-M318_Y7TnzTp2s.jpeg",
+        "sourcePage": "https://www.archiproducts.com/en/hotbath/products/4",
+        "officialProductPage": "https://hotbath.it/fr/produits/3402/M318",
+        "scope": "model",
+        "status": "manufacturer-model-code-matched"
+      },
+      "M445": {
+        "image": "https://img.edilportale.com/product-thumbs/b_Hotbath_GUY-M445_CT1hlvrrA1.jpeg",
+        "sourcePage": "https://www.archiproducts.com/en/hotbath/products/4",
+        "officialProductPage": "https://hotbath.it/fr/produits/3403/M445",
+        "scope": "model",
+        "status": "manufacturer-model-code-matched"
+      },
+      "M446": {
+        "image": "https://img.edilportale.com/product-thumbs/b_Hotbath_GUY-M446_p9kOeopJlD.jpeg",
+        "sourcePage": "https://www.archiproducts.com/en/hotbath/products/4",
+        "officialProductPage": "https://hotbath.it/fr/produits/3404/M446",
+        "scope": "model",
+        "status": "manufacturer-model-code-matched"
+      },
+      "M354": {
+        "image": "https://img.edilportale.com/product-thumbs/b_Hotbath_GUY-M354_sWDV45jOGH.jpeg",
+        "sourcePage": "https://www.archiproducts.com/en/hotbath/products/4",
+        "officialProductPage": "https://hotbath.it/fr/produits/3407/M354",
+        "scope": "model",
+        "status": "manufacturer-model-code-matched"
+      },
+      "M355": {
+        "image": "https://img.edilportale.com/product-thumbs/b_Hotbath_GUY-M355_lIGXs5OY8M.jpeg",
+        "sourcePage": "https://www.archiproducts.com/en/hotbath/products/4",
+        "officialProductPage": "https://hotbath.it/fr/produits/3408/M355",
+        "scope": "model",
+        "status": "manufacturer-model-code-matched"
+      },
+      "CB452": {
+        "image": "https://img.edilportale.com/product-thumbs/b_Hotbath_GUY-CB452_etCoFKHQvY.jpeg",
+        "sourcePage": "https://www.archiproducts.com/en/hotbath/products/4",
+        "officialProductPage": "https://hotbath.it/fr/produits/3413/CB452",
+        "scope": "model",
+        "status": "manufacturer-model-code-matched"
+      },
+      "CB453": {
+        "image": "https://img.edilportale.com/product-thumbs/b_Hotbath_GUY-CB453_ErY5sNBwiY.jpeg",
+        "sourcePage": "https://www.archiproducts.com/en/hotbath/products/4",
+        "officialProductPage": "https://hotbath.it/fr/produits/3414/CB453",
+        "scope": "model",
+        "status": "manufacturer-model-code-matched"
+      },
+      "CBA321": {
+        "image": "https://img.edilportale.com/product-thumbs/b_Hotbath_GUY-CBA321_TQlZfdClz.jpeg",
+        "sourcePage": "https://www.archiproducts.com/en/hotbath/products/4",
+        "officialProductPage": "https://hotbath.it/fr/produits/3423/CBA321",
+        "scope": "model",
+        "status": "manufacturer-model-code-matched"
+      }
+    },
+    "Archie": {
+      "AR124": {
+        "image": "https://img.edilportale.com/product-thumbs/b_Hotbath_ARCHIE-AR124_hfCG4JriV.jpeg",
+        "sourcePage": "https://www.archiproducts.com/en/hotbath/products/4",
+        "officialProductPage": "https://hotbath.it/fr/produits/3526/AR124",
+        "scope": "model",
+        "status": "manufacturer-model-code-matched"
+      },
+      "AR018": {
+        "image": "https://img.edilportale.com/product-thumbs/b_Hotbath_ARCHIE-AR018_GpaHrwhYFX.jpeg",
+        "sourcePage": "https://www.archiproducts.com/en/hotbath/products/4",
+        "officialProductPage": "https://hotbath.it/fr/produits/3533/AR018",
+        "scope": "model",
+        "status": "manufacturer-model-code-matched"
+      }
+    },
+    "Ace": {
+      "AC131": {
+        "image": "https://img.edilportale.com/product-thumbs/b_Hotbath_ACE-AC131_YkeX72uOZo.jpeg",
+        "sourcePage": "https://www.archiproducts.com/en/hotbath/products/5",
+        "officialProductPage": "https://hotbath.it/fr/produits/3013/AC131",
+        "scope": "model",
+        "status": "manufacturer-model-code-matched"
+      },
+      "AC111": {
+        "image": "https://img.edilportale.com/product-thumbs/b_Hotbath_ACE-AC111_RemyPNmDn1.jpeg",
+        "sourcePage": "https://www.archiproducts.com/en/hotbath/products/5",
+        "officialProductPage": "https://hotbath.it/fr/produits/3020/AC111",
+        "scope": "model",
+        "status": "manufacturer-model-code-matched"
+      },
+      "AC129": {
+        "image": "https://img.edilportale.com/product-thumbs/b_Hotbath_ACE-AC129_vitWg7SVcy.jpeg",
+        "sourcePage": "https://www.archiproducts.com/en/hotbath/products/5",
+        "officialProductPage": "https://hotbath.it/fr/produits/3021/AC129",
+        "scope": "model",
+        "status": "manufacturer-model-code-matched"
+      },
+      "AC177": {
+        "image": "https://img.edilportale.com/product-thumbs/b_Hotbath_ACE-AC177_oF8dkg8mFc.jpeg",
+        "sourcePage": "https://www.archiproducts.com/en/hotbath/products/5",
+        "officialProductPage": "https://hotbath.it/fr/produits/3014/AC177",
+        "scope": "model",
+        "status": "manufacturer-model-code-matched"
+      },
+      "SDSAC9": {
+        "image": "https://img.edilportale.com/product-thumbs/b_Hotbath_ACE-SDSAC9_ImePaTCXGu.jpeg",
+        "sourcePage": "https://www.archiproducts.com/en/hotbath/products/5",
+        "officialProductPage": "https://hotbath.it/fr/produits/4095/SDSAC9",
+        "scope": "model",
+        "status": "manufacturer-model-code-matched"
+      },
+      "M274": {
+        "image": "https://img.edilportale.com/product-thumbs/b_Hotbath_ACE-M274_tMoAr2sL57.jpeg",
+        "sourcePage": "https://www.archiproducts.com/en/hotbath/products/5",
+        "officialProductPage": "https://hotbath.it/fr/produits/3042/M274",
+        "scope": "model",
+        "status": "manufacturer-model-code-matched"
+      },
+      "AC443": {
+        "image": "https://img.edilportale.com/product-thumbs/b_Hotbath_ACE-AC443_TdWo6WlSOX.jpeg",
+        "sourcePage": "https://www.archiproducts.com/en/hotbath/products/5",
+        "officialProductPage": "https://hotbath.it/fr/produits/3043/AC443",
+        "scope": "model",
+        "status": "manufacturer-model-code-matched"
+      },
+      "AC452": {
+        "image": "https://img.edilportale.com/product-thumbs/b_Hotbath_ACE-AC452_PoVYSDDCSx.jpeg",
+        "sourcePage": "https://www.archiproducts.com/en/hotbath/products/5",
+        "officialProductPage": "https://hotbath.it/fr/produits/3033/AC452",
+        "scope": "model",
+        "status": "manufacturer-model-code-matched"
+      },
+      "AC453": {
+        "image": "https://img.edilportale.com/product-thumbs/b_Hotbath_ACE-AC453_Sy8vCVAXFj.jpeg",
+        "sourcePage": "https://www.archiproducts.com/en/hotbath/products/5",
+        "officialProductPage": "https://hotbath.it/fr/produits/3044/AC453",
+        "scope": "model",
+        "status": "manufacturer-model-code-matched"
+      },
+      "M354": {
+        "image": "https://img.edilportale.com/product-thumbs/b_Hotbath_ACE-M354_M7PSwnHRhJ.jpeg",
+        "sourcePage": "https://www.archiproducts.com/en/hotbath/products/5",
+        "officialProductPage": "https://hotbath.it/fr/produits/3050/M354",
+        "scope": "model",
+        "status": "manufacturer-model-code-matched"
+      },
+      "M376": {
+        "image": "https://img.edilportale.com/product-thumbs/b_Hotbath_ACE-M376_1R6cmvPklj.jpeg",
+        "sourcePage": "https://www.archiproducts.com/en/hotbath/products/5",
+        "officialProductPage": "https://hotbath.it/fr/produits/3051/M376",
+        "scope": "model",
+        "status": "manufacturer-model-code-matched"
+      },
+      "AC515": {
+        "image": "https://img.edilportale.com/product-thumbs/b_Hotbath_ACE-AC515_UIqvmCXhwM.jpeg",
+        "sourcePage": "https://www.archiproducts.com/en/hotbath/products/6",
+        "officialProductPage": "https://hotbath.it/fr/produits/3046/AC515",
+        "scope": "model",
+        "status": "manufacturer-model-code-matched"
+      },
+      "AC517": {
+        "image": "https://img.edilportale.com/product-thumbs/b_Hotbath_ACE-AC517_mLGTiGOAEH.jpeg",
+        "sourcePage": "https://www.archiproducts.com/en/hotbath/products/6",
+        "officialProductPage": "https://hotbath.it/fr/produits/3035/AC517",
+        "scope": "model",
+        "status": "manufacturer-model-code-matched"
+      },
+      "M161": {
+        "image": "https://img.edilportale.com/product-thumbs/b_Hotbath_ACE-M161_xzTYjdEohx.jpeg",
+        "sourcePage": "https://www.archiproducts.com/en/hotbath/products/6",
+        "officialProductPage": "https://hotbath.it/fr/produits/3053/M161",
+        "scope": "model",
+        "status": "manufacturer-model-code-matched"
+      },
+      "M162": {
+        "image": "https://img.edilportale.com/product-thumbs/b_Hotbath_ACE-M162_SuVOnjhRGo.jpeg",
+        "sourcePage": "https://www.archiproducts.com/en/hotbath/products/6",
+        "officialProductPage": "https://hotbath.it/fr/produits/3054/M162",
+        "scope": "model",
+        "status": "manufacturer-model-code-matched"
+      },
+      "M111": {
+        "image": "https://img.edilportale.com/product-thumbs/b_Hotbath_ACE-M111_RExQPG5CF7.jpeg",
+        "sourcePage": "https://www.archiproducts.com/en/hotbath/products/6",
+        "officialProductPage": "https://hotbath.it/fr/produits/3055/M111",
+        "scope": "model",
+        "status": "manufacturer-model-code-matched"
+      },
+      "AC146": {
+        "image": "https://img.edilportale.com/product-thumbs/b_Hotbath_ACE-AC146_P9nrgjBlIV.jpeg",
+        "sourcePage": "https://www.archiproducts.com/en/hotbath/products/6",
+        "officialProductPage": "https://hotbath.it/fr/produits/3330/AC146",
+        "scope": "model",
+        "status": "manufacturer-model-code-matched"
+      },
+      "AC148": {
+        "image": "https://img.edilportale.com/product-thumbs/b_Hotbath_ACE-AC148_XS2X5dMz8J.jpeg",
+        "sourcePage": "https://www.archiproducts.com/en/hotbath/products/6",
+        "officialProductPage": "https://hotbath.it/fr/produits/3056/AC148",
+        "scope": "model",
+        "status": "manufacturer-model-code-matched"
+      }
+    }
+  }
+}
