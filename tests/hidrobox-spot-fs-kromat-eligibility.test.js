@@ -51,4 +51,8 @@ test('Spot and FS material controls are built from the selected model supplier r
  assert.match(fsUi,/const materialRows=rows\.filter\(r=>r\.model===selected\.model\)/);
  assert.match(fsUi,/const materials=\[\.\.\.new Set\(materialRows\.map\(r=>r\.material\)\)\]/);
  assert.match(fsUi,/Kromat coloré : uniquement FS 19 et FS 23/);
+ assert.match(spotUi,/data-hb-spot-color-tile/);
+ assert.match(spotUi,/HydroProgramColour2026\?\.SWATCHES/);
+ assert.match(fsUi,/hb-fs-swatches hb-pc-palette/);
+ assert.match(fsUi,/HydroProgramColour2026\?\.SWATCHES/);
 });
