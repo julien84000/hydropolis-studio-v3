@@ -60,7 +60,7 @@ test('Hotbath Galassia-style configurator is installed after old guide, preservi
  assert.match(js,/galassia-selection hotbath-selection/);
  assert.match(js,/data-model/);
  assert.match(js,/rough\.resolve\(p\)/);
- assert.match(js,/await onAdd\(p,roomId\)/);
+ assert.match(js,/await onAdd\(\{\.\.\.p,hotbathSelectedCollection:collection/);
  const window={HydroManufacturerGuide:{open:(brand)=>'original:'+brand},
   HydroHotbathOfficialGuide:{},HydroHotbathRoughIn:{}};
  vm.runInNewContext(js,{window});
