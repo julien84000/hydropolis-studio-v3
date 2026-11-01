@@ -35,3 +35,12 @@
  .catalano-shell .galassia-model{min-height:178px}
  .catalano-shell .galassia-selection{padding:12px}
 }
+
+/* Exact reference / same-model photos only; never show collection lifestyle
+   photography in product grids or product detail cards. */
+.catalano-shell .catalano-models .galassia-model-photo{display:flex;align-items:center;justify-content:center;background:#f8f9f7;overflow:hidden}
+.catalano-shell .catalano-models .galassia-model-photo img{object-fit:contain!important;max-height:100%;width:100%}
+.catalano-shell .catalano-no-product-photo{display:flex;justify-content:center;align-items:center;
+ padding:10px;min-height:76px;text-align:center;color:#748075;font-size:11px;line-height:1.5;
+ background:repeating-linear-gradient(-45deg,#f5f6f3,#f5f6f3 12px,#f1f3f0 12px,#f1f3f0 24px)}
+.catalano-shell .catalano-selection .catalano-no-product-photo{width:100%;min-height:180px}

@@ -1999,7 +1999,12 @@ function launchCatalanoConfigurator(initial,roomId){
  window.HydroCatalanoConfigurator.open(initial,target,items,async (chosen,selectedRoom,accessories=[])=>{
   if(!items.some(p=>p.reference===chosen.reference&&p.collection===chosen.collection))
    throw new Error("Référence principale Catalano absente du tarif importé.");
-  const main=createSelectedProductRecord(chosen,selectedRoom);
+  const officialPhoto=window.HydroCatalanoProductMedia?.get?.(chosen);
+  const item=officialPhoto?.src?{...chosen,image:officialPhoto.src,
+   imageSource:officialPhoto.scope==='exact'?'Catalogue fabricant Catalano · référence exacte':'Catalogue fabricant Catalano · modèle uniquement',
+   imageFinishMatch:officialPhoto.scope==='exact'?'exact':'model-only',
+   manufacturerUrl:officialPhoto.productUrl||chosen.manufacturerUrl}:chosen;
+  const main=createSelectedProductRecord(item,selectedRoom);
   if(!main)throw new Error("Impossible d’enregistrer le produit Catalano.");
   main.catalanoConfiguration={reference:chosen.reference,base:chosen.base||chosen.reference,
     collection:chosen.collection,finishCode:chosen.finishCode||'',accessories:accessories.map(a=>a.reference)};
