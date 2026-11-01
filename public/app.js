@@ -2050,6 +2050,8 @@ function renderCatalog(){
    </section>`:"";
    const galassiaActive=/^Galassia$/i.test(fs.manufacturer)||(!fs.manufacturer&&/^galassia\b/i.test(String(q).trim()));
    const galassiaLauncher=galassiaActive?`<section class="galassia-launcher"><div><span class="eyebrow">GALASSIA · CONFIGURATEUR VISUEL</span><h3>Explorer les collections Galassia</h3><p>Collections → modèles → variantes · prix publics du tarif fourni · remise d’achat 50 %. Visuels de modèle et fiches techniques du fabricant.</p></div><button type="button" class="galassia-open">Configurer Galassia</button></section>`:"";
+   const naxaniActive=/^Naxani$/i.test(fs.manufacturer)||(!fs.manufacturer&&/^naxani\b/i.test(String(q).trim()));
+   const naxaniLauncher=naxaniActive?`<section class="galassia-launcher naxani-direct-launcher"><div><span class="eyebrow">NAXANI · CONFIGURATEUR MOBILIER</span><h3>Composer un meuble Naxani</h3><p>Collection → meuble → dimensions → plan vasque intégré compatible ou top et vasque à poser → bonde en option. Références et tarifs du catalogue 2026.</p></div><button type="button" class="naxani-direct-open">Configurer Naxani</button></section>`:"";
    const betteActive=/^Bette$/i.test(fs.manufacturer)||(!fs.manufacturer&&/^bette\b/i.test(String(q).trim()));
    const betteLauncher=betteActive?`<section class="galassia-launcher bette-direct-launcher"><div><span class="eyebrow">BETTE · CONFIGURATEUR DIRECT</span><h3>Configurer Bette</h3><p>Accès immédiat au configurateur Hydropolis : baignoires, receveurs, vasques, modèles, dimensions et finitions. Photos fabricant illustratives si la variante exacte n’est pas prouvée.</p></div><button type="button" class="bette-direct-open">Configurer Bette</button></section>`:"";
    const catalanoActive=/^Catalano$/i.test(fs.manufacturer)||(!fs.manufacturer&&/^catalano\b/i.test(String(q).trim()));
@@ -2072,7 +2074,7 @@ function renderCatalog(){
      <div><span class="eyebrow">${esc(fs.manufacturer)} · CATALOGUE VISUEL</span><h3>Parcourir les collections du fabricant</h3><p>${fs.manufacturer==="Gessi"?"Univers → collection → famille → produit → finition. Navigation inspirée de Gessi Area Pro.":"Collection → espace → modèle → finition. Références et prix du catalogue existant."}</p></div>
      <button class="btn primary manufacturer-guide-open" type="button">Explorer les collections</button>
    </section>`:"";
-   results.innerHTML=galassiaLauncher+betteLauncher+catalanoLauncher+hidroboxLauncher+sbordoniLauncher+manufacturerGuideLauncher+(productCards||`<div class="empty">Aucun résultat.</div>`);
+   results.innerHTML=galassiaLauncher+naxaniLauncher+betteLauncher+catalanoLauncher+hidroboxLauncher+sbordoniLauncher+manufacturerGuideLauncher+(productCards||`<div class="empty">Aucun résultat.</div>`);
    results.querySelector(".galassia-open")?.addEventListener("click",()=>{
      const items=catalogIndex.maker("Galassia");
      const target=$("#targetRoom")?.value||state.rooms[0]?.id||"";
@@ -2094,6 +2096,12 @@ function renderCatalog(){
        commitSelectedRecords(records);
        return main.id;
      }).catch(e=>alert("Galassia : "+(e.message||e)));
+   });
+   results.querySelector(".naxani-direct-open")?.addEventListener("click",()=>{
+     const target=$("#targetRoom")?.value||state.rooms[0]?.id||"";
+     const items=catalogIndex.maker("Naxani");
+     if(!window.HydroNaxaniConfigurator?.open||!items.length){alert("Configurateur Naxani indisponible : catalogue ou module non chargé.");return;}
+     window.HydroNaxaniConfigurator.open(items,target,chosen=>addNaxaniConfigured(chosen,target)).catch(e=>alert("Naxani : "+(e.message||e)));
    });
    results.querySelector(".bette-direct-open")?.addEventListener("click",()=>{
     const roomId=$("#targetRoom")?.value||state.rooms[0]?.id||"";
