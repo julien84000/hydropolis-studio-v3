@@ -66,7 +66,7 @@ function quote(input,importedRows=[]){
  if(candidates.length!==1)errors.push('Dimensions hors plages combinées du tarif Program Colour (L 70–201, P 40–60, H 1,2 / 3–15 cm).');
  const base=candidates[0]||null;
  if(!['S41','S42'].includes(s.basin))errors.push('Forme S41 ou double S42 obligatoire.');
- if(s.basin==='S42'&&(length<135||depth<45))errors.push('S42 double : longueur au moins 135 cm et profondeur au moins 45 cm (implantation fabricant).');
+ if(s.basin==='S42'&&length<135)errors.push('S42 double : longueur au moins 135 cm (implantation fabricant).');
  if(!['left','center','right'].includes(s.position))errors.push('Position de vasque inconnue.');
  if(base){
    const imported=importedRows.find(x=>String(x.reference||'')===base.reference);
