@@ -2112,7 +2112,7 @@ function renderCatalog(){
      const keys=new Set(rows.map(productKey));
      for(const p of serverSearchRows)if(p.manufacturer===brand&&!keys.has(productKey(p))){rows.push(p);keys.add(productKey(p));}
      window.HydroManufacturerGuide?.open?.(brand,rows,$("#targetRoom")?.value||state.rooms[0]?.id||"",
-       p=>addCatalogProduct(p.reference,$("#targetRoom")?.value||state.rooms[0]?.id||"",productKey(p)));
+       p=>addCatalogProduct(p.reference,$("#targetRoom")?.value||state.rooms[0]?.id||"",productKey(p),p.hotbathSelectedCollection||''));
    });
    if(results.querySelector('.sbordoni-launch-actions')){const docs=document.createElement('button');docs.type='button';docs.className='btn ghost';docs.textContent='Fiches techniques';docs.onclick=()=>window.HydroSbordoniDocuments?.open();results.querySelector('.sbordoni-launch-actions').appendChild(docs);}
    results.querySelector(".sbordoni-launch-basin")?.addEventListener("click",()=>window.HydroSbordoniConfigurator?.open?.({collection:fs.collection},$("#targetRoom")?.value||state.rooms[0]?.id||""));
@@ -2547,7 +2547,7 @@ function openRecorBathConfigurator(p,roomId){
 }
 
 
-function addCatalogProduct(ref,roomId,key=""){
+function addCatalogProduct(ref,roomId,key="",selectedCollection=""){
   const p=productFromCatalogSources(ref,key);
   if(!p){
     console.warn("[catalog add] référence introuvable",{ref,key});
@@ -2589,12 +2589,14 @@ function addCatalogProduct(ref,roomId,key=""){
     openRecorBathConfigurator(p,targetRoomId);
     return;
   }
-  addProduct(ref,targetRoomId,"",key);
+  return addProduct(ref,targetRoomId,"",key,selectedCollection);
 }
 
-async function addProduct(ref,roomId,parentId="",key=""){
+async function addProduct(ref,roomId,parentId="",key="",selectedCollection=""){
   const p=productFromCatalogSources(ref,key);if(!p)return null;
-  const record=createSelectedProductRecord(p,roomId,parentId);
+  const chosen=p.manufacturer==='Hotbath'&&selectedCollection?
+    {...p,hotbathSelectedCollection:selectedCollection,purchaseDiscount:/^Archie$/i.test(selectedCollection)?59.5:55}:p;
+  const record=createSelectedProductRecord(chosen,roomId,parentId);
   if(!record)return null;
   commitSelectedRecords([record]);
   // commitSelectedRecords owns the universal background lookup.
@@ -2834,9 +2836,9 @@ function purchaseDiscountFor(p){
   const maker=String(p?.manufacturer||"");
   const raw=p?.purchaseDiscount;
   const explicit=(raw===null||raw===undefined||raw==="")?NaN:Number(raw);
+  if(maker==='Hotbath')return /^Archie$/i.test(String(p?.hotbathSelectedCollection||p?.collection||'').trim())?59.5:55;
   if(/^(Lefroy Brooks|Ritmonio|Nicolazzi|Gessi|Sbordoni|Dornbracht|Hidrobox|Bette|Carrodrain|Galassia)$/i.test(maker)) return supplierDiscountRate(maker);
   if(Number.isFinite(explicit) && explicit>=0) return clampPercent(explicit);
-  if(p?.manufacturer==="Hotbath" && /(?:^|\/)\s*archie\s*(?:\/|$)/i.test(String(p.collection||""))) return 55;
   return supplierDiscountRate(p?.manufacturer);
 }
 function purchaseCostFor(p){
