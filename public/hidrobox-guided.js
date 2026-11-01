@@ -750,7 +750,7 @@ function sourcePanelSpotPage(g,type){
  const api=root.HydroHidroboxPanelSpotUI;
  if(!api)return null;
  stage='group';chosenGroup=g;
- const collection=type==='panel'?'Panneaux muraux':type==='fs'?'FS':'Spot';
+ const collection=type==='panel'?'Panneaux muraux':type==='fs'?'FS':type==='programColour'?'Program Colour':'Spot';
  const docs=HIDROBOX_DOCUMENTS[norm(collection)]||HIDROBOX_DOCUMENTS[norm(g.collection)]||{};
  const image=collectionImageFor(collection,officialGroupMedia(g)?.image||g.image)||'';
  const ctx={original,room,image,
@@ -767,7 +767,7 @@ function sourcePanelSpotPage(g,type){
    if(!ids?.length)throw Error('Impossible de sauvegarder le produit');
    close();showView('project');
   }};
- return type==='panel'?api.panel(g,ctx):type==='fs'?root.HydroHidroboxFSUI?.fs(g,ctx):api.spot(g,ctx);
+ return type==='panel'?api.panel(g,ctx):type==='fs'?root.HydroHidroboxFSUI?.fs(g,ctx):type==='programColour'?root.HydroProgramColourUI?.programColour(g,ctx):api.spot(g,ctx);
 }
 function universalPage(g){
  const familyName=norm(g.collection||g.id);
@@ -781,6 +781,7 @@ function universalPage(g){
  if(familyName==='panneaux muraux'||familyName==='paneles')return sourcePanelSpotPage(g,'panel');
  if(familyName==='spot')return sourcePanelSpotPage(g,'spot');
  if(familyName==='fs')return sourcePanelSpotPage(g,'fs');
+ if(familyName==='program colour')return sourcePanelSpotPage(g,'programColour');
  if(familyName==='program')return programPage(g);
  if(norm(g.collection||g.id)==='space')return spacePage(g);
  if(norm(g.collection||g.id)==='beta evoque')return betaEvoquePage(g);
