@@ -53,7 +53,7 @@ test('Client returns only same base+category+collection when exact SKU has no ph
  assert.deepEqual([client.get(row('0519501001')).scope,client.get(row('0519501021')).scope],['exact','exact']);
  assert.equal(client.get(row('0519501001')).src,BIDET);
  assert.equal(client.get(row('0519501021')).src,BIDET_COLOR);
- assert.equal(client.get(row('0519501028')).scope,'model','Same ceramic model may use white indicative photo');
+ assert.equal(client.get({...row('0519501001'),reference:'0519501028'}).scope,'model','Same ceramic model may use white indicative photo');
  assert.equal(client.get(row('0512500001')).scope,'missing','A floorstanding WC cannot display a bidet');
  assert.equal(client.get(row('0533010001')).scope,'missing','Cistern must never inherit the collection hero');
  assert.equal(client.get(row('0111460001')).scope,'missing','Zero cannot reuse Sfera photo');
@@ -67,7 +67,7 @@ test('Gallery photos remain only in collection rail and cannot surface via outda
  const html=fs.readFileSync(path.join(__dirname,'../public/index.html'),'utf8');
  const sw=fs.readFileSync(path.join(__dirname,'../public/sw.js'),'utf8');
  assert.match(cfg,/ensureMedia\(collection\)/);
- assert.match(cfg,/root\?\.HydroCatalanoProductMedia\?\.get/);
+ assert.match(cfg,/mediaApi\?\.get\?\.\(p\)/);
  assert.match(cfg,/Visuel produit indisponible/);
  assert(!cfg.includes('photoCache.get(p.reference)'));
  assert(!cfg.includes('photoLoader(p)'));
