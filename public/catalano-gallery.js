@@ -12,7 +12,13 @@ const GROUPS=Object.freeze({
  'Alvea':{image:'https://www.catalano.it/wp-content/uploads/2025/04/CATALANO_Alvea_60_appoggio.webp',url:'https://www.catalano.it/en/all-collections/alvea/'},
  'Italy':{image:'https://www.catalano.it/wp-content/uploads/2025/04/CATALANO_Italy_100-1.webp',url:'https://www.catalano.it/en/all-collections/italy/'},
  'Comfort':{image:'https://www.catalano.it/wp-content/uploads/2025/04/CATALANO_Comfort_Set_01_generale.webp',url:'https://www.catalano.it/en/all-collections/comfort/'},
- 'Ceramic Top':{image:'https://www.catalano.it/wp-content/uploads/2025/05/CATALANO_Zero_Set_08.webp',url:'https://www.catalano.it/en/all-collections/ceramic-top/'}
+ 'Ceramic Top':{image:'https://www.catalano.it/wp-content/uploads/2025/05/CATALANO_Zero_Set_08.webp',url:'https://www.catalano.it/en/all-collections/ceramic-top/'},
+ 'H3 Ceramic':{image:'https://www.catalano.it/wp-content/uploads/2025/06/H3-CERAMIC_120x80.webp',url:'https://www.catalano.it/en/shower-trays/'},
+ 'H3 Planar':{image:'https://www.catalano.it/wp-content/uploads/2025/06/H3_PLANAR_120x80.webp',url:'https://www.catalano.it/en/shower-trays/'},
+ 'H3 Solid':{image:'https://www.catalano.it/wp-content/uploads/2025/06/H3_SOLID_120x80.webp',url:'https://www.catalano.it/en/shower-trays/'},
+ 'H 4,5 Ceramic':{image:'https://www.catalano.it/wp-content/uploads/2025/06/H4_5_120x80.webp',url:'https://www.catalano.it/en/shower-trays/'},
+ 'Vasca':{image:'https://www.catalano.it/wp-content/uploads/2025/03/Vasca_165x80_h52-600x600.webp',url:'https://www.catalano.it/en/bathtubs/'},
+ 'Accessori Vari':{image:'https://www.catalano.it/wp-content/uploads/2025/03/SEDILE_SFERA_ZERO_soft_close_0551200001-600x600.webp',url:'https://www.catalano.it/en/accessories/'}
 });
 const verifiedPhoto=url=>{
  try{const x=new URL(url);return x.protocol==='https:'&&x.hostname==='www.catalano.it'&&
