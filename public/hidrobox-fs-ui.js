@@ -30,9 +30,10 @@ function fs(g,ctx){
  const groupRows=materialRows.filter(r=>r.material===selected.material);
  const uniqueGroups=[...new Set(groupRows.map(r=>r.colorGroup))];
  const svg=root.HydroHidroboxOfficialMinis2026?.get('fs',selected.thumbnail)||'';
- const swatches='<div class="hb-fs-swatches" role="group" aria-label="Teinte Hidrobox">'+
-   m.COLORS[selected.colorGroup].map(c=>'<button type="button" class="hb-fs-swatch" data-fs-color="'+E(c)+'" aria-pressed="'+(s.color===c)+'">'+
-     (c==='Blanc'?'<span class="hb-fs-swatch-chip hb-fs-white" aria-hidden="true"></span>':'')+
+ const palette=root.HydroProgramColour2026?.SWATCHES||{};
+ const swatches='<div class="hb-fs-swatches hb-pc-palette" role="group" aria-label="Teinte Hidrobox">'+
+   m.COLORS[selected.colorGroup].map(c=>'<button type="button" class="hb-fs-swatch hb-pc-swatch" data-fs-color="'+E(c)+'" aria-pressed="'+(s.color===c)+'">'+
+     '<span class="hb-pc-colour" style="background:'+E(c==='Blanc'?'#FFFFFF':palette[c]||'#dddddd')+'" aria-hidden="true"></span>'+
      '<strong>'+E(c)+'</strong></button>').join('')+'</div>';
  const icon=name=>{const v=rows.find(r=>r.model===name);return root.HydroHidroboxOfficialMinis2026?.get('fs',v?.thumbnail)||'';};
  const cards=names.map(name=>'<button type="button" class="hb-fs-model-card" data-fs-model="'+E(name)+'" aria-pressed="'+(selected.model===name)+'">'+
@@ -63,6 +64,7 @@ function fs(g,ctx){
      '<small>Les modèles R/L restent distincts pour la commande ; une photo constructeur ne prouve pas systématiquement son orientation.</small></div></div>'+
    '<h4 class="hidrobox-universal-subtitle">1 · Forme de vasque FS</h4><div class="hb-fs-model-grid">'+cards+'</div>'+
    '<h4 class="hidrobox-universal-subtitle">2 · Matière</h4><div class="hb-fs-axis-grid">'+materialCards+'</div>'+
+   '<p class="hidrobox-guide-note">Kromat coloré : uniquement FS 19 et FS 23 selon les références WFSC du tarif France 2026. Les autres FS sont en Scene blanc ; leurs teintes extérieures sont une option distincte.</p>'+
    '<h4 class="hidrobox-universal-subtitle">3 · Texture</h4><div class="hidrobox-fixed-attribute"><strong>Lisse</strong><span>Texture constructeur FS</span></div>'+
    '<h4 class="hidrobox-universal-subtitle">4 · Couleur</h4><div class="hb-fs-axis-grid">'+tiers+'</div>'+swatches+
    (selected.colorGroup==='SPE'?'<label class="hb-fs-code-label">Référence couleur exacte RAL / NCS<input type="text" id="hbFsSpecialCode" placeholder="RAL 9001 ou NCS S 0500-N" value="'+E(s.code)+'"></label>':'')+

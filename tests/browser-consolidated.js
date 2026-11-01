@@ -879,6 +879,20 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     await page.locator('#brandConfigurator [data-bette-back="sections"]').click();
     await page.locator('#brandConfigurator [data-bette-back="families"]').click();
     await page.locator('#brandConfigurator [data-bette-family="showers"]').click();
+    const betteFamilyPhotos=await page.locator('#brandConfigurator .bette-family-card [data-bette-group-image]').evaluateAll(els=>els.map(img=>({
+      src:img.getAttribute('src'),width:Math.round(img.getBoundingClientRect().width),
+      height:Math.round(img.getBoundingClientRect().height),
+      label:img.closest('.bette-family-card')?.querySelector('b')?.textContent||''
+    })));
+    check('Bette : une vignette est intégrée à chaque carte de la grille familles',
+      betteFamilyPhotos.length>=8&&betteFamilyPhotos.every(x=>x.src&&x.width>=100&&x.height>=90));
+    check('Bette : les images officielles sont distinctes entre BetteAir, BetteFloor et BetteCorner',
+      ['BetteAir','BetteFloor','BetteCorner'].every(prefix=>betteFamilyPhotos.some(x=>x.label.startsWith(prefix)&&x.src.includes('my-bette.com')))&&
+      new Set(['BetteAir','BetteFloor','BetteCorner'].map(prefix=>betteFamilyPhotos.find(x=>x.label.startsWith(prefix))?.src)).size===3);
+    await page.setViewportSize({width:390,height:844});
+    check('Bette : cartes photo familles sans débordement mobile',
+      await mobileTreeOverflow());
+    await page.setViewportSize({width:1440,height:1000});
     await page.locator('#brandConfigurator [data-bette-unclassified]').click();
     check('Bette : les familles sans classement restent accessibles',await page.locator('#brandConfigurator [data-bette-back="sections"]').count()===1);
     await page.locator('#brandConfigurator .brand-config-close').click();

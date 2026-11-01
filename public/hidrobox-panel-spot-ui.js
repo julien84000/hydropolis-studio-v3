@@ -196,7 +196,13 @@
      '<strong>'+E(material)+'</strong><small>'+(material==='Scene'?'Solid Surface blanc':'Kromat · teintes fabricant')+'</small></button>').join('');
   const tierCards=tiers.map(tier=>'<button type="button" class="hb-spot-axis" data-hb-spot-tier="'+E(tier)+'" aria-pressed="'+(tier===current.colorGroup)+'">'+
      '<strong>'+E({BLA:'Blanc',BAS:'Basics',TRE:'Trends',SPE:'Specials RAL / NCS'}[tier]||tier)+'</strong></button>').join('');
-  const colorChoices='<div class="hidrobox-fields">'+select('Teinte fabricant','color',colors,s.color)+'</div>'+
+  const swatchPalette=root?.HydroProgramColour2026?.SWATCHES||{};
+  const colorTiles=current.material==='Kromat'&&current.colorGroup!=='SPE'?
+    '<div class="hb-pc-palette" role="group" aria-label="Nuancier Kromat '+E(current.colorGroup)+'">'+colors.map(c=>
+      '<button type="button" class="hb-pc-swatch" data-hb-spot-color-tile="'+E(c)+'" aria-pressed="'+(s.color===c)+'">'+
+      '<span class="hb-pc-colour" style="background:'+E(swatchPalette[c]||'#dddddd')+'" aria-hidden="true"></span>'+
+      '<strong>'+E(c)+'</strong></button>').join('')+'</div>':'';
+  const colorChoices=colorTiles+'<div class="hidrobox-fields">'+select('Teinte fabricant','color',colors,s.color)+'</div>'+
     (current.colorGroup==='SPE'?'<label class="hb-spot-special-label">Référence de teinte RAL / NCS<input id="hbSpotSpecialCode" type="text" placeholder="RAL 9001 ou NCS S 0500-N" value="'+E(s.specialCode||'')+'"></label>':'');
 
   const optionRows=m.optionsFor(current).map(o=>
@@ -211,6 +217,7 @@
     docsMarkup(ctx)+
     '<h4 class="hidrobox-universal-subtitle">1 · Modèle</h4><div class="hidrobox-tray-model-grid hb-spot-grid">'+tiles+'</div>'+
     '<h4 class="hidrobox-universal-subtitle">2 · Matière</h4><div class="hb-spot-material-grid">'+matCards+'</div>'+
+    '<p class="hidrobox-guide-note">Kromat coloré existe uniquement pour Spot 62, 125, 159, 169 et 186 (tarif France 2026). Les autres modèles Spot restent en Scene blanc, avec leurs éventuelles options de couleur extérieure. Aucun Kromat sans référence WSCC.</p>'+
     '<h4 class="hidrobox-universal-subtitle">3 · Texture</h4><div class="hidrobox-fixed-attribute"><strong>Finition</strong><span>Lisse · modèle Spot</span></div>'+
     '<h4 class="hidrobox-universal-subtitle">4 · Couleur</h4><div class="hb-spot-material-grid">'+tierCards+'</div>'+colorChoices+
     '<h4 class="hidrobox-universal-subtitle">5 · Dimensions fabricant</h4><p>'+E(current.width+' × '+current.length+' × '+current.height)+' cm · modèle '+E(current.model)+'. Dimensions fixes correspondant à la référence choisie.</p>'+
@@ -239,6 +246,7 @@
      const row=sameMaterial.find(x=>x.colorGroup===b.dataset.hbSpotTier);
      if(!row)return;s.ref=row.reference;s.color=m.COLORS[row.colorGroup][0];s.specialCode='';s.extras=[];refresh();
   });
+  view.querySelectorAll('[data-hb-spot-color-tile]').forEach(b=>b.onclick=()=>{s.color=b.dataset.hbSpotColorTile;refresh()});
   view.querySelector('#hbSpotSpecialCode')?.addEventListener('change',e=>{s.specialCode=e.target.value.trim();refresh()});
   view.querySelector('[data-hb-source-select="color"]').onchange=e=>{s.color=e.target.value;refresh()};
   view.querySelectorAll('[data-hb-extra]').forEach(e=>e.onchange=()=>{s.extras=e.checked?[...new Set([...s.extras,e.dataset.hbExtra])]:s.extras.filter(x=>x!==e.dataset.hbExtra);refresh()});

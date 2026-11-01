@@ -56,3 +56,27 @@
 #brandConfigurator .recor-config-summary small{display:block;line-height:1.5;margin-top:6px}
 @media(max-width:540px){#brandConfigurator .bette-official-model-media{min-width:0;max-width:100%}
  #brandConfigurator .bette-official-model-media>img{height:145px}}
+
+
+/* V11.64.35 — Bette family cards: photos must be visible in the category
+   and facet grids, not only on the individual configurator screen. */
+#brandConfigurator .brand-category-grid>.bette-family-card{
+ display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:9px;
+ min-width:0;min-height:218px;padding:10px;text-align:left;
+ background:#fff;border:1px solid #dedfd9;border-radius:10px;
+ overflow:hidden;cursor:pointer
+}
+#brandConfigurator .brand-category-grid>.bette-family-card:hover,
+#brandConfigurator .brand-category-grid>.bette-family-card:focus-visible{
+ border-color:#627d69;box-shadow:0 4px 16px #243c2d15
+}
+#brandConfigurator .bette-family-card .bette-group-photo{
+ width:100%;height:132px;object-fit:contain;box-sizing:border-box;
+ padding:7px;background:#faf9f7;border-radius:7px
+}
+#brandConfigurator .bette-family-card-copy{display:flex;flex-direction:column;gap:5px;min-width:0;flex:1}
+#brandConfigurator .bette-family-card-copy b{font-size:14px;line-height:1.35;color:#23342a;overflow-wrap:anywhere}
+#brandConfigurator .bette-family-card-copy>small{font-size:11px;line-height:1.35;color:#677168}
+#brandConfigurator .bette-family-card-copy>.bette-group-scope{font-size:10px;color:#818782;margin-top:auto}
+@media(max-width:580px){#brandConfigurator .bette-family-card .bette-group-photo{height:112px}
+ #brandConfigurator .brand-category-grid>.bette-family-card{min-height:198px;padding:8px}}
