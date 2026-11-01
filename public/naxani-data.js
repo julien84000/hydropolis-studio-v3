@@ -30,7 +30,7 @@
    price:Number(price),totalPrice:Number(price),currency:'EUR',vat:'HT',sourceYear:2026,
    source:'Naxani — Tarifa 2026 Catalogo General',sourcePage:page,
    purchaseDiscount:null,manufacturerUrl:pageUrl(model),naxaniSourceVerified:true,
-   image:'',imageSource:'Visuel de collection sur demande · non contractuel',
+   image:'/api/naxani-collection-image?collection='+encodeURIComponent(model),imageSource:'Photo de collection Naxani illustrative · finition non contractuelle',
    finish:'Finition à préciser avec le fabricant'};
  });
  const compatible=(furniture,top,exclusions={})=>{
