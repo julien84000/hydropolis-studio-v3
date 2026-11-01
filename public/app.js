@@ -1992,6 +1992,31 @@ function productSearchText(p){
   return text;
 }
 function matches(p,q){const words=String(q||"").toLowerCase().trim().split(/\s+/).filter(Boolean);if(!words.length)return true;const hay=productSearchText(p);return words.every(w=>hay.includes(w));}
+
+function launchCatalanoConfigurator(initial,roomId){
+ const items=catalogIndex.maker("Catalano"),target=normalizedRoomId(roomId||$("#targetRoom")?.value||state.rooms[0]?.id||"");
+ if(!window.HydroCatalanoConfigurator?.open){toast("Configurateur Catalano indisponible");return;}
+ window.HydroCatalanoConfigurator.open(initial,target,items,async (chosen,selectedRoom,accessories=[])=>{
+  if(!items.some(p=>p.reference===chosen.reference&&p.collection===chosen.collection))
+   throw new Error("Référence principale Catalano absente du tarif importé.");
+  const main=createSelectedProductRecord(chosen,selectedRoom);
+  if(!main)throw new Error("Impossible d’enregistrer le produit Catalano.");
+  main.catalanoConfiguration={reference:chosen.reference,base:chosen.base||chosen.reference,
+    collection:chosen.collection,finishCode:chosen.finishCode||'',accessories:accessories.map(a=>a.reference)};
+  const records=[main];
+  for(const accessory of accessories){
+   if(!items.some(p=>p.reference===accessory.reference&&p.manufacturer==='Catalano'&&p.category==='Accessoires'))
+    throw new Error("Accessoire non répertorié : "+accessory.reference);
+   const record=createSelectedProductRecord(accessory,selectedRoom,main.id);
+   if(!record)throw new Error("Accessoire Catalano non enregistré : "+accessory.reference);
+   record.accessoryFor=main.id;record.catalanoLinkedAccessory=true;records.push(record);
+  }
+  commitSelectedRecords(records);
+  return main.id;
+ },p=>cachedManufacturerImage(p)?.src||p.image||'',p=>fetchManufacturerImage(p,false,{imageOnly:true})
+ ).catch(e=>{console.error("[Catalano configurator]",e);alert("Catalano : "+(e.message||e));});
+}
+
 function renderCatalog(){
  syncBrandRail();scheduleServerSearch();renderV11Overview();
  const results=$("#results"),count=$("#resultCount");if(!results)return;
@@ -2015,6 +2040,10 @@ function renderCatalog(){
    </section>`:"";
    const galassiaActive=/^Galassia$/i.test(fs.manufacturer)||(!fs.manufacturer&&/^galassia\b/i.test(String(q).trim()));
    const galassiaLauncher=galassiaActive?`<section class="galassia-launcher"><div><span class="eyebrow">GALASSIA · CONFIGURATEUR VISUEL</span><h3>Explorer les collections Galassia</h3><p>Collections → modèles → variantes · prix publics du tarif fourni · remise d’achat 50 %. Visuels de modèle et fiches techniques du fabricant.</p></div><button type="button" class="galassia-open">Configurer Galassia</button></section>`:"";
+   const betteActive=/^Bette$/i.test(fs.manufacturer)||(!fs.manufacturer&&/^bette\b/i.test(String(q).trim()));
+   const betteLauncher=betteActive?`<section class="galassia-launcher bette-direct-launcher"><div><span class="eyebrow">BETTE · CONFIGURATEUR DIRECT</span><h3>Configurer Bette</h3><p>Accès immédiat au configurateur Hydropolis : baignoires, receveurs, vasques, modèles, dimensions et finitions. Photos fabricant illustratives si la variante exacte n’est pas prouvée.</p></div><button type="button" class="bette-direct-open">Configurer Bette</button></section>`:"";
+   const catalanoActive=/^Catalano$/i.test(fs.manufacturer)||(!fs.manufacturer&&/^catalano\b/i.test(String(q).trim()));
+   const catalanoLauncher=catalanoActive?`<section class="galassia-launcher catalano-launcher"><div><span class="eyebrow">CATALANO · CONFIGURATEUR VISUEL</span><h3>Explorer les collections Catalano</h3><p>Collection → famille → modèle → finition. Pour les WC : abattant assorti et kit de fixation à sélectionner selon la pose.</p></div><button type="button" class="catalano-open">Configurer Catalano</button></section>`:"";
    const sbordoniLauncher=sbordoniActive?`<section class="sbordoni-catalog-launcher">
      <div><span class="eyebrow">SBORDONI · CONFIGURATION GUIDÉE</span><h3>Composer directement le produit final</h3><p>Choisissez d’abord la collection et la dimension, puis uniquement les piètements compatibles montrés dans le catalogue.</p></div>
      <div class="sbordoni-launch-actions"><button type="button" class="btn primary sbordoni-launch-basin">Configurer un lavabo</button><button type="button" class="btn ghost sbordoni-launch-wc">Configurer un WC</button></div>
@@ -2026,14 +2055,14 @@ function renderCatalog(){
      const cached=cachedManufacturerImage(p),finishLabel=exactFinishLabel(p)||"",price=catalogDisplayPrice(p),key=productKey(p),avail=availabilityInfo(p),compared=compareRefs.has(key),favorite=favoriteRefs.has(key);
      const candidateVisual=/^Sbordoni$/i.test(String(p.manufacturer||""))?((window.HydroSbordoniConfigurator?.catalogImage?.(p))||p.image||((Array.isArray(p.images)&&p.images[0])||"")):(cached?.src||p.image||((Array.isArray(p.images)&&p.images[0])||""));
      const catalogVisual=brokenCatalogImages.has(candidateVisual)?"":candidateVisual;
-     return `<article class="result v11-product-card" data-key="${esc(key)}">${catalogThumbHtml(p,catalogVisual,finishLabel,favorite,cached)}<div><div class="r-top"><span class="ref">${esc(p.reference)}</span><span class="badge">${esc(p.manufacturer)}</span><span class="badge">${esc(p.collection)}</span><span class="badge">${esc(p.category)}</span></div><div class="designation">${esc(p.designation)}</div><div class="meta">${esc(p.finish||"")}</div>${roughInWarningHtml(p)}<div class="availability ${avail.cls}">${esc(avail.label)}</div><div class="manufacturer-tools v11-resource-tools"><button class="tiny lookup-photo" data-ref="${esc(p.reference)}" data-key="${esc(key)}">${cached||p.image?"Actualiser la photo":"Photo fabricant"}</button>${hotbathNeedsFinishFallback(p,cached)?`<button class="tiny hotbath-web-photo" data-ref="${esc(p.reference)}" data-key="${esc(key)}">Finition web</button>`:""}${p.manufacturerUrl?`<a class="source-link" target="_blank" rel="noopener" href="${esc(cached?.resolvedManufacturerUrl||p.manufacturerUrl)}">Fiche ↗</a>`:""}${cached?.technicalSheetUrl?`<a class="source-link" target="_blank" rel="noopener" href="${esc(cached.technicalSheetUrl)}">Technique ↗</a>`:""}</div><div class="photo-status">${cached?`<b>${esc(imageBadge(cached,p))}</b>`:p.image?`<b>${esc(p.imageSource||"Visuel catalogue")}</b>`:`Source tarif : ${esc(p.source||"catalogue fabricant")}`}</div>${/^Nicolazzi$/i.test(String(p.manufacturer||""))?`<div class="nicolazzi-options-slot">${nicolazziVisualOptionsHtml(p,cached)}</div>`:""}<div class="card-action-row"><button class="suggest-toggle" data-key="${esc(key)}">Alternatives</button><button class="compare-toggle ${compared?"active":""}" data-key="${esc(key)}">${compared?"✓ Comparé":"Comparer"}</button></div></div><div class="price-box"><small class="v11-price-label">Prix public</small><div class="price">${euro(price)} HT</div>${p.internalReference?`<div class="internal">Ext. ${euro(p.price)} + ${esc(p.internalReference)} ${euro(p.internalPrice)}</div>`:`<div class="internal">${esc(p.sourceYear?`Tarif ${p.sourceYear}`:"Référence complète")}</div>`}${(window.HydroSbordoniConfigurator?.eligible?.(p)||window.HydroSbordoniWCConfigurator?.eligible?.(p)||window.HydroGalassiaConfigurator?.eligible?.(p)||window.HydroHidroboxConfigurator?.eligible?.(p)||window.HydroBetteConfigurator?.eligible?.(p)||window.HydroCarrodrainConfigurator?.eligible?.(p))?`<div class="internal recor-config-hint"><b>Configuration guidée</b> · choisissez la composition finale</div>`:isRecorBathRequiringFeet(p)?`<div class="internal recor-config-hint"><b>Pieds obligatoires</b> · choix à l’ajout</div>`:""}<button class="btn primary add" data-ref="${esc(p.reference)}" data-key="${esc(key)}" style="margin-top:9px">${(window.HydroSbordoniConfigurator?.eligible?.(p)||window.HydroSbordoniWCConfigurator?.eligible?.(p)||window.HydroHidroboxConfigurator?.eligible?.(p)||window.HydroBetteConfigurator?.eligible?.(p)||window.HydroCarrodrainConfigurator?.eligible?.(p))?"Configurer ce produit":isRecorBathRequiringFeet(p)?"Configurer + ajouter":"Ajouter à "+esc(room?.title||"la pièce")}</button></div></article>`;
+     return `<article class="result v11-product-card" data-key="${esc(key)}">${catalogThumbHtml(p,catalogVisual,finishLabel,favorite,cached)}<div><div class="r-top"><span class="ref">${esc(p.reference)}</span><span class="badge">${esc(p.manufacturer)}</span><span class="badge">${esc(p.collection)}</span><span class="badge">${esc(p.category)}</span></div><div class="designation">${esc(p.designation)}</div><div class="meta">${esc(p.finish||"")}</div>${roughInWarningHtml(p)}<div class="availability ${avail.cls}">${esc(avail.label)}</div><div class="manufacturer-tools v11-resource-tools"><button class="tiny lookup-photo" data-ref="${esc(p.reference)}" data-key="${esc(key)}">${cached||p.image?"Actualiser la photo":"Photo fabricant"}</button>${hotbathNeedsFinishFallback(p,cached)?`<button class="tiny hotbath-web-photo" data-ref="${esc(p.reference)}" data-key="${esc(key)}">Finition web</button>`:""}${p.manufacturerUrl?`<a class="source-link" target="_blank" rel="noopener" href="${esc(cached?.resolvedManufacturerUrl||p.manufacturerUrl)}">Fiche ↗</a>`:""}${cached?.technicalSheetUrl?`<a class="source-link" target="_blank" rel="noopener" href="${esc(cached.technicalSheetUrl)}">Technique ↗</a>`:""}</div><div class="photo-status">${cached?`<b>${esc(imageBadge(cached,p))}</b>`:p.image?`<b>${esc(p.imageSource||"Visuel catalogue")}</b>`:`Source tarif : ${esc(p.source||"catalogue fabricant")}`}</div>${/^Nicolazzi$/i.test(String(p.manufacturer||""))?`<div class="nicolazzi-options-slot">${nicolazziVisualOptionsHtml(p,cached)}</div>`:""}<div class="card-action-row"><button class="suggest-toggle" data-key="${esc(key)}">Alternatives</button><button class="compare-toggle ${compared?"active":""}" data-key="${esc(key)}">${compared?"✓ Comparé":"Comparer"}</button></div></div><div class="price-box"><small class="v11-price-label">Prix public</small><div class="price">${euro(price)} HT</div>${p.internalReference?`<div class="internal">Ext. ${euro(p.price)} + ${esc(p.internalReference)} ${euro(p.internalPrice)}</div>`:`<div class="internal">${esc(p.sourceYear?`Tarif ${p.sourceYear}`:"Référence complète")}</div>`}${(window.HydroSbordoniConfigurator?.eligible?.(p)||window.HydroSbordoniWCConfigurator?.eligible?.(p)||window.HydroGalassiaConfigurator?.eligible?.(p)||window.HydroCatalanoConfigurator?.eligible?.(p)||window.HydroCatalanoConfigurator?.eligible?.(p)||window.HydroHidroboxConfigurator?.eligible?.(p)||window.HydroBetteConfigurator?.eligible?.(p)||window.HydroCarrodrainConfigurator?.eligible?.(p))?`<div class="internal recor-config-hint"><b>Configuration guidée</b> · choisissez la composition finale</div>`:isRecorBathRequiringFeet(p)?`<div class="internal recor-config-hint"><b>Pieds obligatoires</b> · choix à l’ajout</div>`:""}<button class="btn primary add" data-ref="${esc(p.reference)}" data-key="${esc(key)}" style="margin-top:9px">${(window.HydroSbordoniConfigurator?.eligible?.(p)||window.HydroSbordoniWCConfigurator?.eligible?.(p)||window.HydroHidroboxConfigurator?.eligible?.(p)||window.HydroBetteConfigurator?.eligible?.(p)||window.HydroCarrodrainConfigurator?.eligible?.(p))?"Configurer ce produit":isRecorBathRequiringFeet(p)?"Configurer + ajouter":"Ajouter à "+esc(room?.title||"la pièce")}</button></div></article>`;
    }).join("");
    const manufacturerGuideActive=window.HydroManufacturerGuide?.isSupported?.(fs.manufacturer);
    const manufacturerGuideLauncher=manufacturerGuideActive?`<section class="manufacturer-guide-launcher">
      <div><span class="eyebrow">${esc(fs.manufacturer)} · CATALOGUE VISUEL</span><h3>Parcourir les collections du fabricant</h3><p>${fs.manufacturer==="Gessi"?"Univers → collection → famille → produit → finition. Navigation inspirée de Gessi Area Pro.":"Collection → espace → modèle → finition. Références et prix du catalogue existant."}</p></div>
      <button class="btn primary manufacturer-guide-open" type="button">Explorer les collections</button>
    </section>`:"";
-   results.innerHTML=galassiaLauncher+hidroboxLauncher+sbordoniLauncher+manufacturerGuideLauncher+(productCards||`<div class="empty">Aucun résultat.</div>`);
+   results.innerHTML=galassiaLauncher+betteLauncher+catalanoLauncher+hidroboxLauncher+sbordoniLauncher+manufacturerGuideLauncher+(productCards||`<div class="empty">Aucun résultat.</div>`);
    results.querySelector(".galassia-open")?.addEventListener("click",()=>{
      const items=catalogIndex.maker("Galassia");
      const target=$("#targetRoom")?.value||state.rooms[0]?.id||"";
@@ -2055,6 +2084,13 @@ function renderCatalog(){
        commitSelectedRecords(records);
        return main.id;
      }).catch(e=>alert("Galassia : "+(e.message||e)));
+   });
+   results.querySelector(".bette-direct-open")?.addEventListener("click",()=>{
+    const roomId=$("#targetRoom")?.value||state.rooms[0]?.id||"";
+    window.HydroBetteConfigurator?.open?.({manufacturer:"Bette"},roomId).catch(e=>alert("Bette : "+(e.message||e)));
+   });
+   results.querySelector(".catalano-open")?.addEventListener("click",()=>{
+    launchCatalanoConfigurator(null,$("#targetRoom")?.value||state.rooms[0]?.id||"");
    });
    results.querySelectorAll(".hidrobox-category-open").forEach(button=>button.addEventListener("click",()=>{
      const guide=window.HydroHidroboxConfigurator;
@@ -2533,7 +2569,8 @@ function addCatalogProduct(ref,roomId,key=""){
      }).catch(e=>alert("Galassia : "+(e.message||e)));
     return;
   }
-  if(window.HydroSbordoniWCConfigurator?.eligible?.(p)){HydroSbordoniWCConfigurator.open(p,targetRoomId);return;}
+  if(window.HydroCatalanoConfigurator?.eligible?.(p)){launchCatalanoConfigurator(p,targetRoomId);return;}
+ if(window.HydroSbordoniWCConfigurator?.eligible?.(p)){HydroSbordoniWCConfigurator.open(p,targetRoomId);return;}
   if(window.HydroSbordoniConfigurator?.eligible?.(p)){HydroSbordoniConfigurator.open(p,targetRoomId);return;}
   if(window.HydroHidroboxConfigurator?.eligible?.(p)){HydroHidroboxConfigurator.open(p,targetRoomId).catch(e=>alert(e.message));return;}
   if(window.HydroBetteConfigurator?.eligible?.(p)){HydroBetteConfigurator.open(p,targetRoomId).catch(e=>alert(e.message));return;}
