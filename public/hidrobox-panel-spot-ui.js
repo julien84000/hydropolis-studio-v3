@@ -173,7 +173,7 @@
   if(!m.byRef.has(s.ref))s.ref=m.rows[0].reference;
   const current=m.byRef.get(s.ref);
   const colors=m.COLORS[current.colorGroup];if(!colors.includes(s.color))s.color=colors[0];
-  const specialCodeReady=current.colorGroup!=='SPE'||/^(?:RAL|NCS)\\s*[-\\w .]{2,25}$/i.test(String(s.specialCode||'').trim());
+  const specialCodeReady=current.colorGroup!=='SPE'||/^(?:RAL|NCS)\s*[-\w .]{2,25}$/i.test(String(s.specialCode||'').trim());
   const colourName=current.colorGroup==='SPE'?(s.specialCode||'À préciser'):s.color;
   s.extras=s.extras.filter(x=>m.optionsFor(current).some(o=>o.reference===x));
   const q=m.quote({reference:s.ref,color:s.color},{accessories:s.extras});
