@@ -649,6 +649,47 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
       await page.locator('[data-hp-select="additional"]').inputValue()==='S25'&&
       await page.locator('[data-hp="curve"][data-value="LR"]').getAttribute('aria-pressed')==='true');
     await page.locator('#hidroboxGuided .hidrobox-back').click();
+    // Artop and Lom source-correct sizing: dimensions, material and texture verified
+    // against the imported official FR 2026 tariff (never OCR's sparse columns).
+    await page.locator('#hidroboxGuided [data-kind="collection"][data-choice="lom"]').click();
+    await page.waitForSelector('#hidroboxGuided #huExactheight');
+    check('Lom 2026: manufacturer 45.5 × 71 × 1.2cm SKU is priceable',
+      (await page.locator('#hidroboxGuided .hidrobox-result').innerText()).includes('WLOS0001')&&
+      await page.locator('#hidroboxGuided #huAdd').isEnabled());
+    await page.locator('#hidroboxGuided #huExactwidth').selectOption('50.5');
+    await page.locator('#hidroboxGuided #huExactlength').selectOption('141');
+    await page.locator('#hidroboxGuided #huExactheight').selectOption('15');
+    check('Lom 2026: second depth and height are mapped to the precise WLOS0020 tariff',
+      (await page.locator('#hidroboxGuided .hidrobox-result').innerText()).includes('WLOS0020')&&
+      await page.locator('#hidroboxGuided #huAdd').isEnabled());
+    await page.locator('#hidroboxGuided .hidrobox-back').click();
+    await page.locator('#hidroboxGuided [data-hidrobox-home]').click();
+    await page.locator('#hidroboxGuided [data-kind="family"][data-choice="plans"]').click();
+    await page.locator('#hidroboxGuided [data-kind="collection"][data-choice="artop"]').click();
+    await page.waitForSelector('#hidroboxGuided #huPlanMaterial');
+    check('Artop 2026: exact Kromat Lisse 45 × 100 × 1.2 supplier variant',
+      (await page.locator('#hidroboxGuided .hidrobox-result').innerText()).includes('CARC0922')&&
+      await page.locator('#hidroboxGuided #huAdd').isEnabled());
+    await page.locator('#hidroboxGuided #huPlanFinish').selectOption('Microtex');
+    check('Artop 2026: Microtex selects distinct tariff SKU not Lisse',
+      (await page.locator('#hidroboxGuided .hidrobox-result').innerText()).includes('CARC0506')&&
+      await page.locator('#hidroboxGuided #huAdd').isEnabled());
+    await page.locator('#hidroboxGuided #huPlanMaterial').selectOption('Scene');
+    check('Artop 2026: Scene white excludes the Microtex references',
+      (await page.locator('#hidroboxGuided .hidrobox-result').innerText()).includes('CARC0842')&&
+      await page.locator('#hidroboxGuided #huAdd').isEnabled());
+    await page.locator('#hidroboxGuided #huExactheight').fill('2');
+    await page.locator('#hidroboxGuided #huExactheight').press('Tab');
+    check('Artop 2026: invalid 2cm height blocks supplier quote',
+      await page.locator('#hidroboxGuided #huAdd').isDisabled());
+    await page.locator('#hidroboxGuided #huExactheight').fill('3');
+    await page.locator('#hidroboxGuided #huExactheight').press('Tab');
+    check('Artop 2026: Scene 3cm restores correct supplier SKU',
+      (await page.locator('#hidroboxGuided .hidrobox-result').innerText()).includes('CARC0862')&&
+      await page.locator('#hidroboxGuided #huAdd').isEnabled());
+    await page.locator('#hidroboxGuided .hidrobox-back').click();
+    await page.locator('#hidroboxGuided [data-hidrobox-home]').click();
+    await page.locator('#hidroboxGuided [data-kind="family"][data-choice="vasques-suspendues"]').click();
     await page.locator('#hidroboxGuided [data-kind="collection"][data-choice="intim"]').click();
     check('Hidrobox Intim : private site collection has no fictitious quote item',
       await page.locator('#hidroboxGuided .hidrobox-unpriced-collection').count()===1&&
