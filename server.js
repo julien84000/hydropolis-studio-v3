@@ -87,6 +87,7 @@ require("./gessi-technical-server")(app);
 require("./gessi-official-series-server")(app);
 require("./galassia-technical-server")(app);
 require("./hidrobox-configurator-server")(app);
+require("./bette-official-media-server")(app);
 app.use(express.static(path.join(__dirname,"public")));
 require("./tariff-server")(app);
 
