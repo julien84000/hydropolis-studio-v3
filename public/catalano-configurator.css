@@ -1,0 +1,37 @@
+/* 11.64.36 Catalano — visual configuration equivalent to Galassia,
+   with a distinct WC accessory hierarchy and clear provenance labels. */
+.catalano-shell .galassia-top{background:#25322b}
+.catalano-shell .galassia-eyebrow{color:#e2b88a}
+.catalano-shell .galassia-family.active{border-color:#607f6a;box-shadow:0 0 0 1px #607f6a}
+.catalano-shell .galassia-model.active{border-color:#607f6a;background:#f4f9f4}
+.catalano-shell .galassia-section.active{background:#e9f0e9;border-color:#607f6a}
+.catalano-shell .galassia-add{background:#2d4d37}
+.catalano-collections .galassia-family{min-height:66px}
+.catalano-collections .galassia-family img{object-fit:cover}
+.catalano-models .galassia-model{min-height:220px}
+.catalano-models .galassia-model .galassia-model-photo img{object-fit:contain;background:#f9f9f7}
+.catalano-selection .galassia-photo{height:196px}
+.catalano-selection .galassia-summary{background:#f1f5f1}
+.catalano-selection .galassia-accessories{margin-top:6px;border-top:1px solid #c9d8ce}
+.catalano-selection .catalano-warning{color:#795b28;font-size:11px;line-height:1.5}
+.catalano-selection .catalano-included{font-size:11px;color:#415c49;margin:3px 0}
+.catalano-selection .galassia-accessory-row select:focus-visible{outline:2px solid #607f6a}
+.bette-direct-launcher{border-color:#b5c4bd;background:linear-gradient(90deg,#f3f8f4,#fff)}
+.bette-direct-launcher button{background:#263d30}
+.catalano-launcher{border-color:#c6bdac;background:linear-gradient(90deg,#f6f4ef,#fff)}
+.catalano-launcher button{background:#24352a}
+.pdf-exporting .catalano-modal,.pdf-exporting .bette-direct-launcher,.pdf-exporting .catalano-launcher{display:none!important}
+@media(max-width:780px){
+ .catalano-shell .galassia-collections{flex-direction:row;max-height:105px}
+ .catalano-shell .galassia-body{overflow-y:auto}
+ .catalano-shell .galassia-models{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .catalano-shell .galassia-selection{overflow:visible}
+ .catalano-shell .galassia-top h2{font-size:21px}
+ .catalano-launcher,.bette-direct-launcher{align-items:stretch}
+}
+@media(max-width:440px){
+ .catalano-shell .galassia-models{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;padding:9px}
+ .catalano-shell .galassia-model-photo{height:95px}
+ .catalano-shell .galassia-model{min-height:178px}
+ .catalano-shell .galassia-selection{padding:12px}
+}
