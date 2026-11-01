@@ -736,7 +736,7 @@ function sourcePanelSpotPage(g,type){
  const api=root.HydroHidroboxPanelSpotUI;
  if(!api)return null;
  stage='group';chosenGroup=g;
- const collection=type==='panel'?'Panneaux muraux':'Spot';
+ const collection=type==='panel'?'Panneaux muraux':type==='fs'?'FS':'Spot';
  const docs=HIDROBOX_DOCUMENTS[norm(collection)]||HIDROBOX_DOCUMENTS[norm(g.collection)]||{};
  const image=collectionImageFor(collection,officialGroupMedia(g)?.image||g.image)||'';
  const ctx={original,room,image,
@@ -753,7 +753,7 @@ function sourcePanelSpotPage(g,type){
    if(!ids?.length)throw Error('Impossible de sauvegarder le produit');
    close();showView('project');
   }};
- return type==='panel'?api.panel(g,ctx):api.spot(g,ctx);
+ return type==='panel'?api.panel(g,ctx):type==='fs'?root.HydroHidroboxFSUI?.fs(g,ctx):api.spot(g,ctx);
 }
 function universalPage(g){
  const familyName=norm(g.collection||g.id);
@@ -766,6 +766,7 @@ function universalPage(g){
  }
  if(familyName==='panneaux muraux'||familyName==='paneles')return sourcePanelSpotPage(g,'panel');
  if(familyName==='spot')return sourcePanelSpotPage(g,'spot');
+ if(familyName==='fs')return sourcePanelSpotPage(g,'fs');
  if(familyName==='program')return programPage(g);
  if(norm(g.collection||g.id)==='space')return spacePage(g);
  if(norm(g.collection||g.id)==='beta evoque')return betaEvoquePage(g);
@@ -1181,6 +1182,7 @@ async function open(p,roomId,requestedCategory=''){
  room=roomId;original=p||{};programDraft=p?.hidroboxConfiguration?.type==='program-2026'?{...p.hidroboxConfiguration}:null;spaceDraft=p?.hidroboxConfiguration?.type==='space-2026'?{...p.hidroboxConfiguration}:null;betaEvoqueDraft=p?.hidroboxConfiguration?.type==='beta-evoque-2026'?{...p.hidroboxConfiguration}:null;betaEssentialDraft=p?.hidroboxConfiguration?.type==='beta-essential-2026'?{...p.hidroboxConfiguration}:null;programFamily='';groups=[];groupsLoading=true;groupsError='';
  for(const key of Object.keys(universalDraft))delete universalDraft[key];
  root.HydroHidroboxPanelSpotUI?.reset?.();
+ root.HydroHidroboxFSUI?.reset?.();
  const existing=HIDROBOX_ALL_OFFICIAL.find(x=>norm(x.name)===norm(p?.collection)||norm(x.key)===norm(p?.collection));
  const requested=CATEGORY.find(x=>x.key===requestedCategory);
  cat=requested?.key||existing?.category||'receveurs';
