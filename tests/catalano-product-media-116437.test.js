@@ -15,7 +15,7 @@ function tile(codes,href,photos){
  '" data-default-thumb="'+photos[0]+'"><img src="'+photos[0]+'"></div></a></div>';
 }
 const html='<main>'+tile('05 1950 1001,05 1950 1021','bidet-sfera-50',[BIDET,BIDET_COLOR])+
- tile('05 1155 0001','wc-sfera-55-wall-hung-up-fix',[WC])+
+ tile('05 1165 0001','wc-sfera-55-wall-hung-up-fix',[WC])+
  tile('05 3301 0001','sfera-cistern',['https://www.catalano.it/wp-content/uploads/2025/03/CATALANO_Sfera_55_sospesi.webp'])+
  '</main>';
 test('Photo source: SKU extracted from manufacturer URL and validated with supplier data-codes',()=>{
