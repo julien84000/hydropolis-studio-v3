@@ -1,0 +1,16 @@
+{
+  "description": "Captures 3D constructeur uniquement après validation stricte de la référence, des dimensions et de la couleur affichées dans le configurateur Bette. Échantillon confirmé par examen du configurateur le 1 novembre 2026.",
+  "requests": [
+    {
+      "reference": "8300-000",
+      "model": "BetteStarlet I",
+      "lengthMm": 1650,
+      "widthMm": 750,
+      "color": "Blanc",
+      "colorCode": "000",
+      "productId": "11584",
+      "variantId": "11585",
+      "sourceUrl": "https://www.my-bette.com/fr/configurator?variant=11585&product=11584"
+    }
+  ]
+}
