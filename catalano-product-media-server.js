@@ -9,13 +9,22 @@ const cheerio=require('cheerio');
 const path=require('path');
 const fs=require('fs');
 const ROOT='https://www.catalano.it';
+// Catalano nests shower trays and bathtubs under a combined parent collection.
+// The flat URLs imported from the price-list are NOT live collection pages.
+const OFFICIAL_URLS={
+ 'H3 Ceramic':ROOT+'/en/all-collections/shower-trays-bathtubs/h3-ceramic/',
+ 'H3 Planar':ROOT+'/en/all-collections/shower-trays-bathtubs/h3-planar-ceramic/',
+ 'H3 Solid':ROOT+'/en/all-collections/shower-trays-bathtubs/h3-solid/',
+ 'H 4,5 Ceramic':ROOT+'/en/all-collections/shower-trays-bathtubs/shower-tray-h4-5/',
+ 'Vasca':ROOT+'/en/all-collections/shower-trays-bathtubs/solid-bathtubs/'
+};
 const PRODUCTS=JSON.parse(fs.readFileSync(path.join(__dirname,'public/catalog_catalano.json'),'utf8'));
 const COLLECTIONS=Object.fromEntries([...new Set(PRODUCTS.map(x=>x.collection))].map(name=>{
  const p=PRODUCTS.find(x=>x.collection===name);
  const catalog=String(p.manufacturerUrl||'');
- return [name,catalog.startsWith(ROOT+'/en/all-collections/')?catalog:
+ return [name,OFFICIAL_URLS[name]||(catalog.startsWith(ROOT+'/en/all-collections/')?catalog:
   name==='Vasca'?ROOT+'/en/bathtubs/':
-  name==='Accessori Vari'?ROOT+'/en/accessories/':''];
+  name==='Accessori Vari'?ROOT+'/en/accessories/':'')];
 }));
 const BY_REF=new Map(PRODUCTS.map(p=>[p.reference,p]));
 const cache=new Map(),inflight=new Map(),TTL=6*60*60*1000;
@@ -45,7 +54,7 @@ function allowedPhoto(url){
 }
 function photoReference(url){
  if(!allowedPhoto(url))return '';
- const name=decodeURIComponent(new URL(url).pathname.split('/').pop()||'').replace(/-600x600(?=\.)/,'');
+ const name=decodeURIComponent(new URL(url).pathname.split('/').pop()||'').replace(/-\d{2,4}x\d{2,4}(?=\.)/,'');
  const normal=name.match(/(?:^|[_-])(\d{10})(?=\.(?:webp|png|jpe?g)$)/i);
  if(normal)return normal[1];
  const dashed=name.match(/(?:^|[_-])(\d{2})-(\d{4})-(\d{4})(?=\.(?:webp|png|jpe?g)$)/i);
@@ -59,6 +68,12 @@ function parseCollection(html,collection){
   const href=box.find('a[href*="/en/products/"]').first().attr('href')||'';
   const thumb=box.find('.product-thumb').first();
   let variants=[];try{variants=JSON.parse(thumb.attr('data-thumbs')||'[]')}catch{}
+  // Official static tiles sometimes expose only the reference-stamped default
+  // product image; the same SKU-on-card AND SKU-in-filename check applies.
+  if(!variants.length){
+   const fallback=thumb.attr('data-default-thumb')||thumb.find('img').first().attr('data-src')||thumb.find('img').first().attr('src')||'';
+   if(fallback)variants=[{image_url:fallback}];
+  }
   if(!variants.length)return;
   if(!href.startsWith(ROOT+'/en/products/'))return;
   for(const item of variants){

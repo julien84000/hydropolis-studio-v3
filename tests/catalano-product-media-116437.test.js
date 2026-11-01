@@ -77,3 +77,38 @@ test('Gallery photos remain only in collection rail and cannot surface via outda
  assert.match(sw,/catalano-product-media\.js/);
  assert.match(app,/launchCatalanoConfigurator/);
 });
+
+test('Nested Catalano H3 shower tray and bathtub collections use verified live manufacturer URLs',()=>{
+ assert.equal(server.COLLECTIONS['H3 Ceramic'],'https://www.catalano.it/en/all-collections/shower-trays-bathtubs/h3-ceramic/');
+ assert.equal(server.COLLECTIONS['H3 Planar'],'https://www.catalano.it/en/all-collections/shower-trays-bathtubs/h3-planar-ceramic/');
+ assert.equal(server.COLLECTIONS['H3 Solid'],'https://www.catalano.it/en/all-collections/shower-trays-bathtubs/h3-solid/');
+ assert.equal(server.COLLECTIONS['H 4,5 Ceramic'],'https://www.catalano.it/en/all-collections/shower-trays-bathtubs/shower-tray-h4-5/');
+ assert.equal(server.COLLECTIONS['Vasca'],'https://www.catalano.it/en/all-collections/shower-trays-bathtubs/solid-bathtubs/');
+});
+
+test('H3 Solid official product tile gives actual SKU image and same model fallback only',async()=>{
+ const src='https://www.catalano.it/wp-content/uploads/2025/03/H3_SOLID_100x130_7141310021-300x300.webp';
+ assert.equal(server.photoReference(src),'7141310021','scaled manufacturer photos preserve supplier SKU');
+ assert.equal(client.imageCode(src),'7141310021');
+ assert(row('7141310021'),'Source-priced H3 Solid white model exists');
+ const html=('<main>'+tile('71 4131 0021,71 4131 0022','h3-solid-130x100',[src])+'</main>').padEnd(600);
+ let requested='';
+ const service=server.createService({get:async url=>{requested=url;return {data:html}}});
+ const collection=await service.collection('H3 Solid');
+ assert.equal(requested,server.COLLECTIONS['H3 Solid']);
+ assert.equal(collection.exact['7141310021'].image,src);
+ client.clear();client.setFixture('H3 Solid',{...collection,ok:true});
+ assert.equal(client.get(row('7141310021')).scope,'exact');
+ assert.equal(client.get(row('7141310022')).scope,'model');
+ assert.equal(client.get(row('7140880021')).scope,'missing','Different tray dimensions must not reuse a 130×100 image');
+ client.clear();
+});
+
+test('Static manufacturer thumbnail is safe only if reference matches both tile and image',()=>{
+ const src='https://www.catalano.it/wp-content/uploads/2025/03/H3_SOLID_100x130_7141310021.webp';
+ const markup='<div class="products-grid-item" data-codes="71 4131 0021"><a href="https://www.catalano.it/en/products/shower-trays/h3-solid-130x100/"><div class="product-thumb"><img src="'+src+'"></div></a></div>';
+ const found=server.parseCollection(markup,'H3 Solid');
+ assert.equal(found.exact['7141310021'].image,src);
+ const wrong=server.parseCollection(markup.replace('71 4131 0021','71 4141 0021'),'H3 Solid');
+ assert.equal(Object.keys(wrong.exact).length,0);
+});
