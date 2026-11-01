@@ -54,7 +54,7 @@ function allowedPhoto(url){
 }
 function photoReference(url){
  if(!allowedPhoto(url))return '';
- const name=decodeURIComponent(new URL(url).pathname.split('/').pop()||'').replace(/-600x600(?=\.)/,'');
+ const name=decodeURIComponent(new URL(url).pathname.split('/').pop()||'').replace(/-\d{2,4}x\d{2,4}(?=\.)/,'');
  const normal=name.match(/(?:^|[_-])(\d{10})(?=\.(?:webp|png|jpe?g)$)/i);
  if(normal)return normal[1];
  const dashed=name.match(/(?:^|[_-])(\d{2})-(\d{4})-(\d{4})(?=\.(?:webp|png|jpe?g)$)/i);
