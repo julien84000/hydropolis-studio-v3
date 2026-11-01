@@ -89,6 +89,7 @@ require("./galassia-technical-server")(app);
 require("./hidrobox-configurator-server")(app);
 require("./bette-official-media-server")(app);
 require("./hotbath-live-media-server")(app);
+require("./hotbath-italian-media-server")(app);
 require("./catalano-product-media-server")(app);
 app.use(express.static(path.join(__dirname,"public")));
 require("./tariff-server")(app);
