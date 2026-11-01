@@ -33,7 +33,7 @@ function imageFor(p,photoResolver){
  const photo=typeof photoResolver==='function'?photoResolver(p):'';
  if(typeof photo==='string'&&/^(?:https:\/\/|\/api\/|\/images\/)/.test(photo))return {src:photo,scope:'model'};
  if(typeof p?.image==='string'&&/^(?:https:\/\/|\/api\/|\/images\/)/.test(p.image))return {src:p.image,scope:'model'};
- const fallback=root?.HydroCatalanoGallery?.family?.(p?.collection);
+ const fallback=galleryApi?.family?.(p?.collection);
  return fallback?{src:fallback.image,scope:'collection'}:{src:'',scope:'missing'};
 }
 function open(initial,roomId,rows,onAdd,photoResolver,photoLoader){
