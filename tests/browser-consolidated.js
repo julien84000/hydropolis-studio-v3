@@ -402,7 +402,7 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
         purchase:(p?purchaseCostFor(p):0)+(c?purchaseCostFor(c):0),
         discount:p?.purchaseDiscount,bodyDiscount:c?.purchaseDiscount};
     });
-    check('Hotbath CB009 : deux lignes de devis, remises effectives et coût net',
+    check('Hotbath CB009 : deux lignes de devis, remises effectives et coût net '+JSON.stringify(cb009Quote),
       cb009Quote.parent&&cb009Quote.body&&cb009Quote.public===1216&&
       Math.abs(cb009Quote.purchase-547.2)<.02&&
       cb009Quote.discount===55&&cb009Quote.bodyDiscount===55);
