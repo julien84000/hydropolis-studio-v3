@@ -12,7 +12,7 @@ function trustedImage(url){
 }
 function imageCode(url){
  if(!trustedImage(url))return '';
- const filename=decodeURIComponent(new URL(url).pathname.split('/').pop()).replace(/-600x600(?=\.)/,'');
+ const filename=decodeURIComponent(new URL(url).pathname.split('/').pop()).replace(/-\d{2,4}x\d{2,4}(?=\.)/,'');
  const m=filename.match(/(?:^|[_-])(\d{10})(?=\.(webp|png|jpe?g)$)/i);
  if(m)return m[1];
  const dashed=filename.match(/(?:^|[_-])(\d{2})-(\d{4})-(\d{4})(?=\.(webp|png|jpe?g)$)/i);
