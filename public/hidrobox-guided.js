@@ -734,8 +734,21 @@ function restoreHidroboxSelection(g){
  if(selectedModel)universalDraft.traySubmodel=selectedModel;
  const saved=original?.hidroboxConfiguration||{};
  const width=Number(saved.widthCm||saved.selectedWidthCm),length=Number(saved.lengthCm||saved.selectedLengthCm);
- if(Number.isInteger(width)&&width>0)universalDraft.exactwidth=width;
+ if(Number.isFinite(width)&&width>0)universalDraft.exactwidth=width;
  if(Number.isInteger(length)&&length>0)universalDraft.exactlength=length;
+ const planApi=root.HydroHidroboxMeasuredPlans2026;
+ if(planApi?.appliesExact(g.collection||g.id)){
+   const verified=planApi.detail(g.collection||g.id,found);
+   if(verified){
+     universalDraft.exactwidth=Number(saved.widthCm)||verified.widthMin;
+     universalDraft.exactlength=Number(saved.lengthCm)||verified.lengthMin;
+     universalDraft.exactheight=Number(saved.heightCm)||verified.heightMin;
+     universalDraft.material=verified.material;universalDraft.finish=verified.finish;
+     universalDraft.colorGroup=verified.colorGroup;
+     universalDraft.customColor=saved.color||saved.selectedColour||(verified.colorGroup==='BLA'?'Blanc':'Bianco');
+     universalDraft.specialColorCode=verified.colorGroup==='SPE'?(saved.color||''):'';
+   }
+ }
  if(saved.color||saved.selectedColour)universalDraft.showerColor=saved.color||saved.selectedColour;
  if(saved.scenePlusColour){
    universalDraft.scenePlusGroup=saved.scenePlusColour.group||'BLA';
