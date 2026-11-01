@@ -232,6 +232,26 @@ function openHotbath(rows,roomId,onAdd){
      if(variant?.finishCode)requestMedia(current,variant.finishCode);
      if(!photoFor(current))requestMedia(current);
    }
+   // Even a formerly verified CDN URL can expire: retry its exact model on
+   // the current manufacturer product page after an actual image-load error.
+   target.querySelectorAll('.mg-products .mg-tile').forEach(button=>{
+     const img=button.querySelector('img');
+     if(img)img.addEventListener('error',()=>requestMedia(button.dataset.value),{once:true});
+   });
+   target.querySelectorAll('.mg-categories .mg-tile').forEach(button=>{
+     const img=button.querySelector('img');
+     if(img)img.addEventListener('error',()=>{
+       const cat=list().find(c=>(c.id||c.label)===button.dataset.value);
+       const candidates=officialModels(collection,cat,prices).slice(0,3);
+       candidates.forEach(m=>requestMedia(m));
+     },{once:true});
+   });
+   const detailImg=target.querySelector('.mg-detail .mg-photo img');
+   if(detailImg)detailImg.addEventListener('error',()=>{
+     const variant=current?.variants?.find(v=>v.reference===chosen)||current?.variants?.[0];
+     if(variant?.finishCode)requestMedia(current,variant.finishCode);
+     if(current)requestMedia(current);
+   },{once:true});
    target.querySelectorAll('[data-step]').forEach(button=>button.onclick=()=>{
      const stage=button.dataset.step;
      if(stage==='collections'){phase=stage;collection='';category=null;current=null;}
