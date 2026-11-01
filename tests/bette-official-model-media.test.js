@@ -71,7 +71,7 @@ test('Bette configurator UI loads model photos, keeps real supplier SKU pricing 
  assert.match(js,/fetchBettePicture\(g,exact\)/);
  assert.match(js,/officialBettePreview\(g,exact\)/);
  assert.match(js,/modelPhotos\.get\(bettePictureKey\(g,selected\)\)/);
- assert.match(js,/imageFinishMatch:media\.image\?'exact':officialModel\?\.image\?'model-only'/);
+ assert.match(js,/imageFinishMatch:exactRender\?\.image\?'exact-3d':media\.image\?'exact':officialModel\?\.image\?'model-only'/);
  assert.match(js,/verifiedPublicPrice\('Bette',selected\)/);
  assert.match(html,/bette-model-media\.js\?v=__APP_VERSION__/);
  assert.match(sw,/bette-model-media\.js/);
