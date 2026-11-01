@@ -63,6 +63,7 @@ function fs(g,ctx){
      '<small>Les modèles R/L restent distincts pour la commande ; une photo constructeur ne prouve pas systématiquement son orientation.</small></div></div>'+
    '<h4 class="hidrobox-universal-subtitle">1 · Forme de vasque FS</h4><div class="hb-fs-model-grid">'+cards+'</div>'+
    '<h4 class="hidrobox-universal-subtitle">2 · Matière</h4><div class="hb-fs-axis-grid">'+materialCards+'</div>'+
+   '<p class="hidrobox-guide-note">Kromat coloré : uniquement FS 19 et FS 23 selon les références WFSC du tarif France 2026. Les autres FS sont en Scene blanc ; leurs teintes extérieures sont une option distincte.</p>'+
    '<h4 class="hidrobox-universal-subtitle">3 · Texture</h4><div class="hidrobox-fixed-attribute"><strong>Lisse</strong><span>Texture constructeur FS</span></div>'+
    '<h4 class="hidrobox-universal-subtitle">4 · Couleur</h4><div class="hb-fs-axis-grid">'+tiers+'</div>'+swatches+
    (selected.colorGroup==='SPE'?'<label class="hb-fs-code-label">Référence couleur exacte RAL / NCS<input type="text" id="hbFsSpecialCode" placeholder="RAL 9001 ou NCS S 0500-N" value="'+E(s.code)+'"></label>':'')+
