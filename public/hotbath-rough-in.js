@@ -56,12 +56,9 @@ function linkCatalog(rows){
   if(p?.manufacturer!=='Hotbath'||!trim(p))continue;
   if(p.internalReference&&Number(p.internalPrice)>0){report.already++;continue}
   const candidates=index.get(modelCode(p))||[];
-  // A duplicate mention in two body descriptions is not authorization.
-  // Prefer an exact numeric model match ONLY if it removes the ambiguity.
-  const model=modelCode(p),numbers=model.match(/\d+[A-Z]*$/),n=numbers?.[0]||'';
-  const ranked=candidates.length>1?candidates.filter(b=>
-    norm(b.reference).endsWith(n)&&n.length>0):candidates;
-  const unique=ranked.length===1?ranked[0]:null;
+  // When multiple manufacturer body descriptions list the same trim model,
+  // compatibility is ambiguous; never infer from a similar body code.
+  const unique=candidates.length===1?candidates[0]:null;
   if(!unique){
    p.roughInRequirement={required:true,reference:'',reason:candidates.length>1?'ambiguous':'not-listed'};
    if(candidates.length>1)report.ambiguous++;else report.unresolved++;
