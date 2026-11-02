@@ -53,6 +53,9 @@ function open(rows,roomId,onAdd,initial){
  .amphora-finish.active{border:2px solid #9b6c42;background:#fff5ec}
  .amphora-add{width:100%;background:#245747;color:white;padding:15px;border:0;border-radius:7px;cursor:pointer;margin-top:14px}
  .amphora-note{color:#775b42;font-size:12px;line-height:1.45}
+ .amphora-rough-in{border:1px solid #b88853;background:#fff5ec;border-radius:8px;padding:12px;margin:12px 0}
+ .amphora-rough-in p{margin:8px 0}
+ .amphora-rough-in small{color:#6d4d35}
  @media(max-width:850px){.amphora-body{grid-template-columns:110px minmax(0,1fr)}.amphora-detail{grid-column:1/-1;max-height:44vh;border-top:1px solid #ddd}.amphora-shell{overflow:auto}}
  `;
  overlay.append(style);
@@ -80,15 +83,25 @@ function open(rows,roomId,onAdd,initial){
   if(!m){$('.amphora-detail').textContent='Choisissez un modèle.';return;}
   if(!m.variants.some(x=>x.reference===ref))ref=m.variants.find(x=>x.finishCode==='BS')?.reference||m.variants[0].reference;
   const p=m.variants.find(x=>x.reference===ref),img=officialImages.get(ref)||'';
+  const roughIn=root?.HydroAmphoraRoughIn?.resolve?.(p,rows)||{required:/\\.EXT\\./.test(p.reference),priced:false,reason:'Correspondance fabricant non chargée'};
+  const requiredBody=roughIn.required&&roughIn.priced?root.HydroAmphoraRoughIn.bodyRecord(p,roughIn):null;
+  const compositePrice=Number(p.price)+(requiredBody?Number(requiredBody.price):0);
   const sorted=[...m.variants].sort((a,b)=>finishes.indexOf(a.finishCode)-finishes.indexOf(b.finishCode));
   $('.amphora-detail').innerHTML=(img?'<img class="amphora-photo" src="'+esc(img)+'" alt="'+esc(m.base)+'">':'<p>Photo non disponible</p>')+
    '<h3>'+esc(m.designation)+'</h3><p>Modèle '+esc(m.base)+'</p>'+
    '<strong>Finition et tarif public HT</strong>'+
    sorted.map(v=>'<button class="amphora-finish '+(v.reference===ref?'active':'')+'" data-ref="'+esc(v.reference)+'"><b>'+esc(v.finish)+'</b><br><small>'+esc(v.reference)+'</small><br><strong>'+euro(v.price)+' HT</strong></button>').join('')+
-   '<p><b>Référence :</b> '+esc(p.reference)+'</p><p><b>Prix public HT :</b> '+euro(p.price)+'</p><p><b>Remise fournisseur :</b> 50 %</p><p><b>Prix d’achat HT :</b> '+euro(p.price*.5)+'</p>'+
+   '<p><b>Référence :</b> '+esc(p.reference)+'</p><p><b>Partie extérieure public HT :</b> '+euro(p.price)+'</p>'+
+   (roughIn.required?
+    '<div class="amphora-rough-in"><strong>Corps d’encastrement nécessaire</strong>'+
+     '<p>Référence '+esc(roughIn.reference||'à confirmer')+'</p>'+
+     (requiredBody?'<p>Prix public HT : <b>'+euro(requiredBody.price)+'</b></p><small>Inclus automatiquement dans la configuration · ligne séparée au devis</small>':
+       '<p class="amphora-note">'+esc(roughIn.reason||'Prix fabricant non vérifié')+'</p>')+'</div>':'')+
+   '<p><b>Total configuration HT :</b> '+euro(compositePrice)+'</p><p><b>Remise fournisseur :</b> 50 %</p><p><b>Coût d’achat total HT :</b> '+euro(compositePrice*.5)+'</p>'+
    '<p class="amphora-note amphora-image-status">'+(img?'Photo fabricant vérifiée pour cette finition.':'Recherche de la photo exacte de cette finition…')+'</p><p class="amphora-note">Franco de port dès 500 € HT d’achat fournisseur cumulé ; sinon 50 € de port par commande. Tarif REEL 2024 à actualiser. Aucun accessoire ajouté sans justification fabricant.</p>'+
    (p.manufacturerUrl?'<a href="'+esc(p.manufacturerUrl)+'" target="_blank" rel="noopener noreferrer">Voir la fiche fabricant</a>':'')+
-   '<button class="amphora-add" '+(busy?'disabled':'')+'>Ajouter au projet</button>';
+   '<button class="amphora-add" '+(busy||roughIn.required&&!requiredBody?'disabled':'')+'>'+
+     (roughIn.required&&!requiredBody?'Corps obligatoire à confirmer':'Ajouter la configuration au projet')+'</button>';
   overlay.querySelectorAll('[data-ref]').forEach(b=>b.onclick=()=>{ref=b.dataset.ref;render()});
   // Update the selected image only: never replace a newer selection with a stale request.
   if(!officialImages.has(ref)){
@@ -106,7 +119,16 @@ function open(rows,roomId,onAdd,initial){
    });
   }else if(!img){const status=$('.amphora-image-status');if(status)status.textContent='Photo de cette finition indisponible chez le fabricant ; aucun visuel générique affiché.';}
 
-  $('.amphora-add').onclick=async()=>{if(busy)return;busy=true;$('.amphora-add').disabled=true;try{await onAdd({...p,purchaseDiscount:50,amphoraShippingThresholdHT:500,amphoraShippingBelowThresholdHT:50,...(officialImages.get(p.reference)?{image:officialImages.get(p.reference),imageSource:'Amphora officiel · finition exacte'}:{image:'',imageSource:'Photo de finition non vérifiée'})},roomId);close()}catch(e){busy=false;alert('Amphora : '+(e.message||e));render()}};
+  $('.amphora-add').onclick=async()=>{
+   if(busy||roughIn.required&&!requiredBody)return;
+   busy=true;$('.amphora-add').disabled=true;
+   try{
+    await onAdd({...p,totalPrice:Number(p.price),purchaseDiscount:50,amphoraShippingThresholdHT:500,amphoraShippingBelowThresholdHT:50,
+      ...officialImages.get(p.reference)?{image:officialImages.get(p.reference),imageSource:'Amphora officiel · finition exacte'}:{image:'',imageSource:'Photo de finition non vérifiée'}},
+     requiredBody,roomId);
+    close();
+   }catch(e){busy=false;alert('Amphora : '+(e.message||e));render()}
+  };
  }
  $('.amphora-search').oninput=e=>{search=e.target.value;render()};
  render();return Promise.resolve(true);
