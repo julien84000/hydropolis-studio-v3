@@ -220,6 +220,8 @@
     '<label>Finition des profilés<select class="radaway-profile"></select></label>'+
     '<label>Épaisseur du verre<select class="radaway-thickness"></select></label>'+
     '<label>Type de verre<select class="radaway-glass"></select></label>'+
+    '<label>Nombre de côtés vitrés<input type="number" class="radaway-glass-sides" min="1" max="8" value="1"></label>'+
+    '<div class="wide radaway-glass-extra">Plus-value éventuelle : sélectionnez le verre et son épaisseur.</div>'+
     '<p class="wide radaway-spec-note"></p>'+
     '<label class="wide">Référence et dimension du tarif 2026<select class="radaway-tariff-variant"><option value="">Choisir une référence tarifée</option></select></label>'+
     '<div class="wide radaway-file-import"><span class="radaway-tariff-status">Tarif Radaway 2026 non chargé</span>'+
@@ -259,6 +261,7 @@
    };
    $('.radaway-thickness').onchange=()=>updateGlassNote();
    $('.radaway-glass').onchange=()=>updateGlassNote();
+   $('.radaway-glass-sides').oninput=()=>updateGlassNote();
    updateMetadata();
    updateTariff();
    $('.radaway-tariff-file').onchange=async e=>{
@@ -275,9 +278,18 @@
     if(matched){
       $('.radaway-sku').value=matched.r;
       $('.radaway-price').value=matched.p;
+      $('.radaway-price').dataset.excelPublic=String(matched.p);
       $('.radaway-price').dataset.excelPurchase=String(matched.a);
-      $('.radaway-spec-note').textContent='Tarif 2026 : '+matched.d+' · '+euro(matched.p)+' HT public · '+euro(matched.a)+' HT achat fournisseur.';
-    }else $('.radaway-price').dataset.excelPurchase='';
+      $('.radaway-price').dataset.manuallyEdited='false';
+      updateGlassNote();
+    }else {
+      $('.radaway-price').dataset.excelPurchase='';
+      $('.radaway-price').dataset.excelPublic='';
+    }
+   };
+   $('.radaway-price').oninput=()=>{
+     $('.radaway-price').dataset.manuallyEdited='true';
+     $('.radaway-price').dataset.excelPurchase='';
    };
    $('.radaway-add').onclick=async()=>{
     if(busy)return;
@@ -285,8 +297,11 @@
     const sku=$('.radaway-sku').value.trim();
     const thickness=Number($('.radaway-thickness').value),profile=$('.radaway-profile').selectedOptions[0]?.textContent||'À confirmer',
       glass=$('.radaway-glass').value||'À confirmer',
-      pricedSource=tariff()?.exact(sku),exactPrice=pricedSource&&Math.abs(Number(pricedSource.p)-price)<.001;
-    if(!Number.isFinite(thickness)||![6,8,10].includes(thickness)||!glass||!profile){
+      pricedSource=tariff()?.exact(sku),sides=Number($('.radaway-glass-sides').value)||1,
+      surcharge=productOptions()?.glassSurcharge(glass,thickness,sides)||{verified:false,publicHT:0,purchaseHT:0},
+      exactPrice=pricedSource&&surcharge.verified&&
+        Math.abs(Number(pricedSource.p)+surcharge.publicHT-price)<.001;
+    if(!Number.isFinite(thickness)||![6,8,10].includes(thickness)||!glass||!profile||sides<1||sides>8){
      $('.radaway-error').textContent='Indiquer l’épaisseur, la finition du profilé et le type de verre.';return;
     }
     const w=$('.radaway-width').value.trim(),h=$('.radaway-height').value.trim();
@@ -294,18 +309,23 @@
     if((w&&(!Number.isFinite(+w)||+w<30||+w>350))||(h&&(!Number.isFinite(+h)||+h<50||+h>350))){
      $('.radaway-error').textContent='Vérifier les dimensions saisies.';return;
     }
+    if(glass!=='Transparent'&&!surcharge.verified&&hasPrice){
+      $('.radaway-error').textContent='Plus-value '+glass+' '+thickness+' mm absente du tarif. Demander le prix au fabricant avant de chiffrer.';return;
+    }
     const pending=!hasPrice;
     const record={...selected,reference:sku||selected.reference,manufacturerReference:sku,
      radawayInternalSelectionId:selected.reference,
      designation:selected.designation+(w?' · L '+w+' cm':'')+(h?' · H '+h+' cm':''),
      price,totalPrice:price,purchaseDiscount:50,
-     purchasePrice:exactPrice?pricedSource.a:Math.ceil(price*.5),
-     pricingStatus:pending?'quote-required':'manufacturer-quote-manual',
-     pricingSource:pending?'Radaway : devis à obtenir':'Chiffrage fabricant saisi manuellement',
+     purchasePrice:exactPrice?pricedSource.a+surcharge.purchaseHT:Math.ceil(price*.5),
+     pricingStatus:pending?'quote-required':exactPrice?'radaway-excel-2026':'manufacturer-quote-manual',
+     pricingSource:pending?'Radaway : devis à obtenir':exactPrice?'RADAWAY_SHOWROOMS_TARIF 02022026.xlsx':'Chiffrage fabricant saisi manuellement',
      radawayPendingQuote:pending,hideFromDossier:pending,
      image:photoFor(selected)||'',imageSource:'radaway.fr · photo du modèle et de sa finition',imageFinishMatch:'manufacturer-model',
      radawayConfiguration:{model:selected.designation,type:selected.productType,collection:selected.collection,
       finish:selected.finish,profileFinish:profile,glassType:glass,glassThicknessMm:thickness,
+      glassSides:sides,glassSupplementHT:surcharge.verified?surcharge.publicHT:0,
+      glassSupplementPurchaseHT:surcharge.verified?surcharge.purchaseHT:0,
       manufacturerGlassVerified:(metaFor(selected).thicknessOptions||[]).includes(thickness),
       tariffSource:exactPrice?'RADAWAY_SHOWROOMS_TARIF 02022026.xlsx':'Prix vérifié manuellement',
       widthCm:w?Number(w):null,heightCm:h?Number(h):null,opening:$('.radaway-side').value,
@@ -323,6 +343,21 @@
    if(!note)return;
    note.textContent=(meta?.thicknessOptions?.includes(thick)?'Épaisseur confirmée par la fiche fabricant. ':'Épaisseur à confirmer pour cette référence. ')+
      (meta?.glassOptionsVerified?'Type de verre disponible sur le modèle.':'Type de verre à faire confirmer sur le configurateur officiel ou le tarif.');
+   const sides=Number($('.radaway-glass-sides')?.value)||1;
+   const extra=opts?.glassSurcharge(glass,thick,sides);
+   const line=$('.radaway-glass-extra');
+   if(line)line.textContent=extra?.verified?
+    ('Plus-value verre : '+euro(extra.publicHT)+' HT public · '+euro(extra.purchaseHT)+' HT achat'+
+      (extra.publicHT?' ('+sides+' côté(s))':' — sans supplément')) :
+    (extra?.reason||'Plus-value du verre à confirmer.');
+   const priceField=$('.radaway-price');
+   const source=tariff()?.exact($('.radaway-tariff-variant')?.value);
+   if(priceField&&source&&priceField.dataset.manuallyEdited!=='true'&&extra?.verified){
+     priceField.value=(Number(source.p)+extra.publicHT).toFixed(2);
+     priceField.dataset.excelPurchase=String(Number(source.a)+extra.purchaseHT);
+     priceField.dataset.excelPublic=String(source.p);
+     if(note)note.textContent+=' Référence tarifaire : '+source.r+' · '+euro(source.p)+' HT public de base.';
+   }
   }
   function updateMetadata(){
    if(!selected||!$('.radaway-thickness'))return;
