@@ -96,3 +96,18 @@
 .nax-plan-variant small{font-size:10px;line-height:1.2;color:#73685d}
 .nax-plan-variant strong{font-size:11px;color:#80562c}
 @media(max-width:730px){.nax-plan-variants{grid-template-columns:1fr}}
+
+/* Photo-based Naxani countertop basin selection, manufacturer product pages 2026. */
+.nax-countertop-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;max-height:365px;overflow-y:auto;padding:2px}
+.nax-countertop-card{font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;min-width:0;padding:5px;background:#fff;border:1px solid #d4c8b9;border-radius:7px;cursor:pointer;touch-action:manipulation}
+.nax-countertop-card:hover{border-color:#37805c;background:#f5f8f4}
+.nax-countertop-card.active{border:2px solid #276149;background:#edf6ef}
+.nax-countertop-card:focus-visible{outline:3px solid #b68d55;outline-offset:2px}
+.nax-countertop-photo{height:105px;width:100%;display:flex;align-items:center;justify-content:center;background:#f4f1ec;overflow:hidden;border-radius:4px}
+.nax-countertop-photo img{height:100%;width:100%;object-fit:cover}
+.nax-countertop-photo .nax-pictogram{height:75px;width:100%;max-width:130px}
+.nax-countertop-card b{font-size:12px;line-height:1.2}
+.nax-countertop-card small{font-size:9px;color:#74685d}
+.nax-countertop-gallery{display:flex;gap:5px;overflow-x:auto;padding:3px 0}
+.nax-countertop-gallery img{width:80px;height:85px;object-fit:cover;border-radius:5px;border:1px solid #ddd0c1;flex:none}
+@media(max-width:730px){.nax-countertop-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.nax-countertop-photo{height:80px}}
