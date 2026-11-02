@@ -33,6 +33,17 @@
       }
       destination.items.push(item);
     }
+    // V12 dossier-only ordering: visually reorder within an individual page.
+    // Never change project product order, pricing or quotation line order.
+    if(layout.orders && typeof layout.orders==='object'){
+      for(const page of pages){
+        const recorded=layout.orders[page.key];
+        if(!Array.isArray(recorded)||!recorded.length)continue;
+        const lookup=new Map(recorded.map((id,index)=>[String(id),index]));
+        const original=new Map(page.items.map((item,index)=>[String(item.id),index]));
+        page.items.sort((a,b)=>(lookup.has(String(a.id))?lookup.get(String(a.id)):1e6+original.get(String(a.id)))-(lookup.has(String(b.id))?lookup.get(String(b.id)):1e6+original.get(String(b.id))));
+      }
+    }
     return {pages:pages.filter(page=>page.items.length).sort((a,b)=>groups.indexOf(a.group)-groups.indexOf(b.group)||Number(a.key.slice(a.group.key.length+1))-Number(b.key.slice(b.group.key.length+1))),origins};
   }
   return {plan};
