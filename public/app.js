@@ -3077,9 +3077,16 @@ function projectPurchaseCost(){
 }
 function negotiatedSupplierFreight(){
   const items=(state.selected||[]).filter(isRealSelectedProduct).map(p=>({
-    manufacturer:p.manufacturer,netPurchase:purchaseCostFor(p),quantity:itemQuantity(p)
+    manufacturer:p.manufacturer,netPurchase:purchaseCostFor(p),quantity:itemQuantity(p),
+    heightCm:Number(p.radawayConfiguration?.heightCm||0),
+    fixedPanelWidthCm:Number(p.radawayConfiguration?.fixedPanelWidthCm||0),
+    isFixedPanel:!!p.radawayConfiguration?.fixedPanel
   }));
-  return window.HydroSupplierFreight?.calculate(items)||{total:0,byManufacturer:{},naxaniFreightPending:false,naxaniWarning:''};
+  const postcode=String(state.project?.location||'').match(/\b(\d{5})\b/)?.[1]||'';
+  const department=String(state.commercial?.radawayDeliveryDepartment||
+    (postcode&&!postcode.startsWith('20')?postcode.slice(0,2):'')).toUpperCase();
+  return window.HydroSupplierFreight?.calculate(items,{department})||
+    {total:0,byManufacturer:{},naxaniFreightPending:false,naxaniWarning:''};
 }
 function projectFinancials(){
   const productList=selectedCatalogTotal();
@@ -3325,6 +3332,7 @@ function renderMarginDashboard(){
     warn.innerHTML=(missing.length?`<b>À compléter :</b> remise fournisseur non renseignée pour ${missing.join(", ")}. `:"")+
       (f.negotiatedFreight.naxaniFreightPending?`<b>Port Naxani à confirmer :</b> le mémo indique simultanément « franco 1 000 € » et « si &gt; 1 000 € : 55 €/65 € ». Le miroir seul est indiqué à 75 €. Aucun port Naxani automatique calculé. `:""); 
     if(radawayPending)warn.innerHTML+=`<b>Radaway :</b> ${radawayPending} article(s) sans prix fournisseur, masqué(s) dans le dossier client. `;
+    if(f.negotiatedFreight.radawayFreightPending)warn.innerHTML+=`<b>Transport Radaway :</b> ${f.negotiatedFreight.radawayWarning} `;
   }
 
   const detail=$("#marginByManufacturer");
