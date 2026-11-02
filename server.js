@@ -91,6 +91,7 @@ require("./bette-official-media-server")(app);
 require("./hotbath-live-media-server")(app);
 require("./hotbath-italian-media-server")(app);
 require("./catalano-product-media-server")(app);
+require("./dornbracht-media-server")(app);
 app.use(express.static(path.join(__dirname,"public")));
 require("./tariff-server")(app);
 
