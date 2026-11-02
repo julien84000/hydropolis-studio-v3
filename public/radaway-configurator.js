@@ -109,7 +109,25 @@
      img.src='/api/radaway-product-photo?slug='+encodeURIComponent(slug);
      return;
     }
-    img.style.display='none';
+    const collection=gallery()?.illustrationFor(p);
+     if(collection?.url&&img.dataset.radawayIllustration!=='1'){
+      img.dataset.radawayIllustration='1';
+      img.src=collection.url;
+      const note=img.closest('.radaway-model')?.querySelector('.radaway-image-status');
+      if(note)note.textContent='Visuel fabricant indicatif';
+      else{
+       const model=img.closest('.radaway-model');
+       if(model){const text=document.createElement('small');text.className='radaway-image-status';
+        text.textContent='Visuel fabricant indicatif';model.appendChild(text)}
+      }
+      return;
+     }
+     if(img.dataset.radawayIllustration==='1'&&img.dataset.radawayIllustrationProxy!=='1'){
+      img.dataset.radawayIllustrationProxy='1';
+      img.src='/api/radaway-curated-image?collection='+encodeURIComponent(p?.collection||'');
+      return;
+     }
+     img.style.display='none';
     const item=img.closest('.radaway-model');
     if(item&&!item.querySelector('.radaway-model-image-pending')){
      const label=document.createElement('div');
@@ -121,10 +139,20 @@
      status.textContent='Photo fabricant indisponible pour cette variante.';
    };
   }
-  function photoFor(p){return validModelPhoto(p?.image)?p.image:(mediaCache.get(p?.reference)||'')}
+  const gallery=()=>root.HydroRadawayGallery;
+  function exactPhoto(p){
+   if(!p)return '';
+   return validModelPhoto(mediaCache.get(p.reference))?mediaCache.get(p.reference):
+    gallery()?.exactFor(p)|| (validModelPhoto(p.image)?p.image:'');
+  }
+  function previewFor(p){
+   const url=exactPhoto(p);
+   return url?{url,exact:true}:gallery()?.illustrationFor(p)||null;
+  }
+  function photoFor(p){return previewFor(p)?.url||''}
   function officialPhoto(p){
    if(!p)return Promise.resolve('');
-   const known=photoFor(p);
+   const known=exactPhoto(p);
    if(known)return Promise.resolve(known);
    const ref=p.reference;
    if(mediaCache.has(ref))return Promise.resolve('');
@@ -191,7 +219,7 @@
     return '<button type="button" class="radaway-model '+(p.reference===selected?.reference?'active':'')+'" data-model="'+esc(p.reference)+'">'+
     (src?'<img loading="lazy" src="'+esc(src)+'" alt="'+esc(p.designation)+'">':
       '<div class="radaway-model-image-pending" data-photo-ref="'+esc(p.reference)+'">Photo fabricant à charger</div>')+
-    '<strong>'+esc(p.designation)+'</strong><small>'+esc(p.finish)+'</small></button>';
+    '<strong>'+esc(p.designation)+'</strong><small>'+esc(p.finish)+'</small>'+(previewFor(p)?.exact?'':'<small class="radaway-image-status">Visuel fabricant indicatif</small>')+'</button>';
    }).join('')||'<div class="radaway-guide">Aucune référence indexée pour cette forme et ces filtres. <a href="'+esc(official?.url||'https://www.radaway.fr/')+
     '" target="_blank" rel="noopener noreferrer">Consulter les modèles de cette forme chez Radaway</a></div>';
    ov.querySelectorAll('.radaway-model img').forEach(img=>{
@@ -203,30 +231,37 @@
    });
    // Every displayed model is queued. Limit concurrency rather than skipping
    // images after the twelfth tile. Deduplicate requests with mediaPending.
-   shown.filter(p=>!photoFor(p)).forEach(p=>{
+   shown.filter(p=>!exactPhoto(p)).forEach(p=>{
     const requested=p.reference;
     scheduledPhoto(p).then(src=>{
-      if(!ov.isConnected)return;
-       if(!src){
-        ov.querySelectorAll('.radaway-model [data-photo-ref]').forEach(place=>{
-         if(place.getAttribute('data-photo-ref')===requested)place.textContent='Photo fabricant indisponible';
-        });
-        return;
-       }
+     if(!ov.isConnected)return;
+     if(!src){
       ov.querySelectorAll('.radaway-model [data-photo-ref]').forEach(place=>{
-       if(place.getAttribute('data-photo-ref')!==requested)return;
-       const el=document.createElement('img');el.loading='lazy';el.alt=p.designation;el.src=src;
-       bindPhotoFallback(el,p);
-       place.replaceWith(el);
+       if(place.getAttribute('data-photo-ref')===requested)place.textContent='Photo fabricant indisponible';
       });
-      if(selected?.reference===requested){updateSelectedPhoto(src);updateMetadata();}
+      return;
+     }
+     const card=Array.from(ov.querySelectorAll('.radaway-model'))
+      .find(el=>el.getAttribute('data-model')===requested);
+     if(card){
+      const img=card.querySelector('img');
+      if(img){img.src=src;img.style.display='block';bindPhotoFallback(img,p)}
+      card.querySelectorAll('.radaway-image-status').forEach(el=>el.remove());
+     }
+     ov.querySelectorAll('.radaway-model [data-photo-ref]').forEach(place=>{
+      if(place.getAttribute('data-photo-ref')!==requested)return;
+      const el=document.createElement('img');
+      el.loading='lazy';el.alt=p.designation;el.src=src;
+      bindPhotoFallback(el,p);place.replaceWith(el);
+     });
+     if(selected?.reference===requested){updateSelectedPhoto(src);updateMetadata()}
     });
    });
   }
   function updateSelectedPhoto(src){
     if(!src||!selected||!ov.isConnected)return;
     const el=$('.radaway-detail .radaway-image');
-    if(el){el.src=src;el.style.display='block'}
+    if(el){el.src=src;el.style.display='block';bindPhotoFallback(el,selected)}
     const note=$('.radaway-image-status');
     if(note)note.textContent='Photo issue de la fiche fabricant de ce modèle';
   }
@@ -242,7 +277,7 @@
    }
    const url=targets[selected.productType]||'https://konfigurator.radaway.eu/';
    $('.radaway-detail').innerHTML='<img class="radaway-image" '+(photoFor(selected)?'src="'+esc(photoFor(selected))+'" ':'')+'alt="'+esc(selected.designation)+'">'+
-    '<div class="radaway-image-status">'+(photoFor(selected)?'Photo officielle du fabricant':'Chargement de la photo officielle…')+'</div>'+
+    '<div class="radaway-image-status">'+(previewFor(selected)?.exact?'Photo du modèle Radaway':photoFor(selected)?'Photo Radaway indicative — modèle ou finition à vérifier':'Chargement de la photo officielle…')+'</div>'+
     '<h3>'+esc(selected.designation)+'</h3><p>Collection : <b>'+esc(selected.collection)+'</b><br>Finition du modèle photographié : <b>'+esc(selected.finish)+'</b></p>'+
     '<p><a target="_blank" rel="noopener noreferrer" href="'+esc(selected.manufacturerUrl)+'">Voir le produit sur radaway.fr</a><br>'+
     '<a target="_blank" rel="noopener noreferrer" href="'+esc(url)+'">Ouvrir le configurateur officiel Radaway</a></p>'+
@@ -361,7 +396,9 @@
      pricingStatus:pending?'quote-required':exactPrice?'radaway-excel-2026':'manufacturer-quote-manual',
      pricingSource:pending?'Radaway : devis à obtenir':exactPrice?'RADAWAY_SHOWROOMS_TARIF 02022026.xlsx':'Chiffrage fabricant saisi manuellement',
      radawayPendingQuote:pending,hideFromDossier:pending,
-     image:photoFor(selected)||'',imageSource:'radaway.fr · photo du modèle et de sa finition',imageFinishMatch:'manufacturer-model',
+     image:photoFor(selected)||'',
+     imageSource:previewFor(selected)?.exact?'Radaway · photo du modèle':'Radaway · illustration de gamme (modèle ou finition à vérifier)',
+     imageFinishMatch:previewFor(selected)?.exact?'manufacturer-model':'collection-illustration',
      radawayConfiguration:{model:selected.designation,type:selected.productType,collection:selected.collection,
       finish:selected.finish,profileFinish:profile,glassType:glass,glassThicknessMm:thickness,
       glassSides:sides,glassSupplementHT:surcharge.verified?surcharge.publicHT:0,
