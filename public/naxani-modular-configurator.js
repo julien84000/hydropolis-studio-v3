@@ -63,7 +63,10 @@ function open(rows,roomId,onAdd,initial){
    }
    if(!moduleRefs.length)moduleRefs=[reference];
  }
- function option(p,sel){return '<option value="'+esc(p.reference)+'"'+(p.reference===sel?' selected':'')+'>'+esc(p.collection)+' · '+width(p).toLocaleString('fr-FR')+' cm · '+(p.naPosition||p.naWood||'')+' · '+esc(p.reference)+' · '+euro(p.price)+'</option>'}
+ function option(p,sel){
+  const w=width(p),shown=Number.isFinite(w)&&w>0?w.toLocaleString('fr-FR')+' cm · ':'';
+  return '<option value="'+esc(p.reference)+'"'+(p.reference===sel?' selected':'')+'>'+esc(p.collection)+' · '+shown+(p.naPosition||p.naWood||'')+' · '+esc(p.reference)+' · '+euro(p.price)+'</option>';
+ }
  function selectOptions(items,selected){return items.map(p=>option(p,selected)).join('')}
  function renderNav(){
   $('.nax-nav').innerHTML=['Meubles','Lavabos'].map(t=>'<div class="nax-menu-title">'+t+'</div>'+groups.filter(g=>g[0]===t).map(g=>'<button type="button" data-family="'+g[1]+'" class="'+(family===g[1]?'selected':'')+'">'+g[2]+'</button>').join('')).join('');
