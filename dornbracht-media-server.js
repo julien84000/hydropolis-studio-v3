@@ -6,6 +6,7 @@
 module.exports=function installDornbrachtMedia(app){
  const axios=require('axios'),cheerio=require('cheerio');
  const cache=new Map(),pending=new Map(),accessoryCache=new Map();
+ const imageCache=new Map(),imagePending=new Map();
  const rawPages=new Map(),rawPending=new Map();
  const safeSku=ref=>/^[0-9A-Z]{7,14}(?:-[0-9A-Z]{2,3})?$/i.test(String(ref||''));
  function safeImage(input){
@@ -80,11 +81,24 @@ module.exports=function installDornbrachtMedia(app){
   return task;
  }
  async function lookupImage(ref){
-  const prior=cache.get(ref);
-  if(prior&&Date.now()-prior.timestamp<6*3600000)return {...prior.result,accessories:[]};
-  const info=await rawPage(ref);
-  return {ok:true,reference:ref,image:info.image,manufacturerUrl:info.manufacturerUrl,
-   title:info.title,source:info.source,scope:'reference',accessories:[]};
+  const full=cache.get(ref);
+  if(full&&Date.now()-full.timestamp<6*3600000)
+   return {...full.result,accessories:[]};
+  const raw=rawPages.get(ref);
+  if(raw&&Date.now()-raw.timestamp<6*3600000)
+   return {...raw.data,accessories:[]};
+  const prior=imageCache.get(ref);
+  if(prior&&Date.now()-prior.timestamp<6*3600000)return prior.result;
+  if(imagePending.has(ref))return imagePending.get(ref);
+  // Gallery previews never parse or verify required accessories.
+  const task=loadOfficial(ref,false).then(info=>{
+   const result={...info,accessories:[]};
+   imageCache.set(ref,{timestamp:Date.now(),result});
+   if(imageCache.size>800)imageCache.delete(imageCache.keys().next().value);
+   return result;
+  }).finally(()=>imagePending.delete(ref));
+  imagePending.set(ref,task);
+  return task;
  }
  async function verifyFrance(ref){
   const prior=accessoryCache.get(ref);
