@@ -1,0 +1,121 @@
+/* V12 personalized client dossier — styling isolated to the #document preview,
+   preserving quotation figures, manufacturer references and A4 page dimensions. */
+.v12-dossier-studio{
+ display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;
+ padding:17px 19px;margin:0 0 16px;background:#fff;
+ border:1px solid #e6e9ed;border-radius:17px;
+ box-shadow:0 10px 26px rgba(25,33,42,.05);
+}
+.v12-dossier-studio .studio-title{width:100%;font-size:14px;font-weight:760;color:#252a30;letter-spacing:-.02em}
+.v12-dossier-studio .studio-description{width:100%;font-size:11px;color:#78818b;margin-top:-6px}
+.v12-dossier-studio label{font-size:11px;color:#5c6570;display:grid;gap:5px;min-width:122px}
+.v12-dossier-studio input:not([type=color]),.v12-dossier-studio select{
+ width:100%;min-height:36px;max-width:240px;padding:8px 10px;
+ border:1px solid #dce1e6;border-radius:10px;font:12px/1.4 inherit;background:#fcfcfd;
+}
+.v12-dossier-studio label.v12-dossier-cover-title{flex:1 1 220px}
+.v12-dossier-studio label.v12-dossier-cover-title input{max-width:none}
+.v12-dossier-studio input[type=color]{width:38px;height:36px;border:1px solid #dce1e6;border-radius:10px;padding:3px;background:#fff;cursor:pointer}
+.v12-dossier-studio .v12-dossier-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end}
+.v12-dossier-studio button{
+ min-height:36px;border:1px solid #d9dde2;background:#fff;border-radius:10px;
+ color:#323840;padding:8px 12px;font-size:11px;font-weight:680;cursor:pointer;
+}
+.v12-dossier-studio button:hover{border-color:#b5a17e;background:#faf8f4}
+.v12-dossier-studio button[aria-pressed=true]{border-color:#ae8a52;background:#f9f3e8}
+.v12-dossier-studio .v12-help{font-size:10px;color:#7a848d;flex:1 1 180px}
+.v12-dossier-studio .v12-dossier-status{font-size:11px;color:#56636b}
+#document[data-v12-template]{
+ --v12-doc-accent:#b38a4d;--v12-doc-font:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+}
+#document[data-v12-template] .cover-kicker,
+#document[data-v12-template] .section-kicker,
+#document[data-v12-template] .editorial-brand,
+#document[data-v12-template] .cover-page-mark{color:var(--v12-doc-accent)!important}
+#document[data-v12-template] .editorial-footer{
+ border-color:var(--v12-doc-accent)!important;
+}
+#document[data-v12-template] .editorial-cover-card h2,
+#document[data-v12-template] .board-head h2,
+#document[data-v12-template] .pagehead h2{
+ font-family:var(--v12-doc-font)!important;
+}
+#document[data-v12-template="minimal"] .cover-page{background:#fcfcfb!important}
+#document[data-v12-template="minimal"] .cover-ambient{display:none!important}
+#document[data-v12-template="minimal"] .editorial-cover-card{
+ top:44mm!important;left:15mm!important;background:#fff!important;
+ border:1px solid #ebeced!important;box-shadow:none!important;
+ backdrop-filter:none!important;
+}
+#document[data-v12-template="minimal"] .editorial-cover-image{
+ inset:14mm 12mm 14mm 47%!important;
+ border-radius:3mm!important;
+}
+#document[data-v12-template="minimal"] .editorial-cover-card h2{
+ font-size:31pt!important;font-weight:720!important;letter-spacing:-.05em!important;color:#252a30!important;
+}
+#document[data-v12-template="minimal"] .board-head h2{
+ color:#2a3036!important;font-size:20pt!important;font-weight:730!important;letter-spacing:-.04em!important;
+}
+#document[data-v12-template="minimal"] .board-head:before,
+#document[data-v12-template="minimal"] .board-head:after{
+ background:var(--v12-doc-accent)!important;
+}
+#document[data-v12-template="minimal"] .room-page{background:#fff!important}
+#document[data-v12-template="minimal"] .page-ambient{display:none!important}
+#document[data-v12-template="minimal"] .visual-board .board-visual{background:#f8f9fa!important}
+#document[data-v12-template="minimal"] .editorial-product-visual{background:#f8f9fa!important}
+#document[data-v12-template="minimal"] .editorial-footer{color:#7f858a!important}
+#document[data-v12-template="editorial"] .cover-page{background:#f5f0e8!important}
+#document[data-v12-template="editorial"] .editorial-cover-card{
+ background:rgba(255,255,255,.91)!important;
+}
+#document[data-v12-template="editorial"] .cover-page-mark{letter-spacing:.25em!important}
+#document[data-v12-template="signature"] .cover-page{
+ background:linear-gradient(120deg,#212323,#39342b)!important;
+}
+#document[data-v12-template="signature"] .cover-ambient{
+ background:radial-gradient(circle at 18% 27%,#d8b87928,transparent 48%)!important;
+}
+#document[data-v12-template="signature"] .editorial-cover-card{
+ background:#232626!important;color:#eee5d6!important;
+ box-shadow:0 19px 50px #0004!important;
+}
+#document[data-v12-template="signature"] .editorial-cover-card h2{
+ color:#fff6e6!important;font-weight:520!important;
+}
+#document[data-v12-template="signature"] .editorial-cover-card p,
+#document[data-v12-template="signature"] .editorial-cover-card .projname{color:#d7d0c1!important}
+#document[data-v12-template="signature"] .room-page{background:#fbf9f5!important}
+#document[data-v12-template="signature"] .board-head h2{color:#2d2a26!important}
+#document[data-v12-template="signature"] .board-head:before,
+#document[data-v12-template="signature"] .board-head:after{
+ background:var(--v12-doc-accent)!important;
+}
+#document[data-v12-template="signature"] .page-ambient{opacity:.6}
+#document[data-v12-template] .editorial-cover-card .v12-cover-caption{
+ color:inherit!important;font-size:9pt!important;line-height:1.45!important;
+}
+#document .v12-sort-grip,#document .v12-resize-grip{
+ display:none;position:absolute;z-index:100;cursor:grab;
+ border:1px solid #d1ba97;border-radius:7px;background:#fff8ef;color:#7e5931;
+ min-width:24px;min-height:24px;font-size:15px;box-shadow:0 2px 7px #0002;
+}
+body.presentation-layout-editing #document .v12-sort-grip{display:grid;place-items:center;top:6px;left:6px}
+body.presentation-layout-editing.v12-advanced-resize #document .v12-resize-grip{
+ display:grid;place-items:center;bottom:5px;right:5px;cursor:nwse-resize;
+}
+#document .v12-sort-ghost{outline:3px dashed #b38a4d;opacity:.45}
+#document .v12-sort-chosen{outline:2px solid #b38a4d}
+#document .v12-sort-grip:focus-visible,#document .v12-resize-grip:focus-visible{
+ outline:3px solid #977142;outline-offset:2px;
+}
+@media(max-width:800px){
+ .v12-dossier-studio{padding:12px}
+ .v12-dossier-studio label{flex:1 1 130px}
+}
+@media print{
+ .v12-dossier-studio,#document .v12-sort-grip,#document .v12-resize-grip{display:none!important}
+ #document[data-v12-template] .editorial-page{box-shadow:none!important}
+ #document[data-v12-template] .editorial-cover-card{backdrop-filter:none!important}
+}
