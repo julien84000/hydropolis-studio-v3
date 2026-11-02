@@ -72,7 +72,8 @@ function open(rows,roomId,onAdd,initial){
   (COLLECTION_ORDER.indexOf(a)<0?999:COLLECTION_ORDER.indexOf(a))-
   (COLLECTION_ORDER.indexOf(b)<0?999:COLLECTION_ORDER.indexOf(b))||a.localeCompare(b,'fr'));
  let collection=initial?.collection&&index.collections.has(initial.collection)?initial.collection:(sorted.includes('TARA')?'TARA':sorted[0]);
- let category='',base='',reference=initial?.reference||'',search='',selectedBody='',page=0,busy=false,closed=false;
+ let category=initial?.manufacturer==='Dornbracht'?family(initial):'',base=initial?.manufacturer==='Dornbracht'?String(initial.base||initial.reference):'',
+ reference=initial?.reference||'',search='',selectedBody='',page=0,busy=false,closed=false;
  const media=new Map(),loading=new Set(),tasks=[],maxParallel=3;let parallel=0;
  document.querySelector('.dornbracht-modal')?.remove();
  const overlay=document.createElement('div');overlay.className='galassia-modal dornbracht-modal';
