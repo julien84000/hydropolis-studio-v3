@@ -465,7 +465,9 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     await page.locator('.nax-modal [data-collection="Aalto"]').click();
     await page.locator('.nax-modal [data-input="reference"]').selectOption('504086');
     await page.locator('.nax-modal [data-mode="separate"]').click();
-    await page.locator('.nax-modal [data-input="top"]').selectOption('515037');
+    // The modular Naxani UI selects the plan collection pictogram before the exact tariff SKU.
+    await page.locator('.nax-modal [data-plan-collection="Solid Surface"]').click();
+    await page.locator('.nax-modal [data-input="plan"]').selectOption('515037');
     await page.locator('.nax-modal [data-input="basin"]').selectOption('570011');
     await page.locator('.nax-modal .nax-add').click();
     await page.waitForSelector('.nax-modal',{state:'detached'});
