@@ -252,9 +252,17 @@ function open(rows,roomId,onAdd,initial){
    '<div class="galassia-image-note">'+(info?.image?'Photo sur la fiche officielle de la référence choisie':
       'Photo du modèle illustrative ou absente · finition exacte non certifiée')+'</div>'+
    '<span class="galassia-eyebrow">'+esc(collection)+' · '+esc(category)+'</span><h3>'+esc(item.designation)+'</h3>'+
-   '<label>Finition et référence<select class="dornbracht-variant">'+m.variants.map(p=>
+   '<div class="dornbracht-finishes"><strong>Finition, référence et prix public HT</strong><small>'+
+    m.variants.length+' finition'+(m.variants.length>1?'s':'')+' tarifée'+(m.variants.length>1?'s':'')+' pour ce modèle. Sélectionner la référence :</small>'+
+    '<div class="dornbracht-finish-tiles" role="group" aria-label="Finitions et prix Dornbracht">'+
+    m.variants.slice().sort((a,b)=>String(a.finish||'').localeCompare(String(b.finish||''),'fr')).map(p=>
+     '<button type="button" class="dornbracht-finish-tile'+(p.reference===reference?' active':'')+
+      '" data-dornbracht-finish="'+esc(p.reference)+'" aria-pressed="'+(p.reference===reference)+'">'+
+      '<b>'+esc(p.finish||'Pièce technique sans finition')+'</b><small>'+esc(p.reference)+'</small>'+
+      '<strong>'+euro(p.price)+' HT</strong>'+(p.reference===reference?'<span>✓ Sélectionné</span>':'')+'</button>').join('')+'</div>'+
+    '<label>Référence exacte<select class="dornbracht-variant">'+m.variants.map(p=>
     '<option value="'+esc(p.reference)+'"'+(p.reference===reference?' selected':'')+'>'+
-     esc(p.finish||'Sans finition')+' · '+esc(p.reference)+' · '+euro(p.price)+' HT</option>').join('')+'</select></label>'+
+     esc(p.finish||'Pièce technique sans finition')+' · '+esc(p.reference)+' · '+euro(p.price)+' HT</option>').join('')+'</select></label></div>'+
    '<div class="galassia-summary"><div><span>Référence</span><b>'+esc(item.reference)+'</b></div>'+
     '<div><span>Prix public HT</span><b>'+euro(price)+'</b></div>'+
     (body?'<div><span>Corps '+esc(body.reference)+'</span><b>'+euro(body.price)+'</b></div>':'')+
@@ -271,7 +279,9 @@ function open(rows,roomId,onAdd,initial){
    '<button type="button" class="galassia-add dornbracht-add" '+(busy||pending||blocked?'disabled':'')+'>'+
     (busy?'Ajout…':pending?'Vérification fabricant…':blocked?'Vérifier le corps compatible':'Ajouter la configuration au projet')+'</button>';
   $('.dornbracht-selection').innerHTML=content;
-  $('.dornbracht-variant').onchange=e=>{reference=e.target.value;selectedBody='';fetchMedia(reference);renderSelection()};
+  const changeFinish=ref=>{if(ref===reference)return;reference=ref;selectedBody='';fetchMedia(reference);fetchPreview(reference,true);renderSelection()};
+  $('.dornbracht-variant').onchange=e=>changeFinish(e.target.value);
+  $('[data-dornbracht-finish]').forEach(b=>b.onclick=()=>changeFinish(b.dataset.dornbrachtFinish));
   $$('[data-body]').forEach(b=>b.onclick=()=>{selectedBody=b.dataset.body;renderSelection()});
   $('.dornbracht-add').onclick=async()=>{
    if(busy||blocked||pending)return;
