@@ -23,11 +23,12 @@ module.exports=function installRadawayMedia(app){
   // Prefer the selected product's media area over a generic social preview.
   $('[class*="gallery"] img, [class*="product"] img, [class*="slide"] img, .single-product img, img.wp-post-image').each((_,el)=>{
    const e=$(el);
-   for(const attr of ['data-large_image','data-src','data-lazy-src','src'])add(e.attr(attr),100);
+   for(const attr of ['data-large_image','data-src','data-lazy-src','data-original','data-zoom-image','data-full','src'])add(e.attr(attr),100);
    const srcset=e.attr('srcset')||e.attr('data-srcset')||'';
    for(const match of srcset.matchAll(/(https?:\/\/[^\s,]+\.(?:jpg|jpeg|webp|png))(?:\s+\d+w)?/gi))add(match[1],96);
   });
   $('a[href*="/wp-content/uploads/"]').each((_,el)=>add($(el).attr('href'),85));
+  $('[data-bg], [data-background], [data-image]').each((_,el)=>{const e=$(el);for(const a of ['data-bg','data-background','data-image'])add(e.attr(a),60)});
   $('[style*="background-image"]').each((_,el)=>{
    const style=$(el).attr('style')||'';
    const image=style.match(/background-image\s*:\s*url\(\s*['"]?([^)'"]+)/i)?.[1];add(image,65);
@@ -58,26 +59,57 @@ module.exports=function installRadawayMedia(app){
   return {image,thicknessOptions,glassOptions,manufacturerUrl:url,
    imageVerified:!!image,glassOptionsVerified:false,source:'Fiche officielle Radaway'};
  }
+ // The French Radaway domain does not host every model. Try exact model pages
+ // on all three official domains before reporting an image as unavailable.
+ const officialHosts=['www.radaway.fr','www.radaway.eu','www.radaway.pl'];
  async function photo(slug){
   if(!valid(slug))throw Error('Invalid model slug');
   const cached=cache.get(slug);
-  if(cached&&Date.now()-cached.ts<24*3600000)return cached.data;
+  if(cached&&Date.now()-cached.ts<(cached.data.ok?24*3600000:15*60000))return cached.data;
   if(pending.has(slug))return pending.get(slug);
   const task=(async()=>{
-   const url='https://www.radaway.fr/kategoria/'+slug+'/';
-   const response=await axios.get(url,{timeout:12000,maxRedirects:2,maxContentLength:3000000,
-     headers:{'User-Agent':'Mozilla/5.0','Accept-Language':'fr-FR,fr;q=0.9'}});
-   const extracted=fromHtml(String(response.data||''),slug,url);
-   const data={ok:extracted.imageVerified,slug,photo:extracted.image,
-     exactFinish:extracted.imageVerified,manufacturerUrl:url,
-     thicknessOptions:extracted.thicknessOptions,glassOptions:extracted.glassOptions,
-     glassOptionsVerified:false,source:extracted.source};
-   cache.set(slug,{ts:Date.now(),data});
-   if(cache.size>800)cache.delete(cache.keys().next().value);
-   return data;
+   for(const hostname of officialHosts){
+    const url='https://'+hostname+'/kategoria/'+slug+'/';
+    try{
+     const response=await axios.get(url,{timeout:8500,maxRedirects:2,maxContentLength:4500000,
+      headers:{'User-Agent':'Mozilla/5.0','Accept-Language':'en-US,en;q=0.9,fr;q=0.8'}});
+     if(typeof response.data!=='string')continue;
+     const extracted=fromHtml(response.data,slug,url);
+     if(!extracted.imageVerified)continue;
+     const data={ok:true,slug,photo:extracted.image,exactFinish:true,
+      manufacturerUrl:url,thicknessOptions:extracted.thicknessOptions,
+      glassOptions:extracted.glassOptions,glassOptionsVerified:false,
+      source:'Fiche Radaway officielle ('+hostname+')'};
+     cache.set(slug,{ts:Date.now(),data});
+     if(cache.size>800)cache.delete(cache.keys().next().value);
+     return data;
+    }catch(err){/* The next official manufacturer domain may have this model. */}
+   }
+   const data={ok:false,slug,photo:'',exactFinish:false,
+    thicknessOptions:[],glassOptions:['Transparent'],glassOptionsVerified:false,
+    error:'Photo officielle indisponible sur les sites Radaway'};
+   cache.set(slug,{ts:Date.now(),data});return data;
   })().finally(()=>pending.delete(slug));
   pending.set(slug,task);return task;
  }
+ // Proxy only exact photo URLs selected by the official-domain resolver.
+ // Browser direct hotlinking is sometimes denied even when the server can fetch it.
+ app.get('/api/radaway-product-photo',async(req,res)=>{
+  const slug=String(req.query.slug||'').trim().toLowerCase();
+  if(!valid(slug))return res.status(400).end();
+  try{
+   const result=await photo(slug);
+   const src=classifyImage(result.photo,result.manufacturerUrl);
+   if(!result.ok||!src)return res.status(404).end();
+   const upstream=await axios.get(src,{responseType:'arraybuffer',timeout:12000,
+    maxRedirects:2,maxContentLength:6000000,
+    headers:{'User-Agent':'Mozilla/5.0','Accept':'image/webp,image/png,image/jpeg,*/*'}});
+   const mime=String(upstream.headers['content-type']||'').split(';')[0].trim().toLowerCase();
+   if(!['image/jpeg','image/png','image/webp'].includes(mime))return res.status(502).end();
+   res.set('Content-Type',mime);res.set('Cache-Control','public,max-age=86400');
+   return res.send(Buffer.from(upstream.data));
+  }catch{return res.status(404).end()}
+ });
  app.get('/api/radaway-model-media',(req,res)=>{
   const slug=String(req.query.slug||'').trim().toLowerCase();
   if(!valid(slug))return res.status(400).json({ok:false,error:'Modèle invalide'});
