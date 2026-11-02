@@ -1,9 +1,9 @@
 {
-  "name": "Hydropolis Studio V11",
+  "name": "Hydropolis Studio V12",
   "short_name": "Hydropolis",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f4f4f2",
-  "theme_color": "#1c1d1b",
+  "background_color": "#f4f5f4",
+  "theme_color": "#17242b",
   "description": "Hydropolis Studio — sélection, devis et dossier client"
 }

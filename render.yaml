@@ -1,8 +1,17 @@
+# V12 PREVIEW ONLY. The main branch keeps hydropolis-studio-v3 unchanged.
+# Separate service, separate authentication secret and NO production database.
 services:
   - type: web
-    name: hydropolis-studio-v3
+    name: hydropolis-studio-v12-preview
     runtime: node
     plan: free
+    region: frankfurt
+    repo: https://github.com/julien84000/hydropolis-studio-v3
+    branch: feat/v12-premium-ui
+    autoDeployTrigger: off
     buildCommand: npm ci && npm run build
     startCommand: npm start
     healthCheckPath: /api/health
+    envVars:
+      - key: HYDRO_TOKEN_SECRET
+        generateValue: true
