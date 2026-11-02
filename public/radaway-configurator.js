@@ -15,6 +15,9 @@
    'Pare-baignoire':'https://konfigurator.radaway.eu/parawany-nawannowe'
  };
  const eligible=p=>p?.manufacturer==='Radaway';
+ const tree=()=>root?.HydroRadawayHierarchy;
+ const family=p=>tree()?.groupFor(p)||'paroi';
+ const validModelPhoto=src=>typeof src==='string'&&/^https:\/\/www\.radaway\.fr\/wp-content\/uploads\//.test(src);
  function open(rows,roomId,onAdd,initial=null){
   if(typeof document==='undefined'||typeof onAdd!=='function')return Promise.reject(Error('Interface Radaway indisponible'));
   rows=(rows?.length?rows:root.HydroRadawayCatalog?.rows||[]).filter(eligible);
@@ -47,33 +50,140 @@
    '.radaway-add{background:#265849;color:#fff;border:0;width:100%;padding:14px;margin-top:12px;border-radius:6px;cursor:pointer}' +
    '.radaway-add:disabled{opacity:.5;cursor:default}.radaway-error{color:#a12b2b;min-height:18px}' +
    '@media(max-width:890px){.radaway-columns{grid-template-columns:105px minmax(0,1fr)}.radaway-detail{grid-column:1/-1;max-height:45vh}.radaway-shell{overflow:auto}}';
-  ov.innerHTML='<style>'+css+'</style><div class="radaway-shell"><header class="radaway-head"><div><small>RADAWAY · VISUELS FABRICANT</small><h2>Configurer une paroi Radaway</h2><small>Catégorie → collection → modèle → dimensions et chiffrage</small></div><button class="radaway-close" type="button">×</button></header><div class="radaway-columns"><aside class="radaway-types"></aside><main class="radaway-main"><div class="radaway-controls"><select class="radaway-series"></select><input type="search" class="radaway-search" placeholder="Rechercher modèle ou finition"></div><div class="radaway-grid"></div></main><aside class="radaway-detail"></aside></div></div>';
+
+  const extraCss=
+   '.radaway-types button{display:flex;align-items:center;gap:9px;font-size:12px;font-weight:650}'+
+   '.radaway-types button svg{height:40px;width:40px;flex-shrink:0;stroke:#666}'+
+   '.radaway-crumbs{font-size:12px;color:#8c653a;min-height:18px;margin:0 0 9px;font-weight:650}'+
+   '.radaway-shapes{display:grid;grid-template-columns:repeat(auto-fill,minmax(123px,1fr));gap:10px;margin-bottom:15px}'+
+   '.radaway-shapes button{min-height:138px;color:#333;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:5px;padding:9px;border:1px solid #ddd;background:#fff;border-radius:8px;cursor:pointer}'+
+   '.radaway-shapes button.active{background:#fff4e8;border-color:#a36a33}'+
+   '.radaway-shapes svg{max-width:100%;color:#353535}'+
+   '.radaway-shapes small{font-size:11px;color:#777}'+
+   '.radaway-model-image-pending{height:145px;display:flex;align-items:center;justify-content:center;background:#f5f5f5;color:#777;font-size:11px}'+
+   '.radaway-guide{background:#f7f5f1;padding:15px;border:1px solid #e9e2d6;border-radius:8px;font-size:13px;line-height:1.55;margin:10px 0}'+
+   '.radaway-guide a{display:inline-block;margin-top:8px}'+
+   '.radaway-hidden-filter{display:none!important}'+
+   '.radaway-image-status{color:#75572a;font-size:11px}';
+  ov.innerHTML='<style>'+css+extraCss+'</style><div class="radaway-shell"><header class="radaway-head"><div><small>RADAWAY · VISUELS FABRICANT</small><h2>Configurer une paroi Radaway</h2><small>Catégorie → collection → modèle → dimensions et chiffrage</small></div><button class="radaway-close" type="button">×</button></header><div class="radaway-columns"><aside class="radaway-types"></aside><main class="radaway-main"><div class="radaway-crumbs"></div><div class="radaway-shapes"></div><div class="radaway-controls"><select class="radaway-series"></select><input type="search" class="radaway-search" placeholder="Rechercher modèle ou finition"></div><div class="radaway-grid"></div></main><aside class="radaway-detail"></aside></div></div>';
   document.body.appendChild(ov);
   const $=s=>ov.querySelector(s),close=()=>ov.remove();
   $('.radaway-close').onclick=close;ov.addEventListener('click',e=>{if(e.target===ov)close()});
-  let selected=rows.find(p=>p.reference===initial?.reference)||rows[0],type=selected.productType,series='',search='',busy=false;
+  let selected=null,group='paroi',form='',type='Paroi de douche',series='',search='',busy=false;
+  const hierarchy=tree();
+  if(!hierarchy)throw Error('Arborescence Radaway non chargée');
+  const preselected=rows.find(p=>p.reference===initial?.reference);
+  if(preselected){selected=preselected;group=family(preselected);form=hierarchy.shapeFor(preselected);type=preselected.productType}
+  const mediaCache=new Map(),mediaPending=new Map();
+  function photoFor(p){return validModelPhoto(p?.image)?p.image:(mediaCache.get(p?.reference)||'')}
+  function officialPhoto(p){
+   if(!p)return Promise.resolve('');
+   const known=photoFor(p);
+   if(known)return Promise.resolve(known);
+   const ref=p.reference;
+   if(mediaCache.has(ref))return Promise.resolve('');
+   if(mediaPending.has(ref))return mediaPending.get(ref);
+   const slug=String(p.manufacturerUrl||'').match(/\/kategoria\/([a-z0-9-]+)\/?/i)?.[1];
+   if(!slug)return Promise.resolve('');
+   const task=fetch('/api/radaway-model-media?slug='+encodeURIComponent(slug))
+    .then(r=>r.ok?r.json():null)
+    .then(data=>{
+      const src=data?.exactFinish===true&&data.slug===slug&&validModelPhoto(data.photo)?data.photo:'';
+      mediaCache.set(ref,src);
+      if(src){p.image=src;p.imageSource='Radaway.fr · photo officielle du modèle';}
+      return src;
+    }).catch(()=>{mediaCache.set(ref,'');return ''})
+      .finally(()=>mediaPending.delete(ref));
+   mediaPending.set(ref,task);return task;
+  }
+  function filterModels(){
+   return rows.filter(p=>family(p)===group&&(!form||hierarchy.shapeFor(p)===form));
+  }
   function renderType(){
-   $('.radaway-types').innerHTML=types.map(t=>'<button type="button" class="'+(t===type?'active':'')+'" data-type="'+esc(t)+'">'+esc(t)+' <small>('+rows.filter(x=>x.productType===t).length+')</small></button>').join('');
-   ov.querySelectorAll('[data-type]').forEach(btn=>btn.onclick=()=>{type=btn.dataset.type;selected=rows.find(x=>x.productType===type);series='';render()});
+   $('.radaway-types').innerHTML=hierarchy.groups.map(g=>
+    '<button type="button" class="'+(g.id===group?'active':'')+'" data-group="'+esc(g.id)+'">'+
+    hierarchy.pictogram(hierarchy.byGroup(g.id)[0])+'<span>'+esc(g.label)+'</span></button>'
+   ).join('');
+   ov.querySelectorAll('[data-group]').forEach(btn=>btn.onclick=()=>{
+     group=btn.dataset.group;type=hierarchy.groups.find(g=>g.id===group)?.type||'Paroi de douche';
+     form='';selected=null;series='';search='';render();
+   });
+  }
+  function renderShapes(){
+   const g=hierarchy.groups.find(x=>x.id===group),shapes=hierarchy.byGroup(group);
+   const current=shapes.find(x=>x.id===form);
+   $('.radaway-crumbs').textContent=g.label+(current?' / '+current.label+' / Collections':' / Choisir '+g.menuLabel.toLowerCase());
+   $('.radaway-shapes').innerHTML=shapes.map(opt=>{
+    const n=rows.filter(p=>family(p)===group&&hierarchy.shapeFor(p)===opt.id).length;
+    return '<button type="button" data-shape="'+esc(opt.id)+'" class="'+(form===opt.id?'active':'')+'">'+
+      hierarchy.pictogram(opt)+'<strong>'+esc(opt.label)+'</strong><small>'+n+' modèle(s) indexé(s)</small></button>';
+   }).join('');
+   ov.querySelectorAll('[data-shape]').forEach(btn=>btn.onclick=()=>{
+     form=btn.dataset.shape;selected=null;series='';search='';render();
+   });
   }
   function renderGrid(){
-   const listing=rows.filter(p=>p.productType===type);
-   const seriesNames=[...new Set(listing.map(p=>p.collection))].sort((a,b)=>a.localeCompare(b,'fr'));
-   $('.radaway-series').innerHTML='<option value="">Toutes les collections</option>'+seriesNames.map(s=>'<option value="'+esc(s)+'">'+esc(s)+'</option>').join('');
+   const listing=filterModels();
+   const show=!!form;
+   $('.radaway-controls').classList.toggle('radaway-hidden-filter',!show);
+   if(!show){
+    $('.radaway-grid').innerHTML='<div class="radaway-guide">Choisis d’abord une '+esc(group==='paroi'?'forme':group==='doors'?'typologie d’ouverture':'configuration')+' dans les pictogrammes ci-dessus.</div>';
+    return;
+   }
+   const names=[...new Set(listing.map(p=>p.collection))].sort((a,b)=>a.localeCompare(b,'fr'));
+   if(!names.includes(series))series='';
+   $('.radaway-series').innerHTML='<option value="">Toutes les collections</option>'+names.map(n=>'<option value="'+esc(n)+'">'+esc(n)+'</option>').join('');
    $('.radaway-series').value=series;
-   $('.radaway-series').onchange=e=>{series=e.target.value;renderGrid()};
+   $('.radaway-series').onchange=e=>{series=e.target.value;selected=null;renderGrid();renderDetail()};
    $('.radaway-search').value=search;
    $('.radaway-search').oninput=e=>{search=e.target.value;renderGrid()};
    const shown=listing.filter(p=>(!series||p.collection===series)&&(!search||[p.designation,p.finish,p.collection].join(' ').toLowerCase().includes(search.toLowerCase())));
-   $('.radaway-grid').innerHTML=shown.map(p=>'<button type="button" class="radaway-model '+(p.reference===selected?.reference?'active':'')+'" data-model="'+esc(p.reference)+'">'+
-    '<img loading="lazy" src="'+esc(p.image)+'" alt="'+esc(p.designation)+'"><strong>'+esc(p.designation)+'</strong><small>'+esc(p.finish)+'</small></button>').join('')||'<p>Aucun modèle trouvé.</p>';
-   ov.querySelectorAll('[data-model]').forEach(btn=>btn.onclick=()=>{selected=rows.find(p=>p.reference===btn.dataset.model);renderGrid();renderDetail()});
-   ov.querySelectorAll('.radaway-model img').forEach(img=>img.onerror=()=>{img.style.display='none'});
+   const official=hierarchy.byGroup(group).find(x=>x.id===form);
+   $('.radaway-grid').innerHTML=shown.map(p=>{
+    const src=photoFor(p);
+    return '<button type="button" class="radaway-model '+(p.reference===selected?.reference?'active':'')+'" data-model="'+esc(p.reference)+'">'+
+    (src?'<img loading="lazy" src="'+esc(src)+'" alt="'+esc(p.designation)+'">':
+      '<div class="radaway-model-image-pending" data-photo-ref="'+esc(p.reference)+'">Photo fabricant à charger</div>')+
+    '<strong>'+esc(p.designation)+'</strong><small>'+esc(p.finish)+'</small></button>';
+   }).join('')||'<div class="radaway-guide">Aucune référence indexée pour cette forme et ces filtres. <a href="'+esc(official?.url||'https://www.radaway.fr/')+
+    '" target="_blank" rel="noopener noreferrer">Consulter les modèles de cette forme chez Radaway</a></div>';
+   ov.querySelectorAll('[data-model]').forEach(btn=>btn.onclick=()=>{
+     selected=rows.find(p=>p.reference===btn.dataset.model);renderGrid();renderDetail();
+   });
+   shown.filter(p=>!photoFor(p)).slice(0,12).forEach(p=>{
+    const requested=p.reference;
+    officialPhoto(p).then(src=>{
+      if(!ov.isConnected||!src)return;
+      ov.querySelectorAll('.radaway-model [data-photo-ref]').forEach(place=>{
+       if(place.getAttribute('data-photo-ref')!==requested)return;
+       const el=document.createElement('img');el.loading='lazy';el.alt=p.designation;el.src=src;
+       el.onerror=()=>{el.style.display='none';};
+       place.replaceWith(el);
+      });
+      if(selected?.reference===requested)updateSelectedPhoto(src);
+    });
+   });
+  }
+  function updateSelectedPhoto(src){
+    if(!src||!selected||!ov.isConnected)return;
+    const el=$('.radaway-detail .radaway-image');
+    if(el){el.src=src;el.style.display='block'}
+    const note=$('.radaway-image-status');
+    if(note)note.textContent='Photo issue de la fiche fabricant de ce modèle';
   }
   function renderDetail(){
-   if(!selected){$('.radaway-detail').textContent='Choisir un modèle.';return}
+   if(!selected){
+    const current=hierarchy.byGroup(group).find(x=>x.id===form);
+    $('.radaway-detail').innerHTML='<div class="radaway-guide">'+
+       (form?'Choisis un modèle de la collection.':'Sélectionne d’abord le pictogramme correspondant à ton installation.')+
+       '<p>Les photos proviennent des fiches fabricant et les références de commande seront confirmées au chiffrage.</p>'+
+       (current?'<a href="'+esc(current.url)+'" target="_blank" rel="noopener noreferrer">Voir la gamme officielle</a>':'')+
+       '</div>';
+    return;
+   }
    const url=targets[selected.productType]||'https://konfigurator.radaway.eu/';
-   $('.radaway-detail').innerHTML='<img class="radaway-image" src="'+esc(selected.image)+'" alt="'+esc(selected.designation)+'">'+
+   $('.radaway-detail').innerHTML='<img class="radaway-image" '+(photoFor(selected)?'src="'+esc(photoFor(selected))+'" ':'')+'alt="'+esc(selected.designation)+'">'+
+    '<div class="radaway-image-status">'+(photoFor(selected)?'Photo officielle du fabricant':'Chargement de la photo officielle…')+'</div>'+
     '<h3>'+esc(selected.designation)+'</h3><p>Collection : <b>'+esc(selected.collection)+'</b><br>Finition du modèle photographié : <b>'+esc(selected.finish)+'</b></p>'+
     '<p><a target="_blank" rel="noopener noreferrer" href="'+esc(selected.manufacturerUrl)+'">Voir le produit sur radaway.fr</a><br>'+
     '<a target="_blank" rel="noopener noreferrer" href="'+esc(url)+'">Ouvrir le configurateur officiel Radaway</a></p>'+
@@ -86,7 +196,16 @@
     '<label class="wide">Prix public HT vérifié (€)<input type="number" min="0" step=".01" class="radaway-price" placeholder="À chiffrer"></label>'+
     '</div><div class="radaway-note">Sans prix fabricant confirmé, la paroi sera ajoutée au projet <b>en attente de chiffrage</b> et masquée dans le dossier client. Les codes RAD-SÉLECTION sont uniquement des identifiants internes. La remise fournisseur de 50 % est appliquée aux articles chiffrés, sans modifier le prix public.</div>'+
     '<button class="radaway-add" type="button">Ajouter au projet</button><p class="radaway-error" aria-live="polite"></p>';
-   const photo=$('.radaway-image');photo.onerror=()=>{photo.style.display='none';$('.radaway-error').textContent='Image officielle temporairement indisponible.'};
+   const photo=$('.radaway-image');
+   photo.onerror=()=>{photo.style.display='none';$('.radaway-image-status').textContent='Photo temporairement indisponible : consulter la fiche Radaway.'};
+   if(!photoFor(selected)){
+     const request=selected.reference;
+     officialPhoto(selected).then(src=>{
+       if(selected?.reference!==request||!ov.isConnected)return;
+       if(src)updateSelectedPhoto(src);
+       else $('.radaway-image-status').textContent='Photo fabricant non accessible pour cette variante.';
+     });
+   }
    $('.radaway-add').onclick=async()=>{
     if(busy)return;
     const input=$('.radaway-price').value.trim(),hasPrice=!!input,price=hasPrice?Number(input):0;
@@ -113,7 +232,7 @@
     try{await onAdd(record,roomId);close()}catch(e){busy=false;$('.radaway-add').disabled=false;$('.radaway-error').textContent=e.message||String(e)}
    };
   }
-  function render(){renderType();renderGrid();renderDetail()}
+  function render(){renderType();renderShapes();renderGrid();renderDetail()}
   render();return Promise.resolve(true);
  }
  return {open,eligible,targets};
