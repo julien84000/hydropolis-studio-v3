@@ -20,7 +20,7 @@
   'sintesi':'https://www.vismaravetro.it/App_Assets/Moduli/0215/794/md-vismaravetro-box-doccia-sintesi-tiquadro.jpg',
   'junior':'https://www.vismaravetro.it/App_Assets/Moduli/0225/1838/md-vismaravetro-box-doccia-junior-header-03.jpg',
   'serie f':'https://www.vismaravetro.it/App_Assets/Moduli/0578/1061/md-vismaravetro-box-doccia-serie-f3.jpg',
-  'solutions pour baignoires':'https://www.vismaravetro.it/App_Assets/Moduli/0217/357/md-vismaravetro-box-doccia-replay3.jpg'
+  'solutions pour baignoires':'https://www.vismaravetro.it/App_Assets/Moduli/0227/389/md-vismaravetro-box-doccia-vasche3.jpg'
  });
  function get(collection){return map[String(collection||'').trim().toLowerCase()]||'';}
  return {get,map};
