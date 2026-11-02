@@ -235,8 +235,8 @@ function open(rows,roomId,onAdd,initial){
     if(k==='drain')drainRef=v;
     render(false);
    });
-   $('[data-bacall-combo]').forEach(el=>el.onclick=()=>{beginMain(el.dataset.bacallCombo);render(false)});
-   $('[data-module]').forEach(el=>el.onchange=()=>{moduleRefs[Number(el.dataset.module)]=el.value;resetOptions();render(false)});
+   $$('[data-bacall-combo]').forEach(el=>el.onclick=()=>{beginMain(el.dataset.bacallCombo);render(false)});
+   $$('[data-module]').forEach(el=>el.onchange=()=>{moduleRefs[Number(el.dataset.module)]=el.value;resetOptions();render(false)});
    $$('[data-remove-module]').forEach(el=>el.onclick=()=>{moduleRefs.splice(Number(el.dataset.removeModule),1);resetOptions();render(false)});
    $('.nax-plus-module')?.addEventListener('click',()=>{const available=getModuleRows(p);if(available.length&&moduleRefs.length<4){moduleRefs.push(available[0].reference);resetOptions();render(false)}});
    // Delegate clicks to the actual plan buttons, including taps directly on SVG paths.
@@ -260,7 +260,7 @@ function open(rows,roomId,onAdd,initial){
        else if(ref!==topRef){topRef=ref;render(false);}
      }
    };
-   $('[data-mode]').forEach(el=>el.onclick=()=>{mode=el.dataset.mode;planCollection='';planRef='';topRef='';render(false)});
+   $$('[data-mode]').forEach(el=>el.onclick=()=>{mode=el.dataset.mode;planCollection='';planRef='';topRef='';render(false)});
    $('.nax-add').onclick=async()=>{
     if(busy||!b.valid)return;
     busy=true;$('.nax-add').disabled=true;
