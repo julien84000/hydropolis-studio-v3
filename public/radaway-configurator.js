@@ -17,7 +17,7 @@
  const eligible=p=>p?.manufacturer==='Radaway';
  const tree=()=>root?.HydroRadawayHierarchy;
  const family=p=>tree()?.groupFor(p)||'paroi';
- const validModelPhoto=src=>typeof src==='string'&&/^https:\/\/www\.radaway\.fr\/wp-content\/uploads\//.test(src);
+ const validModelPhoto=src=>typeof src==='string'&&/^https:\/\/www\.radaway\.(?:fr|pl|eu)\/wp-content\/uploads\//.test(src);
  function open(rows,roomId,onAdd,initial=null){
   if(typeof document==='undefined'||typeof onAdd!=='function')return Promise.reject(Error('Interface Radaway indisponible'));
   rows=(rows?.length?rows:root.HydroRadawayCatalog?.rows||[]).filter(eligible);
