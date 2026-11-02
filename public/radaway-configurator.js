@@ -114,11 +114,11 @@
       img.dataset.radawayIllustration='1';
       img.src=collection.url;
       const note=img.closest('.radaway-model')?.querySelector('.radaway-image-status');
-      if(note)note.textContent='Visuel illustratif de la collection';
+      if(note)note.textContent='Visuel fabricant indicatif';
       else{
        const model=img.closest('.radaway-model');
        if(model){const text=document.createElement('small');text.className='radaway-image-status';
-        text.textContent='Visuel illustratif de la collection';model.appendChild(text)}
+        text.textContent='Visuel fabricant indicatif';model.appendChild(text)}
       }
       return;
      }
@@ -219,7 +219,7 @@
     return '<button type="button" class="radaway-model '+(p.reference===selected?.reference?'active':'')+'" data-model="'+esc(p.reference)+'">'+
     (src?'<img loading="lazy" src="'+esc(src)+'" alt="'+esc(p.designation)+'">':
       '<div class="radaway-model-image-pending" data-photo-ref="'+esc(p.reference)+'">Photo fabricant à charger</div>')+
-    '<strong>'+esc(p.designation)+'</strong><small>'+esc(p.finish)+'</small>'+(previewFor(p)?.exact?'':'<small class="radaway-image-status">Visuel illustratif de la collection</small>')+'</button>';
+    '<strong>'+esc(p.designation)+'</strong><small>'+esc(p.finish)+'</small>'+(previewFor(p)?.exact?'':'<small class="radaway-image-status">Visuel fabricant indicatif</small>')+'</button>';
    }).join('')||'<div class="radaway-guide">Aucune référence indexée pour cette forme et ces filtres. <a href="'+esc(official?.url||'https://www.radaway.fr/')+
     '" target="_blank" rel="noopener noreferrer">Consulter les modèles de cette forme chez Radaway</a></div>';
    ov.querySelectorAll('.radaway-model img').forEach(img=>{
@@ -277,7 +277,7 @@
    }
    const url=targets[selected.productType]||'https://konfigurator.radaway.eu/';
    $('.radaway-detail').innerHTML='<img class="radaway-image" '+(photoFor(selected)?'src="'+esc(photoFor(selected))+'" ':'')+'alt="'+esc(selected.designation)+'">'+
-    '<div class="radaway-image-status">'+(previewFor(selected)?.exact?'Photo du modèle Radaway':photoFor(selected)?'Photo illustrative de la collection — modèle ou finition à vérifier':'Chargement de la photo officielle…')+'</div>'+
+    '<div class="radaway-image-status">'+(previewFor(selected)?.exact?'Photo du modèle Radaway':photoFor(selected)?'Photo Radaway indicative — modèle ou finition à vérifier':'Chargement de la photo officielle…')+'</div>'+
     '<h3>'+esc(selected.designation)+'</h3><p>Collection : <b>'+esc(selected.collection)+'</b><br>Finition du modèle photographié : <b>'+esc(selected.finish)+'</b></p>'+
     '<p><a target="_blank" rel="noopener noreferrer" href="'+esc(selected.manufacturerUrl)+'">Voir le produit sur radaway.fr</a><br>'+
     '<a target="_blank" rel="noopener noreferrer" href="'+esc(url)+'">Ouvrir le configurateur officiel Radaway</a></p>'+
@@ -397,7 +397,7 @@
      pricingSource:pending?'Radaway : devis à obtenir':exactPrice?'RADAWAY_SHOWROOMS_TARIF 02022026.xlsx':'Chiffrage fabricant saisi manuellement',
      radawayPendingQuote:pending,hideFromDossier:pending,
      image:photoFor(selected)||'',
-     imageSource:previewFor(selected)?.exact?'Radaway · photo du modèle':'Radaway · illustration de collection (modèle ou finition à vérifier)',
+     imageSource:previewFor(selected)?.exact?'Radaway · photo du modèle':'Radaway · illustration de gamme (modèle ou finition à vérifier)',
      imageFinishMatch:previewFor(selected)?.exact?'manufacturer-model':'collection-illustration',
      radawayConfiguration:{model:selected.designation,type:selected.productType,collection:selected.collection,
       finish:selected.finish,profileFinish:profile,glassType:glass,glassThicknessMm:thickness,
