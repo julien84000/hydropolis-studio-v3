@@ -84,7 +84,7 @@
     '<label>Verre<input class="radaway-glass" placeholder="À confirmer"></label>'+
     '<label class="wide">Référence fabricant vérifiée<input class="radaway-sku" placeholder="Vide si devis non reçu"></label>'+
     '<label class="wide">Prix public HT vérifié (€)<input type="number" min="0" step=".01" class="radaway-price" placeholder="À chiffrer"></label>'+
-    '</div><div class="radaway-note">Sans prix fabricant confirmé, la paroi sera ajoutée au projet <b>en attente de chiffrage</b> et masquée dans le dossier client. Les codes RAD-SÉLECTION sont uniquement des identifiants internes.</div>'+
+    '</div><div class="radaway-note">Sans prix fabricant confirmé, la paroi sera ajoutée au projet <b>en attente de chiffrage</b> et masquée dans le dossier client. Les codes RAD-SÉLECTION sont uniquement des identifiants internes. La remise fournisseur de 50 % est appliquée aux articles chiffrés, sans modifier le prix public.</div>'+
     '<button class="radaway-add" type="button">Ajouter au projet</button><p class="radaway-error" aria-live="polite"></p>';
    const photo=$('.radaway-image');photo.onerror=()=>{photo.style.display='none';$('.radaway-error').textContent='Image officielle temporairement indisponible.'};
    $('.radaway-add').onclick=async()=>{
@@ -100,7 +100,7 @@
     const record={...selected,reference:sku||selected.reference,manufacturerReference:sku,
      radawayInternalSelectionId:selected.reference,
      designation:selected.designation+(w?' · L '+w+' cm':'')+(h?' · H '+h+' cm':''),
-     price,totalPrice:price,purchaseDiscount:undefined,
+     price,totalPrice:price,purchaseDiscount:50,
      pricingStatus:pending?'quote-required':'manufacturer-quote-manual',
      pricingSource:pending?'Radaway : devis à obtenir':'Chiffrage fabricant saisi manuellement',
      radawayPendingQuote:pending,hideFromDossier:pending,
