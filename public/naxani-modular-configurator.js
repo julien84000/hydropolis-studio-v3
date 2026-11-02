@@ -125,11 +125,11 @@ function open(rows,roomId,onAdd,initial){
     const mods=getModuleRows(p),count=p.naPrepricedJoin?2:moduleRefs.length,total=moduleRefs.reduce((s,r)=>s+width(byRef.get(r)),0);
     html+='<div class="nax-assembly"><h4>1. Composer les caissons</h4>';
     if(p.naPrepricedJoin){
-      const combos=collectionRows().filter(x=>x.naPrepricedJoin&&x.naVariant===p.naVariant&&x.naWood===p.naWood&&Array.isArray(x.naModules));
-      html+='<div class="nax-combo-title">Choisir les deux largeurs, de gauche à droite</div><div class="nax-combo-grid">'+combos.map(x=>{
+      const combos=collectionRows().filter(x=>x.naPrepricedJoin&&x.naVariant===p.naVariant&&x.naWood===p.naWood&&Array.isArray(x.naModules)&&eq(width(x),width(p)));
+      html+='<div class="nax-combo-title">'+combos.length+' composition'+(combos.length>1?'s':'')+' disponible'+(combos.length>1?'s':'')+' pour '+Number(width(p)).toLocaleString('fr-FR')+' cm. Cliquer sur un pictogramme pour choisir les caissons gauche et droit.</div><div class="nax-combo-grid">'+combos.map(x=>{
        const left=x.naModules[0],right=x.naModules[1],chosen=x.reference===p.reference;
        const number=n=>Number(n).toLocaleString('fr-FR');
-       return '<button type="button" class="nax-combo-item '+(chosen?'active':'')+'" data-bacall-combo="'+esc(x.reference)+'" aria-pressed="'+chosen+'">'+
+       return '<button type="button" class="nax-combo-item '+(chosen?'active':'')+'" data-bacall-combo="'+esc(x.reference)+'" aria-pressed="'+chosen+'" aria-label="Choisir Bacall '+esc(p.naVariant)+' '+number(left)+' cm à gauche plus '+number(right)+' cm à droite, référence '+esc(x.reference)+', '+euro(x.price)+' HT">'+
        '<div class="nax-combo-picto">'+pict(x)+'</div><strong>'+number(left)+' cm <span>+</span> '+number(right)+' cm</strong>'+
        '<small>Gauche '+number(left)+' · droite '+number(right)+'</small>'+
        '<b>Total '+number(width(x))+' cm</b><small>Réf. '+esc(x.reference)+'</small><em>'+euro(x.price)+' HT</em></button>'
