@@ -124,9 +124,10 @@
   const designation=norm(row.designation);
   const finish=norm(row.finish);
   const coll=norm(row.collection);
-  const noFinish=s=>finish&&finish!=='a preciser'&&finish!=='finition du modele'
-   ?s.replace(new RegExp('(?:^| )'+finish.replace(/[.*+?^$\\{}()|[\\]\\]/g,'\\$&')+'(?= |$)','g'),' ').replace(/\\s+/g,' ').trim()
-   :s;
+  const noFinish=s=>{
+   if(!finish||finish==='a preciser'||finish==='finition du modele')return s;
+   return (' '+s+' ').replace(' '+finish+' ',' ').trim().replace(/\s+/g,' ');
+  };
   const base=noFinish(designation);
   const matched=data.prices.filter(x=>{
    const description=norm(x.d).replace(/^(?:s|nt) /,'');
