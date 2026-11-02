@@ -8,7 +8,7 @@ module.exports=function installRadawayMedia(app){
  const classifyImage=(value,base)=>{
   try{
    const u=new URL(String(value||'').replace(/&amp;/g,'&'),base);
-   if(u.protocol!=='https:'||u.hostname!=='www.radaway.fr'||!u.pathname.startsWith('/wp-content/uploads/'))return '';
+   if(u.protocol!=='https:'||!['www.radaway.fr','www.radaway.pl','www.radaway.eu'].includes(u.hostname)||!u.pathname.startsWith('/wp-content/uploads/'))return '';
    if(!/\.(?:jpe?g|png|webp)$/i.test(u.pathname))return '';
    if(/logo|kolor-|sample|avatar|icon|placeholder|banner|ikona|favicon|colour|color|flag|transparent-glass|easyclean/i.test(u.pathname))return '';
    return u.href;
