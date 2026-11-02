@@ -6,6 +6,7 @@
 module.exports=function installDornbrachtMedia(app){
  const axios=require('axios'),cheerio=require('cheerio');
  const cache=new Map(),pending=new Map(),accessoryCache=new Map();
+ const rawPages=new Map(),rawPending=new Map();
  const safeSku=ref=>/^[0-9A-Z]{7,14}(?:-[0-9A-Z]{2,3})?$/i.test(String(ref||''));
  function safeImage(input){
   try{const u=new URL(String(input||'').trim());
@@ -66,6 +67,25 @@ module.exports=function installDornbrachtMedia(app){
   return {ok:true,reference:ref,image,manufacturerUrl:page,title,source:'Dornbracht officiel · page de la référence',
    scope:'reference',accessories:includeAccessories?accessoriesFromHtml($):[]};
  }
+ async function rawPage(ref){
+  const prior=rawPages.get(ref);
+  if(prior&&Date.now()-prior.timestamp<6*3600000)return prior.data;
+  if(rawPending.has(ref))return rawPending.get(ref);
+  const task=loadOfficial(ref,true).then(data=>{
+   rawPages.set(ref,{timestamp:Date.now(),data});
+   if(rawPages.size>450)rawPages.delete(rawPages.keys().next().value);
+   return data;
+  }).finally(()=>rawPending.delete(ref));
+  rawPending.set(ref,task);
+  return task;
+ }
+ async function lookupImage(ref){
+  const prior=cache.get(ref);
+  if(prior&&Date.now()-prior.timestamp<6*3600000)return {...prior.result,accessories:[]};
+  const info=await rawPage(ref);
+  return {ok:true,reference:ref,image:info.image,manufacturerUrl:info.manufacturerUrl,
+   title:info.title,source:info.source,scope:'reference',accessories:[]};
+ }
  async function verifyFrance(ref){
   const prior=accessoryCache.get(ref);
   if(prior&&Date.now()-prior.time<12*3600000)return prior.ok;
@@ -80,7 +100,7 @@ module.exports=function installDornbrachtMedia(app){
   if(prior&&Date.now()-prior.timestamp<6*3600000)return prior.result;
   if(pending.has(ref))return pending.get(ref);
   const task=(async()=>{
-   const data=await loadOfficial(ref,true);
+   const data=await rawPage(ref);
    // Exact manufacturer list from the French product page. Never synthesize compatibility.
    const options=await Promise.all(data.accessories.slice(0,12).map(async item=>({
     ...item,francePageVerified:await verifyFrance(item.reference)
@@ -93,14 +113,18 @@ module.exports=function installDornbrachtMedia(app){
   pending.set(ref,task);
   return task;
  }
- function route(req,res){
-  const ref=String(req.query.reference||'').trim().toUpperCase();
-  if(!safeSku(ref))return res.status(400).json({ok:false,error:'Référence Dornbracht invalide'});
-  lookup(ref).then(data=>{
-   res.set('Cache-Control','private,max-age=1800');res.json(data);
-  }).catch(()=>res.status(404).json({ok:false,reference:ref,image:'',accessories:[],error:'Fiche française de cette référence non vérifiée'}));
+ function route(loader){
+  return (req,res)=>{
+   const ref=String(req.query.reference||'').trim().toUpperCase();
+   if(!safeSku(ref))return res.status(400).json({ok:false,error:'Référence Dornbracht invalide'});
+   loader(ref).then(data=>{
+    res.set('Cache-Control','private,max-age=1800');res.json(data);
+   }).catch(()=>res.status(404).json({ok:false,reference:ref,image:'',accessories:[],error:'Fiche française de cette référence non vérifiée'}));
+  };
  }
- app.get('/api/dornbracht-product-media',route);
- app.get('/api/dornbracht-product-config',route);
- return {lookup,safeSku,safeImage,accessoriesFromHtml,validRefPage,verifyFrance};
+ // Miniature: one French manufacturer page, zero accessory-market validation calls.
+ app.get('/api/dornbracht-product-media',route(lookupImage));
+ // Configurator detail: validate only the chosen model's required French parts.
+ app.get('/api/dornbracht-product-config',route(lookup));
+ return {lookup,lookupImage,rawPage,safeSku,safeImage,accessoriesFromHtml,validRefPage,verifyFrance};
 };
