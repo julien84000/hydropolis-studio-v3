@@ -229,27 +229,27 @@
    shown.filter(p=>!exactPhoto(p)).forEach(p=>{
     const requested=p.reference;
     scheduledPhoto(p).then(src=>{
-      if(!ov.isConnected)return;
-       if(!src){
-        const matchingCard=Array.from(ov.querySelectorAll('.radaway-model'))
-        .find(card=>card.getAttribute('data-model')===requested);
-       if(matchingCard){
-        const thumbnail=matchingCard.querySelector('img');
-        if(thumbnail){thumbnail.src=src;thumbnail.style.display='block';bindPhotoFallback(thumbnail,p)}
-        matchingCard.querySelectorAll('.radaway-image-status').forEach(el=>el.remove());
-       }
-       ov.querySelectorAll('.radaway-model [data-photo-ref]').forEach(place=>{
-         if(place.getAttribute('data-photo-ref')===requested)place.textContent='Photo fabricant indisponible';
-        });
-        return;
-       }
+     if(!ov.isConnected)return;
+     if(!src){
       ov.querySelectorAll('.radaway-model [data-photo-ref]').forEach(place=>{
-       if(place.getAttribute('data-photo-ref')!==requested)return;
-       const el=document.createElement('img');el.loading='lazy';el.alt=p.designation;el.src=src;
-       bindPhotoFallback(el,p);
-       place.replaceWith(el);
+       if(place.getAttribute('data-photo-ref')===requested)place.textContent='Photo fabricant indisponible';
       });
-      if(selected?.reference===requested){updateSelectedPhoto(src);updateMetadata();}
+      return;
+     }
+     const card=Array.from(ov.querySelectorAll('.radaway-model'))
+      .find(el=>el.getAttribute('data-model')===requested);
+     if(card){
+      const img=card.querySelector('img');
+      if(img){img.src=src;img.style.display='block';bindPhotoFallback(img,p)}
+      card.querySelectorAll('.radaway-image-status').forEach(el=>el.remove());
+     }
+     ov.querySelectorAll('.radaway-model [data-photo-ref]').forEach(place=>{
+      if(place.getAttribute('data-photo-ref')!==requested)return;
+      const el=document.createElement('img');
+      el.loading='lazy';el.alt=p.designation;el.src=src;
+      bindPhotoFallback(el,p);place.replaceWith(el);
+     });
+     if(selected?.reference===requested){updateSelectedPhoto(src);updateMetadata()}
     });
    });
   }
