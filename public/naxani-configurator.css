@@ -61,3 +61,21 @@
 .nax-selected-plan small{color:#6f6256;text-align:center;font-size:10px}
 .nax-assembly{flex-shrink:0}
 .nax-detail select:disabled{opacity:.7;background:#f5f2ee}
+
+/* Bacall 1C / 2C: manufacturer-specific left/right modular assemblies */
+.nax-combo-title{font-weight:700;font-size:12px;color:#6b5031}
+.nax-combo-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;max-height:350px;overflow:auto;padding:2px}
+.nax-combo-item{font-family:inherit;border:1px solid #d1c1ac;border-radius:8px;background:#fff;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 5px;cursor:pointer;color:#38302b;text-align:center;min-width:0}
+.nax-combo-item.active{background:#edf5ed;border:2px solid #286049}
+.nax-combo-item strong{font-size:12px;white-space:nowrap}
+.nax-combo-item strong span{color:#b17b44}
+.nax-combo-item small{font-size:9px;color:#7b6e5f}
+.nax-combo-item b{font-size:11px}
+.nax-combo-item em{font-size:11px;font-weight:700;font-style:normal;color:#855c36}
+.nax-combo-picto{height:38px;width:100%}
+.nax-combo-picto .nax-pictogram{height:38px;width:100%}
+.nax-plan-original-shape{color:#292822}
+.nax-plan-card .nax-plan-original-shape{height:55px;max-width:100%}
+.nax-plan-card{padding:7px 4px;min-height:95px}
+.nax-plan-card span{font-size:11px;line-height:1.25}
+@media (max-width:730px){.nax-combo-grid{grid-template-columns:1fr}.nax-plan-cards{grid-template-columns:1fr}}
