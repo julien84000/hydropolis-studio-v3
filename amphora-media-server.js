@@ -2,7 +2,7 @@
 /* Amphora official WooCommerce variation image resolver. Never infer images from filename. */
 module.exports=function installAmphoraMedia(app){
  const axios=require('axios'),cheerio=require('cheerio'),cache=new Map(),pending=new Map();
- const valid=ref=>/^RE[A-Z0-9]{2,12}\.(?:BS|BB|BC)$/i.test(ref);
+ const valid=ref=>/^RE[A-Z0-9]{2,12}(?:\.EXT)?\.(?:BS|BB|BC)$/i.test(ref);
  async function lookup(reference){
   if(!valid(reference))throw Error('Invalid Amphora SKU');
   const ref=reference.toUpperCase(),saved=cache.get(ref);
