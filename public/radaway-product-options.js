@@ -34,9 +34,29 @@
    return {options:[10],selected:10,verified:false,source:'Gamme Modo X/XL — à confirmer sur fiche'};
   return {options:[6,8,10],selected:null,verified:false,source:'Épaisseur non identifiée : vérifier la fiche'};
  }
+ // Sur-mesure sheet: glass supplement per side, Radaway FR showroom 02/02/2026.
+ const SURCHARGES=Object.freeze({
+   6:Object.freeze({Brun:[80,40],Graphite:[80,40],'Satiné':[80,40],UltraClear:[80,40],
+    'Master-Soft':[165,83],Visiosun:[165,83],Miroir:[215,108]}),
+   8:Object.freeze({Brun:[150,75],Graphite:[150,75],'Satiné':[150,75],UltraClear:[150,75],
+    'Master-Soft':[250,125],Visiosun:[250,125],Miroir:[415,208]}),
+   10:Object.freeze({Brun:[180,90],Graphite:[180,90],'Satiné':[180,90],UltraClear:[180,90]})
+ });
+ function glassSurcharge(glass,thickness,sides=1){
+   if(!glass||glass==='Transparent')return {verified:true,publicHT:0,purchaseHT:0,source:'Sans plus-value'};
+   const entry=SURCHARGES[Number(thickness)]?.[glass];
+   if(!entry)return {verified:false,publicHT:0,purchaseHT:0,
+    reason:'Plus-value du verre '+glass+' non spécifiée pour '+thickness+' mm dans le tableau 2026.'};
+   const qty=Math.max(1,Math.min(10,Number(sides)||1));
+   return {verified:true,publicHT:entry[0]*qty,purchaseHT:entry[1]*qty,
+      perSidePublicHT:entry[0],sides:qty,source:'SUR-MESURE Radaway FR 2026 · plus-value par côté'};
+ }
  function modelFamily(name){
   let s=String(name||'');
-  for(const term of FINISH_NAMES)s=s.replace(new RegExp('\\b'+term.replace(/[+]/g,'\\+')+'\\b','ig'),' ');
+  for(const term of FINISH_NAMES){
+   const start=s.toLowerCase().indexOf(term.toLowerCase());
+   if(start>=0)s=s.slice(0,start)+' '+s.slice(start+term.length);
+  }
   s=s.replace(/\s+/g,' ').trim();
   return s.toLowerCase();
  }
@@ -58,5 +78,5 @@
   return GLASSES.map(g=>({...g,verified:!!verified&&verified.includes(g.value),
     available:!verified||verified.includes(g.value)})).filter(g=>g.available);
  }
- return {FINISH_NAMES,GLASSES,COLORS,parseFinish,thicknessFor,modelFamily,profiles,glassOptions};
+ return {FINISH_NAMES,GLASSES,COLORS,SURCHARGES,glassSurcharge,parseFinish,thicknessFor,modelFamily,profiles,glassOptions};
 });
