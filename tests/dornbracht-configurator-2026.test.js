@@ -68,3 +68,34 @@ test('Dornbracht UI loads before app and has direct launcher',()=>{
  assert.ok(app.includes('dornbracht-direct-open'));
  assert.ok(js.includes('/api/dornbracht-product-config'));
 });
+
+test('Dornbracht FAB-DIS 2026: no price omitted and every listed finish preserved in the model index',()=>{
+ const fs=require('fs'),path=require('path');
+ const rows=Array.from({length:9},(_,i)=>JSON.parse(fs.readFileSync(
+  path.join(__dirname,'../public/catalog_dornbracht_'+(i+1)+'.json'),'utf8'))).flat();
+ assert.equal(rows.length,8996);
+ assert.equal(rows.filter(p=>!(Number(p.price)>0)).length,0);
+ const emptyFinish=rows.filter(p=>!p.finish);
+ assert.equal(emptyFinish.length,452);
+ const idx=Dornbracht.indexRows(rows);
+ assert.equal(idx.originals.length,8996);
+ const main=idx.collections.get('LISSÉ').categories.get('Mitigeurs et mélangeurs').models.get('36860845');
+ assert.ok(main.variants.some(p=>p.reference==='36860845-00'&&p.price===933.7));
+ assert.equal(new Set(main.variants.map(p=>p.reference)).size,main.variants.length);
+ assert.equal(new Set(idx.byRef.keys()).size,8996);
+});
+test('Dornbracht fast thumbnails do not load accessory verification and do not rebuild grid on image arrival',()=>{
+ const fs=require('fs'),path=require('path');
+ const ui=fs.readFileSync(path.join(__dirname,'../public/dornbracht-configurator.js'),'utf8');
+ const backend=fs.readFileSync(path.join(__dirname,'../dornbracht-media-server.js'),'utf8');
+ const css=fs.readFileSync(path.join(__dirname,'../public/dornbracht-configurator.css'),'utf8');
+ assert.ok(ui.includes("fetch('/api/dornbracht-product-media?reference='"));
+ assert.ok(ui.includes("fetch('/api/dornbracht-product-config?reference='"));
+ assert.ok(ui.includes('function updateModelPhoto(ref)'));
+ assert.ok(ui.includes("previews=PHOTO_CACHE"));
+ assert.ok(ui.includes("data-dornbracht-finish"));
+ assert.ok(ui.includes("$$('[data-dornbracht-finish]')"));
+ assert.ok(backend.includes("route(lookupImage)"));
+ assert.ok(backend.includes("route(lookup)"));
+ assert.ok(css.includes(".dornbracht-finish-tile.active"));
+});
