@@ -152,7 +152,13 @@ function open(rows,roomId,onAdd,initial){
   else if(mode==='separate'&&(!basin||basin.productType!=='vasque-poser'))reason='Choisissez une vasque à poser.';
   return {items,valid:!reason,reason,totalWidth,count,planWidth:plan?width(plan):null};
  }
- function visual(p){return '<div class="nax-mainphoto">'+img(p)+'</div><div class="nax-picto-main">'+pict(p)+'</div><div class="nax-photonote">Photo de collection illustrative · pictogramme schématique (non contractuel).</div>'}
+ function visual(p){
+  const exactFinishPhoto=woodPhoto(p,p?.naWood);
+  const illustration=exactFinishPhoto?{...p,image:exactFinishPhoto}:p;
+  const note=exactFinishPhoto?'Photo fabricant illustrant l’essence ou la teinte '+esc(p.naWood)+' (dimensions non contractuelles).':
+   (p?.naWood?'Photo de collection, pas nécessairement la finition '+esc(p.naWood)+'.':'Photo de collection illustrative, finition non contractuelle.');
+  return '<div class="nax-mainphoto">'+img(illustration)+'</div><div class="nax-picto-main">'+pict(p)+'</div><div class="nax-photonote">'+note+' Pictogramme schématique.</div>';
+ }
  function renderDetail(){
    const p=current();
    if(!p){$('.nax-detail').innerHTML='<p class="nax-empty">Choisissez une collection.</p>';return}
@@ -181,7 +187,7 @@ function open(rows,roomId,onAdd,initial){
      html+='</div>';
    }
    if(widths.length)html+='<label>Largeur du module / assemblage<select data-input="width">'+widths.map(w=>'<option value="'+w+'"'+(eq(w,width(p))?' selected':'')+'>'+w.toLocaleString('fr-FR')+' cm</option>').join('')+'</select></label>';
-   html+='<label>Référence tarifée<select data-input="reference">'+selectOptions(alternatives.filter(x=>eq(width(x),width(p))),reference)+'</select></label>'+
+   html+='<label>Référence tarifée'+(p.naWood?' — '+esc(p.naWood):'')+'<select data-input="reference">'+selectOptions(alternatives.filter(x=>eq(width(x),width(p))),reference)+'</select></label>'+
      '<p class="nax-supplier">Référence '+esc(p.reference)+' · '+euro(p.price)+' HT · tarif PDF p. '+(p.sourcePage||'?')+'</p>';
    if(furniture(p)){
     const mods=getModuleRows(p),count=p.naPrepricedJoin?2:moduleRefs.length,total=moduleRefs.reduce((s,r)=>s+width(byRef.get(r)),0);
