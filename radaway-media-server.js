@@ -73,6 +73,8 @@ module.exports=function installRadawayMedia(app){
     try{
      const response=await axios.get(url,{timeout:8500,maxRedirects:2,maxContentLength:4500000,
       headers:{'User-Agent':'Mozilla/5.0','Accept-Language':'en-US,en;q=0.9,fr;q=0.8'}});
+     const finalUrl=String(response.request?.res?.responseUrl||response.config?.url||url);
+     if(!finalUrl.includes('/kategoria/'+slug+'/'))continue;
      if(typeof response.data!=='string')continue;
      const extracted=fromHtml(response.data,slug,url);
      if(!extracted.imageVerified)continue;
