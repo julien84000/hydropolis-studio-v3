@@ -111,3 +111,20 @@
 .nax-countertop-gallery{display:flex;gap:5px;overflow-x:auto;padding:3px 0}
 .nax-countertop-gallery img{width:80px;height:85px;object-fit:cover;border-radius:5px;border:1px solid #ddd0c1;flex:none}
 @media(max-width:730px){.nax-countertop-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.nax-countertop-photo{height:80px}}
+
+/* Tariff-verified Naxani species and wood stains (2026). */
+.nax-wood-group{background:#f0e9df;border:1px solid #dfd0bc;border-radius:9px;margin:12px 0;padding:10px}
+.nax-wood-group>label{font-size:12px;font-weight:700;display:block}
+.nax-wood-group select{width:100%;margin-top:5px}
+.nax-wood-hint{margin:7px 0 9px;font-size:10px;color:#675b4b;line-height:1.4}
+.nax-wood-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;max-height:300px;overflow:auto;padding:2px}
+.nax-wood-choice{font-family:inherit;display:flex;align-items:center;flex-direction:column;gap:4px;min-width:0;background:#fff;border:1px solid #d6c8b6;border-radius:7px;cursor:pointer;padding:6px;text-align:center;touch-action:manipulation}
+.nax-wood-choice:hover{border-color:#3e7356;background:#f4f7f2}
+.nax-wood-choice.active{border:2px solid #2c6a4c;background:#edf6ee}
+.nax-wood-choice:focus-visible{outline:3px solid #bb8f4f;outline-offset:2px}
+.nax-wood-choice img,.nax-wood-no-photo{display:block;width:100%;height:75px;object-fit:cover;border-radius:4px;background:#f2eee7}
+.nax-wood-no-photo{display:flex;justify-content:center;align-items:center;padding:4px;color:#796f64;font-size:9px}
+.nax-wood-choice b{font-size:12px;color:#38302b}
+.nax-wood-choice small{font-size:10px;line-height:1.3;color:#736456}
+.nax-wood-selected{font-weight:700;font-size:10px;color:#206c48}
+@media(max-width:730px){.nax-wood-options{grid-template-columns:1fr}.nax-wood-choice img,.nax-wood-no-photo{height:68px}}
