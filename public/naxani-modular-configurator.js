@@ -218,7 +218,7 @@ function open(rows,roomId,onAdd,initial){
    $$('[data-remove-module]').forEach(el=>el.onclick=()=>{moduleRefs.splice(Number(el.dataset.removeModule),1);resetOptions();render(false)});
    $('.nax-plus-module')?.addEventListener('click',()=>{const available=getModuleRows(p);if(available.length&&moduleRefs.length<4){moduleRefs.push(available[0].reference);resetOptions();render(false)}});
    // Delegate clicks to the actual plan buttons, including taps directly on SVG paths.
-   $('.nax-detail').addEventListener('click',event=>{
+   $('.nax-detail').onclick=event=>{
      const card=event.target.closest('button[data-plan-collection]');
      if(card){
        const chosen=card.dataset.planCollection;
@@ -231,8 +231,8 @@ function open(rows,roomId,onAdd,initial){
        if(mode==='integrated'){if(ref!==planRef){planRef=ref;render(false);}}
        else if(ref!==topRef){topRef=ref;render(false);}
      }
-   });
-   $$('[data-mode]').forEach(el=>el.onclick=()=>{mode=el.dataset.mode;planCollection='';planRef='';topRef='';render(false)});
+   };
+   $('[data-mode]').forEach(el=>el.onclick=()=>{mode=el.dataset.mode;planCollection='';planRef='';topRef='';render(false)});
    $('.nax-add').onclick=async()=>{
     if(busy||!b.valid)return;
     busy=true;$('.nax-add').disabled=true;
