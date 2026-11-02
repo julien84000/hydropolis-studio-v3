@@ -66,7 +66,7 @@
   });
   const photo=same[0]?.image||hero[p.collection]||'';
   if(!valid(photo))return null;
-  return {url:photo,exact:false,source:'Photographie illustrative Radaway, autre modèle ou finition de la collection'};
+  return {url:photo,exact:false,source:'Photographie Radaway indicative : autre modèle ou finition de la gamme'};
  }
  function previewFor(p){
   if(!p)return null;
