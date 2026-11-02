@@ -2050,6 +2050,8 @@ function renderCatalog(){
    </section>`:"";
    const galassiaActive=/^Galassia$/i.test(fs.manufacturer)||(!fs.manufacturer&&/^galassia\b/i.test(String(q).trim()));
    const galassiaLauncher=galassiaActive?`<section class="galassia-launcher"><div><span class="eyebrow">GALASSIA · CONFIGURATEUR VISUEL</span><h3>Explorer les collections Galassia</h3><p>Collections → modèles → variantes · prix publics du tarif fourni · remise d’achat 50 %. Visuels de modèle et fiches techniques du fabricant.</p></div><button type="button" class="galassia-open">Configurer Galassia</button></section>`:"";
+   const dornbrachtActive=/^Dornbracht$/i.test(fs.manufacturer)||(!fs.manufacturer&&/^dornbracht\b/i.test(String(q).trim()));
+   const dornbrachtLauncher=dornbrachtActive?`<section class="galassia-launcher dornbracht-direct-launcher"><div><span class="eyebrow">DORNBRACHT · CONFIGURATEUR VISUEL</span><h3>Configurer les collections Dornbracht</h3><p>Collection → famille → modèle → finition → accessoires nécessaires validés sur le site français. Prix publics FAB-DIS 2026 · remise fournisseur 50 %.</p></div><button type="button" class="dornbracht-direct-open">Configurer Dornbracht</button></section>`:"";
    const naxaniActive=/^Naxani$/i.test(fs.manufacturer)||(!fs.manufacturer&&/^naxani\b/i.test(String(q).trim()));
    const naxaniLauncher=naxaniActive?`<section class="galassia-launcher naxani-direct-launcher"><div><span class="eyebrow">NAXANI · CONFIGURATEUR MOBILIER</span><h3>Composer un meuble Naxani</h3><p>Collection → meuble → dimensions → plan vasque intégré compatible ou top et vasque à poser → bonde en option. Références et tarifs du catalogue 2026.</p></div><button type="button" class="naxani-direct-open">Configurer Naxani</button></section>`:"";
    const betteActive=/^Bette$/i.test(fs.manufacturer)||(!fs.manufacturer&&/^bette\b/i.test(String(q).trim()));
@@ -2067,14 +2069,14 @@ function renderCatalog(){
      const cached=cachedManufacturerImage(p),finishLabel=exactFinishLabel(p)||"",price=catalogDisplayPrice(p),key=productKey(p),avail=availabilityInfo(p),compared=compareRefs.has(key),favorite=favoriteRefs.has(key);
      const candidateVisual=/^Sbordoni$/i.test(String(p.manufacturer||""))?((window.HydroSbordoniConfigurator?.catalogImage?.(p))||p.image||((Array.isArray(p.images)&&p.images[0])||"")):(cached?.src||p.image||((Array.isArray(p.images)&&p.images[0])||""));
      const catalogVisual=brokenCatalogImages.has(candidateVisual)?"":candidateVisual;
-     return `<article class="result v11-product-card" data-key="${esc(key)}">${catalogThumbHtml(p,catalogVisual,finishLabel,favorite,cached)}<div><div class="r-top"><span class="ref">${esc(p.reference)}</span><span class="badge">${esc(p.manufacturer)}</span><span class="badge">${esc(p.collection)}</span><span class="badge">${esc(p.category)}</span></div><div class="designation">${esc(p.designation)}</div><div class="meta">${esc(p.finish||"")}</div>${roughInWarningHtml(p)}<div class="availability ${avail.cls}">${esc(avail.label)}</div><div class="manufacturer-tools v11-resource-tools"><button class="tiny lookup-photo" data-ref="${esc(p.reference)}" data-key="${esc(key)}">${cached||p.image?"Actualiser la photo":"Photo fabricant"}</button>${hotbathNeedsFinishFallback(p,cached)?`<button class="tiny hotbath-web-photo" data-ref="${esc(p.reference)}" data-key="${esc(key)}">Finition web</button>`:""}${p.manufacturerUrl?`<a class="source-link" target="_blank" rel="noopener" href="${esc(cached?.resolvedManufacturerUrl||p.manufacturerUrl)}">Fiche ↗</a>`:""}${cached?.technicalSheetUrl?`<a class="source-link" target="_blank" rel="noopener" href="${esc(cached.technicalSheetUrl)}">Technique ↗</a>`:""}</div><div class="photo-status">${cached?`<b>${esc(imageBadge(cached,p))}</b>`:p.image?`<b>${esc(p.imageSource||"Visuel catalogue")}</b>`:`Source tarif : ${esc(p.source||"catalogue fabricant")}`}</div>${/^Nicolazzi$/i.test(String(p.manufacturer||""))?`<div class="nicolazzi-options-slot">${nicolazziVisualOptionsHtml(p,cached)}</div>`:""}<div class="card-action-row"><button class="suggest-toggle" data-key="${esc(key)}">Alternatives</button><button class="compare-toggle ${compared?"active":""}" data-key="${esc(key)}">${compared?"✓ Comparé":"Comparer"}</button></div></div><div class="price-box"><small class="v11-price-label">Prix public</small><div class="price">${euro(price)} HT</div>${p.internalReference?`<div class="internal">Ext. ${euro(p.price)} + ${esc(p.internalReference)} ${euro(p.internalPrice)}</div>`:`<div class="internal">${esc(p.sourceYear?`Tarif ${p.sourceYear}`:"Référence complète")}</div>`}${(window.HydroSbordoniConfigurator?.eligible?.(p)||window.HydroSbordoniWCConfigurator?.eligible?.(p)||window.HydroGalassiaConfigurator?.eligible?.(p)||window.HydroCatalanoConfigurator?.eligible?.(p)||window.HydroCatalanoConfigurator?.eligible?.(p)||window.HydroHidroboxConfigurator?.eligible?.(p)||window.HydroBetteConfigurator?.eligible?.(p)||window.HydroCarrodrainConfigurator?.eligible?.(p))?`<div class="internal recor-config-hint"><b>Configuration guidée</b> · choisissez la composition finale</div>`:isRecorBathRequiringFeet(p)?`<div class="internal recor-config-hint"><b>Pieds obligatoires</b> · choix à l’ajout</div>`:""}<button class="btn primary add" data-ref="${esc(p.reference)}" data-key="${esc(key)}" style="margin-top:9px">${(window.HydroSbordoniConfigurator?.eligible?.(p)||window.HydroSbordoniWCConfigurator?.eligible?.(p)||window.HydroHidroboxConfigurator?.eligible?.(p)||window.HydroBetteConfigurator?.eligible?.(p)||window.HydroCarrodrainConfigurator?.eligible?.(p))?"Configurer ce produit":isRecorBathRequiringFeet(p)?"Configurer + ajouter":"Ajouter au projet"}</button></div></article>`;
+     return `<article class="result v11-product-card" data-key="${esc(key)}">${catalogThumbHtml(p,catalogVisual,finishLabel,favorite,cached)}<div><div class="r-top"><span class="ref">${esc(p.reference)}</span><span class="badge">${esc(p.manufacturer)}</span><span class="badge">${esc(p.collection)}</span><span class="badge">${esc(p.category)}</span></div><div class="designation">${esc(p.designation)}</div><div class="meta">${esc(p.finish||"")}</div>${roughInWarningHtml(p)}<div class="availability ${avail.cls}">${esc(avail.label)}</div><div class="manufacturer-tools v11-resource-tools"><button class="tiny lookup-photo" data-ref="${esc(p.reference)}" data-key="${esc(key)}">${cached||p.image?"Actualiser la photo":"Photo fabricant"}</button>${hotbathNeedsFinishFallback(p,cached)?`<button class="tiny hotbath-web-photo" data-ref="${esc(p.reference)}" data-key="${esc(key)}">Finition web</button>`:""}${p.manufacturerUrl?`<a class="source-link" target="_blank" rel="noopener" href="${esc(cached?.resolvedManufacturerUrl||p.manufacturerUrl)}">Fiche ↗</a>`:""}${cached?.technicalSheetUrl?`<a class="source-link" target="_blank" rel="noopener" href="${esc(cached.technicalSheetUrl)}">Technique ↗</a>`:""}</div><div class="photo-status">${cached?`<b>${esc(imageBadge(cached,p))}</b>`:p.image?`<b>${esc(p.imageSource||"Visuel catalogue")}</b>`:`Source tarif : ${esc(p.source||"catalogue fabricant")}`}</div>${/^Nicolazzi$/i.test(String(p.manufacturer||""))?`<div class="nicolazzi-options-slot">${nicolazziVisualOptionsHtml(p,cached)}</div>`:""}<div class="card-action-row"><button class="suggest-toggle" data-key="${esc(key)}">Alternatives</button><button class="compare-toggle ${compared?"active":""}" data-key="${esc(key)}">${compared?"✓ Comparé":"Comparer"}</button></div></div><div class="price-box"><small class="v11-price-label">Prix public</small><div class="price">${euro(price)} HT</div>${p.internalReference?`<div class="internal">Ext. ${euro(p.price)} + ${esc(p.internalReference)} ${euro(p.internalPrice)}</div>`:`<div class="internal">${esc(p.sourceYear?`Tarif ${p.sourceYear}`:"Référence complète")}</div>`}${(window.HydroSbordoniConfigurator?.eligible?.(p)||window.HydroSbordoniWCConfigurator?.eligible?.(p)||window.HydroGalassiaConfigurator?.eligible?.(p)||window.HydroCatalanoConfigurator?.eligible?.(p)||window.HydroCatalanoConfigurator?.eligible?.(p)||window.HydroHidroboxConfigurator?.eligible?.(p)||window.HydroBetteConfigurator?.eligible?.(p)||window.HydroCarrodrainConfigurator?.eligible?.(p))?`<div class="internal recor-config-hint"><b>Configuration guidée</b> · choisissez la composition finale</div>`:isRecorBathRequiringFeet(p)?`<div class="internal recor-config-hint"><b>Pieds obligatoires</b> · choix à l’ajout</div>`:""}<button class="btn primary add" data-ref="${esc(p.reference)}" data-key="${esc(key)}" style="margin-top:9px">${(window.HydroSbordoniConfigurator?.eligible?.(p)||window.HydroSbordoniWCConfigurator?.eligible?.(p)||window.HydroHidroboxConfigurator?.eligible?.(p)||window.HydroBetteConfigurator?.eligible?.(p)||window.HydroCarrodrainConfigurator?.eligible?.(p)||p.manufacturer==='Dornbracht')?"Configurer ce produit":isRecorBathRequiringFeet(p)?"Configurer + ajouter":"Ajouter au projet"}</button></div></article>`;
    }).join("");
    const manufacturerGuideActive=window.HydroManufacturerGuide?.isSupported?.(fs.manufacturer);
    const manufacturerGuideLauncher=manufacturerGuideActive?`<section class="manufacturer-guide-launcher">
      <div><span class="eyebrow">${esc(fs.manufacturer)} · CATALOGUE VISUEL</span><h3>Parcourir les collections du fabricant</h3><p>${fs.manufacturer==="Gessi"?"Univers → collection → famille → produit → finition. Navigation inspirée de Gessi Area Pro.":"Collection → espace → modèle → finition. Références et prix du catalogue existant."}</p></div>
      <button class="btn primary manufacturer-guide-open" type="button">Explorer les collections</button>
    </section>`:"";
-   results.innerHTML=galassiaLauncher+naxaniLauncher+betteLauncher+catalanoLauncher+hidroboxLauncher+sbordoniLauncher+manufacturerGuideLauncher+(productCards||`<div class="empty">Aucun résultat.</div>`);
+   results.innerHTML=galassiaLauncher+dornbrachtLauncher+naxaniLauncher+betteLauncher+catalanoLauncher+hidroboxLauncher+sbordoniLauncher+manufacturerGuideLauncher+(productCards||`<div class="empty">Aucun résultat.</div>`);
    results.querySelector(".galassia-open")?.addEventListener("click",()=>{
      const items=catalogIndex.maker("Galassia");
      const target=$("#targetRoom")?.value||state.rooms[0]?.id||"";
@@ -2097,6 +2099,7 @@ function renderCatalog(){
        return main.id;
      }).catch(e=>alert("Galassia : "+(e.message||e)));
    });
+   results.querySelector(".dornbracht-direct-open")?.addEventListener("click",()=>launchDornbrachtConfigurator());
    results.querySelector(".naxani-direct-open")?.addEventListener("click",()=>{
      const target=$("#targetRoom")?.value||state.rooms[0]?.id||"";
      const items=catalogIndex.maker("Naxani");
@@ -2571,6 +2574,47 @@ function openRecorBathConfigurator(p,roomId){
 }
 
 
+function addDornbrachtConfigured(p,requiredBody,roomId){
+ if(p?.manufacturer!=='Dornbracht'||!p?.dornbrachtConfigured)
+  throw Error('Sélection Dornbracht non configurée.');
+ const catalog=catalogIndex.maker('Dornbracht');
+ const byRef=new Map(catalog.map(item=>[item.reference,item]));
+ const source=byRef.get(p.reference);
+ if(!source||Math.abs(Number(source.price)-Number(p.price))>.01)
+  throw Error('Référence ou prix Dornbracht absent du tarif 2026.');
+ if(requiredBody){
+  const expected=byRef.get(requiredBody.reference);
+  if(!expected||!p.dornbrachtVerifiedBody||
+    expected.reference!==p.dornbrachtVerifiedBody||
+    Math.abs(Number(expected.price)-Number(requiredBody.price))>.01)
+    throw Error('Corps Dornbracht non conforme aux accessoires validés et au tarif.');
+ }else if(p.dornbrachtVerifiedBody)
+   throw Error('Le corps obligatoire de la configuration a été omis.');
+ const main=createSelectedProductRecord({...source,...p,purchaseDiscount:50},roomId);
+ if(!main)throw Error('Impossible de créer le produit Dornbracht.');
+ const records=[main];
+ if(requiredBody){
+  const accessory=createSelectedProductRecord({...byRef.get(requiredBody.reference),
+    dornbrachtRequiredBody:true,requiredRoughIn:true,purchaseDiscount:50},roomId,main.id);
+  if(!accessory)throw Error('Impossible d’ajouter le corps Dornbracht.');
+  accessory.accessoryFor=main.id;
+  accessory.requiredRoughIn=true;
+  accessory.dornbrachtRequiredBody=true;
+  records.push(accessory);
+ }
+ commitSelectedRecords(records,{showProject:true});
+ return main.id;
+}
+function launchDornbrachtConfigurator(initial=null){
+ const items=catalogIndex.maker('Dornbracht');
+ const target=$('#targetRoom')?.value||state.rooms[0]?.id||'';
+ if(!items.length||!window.HydroDornbrachtConfigurator?.open){
+  alert('Configurateur Dornbracht indisponible : catalogue ou module non chargé.');return;
+ }
+ window.HydroDornbrachtConfigurator.open(items,target,
+  (main,body,room)=>addDornbrachtConfigured(main,body,room||target),initial)
+  .catch(e=>alert('Dornbracht : '+(e.message||e)));
+}
 function addNaxaniConfigured(p,roomId){
  const assembly=p?.naxaniAssembly,refs=assembly?.references;
  if(p?.manufacturer!=='Naxani'||!Array.isArray(refs)||!refs.length||refs[0]!==p.reference)
@@ -2658,6 +2702,7 @@ function addCatalogProduct(ref,roomId,key="",selectedCollection=""){
     return;
   }
   const targetRoomId=normalizedRoomId(roomId);
+  if(p.manufacturer==='Dornbracht'){launchDornbrachtConfigurator(p);return;}
   if(window.HydroNaxaniConfigurator?.eligible?.(p)){
     window.HydroNaxaniConfigurator.open(catalogIndex.maker('Naxani'),targetRoomId,
       chosen=>addNaxaniConfigured(chosen,targetRoomId),p).catch(e=>alert('Naxani : '+(e.message||e)));
