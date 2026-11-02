@@ -98,6 +98,29 @@
   // Restores previous locally imported tariff without slowing down initial presentation.
   tariff()?.load().then(()=>{if(ov.isConnected&&selected)renderDetail()}).catch(()=>{});
 
+  function photoSlug(p){return String(p?.manufacturerUrl||'').match(/\/kategoria\/([a-z0-9-]+)\/?/i)?.[1]||''}
+  // Same-origin fallback prevents blocked manufacturer hotlinks from becoming blank cards.
+  function bindPhotoFallback(img,p){
+   if(!img)return;
+   const slug=photoSlug(p);
+   img.onerror=()=>{
+    if(slug&&img.dataset.radawayProxy!=='1'){
+     img.dataset.radawayProxy='1';
+     img.src='/api/radaway-product-photo?slug='+encodeURIComponent(slug);
+     return;
+    }
+    img.style.display='none';
+    const item=img.closest('.radaway-model');
+    if(item&&!item.querySelector('.radaway-model-image-pending')){
+     const label=document.createElement('div');
+     label.className='radaway-model-image-pending';label.textContent='Photo Radaway indisponible';
+     img.after(label);
+    }
+    const status=$('.radaway-image-status');
+    if(img.classList.contains('radaway-image')&&status)
+     status.textContent='Photo fabricant indisponible pour cette variante.';
+   };
+  }
   function photoFor(p){return validModelPhoto(p?.image)?p.image:(mediaCache.get(p?.reference)||'')}
   function officialPhoto(p){
    if(!p)return Promise.resolve('');
@@ -171,7 +194,11 @@
     '<strong>'+esc(p.designation)+'</strong><small>'+esc(p.finish)+'</small></button>';
    }).join('')||'<div class="radaway-guide">Aucune référence indexée pour cette forme et ces filtres. <a href="'+esc(official?.url||'https://www.radaway.fr/')+
     '" target="_blank" rel="noopener noreferrer">Consulter les modèles de cette forme chez Radaway</a></div>';
-   ov.querySelectorAll('[data-model]').forEach(btn=>btn.onclick=()=>{
+   ov.querySelectorAll('.radaway-model img').forEach(img=>{
+      const ref=img.closest('.radaway-model')?.getAttribute('data-model');
+      bindPhotoFallback(img,rows.find(p=>p.reference===ref));
+    });
+    ov.querySelectorAll('[data-model]').forEach(btn=>btn.onclick=()=>{
      selected=rows.find(p=>p.reference===btn.dataset.model);renderGrid();renderDetail();
    });
    // Every displayed model is queued. Limit concurrency rather than skipping
@@ -179,11 +206,17 @@
    shown.filter(p=>!photoFor(p)).forEach(p=>{
     const requested=p.reference;
     scheduledPhoto(p).then(src=>{
-      if(!ov.isConnected||!src)return;
+      if(!ov.isConnected)return;
+       if(!src){
+        ov.querySelectorAll('.radaway-model [data-photo-ref]').forEach(place=>{
+         if(place.getAttribute('data-photo-ref')===requested)place.textContent='Photo fabricant indisponible';
+        });
+        return;
+       }
       ov.querySelectorAll('.radaway-model [data-photo-ref]').forEach(place=>{
        if(place.getAttribute('data-photo-ref')!==requested)return;
        const el=document.createElement('img');el.loading='lazy';el.alt=p.designation;el.src=src;
-       el.onerror=()=>{el.style.display='none';};
+       bindPhotoFallback(el,p);
        place.replaceWith(el);
       });
       if(selected?.reference===requested){updateSelectedPhoto(src);updateMetadata();}
@@ -233,7 +266,7 @@
     '</div><div class="radaway-note">Sans prix fabricant confirmé, la paroi sera ajoutée au projet <b>en attente de chiffrage</b> et masquée dans le dossier client. Les codes RAD-SÉLECTION sont uniquement des identifiants internes. La remise fournisseur de 50 % est appliquée aux articles chiffrés, sans modifier le prix public.</div>'+
     '<button class="radaway-add" type="button">Ajouter au projet</button><p class="radaway-error" aria-live="polite"></p>';
    const photo=$('.radaway-image');
-   photo.onerror=()=>{photo.style.display='none';$('.radaway-image-status').textContent='Photo temporairement indisponible : consulter la fiche Radaway.'};
+   bindPhotoFallback(photo,selected);
    // Fetch manufacturer specs even when a legacy thumbnail was already stored.
    if(!metaCache.has(selected.reference)&&!mediaPending.has(selected.reference)){
      const wanted=selected.reference;
