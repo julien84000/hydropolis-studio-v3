@@ -74,7 +74,15 @@
   if(!hierarchy)throw Error('Arborescence Radaway non chargée');
   const preselected=rows.find(p=>p.reference===initial?.reference);
   if(preselected){selected=preselected;group=family(preselected);form=hierarchy.shapeFor(preselected);type=preselected.productType}
-  const mediaCache=new Map(),mediaPending=new Map();
+  const mediaCache=new Map(),mediaPending=new Map(),metaCache=new Map();
+  let tarifNotice='',imageQueue=Promise.resolve();
+  const productOptions=()=>root.HydroRadawayOptions;
+  const tariff=()=>root.HydroRadawayTariff;
+  const modelVariants=()=>tariff()?.variants(selected)||[];
+  const metaFor=p=>metaCache.get(p?.reference)||{};
+  // Restores previous locally imported tariff without slowing down initial presentation.
+  tariff()?.load().then(()=>{if(ov.isConnected&&selected)renderDetail()}).catch(()=>{});
+
   function photoFor(p){return validModelPhoto(p?.image)?p.image:(mediaCache.get(p?.reference)||'')}
   function officialPhoto(p){
    if(!p)return Promise.resolve('');
@@ -90,6 +98,7 @@
     .then(data=>{
       const src=data?.exactFinish===true&&data.slug===slug&&validModelPhoto(data.photo)?data.photo:'';
       mediaCache.set(ref,src);
+      if(data&&typeof data==='object')metaCache.set(ref,data);
       if(src){p.image=src;p.imageSource='Radaway.fr · photo officielle du modèle';}
       return src;
     }).catch(()=>{mediaCache.set(ref,'');return ''})
@@ -150,9 +159,11 @@
    ov.querySelectorAll('[data-model]').forEach(btn=>btn.onclick=()=>{
      selected=rows.find(p=>p.reference===btn.dataset.model);renderGrid();renderDetail();
    });
-   shown.filter(p=>!photoFor(p)).slice(0,12).forEach(p=>{
+   // Every displayed model is queued. Limit concurrency rather than skipping
+   // images after the twelfth tile. Deduplicate requests with mediaPending.
+   shown.filter(p=>!photoFor(p)).forEach(p=>{
     const requested=p.reference;
-    officialPhoto(p).then(src=>{
+    imageQueue=imageQueue.catch(()=>{}).then(()=>officialPhoto(p)).then(src=>{
       if(!ov.isConnected||!src)return;
       ov.querySelectorAll('.radaway-model [data-photo-ref]').forEach(place=>{
        if(place.getAttribute('data-photo-ref')!==requested)return;
@@ -160,7 +171,7 @@
        el.onerror=()=>{el.style.display='none';};
        place.replaceWith(el);
       });
-      if(selected?.reference===requested)updateSelectedPhoto(src);
+      if(selected?.reference===requested){updateSelectedPhoto(src);updateMetadata();}
     });
    });
   }
@@ -191,13 +202,29 @@
     '<label>Largeur (cm)<input class="radaway-width" type="number" min="30" max="350" step=".1" placeholder="À confirmer"></label>'+
     '<label>Hauteur (cm)<input class="radaway-height" type="number" min="50" max="350" step=".1" placeholder="À confirmer"></label>'+
     '<label>Sens d’ouverture<select class="radaway-side"><option>À confirmer</option><option>Gauche</option><option>Droite</option></select></label>'+
-    '<label>Verre<input class="radaway-glass" placeholder="À confirmer"></label>'+
-    '<label class="wide">Référence fabricant vérifiée<input class="radaway-sku" placeholder="Vide si devis non reçu"></label>'+
+    '<label>Finition des profilés<select class="radaway-profile"></select></label>'+
+    '<label>Épaisseur du verre<select class="radaway-thickness"></select></label>'+
+    '<label>Type de verre<select class="radaway-glass"></select></label>'+
+    '<p class="wide radaway-spec-note"></p>'+
+    '<label class="wide">Référence et dimension du tarif 2026<select class="radaway-tariff-variant"><option value="">Choisir une référence tarifée</option></select></label>'+
+    '<div class="wide radaway-file-import"><span class="radaway-tariff-status">Tarif Radaway Excel non chargé</span>'+
+    '<label>Charger le tarif 2026 extrait du fichier Excel<input type="file" class="radaway-tariff-file" accept=".json,application/json"></label></div>'+
+    '<label class="wide">Référence fabricant vérifiée<input class="radaway-sku" placeholder="Référence de la gamme Radaway"></label>'+
     '<label class="wide">Prix public HT vérifié (€)<input type="number" min="0" step=".01" class="radaway-price" placeholder="À chiffrer"></label>'+
     '</div><div class="radaway-note">Sans prix fabricant confirmé, la paroi sera ajoutée au projet <b>en attente de chiffrage</b> et masquée dans le dossier client. Les codes RAD-SÉLECTION sont uniquement des identifiants internes. La remise fournisseur de 50 % est appliquée aux articles chiffrés, sans modifier le prix public.</div>'+
     '<button class="radaway-add" type="button">Ajouter au projet</button><p class="radaway-error" aria-live="polite"></p>';
    const photo=$('.radaway-image');
    photo.onerror=()=>{photo.style.display='none';$('.radaway-image-status').textContent='Photo temporairement indisponible : consulter la fiche Radaway.'};
+   // Fetch manufacturer specs even when a legacy thumbnail was already stored.
+   if(!metaCache.has(selected.reference)&&!mediaPending.has(selected.reference)){
+     const wanted=selected.reference;
+     const slug=String(selected.manufacturerUrl||'').match(/\/kategoria\/([a-z0-9-]+)\/?/i)?.[1];
+     if(slug)fetch('/api/radaway-model-media?slug='+encodeURIComponent(slug)).then(r=>r.json()).then(data=>{
+       if(data?.slug===slug)metaCache.set(wanted,data);
+       if(data?.photo&&validModelPhoto(data.photo)){mediaCache.set(wanted,data.photo);selected?.reference===wanted&&updateSelectedPhoto(data.photo)}
+       if(selected?.reference===wanted&&ov.isConnected)updateMetadata();
+     }).catch(()=>{});
+   }
    if(!photoFor(selected)){
      const request=selected.reference;
      officialPhoto(selected).then(src=>{
@@ -206,10 +233,47 @@
        else $('.radaway-image-status').textContent='Photo fabricant non accessible pour cette variante.';
      });
    }
+   const opts=productOptions();
+   const availableProfiles=opts?.profiles(selected,rows)||[{finish:selected.finish,reference:selected.reference}];
+   $('.radaway-profile').innerHTML=availableProfiles.map(v=>
+    '<option value="'+esc(v.reference)+'">'+esc(v.finish)+'</option>').join('');
+   $('.radaway-profile').value=selected.reference;
+   $('.radaway-profile').onchange=()=>{
+    const next=rows.find(v=>v.reference===$('.radaway-profile').value);
+    if(next){selected=next;renderGrid();renderDetail()}
+   };
+   $('.radaway-thickness').onchange=()=>updateGlassNote();
+   $('.radaway-glass').onchange=()=>updateGlassNote();
+   updateMetadata();
+   updateTariff();
+   $('.radaway-tariff-file').onchange=async e=>{
+     const file=e.target.files?.[0];
+     if(!file)return;
+     $('.radaway-tariff-status').textContent='Vérification du tarif en cours…';
+     try{const info=await tariff().importFile(file);
+       tarifNotice=info.rows+' références 2026 chargées';
+       updateTariff();
+     }catch(err){$('.radaway-tariff-status').textContent='Import impossible : '+(err.message||err)}
+   };
+   $('.radaway-tariff-variant').onchange=()=>{
+    const matched=tariff()?.exact($('.radaway-tariff-variant').value);
+    if(matched){
+      $('.radaway-sku').value=matched.r;
+      $('.radaway-price').value=matched.p;
+      $('.radaway-price').dataset.excelPurchase=String(matched.a);
+      $('.radaway-spec-note').textContent='Tarif 2026 : '+matched.d+' · '+euro(matched.p)+' HT public · '+euro(matched.a)+' HT achat fournisseur.';
+    }else $('.radaway-price').dataset.excelPurchase='';
+   };
    $('.radaway-add').onclick=async()=>{
     if(busy)return;
     const input=$('.radaway-price').value.trim(),hasPrice=!!input,price=hasPrice?Number(input):0;
     const sku=$('.radaway-sku').value.trim();
+    const thickness=Number($('.radaway-thickness').value),profile=$('.radaway-profile').selectedOptions[0]?.textContent||'À confirmer',
+      glass=$('.radaway-glass').value||'À confirmer',
+      pricedSource=tariff()?.exact(sku),exactPrice=pricedSource&&Math.abs(Number(pricedSource.p)-price)<.001;
+    if(!Number.isFinite(thickness)||![6,8,10].includes(thickness)||!glass||!profile){
+     $('.radaway-error').textContent='Indiquer l’épaisseur, la finition du profilé et le type de verre.';return;
+    }
     const w=$('.radaway-width').value.trim(),h=$('.radaway-height').value.trim();
     if(hasPrice&&(!Number.isFinite(price)||price<=0||!sku)){ $('.radaway-error').textContent='Pour un article chiffré, renseigner un prix HT positif et une référence fabricant.';return}
     if((w&&(!Number.isFinite(+w)||+w<30||+w>350))||(h&&(!Number.isFinite(+h)||+h<50||+h>350))){
@@ -220,17 +284,56 @@
      radawayInternalSelectionId:selected.reference,
      designation:selected.designation+(w?' · L '+w+' cm':'')+(h?' · H '+h+' cm':''),
      price,totalPrice:price,purchaseDiscount:50,
+     purchasePrice:exactPrice?pricedSource.a:Math.ceil(price*.5),
      pricingStatus:pending?'quote-required':'manufacturer-quote-manual',
      pricingSource:pending?'Radaway : devis à obtenir':'Chiffrage fabricant saisi manuellement',
      radawayPendingQuote:pending,hideFromDossier:pending,
-     imageSource:'radaway.fr · photo du modèle et de sa finition',imageFinishMatch:'manufacturer-model',
-     radawayConfiguration:{model:selected.designation,type:selected.productType,collection:selected.collection,finish:selected.finish,
+     image:photoFor(selected)||'',imageSource:'radaway.fr · photo du modèle et de sa finition',imageFinishMatch:'manufacturer-model',
+     radawayConfiguration:{model:selected.designation,type:selected.productType,collection:selected.collection,
+      finish:selected.finish,profileFinish:profile,glassType:glass,glassThicknessMm:thickness,
+      manufacturerGlassVerified:(metaFor(selected).thicknessOptions||[]).includes(thickness),
+      tariffSource:exactPrice?'RADAWAY_SHOWROOMS_TARIF 02022026.xlsx':'Prix vérifié manuellement',
       widthCm:w?Number(w):null,heightCm:h?Number(h):null,opening:$('.radaway-side').value,
-      glass:$('.radaway-glass').value.trim()||'À confirmer',officialConfiguratorUrl:url,
+      glass,officialConfiguratorUrl:url,
       manufacturerPage:selected.manufacturerUrl,manufacturerSku:sku||null,priceVerified:!pending}};
     busy=true;$('.radaway-add').disabled=true;
     try{await onAdd(record,roomId);close()}catch(e){busy=false;$('.radaway-add').disabled=false;$('.radaway-error').textContent=e.message||String(e)}
    };
+  }
+  function updateGlassNote(){
+   if(!selected)return;
+   const meta=metaFor(selected),opts=productOptions();
+   const thick=Number($('.radaway-thickness')?.value||0),glass=$('.radaway-glass')?.value;
+   const note=$('.radaway-spec-note');
+   if(!note)return;
+   note.textContent=(meta?.thicknessOptions?.includes(thick)?'Épaisseur confirmée par la fiche fabricant. ':'Épaisseur à confirmer pour cette référence. ')+
+     (meta?.glassOptionsVerified?'Type de verre disponible sur le modèle.':'Type de verre à faire confirmer sur le configurateur officiel ou le tarif.');
+  }
+  function updateMetadata(){
+   if(!selected||!$('.radaway-thickness'))return;
+   const meta=metaFor(selected),opts=productOptions();
+   const thickness=opts?.thicknessFor(selected,meta)||{options:[6,8,10],selected:null,verified:false};
+   const glass=opts?.glassOptions(meta)||[{value:'Transparent',label:'Transparent'}];
+   const prevThickness=$('.radaway-thickness').value,prevGlass=$('.radaway-glass').value;
+   $('.radaway-thickness').innerHTML='<option value="">À confirmer</option>'+thickness.options.map(n=>
+    '<option value="'+n+'">'+n+' mm'+(!thickness.verified?' · vérifier':'')+'</option>').join('');
+   $('.radaway-thickness').value=thickness.options.includes(Number(prevThickness))?prevThickness:(thickness.selected||'');
+   $('.radaway-glass').innerHTML=glass.map(g=>
+    '<option value="'+esc(g.value)+'">'+esc(g.label)+(g.verified?'':' · disponibilité à vérifier')+'</option>').join('');
+   if(glass.some(g=>g.value===prevGlass))$('.radaway-glass').value=prevGlass;
+   updateGlassNote();
+  }
+  function updateTariff(){
+   if(!selected||!$('.radaway-tariff-variant'))return;
+   const list=modelVariants();
+   const status=tariff()?.status();
+   $('.radaway-tariff-status').textContent=status?.ready?
+    (status.rows+' lignes du tarif 2026 chargées'+(list.length?' · '+list.length+' variantes pour ce modèle':' · référence à vérifier')) :
+    'Tarif Excel à importer une fois (fichier JSON fourni)';
+   $('.radaway-tariff-variant').innerHTML='<option value="">Choisir une référence tarifée</option>'+
+    list.map(p=>'<option value="'+esc(p.r)+'">'+esc(p.r+' · '+p.d+' · '+euro(p.p)+' HT')+'</option>').join('');
+   const curr=$('.radaway-sku').value;
+   if(list.some(p=>p.r===curr))$('.radaway-tariff-variant').value=curr;
   }
   function render(){renderType();renderShapes();renderGrid();renderDetail()}
   render();return Promise.resolve(true);
