@@ -113,7 +113,12 @@ function open(rows,roomId,onAdd,initial){
  }
  // Cards request only the photo. Accessory verification is not triggered on browsing.
  function fetchPreview(ref,priority=false){
-  if(!ref||previews.has(ref)||photoLoading.has(ref)||media.get(ref)?.image)return;
+  if(!ref||previews.has(ref)||media.get(ref)?.image)return;
+  if(photoLoading.has(ref)){
+   // Move an already queued visible/selected SKU to the front (active fetches are untouched).
+   if(priority){const at=photoTasks.indexOf(ref);if(at>0){photoTasks.splice(at,1);photoTasks.unshift(ref);}}
+   return;
+  }
   photoLoading.add(ref);
   if(priority)photoTasks.unshift(ref);else photoTasks.push(ref);
   drainPhotos();
@@ -217,8 +222,12 @@ function open(rows,roomId,onAdd,initial){
     esc(m.base)+' · '+m.variants.length+' finition(s)</small><small>Dès '+euro(min)+' HT</small></button>';
   }).join('')||'<p class="galassia-empty">Aucune référence dans cette famille.</p>';
   $$('[data-model]').forEach(b=>b.onclick=()=>{base=b.dataset.model;reference='';selectedBody='';renderSelection();renderModels()});
-  // Bounded progressive manufacturer image discovery; not a 9,000-SKU blast.
-  for(const m of visible.slice(0,12))if(!modelPhoto(m))fetchPreview(m.variants[0]?.reference);
+  // Only visible models are prefetched. Remove stale queued requests when switching families.
+  const desired=new Set(visible.slice(0,10).map(m=>m.variants[0]?.reference).filter(Boolean));
+  for(let i=photoTasks.length-1;i>=0;i--){
+   if(!desired.has(photoTasks[i])){photoLoading.delete(photoTasks[i]);photoTasks.splice(i,1);}
+  }
+  for(const m of visible.slice(0,10))if(!modelPhoto(m))fetchPreview(m.variants[0]?.reference);
   $('.dornbracht-pages').innerHTML=list.length>36?
    '<button type="button" data-page="-1" '+(!page?'disabled':'')+'>Précédent</button><span>Page '+(page+1)+' / '+Math.ceil(list.length/36)+'</span>'+
    '<button type="button" data-page="1" '+((page+1)*36>=list.length?'disabled':'')+'>Suivant</button>':'';
