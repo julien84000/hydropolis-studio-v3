@@ -53,9 +53,68 @@
   })().catch(()=>null);
   return readyPromise;
  }
+ const utf8=new TextDecoder('utf-8');
+ async function parseXlsx(file){
+  // Native modern-browser ZIP reader. No external service receives customer
+  // price files; the original Excel stays in browser/IndexedDB.
+  const raw=await file.arrayBuffer(),view=new DataView(raw),bytes=new Uint8Array(raw);
+  let eocd=-1;
+  for(let p=raw.byteLength-22;p>=Math.max(0,raw.byteLength-65557);p--){
+   if(view.getUint32(p,true)===0x06054b50){eocd=p;break}
+  }
+  if(eocd<0)throw Error('Archive Excel non reconnue.');
+  const entries=view.getUint16(eocd+10,true),offset=view.getUint32(eocd+16,true);
+  const archive=new Map();let pos=offset;
+  for(let n=0;n<entries;n++){
+   if(view.getUint32(pos,true)!==0x02014b50)throw Error('Structure XLSX invalide.');
+   const method=view.getUint16(pos+10,true),compressed=view.getUint32(pos+20,true),
+     fnlen=view.getUint16(pos+28,true),extralen=view.getUint16(pos+30,true),
+     comlen=view.getUint16(pos+32,true),loc=view.getUint32(pos+42,true);
+   const name=utf8.decode(bytes.slice(pos+46,pos+46+fnlen));
+   archive.set(name,{method,compressed,loc});
+   pos+=46+fnlen+extralen+comlen;
+  }
+  async function xml(name){
+   const file=archive.get(name);
+   if(!file)throw Error('Fichier requis absent du classeur : '+name);
+   const p=file.loc;
+   if(view.getUint32(p,true)!==0x04034b50)throw Error('Fichier ZIP endommagé');
+   const start=p+30+view.getUint16(p+26,true)+view.getUint16(p+28,true);
+   const compressed=bytes.slice(start,start+file.compressed);
+   let data=compressed;
+   if(file.method===8){
+    if(typeof DecompressionStream==='undefined')throw Error('Navigateur incompatible. Utilisez le fichier JSON préparé.');
+    try{
+     const stream=new Blob([compressed]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+     data=new Uint8Array(await new Response(stream).arrayBuffer());
+    }catch{throw Error('Décompression XLSX indisponible dans ce navigateur ; utilisez le JSON fourni.')}
+   }else if(file.method!==0)throw Error('Compression XLSX non prise en charge.');
+   const doc=new DOMParser().parseFromString(utf8.decode(data),'application/xml');
+   if(doc.querySelector('parsererror'))throw Error('XML Excel invalide');
+   return doc;
+  }
+  const shared=await xml('xl/sharedStrings.xml');
+  const strings=Array.from(shared.getElementsByTagName('si'),item=>item.textContent||'');
+  const sheet=await xml('xl/worksheets/sheet1.xml');
+  const rows=sheet.getElementsByTagName('row'),priced=[];
+  for(let n=1;n<rows.length;n++){
+   const values={};
+   for(const cell of rows[n].getElementsByTagName('c')){
+    const col=(cell.getAttribute('r')||'').match(/^[A-Z]+/)?.[0];
+    const raw=cell.getElementsByTagName('v')[0]?.textContent||'';
+    if(col)values[col]=cell.getAttribute('t')==='s'?strings[Number(raw)]||'':raw;
+   }
+   const reference=values.C,publicPrice=Number(values.H),purchase=Number(values.I);
+   if(!reference||!Number.isFinite(publicPrice)||publicPrice<=0||
+      !Number.isFinite(purchase)||purchase<=0)continue;
+   priced.push({s:values.A||'',u:values.B||'',r:reference,e:values.D||'',d:values.E||'',
+     t:values.F||'',p:publicPrice,a:purchase});
+  }
+  return {source:'RADAWAY_SHOWROOMS_TARIF 02022026.xlsx',date:'2026-02-02',discount:50,prices:priced};
+ }
  async function importFile(file){
   if(!file)throw Error('Choisir le fichier tarif Radaway JSON.');
-  const parsed=JSON.parse(await file.text());
+  const parsed=/\.xlsx$/i.test(file.name)?await parseXlsx(file):JSON.parse(await file.text());
   const info=use(parsed);
   await store(parsed);return info;
  }
@@ -72,5 +131,5 @@
   return mapped.sort((a,b)=>a.p-b.p||a.r.localeCompare(b.r));
  }
  function status(){return {ready:!!data,rows:data?.prices?.length||0,date:data?.date||''}}
- return {load,importFile,exact,variants,status,validate,use};
+ return {load,importFile,exact,variants,status,validate,use,parseXlsx};
 });
