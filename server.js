@@ -92,6 +92,7 @@ require("./hotbath-live-media-server")(app);
 require("./hotbath-italian-media-server")(app);
 require("./catalano-product-media-server")(app);
 require("./dornbracht-media-server")(app);
+require("./amphora-media-server")(app);
 app.use(express.static(path.join(__dirname,"public")));
 require("./tariff-server")(app);
 
