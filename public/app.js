@@ -2050,6 +2050,8 @@ function renderCatalog(){
    </section>`:"";
    const galassiaActive=/^Galassia$/i.test(fs.manufacturer)||(!fs.manufacturer&&/^galassia\b/i.test(String(q).trim()));
    const galassiaLauncher=galassiaActive?`<section class="galassia-launcher"><div><span class="eyebrow">GALASSIA · CONFIGURATEUR VISUEL</span><h3>Explorer les collections Galassia</h3><p>Collections → modèles → variantes · prix publics du tarif fourni · remise d’achat 50 %. Visuels de modèle et fiches techniques du fabricant.</p></div><button type="button" class="galassia-open">Configurer Galassia</button></section>`:"";
+   const amphoraActive=/^Amphora$/i.test(fs.manufacturer)||(!fs.manufacturer&&/^amphora\b/i.test(String(q).trim()));
+   const amphoraLauncher=amphoraActive?`<section class="galassia-launcher amphora-direct-launcher"><div><span class="eyebrow">AMPHORA · REEL</span><h3>Configurer Amphora</h3><p>57 modèles · 3 finitions · tarifs enregistrés de 2024 (à actualiser).</p></div><button type="button" class="amphora-direct-open">Configurer Amphora</button></section>`:"";
    const dornbrachtActive=/^Dornbracht$/i.test(fs.manufacturer)||(!fs.manufacturer&&/^dornbracht\b/i.test(String(q).trim()));
    const dornbrachtLauncher=dornbrachtActive?`<section class="galassia-launcher dornbracht-direct-launcher"><div><span class="eyebrow">DORNBRACHT · CONFIGURATEUR VISUEL</span><h3>Configurer les collections Dornbracht</h3><p>Collection → famille → modèle → finition → accessoires nécessaires validés sur le site français. Prix publics FAB-DIS 2026 · remise fournisseur 50 %.</p></div><button type="button" class="dornbracht-direct-open">Configurer Dornbracht</button></section>`:"";
    const naxaniActive=/^Naxani$/i.test(fs.manufacturer)||(!fs.manufacturer&&/^naxani\b/i.test(String(q).trim()));
@@ -2076,7 +2078,7 @@ function renderCatalog(){
      <div><span class="eyebrow">${esc(fs.manufacturer)} · CATALOGUE VISUEL</span><h3>Parcourir les collections du fabricant</h3><p>${fs.manufacturer==="Gessi"?"Univers → collection → famille → produit → finition. Navigation inspirée de Gessi Area Pro.":"Collection → espace → modèle → finition. Références et prix du catalogue existant."}</p></div>
      <button class="btn primary manufacturer-guide-open" type="button">Explorer les collections</button>
    </section>`:"";
-   results.innerHTML=galassiaLauncher+dornbrachtLauncher+naxaniLauncher+betteLauncher+catalanoLauncher+hidroboxLauncher+sbordoniLauncher+manufacturerGuideLauncher+(productCards||`<div class="empty">Aucun résultat.</div>`);
+   results.innerHTML=galassiaLauncher+amphoraLauncher+dornbrachtLauncher+naxaniLauncher+betteLauncher+catalanoLauncher+hidroboxLauncher+sbordoniLauncher+manufacturerGuideLauncher+(productCards||`<div class="empty">Aucun résultat.</div>`);
    results.querySelector(".galassia-open")?.addEventListener("click",()=>{
      const items=catalogIndex.maker("Galassia");
      const target=$("#targetRoom")?.value||state.rooms[0]?.id||"";
@@ -2099,6 +2101,7 @@ function renderCatalog(){
        return main.id;
      }).catch(e=>alert("Galassia : "+(e.message||e)));
    });
+   results.querySelector(".amphora-direct-open")?.addEventListener("click",()=>launchAmphoraConfigurator());
    results.querySelector(".dornbracht-direct-open")?.addEventListener("click",()=>launchDornbrachtConfigurator());
    results.querySelector(".naxani-direct-open")?.addEventListener("click",()=>{
      const target=$("#targetRoom")?.value||state.rooms[0]?.id||"";
@@ -2605,6 +2608,16 @@ function addDornbrachtConfigured(p,requiredBody,roomId){
  commitSelectedRecords(records,{showProject:true});
  return main.id;
 }
+function launchAmphoraConfigurator(initial=null){
+ const items=catalogIndex.maker('Amphora'),target=$('#targetRoom')?.value||state.rooms[0]?.id||'';
+ if(!items.length||!window.HydroAmphoraConfigurator?.open){alert('Configurateur Amphora indisponible.');return;}
+ window.HydroAmphoraConfigurator.open(items,target,(p,room)=>{
+  const record=createSelectedProductRecord(p,room);
+  if(!record)throw Error('Référence introuvable dans le catalogue.');
+  commitSelectedRecords([record],{showProject:true});
+  return record.id;
+ },initial).catch(e=>alert('Amphora : '+(e.message||e)));
+}
 function launchDornbrachtConfigurator(initial=null){
  const items=catalogIndex.maker('Dornbracht');
  const target=$('#targetRoom')?.value||state.rooms[0]?.id||'';
@@ -2703,6 +2716,7 @@ function addCatalogProduct(ref,roomId,key="",selectedCollection=""){
   }
   const targetRoomId=normalizedRoomId(roomId);
   if(p.manufacturer==='Dornbracht'){launchDornbrachtConfigurator(p);return;}
+  if(p.manufacturer==='Amphora'){launchAmphoraConfigurator(p);return;}
   if(window.HydroNaxaniConfigurator?.eligible?.(p)){
     window.HydroNaxaniConfigurator.open(catalogIndex.maker('Naxani'),targetRoomId,
       chosen=>addNaxaniConfigured(chosen,targetRoomId),p).catch(e=>alert('Naxani : '+(e.message||e)));
