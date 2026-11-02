@@ -117,7 +117,7 @@ function open(rows,roomId,onAdd,initial){
    const widths=[...new Set(alternatives.map(width).filter(Number.isFinite))].sort((a,b)=>a-b);
    let html=visual(p)+'<span class="nax-eyebrow">'+esc(groups.find(g=>g[1]===family)?.[2]||'')+'</span><h3>'+esc(collection)+'</h3>';
    if(kinds.length>1)html+='<label>Type de caisson / composition<select data-input="variant">'+kinds.map(x=>'<option value="'+esc(x)+'"'+(x===variant(p)?' selected':'')+'>'+esc(x)+'</option>').join('')+'</select></label>';
-   if(woods.length>1)html+='<label>Essence / finition<select data-input="wood">'+woods.map(x=>'<option value="'+esc(x)+'"'+(p.naWood===x?' selected':'')+'>'+esc(x)+'</option>').join('')+'</select></label>';
+   if(woods.length>1)html+='<label>Finition du bois<select data-input="wood">'+woods.map(x=>'<option value="'+esc(x)+'"'+(p.naWood===x?' selected':'')+'>'+esc(x)+'</option>').join('')+'</select></label>';
    if(widths.length)html+='<label>Largeur du module / assemblage<select data-input="width">'+widths.map(w=>'<option value="'+w+'"'+(eq(w,width(p))?' selected':'')+'>'+w.toLocaleString('fr-FR')+' cm</option>').join('')+'</select></label>';
    html+='<label>Référence tarifée<select data-input="reference">'+selectOptions(alternatives.filter(x=>eq(width(x),width(p))),reference)+'</select></label>'+
      '<p class="nax-supplier">Référence '+esc(p.reference)+' · '+euro(p.price)+' HT · tarif PDF p. '+(p.sourcePage||'?')+'</p>';
@@ -125,7 +125,16 @@ function open(rows,roomId,onAdd,initial){
     const mods=getModuleRows(p),count=p.naPrepricedJoin?2:moduleRefs.length,total=moduleRefs.reduce((s,r)=>s+width(byRef.get(r)),0);
     html+='<div class="nax-assembly"><h4>1. Composer les caissons</h4>';
     if(p.naPrepricedJoin){
-      html+='<div class="nax-module-fixed">'+pict(p)+'<b>Bacall '+esc(p.naVariant)+' · deux caissons tarifés ensemble</b><small>'+((p.naModules||[]).join(' + '))+' cm · '+total.toLocaleString('fr-FR')+' cm au tarif</small></div>';
+      const combos=collectionRows().filter(x=>x.naPrepricedJoin&&x.naVariant===p.naVariant&&x.naWood===p.naWood&&Array.isArray(x.naModules));
+      html+='<div class="nax-combo-title">Choisir les deux largeurs, de gauche à droite</div><div class="nax-combo-grid">'+combos.map(x=>{
+       const left=x.naModules[0],right=x.naModules[1],chosen=x.reference===p.reference;
+       const number=n=>Number(n).toLocaleString('fr-FR');
+       return '<button type="button" class="nax-combo-item '+(chosen?'active':'')+'" data-bacall-combo="'+esc(x.reference)+'" aria-pressed="'+chosen+'">'+
+       '<div class="nax-combo-picto">'+pict(x)+'</div><strong>'+number(left)+' cm <span>+</span> '+number(right)+' cm</strong>'+
+       '<small>Gauche '+number(left)+' · droite '+number(right)+'</small>'+
+       '<b>Total '+number(width(x))+' cm</b><small>Réf. '+esc(x.reference)+'</small><em>'+euro(x.price)+' HT</em></button>'
+      }).join('')+'</div>';
+      html+='<div class="nax-module-fixed"><b>Bacall '+esc(p.naVariant)+' · deux caissons tarifés ensemble</b><small>Caisson gauche '+Number(p.naModules?.[0]).toLocaleString('fr-FR')+' cm · caisson droit '+Number(p.naModules?.[1]).toLocaleString('fr-FR')+' cm</small></div>';
     }else{
       moduleRefs.forEach((r,i)=>{
        const q=byRef.get(r);
@@ -187,7 +196,8 @@ function open(rows,roomId,onAdd,initial){
     if(k==='drain')drainRef=v;
     render(false);
    });
-   $$('[data-module]').forEach(el=>el.onchange=()=>{moduleRefs[Number(el.dataset.module)]=el.value;resetOptions();render(false)});
+   $('[data-bacall-combo]').forEach(el=>el.onclick=()=>{beginMain(el.dataset.bacallCombo);render(false)});
+   $('[data-module]').forEach(el=>el.onchange=()=>{moduleRefs[Number(el.dataset.module)]=el.value;resetOptions();render(false)});
    $$('[data-remove-module]').forEach(el=>el.onclick=()=>{moduleRefs.splice(Number(el.dataset.removeModule),1);resetOptions();render(false)});
    $('.nax-plus-module')?.addEventListener('click',()=>{const available=getModuleRows(p);if(available.length&&moduleRefs.length<4){moduleRefs.push(available[0].reference);resetOptions();render(false)}});
    $$('[data-plan-collection]').forEach(el=>el.onclick=()=>{planCollection=el.dataset.planCollection;planRef='';topRef='';render(false)});
