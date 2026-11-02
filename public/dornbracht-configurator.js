@@ -115,7 +115,9 @@ function open(rows,roomId,onAdd,initial){
  const available=()=>index.collections.get(collection);
  const categories=()=>[...(available()?.categories.values()||[])].sort((a,b)=>a.label.localeCompare(b.label,'fr'));
  function activeCategory(){
-  const values=categories();if(!values.some(c=>c.label===category))category=values[0]?.label||'';
+  const values=categories();
+  const preferred=['Mitigeurs et mélangeurs','Commandes et thermostatiques','Douchettes et pommes','Douche','Lavabo','Bain','Becs de lavabo'];
+  if(!values.some(c=>c.label===category))category=preferred.map(p=>values.find(c=>c.label===p)).find(Boolean)?.label||values[0]?.label||'';
   return values.find(c=>c.label===category);
  }
  function models(){
