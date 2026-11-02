@@ -32,7 +32,7 @@
   const shape=shapes[k];
   if(!shape)return existing(p);
   const doubled=Number(p.naSinkCount||1)===2;
-  const bowl=(doubled?'<g transform="translate(-38 0) scale(.73 1)">'+shape+'</g><g transform="translate(72 0) scale(.73 1)">'+shape+'</g>':shape);
+  const bowl=(doubled?'<g transform="translate(6 0) scale(.57 1)">'+shape+'</g><g transform="translate(80 0) scale(.57 1)">'+shape+'</g>':shape);
   const tape=(doubled?'<circle cx="63" cy="17" r="2.1"/><circle cx="137" cy="17" r="2.1"/>':'<circle cx="100" cy="17" r="2.1"/>');
   return '<svg class="nax-pictogram nax-plan-original-shape" viewBox="0 0 200 95" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Schéma de forme plan vasque '+esc(p.collection)+(doubled?', deux vasques':'')+'">'+
     '<rect x="11" y="11" width="178" height="74" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/>'+
