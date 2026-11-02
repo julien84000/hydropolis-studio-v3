@@ -2633,6 +2633,8 @@ function launchRadawayConfigurator(initial=null){
   const rec=createSelectedProductRecord(chosen,room||target);
   if(!rec)throw Error('Impossible de créer la configuration Radaway.');
   rec.purchaseDiscount=50;
+  rec.purchasePrice=pending?undefined:Number(chosen.purchasePrice);
+  rec.radawayConfiguration=chosen.radawayConfiguration;
   rec.radawayPendingQuote=pending;
   rec.hideFromDossier=pending;
   rec.pricingStatus=chosen.pricingStatus;
@@ -3315,6 +3317,19 @@ function renderMarginDashboard(){
       </label>`).join(""):`<div class="margin-empty">Ajoutez des produits au projet pour paramétrer les conditions fournisseur.</div>`;
   }
 
+  if(supplierHost&&makers.includes('Radaway')){
+    supplierHost.insertAdjacentHTML('beforeend',
+      '<label class="supplier-discount-row"><span><b>Département de livraison Radaway</b><small>Port calculé à la commande, selon dimensions, franco et département</small></span>'+
+      '<span class="supplier-rate"><input id="radawayDeliveryDepartment" type="text" maxlength="2" placeholder="84, 13, 2A…" value="'+
+       String(state.commercial?.radawayDeliveryDepartment||'').replace(/[^0-9AB]/gi,'').toUpperCase()+'"></span></label>');
+    const department=$('#radawayDeliveryDepartment');
+    department.onchange=()=>{
+      const value=department.value.trim().toUpperCase();
+      if(value&&!/^(?:[0-9]{2}|2A|2B)$/.test(value)){alert('Code département invalide.');return}
+      state.commercial.radawayDeliveryDepartment=value;
+      saveState();renderMarginDashboard();
+    };
+  }
   const f=projectFinancials();
   const k=$("#marginKpis");
   if(k) k.innerHTML=`
