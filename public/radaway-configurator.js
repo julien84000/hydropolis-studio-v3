@@ -216,6 +216,8 @@
     '<div class="radaway-fields">'+
     '<label>Largeur (cm)<input class="radaway-width" type="number" min="30" max="350" step=".1" placeholder="À confirmer"></label>'+
     '<label>Hauteur (cm)<input class="radaway-height" type="number" min="50" max="350" step=".1" placeholder="À confirmer"></label>'+
+    '<label>Paroi fixe incluse (transport)<input class="radaway-fixed-panel" type="checkbox" '+(selected.productType==='Walk-in'?'checked':'')+'></label>'+
+    '<label>Largeur de la plus grande paroi fixe (cm)<input class="radaway-fixed-width" type="number" min="20" max="350" step=".1" placeholder="Si présente"></label>'+
     '<label>Sens d’ouverture<select class="radaway-side"><option>À confirmer</option><option>Gauche</option><option>Droite</option></select></label>'+
     '<label>Finition des profilés<select class="radaway-profile"></select></label>'+
     '<label>Épaisseur du verre<select class="radaway-thickness"></select></label>'+
@@ -305,8 +307,11 @@
      $('.radaway-error').textContent='Indiquer l’épaisseur, la finition du profilé et le type de verre.';return;
     }
     const w=$('.radaway-width').value.trim(),h=$('.radaway-height').value.trim();
+    const fixedPanel=$('.radaway-fixed-panel').checked,
+      fixedPanelWidthCm=fixedPanel?Number($('.radaway-fixed-width').value||w||0):0;
     if(hasPrice&&(!Number.isFinite(price)||price<=0||!sku)){ $('.radaway-error').textContent='Pour un article chiffré, renseigner un prix HT positif et une référence fabricant.';return}
-    if((w&&(!Number.isFinite(+w)||+w<30||+w>350))||(h&&(!Number.isFinite(+h)||+h<50||+h>350))){
+    if((w&&(!Number.isFinite(+w)||+w<30||+w>350))||(h&&(!Number.isFinite(+h)||+h<50||+h>350))||
+      (fixedPanelWidthCm&&(!Number.isFinite(fixedPanelWidthCm)||fixedPanelWidthCm<20||fixedPanelWidthCm>350))){
      $('.radaway-error').textContent='Vérifier les dimensions saisies.';return;
     }
     if(glass!=='Transparent'&&!surcharge.verified&&hasPrice){
@@ -328,7 +333,8 @@
       glassSupplementPurchaseHT:surcharge.verified?surcharge.purchaseHT:0,
       manufacturerGlassVerified:(metaFor(selected).thicknessOptions||[]).includes(thickness),
       tariffSource:exactPrice?'RADAWAY_SHOWROOMS_TARIF 02022026.xlsx':'Prix vérifié manuellement',
-      widthCm:w?Number(w):null,heightCm:h?Number(h):null,opening:$('.radaway-side').value,
+      widthCm:w?Number(w):null,heightCm:h?Number(h):null,
+      fixedPanel,fixedPanelWidthCm:fixedPanel?fixedPanelWidthCm:null,opening:$('.radaway-side').value,
       glass,officialConfiguratorUrl:url,
       manufacturerPage:selected.manufacturerUrl,manufacturerSku:sku||null,priceVerified:!pending}};
     busy=true;$('.radaway-add').disabled=true;
