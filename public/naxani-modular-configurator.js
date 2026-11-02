@@ -24,6 +24,45 @@ const variant=p=>(p?.naVariant||'Meuble')+(p?.naPrepricedJoin?' · composition 2
 const photo=p=>E.picture(p);
 const img=p=>photo(p)?'<img src="'+esc(photo(p))+'" alt="Photo illustrative '+esc(p.collection)+'" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\'"><span class="nax-photo-fallback" style="display:none">Photo indisponible</span>':'<span class="nax-photo-fallback">Photo non disponible · schéma ci-dessous</span>';
 const pict=p=>E.pictogram(p);
+// Official manufacturer examples, never a promise that the illustrated SKU/width is exact.
+const woodGallery={
+ 'Suró':{
+  '31':{
+   Honey:'https://naxani.com/wp-content/uploads/2024/11/suro-31-200-honey-1-lav.jpg',
+   Smoked:'https://naxani.com/wp-content/uploads/2024/11/suro-31-140-smoked.jpg'
+  },
+  '64':{Smoked:'https://naxani.com/wp-content/uploads/2024/11/suro-64-160-smoked.jpg'}
+ },
+ Prenn:{
+  '31':{
+   Iroko:'https://naxani.com/wp-content/uploads/2024/11/prenn-31-140-iroko.jpg',
+   'Érable':'https://naxani.com/wp-content/uploads/2024/11/prenn-31-130-maple.jpg',
+   Noyer:'https://naxani.com/wp-content/uploads/2024/11/prenn-31-140-nogal.jpg',
+   'Chêne':'https://naxani.com/wp-content/uploads/2024/11/prenn-31-140-roble-marmol.jpg'
+  },
+  '64':{
+   Iroko:'https://naxani.com/wp-content/uploads/2024/11/prenn-64-140-iroko.jpg',
+   'Chêne':'https://naxani.com/wp-content/uploads/2024/11/prenn-64-160-roble.jpg'
+  }
+ },
+ Slat:{
+  '1C':{
+   Frêne:'https://naxani.com/wp-content/uploads/2024/11/Slat_1C_120_fresno-scaled.jpg',
+   Iroko:'https://naxani.com/wp-content/uploads/2024/11/slat-1c-160-iroko.jpg',
+   'Érable':'https://naxani.com/wp-content/uploads/2024/11/slat-1c-100-maple.jpg',
+   Noyer:'https://naxani.com/wp-content/uploads/2024/11/slat-1c-140-nogal.jpg',
+   'Chêne':'https://naxani.com/wp-content/uploads/2024/11/slat-1c-140-roble.jpg'
+  },
+  '2C':{
+   Iroko:'https://naxani.com/wp-content/uploads/2024/11/slat-2c-140-iroko.jpg',
+   Noyer:'https://naxani.com/wp-content/uploads/2024/11/slat-2c-180-nogal.jpg'
+  }
+ }
+};
+const woodPhoto=(p,finish)=>{
+ const model=String(p?.naVariant||'').match(/^(\d{2}|1C|2C)/)?.[0]||'';
+ return woodGallery[p?.collection]?.[model]?.[finish]||'';
+};
 function compatible(meuble,plan,data=catalog,composedWidth){
  if(!meuble||!plan||plan.productType!=='plan-integre')return false;
  const total=Number.isFinite(Number(composedWidth))?Number(composedWidth):width(meuble);
@@ -35,6 +74,7 @@ function open(rows,roomId,onAdd,initial){
  if(!root.document||!Array.isArray(rows)||!rows.length)return Promise.reject(Error('Tarif Naxani indisponible'));
  root.HydroNaxaniFurnitureMedia?.apply?.(rows);
  E.annotate(rows);
+ root.HydroNaxaniWoodFinishes?.annotate?.(rows);
  const byRef=new Map(rows.map(p=>[p.reference,p]));
  let family=familyTypes('bois-massif')[0],collection='',reference='',moduleRefs=[];
  let mode='integrated',basinCount=1,planCollection='',planRef='',topRef='',basinRef='',drainRef='',search='',busy=false;
@@ -118,10 +158,28 @@ function open(rows,roomId,onAdd,initial){
    if(!p){$('.nax-detail').innerHTML='<p class="nax-empty">Choisissez une collection.</p>';return}
    const variants=collectionRows(),kinds=[...new Set(variants.map(variant))],woods=[...new Set(variants.filter(x=>variant(x)===variant(p)).map(x=>x.naWood).filter(Boolean))];
    const alternatives=mainRowsLike(p);
-   const widths=[...new Set(alternatives.map(width).filter(Number.isFinite))].sort((a,b)=>a-b);
+   const widths=[...new Set(alternatives.map(width).filter(n=>Number.isFinite(n)&&n>0))].sort((a,b)=>a-b);
    let html=visual(p)+'<span class="nax-eyebrow">'+esc(groups.find(g=>g[1]===family)?.[2]||'')+'</span><h3>'+esc(collection)+'</h3>';
    if(kinds.length>1)html+='<label>Type de caisson / composition<select data-input="variant">'+kinds.map(x=>'<option value="'+esc(x)+'"'+(x===variant(p)?' selected':'')+'>'+esc(x)+'</option>').join('')+'</select></label>';
-   if(woods.length>1)html+='<label>Finition du bois<select data-input="wood">'+woods.map(x=>'<option value="'+esc(x)+'"'+(p.naWood===x?' selected':'')+'>'+esc(x)+'</option>').join('')+'</select></label>';
+   if(woods.length){
+     const finishType=p.naFinishType==='teinte'?'Teinte du bois':p.naFinishType==='finition'?'Finition du meuble':p.naFinishType==='non-precise'?'Essence non précisée':'Essence du bois';
+     html+='<div class="nax-wood-group"><label>'+finishType+'<select data-input="wood" '+(woods.length===1?'disabled':'')+'>'+woods.map(x=>'<option value="'+esc(x)+'"'+(p.naWood===x?' selected':'')+'>'+esc(x)+'</option>').join('')+'</select></label>';
+     if(woods.length>1){
+       const sameVariant=variants.filter(x=>variant(x)===variant(p));
+       html+='<div class="nax-wood-hint">'+(p.naFinishType==='teinte'?'Ces choix sont des teintes du bois, et non des essences différentes.':'Choisissez une essence pour afficher les références et prix correspondants.')+'</div>'+
+        '<div class="nax-wood-options" role="group" aria-label="'+finishType+'">'+woods.map(wood=>{
+         const found=sameVariant.filter(x=>x.naWood===wood);
+         const atWidth=found.find(x=>eq(width(x),width(p)))||found[0];
+         const example=woodPhoto(p,wood);
+         const selected=wood===p.naWood;
+         return '<button type="button" class="nax-wood-choice '+(selected?'active':'')+'" data-wood-finish="'+esc(wood)+'" aria-pressed="'+selected+'" aria-label="Choisir '+esc(wood)+'">'+
+           (example?'<img loading="lazy" src="'+esc(example)+'" alt="Exemple fabricant '+esc(wood)+'" onerror="this.style.display=\'none\'">':'<span class="nax-wood-no-photo">Visuel de finition non disponible</span>')+
+           '<b>'+esc(wood)+'</b>'+(atWidth?'<small>À '+Number(width(atWidth)).toLocaleString('fr-FR')+' cm : '+euro(atWidth.price)+' HT</small>':'')+
+           (selected?'<span class="nax-wood-selected">✓ Choisi</span>':'')+'</button>';
+        }).join('')+'</div>';
+     }
+     html+='</div>';
+   }
    if(widths.length)html+='<label>Largeur du module / assemblage<select data-input="width">'+widths.map(w=>'<option value="'+w+'"'+(eq(w,width(p))?' selected':'')+'>'+w.toLocaleString('fr-FR')+' cm</option>').join('')+'</select></label>';
    html+='<label>Référence tarifée<select data-input="reference">'+selectOptions(alternatives.filter(x=>eq(width(x),width(p))),reference)+'</select></label>'+
      '<p class="nax-supplier">Référence '+esc(p.reference)+' · '+euro(p.price)+' HT · tarif PDF p. '+(p.sourcePage||'?')+'</p>';
@@ -224,7 +282,7 @@ function open(rows,roomId,onAdd,initial){
     const k=el.dataset.input,v=el.value;
     if(['variant','wood','width','reference'].includes(k)){
       let possible=collectionRows();
-      if(k==='variant')possible=possible.filter(x=>variant(x)===v&&(!p.naWood||x.naWood===p.naWood));
+      if(k==='variant'){const matching=possible.filter(x=>variant(x)===v);possible=matching.filter(x=>!p.naWood||x.naWood===p.naWood);if(!possible.length)possible=matching;}
       if(k==='wood')possible=possible.filter(x=>variant(x)===variant(p)&&x.naWood===v);
       if(k==='width')possible=possible.filter(x=>variant(x)===variant(p)&&(!p.naWood||x.naWood===p.naWood)&&eq(width(x),Number(v)));
       const next=k==='reference'?v:(possible.find(x=>eq(width(x),width(p)))||possible[0])?.reference;
@@ -242,6 +300,16 @@ function open(rows,roomId,onAdd,initial){
    $('.nax-plus-module')?.addEventListener('click',()=>{const available=getModuleRows(p);if(available.length&&moduleRefs.length<4){moduleRefs.push(available[0].reference);resetOptions();render(false)}});
    // Delegate clicks to the actual plan buttons, including taps directly on SVG paths.
    $('.nax-detail').onclick=event=>{
+     const woodCard=event.target.closest('button[data-wood-finish]');
+     if(woodCard){
+       const finish=woodCard.dataset.woodFinish;
+       if(finish!==p.naWood){
+         const matching=collectionRows().filter(x=>variant(x)===variant(p)&&x.naWood===finish);
+         const next=(matching.find(x=>eq(width(x),width(p)))||matching[0])?.reference;
+         if(next){beginMain(next);render(false);}
+       }
+       return;
+     }
      const card=event.target.closest('button[data-plan-collection]');
      if(card){
        const chosen=card.dataset.planCollection;
