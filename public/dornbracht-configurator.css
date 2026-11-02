@@ -35,3 +35,20 @@
 .dornbracht-modal .dornbracht-selection{border-top:1px solid #ddd;overflow:visible}
 }
 @media print{.dornbracht-modal{display:none!important}}
+
+/* Priced finish cards, with reference-exact variants and accessible selection. */
+.dornbracht-modal .dornbracht-finishes{display:flex;flex-direction:column;gap:7px;padding:10px;background:#f3f0ec;border:1px solid #d8cbbd;border-radius:8px}
+.dornbracht-modal .dornbracht-finishes>strong{font-size:13px;color:#342b22}
+.dornbracht-modal .dornbracht-finishes>small{font-size:10px;color:#6c6053;line-height:1.4}
+.dornbracht-modal .dornbracht-finish-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;max-height:245px;overflow-y:auto;padding:3px 2px}
+.dornbracht-modal .dornbracht-finish-tile{display:flex;flex-direction:column;gap:4px;align-items:flex-start;text-align:left;padding:8px;min-width:0;border:1px solid #d7c8b7;background:#fff;border-radius:7px;cursor:pointer;color:#382f26;font:inherit}
+.dornbracht-modal .dornbracht-finish-tile:hover{border-color:#54836b;background:#f5f8f5}
+.dornbracht-modal .dornbracht-finish-tile.active{border:2px solid #276248;background:#ecf5ed}
+.dornbracht-modal .dornbracht-finish-tile:focus-visible{outline:3px solid #be9861;outline-offset:2px}
+.dornbracht-modal .dornbracht-finish-tile>b{font-size:11px;line-height:1.25}
+.dornbracht-modal .dornbracht-finish-tile small{font-size:10px;color:#685c4f}
+.dornbracht-modal .dornbracht-finish-tile strong{font-size:12px;color:#68502d}
+.dornbracht-modal .dornbracht-finish-tile span{font-size:10px;color:#236847;font-weight:700}
+.dornbracht-modal .dornbracht-finishes label{font-size:11px;color:#66574a}
+.dornbracht-modal .dornbracht-finishes select{width:100%;margin-top:3px}
+@media(max-width:380px){.dornbracht-modal .dornbracht-finish-tiles{grid-template-columns:1fr}}
