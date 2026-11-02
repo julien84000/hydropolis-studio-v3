@@ -10,7 +10,7 @@ const gallery=root.HydroRadawayGallery,rows=root.HydroRadawayCatalog.rows;
 test('All Radaway catalogue items have a manufacturer photo or explicitly illustrative gallery preview',()=>{
  assert.ok(rows.length>=140);
  const missing=rows.filter(row=>!gallery.previewFor(row)?.url);
- assert.deepEqual(missing.map(r=>r.designation),[]);
+ assert.equal(missing.length,0,missing.map(r=>r.designation).join(', '));
  for(const r of rows){
   const p=gallery.previewFor(r);
   assert.ok(gallery.valid(p.url),r.designation);
