@@ -18,7 +18,7 @@ test('Naxani: every 2026 solid-wood tariff reference has species or finish',()=>
  const root=fixture();
  const rows=root.HydroNaxani2026.rows.filter(x=>x.productType==='bois-massif');
  assert.equal(rows.length,739);
- assert.deepEqual(rows.filter(x=>!x.naWood).map(x=>x.reference),[]);
+ assert.deepEqual(Array.from(rows.filter(x=>!x.naWood),x=>x.reference),[]);
  for(const row of rows)assert.ok(row.naVariant, 'Cabinet type missing: '+row.reference);
 });
 test('Naxani Suró 31: four distinct stain references/prices at 80 cm',()=>{
@@ -51,7 +51,7 @@ test('Naxani Prenn and Slat: width and cabinet model remain stable across specie
   ['Taba','1C · 1 tiroir',80,['Frêne','Érable','Noyer','Chêne','Iroko']]
  ]){
   const variants=rows.filter(x=>x.collection===collection&&x.naVariant===model&&x.naWidth===width);
-  assert.deepEqual(variants.map(x=>x.naWood).sort(),expected.slice().sort(),collection+' '+model+' '+width);
+  assert.deepEqual(Array.from(variants,x=>x.naWood).sort(),expected.slice().sort(),collection+' '+model+' '+width);
   assert.equal(new Set(variants.map(x=>x.reference)).size,expected.length);
  }
 });
