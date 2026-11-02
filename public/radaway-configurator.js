@@ -109,7 +109,20 @@
      img.src='/api/radaway-product-photo?slug='+encodeURIComponent(slug);
      return;
     }
-    img.style.display='none';
+    const collection=gallery()?.illustrationFor(p);
+     if(collection?.url&&img.dataset.radawayIllustration!=='1'){
+      img.dataset.radawayIllustration='1';
+      img.src=collection.url;
+      const note=img.closest('.radaway-model')?.querySelector('.radaway-image-status');
+      if(note)note.textContent='Visuel illustratif de la collection';
+      else{
+       const model=img.closest('.radaway-model');
+       if(model){const text=document.createElement('small');text.className='radaway-image-status';
+        text.textContent='Visuel illustratif de la collection';model.appendChild(text)}
+      }
+      return;
+     }
+     img.style.display='none';
     const item=img.closest('.radaway-model');
     if(item&&!item.querySelector('.radaway-model-image-pending')){
      const label=document.createElement('div');
@@ -218,7 +231,14 @@
     scheduledPhoto(p).then(src=>{
       if(!ov.isConnected)return;
        if(!src){
-        ov.querySelectorAll('.radaway-model [data-photo-ref]').forEach(place=>{
+        const matchingCard=Array.from(ov.querySelectorAll('.radaway-model'))
+        .find(card=>card.getAttribute('data-model')===requested);
+       if(matchingCard){
+        const thumbnail=matchingCard.querySelector('img');
+        if(thumbnail){thumbnail.src=src;thumbnail.style.display='block';bindPhotoFallback(thumbnail,p)}
+        matchingCard.querySelectorAll('.radaway-image-status').forEach(el=>el.remove());
+       }
+       ov.querySelectorAll('.radaway-model [data-photo-ref]').forEach(place=>{
          if(place.getAttribute('data-photo-ref')===requested)place.textContent='Photo fabricant indisponible';
         });
         return;
