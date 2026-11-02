@@ -2620,11 +2620,33 @@ function addDornbrachtConfigured(p,requiredBody,roomId){
 function launchAmphoraConfigurator(initial=null){
  const items=catalogIndex.maker('Amphora'),target=$('#targetRoom')?.value||state.rooms[0]?.id||'';
  if(!items.length||!window.HydroAmphoraConfigurator?.open){alert('Configurateur Amphora indisponible.');return;}
- window.HydroAmphoraConfigurator.open(items,target,(p,room)=>{
-  const record=createSelectedProductRecord(p,room);
-  if(!record)throw Error('Référence introuvable dans le catalogue.');
-  commitSelectedRecords([record],{showProject:true});
-  return record.id;
+ window.HydroAmphoraConfigurator.open(items,target,(p,requiredBody,room)=>{
+  const source=items.find(item=>item.reference===p?.reference);
+  if(!source||Math.abs(Number(source.price)-Number(p.price))>0.001)
+    throw Error('Référence ou prix de la partie apparente absents du tarif Amphora.');
+  const official=window.HydroAmphoraRoughIn?.resolve?.(source,items);
+  if(!official)throw Error('Référentiel des corps Amphora indisponible.');
+  if(official.required){
+    if(!official.priced||!requiredBody||requiredBody.reference!==official.reference||
+       Math.abs(Number(requiredBody.price)-official.price)>0.001)
+      throw Error('Corps Amphora indispensable non conforme à la référence fabricant.');
+  }else if(requiredBody)throw Error('Corps Amphora inattendu pour ce produit.');
+  // Catalogue source totalPrice may already include the body. Never price it twice.
+  const main=createSelectedProductRecord({...source,...p,totalPrice:Number(source.price),
+    amphoraRoughInReference:official.required?official.reference:'',
+    purchaseDiscount:50},room||target);
+  if(!main)throw Error('Impossible d’ajouter le produit Amphora.');
+  const records=[main];
+  if(official.required){
+    const verified=window.HydroAmphoraRoughIn.bodyRecord(source,official);
+    const accessory=createSelectedProductRecord(verified,room||target,main.id);
+    if(!accessory)throw Error('Impossible d’ajouter le corps Amphora.');
+    accessory.accessoryFor=main.id;
+    accessory.requiredRoughIn=true;accessory.amphoraRequiredRoughIn=true;
+    records.push(accessory);
+  }
+  commitSelectedRecords(records,{showProject:true});
+  return main.id;
  },initial).catch(e=>alert('Amphora : '+(e.message||e)));
 }
 function launchDornbrachtConfigurator(initial=null){
