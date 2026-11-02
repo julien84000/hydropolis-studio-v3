@@ -90,7 +90,7 @@ function blankProjectState(){
     selected:[],
     commercial:{
       clientDiscount:0,vatRate:20,shippingFee:0,supplierShippingFee:0,
-      supplierDiscounts:{"Amphora":50,"Catalano":64,"Coalbrook":50,"Zucchetti":55,"Lefroy Brooks":55,"Hotbath":50,"Recor":61.5385,"Ritmonio":55,"Nicolazzi":50,"Gessi":50,"Sbordoni":55,"Dornbracht":50.5,"Galassia":50}
+      supplierDiscounts:{"Amphora":50,"Catalano":64,"Coalbrook":50,"Zucchetti":55,"Lefroy Brooks":55,"Hotbath":50,"Recor":61.5385,"Ritmonio":55,"Nicolazzi":50,"Gessi":50,"Sbordoni":55,"Dornbracht":50.5,"Galassia":50,"Radaway":50}
     },
     showClientPrices:true,
     showSpaceSubtotals:false,
@@ -1564,7 +1564,7 @@ function loadState(override=null){
 
   if(!state.commercial || typeof state.commercial!=="object")state.commercial=fresh.commercial;
   if(!state.commercial.supplierDiscounts || typeof state.commercial.supplierDiscounts!=="object")state.commercial.supplierDiscounts={};
-  const defaultSupplierDiscounts={"Amphora":50,"Catalano":64,"Coalbrook":50,"Zucchetti":55,"Lefroy Brooks":55,"Hotbath":50,"Recor":61.5385,"Ritmonio":55,"Nicolazzi":50,"Gessi":50,"Sbordoni":55,"Dornbracht":50.5};
+  const defaultSupplierDiscounts={"Amphora":50,"Catalano":64,"Coalbrook":50,"Zucchetti":55,"Lefroy Brooks":55,"Hotbath":50,"Recor":61.5385,"Ritmonio":55,"Nicolazzi":50,"Gessi":50,"Sbordoni":55,"Dornbracht":50.5,"Radaway":50};
   Object.entries(defaultSupplierDiscounts).forEach(([maker,rate])=>{
     if(state.commercial.supplierDiscounts[maker]===undefined || state.commercial.supplierDiscounts[maker]===null || state.commercial.supplierDiscounts[maker]==="")state.commercial.supplierDiscounts[maker]=rate;
   });
@@ -2632,6 +2632,7 @@ function launchRadawayConfigurator(initial=null){
   if(pending&&price!==0)throw Error('Le devis Radaway non chiffré ne peut comporter un prix.');
   const rec=createSelectedProductRecord(chosen,room||target);
   if(!rec)throw Error('Impossible de créer la configuration Radaway.');
+  rec.purchaseDiscount=50;
   rec.radawayPendingQuote=pending;
   rec.hideFromDossier=pending;
   rec.pricingStatus=chosen.pricingStatus;
@@ -2988,7 +2989,7 @@ function clearQuoteLineOverrides(obj){
 function supplierDiscountRate(manufacturer){
   const configured=state.commercial?.supplierDiscounts?.[manufacturer];
   if(configured!==undefined&&configured!==null&&configured!=="")return clampPercent(configured);
-  const defaults={Hidrobox:50,Bette:50,Carrodrain:50,Galassia:50};
+  const defaults={Hidrobox:50,Bette:50,Carrodrain:50,Galassia:50,Radaway:50};
   return clampPercent(defaults[manufacturer]||0);
 }
 function selectedCatalogTotal(){
@@ -3061,7 +3062,7 @@ function purchaseDiscountFor(p){
   const raw=p?.purchaseDiscount;
   const explicit=(raw===null||raw===undefined||raw==="")?NaN:Number(raw);
   if(maker==='Hotbath')return /^Archie$/i.test(String(p?.hotbathSelectedCollection||p?.collection||'').trim())?59.5:55;
-  if(/^(Lefroy Brooks|Ritmonio|Nicolazzi|Gessi|Sbordoni|Dornbracht|Hidrobox|Bette|Carrodrain|Galassia)$/i.test(maker)) return supplierDiscountRate(maker);
+  if(/^(Lefroy Brooks|Ritmonio|Nicolazzi|Gessi|Sbordoni|Dornbracht|Hidrobox|Bette|Carrodrain|Galassia|Radaway)$/i.test(maker)) return supplierDiscountRate(maker);
   if(Number.isFinite(explicit) && explicit>=0) return clampPercent(explicit);
   return supplierDiscountRate(p?.manufacturer);
 }
