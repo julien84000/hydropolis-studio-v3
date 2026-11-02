@@ -75,7 +75,22 @@
   const preselected=rows.find(p=>p.reference===initial?.reference);
   if(preselected){selected=preselected;group=family(preselected);form=hierarchy.shapeFor(preselected);type=preselected.productType}
   const mediaCache=new Map(),mediaPending=new Map(),metaCache=new Map();
-  let tarifNotice='',imageQueue=Promise.resolve();
+  let tarifNotice='',mediaActive=0;
+  const mediaJobs=[],queuedMedia=new Map();
+  function pumpMedia(){
+   while(mediaActive<6&&mediaJobs.length){
+    const {p,resolve}=mediaJobs.shift();
+    mediaActive++;
+    officialPhoto(p).then(resolve,()=>resolve('')).finally(()=>{
+      mediaActive--;queuedMedia.delete(p.reference);pumpMedia();
+    });
+   }
+  }
+  function scheduledPhoto(p){
+   if(queuedMedia.has(p.reference))return queuedMedia.get(p.reference);
+   const task=new Promise(resolve=>mediaJobs.push({p,resolve}));
+   queuedMedia.set(p.reference,task);pumpMedia();return task;
+  }
   const productOptions=()=>root.HydroRadawayOptions;
   const tariff=()=>root.HydroRadawayTariff;
   const modelVariants=()=>tariff()?.variants(selected)||[];
@@ -163,7 +178,7 @@
    // images after the twelfth tile. Deduplicate requests with mediaPending.
    shown.filter(p=>!photoFor(p)).forEach(p=>{
     const requested=p.reference;
-    imageQueue=imageQueue.catch(()=>{}).then(()=>officialPhoto(p)).then(src=>{
+    scheduledPhoto(p).then(src=>{
       if(!ov.isConnected||!src)return;
       ov.querySelectorAll('.radaway-model [data-photo-ref]').forEach(place=>{
        if(place.getAttribute('data-photo-ref')!==requested)return;
