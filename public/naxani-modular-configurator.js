@@ -182,7 +182,26 @@ function open(rows,roomId,onAdd,initial){
     }else html+='<p class="nax-warning">Aucune référence de plan pour '+basinCount+' vasque(s) à cette longueur dans le tarif importé. Ne pas inventer de prix sur mesure.</p>';
     const displayPlan=byRef.get(mode==='integrated'?planRef:topRef);
     if(displayPlan)html+='<div class="nax-selected-plan">'+pict(displayPlan)+'<div>'+img(displayPlan)+'</div><small>Plan '+width(displayPlan).toLocaleString('fr-FR')+' cm · caissons '+total.toLocaleString('fr-FR')+' cm · débord total : '+(width(displayPlan)-total).toLocaleString('fr-FR')+' cm</small></div>';
-    if(mode==='separate')html+='<label>Modèle de vasque à poser<select data-input="basin">'+selectOptions(basinRows,basinRef)+'</select></label>';
+    if(mode==='separate'){
+     const selectedBasin=byRef.get(basinRef);
+     const basinModels=[...new Map(basinRows.map(x=>[x.collection,x])).values()];
+     html+='<div class="nax-plan-hint">Vasque à poser — cliquez sur la photo du modèle :</div><div class="nax-countertop-grid" role="group" aria-label="Vasques à poser Naxani">'+
+      basinModels.map(x=>{
+       const chosen=x.collection===selectedBasin?.collection;
+       const hasPhoto=!!photo(x);
+       return '<button type="button" data-countertop-basin="'+esc(x.reference)+'" class="nax-countertop-card '+(chosen?'active':'')+'" aria-pressed="'+chosen+'" aria-label="Choisir la vasque à poser '+esc(x.collection)+'">'+
+        '<div class="nax-countertop-photo">'+(hasPhoto?img(x):pict(x))+'</div><b>'+esc(x.collection)+'</b>'+
+        '<small>'+(hasPhoto?'Photo fabricant Naxani':'Photo fabricant non disponible')+'</small>'+
+        (chosen?'<strong class="nax-plan-check">✓ Sélectionnée</strong>':'')+'</button>';
+      }).join('')+'</div>';
+     if(selectedBasin){
+      const variants=basinRows.filter(x=>x.collection===selectedBasin.collection);
+      html+='<label>Référence de '+esc(selectedBasin.collection)+'<select data-input="basin">'+selectOptions(variants,basinRef)+'</select></label>';
+      const images=(selectedBasin.images||[]).filter((u,i,a)=>typeof u==='string'&&a.indexOf(u)===i).slice(0,4);
+      if(images.length)html+='<div class="nax-countertop-gallery" aria-label="Photos officielles de la vasque '+esc(selectedBasin.collection)+'">'+images.map((u,i)=>
+       '<img loading="lazy" src="'+esc(u)+'" alt="'+esc(selectedBasin.collection)+' · photo fabricant '+(i+1)+'" onerror="this.style.display=\'none\'">').join('')+'</div><small class="nax-detail-note">Photos du modèle Naxani ; finition ou dimensions illustratives.</small>';
+     }
+    }
     html+='<small class="nax-detail-note">Le débord du plan dépend du modèle Naxani. Vérifier le plan technique avant commande, notamment pour les dimensions sur mesure.</small></div>';
    }
    if(furniture(p)||['plan-integre','vasque-poser','suspendu'].includes(p.productType)){
@@ -223,6 +242,12 @@ function open(rows,roomId,onAdd,initial){
      if(card){
        const chosen=card.dataset.planCollection;
        if(chosen!==planCollection){planCollection=chosen;planRef='';topRef='';render(false);}
+       return;
+     }
+     const basinCard=event.target.closest('button[data-countertop-basin]');
+     if(basinCard){
+       const newRef=basinCard.dataset.countertopBasin;
+       if(newRef!==basinRef){basinRef=newRef;render(false);}
        return;
      }
      const option=event.target.closest('button[data-plan-ref]');
