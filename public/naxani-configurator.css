@@ -79,3 +79,20 @@
 .nax-plan-card{padding:7px 4px;min-height:95px}
 .nax-plan-card span{font-size:11px;line-height:1.25}
 @media (max-width:730px){.nax-combo-grid{grid-template-columns:1fr}.nax-plan-cards{grid-template-columns:1fr}}
+
+/* Interactive Naxani basin-plan models and exact variants. */
+.nax-plan-hint{font-weight:700;font-size:11px;color:#6c5037;margin:7px 0 3px}
+.nax-plan-cards{max-height:300px}
+.nax-plan-card{position:relative;transition:border-color .12s,background-color .12s;touch-action:manipulation}
+.nax-plan-card:hover,.nax-plan-variant:hover{border-color:#377054;background:#f4f8f3}
+.nax-plan-card:focus-visible,.nax-plan-variant:focus-visible{outline:3px solid #bc8d52;outline-offset:2px}
+.nax-plan-card.active,.nax-plan-variant.active{border:2px solid #286049;background:#ebf5ec}
+.nax-plan-check{display:block;font-size:10px;font-weight:700;color:#1e6247}
+.nax-plan-variants{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;max-height:300px;overflow:auto;padding:2px}
+.nax-plan-variant{font-family:inherit;background:white;border:1px solid #d5c7b8;border-radius:7px;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0;padding:8px 5px;color:#332c25;text-align:center;cursor:pointer;touch-action:manipulation}
+.nax-plan-variant-pict{display:flex;justify-content:center;width:100%}
+.nax-plan-variant-pict .nax-pictogram{height:53px;max-width:100%}
+.nax-plan-variant b{font-size:12px}
+.nax-plan-variant small{font-size:10px;line-height:1.2;color:#73685d}
+.nax-plan-variant strong{font-size:11px;color:#80562c}
+@media(max-width:730px){.nax-plan-variants{grid-template-columns:1fr}}
