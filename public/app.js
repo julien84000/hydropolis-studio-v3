@@ -2574,36 +2574,72 @@ function openRecorBathConfigurator(p,roomId){
 function addNaxaniConfigured(p,roomId){
  const assembly=p?.naxaniAssembly,refs=assembly?.references;
  if(p?.manufacturer!=='Naxani'||!Array.isArray(refs)||!refs.length||refs[0]!==p.reference)
-  throw Error('Assemblage Naxani incomplet : référence principale manquante.');
- const rows=catalogIndex.maker('Naxani'),catalog=new Map(rows.map(r=>[r.reference,r]));
- if(new Set(refs).size!==refs.length)throw Error('Composant Naxani dupliqué.');
+  throw Error('Composition Naxani invalide : référence principale manquante.');
+ const rows=catalogIndex.maker('Naxani');
+ window.HydroNaxaniEnhancements?.annotate?.(rows);
+ const catalog=new Map(rows.map(r=>[r.reference,r]));
+ // Duplicates are intentional when two identical cabinets or countertop basins are used.
  const parts=refs.map(ref=>catalog.get(ref));
- if(parts.some(x=>!x||!Number.isFinite(Number(x.price))))throw Error('Référence Naxani non tarifée : ajout refusé.');
- // Verify the basin/top choices at the moment of committing, not only in the UI.
- if(['bois-massif','laque'].includes(parts[0].productType)){
-  const sink=parts.find(x=>x.productType==='plan-integre');
-  const top=parts.find(x=>['plan-solid','plan-mdf'].includes(x.productType));
-  const counter=parts.find(x=>x.productType==='vasque-poser');
-  const equal=(a,b)=>Math.abs(Number(a)-Number(b))<0.06;
+ if(parts.some(x=>!x||!Number.isFinite(Number(x.price))))
+  throw Error('Référence Naxani absente du tarif : ajout refusé.');
+ const E=window.HydroNaxaniEnhancements;
+ const getWidth=item=>E?.width?.(item)??Number(item?.naWidth);
+ const equal=(a,b)=>Number.isFinite(a)&&Number.isFinite(b)&&Math.abs(a-b)<.06;
+ const isFurniture=['bois-massif','laque'].includes(parts[0].productType);
+ if(isFurniture){
+  const moduleRefs=assembly.moduleRefs;
+  if(!Array.isArray(moduleRefs)||!moduleRefs.length||moduleRefs[0]!==parts[0].reference||
+    moduleRefs.length>4||moduleRefs.some((ref,i)=>refs[i]!==ref))
+   throw Error('Composition de caissons Naxani incohérente.');
+  const modules=parts.slice(0,moduleRefs.length);
+  if(modules.some(x=>!['bois-massif','laque'].includes(x.productType)||x.collection!==parts[0].collection))
+   throw Error('Caissons de collections incompatibles.');
+  const main=modules[0],prejoined=!!main.naPrepricedJoin;
+  if(prejoined&&modules.length!==1)throw Error('La référence choisie inclut déjà deux caissons.');
+  if(!prejoined&&modules.some(x=>x.naPrepricedJoin||x.naVariant!==main.naVariant||x.naWood!==main.naWood))
+   throw Error('Type ou finition de caisson incohérent.');
+  if(main.collection==='Linjer'&&modules.length>1)
+   throw Error('Naxani Linjer : assemblage de caissons interdit par le fabricant.');
+  const totalWidth=modules.reduce((sum,x)=>sum+getWidth(x),0);
+  if(!equal(totalWidth,Number(assembly.totalWidth)))throw Error('Largeur de caissons incorrecte.');
+  const other=parts.slice(modules.length);
+  const basinCount=Number(assembly.basinCount);
+  if(![1,2].includes(basinCount))throw Error('Indiquez une ou deux vasques.');
+  const plans=other.filter(x=>x.productType==='plan-integre');
+  const tops=other.filter(x=>['plan-solid','plan-mdf'].includes(x.productType));
+  const basins=other.filter(x=>x.productType==='vasque-poser');
+  const wastes=other.filter(x=>x.productType==='bonde');
+  const requiredPlan=assembly.mode==='integrated'?plans[0]:tops[0];
+  if(!requiredPlan||plans.length+tops.length!==1||!equal(getWidth(requiredPlan),Number(assembly.planWidth)))
+   throw Error('Plan Naxani manquant ou dimensions incorrectes.');
+  const overhang=getWidth(requiredPlan)-totalWidth;
+  if(overhang<-.06||overhang>10.06)
+   throw Error('Le plan ne couvre pas correctement la longueur de l’assemblage.');
   if(assembly.mode==='integrated'){
-   if(!sink||top||counter||!window.HydroNaxaniConfigurator.compatible(parts[0],sink))
-    throw Error('Plan vasque non compatible avec le meuble Naxani sélectionné.');
+   if(plans.length!==1||basins.length||
+      Number(plans[0].naSinkCount||1)!==basinCount||
+      !window.HydroNaxaniConfigurator.compatible(main,plans[0],undefined,totalWidth))
+    throw Error('Plan vasque incompatible ou nombre de vasques erroné.');
   }else if(assembly.mode==='separate'){
-   if(!top||!counter||sink||!equal(parts[0].naWidth,top.naWidth))
-    throw Error('Ensemble plan + vasque à poser incomplet ou largeur incorrecte.');
-  }else throw Error('Choix de plan vasque obligatoire.');
+   if(tops.length!==1||basins.length!==basinCount||basins.some(x=>x.reference!==basins[0].reference))
+    throw Error('Plan et vasques à poser incomplets.');
+  }else throw Error('Type de plan vasque non défini.');
+  if(wastes.length!==0&&wastes.length!==basinCount)
+   throw Error('Nombre de bondes incohérent.');
+  if(other.length!==1+basins.length+wastes.length)
+   throw Error('Composition Naxani contenant un article inattendu.');
  }
  const total=parts.reduce((sum,x)=>sum+Number(x.price),0);
- if(Math.abs(total-Number(assembly.total))>0.01)throw Error('Écart de tarif dans la composition Naxani.');
+ if(Math.abs(total-Number(assembly.total))>.01)throw Error('Écart tarifaire Naxani dans la composition.');
  const main=createSelectedProductRecord({...parts[0],naxaniAssembly:assembly,naxaniGenericPhoto:true},roomId);
- if(!main)throw Error('Impossible de créer le meuble Naxani.');
+ if(!main)throw Error('Impossible d’ajouter le meuble Naxani.');
  const records=[main];
  for(const item of parts.slice(1)){
-  const accessory=createSelectedProductRecord({...item,naxaniLinkedAccessory:true},roomId,main.id);
-  if(!accessory)throw Error('Composant Naxani introuvable : '+item.reference);
-  accessory.accessoryFor=main.id;
-  accessory.naxaniLinkedAccessory=true;
-  records.push(accessory);
+  const record=createSelectedProductRecord({...item,naxaniLinkedAccessory:true},roomId,main.id);
+  if(!record)throw Error('Composant Naxani introuvable : '+item.reference);
+  record.accessoryFor=main.id;
+  record.naxaniLinkedAccessory=true;
+  records.push(record);
  }
  commitSelectedRecords(records,{showProject:true});
  return main.id;
