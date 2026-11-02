@@ -112,6 +112,26 @@ module.exports=function installRadawayMedia(app){
    return res.send(Buffer.from(upstream.data));
   }catch{return res.status(404).end()}
  });
+ // Curated manufacturer images are safe to proxy: references are selected from
+ // the checked-in official gallery, never from user-controlled external URLs.
+ app.get('/api/radaway-curated-image',async(req,res)=>{
+  const gallery=require('./public/radaway-gallery-2026.js');
+  const collection=String(req.query.collection||'');
+  const reference=String(req.query.ref||'');
+  if(collection.length>80||reference.length>150)return res.status(400).end();
+  const photo=gallery.exactFor({reference})||gallery.hero[collection]||'';
+  const url=classifyImage(photo,'https://www.radaway.pl/');
+  if(!url)return res.status(404).end();
+  try{
+   const upstream=await axios.get(url,{responseType:'arraybuffer',timeout:12000,
+    maxRedirects:2,maxContentLength:6500000,
+    headers:{'User-Agent':'Mozilla/5.0','Accept':'image/webp,image/png,image/jpeg,*/*'}});
+   const mime=String(upstream.headers['content-type']||'').split(';')[0].trim().toLowerCase();
+   if(!['image/jpeg','image/png','image/webp'].includes(mime))return res.status(502).end();
+   res.set('Content-Type',mime);res.set('Cache-Control','public,max-age=86400');
+   return res.send(Buffer.from(upstream.data));
+  }catch{return res.status(404).end()}
+ });
  app.get('/api/radaway-model-media',(req,res)=>{
   const slug=String(req.query.slug||'').trim().toLowerCase();
   if(!valid(slug))return res.status(400).json({ok:false,error:'Modèle invalide'});
