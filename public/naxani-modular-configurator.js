@@ -33,6 +33,7 @@ function compatible(meuble,plan,data=catalog,composedWidth){
 }
 function open(rows,roomId,onAdd,initial){
  if(!root.document||!Array.isArray(rows)||!rows.length)return Promise.reject(Error('Tarif Naxani indisponible'));
+ root.HydroNaxaniFurnitureMedia?.apply?.(rows);
  E.annotate(rows);
  const byRef=new Map(rows.map(p=>[p.reference,p]));
  let family=familyTypes('bois-massif')[0],collection='',reference='',moduleRefs=[];
