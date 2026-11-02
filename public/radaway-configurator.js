@@ -222,8 +222,8 @@
     '<label>Type de verre<select class="radaway-glass"></select></label>'+
     '<p class="wide radaway-spec-note"></p>'+
     '<label class="wide">Référence et dimension du tarif 2026<select class="radaway-tariff-variant"><option value="">Choisir une référence tarifée</option></select></label>'+
-    '<div class="wide radaway-file-import"><span class="radaway-tariff-status">Tarif Radaway Excel non chargé</span>'+
-    '<label>Charger le tarif 2026 extrait du fichier Excel<input type="file" class="radaway-tariff-file" accept=".json,application/json"></label></div>'+
+    '<div class="wide radaway-file-import"><span class="radaway-tariff-status">Tarif Radaway 2026 non chargé</span>'+
+    '<label>Importer le tarif Excel Radaway 2026<input type="file" class="radaway-tariff-file" accept=".xlsx,.json,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/json"></label></div>'+
     '<label class="wide">Référence fabricant vérifiée<input class="radaway-sku" placeholder="Référence de la gamme Radaway"></label>'+
     '<label class="wide">Prix public HT vérifié (€)<input type="number" min="0" step=".01" class="radaway-price" placeholder="À chiffrer"></label>'+
     '</div><div class="radaway-note">Sans prix fabricant confirmé, la paroi sera ajoutée au projet <b>en attente de chiffrage</b> et masquée dans le dossier client. Les codes RAD-SÉLECTION sont uniquement des identifiants internes. La remise fournisseur de 50 % est appliquée aux articles chiffrés, sans modifier le prix public.</div>'+
@@ -344,7 +344,7 @@
    const status=tariff()?.status();
    $('.radaway-tariff-status').textContent=status?.ready?
     (status.rows+' lignes du tarif 2026 chargées'+(list.length?' · '+list.length+' variantes pour ce modèle':' · référence à vérifier')) :
-    'Tarif Excel à importer une fois (fichier JSON fourni)';
+    'Tarif Radaway 2026 : charger le fichier Excel une seule fois';
    $('.radaway-tariff-variant').innerHTML='<option value="">Choisir une référence tarifée</option>'+
     list.map(p=>'<option value="'+esc(p.r)+'">'+esc(p.r+' · '+p.d+' · '+euro(p.p)+' HT')+'</option>').join('');
    const curr=$('.radaway-sku').value;
