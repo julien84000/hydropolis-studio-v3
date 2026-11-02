@@ -53,8 +53,8 @@
   })().catch(()=>null);
   return readyPromise;
  }
- const utf8=new TextDecoder('utf-8');
  async function parseXlsx(file){
+  const utf8=new TextDecoder('utf-8');
   // Native modern-browser ZIP reader. No external service receives customer
   // price files; the original Excel stays in browser/IndexedDB.
   const raw=await file.arrayBuffer(),view=new DataView(raw),bytes=new Uint8Array(raw);
