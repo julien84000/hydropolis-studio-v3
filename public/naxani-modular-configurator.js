@@ -337,7 +337,9 @@ function open(rows,roomId,onAdd,initial){
      const chosen={...p,naxaniAssembly:{
        references:b.items.map(x=>x.reference),moduleRefs:furniture(p)?moduleRefs.slice():[],
        mode:furniture(p)?mode:'standalone',basinCount:furniture(p)?basinCount:Number(p.naSinkCount||1),
-       totalWidth:b.totalWidth,planWidth:b.planWidth,total:sum,source:'Tarif officiel Naxani 2026',
+       totalWidth:b.totalWidth,planWidth:b.planWidth,total:sum,
+       woodFinish:p.naWood||null,woodFinishType:p.naFinishType||'essence',cabinetType:p.naVariant||null,
+       source:'Tarif officiel Naxani 2026',
        drawingStatus:'Pictogrammes schématiques non contractuels'
      }};
      await onAdd(chosen,roomId);close();
