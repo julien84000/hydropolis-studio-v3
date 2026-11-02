@@ -36,7 +36,10 @@ test('dossier plugin is syntactically valid and only writes dossier presentation
  assert.match(js,/layout\.orders=orders/);
  assert.match(js,/window\.Sortable/);
  assert.match(js,/window\.interact/);
- assert.match(js,/pagedjs@0\.4\.3/);
+ assert.match(js,/function showPaginationPreview/);
+ assert.match(js,/function updatePaginationFocus/);
+ assert.match(js,/v12-page-focus/);
+ assert.ok(!js.includes("window.open("),'La pagination ne doit pas dépendre des popups');
  assert.ok(!js.includes('purchasePrice='));
  assert.ok(!js.includes('supplierDiscounts='));
  assert.ok(!js.includes('state.selected='));
