@@ -12,6 +12,9 @@
  const FR='https://www.radaway.fr/wp-content/uploads/';
  // Product-specific photos verified against the matching Radaway product page.
  const exact=Object.freeze({
+  // Modo XL pages verified live: the older legacy thumbnail URLs are unreliable.
+  'RAD-MODELE-MODO-XL':IMG+'2021/04/Radaway-Modo-X-do-sufitu-760x1140.jpg',
+  'RAD-MODELE-MODO-XL-BLACK':IMG+'2021/04/Radaway-Modo-X-Black-do-sufitu-512x768.jpg',
   'RAD-MODELE-MODO-XL-GOLD':IMG+'2026/02/Radaway-Modo-Gold-XL-wariant4-kadr-760x1140.jpg',
   'RAD-MODELE-FURO-GOLD-WALK-IN':IMG+'2020/10/Furo-Gold-Walk-in_kadr-512x768.jpg',
   'RAD-MODELE-ESSENZA-PRO-8-GOLD-WALK-IN-III':IMG+'2020/12/Essenza-Pro-Gold-Walkin3-kadr-2-760x1140.jpg',
