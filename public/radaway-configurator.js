@@ -98,6 +98,29 @@
   // Restores previous locally imported tariff without slowing down initial presentation.
   tariff()?.load().then(()=>{if(ov.isConnected&&selected)renderDetail()}).catch(()=>{});
 
+  function photoSlug(p){return String(p?.manufacturerUrl||'').match(/\/kategoria\/([a-z0-9-]+)\/?/i)?.[1]||''}
+  // Same-origin fallback prevents blocked manufacturer hotlinks from becoming blank cards.
+  function bindPhotoFallback(img,p){
+   if(!img)return;
+   const slug=photoSlug(p);
+   img.onerror=()=>{
+    if(slug&&img.dataset.radawayProxy!=='1'){
+     img.dataset.radawayProxy='1';
+     img.src='/api/radaway-product-photo?slug='+encodeURIComponent(slug);
+     return;
+    }
+    img.style.display='none';
+    const item=img.closest('.radaway-model');
+    if(item&&!item.querySelector('.radaway-model-image-pending')){
+     const label=document.createElement('div');
+     label.className='radaway-model-image-pending';label.textContent='Photo Radaway indisponible';
+     img.after(label);
+    }
+    const status=$('.radaway-image-status');
+    if(img.classList.contains('radaway-image')&&status)
+     status.textContent='Photo fabricant indisponible pour cette variante.';
+   };
+  }
   function photoFor(p){return validModelPhoto(p?.image)?p.image:(mediaCache.get(p?.reference)||'')}
   function officialPhoto(p){
    if(!p)return Promise.resolve('');
@@ -171,7 +194,11 @@
     '<strong>'+esc(p.designation)+'</strong><small>'+esc(p.finish)+'</small></button>';
    }).join('')||'<div class="radaway-guide">Aucune référence indexée pour cette forme et ces filtres. <a href="'+esc(official?.url||'https://www.radaway.fr/')+
     '" target="_blank" rel="noopener noreferrer">Consulter les modèles de cette forme chez Radaway</a></div>';
-   ov.querySelectorAll('[data-model]').forEach(btn=>btn.onclick=()=>{
+   ov.querySelectorAll('.radaway-model img').forEach(img=>{
+      const ref=img.closest('.radaway-model')?.getAttribute('data-model');
+      bindPhotoFallback(img,rows.find(p=>p.reference===ref));
+    });
+    ov.querySelectorAll('[data-model]').forEach(btn=>btn.onclick=()=>{
      selected=rows.find(p=>p.reference===btn.dataset.model);renderGrid();renderDetail();
    });
    // Every displayed model is queued. Limit concurrency rather than skipping
@@ -179,11 +206,17 @@
    shown.filter(p=>!photoFor(p)).forEach(p=>{
     const requested=p.reference;
     scheduledPhoto(p).then(src=>{
-      if(!ov.isConnected||!src)return;
+      if(!ov.isConnected)return;
+       if(!src){
+        ov.querySelectorAll('.radaway-model [data-photo-ref]').forEach(place=>{
+         if(place.getAttribute('data-photo-ref')===requested)place.textContent='Photo fabricant indisponible';
+        });
+        return;
+       }
       ov.querySelectorAll('.radaway-model [data-photo-ref]').forEach(place=>{
        if(place.getAttribute('data-photo-ref')!==requested)return;
        const el=document.createElement('img');el.loading='lazy';el.alt=p.designation;el.src=src;
-       el.onerror=()=>{el.style.display='none';};
+       bindPhotoFallback(el,p);
        place.replaceWith(el);
       });
       if(selected?.reference===requested){updateSelectedPhoto(src);updateMetadata();}
@@ -233,7 +266,7 @@
     '</div><div class="radaway-note">Sans prix fabricant confirmé, la paroi sera ajoutée au projet <b>en attente de chiffrage</b> et masquée dans le dossier client. Les codes RAD-SÉLECTION sont uniquement des identifiants internes. La remise fournisseur de 50 % est appliquée aux articles chiffrés, sans modifier le prix public.</div>'+
     '<button class="radaway-add" type="button">Ajouter au projet</button><p class="radaway-error" aria-live="polite"></p>';
    const photo=$('.radaway-image');
-   photo.onerror=()=>{photo.style.display='none';$('.radaway-image-status').textContent='Photo temporairement indisponible : consulter la fiche Radaway.'};
+   bindPhotoFallback(photo,selected);
    // Fetch manufacturer specs even when a legacy thumbnail was already stored.
    if(!metaCache.has(selected.reference)&&!mediaPending.has(selected.reference)){
      const wanted=selected.reference;
@@ -289,6 +322,8 @@
       $('.radaway-price').dataset.excelPublic='';
     }
    };
+   $('.radaway-width').oninput=()=>updateTariff();
+   $('.radaway-height').oninput=()=>updateTariff();
    $('.radaway-price').oninput=()=>{
      $('.radaway-price').dataset.manuallyEdited='true';
      $('.radaway-price').dataset.excelPurchase='';
@@ -381,15 +416,33 @@
   }
   function updateTariff(){
    if(!selected||!$('.radaway-tariff-variant'))return;
-   const list=modelVariants();
-   const status=tariff()?.status();
+   const list=modelVariants(),status=tariff()?.status();
    $('.radaway-tariff-status').textContent=status?.ready?
-    (status.rows+' lignes du tarif 2026 chargées'+(list.length?' · '+list.length+' variantes pour ce modèle':' · référence à vérifier')) :
-    'Tarif Radaway 2026 : charger le fichier Excel une seule fois';
+    (status.rows+' lignes du tarif 2026 chargées'+(list.length?' · '+list.length+' références compatibles':' · référence à vérifier')) :
+    'Tarif Radaway 2026 : import initial requis (Excel ou JSON)';
    $('.radaway-tariff-variant').innerHTML='<option value="">Choisir une référence tarifée</option>'+
     list.map(p=>'<option value="'+esc(p.r)+'">'+esc(p.r+' · '+p.d+' · '+euro(p.p)+' HT')+'</option>').join('');
-   const curr=$('.radaway-sku').value;
-   if(list.some(p=>p.r===curr))$('.radaway-tariff-variant').value=curr;
+   const width=Number($('.radaway-width')?.value),height=Number($('.radaway-height')?.value);
+   const matching=(width>0&&height>0)?list.filter(p=>{
+    const range=String(p.d||'').match(/(\d+)\s*-\s*(\d+)\s*[x×]\s*(\d+)\s*-\s*(\d+)/i);
+    if(!range)return false;
+    return width>=Number(range[1])&&width<=Number(range[2])&&
+     height>=Number(range[3])&&height<=Number(range[4]);
+   }):[];
+   // Never guess a price when several articles cover the same measurements.
+   const auto=matching.length===1?matching[0]:null;
+   const current=$('.radaway-sku').value;
+   const chosen=auto||list.find(p=>p.r===current)||null;
+   if(!chosen)return;
+   $('.radaway-tariff-variant').value=chosen.r;
+   const price=$('.radaway-price');
+   if(auto||price.dataset.manuallyEdited!=='true'){
+    $('.radaway-sku').value=chosen.r;
+    price.dataset.manuallyEdited='false';
+    price.dataset.excelPublic=String(chosen.p);
+    price.dataset.excelPurchase=String(chosen.a);
+    updateGlassNote();
+   }
   }
   function render(){renderType();renderShapes();renderGrid();renderDetail()}
   render();return Promise.resolve(true);

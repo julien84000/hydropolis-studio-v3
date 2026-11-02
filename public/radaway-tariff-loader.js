@@ -121,14 +121,33 @@
  function exact(ref){return byRef.get(String(ref||''))||null}
  function variants(row){
   if(!data||!row)return [];
-  const name=norm(row.designation),mapped=data.prices.filter(x=>{
-   const text=norm(x.d);
-   // Manufacturer descriptions have a dimension suffix. Match longest named
-   // product string exactly, never a looser series-only or profile-only match.
-   return text===name||text.startsWith(name+' ')||
-    text.startsWith('s '+name+' ')||text.startsWith('nt '+name+' ');
+  const designation=norm(row.designation);
+  const finish=norm(row.finish);
+  const coll=norm(row.collection);
+  const noFinish=s=>{
+   if(!finish||finish==='a preciser'||finish==='finition du modele')return s;
+   return (' '+s+' ').replace(' '+finish+' ',' ').trim().replace(/\s+/g,' ');
+  };
+  const base=noFinish(designation);
+  const matched=data.prices.filter(x=>{
+   const description=norm(x.d).replace(/^(?:s|nt) /,'');
+   const sourceFinish=norm(x.u);
+   // A finish is part of the commercial identity, not an interchangeable option.
+   if(finish&&finish!=='a preciser'&&finish!=='finition du modele'&&
+      sourceFinish!==finish)return false;
+   if(coll&&norm(x.s)!==coll&&
+      !coll.startsWith(norm(x.s)+' ')&&!norm(x.s).startsWith(coll+' '))return false;
+   const withoutFinish=noFinish(description);
+   // Alternate official word orders: "Furo Chrome Walk-in" versus
+   // "Furo Walk-in Door ..." in the 2026 spreadsheet.
+   return description===designation||description.startsWith(designation+' ')||
+     withoutFinish===base||withoutFinish.startsWith(base+' ');
   });
-  return mapped.sort((a,b)=>a.p-b.p||a.r.localeCompare(b.r));
+  return matched.sort((a,b)=>{
+   // Standard articles take precedence over NT/custom-order references.
+   const customA=/^NT-/i.test(a.r)?1:0,customB=/^NT-/i.test(b.r)?1:0;
+   return customA-customB||a.p-b.p||a.r.localeCompare(b.r);
+  });
  }
  function status(){return {ready:!!data,rows:data?.prices?.length||0,date:data?.date||''}}
  return {load,importFile,exact,variants,status,validate,use,parseXlsx};
