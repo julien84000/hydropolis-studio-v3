@@ -129,7 +129,7 @@ function activateResize(){
  });
 }
 function refresh(){
- cleanup();apply();activateSorting();activateResize();
+ cleanup();apply();activateSorting();activateResize();updatePaginationFocus();
  const b=one('#v12AdvancedResize');
  if(b){
   b.disabled=typeof window.interact!=='function';
@@ -137,31 +137,74 @@ function refresh(){
   b.textContent=advanced&&presentationLayoutEditing?'Terminer les ajustements':'Redimensionnement avancé';
  }
 }
-function showPaginationPreview(){
- // Never replaces the existing A4 / browser-print production workflow.
- const doc=one('#document');
- if(!doc||!doc.children.length){announce('Ouvrez un dossier avant l’aperçu.');return;}
- const w=window.open('','_blank');
- if(!w){announce('Autorisez les fenêtres pour afficher cet aperçu expérimental.');return;}
- const styles=all('link[rel="stylesheet"],style',document.head).map(el=>el.outerHTML).join('\n');
- const content=doc.innerHTML;
- w.document.open();
- w.document.write('<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Hydropolis V12 · Aperçu paginé</title>'+
-  styles+
-  '<style>body{margin:0;background:#f1f2f3}#document{display:block}#document>.page{margin:0 auto 12mm;break-after:page;page-break-after:always}'+
-  '@page{size:A4 landscape;margin:0}.preview-only{padding:12px;text-align:center;font:14px Arial}</style>'+
-  '</head><body><div class="preview-only">Aperçu expérimental Paged.js — le PDF officiel reste inchangé.</div><div id="document"></div>'+
-  '<script src="https://cdn.jsdelivr.net/npm/pagedjs@0.4.3/dist/paged.polyfill.js"><\/script></body></html>');
- w.document.close();
- const target=w.document.getElementById('document');
- target.dataset.v12Template=config().template;
- target.style.cssText=doc.style.cssText;
- // Transfer nodes through a document-owned template, no event code from source.
- const template=w.document.createElement('template');
- template.innerHTML=content;
- template.content.querySelectorAll('.layout-controls,.v12-sort-grip,.v12-resize-grip').forEach(el=>el.remove());
- target.append(template.content);
+let focusedPage=0;
+let paginationMode=false;
+function paginatedPages(){return all('#view-preview #document > .page')}
+function updatePaginationFocus(){
+ const pages=paginatedPages();
+ const nav=one('#v12PaginationNav');
+ const action=one('#v12PagedPreview');
+ if(!pages.length){if(nav)nav.hidden=true;return;}
+ focusedPage=Math.max(0,Math.min(focusedPage,pages.length-1));
+ document.body.classList.toggle('v12-page-focus',paginationMode);
+ pages.forEach((page,i)=>{
+  page.classList.toggle('v12-active-page',paginationMode&&i===focusedPage);
+ });
+ if(action){
+  action.textContent=paginationMode?'Quitter le mode page par page':'Aperçu page par page';
+  action.setAttribute('aria-pressed',String(paginationMode));
+ }
+ if(!nav)return;
+ nav.hidden=!paginationMode;
+ const label=one('#v12PageCounter');
+ if(label)label.textContent='Page '+(focusedPage+1)+' / '+pages.length;
+ const prev=one('#v12PagePrev'),next=one('#v12PageNext');
+ if(prev)prev.disabled=focusedPage===0;
+ if(next)next.disabled=focusedPage===pages.length-1;
+ const select=one('#v12PageSelect');
+ if(select){
+  if(select.options.length!==pages.length){
+   select.replaceChildren();
+   pages.forEach((page,i)=>{
+    const option=document.createElement('option');
+    option.value=String(i);
+    const title=page.querySelector('.board-head h2,.pagehead h2,.brandcover h2,.quote-page h2')?.textContent?.trim()||'Page '+(i+1);
+    option.textContent=(i+1)+' · '+title.slice(0,68);
+    select.append(option);
+   });
+  }
+  select.value=String(focusedPage);
+ }
 }
+function moveFocus(delta){
+ const pages=paginatedPages();
+ focusedPage=Math.max(0,Math.min(focusedPage+delta,pages.length-1));
+ updatePaginationFocus();
+ one('#view-preview .preview-bg')?.scrollIntoView({block:'start',behavior:'auto'});
+}
+function showPaginationPreview(){
+ if(!paginatedPages().length){announce('Aucune page à afficher : ouvrez d’abord un dossier client.');return;}
+ paginationMode=!paginationMode;
+ if(paginationMode)focusedPage=0;
+ updatePaginationFocus();
+ announce(paginationMode?'Aperçu page par page activé : les pages et leurs données originales sont conservées.':'Aperçu complet rétabli.');
+}
+function initPaginationNav(panel){
+ if(one('#v12PaginationNav'))return;
+ const nav=document.createElement('div');nav.id='v12PaginationNav';
+ nav.className='v12-pagination-nav';nav.hidden=true;
+ nav.setAttribute('role','navigation');nav.setAttribute('aria-label','Navigation dans le dossier paginé');
+ const prev=document.createElement('button');prev.type='button';prev.id='v12PagePrev';prev.textContent='← Précédente';
+ const counter=document.createElement('strong');counter.id='v12PageCounter';counter.setAttribute('aria-live','polite');
+ const select=document.createElement('select');select.id='v12PageSelect';select.setAttribute('aria-label','Choisir une page');
+ const next=document.createElement('button');next.type='button';next.id='v12PageNext';next.textContent='Suivante →';
+ prev.addEventListener('click',()=>moveFocus(-1));
+ next.addEventListener('click',()=>moveFocus(1));
+ select.addEventListener('change',()=>{focusedPage=Number(select.value)||0;updatePaginationFocus();});
+ nav.append(prev,counter,select,next);
+ panel.after(nav);
+}
+
 function init(){
  if(!first)return;first=false;
  const toolbar=one('#view-preview .preview-toolbar');if(!toolbar)return;
@@ -174,7 +217,7 @@ function init(){
  '<label>Accent<input type="color" id="v12DossierAccent" value="#b38a4d"></label>'+
  '<label class="v12-dossier-cover-title">Sous-titre couverture<input maxlength="140" id="v12DossierSubtitle"></label>'+
  '<div class="v12-dossier-actions"><button type="button" id="v12AdvancedResize" aria-pressed="false">Redimensionnement avancé</button>'+
- '<button type="button" id="v12PagedPreview">Aperçu pagination (bêta)</button></div>'+
+ '<button type="button" id="v12PagedPreview" aria-pressed="false">Aperçu page par page</button></div>'+
  '<span class="v12-help">Activer « Modifier la mise en page » pour déplacer les photos. Maximum 6 vignettes par page.</span>'+
  '<span class="v12-dossier-status" id="v12DossierStatus" aria-live="polite"></span>';
  toolbar.before(panel);
@@ -187,6 +230,7 @@ function init(){
   if(!presentationLayoutEditing)one('#layoutEditBtn')?.click();
   advanced=!advanced;refresh();
  });
+ initPaginationNav(panel);
  one('#v12PagedPreview').addEventListener('click',showPaginationPreview);
  apply();
 }
