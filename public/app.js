@@ -2577,6 +2577,7 @@ function addNaxaniConfigured(p,roomId){
   throw Error('Composition Naxani invalide : référence principale manquante.');
  const rows=catalogIndex.maker('Naxani');
  window.HydroNaxaniEnhancements?.annotate?.(rows);
+ window.HydroNaxaniWoodFinishes?.annotate?.(rows);
  const catalog=new Map(rows.map(r=>[r.reference,r]));
  // Duplicates are intentional when two identical cabinets or countertop basins are used.
  const parts=refs.map(ref=>catalog.get(ref));
@@ -2595,6 +2596,10 @@ function addNaxaniConfigured(p,roomId){
   if(modules.some(x=>!['bois-massif','laque'].includes(x.productType)||x.collection!==parts[0].collection))
    throw Error('Caissons de collections incompatibles.');
   const main=modules[0],prejoined=!!main.naPrepricedJoin;
+  if(assembly.woodFinish!==undefined&&assembly.woodFinish!==main.naWood)
+   throw Error('Finition ou essence Naxani différente de la référence choisie.');
+  if(assembly.cabinetType!==undefined&&assembly.cabinetType!==main.naVariant)
+   throw Error('Type de caisson Naxani différent de la référence choisie.');
   if(prejoined&&modules.length!==1)throw Error('La référence choisie inclut déjà deux caissons.');
   if(!prejoined&&modules.some(x=>x.naPrepricedJoin||x.naVariant!==main.naVariant||x.naWood!==main.naWood))
    throw Error('Type ou finition de caisson incohérent.');
