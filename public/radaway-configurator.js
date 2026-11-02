@@ -143,7 +143,7 @@
   function exactPhoto(p){
    if(!p)return '';
    return validModelPhoto(mediaCache.get(p.reference))?mediaCache.get(p.reference):
-    validModelPhoto(p.image)?p.image:gallery()?.exactFor(p)||'';
+    gallery()?.exactFor(p)|| (validModelPhoto(p.image)?p.image:'');
   }
   function previewFor(p){
    const url=exactPhoto(p);
