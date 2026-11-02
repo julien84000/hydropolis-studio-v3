@@ -290,7 +290,7 @@ function open(rows,roomId,onAdd,initial){
   $('.dornbracht-selection').innerHTML=content;
   const changeFinish=ref=>{if(ref===reference)return;reference=ref;selectedBody='';fetchMedia(reference);fetchPreview(reference,true);renderSelection()};
   $('.dornbracht-variant').onchange=e=>changeFinish(e.target.value);
-  $('[data-dornbracht-finish]').forEach(b=>b.onclick=()=>changeFinish(b.dataset.dornbrachtFinish));
+  $$('[data-dornbracht-finish]').forEach(b=>b.onclick=()=>changeFinish(b.dataset.dornbrachtFinish));
   $$('[data-body]').forEach(b=>b.onclick=()=>{selectedBody=b.dataset.body;renderSelection()});
   $('.dornbracht-add').onclick=async()=>{
    if(busy||blocked||pending)return;
