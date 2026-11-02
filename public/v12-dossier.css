@@ -119,3 +119,38 @@ body.presentation-layout-editing.v12-advanced-resize #document .v12-resize-grip{
  #document[data-v12-template] .editorial-page{box-shadow:none!important}
  #document[data-v12-template] .editorial-cover-card{backdrop-filter:none!important}
 }
+
+/* In-app A4 pagination preview replaces the popup experiment.
+   Pages retain their existing DOM, CSS size and quote calculation. */
+.v12-pagination-nav{
+ display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:9px;
+ position:sticky;top:76px;z-index:140;margin:13px 0;padding:12px 16px;
+ background:#fff;border:1px solid #e2e5e9;border-radius:13px;
+ box-shadow:0 8px 18px #111e2c13;
+}
+.v12-pagination-nav[hidden]{display:none!important}
+.v12-pagination-nav strong{font-size:12px;font-weight:750;color:#29333b;min-width:96px;text-align:center}
+.v12-pagination-nav select{
+ min-width:160px;max-width:330px;height:36px;background:#fff;border:1px solid #d9dde2;border-radius:8px;
+ color:#3b424b;font-size:11px;padding:6px;
+}
+.v12-pagination-nav button{
+ background:#fff;border:1px solid #d8dce1;border-radius:9px;
+ color:#424a51;min-height:36px;padding:8px 12px;font-size:11px;font-weight:650;cursor:pointer
+}
+.v12-pagination-nav button:hover:not(:disabled){background:#f6f7f8;border-color:#c4aa83}
+.v12-pagination-nav button:disabled{opacity:.35;cursor:not-allowed}
+body.v12-page-focus #view-preview #document > .page{display:none!important}
+body.v12-page-focus #view-preview #document > .page.v12-active-page{
+ display:block!important;
+}
+body.v12-page-focus #view-preview #document{
+ display:block!important;width:max-content;max-width:100%;margin:0 auto;
+}
+body.v12-page-focus #view-preview .preview-bg{
+ overflow-x:auto;padding:30px 15px;min-height:58vh;
+}
+@media print{
+ .v12-pagination-nav{display:none!important}
+ body.v12-page-focus #view-preview #document > .page{display:block!important}
+}
