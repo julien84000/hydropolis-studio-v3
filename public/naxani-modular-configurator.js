@@ -158,13 +158,28 @@ function open(rows,roomId,onAdd,initial){
     if(!basinRows.some(x=>x.reference===basinRef))basinRef=basinRows[0]?.reference||'';
     html+='<div class="nax-assembly"><h4>2. Choisir le plan et les vasques</h4><div class="nax-modes"><button type="button" data-mode="integrated" class="'+(mode==='integrated'?'active':'')+'">Plan vasque intégré</button><button type="button" data-mode="separate" class="'+(mode==='separate'?'active':'')+'">Plan + vasque à poser</button></div>';
     html+='<label>Nombre de vasques<select data-input="basinCount"><option value="1"'+(basinCount===1?' selected':'')+'>1 vasque</option><option value="2"'+(basinCount===2?' selected':'')+'>2 vasques</option></select></label>';
-    html+='<div class="nax-plan-cards">'+[...new Set(plans.map(x=>x.collection))].map(name=>{
-      const s=plans.find(x=>x.collection===name);
-      return '<button type="button" class="nax-plan-card '+(name===planCollection?'active':'')+'" data-plan-collection="'+esc(name)+'"><div class="nax-plan-pict">'+pict(s)+'</div><span>'+esc(name)+'</span></button>';
+    // Each family pictogram is an actionable model selector. The second level shows
+    // exact tariffed widths / positions as clickable pictograms too.
+    const activePlanRef=mode==='integrated'?planRef:topRef;
+    html+='<div class="nax-plan-hint">Sélectionnez un modèle en cliquant sur son pictogramme :</div>'+
+     '<div class="nax-plan-cards" role="group" aria-label="Modèles de plans vasques">'+[...new Set(plans.map(x=>x.collection))].map(name=>{
+      const sample=plans.find(x=>x.collection===name);
+      const selected=name===planCollection;
+      return '<button type="button" class="nax-plan-card '+(selected?'active':'')+'" data-plan-collection="'+esc(name)+'" aria-pressed="'+selected+'" aria-label="Choisir le plan '+esc(name)+'">'+
+       '<div class="nax-plan-pict">'+pict(sample)+'</div><span>'+esc(name)+'</span>'+(selected?'<strong class="nax-plan-check">✓ Sélectionné</strong>':'')+'</button>';
     }).join('')+'</div>';
-    if(chosenPlan.length)html+='<label>Dimensions et références des plans'+
-      '<select data-input="plan">'+selectOptions(chosenPlan,mode==='integrated'?planRef:topRef)+'</select></label>';
-    else html+='<p class="nax-warning">Aucune référence de plan pour '+basinCount+' vasque(s) à cette longueur dans le tarif importé. Ne pas inventer de prix sur mesure.</p>';
+    if(chosenPlan.length){
+      html+='<div class="nax-plan-hint">Choisissez la dimension et la position des vasques :</div>'+
+       '<div class="nax-plan-variants" role="group" aria-label="Références et dimensions de '+esc(planCollection)+'">'+chosenPlan.map(x=>{
+        const selected=x.reference===activePlanRef;
+        return '<button type="button" class="nax-plan-variant '+(selected?'active':'')+'" data-plan-ref="'+esc(x.reference)+'" aria-pressed="'+selected+'" aria-label="'+esc(planCollection)+' '+width(x).toLocaleString('fr-FR')+' cm '+esc(x.naPosition||'')+' référence '+esc(x.reference)+'">'+
+         '<div class="nax-plan-variant-pict">'+pict(x)+'</div><b>'+width(x).toLocaleString('fr-FR')+' cm</b>'+
+         (mode==='integrated'?'<small>'+esc(x.naPosition|| (Number(x.naSinkCount||1)===2?'Double vasque':'Simple vasque'))+'</small>':'')+
+         '<small>Réf. '+esc(x.reference)+'</small><strong>'+euro(x.price)+' HT</strong>'+
+         (selected?'<span class="nax-plan-check">✓ Sélectionné</span>':'')+'</button>';
+       }).join('')+'</div>';
+      html+='<label>Référence du plan sélectionné<select data-input="plan">'+selectOptions(chosenPlan,activePlanRef)+'</select></label>';
+    }else html+='<p class="nax-warning">Aucune référence de plan pour '+basinCount+' vasque(s) à cette longueur dans le tarif importé. Ne pas inventer de prix sur mesure.</p>';
     const displayPlan=byRef.get(mode==='integrated'?planRef:topRef);
     if(displayPlan)html+='<div class="nax-selected-plan">'+pict(displayPlan)+'<div>'+img(displayPlan)+'</div><small>Plan '+width(displayPlan).toLocaleString('fr-FR')+' cm · caissons '+total.toLocaleString('fr-FR')+' cm · débord total : '+(width(displayPlan)-total).toLocaleString('fr-FR')+' cm</small></div>';
     if(mode==='separate')html+='<label>Modèle de vasque à poser<select data-input="basin">'+selectOptions(basinRows,basinRef)+'</select></label>';
@@ -179,7 +194,9 @@ function open(rows,roomId,onAdd,initial){
     '<div class="nax-grand"><span>Total public HT</span><b>'+euro(sum)+'</b></div><small>Tarifs 2026 par références exactes. Remise fournisseur Naxani non renseignée.</small></div>'+
     (b.reason?'<div class="nax-warning">'+esc(b.reason)+'</div>':'')+
     '<button type="button" class="nax-add" '+(!b.valid||busy?'disabled':'')+'>'+(busy?'Enregistrement…':'Ajouter la composition au projet')+'</button>';
-   $('.nax-detail').innerHTML=html;
+   const detailPanel=$('.nax-detail'),detailScroll=detailPanel.scrollTop;
+   detailPanel.innerHTML=html;
+   detailPanel.scrollTop=detailScroll;
    $$('[data-input]').forEach(el=>el.onchange=()=>{
     const k=el.dataset.input,v=el.value;
     if(['variant','wood','width','reference'].includes(k)){
@@ -200,7 +217,21 @@ function open(rows,roomId,onAdd,initial){
    $('[data-module]').forEach(el=>el.onchange=()=>{moduleRefs[Number(el.dataset.module)]=el.value;resetOptions();render(false)});
    $$('[data-remove-module]').forEach(el=>el.onclick=()=>{moduleRefs.splice(Number(el.dataset.removeModule),1);resetOptions();render(false)});
    $('.nax-plus-module')?.addEventListener('click',()=>{const available=getModuleRows(p);if(available.length&&moduleRefs.length<4){moduleRefs.push(available[0].reference);resetOptions();render(false)}});
-   $$('[data-plan-collection]').forEach(el=>el.onclick=()=>{planCollection=el.dataset.planCollection;planRef='';topRef='';render(false)});
+   // Delegate clicks to the actual plan buttons, including taps directly on SVG paths.
+   $('.nax-detail').addEventListener('click',event=>{
+     const card=event.target.closest('button[data-plan-collection]');
+     if(card){
+       const chosen=card.dataset.planCollection;
+       if(chosen!==planCollection){planCollection=chosen;planRef='';topRef='';render(false);}
+       return;
+     }
+     const option=event.target.closest('button[data-plan-ref]');
+     if(option){
+       const ref=option.dataset.planRef;
+       if(mode==='integrated'){if(ref!==planRef){planRef=ref;render(false);}}
+       else if(ref!==topRef){topRef=ref;render(false);}
+     }
+   });
    $$('[data-mode]').forEach(el=>el.onclick=()=>{mode=el.dataset.mode;planCollection='';planRef='';topRef='';render(false)});
    $('.nax-add').onclick=async()=>{
     if(busy||!b.valid)return;
