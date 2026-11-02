@@ -187,7 +187,9 @@ function open(rows,roomId,onAdd,initial){
   const needsChecking=mayNeedBody(item);
   const pending=(!info||loading.has(item.reference));
   const missing=!!info&&!info.ok,unconfirmed=options.filter(o=>!o.francePageVerified||!o.priced);
-  const blocked=(!info||missing)||(hasNecessary&&!body)||(needsChecking&&!hasNecessary);
+  // A failed photo lookup is not a reason to block a standalone priced item.
+  // Concealed trims do require an official FR accessory check before sale.
+  const blocked=(hasNecessary&&!body)||(needsChecking&&(!info||missing||!hasNecessary));
   const photo=info?.image||modelPhoto(m);
   const price=Number(item.price),sum=price+(body?Number(body.price):0);
   const accessoryCards=hasNecessary?'<div class="dornbracht-accessory-options">'+options.map(o=>
