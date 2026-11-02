@@ -31,7 +31,7 @@ test('Configurator exposes its illustrative photo status and attempts to upgrade
  const source=fs.readFileSync(path.join(pub,'radaway-configurator.js'),'utf8');
  assert.match(source,/photoFor\(p\)/);
  assert.match(source,/shown\.filter\(p=>!exactPhoto\(p\)\)/);
- assert.match(source,/Visuel illustratif de la collection/);
+ assert.match(source,/Visuel fabricant indicatif/);
  assert.match(source,/imageFinishMatch:previewFor\(selected\)\?\.exact/);
  assert.match(source,/card\.querySelector\('img'\)/);
  const html=fs.readFileSync(path.join(pub,'index.html'),'utf8');
