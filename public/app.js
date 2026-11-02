@@ -2458,7 +2458,7 @@ function commitSelectedRecords(records,{showProject=false}={}){
     const isRitmonio=/^Ritmonio$/i.test(item.manufacturer||"");
     // A grouped Sbordoni result already owns its exact catalogue composition image.
     // Do not replace it with a generic manufacturer lookup.
-    if(!item.sbordoniGrouped && !item.sbordoniWCConfiguration && !item.sbordoniWCConfigurationAccessory && !(item.siraConfiguration && item.image) && item.manufacturer!=="Galassia" && !(item.manufacturer==="Hidrobox" && item.hidroboxConfiguration?.officialConfiguratorImage))enqueueSelectedImageSearch(item);
+    if(!item.sbordoniGrouped && !item.sbordoniWCConfiguration && !item.sbordoniWCConfigurationAccessory && !(item.siraConfiguration && item.image) && item.manufacturer!=="Galassia" && !(item.manufacturer==="Vismaravetro" && item.image && item.imageFinishMatch==="collection-only") && !(item.manufacturer==="Hidrobox" && item.hidroboxConfiguration?.officialConfiguratorImage))enqueueSelectedImageSearch(item);
     if(isRitmonio && !item.technicalSheetUrl){
       fetchRitmonioDocuments(item).then(docs=>{
         if(docs?.technicalSheet?.url){saveState();renderRooms();}
@@ -7349,35 +7349,43 @@ $$(".nav").forEach(n=>n.onclick=()=>showView(n.dataset.view));
 })();
 
 ;
-/* SOURCE public/vismara-configurator.js */
-/* Mini-configurateur Vismaravetro : combinaisons du tarif fourni. */
+/* SOURCE public/vismara-configurator.js — modular 2026 replacement */
 (()=>{
-'use strict';let data;
-const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-async function openVismara(p,roomId){
- if(!data){const r=await fetch('/vismara_tariff_2026.json');if(!r.ok)throw Error('Tarif indisponible');data=await r.json();}
- const o=document.createElement('div');o.className='v1153-overlay';o.id='vismaraTariffModal';
- o.innerHTML=`<div class="v1153-modal vismara-modal" role="dialog" aria-modal="true"><header><div><div class="eyebrow">VISMARAVETRO · JANVIER 2026</div><h2>Configurer une paroi</h2><p>Choisissez le modèle, les dimensions, le profil et le verre.</p></div><button class="icon close-vismara">×</button></header><div class="v1153-body"><div class="v1153-grid"><label>Collection<select class="vismara-collection"></select></label><label>Modèle<select class="vismara-model"></select></label><label>Dimensions / référence<select class="vismara-range"></select></label><label>Profil<select class="vismara-profile"></select></label><label>Verre<select class="vismara-glass"></select></label><label>Cotes et sens d’ouverture<input class="vismara-dimensions" placeholder="Préciser les cotes de fabrication et le sens"></label><label>Suppléments confirmés HT<input class="vismara-extras" type="number" min="0" step="0.01" value="0"></label><label>Détail des suppléments<input class="vismara-extra-description" placeholder="Option et montant vérifiés dans le tarif"></label></div><div class="v1153-price-panel"><b>Prix public HT</b><strong class="vismara-price"></strong></div><p class="v1153-note">Prix de l’élément sélectionné. Pour une composition, ajoutez chaque élément. Les options spéciales non incluses dans les choix doivent être vérifiées dans la grille ci-dessous.</p><details><summary>Consulter la grille tarifaire source</summary><div class="vismara-grid-image"></div></details><div class="vismara-fallback hidden"><p>Ce modèle nécessite une sélection dans la grille : choisissez son prix et renseignez sa configuration exacte.</p><label>Référence<input class="vismara-reference"></label><label>Profil et verre<input class="vismara-finish"></label></div></div><div class="v1153-error" aria-live="polite"></div><footer><button class="btn ghost close-vismara">Annuler</button><button class="btn primary vismara-add" disabled>Ajouter l’article</button></footer></div>`;
- document.body.appendChild(o);const $=s=>o.querySelector(s);o.querySelectorAll('.close-vismara').forEach(b=>b.onclick=()=>o.remove());let page,base=null;
- function options(selector,values,labels={}){$(selector).innerHTML=values.map(v=>`<option value="${esc(v)}">${esc(labels[v]?v+' · '+labels[v]:v)}</option>`).join('');}
- options('.vismara-collection',[...new Set(data.pages.map(x=>x.collection))]);const desired=String(p.collection||'').toLowerCase().replace('série','serie');if([...$('.vismara-collection').options].some(x=>x.value===desired))$('.vismara-collection').value=desired;
- const selectedRows=()=>page.matrix.filter(r=>JSON.stringify([r.type,r.range])===$('.vismara-range').value);
- function price(){const extra=Math.max(0,Number($('.vismara-extras').value)||0);$('.vismara-price').textContent=base==null?'Configuration à vérifier dans la grille':`${euro(base+extra)} HT · achat ${euro((base+extra)*.5)} HT`;$('.vismara-add').disabled=base==null;}
- function glassChanged(){const prices=[...new Set(selectedRows().filter(r=>r.profiles.includes($('.vismara-profile').value)&&r.glasses.includes($('.vismara-glass').value)).map(r=>r.price))];base=prices.length===1?prices[0]:null;price();}
- function profileChanged(){options('.vismara-glass',[...new Set(selectedRows().filter(r=>r.profiles.includes($('.vismara-profile').value)).flatMap(r=>r.glasses))],data.glassLabels);glassChanged();}
- function rangeChanged(){options('.vismara-profile',[...new Set(selectedRows().flatMap(r=>r.profiles))],data.profileLabels);profileChanged();}
- function showPage(){page=data.pages.find(x=>x.pdfPage===Number($('.vismara-model').value));base=null;$('.vismara-extras').value=0;$('.vismara-extra-description').value='';$('.vismara-dimensions').value='';const groups=[...new Set(page.matrix.map(r=>JSON.stringify([r.type,r.range])))];$('.vismara-range').innerHTML=groups.map(v=>`<option value="${esc(v)}">${esc(JSON.parse(v).join(' · '))}</option>`).join('');$('.vismara-fallback').classList.toggle('hidden',!!groups.length);
- $('.vismara-grid-image').innerHTML=`<div class="vismara-sheet"><img src="${page.image}" alt="Tarif ${esc(page.model)} page ${page.printedPage}">${!groups.length?page.cells.map((c,i)=>`<button type="button" class="vismara-cell" data-i="${i}" aria-label="Choisir ${c.label} euros HT" style="left:${c.box[0]}%;top:${c.box[1]}%;width:${c.box[2]}%;height:${c.box[3]}%"></button>`).join(''):''}</div>`;
- $('.vismara-grid-image').querySelectorAll('button').forEach(b=>b.onclick=()=>{base=page.cells[Number(b.dataset.i)].value;price();});if(groups.length)rangeChanged();else{options('.vismara-profile',[]);options('.vismara-glass',[]);price();}
+ 'use strict';
+ // Populate catalogue cards from real manufacturer collection photographs.
+ // They illustrate the collection only; never imply the exact glass/profile choice.
+ for(const p of CATALOG){
+  if(p?.manufacturer!=='Vismaravetro')continue;
+  const photo=window.HydroVismaraPhotos?.get?.(p.collection);
+  if(!p.image&&photo){
+   p.image=photo;p.imageSource='Vismaravetro officiel · photo de collection illustrative';
+   p.imageFinishMatch='collection-only';
+  }
  }
- function models(){const ps=data.pages.filter(x=>x.collection===$('.vismara-collection').value);$('.vismara-model').innerHTML=ps.map(x=>`<option value="${x.pdfPage}">${esc(x.model)} · p. ${x.printedPage}</option>`).join('');showPage();}
- $('.vismara-collection').onchange=models;$('.vismara-model').onchange=showPage;$('.vismara-range').onchange=rangeChanged;$('.vismara-profile').onchange=profileChanged;$('.vismara-glass').onchange=glassChanged;$('.vismara-extras').oninput=price;models();
- $('.vismara-add').onclick=()=>{const extra=Math.max(0,Number($('.vismara-extras').value)||0),detail=$('.vismara-extra-description').value.trim(),dimensions=$('.vismara-dimensions').value.trim(),group=$('.vismara-range').value?JSON.parse($('.vismara-range').value):null;const ref=group?group[1]:$('.vismara-reference').value.trim(),finish=group?`${$('.vismara-profile').value} ${data.profileLabels[$('.vismara-profile').value]||''} · ${$('.vismara-glass').value} ${data.glassLabels[$('.vismara-glass').value]||''}`:$('.vismara-finish').value.trim();
- if(base==null||!ref||!finish||(extra&&!detail)||(group?.[0]==='Sur mesure'&&!dimensions)){$('.v1153-error').textContent='Complétez la configuration, les cotes sur mesure et le détail des suppléments éventuels.';return;}
- const total=base+extra,record=createSelectedProductRecord({...p,reference:ref,designation:`${page.collection} ${page.model} · ${ref}${dimensions?' · '+dimensions:''}`,collection:page.collection,finish,price:total,totalPrice:total,purchaseDiscount:50},roomId);
- Object.assign(record,{price:total,totalPrice:total,catalogPrice:total,catalogTotalPrice:total,purchaseDiscount:50,pricingStatus:'vismara-2026-matrix',pricingSource:data.source+' · p. '+page.printedPage,technicalSheetUrl:page.technicalSheetUrl,technicalSheetType:page.technicalSheetUrl?'pdf':'',technicalSheetLabel:'Fiche modèle Vismaravetro 2026',showerConfiguration:{model:page.model,collection:page.collection,sourcePdfPage:page.pdfPage,basePrice:base,supplements:extra,supplementDescription:detail,reference:ref,finish,dimensions},configuratorType:'vismara-2026'});commitSelectedRecords([record],{showProject:true});o.remove();};
-}
-const previous=addCatalogProduct;addCatalogProduct=function(ref,roomId,key=''){const p=productFromCatalogSources(ref,key);if(/^Vismaravetro$/i.test(p?.manufacturer||'')){openVismara(p,roomId).catch(e=>alert(e.message));return;}return previous(ref,roomId,key);};
+ const previous=addCatalogProduct;
+ addCatalogProduct=function(ref,roomId,key='',selectedCollection=''){
+  const p=productFromCatalogSources(ref,key);
+  if(!/^Vismaravetro$/i.test(p?.manufacturer||''))return previous(ref,roomId,key,selectedCollection);
+  if(!window.HydroVismara2026?.open){alert('Configurateur Vismaravetro non chargé.');return;}
+  const target=normalizedRoomId(roomId);
+  window.HydroVismara2026.open(p,target,(chosen,selectedRoom)=>{
+   if(!Number.isFinite(Number(chosen?.price))||Number(chosen.price)<=0)throw Error('Prix Vismaravetro non valide.');
+   if(!chosen.showerConfiguration?.model||!chosen.showerConfiguration?.sourcePdfPage)
+    throw Error('Configuration incomplète.');
+   const record=createSelectedProductRecord(chosen,selectedRoom||target);
+   if(!record)throw Error('Impossible de créer la ligne Vismaravetro.');
+   Object.assign(record,{price:Number(chosen.price),totalPrice:Number(chosen.price),
+    catalogPrice:Number(chosen.price),catalogTotalPrice:Number(chosen.price),
+    image:chosen.image||'',pdfImage:chosen.image||'',
+    images:chosen.image?[chosen.image]:[],pdfImages:chosen.image?[chosen.image]:[],
+    imageSource:chosen.imageSource||'Photo de collection illustrative',
+    imageFinishMatch:'collection-only',pricingStatus:chosen.pricingStatus,
+    pricingSource:chosen.pricingSource,showerConfiguration:chosen.showerConfiguration,
+    purchaseDiscount:50,configuratorType:'vismara-2026'});
+   commitSelectedRecords([record],{showProject:true});
+   return record.id;
+  }).catch(e=>{console.error('[Vismaravetro]',e);alert('Vismaravetro : '+(e.message||e));});
+ };
 })();
 
 ;Promise.resolve(bootstrap()).catch(e=>console.error("[Hydropolis V11.54]",e));
