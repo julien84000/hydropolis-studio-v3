@@ -122,6 +122,11 @@
       }
       return;
      }
+     if(img.dataset.radawayIllustration==='1'&&img.dataset.radawayIllustrationProxy!=='1'){
+      img.dataset.radawayIllustrationProxy='1';
+      img.src='/api/radaway-curated-image?collection='+encodeURIComponent(p?.collection||'');
+      return;
+     }
      img.style.display='none';
     const item=img.closest('.radaway-model');
     if(item&&!item.querySelector('.radaway-model-image-pending')){
