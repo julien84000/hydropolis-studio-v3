@@ -28,6 +28,9 @@ const MAX_PHOTO_REQUESTS=4;
 function family(p){
  const cat=String(p.category||'Autres');
  const d=normalize(p.designation);
+ // FAB-DIS descriptions sometimes classify bath mixers as shower products.
+ // Group by the actual product purpose so all finishes of one base SKU stay together.
+ if(/(?:melangeur|mitigeur|robinetterie).{0,75}bain|bain.{0,50}(?:melangeur|mitigeur|robinetterie)/.test(d))return 'Bain';
  if(cat==='Lavabo'){
   if(/bec (deverseur|déverseur)|bec lavabo/.test(d))return 'Becs de lavabo';
   if(/mitigeur|melangeur|mélangeur|robinet/.test(d))return 'Mitigeurs et mélangeurs';
