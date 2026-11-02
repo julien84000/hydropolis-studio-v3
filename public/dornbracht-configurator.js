@@ -23,6 +23,8 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const normalize=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
 const euro=n=>Number(n||0).toLocaleString('fr-FR',{style:'currency',currency:'EUR'});
 const good=p=>p?.manufacturer==='Dornbracht'&&p.reference&&Number(p.price)>0;
+const PHOTO_CACHE=new Map(), DETAIL_CACHE=new Map();
+const MAX_PHOTO_REQUESTS=4;
 function family(p){
  const cat=String(p.category||'Autres');
  const d=normalize(p.designation);
@@ -74,7 +76,8 @@ function open(rows,roomId,onAdd,initial){
  let collection=initial?.collection&&index.collections.has(initial.collection)?initial.collection:(sorted.includes('TARA')?'TARA':sorted[0]);
  let category=initial?.manufacturer==='Dornbracht'?family(initial):'',base=initial?.manufacturer==='Dornbracht'?String(initial.base||initial.reference):'',
  reference=initial?.reference||'',search='',selectedBody='',page=0,busy=false,closed=false;
- const media=new Map(),loading=new Set(),tasks=[],maxParallel=3;let parallel=0;
+ const media=DETAIL_CACHE,previews=PHOTO_CACHE,loading=new Set(),photoLoading=new Set(),photoTasks=[];
+ let photoParallel=0;
  document.querySelector('.dornbracht-modal')?.remove();
  const overlay=document.createElement('div');overlay.className='galassia-modal dornbracht-modal';
  overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');overlay.setAttribute('aria-label','Configurateur Dornbracht');
@@ -93,24 +96,67 @@ function open(rows,roomId,onAdd,initial){
  const key=e=>{if(e.key==='Escape')close()};
  document.addEventListener('keydown',key);$('.galassia-close').onclick=close;
  overlay.addEventListener('click',e=>{if(e.target===overlay)close()});
+ // Manufacturer accessories are checked only for the selected SKU.
  function fetchMedia(ref){
   if(!ref||media.has(ref)||loading.has(ref))return;
-  loading.add(ref);tasks.push(ref);drain();
+  loading.add(ref);
+  fetch('/api/dornbracht-product-config?reference='+encodeURIComponent(ref),{credentials:'same-origin'})
+   .then(r=>r.ok?r.json():null).then(info=>{
+    const valid=info?.ok&&info.reference===ref;
+    media.set(ref,valid?info:{ok:false,reference:ref,image:'',accessories:[],error:'Fiche France indisponible'});
+    if(valid&&info.image)previews.set(ref,{ok:true,reference:ref,image:info.image});
+   }).catch(()=>media.set(ref,{ok:false,reference:ref,image:'',accessories:[],error:'Fiche France non vérifiée'}))
+   .finally(()=>{
+    loading.delete(ref);
+    if(!closed&&overlay.isConnected){updateModelPhoto(ref);if(reference===ref)renderSelection();}
+   });
  }
- function drain(){
-  while(parallel<maxParallel&&tasks.length){
-   const ref=tasks.shift();parallel++;
-   fetch('/api/dornbracht-product-config?reference='+encodeURIComponent(ref),{credentials:'same-origin'})
+ // Cards request only the photo. Accessory verification is not triggered on browsing.
+ function fetchPreview(ref,priority=false){
+  if(!ref||previews.has(ref)||photoLoading.has(ref)||media.get(ref)?.image)return;
+  photoLoading.add(ref);
+  if(priority)photoTasks.unshift(ref);else photoTasks.push(ref);
+  drainPhotos();
+ }
+ function drainPhotos(){
+  while(photoParallel<MAX_PHOTO_REQUESTS&&photoTasks.length){
+   const ref=photoTasks.shift();photoParallel++;
+   fetch('/api/dornbracht-product-media?reference='+encodeURIComponent(ref),{credentials:'same-origin'})
     .then(r=>r.ok?r.json():null).then(info=>{
-     if(info?.ok&&info.reference===ref)media.set(ref,info);
-     else media.set(ref,{ok:false,reference:ref,image:'',accessories:[],error:'Fiche France indisponible'});
-    }).catch(()=>media.set(ref,{ok:false,reference:ref,image:'',accessories:[],error:'Fiche France non vérifiée'}))
+     previews.set(ref,info?.ok&&info.reference===ref?info:{ok:false,reference:ref,image:''});
+    }).catch(()=>previews.set(ref,{ok:false,reference:ref,image:''}))
     .finally(()=>{
-     loading.delete(ref);parallel--;
-     if(!closed&&overlay.isConnected){renderModels();if(reference===ref)renderSelection();}
-     drain();
+     photoLoading.delete(ref);photoParallel--;
+     if(!closed&&overlay.isConnected){
+      updateModelPhoto(ref);
+      if(reference===ref&&!media.has(ref))refreshSelectedPhoto(ref);
+     }
+     drainPhotos();
     });
   }
+ }
+ function updateModelPhoto(ref){
+  const product=index.byRef.get(ref);if(!product)return;
+  const image=previews.get(ref)?.image||media.get(ref)?.image;
+  if(!image)return;
+  const cards=$$('[data-model]').filter(b=>b.dataset.model===String(product.base||product.reference));
+  for(const card of cards){
+   const frame=card.querySelector('.galassia-model-photo');
+   if(!frame||frame.querySelector('img'))continue;
+   const img=document.createElement('img');img.src=image;img.alt='Modèle '+String(product.base||product.reference);
+   img.loading='lazy';img.decoding='async';img.onerror=()=>{img.remove();frame.textContent='Photo indisponible'};
+   frame.replaceChildren(img);
+  }
+ }
+ function refreshSelectedPhoto(ref){
+  if(reference!==ref)return;
+  const panel=$('.dornbracht-selection .galassia-photo');
+  if(!panel||panel.querySelector('img'))return;
+  const image=previews.get(ref)?.image;
+  if(!image)return;
+  const img=document.createElement('img');img.src=image;img.alt='Produit Dornbracht';img.loading='lazy';img.decoding='async';
+  img.onerror=()=>{img.remove();panel.textContent='Photo indisponible'};
+  panel.replaceChildren(img);
  }
  const available=()=>index.collections.get(collection);
  const categories=()=>[...(available()?.categories.values()||[])].sort((a,b)=>a.label.localeCompare(b.label,'fr'));
@@ -138,7 +184,7 @@ function open(rows,roomId,onAdd,initial){
  }
  function modelPhoto(m){
   const refs=m.variants.map(v=>v.reference);
-  return refs.map(r=>media.get(r)?.image).find(Boolean)||'';
+  return refs.map(r=>media.get(r)?.image||previews.get(r)?.image).find(Boolean)||'';
  }
  function renderCollections(){
   $('.dornbracht-collections').innerHTML=sorted.map(name=>{
@@ -172,7 +218,7 @@ function open(rows,roomId,onAdd,initial){
   }).join('')||'<p class="galassia-empty">Aucune référence dans cette famille.</p>';
   $$('[data-model]').forEach(b=>b.onclick=()=>{base=b.dataset.model;reference='';selectedBody='';renderSelection();renderModels()});
   // Bounded progressive manufacturer image discovery; not a 9,000-SKU blast.
-  for(const m of visible.slice(0,12))if(!modelPhoto(m))fetchMedia(m.variants[0]?.reference);
+  for(const m of visible.slice(0,12))if(!modelPhoto(m))fetchPreview(m.variants[0]?.reference);
   $('.dornbracht-pages').innerHTML=list.length>36?
    '<button type="button" data-page="-1" '+(!page?'disabled':'')+'>Précédent</button><span>Page '+(page+1)+' / '+Math.ceil(list.length/36)+'</span>'+
    '<button type="button" data-page="1" '+((page+1)*36>=list.length?'disabled':'')+'>Suivant</button>':'';
@@ -192,7 +238,7 @@ function open(rows,roomId,onAdd,initial){
   // A failed photo lookup is not a reason to block a standalone priced item.
   // Concealed trims do require an official FR accessory check before sale.
   const blocked=(hasNecessary&&!body)||(needsChecking&&(!info||missing||!hasNecessary));
-  const photo=info?.image||modelPhoto(m);
+  const photo=info?.image||previews.get(item.reference)?.image||modelPhoto(m);
   const price=Number(item.price),sum=price+(body?Number(body.price):0);
   const accessoryCards=hasNecessary?'<div class="dornbracht-accessory-options">'+options.map(o=>
    '<button type="button" data-body="'+esc(o.reference)+'" class="dornbracht-body-option'+(o.reference===selectedBody?' active':'')+
@@ -239,6 +285,7 @@ function open(rows,roomId,onAdd,initial){
    }catch(e){busy=false;renderSelection();alert('Dornbracht : '+(e.message||e))}
   };
   if(!info)fetchMedia(item.reference);
+  if(!photo)fetchPreview(item.reference,true);
  }
  function render(resetSearch=true){
   if(closed||!overlay.isConnected)return;
