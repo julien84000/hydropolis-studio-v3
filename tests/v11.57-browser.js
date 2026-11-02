@@ -248,8 +248,8 @@ const check=(name,value)=>{assert.ok(value,name);report.checks.push(name);};
       const price=quoteLineUnit(sample('Sbordoni'));
       return {costs,rates,clientDiscount,originalClientDiscount:saved.commercial.clientDiscount,price};
     });
-    check('remises achat Sbordoni 55 % et Dornbracht 50 % migrées et conservées',JSON.stringify(purchaseTerms.rates)==='[55,50]');
-    check('coûts achat Sbordoni et Dornbracht corrigés malgré ancienne remise article',Math.abs(purchaseTerms.costs[0]-450)<0.001&&purchaseTerms.costs[1]===500);
+    check('remises achat Sbordoni 55 % et Dornbracht 45 + 10 % migrées et conservées',JSON.stringify(purchaseTerms.rates)==='[55,50.5]');
+    check('coûts achat Sbordoni et Dornbracht corrigés malgré ancienne remise article',Math.abs(purchaseTerms.costs[0]-450)<0.001&&Math.abs(purchaseTerms.costs[1]-495)<0.001);
     check('remises fournisseur sans effet sur les prix et remises client',purchaseTerms.price===1000&&purchaseTerms.clientDiscount===purchaseTerms.originalClientDiscount);
 
     const subtotals=await page.evaluate(()=>{
