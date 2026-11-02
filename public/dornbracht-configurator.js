@@ -279,8 +279,8 @@ function open(rows,roomId,onAdd,initial){
     '<div><span>Prix public HT</span><b>'+euro(price)+'</b></div>'+
     (body?'<div><span>Corps '+esc(body.reference)+'</span><b>'+euro(body.price)+'</b></div>':'')+
     '<div><span>Total public HT</span><b>'+euro(sum)+'</b></div>'+
-    '<div><span>Remise d’achat</span><b>50 %</b></div>'+
-    '<div><span>Coût d’achat estimé HT</span><b>'+euro(sum*.5)+'</b></div></div>'+
+    '<div><span>Remise d’achat</span><b>45 % + 10 % (50,5 % effectifs)</b></div>'+
+    '<div><span>Coût d’achat estimé HT</span><b>'+euro(sum*.495)+'</b></div></div>'+
    '<div class="dornbracht-accessory"><strong>Accessoires nécessaires · marché français</strong>'+
     (missing?'<p class="dornbracht-missing">Fiche fabricant France indisponible : complément obligatoire non vérifié.</p>':'')+
     accessoryCards+
@@ -301,8 +301,8 @@ function open(rows,roomId,onAdd,initial){
    try{
     const selected={...item,dornbrachtConfigured:true,dornbrachtSelectedCollection:collection,
      dornbrachtVerifiedBody:body?.reference||'',dornbrachtManufacturerPage:info.manufacturerUrl,
-     purchaseDiscount:50,...(info.image?{image:info.image,imageSource:'Dornbracht officiel · référence exacte'}:{})};
-    await onAdd(selected,body?{...body,dornbrachtRequiredBody:true,requiredRoughIn:true,purchaseDiscount:50}:null,roomId);
+     purchaseDiscount:50.5,...(info.image?{image:info.image,imageSource:'Dornbracht officiel · référence exacte'}:{})};
+    await onAdd(selected,body?{...body,dornbrachtRequiredBody:true,requiredRoughIn:true,purchaseDiscount:50.5}:null,roomId);
     close();
    }catch(e){busy=false;renderSelection();alert('Dornbracht : '+(e.message||e))}
   };
