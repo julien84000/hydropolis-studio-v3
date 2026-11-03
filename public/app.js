@@ -1086,7 +1086,7 @@ let autoPhotoObserver=null;
 const AUTO_PHOTO_CONCURRENCY=4;
 function autoPhotoGroupKey(p){return manufacturerSharedCacheKey(p)||manufacturerCacheKey(p);}
 function automaticImageEligible(p){
-  if(!p||!/^(Alpi|Sira Concrete|Nicolazzi|Ritmonio|Zucchetti|Gessi|Dornbracht|Hidrobox|Bette|Carrodrain)$/i.test(String(p.manufacturer||"")))return false;
+  if(!p||!/^(Alpi|Sira Concrete|Nicolazzi|Ritmonio|Zucchetti|Gessi|Dornbracht|Hidrobox|Bette|Carrodrain|Coalbrook)$/i.test(String(p.manufacturer||"")))return false;
   if(/^Nicolazzi$/i.test(String(p.manufacturer||""))){
     if(p.image)return false;
     const direct=manufacturerImageCache[manufacturerCacheKey(p)]||manufacturerImageCache[manufacturerSharedCacheKey(p)];
@@ -1094,6 +1094,12 @@ function automaticImageEligible(p){
     // The local PDF drawing is only a placeholder. Hydrate once from Designer
     // Tapware, then avoid repeated network work for twelve hours even on fallback.
     if(direct?.src&&Date.now()-checked<12*60*60*1000)return false;
+  }else if(p.manufacturer==='Coalbrook'){
+    // The 2026 PDF and the official product site have precise finish codes.
+    // Never treat a cached collection-only visual as complete for this SKU.
+    const cached=cachedManufacturerImage(p);
+    if(p.imageFinishMatch==='exact'&&p.image)return false;
+    if(cached?.finishMatch==='exact'&&cached?.src)return false;
   }else if(cachedManufacturerImage(p)?.src||p.image)return false;
 
   const failedAt=autoPhotoFailures.get(autoPhotoGroupKey(p))||0;
