@@ -113,7 +113,7 @@ test('Client tabs, dossier disclaimer and original project fields are wired into
  assert(index.includes('hotbath-project-visual.js'));
  assert(index.includes('hotbath-finish-media.css'));
  assert(app.includes('HydroHotbathProjectVisual?.mount'));
- assert(app.includes('HydroHotbathFinishMedia.view(p)'));
+ assert(app.includes('hotbathResolver.view(p)')&&app.includes('HydroHotbathFinishMedia'));
  assert(app.includes('hotbathDossierPhotoDisclaimer'));
  assert(app.includes('Simulation de finition — rendu indicatif non contractuel'));
  assert(app.includes('Photo générique du modèle — finition illustrative'));
