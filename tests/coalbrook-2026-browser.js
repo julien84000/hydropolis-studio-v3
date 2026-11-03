@@ -62,6 +62,33 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   assert.match(await page.locator('.coalbrook-media-source').innerText(),/finition/);
   const doc=page.locator('a.coalbrook-doc-link').first();
   assert.equal(await doc.getAttribute('href'),withPhoto.technicalSheetUrl);
+  // Real application path: selection must become TWO linked quote records.
+  await page.waitForFunction(()=>typeof catalogIndex!=='undefined'&&
+    catalogIndex.maker('Coalbrook').some(p=>p.reference==='DO1007CP')&&
+    !!state.rooms?.[0]?.id,{timeout:60000});
+  await page.evaluate(()=>{
+    document.querySelector('#manufacturerFilter').value='Coalbrook';
+    document.querySelector('#manufacturerFilter').dispatchEvent(new Event('change'));
+    document.querySelector('#coalbrookLaunch').click();
+  });
+  await page.locator('#coalbrookConfig').waitFor();
+  await page.locator('select[aria-label="01 · Catégorie"]').selectOption('Robinetterie');
+  await page.locator('select[aria-label="02 · Collection"]').selectOption('Domo');
+  await page.locator('select[aria-label="03 · Sous-catégorie"]').selectOption('Lavabo');
+  await page.locator('select[aria-label="04 · Article"]').selectOption('DO1007');
+  await page.locator('select[aria-label="05 · Finition"]').selectOption('DO1007CP');
+  const countBefore=await page.evaluate(()=>state.selected.length);
+  await page.locator('.coalbrook-add').click();
+  const actual=await page.evaluate(()=>state.selected.slice(-2).map(p=>({
+    ref:p.reference,id:p.id,accessoryFor:p.accessoryFor||null,
+    price:Number(p.price),totalPrice:Number(p.totalPrice||0),vat:p.vat
+  })));
+  assert.equal(await page.evaluate(()=>state.selected.length),countBefore+2);
+  assert.deepEqual(actual.map(x=>x.ref),['DO1007CP','CO1201']);
+  assert.equal(actual[1].accessoryFor,actual[0].id);
+  assert.equal(Number((actual[0].price+actual[1].price).toFixed(2)),355.22);
+  assert.notEqual(actual[0].id,actual[1].id);
+  
   assert.deepEqual(errors.filter(x=>/coalbrook/i.test(x)),[]);
   console.log('Coalbrook Chromium E2E OK: model, finish, HT prices, linked rough-in, exact photo, official PDF');
  }catch(e){console.error(e.stack||e,logs.slice(-1800));process.exitCode=1}
