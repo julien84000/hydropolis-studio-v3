@@ -61,3 +61,36 @@ test('Configurator scripts parse and are loaded without replacing any catalogue 
  const manifest=read('public/catalog_manifest.json');
  assert.ok(manifest.includes('catalog_coalbrook.json'));
 });
+
+test('Coalbrook official site imagery is exact per SKU and tech PDF links are manufacturer-hosted',()=>{
+ const photoRows=rows.filter(p=>p.image);
+ const docs=rows.filter(p=>p.technicalSheetUrl);
+ assert.ok(photoRows.length>=500,'Need at least 500 verified official photo references');
+ assert.ok(docs.length>=590,'Need at least 590 manufacturer-backed technical sheet links');
+ for(const p of photoRows){
+  const url=new URL(p.image);
+  assert.equal(url.hostname,'coalbrook-bathrooms.transforms.svdcdn.com');
+  const filename=decodeURIComponent(url.pathname.split('/').pop());
+  assert.ok(filename.startsWith(p.reference+'.')||filename.startsWith(p.reference+'-')||filename.startsWith(p.reference+'_'),
+   'Finish photo must match exact reference: '+p.reference+' => '+filename);
+  assert.equal(p.imageFinishMatch,'exact');
+ }
+ for(const p of docs){
+  const url=new URL(p.technicalSheetUrl);
+  assert.equal(url.hostname,'coalbrook-bathrooms.files.svdcdn.com');
+  assert.match(url.pathname,/\.pdf$/i);
+ }
+ assert.equal(byRef.get('DO1000CP').technicalSheetUrl.includes('DO1000'),true);
+ assert.equal(byRef.get('DO1000CP').vat,'HT');
+});
+test('Configured Coalbrook media and PDF links exist as source records, without modifying other brands',()=>{
+ const assets=JSON.parse(read('public/coalbrook-official-assets-2026.json'));
+ assert.ok(assets.pagesProcessed>=200);
+ assert.ok(Object.keys(assets.images).length>=500);
+ assert.ok(Object.keys(assets.documents).length>=200);
+ const app=read('public/app.js');
+ assert.ok(app.includes('p.technicalSheetUrl'));
+ const config=read('public/coalbrook-2026-configurator.js');
+ assert.match(config,/Ouvrir la fiche technique PDF officielle/);
+ assert.match(config,/Notice d’installation PDF/);
+});
