@@ -25,7 +25,7 @@ function open(rows,roomId,onAdd){
  if(!supplier||!rough||!Array.isArray(rows)||!rows.some(r=>r?.manufacturer==='Hotbath')||typeof onAdd!=='function')
   return Promise.reject(new Error('Données du configurateur Hotbath indisponibles'));
  const linkAudit=rough.linkCatalog(rows);
- const indexed=supplier.tariffIndex(rows);
+ const indexed=ray?.extendTariffIndex(supplier.tariffIndex(rows),rows)||supplier.tariffIndex(rows);
  return new Promise(resolve=>{
   document.querySelector('.hotbath-galassia-modal')?.remove();
   const ov=document.createElement('div');
