@@ -67,7 +67,7 @@ function extendTariffIndex(index,rows){
  const priced=new Map(index.get('Ray')||[]);
  for(const p of rows||[]){
   if(p?.manufacturer!=='Hotbath'||!/^(?:RARH50-[123]EXT\.|RARV135-[123]EXT\.|RAAR\.)/.test(String(p.reference||'')))continue;
-  const key=baseCode(p).toUpperCase();
+  const key=baseCode(p).toUpperCase().replace(/[^A-Z0-9]/g,'');
   const group=priced.get(key)||[];
   if(!group.some(x=>x.reference===p.reference))group.push(p);
   priced.set(key,group);
