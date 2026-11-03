@@ -112,6 +112,33 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   assert.equal(Number((parent.price+child.price).toFixed(2)),355.22);
   assert.equal(parent.vat,'HT');
 
+  // A generic V11 cached image must be shown first but upgraded when an exact SKU becomes available.
+  const missingExact=rows.find(p=>p.manufacturer==='Coalbrook'&&!p.image&&p.designation&&!p.internalReference);
+  assert.ok(missingExact,'Missing a non-illustrated SKU for the cache upgrade test');
+  const upgraded=await page.evaluate(async ({rows,reference})=>{
+    const originalCache=window.cachedManufacturerImage,originalFetcher=window.fetchManufacturerImage;
+    const generic='data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"><rect width="12" height="12" fill="gray"/></svg>');
+    const exact='data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"><rect width="12" height="12" fill="green"/></svg>');
+    let called=false;
+    window.cachedManufacturerImage=()=>({src:generic,finishMatch:'collection-only'});
+    window.fetchManufacturerImage=()=>{called=true;return Promise.resolve({src:exact,finishMatch:'exact'})};
+    window.HydroCoalbrookConfigurator.open(rows,'test-room',()=>{},{reference});
+    for(let i=0;i<100;i++){
+      if(document.querySelector('.coalbrook-product-media img')?.src===exact)break;
+      await new Promise(resolve=>setTimeout(resolve,10));
+    }
+    const image=document.querySelector('.coalbrook-product-media img');
+    const label=document.querySelector('.coalbrook-media-source');
+    const result={called,src:image?.src||'',label:label?.textContent||'',exact};
+    window.cachedManufacturerImage=originalCache;
+    window.fetchManufacturerImage=originalFetcher;
+    return result;
+  },{rows,reference:missingExact.reference});
+  assert.ok(upgraded.called,'A generic cached photo failed to trigger relookup');
+  assert.equal(upgraded.src,upgraded.exact,'Exact image did not replace uncertain cached visual');
+  assert.match(upgraded.label,/finition exacte/);
+
+
   
   assert.deepEqual(errors.filter(x=>/coalbrook/i.test(x)),[]);
   console.log('Coalbrook Chromium E2E OK: model, finish, HT prices, linked rough-in, exact photo, official PDF');
