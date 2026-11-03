@@ -267,7 +267,7 @@ body.v12-ui #view-project #roomsEditor .room-product .hotbath-photo-controls{
   margin:8px 0 6px;
 }
 @media(max-width:720px){
-  body.v12-ui #view-project #roomsEditor .room-product{
+  body.v12-ui #view-project #roomsEditor .room-product:has(.room-prod-img img){
     grid-template-columns:96px minmax(0,1fr) 30px;
   }
   body.v12-ui #view-project #roomsEditor .room-product:has(.room-prod-img img)>.room-prod-img{
