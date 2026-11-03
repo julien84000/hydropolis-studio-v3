@@ -52,3 +52,8 @@ body .coalbrook-launch[hidden]{display:none!important}
 .coalbrook-more-models{grid-column:1/-1;padding:8px;color:#7c8790;font-size:10px}
 @media(max-width:760px){.coalbrook-model-gallery{grid-column:1/-1;grid-template-columns:repeat(3,minmax(0,1fr));max-height:210px}}
 @media(max-width:430px){.coalbrook-model-gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.coalbrook-import-photos{margin-left:auto;max-width:210px;padding:9px 11px;border:1px solid #d4c3a9;border-radius:10px;background:#fff9ed;color:#71542c;cursor:pointer;font-size:11px;font-weight:730}
+.coalbrook-import-photos:disabled{opacity:.55;cursor:progress}
+.coalbrook-model-photo-status{font-size:9px;color:#9a7c4d}
+@media(max-width:700px){.coalbrook-modal-head{flex-wrap:wrap}.coalbrook-import-photos{margin-left:0;order:3;max-width:none;width:100%}}
