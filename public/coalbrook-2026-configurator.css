@@ -1,0 +1,40 @@
+/* Coalbrook guided tariff configurator — no changes to manufacturer grids or printed dossiers. */
+body .coalbrook-launch{border:1px solid #c5ad88;background:#f9f5ed;border-radius:11px;padding:11px 16px;color:#59452e;font-weight:750;cursor:pointer;margin:6px 0 14px}
+body .coalbrook-launch[hidden]{display:none!important}
+.coalbrook-modal-overlay{position:fixed;inset:0;background:#101821b5;z-index:10050;display:grid;place-items:center;padding:17px;backdrop-filter:blur(6px)}
+.coalbrook-modal{width:min(1050px,100%);max-height:95dvh;overflow:auto;background:#fff;border-radius:19px;box-shadow:0 30px 80px #0005;display:flex;flex-direction:column;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:#2a3034}
+.coalbrook-modal-head{display:flex;gap:12px;align-items:start;justify-content:space-between;padding:25px 28px 20px;background:linear-gradient(120deg,#faf8f3,#fff);border-bottom:1px solid #e8eaed}
+.coalbrook-eyebrow{font-size:10px;letter-spacing:.16em;color:#ab8958;font-weight:760}
+.coalbrook-modal-head h2{font-size:29px;line-height:1.1;margin:8px 0;letter-spacing:-.055em;color:#20262b}
+.coalbrook-modal-head p{font-size:12px;color:#68747d;margin:0}
+.coalbrook-close{background:#fff;border:1px solid #dce1e5;border-radius:9px;width:35px;height:35px;cursor:pointer;font-size:23px;color:#48515b}
+.coalbrook-modal-grid{display:grid;grid-template-columns:minmax(210px,310px) minmax(0,1fr);gap:20px;padding:20px 28px;min-height:355px}
+.coalbrook-fields{display:flex;flex-direction:column;gap:13px}
+.coalbrook-field{display:grid;gap:6px;color:#59646f;font-size:11px;font-weight:700}
+.coalbrook-field select{border:1px solid #dce1e6;padding:11px;width:100%;min-width:0;box-sizing:border-box;font-size:12px;border-radius:10px;background:#fff;color:#29313a}
+.coalbrook-product-card{border:1px solid #e6e8ec;background:#fdfdfe;border-radius:15px;display:grid;grid-template-columns:minmax(160px,.8fr) minmax(200px,1.2fr);overflow:hidden;min-width:0}
+.coalbrook-product-media{display:grid;place-items:center;min-height:300px;background:#f6f7f8;color:#8a939c;font-size:12px;text-align:center;padding:15px}
+.coalbrook-product-media img{object-fit:contain;width:100%;max-height:310px}
+.coalbrook-media-pending{border:1px dashed #cfd4db;padding:36px 17px;border-radius:14px}
+.coalbrook-product-description{padding:21px;display:flex;flex-direction:column;gap:9px;min-width:0}
+.coalbrook-breadcrumb{font-size:9px;color:#a27c45;font-weight:740;text-transform:uppercase;letter-spacing:.1em}
+.coalbrook-product-description h3{color:#28323b;font-size:16px;line-height:1.36;margin:0}
+.coalbrook-reference{font-size:12px;color:#75808a;font-weight:650}
+.coalbrook-amount{font-size:24px;color:#29313a;letter-spacing:-.04em;font-weight:780}
+.coalbrook-properties{margin:0;display:grid;gap:5px}
+.coalbrook-properties>div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid #edf0f1;padding:5px 0;font-size:10px}
+.coalbrook-properties dt{color:#84909a}.coalbrook-properties dd{margin:0;color:#444d55;font-weight:650;text-align:right}
+.coalbrook-technical-alert{font-size:10px;background:#f2f4f6;border-left:3px solid #a78c64;color:#67737b;padding:10px;line-height:1.55}
+.coalbrook-rough{display:grid;gap:5px;background:#faf6ed;border:1px solid #e8dcc8;border-radius:10px;padding:12px;color:#594c38;font-size:11px}
+.coalbrook-rough span{font-size:10px}.coalbrook-official-link{color:#99713b;font-size:11px;text-decoration:underline}
+.coalbrook-modal-foot{display:flex;align-items:center;justify-content:space-between;gap:16px;border-top:1px solid #e8eaee;padding:16px 28px}
+.coalbrook-modal-foot span{color:#7d858c;font-size:10px;line-height:1.4}
+.coalbrook-add{background:#27323b;color:#fff;border:none;border-radius:11px;padding:12px 18px;min-width:172px;font-size:12px;font-weight:700;cursor:pointer}
+.coalbrook-add:disabled{opacity:.35;cursor:not-allowed}
+@media(max-width:760px){.coalbrook-modal-grid{grid-template-columns:1fr;padding:15px}.coalbrook-modal-head{padding:17px}.coalbrook-product-card{grid-template-columns:1fr}.coalbrook-modal-foot{flex-direction:column;align-items:stretch;padding:15px}.coalbrook-product-media{min-height:165px}.coalbrook-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:450px){.coalbrook-fields{grid-template-columns:1fr}.coalbrook-modal-head h2{font-size:23px}}
+@media print{.coalbrook-modal-overlay,.coalbrook-launch{display:none!important}}
+
+.coalbrook-technical-alert{display:grid;gap:8px}
+.coalbrook-technical-alert .coalbrook-doc-link{display:block;color:#76562c;font-weight:750;text-decoration:underline;text-underline-offset:3px;font-size:11px}
+.coalbrook-technical-alert small{display:block;color:#79848d;font-size:9px;line-height:1.4}

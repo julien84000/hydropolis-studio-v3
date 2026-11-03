@@ -1,0 +1,261 @@
+{
+  "catalogTotal": 1483,
+  "verifiedAgainstPDF": 593,
+  "corrected": 31,
+  "unverifiedLeftUntouched": 890,
+  "vat": "HT",
+  "source": "Coalbrook EuroBrochure August 2026, pages 146–213",
+  "changes": [
+    {
+      "reference": "DC1007CP",
+      "oldHT": 228.12,
+      "newHT": 228.13,
+      "sourcePages": [
+        155
+      ]
+    },
+    {
+      "reference": "DO1007CP",
+      "oldHT": 228.12,
+      "newHT": 228.13,
+      "sourcePages": [
+        147
+      ]
+    },
+    {
+      "reference": "DO3101CP",
+      "oldHT": 240.62,
+      "newHT": 240.63,
+      "sourcePages": [
+        152
+      ]
+    },
+    {
+      "reference": "DO7003CP",
+      "oldHT": 40.62,
+      "newHT": 40.63,
+      "sourcePages": [
+        196
+      ]
+    },
+    {
+      "reference": "DO7010BB",
+      "oldHT": 103.12,
+      "newHT": 103.13,
+      "sourcePages": [
+        197
+      ]
+    },
+    {
+      "reference": "DO7010BN",
+      "oldHT": 103.12,
+      "newHT": 103.13,
+      "sourcePages": [
+        197
+      ]
+    },
+    {
+      "reference": "DO7010GM",
+      "oldHT": 103.12,
+      "newHT": 103.13,
+      "sourcePages": [
+        197
+      ]
+    },
+    {
+      "reference": "ZU2000BB",
+      "oldHT": 990.62,
+      "newHT": 990.63,
+      "sourcePages": [
+        171
+      ]
+    },
+    {
+      "reference": "ZU2000BN",
+      "oldHT": 990.62,
+      "newHT": 990.63,
+      "sourcePages": [
+        171
+      ]
+    },
+    {
+      "reference": "ZU2000GM",
+      "oldHT": 990.62,
+      "newHT": 990.63,
+      "sourcePages": [
+        171
+      ]
+    },
+    {
+      "reference": "DO2009BB",
+      "oldHT": 1353.12,
+      "newHT": 1353.13,
+      "sourcePages": [
+        150,
+        158
+      ]
+    },
+    {
+      "reference": "DO2009BN",
+      "oldHT": 1353.12,
+      "newHT": 1353.13,
+      "sourcePages": [
+        150,
+        158
+      ]
+    },
+    {
+      "reference": "DO2009GM",
+      "oldHT": 1353.12,
+      "newHT": 1353.13,
+      "sourcePages": [
+        150,
+        158
+      ]
+    },
+    {
+      "reference": "ZU3006BB",
+      "oldHT": 390.62,
+      "newHT": 390.63,
+      "sourcePages": [
+        172
+      ]
+    },
+    {
+      "reference": "ZU3006BN",
+      "oldHT": 390.62,
+      "newHT": 390.63,
+      "sourcePages": [
+        172
+      ]
+    },
+    {
+      "reference": "ZU3006GM",
+      "oldHT": 390.62,
+      "newHT": 390.63,
+      "sourcePages": [
+        172
+      ]
+    },
+    {
+      "reference": "DO3050BB",
+      "oldHT": 390.62,
+      "newHT": 390.63,
+      "sourcePages": [
+        174
+      ]
+    },
+    {
+      "reference": "DO3050BN",
+      "oldHT": 390.62,
+      "newHT": 390.63,
+      "sourcePages": [
+        174
+      ]
+    },
+    {
+      "reference": "DO3050GM",
+      "oldHT": 390.62,
+      "newHT": 390.63,
+      "sourcePages": [
+        174
+      ]
+    },
+    {
+      "reference": "DO3051CP",
+      "oldHT": 403.12,
+      "newHT": 403.13,
+      "sourcePages": [
+        174
+      ]
+    },
+    {
+      "reference": "DO3054BB",
+      "oldHT": 440.62,
+      "newHT": 440.63,
+      "sourcePages": [
+        175
+      ]
+    },
+    {
+      "reference": "DO3054BN",
+      "oldHT": 440.62,
+      "newHT": 440.63,
+      "sourcePages": [
+        175
+      ]
+    },
+    {
+      "reference": "DO3054CP",
+      "oldHT": 290.62,
+      "newHT": 290.63,
+      "sourcePages": [
+        175
+      ]
+    },
+    {
+      "reference": "DO3054GM",
+      "oldHT": 440.62,
+      "newHT": 440.63,
+      "sourcePages": [
+        175
+      ]
+    },
+    {
+      "reference": "DC3051CP",
+      "oldHT": 453.12,
+      "newHT": 453.13,
+      "sourcePages": [
+        176
+      ]
+    },
+    {
+      "reference": "DC3052CP",
+      "oldHT": 403.12,
+      "newHT": 403.13,
+      "sourcePages": [
+        176
+      ]
+    },
+    {
+      "reference": "ZU3053BB",
+      "oldHT": 328.12,
+      "newHT": 328.13,
+      "sourcePages": [
+        181
+      ]
+    },
+    {
+      "reference": "ZU3053BN",
+      "oldHT": 328.12,
+      "newHT": 328.13,
+      "sourcePages": [
+        181
+      ]
+    },
+    {
+      "reference": "ZU3053GM",
+      "oldHT": 328.12,
+      "newHT": 328.13,
+      "sourcePages": [
+        181
+      ]
+    },
+    {
+      "reference": "ZU3062CP",
+      "oldHT": 115.62,
+      "newHT": 115.63,
+      "sourcePages": [
+        184
+      ]
+    },
+    {
+      "reference": "CO3062",
+      "oldHT": 203.12,
+      "newHT": 203.13,
+      "sourcePages": [
+        184
+      ]
+    }
+  ]
+}

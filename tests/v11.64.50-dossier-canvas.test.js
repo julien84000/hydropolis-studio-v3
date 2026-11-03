@@ -57,7 +57,7 @@ test('Only graphic editor assets are loaded; server and existing catalog engine 
    assert.ok(html.includes(f+'?v=__APP_VERSION__'),f);
  assert.ok(html.indexOf('dossier-canvas-editor.js')>html.indexOf('v12-workspace.js'));
  const packageJson=JSON.parse(read('package.json'));
- assert.equal(packageJson.version,'11.64.50');
+ assert.match(packageJson.version,/^11\.64\.\d+$/);
  const app=read('public/app.js');
  assert.ok(app.includes('project:{...state.project}'),'Cloud save keeps dossierCanvas and presets within the project');
  assert.match(app,/async function saveCloudProject\(\)/);
