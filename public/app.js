@@ -2774,6 +2774,11 @@ function addCatalogProduct(ref,roomId,key="",selectedCollection=""){
     return;
   }
   const targetRoomId=normalizedRoomId(roomId);
+  // Coalbrook must enter its full model/finish/rough-in configurator, not the
+  // generic one-click catalogue addition (which could omit mandatory bodies).
+  if(p.manufacturer==='Coalbrook'&&window.HydroCoalbrookConfigurator?.openProduct){
+    window.HydroCoalbrookConfigurator.openProduct(p,targetRoomId);return;
+  }
   if(p.manufacturer==='Dornbracht'){launchDornbrachtConfigurator(p);return;}
   if(p.manufacturer==='Amphora'){launchAmphoraConfigurator(p);return;}
   if(p.manufacturer==='Radaway'){launchRadawayConfigurator(p);return;}
