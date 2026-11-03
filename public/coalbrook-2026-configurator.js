@@ -16,6 +16,10 @@ function coalbrookPreviousMedia(p){
  try{return cachedManufacturerImage(p)||null}catch(_){return null}
 }
 function coalbrookPreferredMedia(p){
+ const furniture=window.HydroCoalbrookFurnitureMedia?.getSync(p?.reference);
+ if(furniture?.src)return {src:furniture.src,
+   label:'Photo officielle Coalbrook · meuble '+furniture.finish+(furniture.illustratedWith?' · vasque illustrée '+furniture.illustratedWith:'')+' (non comprise dans le prix du meuble)',
+   record:{finishMatch:'exact'}};
  const previous=coalbrookPreviousMedia(p);
  if(previous?.src&&previous.finishMatch==='exact')
    return {src:previous.src,label:'Photo Coalbrook déjà enregistrée · finition exacte',record:previous};
@@ -127,13 +131,14 @@ function show(rows,roomId,onAdd,initial){
    const verifiedCache=!photo&&previews.map(coalbrookPreviousMedia).find(c=>c?.src&&c.finishMatch==='exact');
    const uncertainCache=!photo&&!verifiedCache&&previews.map(coalbrookPreviousMedia).find(c=>c?.src);
    const frame=make('span','coalbrook-model-tile-photo');
-   const imageSrc=isMaestro(item)?'':photo?.image||verifiedCache?.src||uncertainCache?.src||'';
+   const furniturePreview=previews.map(p=>window.HydroCoalbrookFurnitureMedia?.getSync(p.reference)).find(x=>x?.src);
+   const imageSrc=isMaestro(item)?'':furniturePreview?.src||photo?.image||verifiedCache?.src||uncertainCache?.src||'';
    if(imageSrc){
     const img=make('img');img.src=imageSrc;img.loading='lazy';img.alt=(item.designation||base)+' · aperçu du modèle';
     img.addEventListener('error',()=>frame.replaceChildren(make('span','','Visuel indisponible')),{once:true});
     frame.append(img);
    }else frame.append(make('span','','Photo à compléter'));
-   const label=make('small','coalbrook-model-photo-status',exact||verifiedCache?'Photo fabricant · finition exacte':'Photo à vérifier');
+   const label=make('small','coalbrook-model-photo-status',furniturePreview||exact||verifiedCache?'Photo fabricant · finition exacte':'Photo à vérifier');
    card.append(frame,make('b','',base),make('small','',(item.designation||'Modèle Coalbrook').slice(0,76)),label);
    // Only unresolved thumbnails are queried, with a small per-view budget.
    // The manufacturer's V11 cache is consulted before fetching again.
@@ -287,6 +292,17 @@ function show(rows,roomId,onAdd,initial){
   selects.finish.value=initialRow.reference;selection=initialRow;display()
  }else setupDown(0);
  setTimeout(()=>selects.family.focus(),0);
+ // Load the manufacturer-verified furniture render index asynchronously.
+ // Preserve the current category, collection and selected finish on refresh.
+ const furniture=window.HydroCoalbrookFurnitureMedia;
+ if(furniture){
+  furniture.apply(products);
+  furniture.ready.then(()=>{
+   if(dialog!==overlay||!document.contains(overlay))return;
+   furniture.apply(products);
+   setupDown(4);
+  }).catch(()=>{});
+ }
 }
 function commitCoalbrookSelection(main,rough,room){
  // The source catalogue totalPrice already includes the rough-in, so the
