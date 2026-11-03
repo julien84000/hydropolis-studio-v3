@@ -52,8 +52,35 @@ function purchaseDiscount(p,chosenCollection=''){
 
 function linkCatalog(rows){
  const index=bodyIndex(rows),report={linked:0,already:0,ambiguous:0,unresolved:0};
+ // Hotbath RAY 2026: the supplier gives the heating assembly and the
+ // INWALL support independently. Only exact MBASES2/3/4 tariff rows authorize
+ // a mandatory link. Price of the visible part must NEVER include the body.
+ const rayBodies=new Map((rows||[]).filter(p=>p?.manufacturer==='Hotbath'&&
+   /^MBASES[234]$/.test(String(p.reference||''))&&Number(p.price)>0)
+   .map(p=>[p.reference,p]));
+ if(typeof window!=='undefined')window.HydroHotbathRay2026?.apply?.(rows);
  for(const p of rows||[]){
-  if(p?.manufacturer!=='Hotbath'||!trim(p))continue;
+  if(p?.manufacturer!=='Hotbath')continue;
+  const ray=String(p.reference||'').match(/^RAR(H50|V135)-([123])EXT\.(IX|CR|GN|WH|TB|BBP|BCP|MBP|BGP)$/);
+  if(ray){
+   const bodyRef='MBASES'+(Number(ray[2])+1),body=rayBodies.get(bodyRef);
+   if(!body){
+    p.roughInRequirement={required:true,reference:bodyRef,verified:false,reason:'missing-supplier-body'};
+    report.unresolved++;continue;
+   }
+   const amount=Number(body.price),mainPrice=Number(p.price);
+   if(!Number.isFinite(mainPrice)||mainPrice<=0){report.unresolved++;continue}
+   const total=Math.round((mainPrice+amount)*100)/100;
+   if(p.internalReference===bodyRef&&Number(p.internalPrice)===amount&&
+       Math.abs(Number(p.totalPrice)-total)<.03){report.already++;continue}
+   p.internalReference=bodyRef;p.sourceInternalReference=body.sourceReference||bodyRef;
+   p.internalPrice=amount;p.internalPurchaseDiscount=purchaseDiscount(p,'Ray');
+   p.totalPrice=total;
+   p.roughInRequirement={required:true,reference:bodyRef,source:'Hotbath 2026 RAY tariff',verified:true};
+   p.supplierNote='Support encastré INWALL '+bodyRef+' obligatoire, '+amount.toFixed(2)+' € HT en ligne liée. Prix apparent distinct. Source : tarif Hotbath RAY 2026.';
+   report.linked++;continue;
+  }
+  if(!trim(p))continue;
   if(p.internalReference&&Number(p.internalPrice)>0){report.already++;continue}
   const candidates=index.get(modelCode(p))||[];
   // When multiple manufacturer body descriptions list the same trim model,
