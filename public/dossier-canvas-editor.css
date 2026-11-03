@@ -1,0 +1,133 @@
+/* Hydropolis Dossier Canvas — editor chrome; all overlays relative to A4 page.
+   Chrome never prints. Product pricing, quote and manufacturer DOM remain untouched. */
+#view-preview .v12-canvas-studio{
+ display:grid;gap:14px;padding:18px 19px;margin:12px 0 18px;
+ background:#fff;border:1px solid #e4e8ec;border-radius:17px;
+ box-shadow:0 13px 32px rgba(24,35,43,.07);
+ color:#303941;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+}
+#view-preview .canvas-title-row{display:flex;justify-content:space-between;align-items:center;gap:18px}
+#view-preview .canvas-kicker{font:750 9px/1.5 inherit;letter-spacing:.2em;color:#aa8651}
+#view-preview .canvas-title-row h3{margin:6px 0 4px;color:#272e35;font-size:18px;letter-spacing:-.04em}
+#view-preview .canvas-title-row p{font-size:11px;line-height:1.55;color:#7c838c;margin:0}
+#view-preview .v12-canvas-studio button{
+ appearance:none;min-height:33px;border:1px solid #dce0e5;background:white;
+ border-radius:9px;padding:7px 11px;color:#39434d;
+ font:650 11px/1.3 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;cursor:pointer;
+}
+#view-preview .v12-canvas-studio button:hover:not(:disabled){
+ border-color:#b79d75;background:#fbf7f1;
+}
+#view-preview .v12-canvas-studio button:focus-visible,#document .v12-canvas-handle:focus-visible{
+ outline:3px solid #b48b57;outline-offset:2px;
+}
+#view-preview .v12-canvas-studio button:disabled{opacity:.36;cursor:not-allowed}
+#view-preview .v12-canvas-studio .canvas-main{
+ background:#29313a;border-color:#29313a;color:#fff;white-space:nowrap;
+ padding:10px 17px;min-height:39px;
+}
+#view-preview .v12-canvas-studio .canvas-main:hover:not(:disabled){background:#404c57;color:#fff}
+#view-preview .canvas-tools{display:flex;gap:7px;align-items:end;flex-wrap:wrap;padding:12px;background:#f6f7f8;border:1px solid #eceef0;border-radius:13px}
+#view-preview .canvas-tools label{min-width:160px;flex:1 0 170px}
+#view-preview .v12-canvas-studio label{display:grid;gap:5px;color:#64707b;font-size:10px;font-weight:600}
+#view-preview .v12-canvas-studio select,#view-preview .v12-canvas-studio input:not([type=checkbox]):not([type=file]),#view-preview .v12-canvas-studio textarea{
+ width:100%;min-height:34px;min-width:0;max-width:100%;box-sizing:border-box;
+ padding:7px 9px;border:1px solid #dce0e6;border-radius:9px;
+ background:#fff;font:12px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:#2c3239;
+}
+#view-preview .v12-canvas-studio input[type=color]{padding:2px!important;width:50px!important;min-width:45px!important}
+#view-preview .v12-canvas-studio textarea{resize:vertical}
+#view-preview .canvas-panels{display:grid;grid-template-columns:minmax(200px,.85fr) minmax(360px,1.15fr);gap:12px}
+#view-preview .canvas-panel{display:grid;gap:11px;align-content:start;padding:15px;border:1px solid #e8eaed;border-radius:13px;background:#fdfdfd}
+#view-preview .canvas-panel>b{font-size:12px;letter-spacing:-.02em;color:#353e46}
+#view-preview .canvas-template-row{display:flex;gap:7px;align-items:center}
+#view-preview .canvas-template-row select{flex:1;min-width:100px}
+#view-preview .canvas-wide{width:100%}
+#view-preview .canvas-layers{display:grid;gap:5px;max-height:180px;overflow:auto;padding:5px 0}
+#view-preview .canvas-layer-row{
+ display:grid;grid-template-columns:minmax(0,1fr) 30px 30px;gap:5px;
+ padding:4px;border:1px solid #e9ecee;border-radius:10px;background:white;
+}
+#view-preview .canvas-layer-row.active{background:#fbf4e9;border-color:#d5ba92}
+#view-preview .canvas-layer-row .canvas-layer-name{text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px;min-width:0}
+#view-preview .canvas-layer-row .canvas-layer-icon{min-height:29px;padding:2px;font-size:12px}
+#view-preview .canvas-layer-actions{display:flex;flex-wrap:wrap;gap:5px}
+#view-preview .canvas-fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+#view-preview .canvas-checks{display:flex;flex-wrap:wrap;gap:17px}
+#view-preview .canvas-checks label{display:flex;gap:6px;align-items:center}
+#view-preview .canvas-bottom{display:flex;justify-content:space-between;align-items:center;gap:10px;border-top:1px solid #eceef0;padding-top:12px}
+#view-preview #canvasNotice{color:#71808a;font-size:10px;line-height:1.45}
+#view-preview #canvasNotice[data-error=true]{color:#a13d36}
+#view-preview .canvas-muted{font-size:10px;color:#8f969c}
+#view-preview #canvasInspector.canvas-disabled{opacity:.72}
+#document .page > .v12-canvas-layer{
+ position:absolute!important;inset:0!important;z-index:30!important;
+ padding:0!important;margin:0!important;overflow:hidden!important;pointer-events:none!important;
+}
+#document .v12-canvas-layer .v12-canvas-block{
+ position:absolute!important;box-sizing:border-box!important;
+ margin:0!important;padding:0!important;min-height:0!important;min-width:0!important;
+ display:block;transform:none!important;
+ color:var(--canvas-color);background:transparent;
+ font-family:var(--canvas-font);font-size:var(--canvas-size);
+ text-align:var(--canvas-align);pointer-events:none;
+ overflow:hidden;isolation:isolate;
+}
+#document .v12-canvas-block.canvas-text,#document .v12-canvas-block.canvas-label{
+ display:flex!important;align-items:center;overflow:hidden;
+}
+#document .v12-canvas-block.canvas-text .v12-canvas-text,
+#document .v12-canvas-block.canvas-label .v12-canvas-text{
+ position:relative;white-space:pre-wrap;overflow-wrap:anywhere;
+ width:100%;line-height:1.2;color:var(--canvas-color);
+ text-align:var(--canvas-align);font:inherit;
+}
+#document .v12-canvas-block.canvas-label .v12-canvas-text{font-weight:750;letter-spacing:.12em}
+#document .v12-canvas-block.canvas-rectangle{background:var(--canvas-background)!important}
+#document .v12-canvas-block.canvas-line{background:var(--canvas-background)!important}
+#document .v12-canvas-block.canvas-image{
+ background:#f6f7f8;border:1px solid #e8e9e9!important;
+}
+#document .v12-canvas-block .v12-canvas-photo{
+ width:100%!important;height:100%!important;object-fit:cover!important;display:block!important;
+}
+#document .v12-canvas-block .v12-canvas-placeholder{color:#8a9199;font:12px Arial,sans-serif}
+body.canvas-editing #document .v12-canvas-block{
+ pointer-events:auto;outline:1px dashed rgba(169,133,83,.28);
+ cursor:pointer;
+}
+body.canvas-editing #document .v12-canvas-block.is-selected{
+ outline:2px solid #bd935b;box-shadow:0 0 0 3px #bd935b1f;
+}
+#document .v12-canvas-block .v12-canvas-handle{
+ position:absolute!important;z-index:99!important;appearance:none;
+ display:grid;place-items:center;pointer-events:auto;
+ width:29px;height:29px;min-width:29px;
+ padding:2px!important;background:#fff!important;border:1px solid #af905b!important;
+ color:#79603c!important;border-radius:8px!important;
+ box-shadow:0 4px 12px rgba(28,36,43,.23);
+ font:18px/1 Arial,sans-serif!important;touch-action:none;
+ user-select:none;-webkit-user-select:none;cursor:grab;
+}
+#document .v12-canvas-block .canvas-drag{top:2px;left:2px}
+#document .v12-canvas-block .canvas-resize{right:2px;bottom:2px;cursor:nwse-resize}
+#document .v12-canvas-block.canvas-line .v12-canvas-handle{top:50%;transform:translateY(-50%)!important}
+#document .v12-canvas-block.canvas-line .canvas-resize{left:auto;right:0}
+@media(max-width:900px){
+ #view-preview .canvas-panels{grid-template-columns:1fr}
+ #view-preview .canvas-fields{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:560px){
+ #view-preview .canvas-title-row,#view-preview .canvas-bottom{flex-direction:column;align-items:stretch}
+ #view-preview .canvas-title-row .canvas-main{align-self:stretch}
+ #view-preview .canvas-tools label{flex:1 0 100%}
+ #view-preview .canvas-tools button{flex:1 1 90px}
+ #view-preview .v12-canvas-studio{padding:12px}
+}
+@media print{
+ #view-preview .v12-canvas-studio,#document .v12-canvas-handle{display:none!important}
+ #document .v12-canvas-layer .v12-canvas-block{
+  outline:none!important;box-shadow:none!important;pointer-events:none!important;
+ }
+ #document .page > .v12-canvas-layer{display:block!important}
+}
