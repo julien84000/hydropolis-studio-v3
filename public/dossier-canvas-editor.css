@@ -83,6 +83,7 @@
  text-align:var(--canvas-align);font:inherit;
 }
 #document .v12-canvas-block.canvas-label .v12-canvas-text{font-weight:750;letter-spacing:.12em}
+#document .v12-canvas-layer .v12-canvas-block.is-hidden{display:none!important}
 #document .v12-canvas-block.canvas-rectangle{background:var(--canvas-background)!important}
 #document .v12-canvas-block.canvas-line{background:var(--canvas-background)!important}
 #document .v12-canvas-block.canvas-image{
