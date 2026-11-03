@@ -175,6 +175,7 @@ function show(rows,roomId,onAdd,initial){
    },{once:true});
    preview.replaceChildren(img,note);return true;
   }
+  let pdfResolvedExact=false;
   const displayed=renderPhoto(media.src,media.label);
   if(!displayed)preview.append(make('div','coalbrook-media-pending','Recherche parmi les photos Coalbrook déjà enregistrées…'));
   // A previous generic/uncertain cached image is not a definitive match:
@@ -184,12 +185,12 @@ function show(rows,roomId,onAdd,initial){
   if(needsSearch&&typeof fetchManufacturerImage==='function'){
    Promise.resolve(fetchManufacturerImage(p,false,{imageOnly:false})).then(result=>{
     if(request!==mediaToken||selection?.reference!==p.reference||!document.contains(preview))return;
-    if(result?.src&&(!displayed||result.finishMatch==='exact')){
+    if(result?.src&&(!displayed||result.finishMatch==='exact')&&(!pdfResolvedExact||result.finishMatch==='exact')){
      renderPhoto(result.src,result.finishMatch==='exact'?
       'Photo retrouvée · finition exacte':'Photo fabricant · finition à vérifier');
-    }else if(!displayed)preview.replaceChildren(make('span','','Photo non trouvée pour cette référence.'));
+    }else if(!displayed&&!pdfResolvedExact)preview.replaceChildren(make('span','','Photo non trouvée pour cette référence.'));
    }).catch(()=>{
-    if(!displayed&&request===mediaToken&&document.contains(preview))
+    if(!displayed&&!pdfResolvedExact&&request===mediaToken&&document.contains(preview))
      preview.replaceChildren(make('span','','Photo temporairement indisponible.'));
    });
   }else if(!displayed)preview.replaceChildren(make('span','','Photo non identifiée pour cette référence.'));
@@ -199,6 +200,7 @@ function show(rows,roomId,onAdd,initial){
   if(!p.image&&media.record?.finishMatch!=='exact'&&window.HydroCoalbrookPdfPhotos?.get){
    window.HydroCoalbrookPdfPhotos.get(p.reference).then(photo=>{
     if(!photo?.src||request!==mediaToken||selection?.reference!==p.reference||!document.contains(preview))return;
+    pdfResolvedExact=photo.finishMatch==='exact';
     renderPhoto(photo.src,photo.finishMatch==='exact'?
      'Photo extraite du tarif août 2026 · référence exacte · stockage local':
      'Photo extraite du tarif août 2026 · modèle à vérifier · stockage local');
