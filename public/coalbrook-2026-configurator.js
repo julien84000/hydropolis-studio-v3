@@ -127,7 +127,7 @@ function show(rows,roomId,onAdd,initial){
    const verifiedCache=!photo&&previews.map(coalbrookPreviousMedia).find(c=>c?.src&&c.finishMatch==='exact');
    const uncertainCache=!photo&&!verifiedCache&&previews.map(coalbrookPreviousMedia).find(c=>c?.src);
    const frame=make('span','coalbrook-model-tile-photo');
-   const imageSrc=photo?.image||verifiedCache?.src||uncertainCache?.src||'';
+   const imageSrc=isMaestro(item)?'':photo?.image||verifiedCache?.src||uncertainCache?.src||'';
    if(imageSrc){
     const img=make('img');img.src=imageSrc;img.loading='lazy';img.alt=(item.designation||base)+' · aperçu du modèle';
     img.addEventListener('error',()=>frame.replaceChildren(make('span','','Visuel indisponible')),{once:true});
@@ -137,14 +137,14 @@ function show(rows,roomId,onAdd,initial){
    card.append(frame,make('b','',base),make('small','',(item.designation||'Modèle Coalbrook').slice(0,76)),label);
    // Only unresolved thumbnails are queried, with a small per-view budget.
    // The manufacturer's V11 cache is consulted before fetching again.
-   if(!imageSrc&&window.HydroCoalbrookPdfPhotos?.get){
+   if((isMaestro(item)||!imageSrc)&&window.HydroCoalbrookPdfPhotos?.get){
     window.HydroCoalbrookPdfPhotos.get(previews[0].reference).then(found=>{
      if(!card.isConnected||!found?.src)return;
      const img=make('img');img.src=found.src;img.loading='lazy';img.alt=(item.designation||base)+' · photo du tarif 2026';frame.replaceChildren(img);
      label.textContent=found.finishMatch==='exact'?'Photo du tarif 2026 · finition exacte':'Photo du tarif 2026 · modèle à vérifier';
     }).catch(()=>{});
    }
-   if(!imageSrc&&gallery.childElementCount<12&&typeof fetchManufacturerImage==='function'){
+   if(!isMaestro(item)&&!imageSrc&&gallery.childElementCount<12&&typeof fetchManufacturerImage==='function'){
     Promise.resolve(fetchManufacturerImage(previews[0],false,{imageOnly:true})).then(res=>{
      if(!card.isConnected||!res?.src)return;
      const img=make('img');img.src=res.src;img.loading='lazy';
@@ -173,7 +173,7 @@ function show(rows,roomId,onAdd,initial){
   add.disabled=!p||!!required.ref&&!rough;
   if(!p){view.append(make('p','','Aucun article disponible pour ces filtres.'));return}
   const preview=make('div','coalbrook-product-media');
-  const media=coalbrookPreferredMedia(p), request=++mediaToken;
+  const media=coalbrookPreferredMedia(p), request=++mediaToken,preferPdf=isMaestro(p);
   function renderPhoto(src,label){
    if(!src)return false;
    const img=make('img');img.src=src;img.loading='lazy';
@@ -186,12 +186,12 @@ function show(rows,roomId,onAdd,initial){
    preview.replaceChildren(img,note);return true;
   }
   let pdfResolvedExact=false;
-  const displayed=renderPhoto(media.src,media.label);
+  const displayed=preferPdf?false:renderPhoto(media.src,media.label);
   if(!displayed)preview.append(make('div','coalbrook-media-pending','Recherche parmi les photos Coalbrook déjà enregistrées…'));
   // A previous generic/uncertain cached image is not a definitive match:
   // show it immediately, but continue looking for an exact official SKU finish.
   // Never downgrade an exact source photo to an unverified fallback.
-  const needsSearch=!displayed||(p.imageFinishMatch!=='exact'&&media.record?.finishMatch!=='exact');
+  const needsSearch=!preferPdf&&(!displayed||(p.imageFinishMatch!=='exact'&&media.record?.finishMatch!=='exact'));
   if(needsSearch&&typeof fetchManufacturerImage==='function'){
    Promise.resolve(fetchManufacturerImage(p,false,{imageOnly:false})).then(result=>{
     if(request!==mediaToken||selection?.reference!==p.reference||!document.contains(preview))return;
@@ -207,14 +207,23 @@ function show(rows,roomId,onAdd,initial){
   view.append(preview);
   // User-supplied 2026 brochure photos are exact only for uniquely keyed SKUs.
   // They remain local to this browser; official web images keep precedence.
-  if(p.imageFinishMatch!=='exact'&&media.record?.finishMatch!=='exact'&&window.HydroCoalbrookPdfPhotos?.get){
+  if((preferPdf||p.imageFinishMatch!=='exact'&&media.record?.finishMatch!=='exact')&&window.HydroCoalbrookPdfPhotos?.get){
    window.HydroCoalbrookPdfPhotos.get(p.reference).then(photo=>{
-    if(!photo?.src||request!==mediaToken||selection?.reference!==p.reference||!document.contains(preview))return;
-    pdfResolvedExact=photo.finishMatch==='exact';
-    renderPhoto(photo.src,photo.finishMatch==='exact'?
-     'Photo extraite du tarif août 2026 · référence exacte · stockage local':
-     'Photo extraite du tarif août 2026 · modèle à vérifier · stockage local');
-   }).catch(()=>{});
+    if(request!==mediaToken||selection?.reference!==p.reference||!document.contains(preview))return;
+    if(photo?.src){
+     pdfResolvedExact=photo.finishMatch==='exact';
+     renderPhoto(photo.src,photo.finishMatch==='exact'?
+      'Photo du tarif Coalbrook 2026 · finition exacte':
+      'Photo du tarif Coalbrook 2026 · modèle à vérifier');
+    }else if(preferPdf&&media.src){
+     renderPhoto(media.src,'Photo fabricant · finition à vérifier (absente du tarif PDF)');
+    }else if(preferPdf){
+     preview.replaceChildren(make('span','','Photo non vérifiée pour cette référence.'));
+    }
+   }).catch(()=>{
+    if(preferPdf&&request===mediaToken&&media.src&&document.contains(preview))
+     renderPhoto(media.src,'Photo fabricant · finition à vérifier');
+   });
   }
   const d=make('div','coalbrook-product-description');
   d.append(make('span','coalbrook-breadcrumb',info.hierarchy.join('  /  ')),make('h3','',p.designation||p.originalDescription||p.reference),
