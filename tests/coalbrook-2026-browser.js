@@ -88,6 +88,30 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   assert.equal(actual[1].accessoryFor,actual[0].id);
   assert.equal(Number((actual[0].price+actual[1].price).toFixed(2)),355.22);
   assert.notEqual(actual[0].id,actual[1].id);
+  // Isolated temporary test database: persist the two real project lines, reload and verify no duplicate body.
+  const saved=await page.evaluate(async()=>{
+    state.project.name='COALBROOK E2E ISOLATED';
+    await saveCloudProject();
+    return {id:cloud.currentProjectId,number:state.selected.length};
+  });
+  assert.ok(saved.id,'Project was not persisted');
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.waitForFunction(()=>typeof cloud!=='undefined'&&typeof openCloudProject==='function'&&!!state.rooms?.length,{timeout:60000});
+  await page.evaluate(async id=>{
+    if(cloud.currentProjectId!==id){await loadCloudProjects();await openCloudProject(id)}
+  },saved.id);
+  const persisted=await page.evaluate(()=>({
+    id:cloud.currentProjectId,
+    rows:state.selected.filter(p=>['DO1007CP','CO1201'].includes(p.reference))
+      .map(p=>({ref:p.reference,id:p.id,accessoryFor:p.accessoryFor||null,price:Number(p.price),vat:p.vat}))
+  }));
+  assert.equal(persisted.id,saved.id,'Project did not reopen');
+  assert.equal(persisted.rows.length,2,'Duplicate or missing linked Coalbrook project records');
+  const parent=persisted.rows.find(p=>p.ref==='DO1007CP'),child=persisted.rows.find(p=>p.ref==='CO1201');
+  assert.equal(child.accessoryFor,parent.id);
+  assert.equal(Number((parent.price+child.price).toFixed(2)),355.22);
+  assert.equal(parent.vat,'HT');
+
   
   assert.deepEqual(errors.filter(x=>/coalbrook/i.test(x)),[]);
   console.log('Coalbrook Chromium E2E OK: model, finish, HT prices, linked rough-in, exact photo, official PDF');
