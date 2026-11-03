@@ -49,6 +49,12 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
   assert.equal(await photo.getAttribute('aria-pressed'),'true');
   assert.match(await page.locator('.hotbath-photo-caption').innerText(),/Photo générique du même modèle/);
   await sim.click();
+  // The preview checks a real image response asynchronously before
+  // committing the reversible mode. Wait for the persisted UI state, not
+  // merely for Playwright to dispatch the click event.
+  await page.waitForFunction(()=>document.querySelector(
+    '#roomsEditor .hotbath-photo-tabs [data-mode="simulation"]'
+  )?.getAttribute('aria-pressed')==='true',null,{timeout:12000});
   assert.equal(await page.locator('.hotbath-photo-tabs [data-mode="simulation"]').getAttribute('aria-pressed'),'true');
   const mid=await page.evaluate(id=>{
    const p=state.selected.find(x=>x.id===id);
