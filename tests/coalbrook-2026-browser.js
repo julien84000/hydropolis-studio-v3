@@ -153,9 +153,22 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   await page.locator('#brandRail [data-maker="Coalbrook"]').click();
   await page.locator('#coalbrookLaunch').waitFor({state:'visible',timeout:15000});
   assert.equal(await page.locator('#manufacturerFilter').inputValue(),'Coalbrook');
-  await page.locator('#coalbrookLaunch').click();
+  const explorer=page.locator('#results .coalbrook-explorer-launcher');
+  await explorer.waitFor({state:'visible'});
+  assert.match(await explorer.locator('h3').innerText(),/Explorer les collections Coalbrook/);
+  await explorer.locator('button.coalbrook-explorer-open').click();
   await page.locator('#coalbrookConfig').waitFor();
   assert.match(await page.locator('#coalbrookConfig h2').innerText(),/Coalbrook/);
+  // The collection explorer must expose genuine selectable model-photo cards.
+  const tiles=page.locator('#coalbrookConfig .coalbrook-model-tile');
+  assert.ok(await tiles.count()>0,'Coalbrook model gallery must be present');
+  assert.ok(await tiles.first().locator('.coalbrook-model-tile-photo').count()===1);
+  await page.locator('#coalbrookConfig select[aria-label="01 · Catégorie"]').selectOption('Robinetterie');
+  await page.locator('#coalbrookConfig select[aria-label="02 · Collection"]').selectOption('Domo');
+  await page.locator('#coalbrookConfig select[aria-label="03 · Sous-catégorie"]').selectOption('Lavabo');
+  const selectedModel=await page.locator('#coalbrookConfig .coalbrook-model-tile').first().getAttribute('data-model');
+  await page.locator('#coalbrookConfig .coalbrook-model-tile').first().click();
+  assert.equal(await page.locator('#coalbrookConfig select[aria-label="04 · Article"]').inputValue(),selectedModel);
   await page.locator('#coalbrookConfig .coalbrook-close').click();
   // Product cards must route to the modal rather than silently inserting a
   // raw item lacking its required CO1201 rough-in.
@@ -172,6 +185,26 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   const cardSelection=await page.evaluate(()=>state.selected.slice(-2).map(p=>({reference:p.reference,id:p.id,accessoryFor:p.accessoryFor||null})));
   assert.deepEqual(cardSelection.map(p=>p.reference),['DO1007CP','CO1201']);
   assert.equal(cardSelection[1].accessoryFor,cardSelection[0].id);
+
+  // Browser-local archive ingestion: one exact manufacturer photo must survive
+  // a reload in the isolated test profile (no server or project data changed).
+  const rawJpeg=Buffer.from('/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////2wBDAf//////////////////////////////////////////////////////////////////////////////////////wAARCAAQABADASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAgEAACAQMDBQAAAAAAAAAAAAABAgMABBEFIRIxQWGR/8QAFQEBAQAAAAAAAAAAAAAAAAAAAwT/xAAaEQACAgMAAAAAAAAAAAAAAAAAAQIDEiEx/9oADAMBAAIRAxEAPwBbQpp6kZZsQCiGz4CqqkebnU5dJbrEwFw4TjmgUJ6r1kyZcMBK5RNDExJgoBgAadQ4P12SDOf0hrVrc7rh93drQRuLjXv//Z','base64');
+  const imageName=Buffer.from('photos/DO1007CP.jpg','utf8');
+  const header=Buffer.alloc(30);
+  header.writeUInt32LE(0x04034b50,0);header.writeUInt16LE(20,4);
+  header.writeUInt16LE(0,6);header.writeUInt16LE(0,8);
+  header.writeUInt32LE(rawJpeg.length,18);header.writeUInt32LE(rawJpeg.length,22);
+  header.writeUInt16LE(imageName.length,26);
+  const zip=Buffer.concat([header,imageName,rawJpeg]).toString('base64');
+  const imported=await page.evaluate(async base64=>{
+    const data=Uint8Array.from(atob(base64),x=>x.charCodeAt(0));
+    const count=await window.HydroCoalbrookPdfPhotos.importZip(new File([data],'coalbrook-pdf-photos.zip',{type:'application/zip'}));
+    const photo=await window.HydroCoalbrookPdfPhotos.get('DO1007CP');
+    return {count,src:photo?.src,finishMatch:photo?.finishMatch};
+  },zip);
+  assert.equal(imported.count,1);
+  assert.ok(imported.src.startsWith('blob:'),'Image ZIP not loaded into browser');
+  assert.equal(imported.finishMatch,'exact');
 
   assert.deepEqual(errors.filter(x=>/coalbrook/i.test(x)),[]);
   console.log('Coalbrook Chromium E2E OK: model, finish, HT prices, linked rough-in, exact photo, official PDF');

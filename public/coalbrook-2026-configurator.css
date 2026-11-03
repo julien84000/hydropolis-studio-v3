@@ -38,3 +38,22 @@ body .coalbrook-launch[hidden]{display:none!important}
 .coalbrook-technical-alert{display:grid;gap:8px}
 .coalbrook-technical-alert .coalbrook-doc-link{display:block;color:#76562c;font-weight:750;text-decoration:underline;text-underline-offset:3px;font-size:11px}
 .coalbrook-technical-alert small{display:block;color:#79848d;font-size:9px;line-height:1.4}
+
+/* Visual Coalbrook collection exploration — follows the Galassia catalogue pattern. */
+.coalbrook-explorer-launcher{border-color:#cbb79a}
+.coalbrook-explorer-launcher .coalbrook-explorer-open{cursor:pointer}
+.coalbrook-model-gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;max-height:290px;overflow:auto;padding:2px;margin-top:5px}
+.coalbrook-model-tile{min-width:0;display:flex;flex-direction:column;gap:3px;align-items:stretch;border:1px solid #e4e8ea;border-radius:12px;padding:7px;background:white;text-align:left;cursor:pointer}
+.coalbrook-model-tile[aria-pressed="true"]{border-color:#9b7138;background:#f9f3e9;box-shadow:0 0 0 1px #9b7138}
+.coalbrook-model-tile-photo{height:105px;display:grid;place-items:center;background:#f5f6f7;border-radius:9px;overflow:hidden;color:#87919a;font-size:10px}
+.coalbrook-model-tile-photo img{height:100%;width:100%;object-fit:contain}
+.coalbrook-model-tile b{font-size:11px;color:#30404b}
+.coalbrook-model-tile small{font-size:9px;color:#72808b;line-height:1.4;overflow-wrap:anywhere}
+.coalbrook-more-models{grid-column:1/-1;padding:8px;color:#7c8790;font-size:10px}
+@media(max-width:760px){.coalbrook-model-gallery{grid-column:1/-1;grid-template-columns:repeat(3,minmax(0,1fr));max-height:210px}}
+@media(max-width:430px){.coalbrook-model-gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.coalbrook-import-photos{margin-left:auto;max-width:210px;padding:9px 11px;border:1px solid #d4c3a9;border-radius:10px;background:#fff9ed;color:#71542c;cursor:pointer;font-size:11px;font-weight:730}
+.coalbrook-import-photos:disabled{opacity:.55;cursor:progress}
+.coalbrook-model-photo-status{font-size:9px;color:#9a7c4d}
+@media(max-width:700px){.coalbrook-modal-head{flex-wrap:wrap}.coalbrook-import-photos{margin-left:0;order:3;max-width:none;width:100%}}
