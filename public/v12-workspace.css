@@ -276,3 +276,32 @@ body.v12-ui #view-project #roomsEditor .room-product .hotbath-photo-controls{
     padding:5px;
   }
 }
+
+
+/* Compact editable article controls must remain inside the now-larger product card thumbnail grid. */
+body.v12-ui #view-project #roomsEditor .room-product>div:nth-child(2),
+body.v12-ui #view-project #roomsEditor .room-product .article-editor,
+body.v12-ui #view-project #roomsEditor .room-product .article-editor-grid,
+body.v12-ui #view-project #roomsEditor .room-product .editor-file-row{
+  min-width:0;
+  max-width:100%;
+  width:100%;
+  box-sizing:border-box;
+}
+body.v12-ui #view-project #roomsEditor .room-product .editor-file-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  overflow:hidden;
+}
+body.v12-ui #view-project #roomsEditor .room-product .editor-file-row .reset-tech,
+body.v12-ui #view-project #roomsEditor .room-product .editor-file-row .reset-photo{
+  flex:0 1 auto;
+  display:inline-block;
+  min-width:0;
+  max-width:100%;
+  width:auto;
+  white-space:normal;
+  overflow-wrap:anywhere;
+  box-sizing:border-box;
+}
