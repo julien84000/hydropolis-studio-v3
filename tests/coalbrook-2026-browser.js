@@ -236,7 +236,8 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   },zip);
   assert.equal(imported.count,1);
   assert.ok(imported.src.startsWith('blob:'),'Image ZIP not loaded into browser');
-  assert.equal(imported.finishMatch,'exact');
+  // A synthetic JPEG lacking the official reference index cannot claim an exact finish.
+  assert.equal(imported.finishMatch,'model-only');
 
   assert.deepEqual(errors.filter(x=>/coalbrook/i.test(x)),[]);
   console.log('Coalbrook Chromium E2E OK: model, finish, HT prices, linked rough-in, exact photo, official PDF');
