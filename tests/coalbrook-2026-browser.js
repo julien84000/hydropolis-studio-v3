@@ -209,7 +209,7 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   },rows);
   await page.locator('#coalbrookConfig .coalbrook-rough').waitFor();
   assert.match(await page.locator('#coalbrookConfig .coalbrook-rough').innerText(),/CO3052/);
-  assert.match(await page.locator('#coalbrookConfig .coalbrook-rough').innerText(),/1\\s?725/);
+  assert.match(await page.locator('#coalbrookConfig .coalbrook-rough').innerText(),/725,00/);
   await page.waitForFunction(()=>{
     const el=document.querySelector('#coalbrookConfig .coalbrook-product-media .coalbrook-media-source');
     return !!el&&/tarif Coalbrook 2026/.test(el.textContent);
