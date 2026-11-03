@@ -24,12 +24,20 @@ const delay=ms=>new Promise(resolve=>setTimeout(resolve,ms));
   await page.route('**/__test/hotbath-tall.svg',route=>route.fulfill({status:200,contentType:'image/svg+xml',body:svg(200,900)}));
   await page.addInitScript(token=>localStorage.setItem('hydropolis-auth-token',token),auth.token);
   await page.goto(base,{waitUntil:'domcontentloaded'});
-  await page.waitForFunction(()=>typeof state!=='undefined'&&!!state.rooms?.length&&!!window.HydroHotbathProjectVisual&&!!catalogIndex?.maker,{timeout:60000});
+  await page.waitForFunction(()=>typeof state!=='undefined'&&!!state.rooms?.length&&
+    !!window.HydroHotbathProjectVisual&&!!catalogIndex?.maker&&
+    catalogIndex.maker('Hotbath').some(p=>p.reference==='CB003C.GN'),{timeout:60000});
   await page.evaluate(()=>{
    const room=state.rooms[0];
-   const hb=catalogIndex.maker('Hidrobox').find(x=>x.reference);
+   // The Hidrobox catalog can be lazy-loaded in a fresh workspace. Use
+   // a source-equivalent entry to test the actual shared project thumbnail CSS
+   // independently of supplier fetch timing.
+   const hb=catalogIndex.maker('Hidrobox').find(x=>x.reference)||{
+     manufacturer:'Hidrobox',collection:'Receveurs',category:'Douche',
+     designation:'Receveur Hidrobox panoramique',reference:'HB-PHOTO-FIT',
+     base:'HB-PHOTO-FIT',price:600,totalPrice:600,finish:'Blanc'};
    const ht=catalogIndex.maker('Hotbath').find(x=>x.reference==='CB003C.GN');
-   if(!hb||!ht)throw Error('Hidrobox or Hotbath catalogue unavailable');
+   if(!ht)throw Error('Hotbath tariff not yet hydrated');
    const h=createSelectedProductRecord(hb,room.id);
    h.id='thumb-hidrobox';
    h.image='/__test/hidrobox-wide.svg';h.images=[h.image];h.pdfImage=h.image;
