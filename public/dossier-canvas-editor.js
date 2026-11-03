@@ -61,7 +61,7 @@ function addType(type){
  mutation(c=>{const b=M.add(c,key,{type,x:18,y:20,...opts[type]});selected=b.id},'Bloc créé localement.')
 }
 function applyBlockStyle(el,b){
- el.className='v12-canvas-block canvas-'+b.type+(b.id===selected?' is-selected':'');
+ el.className='v12-canvas-block canvas-'+b.type+(b.id===selected?' is-selected':'')+(b.hidden?' is-hidden':'');
  el.dataset.canvasId=b.id;el.style.left=b.x+'%';el.style.top=b.y+'%';
  el.style.width=b.w+'%';el.style.height=b.h+'%';el.style.zIndex=String(b.z);
  el.style.opacity=String(b.opacity/100);el.style.display=b.hidden?'none':'block';
