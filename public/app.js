@@ -2159,7 +2159,7 @@ function renderCatalog(){
          // Preserve the configured Hotbath collection by using the canonical addProduct path.
          if(p.manufacturer==='Naxani'&&p.naxaniAssembly)return addNaxaniConfigured(p,room);
          return p.manufacturer==='Hotbath'
-           ?addProduct(p.reference,room,"",productKey(p),p.hotbathSelectedCollection||"")
+           ?addProduct(p.reference,room,"",productKey(p),p.hotbathSelectedCollection||"",p)
            :addCatalogProduct(p.reference,room,productKey(p));
        });
    });
@@ -2848,10 +2848,19 @@ function addCatalogProduct(ref,roomId,key="",selectedCollection=""){
   return addProduct(ref,targetRoomId,"",key,selectedCollection);
 }
 
-async function addProduct(ref,roomId,parentId="",key="",selectedCollection=""){
+async function addProduct(ref,roomId,parentId="",key="",selectedCollection="",chosenPhoto=null){
   const p=productFromCatalogSources(ref,key);if(!p)return null;
-  const chosen=p.manufacturer==='Hotbath'&&selectedCollection?
-    {...p,hotbathSelectedCollection:selectedCollection,purchaseDiscount:/^Archie$/i.test(selectedCollection)?59.5:55}:p;
+  const imagePatch=p.manufacturer==='Hotbath'&&chosenPhoto?.hotbathPhotoOriginal&&
+     window.HydroHotbathFinishMedia?.sameModel(chosenPhoto.hotbathPhotoOriginal,
+       window.HydroHotbathFinishMedia.model(p))?
+     {image:chosenPhoto.hotbathPhotoOriginal,images:[chosenPhoto.hotbathPhotoOriginal],
+       pdfImage:chosenPhoto.hotbathPhotoOriginal,hotbathPhotoOriginal:chosenPhoto.hotbathPhotoOriginal,
+       imageSource:chosenPhoto.imageSource||"Photo générique du modèle",
+       imageFinishMatch:chosenPhoto.imageFinishMatch==="exact"?"exact":"model-only",
+       hotbathVisualMode:"photo"}:{};
+  const chosen=p.manufacturer==='Hotbath'?
+    {...p,hotbathSelectedCollection:selectedCollection||p.collection,
+      purchaseDiscount:/^Archie$/i.test(selectedCollection||p.collection)?59.5:55,...imagePatch}:p;
   const record=createSelectedProductRecord(chosen,roomId,parentId);
   if(!record)return null;
   commitSelectedRecords([record]);
