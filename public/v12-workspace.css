@@ -194,3 +194,85 @@ body.v12-ui #view-project .room-product .edit-tech-file{width:min(100%,260px)}
 @media print{
  body.v12-ui .v12-project-actions,body.v12-ui .v12-page-rail{display:none!important}
 }
+
+
+/* V11.64.57 — Project-by-room photo sizing.
+   Covers Hidrobox, Hotbath and every catalogue maker. A 78px square was
+   obscuring long/tall products and clipped their native aspect ratio. */
+body.v12-ui #view-project #roomsEditor .room-product:has(.room-prod-img img){
+  grid-template-columns:124px minmax(0,1fr) 32px;
+}
+body.v12-ui #view-project #roomsEditor .room-product:has(.room-prod-img img)>.room-prod-img{
+  width:124px;
+  height:114px;
+  max-width:100%;
+  min-width:0;
+  padding:7px;
+  box-sizing:border-box;
+  overflow:hidden;
+  display:grid;
+  place-items:center;
+  background:#faf9f7;
+  border:1px solid rgba(45,40,32,.065);
+  border-radius:10px;
+}
+body.v12-ui #view-project #roomsEditor .room-prod-img>label{
+  width:100%;
+  height:100%;
+  min-width:0;
+  min-height:0;
+  max-width:100%;
+  max-height:100%;
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+  box-sizing:border-box;
+}
+body.v12-ui #view-project #roomsEditor .room-prod-img .product-visual-frame{
+  width:100%;
+  height:100%;
+  min-width:0;
+  min-height:0;
+  max-width:100%;
+  max-height:100%;
+  overflow:hidden;
+  display:grid;
+  place-items:center;
+}
+body.v12-ui #view-project #roomsEditor .room-prod-img .product-visual-frame>img,
+body.v12-ui #view-project #roomsEditor .room-prod-img img.room-live-image{
+  display:block;
+  width:100%;
+  height:100%;
+  max-width:100%;
+  max-height:100%;
+  min-width:0;
+  min-height:0;
+  object-fit:contain;
+  object-position:center center;
+  transform:none;
+  box-sizing:border-box;
+}
+body.v12-ui #view-project #roomsEditor .room-prod-img .finish-swatch-badge{
+  right:2px;
+  bottom:2px;
+  padding:3px 5px;
+  font-size:9px;
+  max-width:calc(100% - 4px);
+}
+body.v12-ui #view-project #roomsEditor .room-product .hotbath-photo-controls{
+  width:max-content;
+  max-width:100%;
+  overflow:visible;
+  margin:8px 0 6px;
+}
+@media(max-width:720px){
+  body.v12-ui #view-project #roomsEditor .room-product:has(.room-prod-img img){
+    grid-template-columns:96px minmax(0,1fr) 30px;
+  }
+  body.v12-ui #view-project #roomsEditor .room-product:has(.room-prod-img img)>.room-prod-img{
+    width:96px;
+    height:94px;
+    padding:5px;
+  }
+}
