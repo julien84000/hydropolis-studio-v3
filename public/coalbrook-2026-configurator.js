@@ -196,38 +196,64 @@ function show(rows,roomId,onAdd,initial){
  }else setupDown(0);
  setTimeout(()=>selects.family.focus(),0);
 }
+function commitCoalbrookSelection(main,rough,room){
+ // The source catalogue totalPrice already includes the rough-in, so the
+ // linked line must be subtracted from the parent to avoid double billing.
+ const parent=createSelectedProductRecord({...main,vat:'HT',
+  totalPrice:Number(main.price),internalPrice:0,
+  coalbrookConfiguration:{reference:main.reference,finish:main.finishCode||'',roughIn:rough?.reference||''}
+ },room);
+ if(!parent)throw Error('Référence principale introuvable.');
+ const records=[parent];
+ if(rough){
+  const child=createSelectedProductRecord({...rough,vat:'HT'},room,parent.id);
+  if(!child)throw Error('Corps encastré introuvable.');
+  child.accessoryFor=parent.id;child.quantityPerParent=1;
+  records.push(child);
+ }
+ commitSelectedRecords(records,{showProject:true});
+}
+function launch(initial,roomId){
+ const items=catalogIndex.maker('Coalbrook');
+ if(initial&&!items.some(p=>p.reference===initial.reference)){
+  alert('Référence Coalbrook indisponible dans le catalogue chargé : '+initial.reference);
+  return;
+ }
+ show(items,roomId,commitCoalbrookSelection,initial||null);
+}
+function currentRoomId(){
+ return document.querySelector('#targetRoom')?.value||state.rooms[0]?.id||'';
+}
 function attach(){
  const catalog=document.querySelector('#view-catalog');
  if(!catalog||document.querySelector('#coalbrookLaunch'))return;
- const trigger=make('button','coalbrook-launch','Configurer Coalbrook');trigger.id='coalbrookLaunch';trigger.type='button';
- const head=catalog.querySelector('#v12CatalogHead')||catalog.querySelector('.search-card');
- head?.before(trigger);
- trigger.addEventListener('click',()=>{
-  const roomId=document.querySelector('#targetRoom')?.value||state.rooms[0]?.id||'';
-  const items=catalogIndex.maker('Coalbrook');
-  show(items,roomId,(main,rough,room)=>{
-   // The source catalogue totalPrice already includes the optional internal body.
-   // A linked rough-in must therefore be excluded from the parent line, otherwise
-   // it would be charged twice in the project quotation.
-   const parent=createSelectedProductRecord({...main,vat:'HT',
-    totalPrice:Number(main.price),internalPrice:0,
-    coalbrookConfiguration:{reference:main.reference,finish:main.finishCode||'',roughIn:rough?.reference||''}
-   },room);
-   if(!parent)throw Error('Référence principale introuvable.');
-   const records=[parent];
-   if(rough){
-    const child=createSelectedProductRecord({...rough,vat:'HT'},room,parent.id);
-    if(!child)throw Error('Corps encastré introuvable.');
-    child.accessoryFor=parent.id;child.quantityPerParent=1;
-    records.push(child);
-   }
-   commitSelectedRecords(records,{showProject:true});
-  });
- });
+ const trigger=make('button','coalbrook-launch','Configurer Coalbrook');
+ trigger.id='coalbrookLaunch';trigger.type='button';
+ trigger.title='Ouvrir le configurateur Coalbrook 2026 · références et prix HT';
+ const target=catalog.querySelector('.search-card .target-row');
+ if(target)target.after(trigger);
+ else (catalog.querySelector('.search-card')||catalog).prepend(trigger);
+ trigger.addEventListener('click',()=>launch(null,currentRoomId()));
  const mf=document.querySelector('#manufacturerFilter');
- const update=()=>{trigger.hidden=!!mf?.value&&mf.value!=='Coalbrook'};
- mf?.addEventListener('change',update);update();
+ const update=()=>{
+  const coalbrook=mf?.value==='Coalbrook';
+  trigger.hidden=!coalbrook;
+  trigger.setAttribute('aria-hidden',coalbrook?'false':'true');
+ };
+ mf?.addEventListener('change',update);
+ // Brand chips change the select programmatically without emitting change.
+ // Synchronise the button after EVERY catalogue render, including those
+ // triggered by the brand rail and the V12 workspace.
+ const previousRender=window.renderCatalog;
+ if(typeof previousRender==='function'){
+  window.renderCatalog=function(){
+   const result=previousRender.apply(this,arguments);
+   update();
+   return result;
+  };
+ }
+ update();
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',attach,{once:true});else attach();
-window.HydroCoalbrookConfigurator={open:show};
+window.HydroCoalbrookConfigurator={open:show,openProduct:(product,roomId)=>launch(product,roomId),launch};
 })();
