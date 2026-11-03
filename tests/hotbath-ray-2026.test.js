@@ -77,7 +77,9 @@ test('RAY exposes original six models and RAAR under a distinct accessory catego
  const win={HydroManufacturerGuide:{open:()=>{}}};
  const script=fs.readFileSync(path.join(__dirname,'../public/hotbath-official-guide.js'),'utf8');
  vm.runInNewContext(script,{window:win});
- const idx=win.HydroHotbathOfficialGuide.tariffIndex(copy);
+ const originalIndex=win.HydroHotbathOfficialGuide.tariffIndex(copy);
+ assert.equal((originalIndex.get('Ray')||new Map()).size,0,'Preserve legacy manufacturer-only taxonomy counts');
+ const idx=ray.extendTariffIndex(originalIndex,copy);
  assert.equal(idx.get('Ray').size,7);
  const categories=win.HydroHotbathOfficialGuide.categories('Ray',taxonomy,idx);
  assert.deepEqual(Array.from(categories.map(x=>x.label)),['Horizontales','Verticales','Accessoires sèche-serviettes']);
