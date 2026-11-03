@@ -1,0 +1,35 @@
+{
+  "source": "Coalbrook Farnolls official exact variants",
+  "images": {
+    "FV9120SO": {
+      "url": "https://coalbrook-bathrooms.transforms.svdcdn.com/production/images/Furniture-Renders/Farnolls/FV9120SO-WITH-CO9120CW.png?auto=format&fit=crop&crop=focalpoint&q=95&w=800&h=800&fp-x=0.5&fp-y=0.5&dm=1780324913&s=a5b760b4134a3a57bdf68089ba08708e",
+      "finish": "Smoked Oak",
+      "manufacturerUrl": "https://coalbrookuk.co.uk/furniture/farnolls/farnolls-1200mm-vanity-unit-",
+      "illustratedWith": "CO9120CW"
+    },
+    "FV906ESO": {
+      "url": "https://coalbrook-bathrooms.transforms.svdcdn.com/production/images/Furniture-Renders/Farnolls/FV906ESO-WITH-CO9060UB.png?auto=format&fit=crop&crop=focalpoint&q=95&w=800&h=800&fp-x=0.5&fp-y=0.5&dm=1779114206&s=9756cfe2dcad60ea25163714b444b33b",
+      "finish": "Smoked Oak",
+      "manufacturerUrl": "https://coalbrookuk.co.uk/furniture/farnolls/farnollls-600mm-extra-deep-vanity-unit",
+      "illustratedWith": "CO9060UB"
+    },
+    "FV908ESO": {
+      "url": "https://coalbrook-bathrooms.transforms.svdcdn.com/production/images/Furniture-Renders/Farnolls/FV908ESO-WITH-CO9080UB.png?auto=format&fit=crop&crop=focalpoint&q=95&w=800&h=800&fp-x=0.5&fp-y=0.5&dm=1779114183&s=9d2d401e098218b4d0f87fcb272a5772",
+      "finish": "Smoked Oak",
+      "manufacturerUrl": "https://coalbrookuk.co.uk/furniture/farnolls/farnolls-800mm-extra-deep-vanity-unit",
+      "illustratedWith": "CO9080UB"
+    },
+    "FV910ESO": {
+      "url": "https://coalbrook-bathrooms.transforms.svdcdn.com/production/images/Furniture-Renders/Farnolls/FV910ESO-WITH-CO9100UB.png?auto=format&fit=crop&crop=focalpoint&q=95&w=800&h=800&fp-x=0.5&fp-y=0.5&dm=1779113732&s=b3c8c688d8da385642b25d5ccc130ceb",
+      "finish": "Smoked Oak",
+      "manufacturerUrl": "https://coalbrookuk.co.uk/furniture/farnolls/farnolls-1000mm-extra-deep-vanity-unit",
+      "illustratedWith": "CO9100UB"
+    },
+    "FV912ESO": {
+      "url": "https://coalbrook-bathrooms.transforms.svdcdn.com/production/images/Furniture-Renders/Farnolls/FV912ESO-WITH-CO9120UB.png?auto=format&fit=crop&crop=focalpoint&q=95&w=800&h=800&fp-x=0.5&fp-y=0.5&dm=1779114172&s=69f5675a2a2eb956a1b805e4dae3b30f",
+      "finish": "Smoked Oak",
+      "manufacturerUrl": "https://coalbrookuk.co.uk/furniture/farnolls/farnolls-1200mm-extra-deep-vanity-unit",
+      "illustratedWith": "CO9120UB"
+    }
+  }
+}
