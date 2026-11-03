@@ -199,10 +199,10 @@ body.v12-ui #view-project .room-product .edit-tech-file{width:min(100%,260px)}
 /* V11.64.57 — Project-by-room photo sizing.
    Covers Hidrobox, Hotbath and every catalogue maker. A 78px square was
    obscuring long/tall products and clipped their native aspect ratio. */
-body.v12-ui #view-project #roomsEditor .room-product{
+body.v12-ui #view-project #roomsEditor .room-product:has(.room-prod-img img){
   grid-template-columns:124px minmax(0,1fr) 32px;
 }
-body.v12-ui #view-project #roomsEditor .room-product>.room-prod-img{
+body.v12-ui #view-project #roomsEditor .room-product:has(.room-prod-img img)>.room-prod-img{
   width:124px;
   height:114px;
   max-width:100%;
@@ -270,38 +270,9 @@ body.v12-ui #view-project #roomsEditor .room-product .hotbath-photo-controls{
   body.v12-ui #view-project #roomsEditor .room-product{
     grid-template-columns:96px minmax(0,1fr) 30px;
   }
-  body.v12-ui #view-project #roomsEditor .room-product>.room-prod-img{
+  body.v12-ui #view-project #roomsEditor .room-product:has(.room-prod-img img)>.room-prod-img{
     width:96px;
     height:94px;
     padding:5px;
   }
-}
-
-
-/* Compact editable article controls must remain inside the now-larger product card thumbnail grid. */
-body.v12-ui #view-project #roomsEditor .room-product>div:nth-child(2),
-body.v12-ui #view-project #roomsEditor .room-product .article-editor,
-body.v12-ui #view-project #roomsEditor .room-product .article-editor-grid,
-body.v12-ui #view-project #roomsEditor .room-product .editor-file-row{
-  min-width:0;
-  max-width:100%;
-  width:100%;
-  box-sizing:border-box;
-}
-body.v12-ui #view-project #roomsEditor .room-product .editor-file-row{
-  display:flex;
-  flex-wrap:wrap;
-  gap:6px;
-  overflow:hidden;
-}
-body.v12-ui #view-project #roomsEditor .room-product .editor-file-row .reset-tech,
-body.v12-ui #view-project #roomsEditor .room-product .editor-file-row .reset-photo{
-  flex:0 1 auto;
-  display:inline-block;
-  min-width:0;
-  max-width:100%;
-  width:auto;
-  white-space:normal;
-  overflow-wrap:anywhere;
-  box-sizing:border-box;
 }
