@@ -2090,8 +2090,15 @@ function renderCatalog(){
    const productCards=visibleRows.map(p=>{
      const cached=cachedManufacturerImage(p),finishLabel=exactFinishLabel(p)||"",price=catalogDisplayPrice(p),key=productKey(p),avail=availabilityInfo(p),compared=compareRefs.has(key),favorite=favoriteRefs.has(key);
      const candidateVisual=/^Sbordoni$/i.test(String(p.manufacturer||""))?((window.HydroSbordoniConfigurator?.catalogImage?.(p))||p.image||((Array.isArray(p.images)&&p.images[0])||"")):(cached?.src||p.image||((Array.isArray(p.images)&&p.images[0])||""));
-     const catalogVisual=brokenCatalogImages.has(candidateVisual)?"":candidateVisual;
-     return `<article class="result v11-product-card" data-key="${esc(key)}">${catalogThumbHtml(p,catalogVisual,finishLabel,favorite,cached)}<div><div class="r-top"><span class="ref">${esc(p.reference)}</span><span class="badge">${esc(p.manufacturer)}</span><span class="badge">${esc(p.collection)}</span><span class="badge">${esc(p.category)}</span></div><div class="designation">${esc(p.designation)}</div><div class="meta">${esc(p.finish||"")}</div>${roughInWarningHtml(p)}<div class="availability ${avail.cls}">${esc(avail.label)}</div><div class="manufacturer-tools v11-resource-tools"><button class="tiny lookup-photo" data-ref="${esc(p.reference)}" data-key="${esc(key)}">${cached||p.image?"Actualiser la photo":"Photo fabricant"}</button>${hotbathNeedsFinishFallback(p,cached)?`<button class="tiny hotbath-web-photo" data-ref="${esc(p.reference)}" data-key="${esc(key)}">Finition web</button>`:""}${p.manufacturerUrl?`<a class="source-link" target="_blank" rel="noopener" href="${esc(cached?.resolvedManufacturerUrl||p.manufacturerUrl)}">Fiche ↗</a>`:""}${cached?.technicalSheetUrl?`<a class="source-link" target="_blank" rel="noopener" href="${esc(cached.technicalSheetUrl)}">Technique ↗</a>`:""}</div><div class="photo-status">${cached?`<b>${esc(imageBadge(cached,p))}</b>`:p.image?`<b>${esc(p.imageSource||"Visuel catalogue")}</b>`:`Source tarif : ${esc(p.source||"catalogue fabricant")}`}</div>${/^Nicolazzi$/i.test(String(p.manufacturer||""))?`<div class="nicolazzi-options-slot">${nicolazziVisualOptionsHtml(p,cached)}</div>`:""}<div class="card-action-row"><button class="suggest-toggle" data-key="${esc(key)}">Alternatives</button><button class="compare-toggle ${compared?"active":""}" data-key="${esc(key)}">${compared?"✓ Comparé":"Comparer"}</button></div></div><div class="price-box"><small class="v11-price-label">Prix public</small><div class="price">${p.manufacturer==="Radaway"&&p.pricingStatus==="quote-required"?"À chiffrer":euro(price)+" HT"}</div>${p.internalReference?`<div class="internal">Ext. ${euro(p.price)} + ${esc(p.internalReference)} ${euro(p.internalPrice)}</div>`:`<div class="internal">${esc(p.sourceYear?`Tarif ${p.sourceYear}`:"Référence complète")}</div>`}${(window.HydroSbordoniConfigurator?.eligible?.(p)||window.HydroSbordoniWCConfigurator?.eligible?.(p)||window.HydroGalassiaConfigurator?.eligible?.(p)||p.manufacturer==='Coalbrook'||window.HydroCatalanoConfigurator?.eligible?.(p)||window.HydroCatalanoConfigurator?.eligible?.(p)||window.HydroHidroboxConfigurator?.eligible?.(p)||window.HydroBetteConfigurator?.eligible?.(p)||window.HydroCarrodrainConfigurator?.eligible?.(p))?`<div class="internal recor-config-hint"><b>Configuration guidée</b> · choisissez la composition finale</div>`:isRecorBathRequiringFeet(p)?`<div class="internal recor-config-hint"><b>Pieds obligatoires</b> · choix à l’ajout</div>`:""}<button class="btn primary add" data-ref="${esc(p.reference)}" data-key="${esc(key)}" style="margin-top:9px">${(window.HydroSbordoniConfigurator?.eligible?.(p)||window.HydroSbordoniWCConfigurator?.eligible?.(p)||window.HydroHidroboxConfigurator?.eligible?.(p)||window.HydroBetteConfigurator?.eligible?.(p)||window.HydroCarrodrainConfigurator?.eligible?.(p)||p.manufacturer==='Dornbracht'||p.manufacturer==='Radaway'||p.manufacturer==='Coalbrook')?"Configurer ce produit":isRecorBathRequiringFeet(p)?"Configurer + ajouter":"Ajouter au projet"}</button></div></article>`;
+     const hotbathCard=p.manufacturer==="Hotbath"?
+       window.HydroHotbathFinishMedia?.original({...p,image:cached?.src||p.image||"",
+         remoteImageUrl:cached?.remoteUrl||p.remoteImageUrl||"",
+         imageFinishMatch:cached?.finishMatch||p.imageFinishMatch||""}):null;
+     // Never present a different model or a collection image as an exact
+     // Hotbath SKU. Generic same-model photography is acceptable.
+     const visualCandidate=p.manufacturer==="Hotbath"?(hotbathCard?.src||""):candidateVisual;
+     const catalogVisual=brokenCatalogImages.has(visualCandidate)?"":visualCandidate;
+     return `<article class="result v11-product-card" data-key="${esc(key)}">${catalogThumbHtml(p,catalogVisual,finishLabel,favorite,cached)}<div><div class="r-top"><span class="ref">${esc(p.reference)}</span><span class="badge">${esc(p.manufacturer)}</span><span class="badge">${esc(p.collection)}</span><span class="badge">${esc(p.category)}</span></div><div class="designation">${esc(p.designation)}</div><div class="meta">${esc(p.finish||"")}</div>${roughInWarningHtml(p)}<div class="availability ${avail.cls}">${esc(avail.label)}</div><div class="manufacturer-tools v11-resource-tools"><button class="tiny lookup-photo" data-ref="${esc(p.reference)}" data-key="${esc(key)}">${cached||p.image?"Actualiser la photo":"Photo fabricant"}</button>${hotbathNeedsFinishFallback(p,cached)?`<button class="tiny hotbath-web-photo" data-ref="${esc(p.reference)}" data-key="${esc(key)}">Finition web</button>`:""}${p.manufacturerUrl?`<a class="source-link" target="_blank" rel="noopener" href="${esc(cached?.resolvedManufacturerUrl||p.manufacturerUrl)}">Fiche ↗</a>`:""}${cached?.technicalSheetUrl?`<a class="source-link" target="_blank" rel="noopener" href="${esc(cached.technicalSheetUrl)}">Technique ↗</a>`:""}</div><div class="photo-status">${p.manufacturer==="Hotbath"?(hotbathCard?.src?`<b>${esc(hotbathCard.scope==="exact"?"Photo fabricant — finition exacte":"Photo générique du même modèle — finition illustrative")}</b>`:"Photo exacte ou générique du modèle indisponible"):(cached?`<b>${esc(imageBadge(cached,p))}</b>`:p.image?`<b>${esc(p.imageSource||"Visuel catalogue")}</b>`:`Source tarif : ${esc(p.source||"catalogue fabricant")}`)}</div>${/^Nicolazzi$/i.test(String(p.manufacturer||""))?`<div class="nicolazzi-options-slot">${nicolazziVisualOptionsHtml(p,cached)}</div>`:""}<div class="card-action-row"><button class="suggest-toggle" data-key="${esc(key)}">Alternatives</button><button class="compare-toggle ${compared?"active":""}" data-key="${esc(key)}">${compared?"✓ Comparé":"Comparer"}</button></div></div><div class="price-box"><small class="v11-price-label">Prix public</small><div class="price">${p.manufacturer==="Radaway"&&p.pricingStatus==="quote-required"?"À chiffrer":euro(price)+" HT"}</div>${p.internalReference?`<div class="internal">Ext. ${euro(p.price)} + ${esc(p.internalReference)} ${euro(p.internalPrice)}</div>`:`<div class="internal">${esc(p.sourceYear?`Tarif ${p.sourceYear}`:"Référence complète")}</div>`}${(window.HydroSbordoniConfigurator?.eligible?.(p)||window.HydroSbordoniWCConfigurator?.eligible?.(p)||window.HydroGalassiaConfigurator?.eligible?.(p)||p.manufacturer==='Coalbrook'||window.HydroCatalanoConfigurator?.eligible?.(p)||window.HydroCatalanoConfigurator?.eligible?.(p)||window.HydroHidroboxConfigurator?.eligible?.(p)||window.HydroBetteConfigurator?.eligible?.(p)||window.HydroCarrodrainConfigurator?.eligible?.(p))?`<div class="internal recor-config-hint"><b>Configuration guidée</b> · choisissez la composition finale</div>`:isRecorBathRequiringFeet(p)?`<div class="internal recor-config-hint"><b>Pieds obligatoires</b> · choix à l’ajout</div>`:""}<button class="btn primary add" data-ref="${esc(p.reference)}" data-key="${esc(key)}" style="margin-top:9px">${(window.HydroSbordoniConfigurator?.eligible?.(p)||window.HydroSbordoniWCConfigurator?.eligible?.(p)||window.HydroHidroboxConfigurator?.eligible?.(p)||window.HydroBetteConfigurator?.eligible?.(p)||window.HydroCarrodrainConfigurator?.eligible?.(p)||p.manufacturer==='Dornbracht'||p.manufacturer==='Radaway'||p.manufacturer==='Coalbrook')?"Configurer ce produit":isRecorBathRequiringFeet(p)?"Configurer + ajouter":"Ajouter au projet"}</button></div></article>`;
    }).join("");
    const manufacturerGuideActive=window.HydroManufacturerGuide?.isSupported?.(fs.manufacturer);
    const manufacturerGuideLauncher=manufacturerGuideActive?`<section class="manufacturer-guide-launcher">
@@ -2159,7 +2166,7 @@ function renderCatalog(){
          // Preserve the configured Hotbath collection by using the canonical addProduct path.
          if(p.manufacturer==='Naxani'&&p.naxaniAssembly)return addNaxaniConfigured(p,room);
          return p.manufacturer==='Hotbath'
-           ?addProduct(p.reference,room,"",productKey(p),p.hotbathSelectedCollection||"")
+           ?addProduct(p.reference,room,"",productKey(p),p.hotbathSelectedCollection||"",p)
            :addCatalogProduct(p.reference,room,productKey(p));
        });
    });
@@ -2423,6 +2430,15 @@ function createSelectedProductRecord(p,roomId,parentId=""){
   const catalogImages=embeddedRecorVisual?[embeddedRecorVisual]:(Array.isArray(p.images)?p.images.filter(Boolean):[p.image].filter(Boolean));
   if(gessiDirect && !catalogImages.includes(gessiDirect))catalogImages.unshift(gessiDirect);
   const catalogMain=embeddedRecorVisual||p.image||gessiDirect||catalogImages[0]||"";
+  // For Hotbath, only a manufacturer photo with the identical model code is
+  // eligible. Do not use collection covers or another product as a fallback.
+  const hotbathResolver=window.HydroHotbathFinishMedia;
+  const hotbathSource=p.manufacturer==="Hotbath"?
+    hotbathResolver?.original({...p,
+      image:cached?.src||p.image||"",remoteImageUrl:cached?.remoteUrl||p.remoteImageUrl||"",
+      imageFinishMatch:cached?.finishMatch||p.imageFinishMatch||""}):null;
+  const chosenSrc=p.manufacturer==="Hotbath"?(hotbathSource?.src||""):(cached?.src||catalogMain);
+  const chosenMediaSource=hotbathSource?.source||cached?.source||p.imageSource||(chosenSrc?"Visuel catalogue":"Photo fabricant à rechercher");
   const id=crypto.randomUUID?crypto.randomUUID():Math.random().toString(36);
   return {
     ...p,id,roomId:targetRoomId,
@@ -2431,15 +2447,18 @@ function createSelectedProductRecord(p,roomId,parentId=""){
     priceOverride:null,
     originalDesignation:p.designation||"",
     customTechnicalSheet:false,
-    image:cached?.src||catalogMain,
-    images:cached?.images||catalogImages,
-    pdfImage:cached?.src||catalogMain,
-    pdfImages:cached?.images||catalogImages,
-    remoteImageUrl:cached?.remoteUrl||"",
-    remoteImages:cached?.remoteImages||[],
-    imageSource:cached?.source||p.imageSource||(catalogMain?"Visuel catalogue":"Photo fabricant à rechercher"),
-    imageFinishMatch:cached?.finishMatch||"",
-    imageStatus:cached?imageBadge(cached,p):(catalogMain?(p.imageSource||"Visuel catalogue"):"Recherche fabricant…"),
+    image:chosenSrc,
+    images:p.manufacturer==="Hotbath"?(chosenSrc?[chosenSrc]:[]):(cached?.images||catalogImages),
+    pdfImage:chosenSrc,
+    pdfImages:p.manufacturer==="Hotbath"?(chosenSrc?[chosenSrc]:[]):(cached?.images||catalogImages),
+    remoteImageUrl:p.manufacturer==="Hotbath"?(hotbathResolver?.originalRemote(chosenSrc)||""):(cached?.remoteUrl||""),
+    remoteImages:p.manufacturer==="Hotbath"?(hotbathResolver?.originalRemote(chosenSrc)?[hotbathResolver.originalRemote(chosenSrc)]:[]):(cached?.remoteImages||[]),
+    imageSource:chosenMediaSource,
+    imageFinishMatch:hotbathSource?(hotbathSource.scope==="exact"?"exact":"model-only"):(cached?.finishMatch||""),
+    imageStatus:hotbathSource?(hotbathSource.scope==="exact"?"Photo fabricant — finition exacte":"Photo générique du même modèle — finition illustrative"):
+      (cached?imageBadge(cached,p):(chosenSrc?(p.imageSource||"Visuel catalogue"):"Recherche fabricant…")),
+    hotbathPhotoOriginal:hotbathSource?.src||p.hotbathPhotoOriginal||"",
+    hotbathVisualMode:p.manufacturer==="Hotbath"?"photo":p.hotbathVisualMode,
     resolvedManufacturerUrl:cached?.resolvedManufacturerUrl||p.manufacturerUrl||"",
     drawingUrl:cached?.drawingUrl||p.drawingUrl||"",
     drawingType:cached?.drawingType||p.drawingType||"",
@@ -2836,10 +2855,19 @@ function addCatalogProduct(ref,roomId,key="",selectedCollection=""){
   return addProduct(ref,targetRoomId,"",key,selectedCollection);
 }
 
-async function addProduct(ref,roomId,parentId="",key="",selectedCollection=""){
+async function addProduct(ref,roomId,parentId="",key="",selectedCollection="",chosenPhoto=null){
   const p=productFromCatalogSources(ref,key);if(!p)return null;
-  const chosen=p.manufacturer==='Hotbath'&&selectedCollection?
-    {...p,hotbathSelectedCollection:selectedCollection,purchaseDiscount:/^Archie$/i.test(selectedCollection)?59.5:55}:p;
+  const imagePatch=p.manufacturer==='Hotbath'&&chosenPhoto?.hotbathPhotoOriginal&&
+     window.HydroHotbathFinishMedia?.sameModel(chosenPhoto.hotbathPhotoOriginal,
+       window.HydroHotbathFinishMedia.model(p))?
+     {image:chosenPhoto.hotbathPhotoOriginal,images:[chosenPhoto.hotbathPhotoOriginal],
+       pdfImage:chosenPhoto.hotbathPhotoOriginal,hotbathPhotoOriginal:chosenPhoto.hotbathPhotoOriginal,
+       imageSource:chosenPhoto.imageSource||"Photo générique du modèle",
+       imageFinishMatch:chosenPhoto.imageFinishMatch==="exact"?"exact":"model-only",
+       hotbathVisualMode:"photo"}:{};
+  const chosen=p.manufacturer==='Hotbath'?
+    {...p,hotbathSelectedCollection:selectedCollection||p.collection,
+      purchaseDiscount:/^Archie$/i.test(selectedCollection||p.collection)?59.5:55,...imagePatch}:p;
   const record=createSelectedProductRecord(chosen,roomId,parentId);
   if(!record)return null;
   commitSelectedRecords([record]);
@@ -4062,6 +4090,11 @@ function renderRooms(){
     renderRoomsFallback(e);
   }
   try{enhanceProductQuantities()}catch(e){console.warn("[V11.42 quantity enhancement]",e)}
+  try{
+    window.HydroHotbathProjectVisual?.mount(state.selected,saveState,()=>{
+      renderRooms();renderSelection();
+    });
+  }catch(e){console.warn("[Hotbath photo tabs]",e)}
 }
 
 
@@ -4406,6 +4439,13 @@ function productVisuals(p){
     seen.add(k);out.push(src);
   };
 
+  // Hotbath has a separately persisted photo/simulated finish view.
+  const hotbathResolver=window.HydroHotbathFinishMedia;
+  if(hotbathResolver?.hotbath(p)){
+    const view=hotbathResolver.view(p);
+    if(view.src)add(view.src);
+    return out;
+  }
   // Original official images first.
   add(p.image);
   if(Array.isArray(p.images))p.images.forEach(add);
@@ -4438,6 +4478,15 @@ function boardVisualHtml(p){
       </figure>`).join("")}
   </div>`;
 }
+function hotbathDossierPhotoDisclaimer(p){
+  const api=window.HydroHotbathFinishMedia;
+  if(!api?.hotbath(p))return "";
+  const view=api.view(p);
+  if(view.simulated)return '<div class="board-simulation-note">Simulation de finition — rendu indicatif non contractuel</div>';
+  if(view.scope==="model")return '<div class="board-simulation-note">Photo générique du modèle — finition illustrative</div>';
+  if(view.scope==="none")return '<div class="board-simulation-note">Photo du modèle non disponible</div>';
+  return "";
+}
 function clientVisualNeedsDisclaimer(p){
   if(!p || p.manual)return false;
   if(p.imageSimulation)return true;
@@ -4467,7 +4516,7 @@ function recorBathAccessoryRailHtml(p){
   return `<aside class="recor-client-accessories" aria-label="Options Recor sélectionnées">${footHtml}${wasteHtml}</aside>`;
 }
 function boardVisualWithRecorOptions(p){
-  if(p.dossierImage)return `<figure class="board-single-image"><img src="${esc(p.dossierImage)}" alt="${esc(p.designation||'Visuel du dossier')}" loading="eager"></figure>`;
+  if(p.dossierImage&&!window.HydroHotbathFinishMedia?.isSimulation(p))return `<figure class="board-single-image"><img src="${esc(p.dossierImage)}" alt="${esc(p.designation||'Visuel du dossier')}" loading="eager"></figure>`;
   const base=boardVisualHtml(p);
   const rail=recorBathAccessoryRailHtml(p);
   if(!rail)return base;
@@ -4493,7 +4542,7 @@ function boardItemHtml(p,idx,originLabel=""){
      <h3>${esc(designation)}</h3>
      ${p.isFreeArticle?`<div class="board-finish">Quantité : ${itemQuantity(p)}${p.leadTime?` · Délai : ${esc(p.leadTime)}`:""}</div>`:""}
      ${dossierFinish?`<div class="board-finish">${esc(dossierFinish)}</div>`:""}
-     ${p.dossierPhotoSource?`<div class="board-simulation-note">Photo d’ambiance fabricant · finition et accessoires illustrés non contractuels</div>`:(clientVisualNeedsDisclaimer(p)?`<div class="board-simulation-note">Visuel non contractuel</div>`:"")}
+     ${hotbathDossierPhotoDisclaimer(p)||(p.dossierPhotoSource?`<div class="board-simulation-note">Photo d’ambiance fabricant · finition et accessoires illustrés non contractuels</div>`:(clientVisualNeedsDisclaimer(p)?`<div class="board-simulation-note">Visuel non contractuel</div>`:""))}
      ${state.showSupplierReferences!==false && p.reference?`<div class="board-ref">Réf. ${esc(p.reference)}</div>`:""}
      ${state.showClientPrices!==false?`<div class="price commercial-price">${isManual?`${euro(priceValue)} HT`:commercialPriceHtml(p.totalPrice??p.price,p)}</div>`:""}
    </div>
@@ -7458,3 +7507,7 @@ $$(".nav").forEach(n=>n.onclick=()=>showView(n.dataset.view));
 })();
 
 ;Promise.resolve(bootstrap()).catch(e=>console.error("[Hydropolis V11.54]",e));
+
+window.addEventListener("hydro-hotbath-media-ready",()=>{
+  try{if(state?.rooms?.length)renderRooms()}catch(e){console.warn("[Hotbath photo refresh]",e)}
+});

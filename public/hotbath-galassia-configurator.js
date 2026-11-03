@@ -71,13 +71,21 @@ function open(rows,roomId,onAdd){
    return validUrl(item.image);
   }
   function knownImage(c,m){
-   if(c==='Ray'){
-    const source=ray?.specification(m);
-    if(source?.photo)return source.photo;
-   }
-   const key=mediaKey(c,m),checked=images.get(key)?.image||'';
-   const contemporary=supplier.photo({base:m},c,media)||'';
-   return italianPhoto(c,m)||validUrl(checked)||validUrl(contemporary)||supplementalPhoto(c,m)||'';
+    const verified=root?.HydroHotbathFinishMedia;
+    const urls=[];
+    if(c==='Ray'){
+      const rayPhoto=ray?.specification(m)?.photo;
+      if(rayPhoto)urls.push(rayPhoto);
+    }
+    const key=mediaKey(c,m),checked=images.get(key)?.image||'';
+    // Maintain the legacy Italian-first priority while validating that the
+    // resulting asset actually depicts the selected manufacturer model.
+    urls.push(italianPhoto(c,m)||validUrl(checked));
+    urls.push(validUrl(supplier.photo({base:m},c,media)||''));
+    urls.push(supplementalPhoto(c,m));
+    const saved=verified?.candidates({manufacturer:'Hotbath',collection:c,base:m})||[];
+    saved.forEach(v=>urls.push(v.src));
+    return urls.find(url=>url&&(!verified||verified.sameModel(url,m)))||'';
   }
   function onItalianError(c,m,url=''){
    const key=mediaKey(c,m);
@@ -87,23 +95,22 @@ function open(rows,roomId,onAdd){
    if(!closed&&ov.isConnected&&c===collection)render(false);
   }
   function selectedImage(m,p){
-   const variant=images.get(mediaKey(collection,m,p?.finishCode||''));
-   // RAY is part of the supplier 'Sparky' tariff, and has six verified
-   // manufacturer model photos. Different finish imagery is illustrative.
-   if(collection==='Ray'){
-    if(variant?.scope==='exact'&&validUrl(variant.image))
-      return {url:variant.image,caption:'Photo fabricant · finition exacte '+p.finishCode};
-    const manufacturer=ray?.media(p);
-    if(manufacturer?.src)return {url:manufacturer.src,caption:manufacturer.caption};
-   }
-   if(variant?.scope==='exact'&&validUrl(variant.image))
-    return {url:variant.image,caption:'Photo fabricant de la finition '+(p?.finishCode||'')};
-   const italianUrl=italianPhoto(collection,m);
-   if(italianUrl)return {url:italianUrl,caption:'Photo du modèle Hotbath Italie · finition illustrative'};
-   const modern=knownImage(collection,m);
-   return {url:modern,caption:modern===supplementalPhoto(collection,m)?
-      'Photo du même modèle publiée sur Archiproducts · finition illustrative':
-      'Photo du modèle fabricant · la finition illustrée peut différer'};
+    const resolver=root?.HydroHotbathFinishMedia;
+    const modelUrl=url=>!!url&&(!resolver||resolver.sameModel(url,m));
+    const variant=images.get(mediaKey(collection,m,p?.finishCode||''));
+    if(variant?.scope==='exact'&&modelUrl(validUrl(variant.image)))
+      return {url:variant.image,caption:'Photo fabricant — finition exacte '+(p.finishCode||''),scope:'exact'};
+    if(collection==='Ray'){
+      const manufacturer=ray?.media(p);
+      if(manufacturer?.src&&modelUrl(manufacturer.src))
+        return {url:manufacturer.src,caption:manufacturer.exact?
+          'Photo fabricant — finition exacte '+(p.finishCode||''):
+          'Photo générique du même modèle — finition illustrative',scope:manufacturer.exact?'exact':'model-only'};
+    }
+    const generic=knownImage(collection,m);
+    return {url:generic||'',caption:generic?
+      'Photo générique du même modèle — finition illustrative':
+      'Photo du modèle indisponible',scope:generic?'model-only':'none'};
   }
   function flushImages(){
    while(pending.count<3&&queue.length){
@@ -272,7 +279,14 @@ function open(rows,roomId,onAdd){
      // createSelectedProductRecord and HydroRoughIn.reconcile already handle the
      // verified p.internalReference as a separate mandatory child of this line.
      // No second copy of the body may be inserted by this dialog.
-     await onAdd({...p,hotbathSelectedCollection:collection,purchaseDiscount:negotiatedDiscount},roomId);
+     // Forward the exact or generic same-model photo chosen in the visual
+     // configurator to the project. Never change the tariff reference or price.
+     const selectedPhoto=selectedImage(m.base,p);
+     await onAdd({...p,hotbathSelectedCollection:collection,purchaseDiscount:negotiatedDiscount,
+       image:selectedPhoto.url||'',images:selectedPhoto.url?[selectedPhoto.url]:[],
+       pdfImage:selectedPhoto.url||'',imageSource:selectedPhoto.caption,
+       imageFinishMatch:selectedPhoto.scope==='exact'?'exact':'model-only',
+       hotbathPhotoOriginal:selectedPhoto.url||'',hotbathVisualMode:'photo'},roomId);
      close();
     }catch(e){
      busy=false;renderSelection();alert('Ajout Hotbath impossible : '+(e?.message||String(e)));

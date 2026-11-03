@@ -3451,6 +3451,9 @@ function hotbathFinishTarget(code){
   const map={
     CR:{rgb:[205,207,207],strength:.74,label:"Chrome"},
     GN:{rgb:[166,163,153],strength:.72,label:"Nickel brossé"},
+    IX:{rgb:[170,174,176],strength:.72,label:"Acier brossé"},
+    TB:{rgb:[116,85,64],strength:.82,label:"Bronze toscan"},
+    BGP:{rgb:[72,77,81],strength:.84,label:"Gunmetal brossé PVD"},
     AB:{rgb:[113,88,60],strength:.82,label:"Laiton vieilli"},
     BB:{rgb:[166,139,86],strength:.78,label:"Laiton brossé"},
     WH:{rgb:[232,229,220],strength:.84,label:"Blanc mat"},
@@ -3860,83 +3863,36 @@ app.post("/api/hotbath-web-image",async(req,res)=>{
 app.get("/api/finish-simulation",async(req,res)=>{
   const url=String(req.query.url||"");
   const finish=String(req.query.finish||"").toUpperCase();
-  if(!/^https?:\/\//i.test(url))return res.status(400).send("URL image invalide");
+  let parsed;
+  try{parsed=new URL(url)}catch{return res.status(400).json({error:"URL image invalide"})}
+  // Prevent a user-supplied URL from being passed to the tinting renderer:
+  // only official Hotbath product assets and known same-model catalog images.
+  if(parsed.protocol!=="https:"||!/(?:^|\.)hotbath\.(?:com|it)$|(?:^|\.)edilportale\.com$/i.test(parsed.hostname))
+    return res.status(400).json({error:"Source Hotbath non autorisée"});
   const target=hotbathFinishTarget(finish);
-  if(!target)return res.status(400).send("Finition Hotbath non prise en charge");
-
-
+  if(!target)return res.status(400).json({error:"Finition Hotbath non prise en charge"});
   try{
     const r=await safeRemoteGet(url,{
       responseType:"arraybuffer",timeout:18000,maxContentLength:15*1024*1024,maxBodyLength:15*1024*1024,
-      headers:{"User-Agent":"Mozilla/5.0","Referer":new URL(url).origin+"/"}
+      headers:{"User-Agent":"Mozilla/5.0","Referer":parsed.origin+"/"}
     });
     const ct=String(r.headers["content-type"]||"");
-    if(!ct.startsWith("image/"))return res.status(415).send("Ressource non image");
-
-    const {createCanvas,loadImage}=await import("@napi-rs/canvas");
-    const img=await loadImage(Buffer.from(r.data));
-    const maxDim=1800;
-    const ratio=Math.min(1,maxDim/Math.max(img.width,img.height));
-    const w=Math.max(1,Math.round(img.width*ratio));
-    const h=Math.max(1,Math.round(img.height*ratio));
-    const canvas=createCanvas(w,h);
-    const ctx=canvas.getContext("2d");
-    ctx.fillStyle="#fff";ctx.fillRect(0,0,w,h);
-    ctx.drawImage(img,0,0,w,h);
-
-    const data=ctx.getImageData(0,0,w,h);
-    const px=data.data;
-    const [tr,tg,tb]=target.rgb;
-
-    // Background estimate from four corners. This makes the simulation usable
-    // on Hotbath's light-background product photography without recolouring it.
-    const cornerAt=(x,y)=>{
-      const i=(y*w+x)*4;
-      return [px[i],px[i+1],px[i+2]];
-    };
-    const corners=[cornerAt(0,0),cornerAt(w-1,0),cornerAt(0,h-1),cornerAt(w-1,h-1)];
-    const bg=[
-      Math.round(corners.reduce((s,c)=>s+c[0],0)/4),
-      Math.round(corners.reduce((s,c)=>s+c[1],0)/4),
-      Math.round(corners.reduce((s,c)=>s+c[2],0)/4)
-    ];
-
-    for(let i=0;i<px.length;i+=4){
-      const r0=px[i],g0=px[i+1],b0=px[i+2],a=px[i+3];
-      if(a<12)continue;
-
-      const bgDist=Math.sqrt((r0-bg[0])**2+(g0-bg[1])**2+(b0-bg[2])**2);
-      const mx=Math.max(r0,g0,b0), mn=Math.min(r0,g0,b0);
-      const lum=.2126*r0+.7152*g0+.0722*b0;
-
-      // Preserve background and near-white studio areas.
-      if(bgDist<22 || (mx>242 && mn>232))continue;
-
-      // Preserve very dark contact shadows with a lighter influence.
-      const shadowFactor=lum<45?.35:1;
-      const metallic=target.strength*shadowFactor;
-
-      // Preserve the source's highlights and geometry by modulating target colour
-      // with the original luminance rather than painting a flat colour.
-      const shade=Math.max(.16,Math.min(1.34,lum/150));
-      const nr=Math.max(0,Math.min(255,tr*shade));
-      const ng=Math.max(0,Math.min(255,tg*shade));
-      const nb=Math.max(0,Math.min(255,tb*shade));
-
-      px[i]=Math.round(r0*(1-metallic)+nr*metallic);
-      px[i+1]=Math.round(g0*(1-metallic)+ng*metallic);
-      px[i+2]=Math.round(b0*(1-metallic)+nb*metallic);
-    }
-
-    ctx.putImageData(data,0,0);
-    const out=await canvas.encode("jpeg",90);
-    res.set("Content-Type","image/jpeg");
-    res.set("Cache-Control","public, max-age=604800");
+    if(!/^image\/(?:png|jpeg|webp|avif)/i.test(ct))return res.status(415).json({error:"Ressource non image"});
+    const {renderHotbathFinish}=require("./hotbath-finish-render");
+    const out=await renderHotbathFinish(Buffer.from(r.data),target);
+    if(!out.ok)return res.status(422).json({
+      error:"Simulation indisponible pour cette photographie",
+      detail:"Le produit ne peut pas être isolé avec certitude : la photographie d’origine est conservée.",
+      reason:out.reason
+    });
+    res.set("Content-Type","image/png");
+    res.set("Cache-Control","private, max-age=3600");
     res.set("X-Hydropolis-Simulation",target.label);
-    res.send(out);
+    res.set("X-Hydropolis-Simulation-Mask",out.mode);
+    res.send(out.bytes);
   }catch(e){
     console.error("[finish-simulation]",e.message);
-    res.status(502).send("Simulation de finition impossible");
+    res.status(502).json({error:"Simulation de finition impossible"});
   }
 });
 
