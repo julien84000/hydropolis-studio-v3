@@ -87,7 +87,7 @@ function original(p){
  if(p.customImage&&typeof p.image==='string'&&p.image)
   return {src:p.image,scope:'custom',source:'Photo personnalisée'};
  if(requested&&(sameModel(requested,model(p))||requested.startsWith('data:')))
-  return {src:requested,scope:'model',source:'Photo conservée du projet'};
+  return {src:requested,scope:p.imageFinishMatch==='exact'?'exact':'model',source:'Photo conservée du projet'};
  if(p.imageSimulation===true&&p.remoteImageUrl&&sameModel(p.remoteImageUrl,model(p)))
   return {src:p.remoteImageUrl,scope:'model',source:'Photo avant simulation'};
  if(p.image&&p.imageFinishMatch==='exact'&&sameModel(p.image,model(p)))
