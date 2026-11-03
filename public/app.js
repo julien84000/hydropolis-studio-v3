@@ -2423,6 +2423,15 @@ function createSelectedProductRecord(p,roomId,parentId=""){
   const catalogImages=embeddedRecorVisual?[embeddedRecorVisual]:(Array.isArray(p.images)?p.images.filter(Boolean):[p.image].filter(Boolean));
   if(gessiDirect && !catalogImages.includes(gessiDirect))catalogImages.unshift(gessiDirect);
   const catalogMain=embeddedRecorVisual||p.image||gessiDirect||catalogImages[0]||"";
+  // For Hotbath, only a manufacturer photo with the identical model code is
+  // eligible. Do not use collection covers or another product as a fallback.
+  const hotbathResolver=window.HydroHotbathFinishMedia;
+  const hotbathSource=p.manufacturer==="Hotbath"?
+    hotbathResolver?.original({...p,
+      image:cached?.src||p.image||"",remoteImageUrl:cached?.remoteUrl||p.remoteImageUrl||"",
+      imageFinishMatch:cached?.finishMatch||p.imageFinishMatch||""}):null;
+  const chosenSrc=p.manufacturer==="Hotbath"?(hotbathSource?.src||""):(cached?.src||catalogMain);
+  const chosenMediaSource=hotbathSource?.source||cached?.source||p.imageSource||(chosenSrc?"Visuel catalogue":"Photo fabricant à rechercher");
   const id=crypto.randomUUID?crypto.randomUUID():Math.random().toString(36);
   return {
     ...p,id,roomId:targetRoomId,
@@ -2431,15 +2440,18 @@ function createSelectedProductRecord(p,roomId,parentId=""){
     priceOverride:null,
     originalDesignation:p.designation||"",
     customTechnicalSheet:false,
-    image:cached?.src||catalogMain,
-    images:cached?.images||catalogImages,
-    pdfImage:cached?.src||catalogMain,
-    pdfImages:cached?.images||catalogImages,
-    remoteImageUrl:cached?.remoteUrl||"",
-    remoteImages:cached?.remoteImages||[],
-    imageSource:cached?.source||p.imageSource||(catalogMain?"Visuel catalogue":"Photo fabricant à rechercher"),
-    imageFinishMatch:cached?.finishMatch||"",
-    imageStatus:cached?imageBadge(cached,p):(catalogMain?(p.imageSource||"Visuel catalogue"):"Recherche fabricant…"),
+    image:chosenSrc,
+    images:p.manufacturer==="Hotbath"?(chosenSrc?[chosenSrc]:[]):(cached?.images||catalogImages),
+    pdfImage:chosenSrc,
+    pdfImages:p.manufacturer==="Hotbath"?(chosenSrc?[chosenSrc]:[]):(cached?.images||catalogImages),
+    remoteImageUrl:p.manufacturer==="Hotbath"?(hotbathResolver?.originalRemote(chosenSrc)||""):(cached?.remoteUrl||""),
+    remoteImages:p.manufacturer==="Hotbath"?(hotbathResolver?.originalRemote(chosenSrc)?[hotbathResolver.originalRemote(chosenSrc)]:[]):(cached?.remoteImages||[]),
+    imageSource:chosenMediaSource,
+    imageFinishMatch:hotbathSource?(hotbathSource.scope==="exact"?"exact":"model-only"):(cached?.finishMatch||""),
+    imageStatus:hotbathSource?(hotbathSource.scope==="exact"?"Photo fabricant — finition exacte":"Photo générique du même modèle — finition illustrative"):
+      (cached?imageBadge(cached,p):(chosenSrc?(p.imageSource||"Visuel catalogue"):"Recherche fabricant…")),
+    hotbathPhotoOriginal:hotbathSource?.src||p.hotbathPhotoOriginal||"",
+    hotbathVisualMode:p.manufacturer==="Hotbath"?"photo":p.hotbathVisualMode,
     resolvedManufacturerUrl:cached?.resolvedManufacturerUrl||p.manufacturerUrl||"",
     drawingUrl:cached?.drawingUrl||p.drawingUrl||"",
     drawingType:cached?.drawingType||p.drawingType||"",
