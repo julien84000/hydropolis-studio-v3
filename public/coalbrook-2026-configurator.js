@@ -65,19 +65,12 @@ function show(rows,roomId,onAdd,initial){
  const heading=make('div');
  heading.append(make('span','coalbrook-eyebrow','COALBROOK · EUR HT · TARIF AOÛT 2026'),make('h2','', 'Configurateur Coalbrook'),make('p','','Collections officielles, références exactes et corps d’encastrement associés.'));
  const close=make('button','coalbrook-close','×');close.type='button';close.setAttribute('aria-label','Fermer le configurateur');close.addEventListener('click',()=>{overlay.remove();dialog=null});
- const importPhotos=make('button','coalbrook-import-photos','Importer les photos du tarif (ZIP)');
- importPhotos.type='button';importPhotos.title='Import local dans ce navigateur, aucune modification des projets ni du serveur';
- importPhotos.addEventListener('click',async()=>{
-  const importer=window.HydroCoalbrookPdfPhotos;
-  if(!importer){alert('Module d’import PDF indisponible.');return}
-  importPhotos.disabled=true;importPhotos.textContent='Import des photos…';
-  try{
-   const count=await importer.chooseZip();
-   if(count){importPhotos.textContent=count+' photos disponibles localement';setupDown(4);}
-   else importPhotos.textContent='Importer les photos du tarif (ZIP)';
-  }catch(e){importPhotos.textContent='Importer les photos du tarif (ZIP)';alert('Import des visuels : '+(e.message||e))}
-  finally{importPhotos.disabled=false}
- });
+ const importPhotos=make('span','coalbrook-import-photos','785 photographies du tarif · chargement automatique');
+ importPhotos.title='Photos déjà intégrées à Hydropolis, aucune importation manuelle nécessaire';
+ window.HydroCoalbrookPdfPhotos?.ensureBundled().then(count=>{
+  if(document.contains(importPhotos))importPhotos.textContent=count===785?
+   '785 photographies du tarif intégrées':'Photos PDF temporairement indisponibles';
+ }).catch(()=>{});
  header.append(heading,importPhotos,close);body.append(header);
  const grid=make('div','coalbrook-modal-grid'),filters=make('div','coalbrook-fields'),view=make('div','coalbrook-product-card');
  body.append(grid);grid.append(filters,view);
@@ -132,24 +125,26 @@ function show(rows,roomId,onAdd,initial){
    const uncertainCache=!photo&&!verifiedCache&&previews.map(coalbrookPreviousMedia).find(c=>c?.src);
    const frame=make('span','coalbrook-model-tile-photo');
    const furniturePreview=previews.map(p=>window.HydroCoalbrookFurnitureMedia?.getSync(p.reference)).find(x=>x?.src);
-   const imageSrc=isMaestro(item)?'':furniturePreview?.src||photo?.image||verifiedCache?.src||uncertainCache?.src||'';
+   const isFurniture=T.classification(item)[0]==='Mobilier';
+   const pdfFirst=isMaestro(item)||(isFurniture&&!furniturePreview);
+   const imageSrc=pdfFirst?'':furniturePreview?.src||photo?.image||verifiedCache?.src||uncertainCache?.src||'';
    if(imageSrc){
     const img=make('img');img.src=imageSrc;img.loading='lazy';img.alt=(item.designation||base)+' · aperçu du modèle';
     img.addEventListener('error',()=>frame.replaceChildren(make('span','','Visuel indisponible')),{once:true});
     frame.append(img);
    }else frame.append(make('span','','Photo à compléter'));
-   const label=make('small','coalbrook-model-photo-status',furniturePreview||exact||verifiedCache?'Photo fabricant · finition exacte':'Photo à vérifier');
+   const label=make('small','coalbrook-model-photo-status',pdfFirst?'Photo du tarif en chargement':furniturePreview||exact||verifiedCache?'Photo fabricant · finition exacte':'Photo à vérifier');
    card.append(frame,make('b','',base),make('small','',(item.designation||'Modèle Coalbrook').slice(0,76)),label);
    // Only unresolved thumbnails are queried, with a small per-view budget.
    // The manufacturer's V11 cache is consulted before fetching again.
-   if((isMaestro(item)||!imageSrc)&&window.HydroCoalbrookPdfPhotos?.get){
+   if((pdfFirst||!imageSrc)&&window.HydroCoalbrookPdfPhotos?.get){
     window.HydroCoalbrookPdfPhotos.get(previews[0].reference).then(found=>{
      if(!card.isConnected||!found?.src)return;
      const img=make('img');img.src=found.src;img.loading='lazy';img.alt=(item.designation||base)+' · photo du tarif 2026';frame.replaceChildren(img);
      label.textContent=found.finishMatch==='exact'?'Photo du tarif 2026 · finition exacte':'Photo du tarif 2026 · modèle à vérifier';
     }).catch(()=>{});
    }
-   if(!isMaestro(item)&&!imageSrc&&gallery.childElementCount<12&&typeof fetchManufacturerImage==='function'){
+   if(!pdfFirst&&!imageSrc&&gallery.childElementCount<12&&typeof fetchManufacturerImage==='function'){
     Promise.resolve(fetchManufacturerImage(previews[0],false,{imageOnly:true})).then(res=>{
      if(!card.isConnected||!res?.src)return;
      const img=make('img');img.src=res.src;img.loading='lazy';
@@ -178,7 +173,8 @@ function show(rows,roomId,onAdd,initial){
   add.disabled=!p||!!required.ref&&!rough;
   if(!p){view.append(make('p','','Aucun article disponible pour ces filtres.'));return}
   const preview=make('div','coalbrook-product-media');
-  const media=coalbrookPreferredMedia(p), request=++mediaToken,preferPdf=isMaestro(p);
+  const media=coalbrookPreferredMedia(p), request=++mediaToken,
+   preferPdf=isMaestro(p)||(T.classification(p)[0]==='Mobilier'&&!window.HydroCoalbrookFurnitureMedia?.getSync(p.reference));
   function renderPhoto(src,label){
    if(!src)return false;
    const img=make('img');img.src=src;img.loading='lazy';
