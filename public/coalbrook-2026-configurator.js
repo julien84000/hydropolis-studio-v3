@@ -101,10 +101,28 @@ function show(rows,roomId,onAdd,initial){
    const previews=variants(products,base);
    const exact=previews.find(p=>p.image&&p.imageFinishMatch==='exact');
    const photo=exact||previews.find(p=>p.image)||null;
+   const verifiedCache=!photo&&previews.map(coalbrookPreviousMedia).find(c=>c?.src&&c.finishMatch==='exact');
+   const uncertainCache=!photo&&!verifiedCache&&previews.map(coalbrookPreviousMedia).find(c=>c?.src);
    const frame=make('span','coalbrook-model-tile-photo');
-   if(photo){const img=make('img');img.src=photo.image;img.loading='lazy';img.alt=(item.designation||base)+' · aperçu du modèle';frame.append(img)}
-   else frame.append(make('span','','Photo à compléter'));
-   card.append(frame,make('b','',base),make('small','',(item.designation||'Modèle Coalbrook').slice(0,76)));
+   const imageSrc=photo?.image||verifiedCache?.src||uncertainCache?.src||'';
+   if(imageSrc){
+    const img=make('img');img.src=imageSrc;img.loading='lazy';img.alt=(item.designation||base)+' · aperçu du modèle';
+    img.addEventListener('error',()=>frame.replaceChildren(make('span','','Visuel indisponible')),{once:true});
+    frame.append(img);
+   }else frame.append(make('span','','Photo à compléter'));
+   const label=make('small','coalbrook-model-photo-status',photo||verifiedCache?'Photo fabricant':'Photo à vérifier');
+   card.append(frame,make('b','',base),make('small','',(item.designation||'Modèle Coalbrook').slice(0,76)),label);
+   // Only unresolved thumbnails are queried, with a small per-view budget.
+   // The manufacturer's V11 cache is consulted before fetching again.
+   if(!imageSrc&&gallery.childElementCount<12&&typeof fetchManufacturerImage==='function'){
+    Promise.resolve(fetchManufacturerImage(previews[0],false,{imageOnly:true})).then(res=>{
+     if(!card.isConnected||!res?.src)return;
+     const img=make('img');img.src=res.src;img.loading='lazy';
+     img.alt=(item.designation||base)+' · visuel fabricant';
+     frame.replaceChildren(img);
+     label.textContent=res.finishMatch==='exact'?'Photo fabricant · finition exacte':'Photo fabricant · finition à vérifier';
+    }).catch(()=>{});
+   }
    card.addEventListener('click',()=>{model.value=base;setupDown(4)});
    gallery.append(card);
   }
