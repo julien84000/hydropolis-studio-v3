@@ -60,6 +60,9 @@ function show(rows,roomId,onAdd,initial){
   const row=make('label','coalbrook-field');row.append(make('span','',label));
   const select=make('select');select.setAttribute('aria-label',label);row.append(select);filters.append(row);selects[key]=select;
  }
+ const gallery=make('div','coalbrook-model-gallery');
+ gallery.setAttribute('aria-label','Explorer les modèles Coalbrook');
+ filters.append(gallery);
  const foot=make('footer','coalbrook-modal-foot');
  const note=make('span','', 'Prix exprimés HT. Remise Coalbrook existante conservée dans le calcul du projet.');
  const add=make('button','coalbrook-add','Ajouter au projet');add.type='button';foot.append(note,add);body.append(foot);
@@ -86,6 +89,26 @@ function show(rows,roomId,onAdd,initial){
    for(const item of models){const opt=make('option');opt.value=T.base(item);opt.textContent=(item.designation||'Article')+' · '+T.base(item);model.append(opt)}
    if(last&&models.some(p=>T.base(p)===last))model.value=last;
   }
+  // Galassia-style model exploration: selectable photo tiles by model.
+  // These are only previews; the exact finish is selected separately below.
+  gallery.replaceChildren();
+  const previewModels=models.slice(0,64);
+  for(const item of previewModels){
+   const base=T.base(item);
+   const card=make('button','coalbrook-model-tile');card.type='button';
+   card.dataset.model=base;card.setAttribute('aria-label',(item.designation||base)+' · '+base);
+   card.setAttribute('aria-pressed',model.value===base?'true':'false');
+   const previews=variants(products,base);
+   const exact=previews.find(p=>p.image&&p.imageFinishMatch==='exact');
+   const photo=exact||previews.find(p=>p.image)||null;
+   const frame=make('span','coalbrook-model-tile-photo');
+   if(photo){const img=make('img');img.src=photo.image;img.loading='lazy';img.alt=(item.designation||base)+' · aperçu du modèle';frame.append(img)}
+   else frame.append(make('span','','Photo à compléter'));
+   card.append(frame,make('b','',base),make('small','',(item.designation||'Modèle Coalbrook').slice(0,76)));
+   card.addEventListener('click',()=>{model.value=base;setupDown(4)});
+   gallery.append(card);
+  }
+  if(models.length>64)gallery.append(make('small','coalbrook-more-models',String(models.length-64)+' autres modèles : affinez la catégorie'));
   const variantsForModel=variants(products,model.value);
   const chosenFinish=finish.value;
   finish.replaceChildren();
