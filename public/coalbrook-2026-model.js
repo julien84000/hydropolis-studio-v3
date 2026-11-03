@@ -27,6 +27,7 @@ function classification(p){
  const category=String(p?.category||''),col=String(p?.collection||'');
  const code=refBase.match(/^(DO|DC|BA|ZU)(\d{4})/);
  if(/^(BY\d{4})/.test(ref))return ['Douche & bain','Bay','Receveurs'];
+ if(/^CO(?:12|13|21|30|31)\d/.test(ref)&&/rough|c-box|corps|encastrement/i.test(description+' '+col))return ['Douche & bain','Maestro','Composants'];
  if(/^(LK|DT|DV|SV|FV)\d/.test(ref)||/vanity unit|vanity|meuble|drawer|tall unit/i.test(description)){
   const range=/^DV|^DT|decimal/i.test(refBase+' '+description)?'Decimal':/^SV|shepherd/i.test(refBase+' '+description)?'Shepherd':'Farnolls';
   return ['Mobilier',range,/^FV/.test(ref)?'Modules extra-profonds':'Meubles'];
