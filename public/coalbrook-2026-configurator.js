@@ -114,19 +114,24 @@ function show(rows,roomId,onAdd,initial){
    },{once:true});
    preview.replaceChildren(img,note);return true;
   }
-  if(!renderPhoto(media.src,media.label)){
-   preview.append(make('div','coalbrook-media-pending','Recherche parmi les photos Coalbrook déjà enregistrées…'));
-   if(typeof fetchManufacturerImage==='function')fetchManufacturerImage(p,false,{imageOnly:false}).then(result=>{
+  const displayed=renderPhoto(media.src,media.label);
+  if(!displayed)preview.append(make('div','coalbrook-media-pending','Recherche parmi les photos Coalbrook déjà enregistrées…'));
+  // A previous generic/uncertain cached image is not a definitive match:
+  // show it immediately, but continue looking for an exact official SKU finish.
+  // Never downgrade an exact source photo to an unverified fallback.
+  const needsSearch=!displayed||(!p.image&&media.record?.finishMatch!=='exact');
+  if(needsSearch&&typeof fetchManufacturerImage==='function'){
+   Promise.resolve(fetchManufacturerImage(p,false,{imageOnly:false})).then(result=>{
     if(request!==mediaToken||selection?.reference!==p.reference||!document.contains(preview))return;
-    if(result?.src)renderPhoto(result.src,result.finishMatch==='exact'?
-     'Photo retrouvée · finition exacte':'Photo fabricant · finition à vérifier');
-    else preview.replaceChildren(make('span','','Photo non trouvée pour cette référence.'));
+    if(result?.src&&(!displayed||result.finishMatch==='exact')){
+     renderPhoto(result.src,result.finishMatch==='exact'?
+      'Photo retrouvée · finition exacte':'Photo fabricant · finition à vérifier');
+    }else if(!displayed)preview.replaceChildren(make('span','','Photo non trouvée pour cette référence.'));
    }).catch(()=>{
-    if(request===mediaToken&&document.contains(preview))
-      preview.replaceChildren(make('span','','Photo temporairement indisponible.'));
+    if(!displayed&&request===mediaToken&&document.contains(preview))
+     preview.replaceChildren(make('span','','Photo temporairement indisponible.'));
    });
-   else preview.replaceChildren(make('span','','Photo non identifiée pour cette référence.'));
-  }
+  }else if(!displayed)preview.replaceChildren(make('span','','Photo non identifiée pour cette référence.'));
   view.append(preview);
   const d=make('div','coalbrook-product-description');
   d.append(make('span','coalbrook-breadcrumb',info.hierarchy.join('  /  ')),make('h3','',p.designation||p.originalDescription||p.reference),
