@@ -25,6 +25,7 @@ async function ensureBundled(){
   for(const part of parts){merged.set(part,offset);offset+=part.byteLength}
   const entries=entriesFromStoredZip(merged.buffer);
   if(entries.length!==785)throw Error('Coalbrook 2026 image list incomplete ('+entries.length+')');
+  if(entries.find(x=>x.reference==='ZU3052BN')?.finishMatch!=='exact')throw Error('Maestro ZU3052BN PDF finish metadata invalid');
   await writePhotos(entries);
   return entries.length;
  })().catch(e=>{bundledPromise=null;console.warn('[Coalbrook 2026 PDF images]',e);return 0});
@@ -46,13 +47,12 @@ function request(q){
 }
 async function get(reference){
  const ref=String(reference||'').toUpperCase();
+ // Wait for the full manufacturer ZIP to finish indexing, including its exact-
+ // finish manifest, before returning an older or partially hydrated photo.
+ await ensureBundled();
  if(urls.has(ref))return urls.get(ref);
  const db=await openDb();
- let row=await request(db.transaction(STORE,'readonly').objectStore(STORE).get(ref));
- if(!row?.image){
-  await ensureBundled();
-  row=await request(db.transaction(STORE,'readonly').objectStore(STORE).get(ref));
- }
+ const row=await request(db.transaction(STORE,'readonly').objectStore(STORE).get(ref));
  if(!row?.image)return null;
  const data={src:URL.createObjectURL(row.image),finishMatch:row.finishMatch,
   imageSource:'Photographie du tarif Coalbrook août 2026 · intégrée',reference:ref};
