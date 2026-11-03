@@ -153,9 +153,22 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   await page.locator('#brandRail [data-maker="Coalbrook"]').click();
   await page.locator('#coalbrookLaunch').waitFor({state:'visible',timeout:15000});
   assert.equal(await page.locator('#manufacturerFilter').inputValue(),'Coalbrook');
-  await page.locator('#coalbrookLaunch').click();
+  const explorer=page.locator('#results .coalbrook-explorer-launcher');
+  await explorer.waitFor({state:'visible'});
+  assert.match(await explorer.locator('h3').innerText(),/Explorer les collections Coalbrook/);
+  await explorer.locator('button.coalbrook-explorer-open').click();
   await page.locator('#coalbrookConfig').waitFor();
   assert.match(await page.locator('#coalbrookConfig h2').innerText(),/Coalbrook/);
+  // The collection explorer must expose genuine selectable model-photo cards.
+  const tiles=page.locator('#coalbrookConfig .coalbrook-model-tile');
+  assert.ok(await tiles.count()>0,'Coalbrook model gallery must be present');
+  assert.ok(await tiles.first().locator('.coalbrook-model-tile-photo').count()===1);
+  await page.locator('#coalbrookConfig select[aria-label="01 · Catégorie"]').selectOption('Robinetterie');
+  await page.locator('#coalbrookConfig select[aria-label="02 · Collection"]').selectOption('Domo');
+  await page.locator('#coalbrookConfig select[aria-label="03 · Sous-catégorie"]').selectOption('Lavabo');
+  const selectedModel=await page.locator('#coalbrookConfig .coalbrook-model-tile').first().getAttribute('data-model');
+  await page.locator('#coalbrookConfig .coalbrook-model-tile').first().click();
+  assert.equal(await page.locator('#coalbrookConfig select[aria-label="04 · Article"]').inputValue(),selectedModel);
   await page.locator('#coalbrookConfig .coalbrook-close').click();
   // Product cards must route to the modal rather than silently inserting a
   // raw item lacking its required CO1201 rough-in.
