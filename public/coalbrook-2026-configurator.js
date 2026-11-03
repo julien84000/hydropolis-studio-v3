@@ -99,9 +99,17 @@ function show(rows,roomId,onAdd,initial){
    const row=make('div');row.append(make('dt','',name),make('dd','',value));props.append(row);
   }
   d.append(props);
-  const technical=make('div','coalbrook-technical-alert',info.specificationPages.length?
-   'Dessin coté repéré p. '+info.specificationPages.join(', ')+' dans le PDF fabricant. La fiche PDF individuelle reste à importer.':
-   'Fiche technique à associer depuis le tarif fabricant.');
+  const technical=make('div','coalbrook-technical-alert');
+  const specLink=safeUrl(p.technicalSheetUrl),guideLink=safeUrl(p.installationGuideUrl);
+  if(specLink){
+   const link=make('a','coalbrook-doc-link','Ouvrir la fiche technique PDF officielle');
+   link.href=specLink;link.target='_blank';link.rel='noopener noreferrer';technical.append(link);
+  }else technical.append(make('span','','Fiche PDF individuelle indisponible sur la fiche produit officielle.'));
+  if(guideLink){
+   const guide=make('a','coalbrook-doc-link','Notice d’installation PDF');
+   guide.href=guideLink;guide.target='_blank';guide.rel='noopener noreferrer';technical.append(guide);
+  }
+  if(info.specificationPages.length)technical.append(make('small','', 'Dessins et cotes : pages '+info.specificationPages.join(', ')+' du tarif Coalbrook 2026.'));
   d.append(technical);
   if(p.internalReference){
    const box=make('div','coalbrook-rough');
