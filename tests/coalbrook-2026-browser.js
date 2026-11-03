@@ -186,6 +186,26 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   assert.deepEqual(cardSelection.map(p=>p.reference),['DO1007CP','CO1201']);
   assert.equal(cardSelection[1].accessoryFor,cardSelection[0].id);
 
+  // Browser-local archive ingestion: one exact manufacturer photo must survive
+  // a reload in the isolated test profile (no server or project data changed).
+  const rawJpeg=Buffer.from('/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////2wBDAf//////////////////////////////////////////////////////////////////////////////////////wAARCAAQABADASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAgEAACAQMDBQAAAAAAAAAAAAABAgMABBEFIRIxQWGR/8QAFQEBAQAAAAAAAAAAAAAAAAAAAwT/xAAaEQACAgMAAAAAAAAAAAAAAAAAAQIDEiEx/9oADAMBAAIRAxEAPwBbQpp6kZZsQCiGz4CqqkebnU5dJbrEwFw4TjmgUJ6r1kyZcMBK5RNDExJgoBgAadQ4P12SDOf0hrVrc7rh93drQRuLjXv//Z','base64');
+  const imageName=Buffer.from('photos/DO1007CP.jpg','utf8');
+  const header=Buffer.alloc(30);
+  header.writeUInt32LE(0x04034b50,0);header.writeUInt16LE(20,4);
+  header.writeUInt16LE(0,6);header.writeUInt16LE(0,8);
+  header.writeUInt32LE(rawJpeg.length,18);header.writeUInt32LE(rawJpeg.length,22);
+  header.writeUInt16LE(imageName.length,26);
+  const zip=Buffer.concat([header,imageName,rawJpeg]).toString('base64');
+  const imported=await page.evaluate(async base64=>{
+    const data=Uint8Array.from(atob(base64),x=>x.charCodeAt(0));
+    const count=await window.HydroCoalbrookPdfPhotos.importZip(new File([data],'coalbrook-pdf-photos.zip',{type:'application/zip'}));
+    const photo=await window.HydroCoalbrookPdfPhotos.get('DO1007CP');
+    return {count,src:photo?.src,finishMatch:photo?.finishMatch};
+  },zip);
+  assert.equal(imported.count,1);
+  assert.ok(imported.src.startsWith('blob:'),'Image ZIP not loaded into browser');
+  assert.equal(imported.finishMatch,'exact');
+
   assert.deepEqual(errors.filter(x=>/coalbrook/i.test(x)),[]);
   console.log('Coalbrook Chromium E2E OK: model, finish, HT prices, linked rough-in, exact photo, official PDF');
  }catch(e){console.error(e.stack||e,logs.slice(-1800));process.exitCode=1}
