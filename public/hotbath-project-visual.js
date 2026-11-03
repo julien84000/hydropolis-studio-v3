@@ -16,7 +16,11 @@ function mount(selected,save,refresh){
  let mounted=0;
  root.document.querySelectorAll('#roomsEditor .room-product .room-prod-img > label[data-id]').forEach(label=>{
   const p=byId.get(String(label.dataset.id));if(!p)return;
-  const slot=label.parentElement;
+  // Place Photo / Simuler finition in the product detail column, not inside
+  // the clipped thumbnail (78/124 px). The controls must remain clickable.
+  const imageSlot=label.parentElement;
+  const actions=label.closest('.room-product')?.querySelector('.image-actions');
+  const slot=actions?.parentElement||imageSlot;
   const prior=slot.querySelector('.hotbath-photo-controls');
   if(prior)prior.remove();
   const visual=resolver.view(p);
@@ -80,7 +84,8 @@ function mount(selected,save,refresh){
     };
     group.appendChild(button);
   }
-  holder.append(group,caption);slot.appendChild(holder);
+  holder.append(group,caption);
+  if(actions)actions.before(holder);else slot.appendChild(holder);
   if(img&&visual.simulated){
     img.addEventListener('error',()=>{
       if(!resolver.isSimulation(p))return;
