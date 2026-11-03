@@ -163,7 +163,13 @@ function attach(){
   const roomId=document.querySelector('#targetRoom')?.value||state.rooms[0]?.id||'';
   const items=catalogIndex.maker('Coalbrook');
   show(items,roomId,(main,rough,room)=>{
-   const parent=createSelectedProductRecord({...main,vat:'HT'},room);
+   // The source catalogue totalPrice already includes the optional internal body.
+   // A linked rough-in must therefore be excluded from the parent line, otherwise
+   // it would be charged twice in the project quotation.
+   const parent=createSelectedProductRecord({...main,vat:'HT',
+    totalPrice:Number(main.price),internalPrice:0,
+    coalbrookConfiguration:{reference:main.reference,finish:main.finishCode||'',roughIn:rough?.reference||''}
+   },room);
    if(!parent)throw Error('Référence principale introuvable.');
    const records=[parent];
    if(rough){
