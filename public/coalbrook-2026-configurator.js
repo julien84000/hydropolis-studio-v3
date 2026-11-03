@@ -137,7 +137,8 @@ function show(rows,roomId,onAdd,initial){
   }
   d.append(props);
   const technical=make('div','coalbrook-technical-alert');
-  const specLink=safeUrl(p.technicalSheetUrl),guideLink=safeUrl(p.installationGuideUrl);
+  const previousDocs=coalbrookPreviousMedia(p);
+  const specLink=safeUrl(p.technicalSheetUrl||previousDocs?.technicalSheetUrl),guideLink=safeUrl(p.installationGuideUrl||previousDocs?.installationGuideUrl);
   if(specLink){
    const link=make('a','coalbrook-doc-link','Ouvrir la fiche technique PDF officielle');
    link.href=specLink;link.target='_blank';link.rel='noopener noreferrer';technical.append(link);
