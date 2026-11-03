@@ -61,6 +61,20 @@ function apply(rows){
  }
  return count;
 }
+// The original manufacturer-only tariff index must remain unchanged because
+// older official guides use it for cross-brand and supplier-tree parity.
+function extendTariffIndex(index,rows){
+ const priced=new Map(index.get('Ray')||[]);
+ for(const p of rows||[]){
+  if(p?.manufacturer!=='Hotbath'||!/^(?:RARH50-[123]EXT\.|RARV135-[123]EXT\.|RAAR\.)/.test(String(p.reference||'')))continue;
+  const key=baseCode(p).toUpperCase();
+  const group=priced.get(key)||[];
+  if(!group.some(x=>x.reference===p.reference))group.push(p);
+  priced.set(key,group);
+ }
+ index.set('Ray',priced);
+ return index;
+}
 function checkPrice(rows){
  const missing=[],mismatches=[];
  for(const [model,tariff] of Object.entries(tariffs)){
@@ -79,5 +93,5 @@ function checkPrice(rows){
  }
  return {missing,mismatches};
 }
-return {models,finishes,tariffs,common,specification,media,apply,checkPrice,baseCode};
+return {models,finishes,tariffs,common,specification,media,apply,checkPrice,baseCode,extendTariffIndex};
 });
