@@ -140,6 +140,39 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
 
 
   
+  // Regression: real brand rail selection never emits select.change, but the
+  // dedicated Coalbrook CTA must become visible after catalogue rendering.
+  await page.evaluate(()=>{
+    document.querySelector('#coalbrookConfig .coalbrook-close')?.click();
+    showView('catalog');
+    const mf=document.querySelector('#manufacturerFilter');
+    mf.value='';
+    mf.dispatchEvent(new Event('change'));
+  });
+  await page.locator('#brandRail [data-maker="Coalbrook"]').waitFor();
+  await page.locator('#brandRail [data-maker="Coalbrook"]').click();
+  await page.locator('#coalbrookLaunch').waitFor({state:'visible',timeout:15000});
+  assert.equal(await page.locator('#manufacturerFilter').inputValue(),'Coalbrook');
+  await page.locator('#coalbrookLaunch').click();
+  await page.locator('#coalbrookConfig').waitFor();
+  assert.match(await page.locator('#coalbrookConfig h2').innerText(),/Coalbrook/);
+  await page.locator('#coalbrookConfig .coalbrook-close').click();
+  // Product cards must route to the modal rather than silently inserting a
+  // raw item lacking its required CO1201 rough-in.
+  const countBeforeCard=await page.evaluate(()=>state.selected.length);
+  await page.evaluate(()=>{
+    const item=CATALOG.find(p=>p.manufacturer==='Coalbrook'&&p.reference==='DO1007CP');
+    if(!item)throw Error('DO1007CP not loaded');
+    addCatalogProduct(item.reference,state.rooms[0].id,productKey(item));
+  });
+  await page.locator('#coalbrookConfig').waitFor();
+  assert.equal(await page.locator('.coalbrook-reference').innerText(),'DO1007CP');
+  assert.equal(await page.evaluate(()=>state.selected.length),countBeforeCard,'Card incorrectly bypassed Coalbrook configurator');
+  await page.locator('#coalbrookConfig .coalbrook-add').click();
+  const cardSelection=await page.evaluate(()=>state.selected.slice(-2).map(p=>({reference:p.reference,id:p.id,accessoryFor:p.accessoryFor||null})));
+  assert.deepEqual(cardSelection.map(p=>p.reference),['DO1007CP','CO1201']);
+  assert.equal(cardSelection[1].accessoryFor,cardSelection[0].id);
+
   assert.deepEqual(errors.filter(x=>/coalbrook/i.test(x)),[]);
   console.log('Coalbrook Chromium E2E OK: model, finish, HT prices, linked rough-in, exact photo, official PDF');
  }catch(e){console.error(e.stack||e,logs.slice(-1800));process.exitCode=1}
