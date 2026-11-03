@@ -1,0 +1,41 @@
+{
+  "source": "Coalbrook official furniture pages, exact SKUs only",
+  "images": {
+    "FV904LSO": {
+      "url": "https://coalbrook-bathrooms.transforms.svdcdn.com/production/images/Furniture-Renders/Farnolls/FV904LSO-WITH-CO9040CW.png?auto=format&fit=crop&crop=focalpoint&q=95&w=800&h=800&fp-x=0.5&fp-y=0.5&dm=1779114206&s=366c1fd7633fff85dddff52e7dec7f1f",
+      "finish": "Smoked Oak",
+      "manufacturerUrl": "https://coalbrookuk.co.uk/furniture/farnolls/farnolls-cloakroom-vanity-unit-lefthand",
+      "illustratedWith": "CO9040CW"
+    },
+    "FV904RSO": {
+      "url": "https://coalbrook-bathrooms.transforms.svdcdn.com/production/images/Furniture-Renders/Farnolls/FV904RSO-WITH-CO9041CW.png?auto=format&fit=crop&crop=focalpoint&q=95&w=800&h=800&fp-x=0.5&fp-y=0.5&dm=1779113773&s=ef57330363a19208e7f352add00a9edc",
+      "finish": "Smoked Oak",
+      "manufacturerUrl": "https://coalbrookuk.co.uk/furniture/farnolls/farnolls-cloakroom-vanity-unit-righthand",
+      "illustratedWith": "CO9041CW"
+    },
+    "FV9050SO": {
+      "url": "https://coalbrook-bathrooms.transforms.svdcdn.com/production/images/Furniture-Renders/Farnolls/FV9050SO-WITH-CO9050CW.png?auto=format&fit=crop&crop=focalpoint&q=95&w=800&h=800&fp-x=0.5&fp-y=0.5&dm=1780324853&s=3a4520fffd45aef4a6abfc2efeed427e",
+      "finish": "Smoked Oak",
+      "manufacturerUrl": "https://coalbrookuk.co.uk/furniture/farnolls/farnolls-500mm-short-projection-vanity-unit",
+      "illustratedWith": "CO9050CW"
+    },
+    "FV9060SO": {
+      "url": "https://coalbrook-bathrooms.transforms.svdcdn.com/production/images/Furniture-Renders/Farnolls/FV9060SO-WITH-CO9060CW.png?auto=format&fit=crop&crop=focalpoint&q=95&w=800&h=800&fp-x=0.5&fp-y=0.5&dm=1780324875&s=7b4b0338b56dab04a6dc7e595f33f9e5",
+      "finish": "Smoked Oak",
+      "manufacturerUrl": "https://coalbrookuk.co.uk/furniture/farnolls/farnolls-600mm-vanity-unit",
+      "illustratedWith": "CO9060CW"
+    },
+    "FV9080SO": {
+      "url": "https://coalbrook-bathrooms.transforms.svdcdn.com/production/images/Furniture-Renders/Farnolls/FV9080SO-WITH-CO9080CW.png?auto=format&fit=crop&crop=focalpoint&q=95&w=800&h=800&fp-x=0.5&fp-y=0.5&dm=1780324888&s=e9f7a7296698699644bde859a35cfa59",
+      "finish": "Smoked Oak",
+      "manufacturerUrl": "https://coalbrookuk.co.uk/furniture/farnolls/farnolls-800mm-vanity-unit",
+      "illustratedWith": "CO9080CW"
+    },
+    "FV9100SO": {
+      "url": "https://coalbrook-bathrooms.transforms.svdcdn.com/production/images/Furniture-Renders/Farnolls/FV9100SO-WITH-CO9100CW.png?auto=format&fit=crop&crop=focalpoint&q=95&w=800&h=800&fp-x=0.5&fp-y=0.5&dm=1780324899&s=01a96ce68f7809aa656a838600b1d813",
+      "finish": "Smoked Oak",
+      "manufacturerUrl": "https://coalbrookuk.co.uk/furniture/farnolls/farnolls-1000mm-vanity-unit",
+      "illustratedWith": "CO9100CW"
+    }
+  }
+}

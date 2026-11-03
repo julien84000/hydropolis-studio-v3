@@ -1,0 +1,53 @@
+{
+  "source": "Coalbrook official Shepherd furniture product variants (exact SKU only)",
+  "images": {
+    "SV904LDO": {
+      "url": "https://coalbrook-bathrooms.transforms.svdcdn.com/production/images/Furniture-Renders/Shepherd/SV904LDO-WITH-CO9041CW.png?auto=format&fit=crop&crop=focalpoint&q=95&w=800&h=800&fp-x=0.5&fp-y=0.5&dm=1779114159&s=5fbeee1dce537a4e36950b43cf8f0f58",
+      "finish": "Deep Oak",
+      "manufacturerUrl": "https://coalbrookuk.co.uk/furniture/shepherd/shepherd-cloakroom-vanity-unit-lefthand",
+      "illustratedWith": "CO9041CW"
+    },
+    "SV904RDO": {
+      "url": "https://coalbrook-bathrooms.transforms.svdcdn.com/production/images/Furniture-Renders/Shepherd/SV904RDO-WITH-CO9041CW.png?auto=format&fit=crop&crop=focalpoint&q=95&w=800&h=800&fp-x=0.5&fp-y=0.5&dm=1779114161&s=1c5c54d5257e17731e599acac7197832",
+      "finish": "Deep Oak",
+      "manufacturerUrl": "https://coalbrookuk.co.uk/furniture/shepherd/shepherd-cloakroom-vanity-unit-righthand",
+      "illustratedWith": "CO9041CW"
+    },
+    "SV9050DO": {
+      "url": "https://coalbrook-bathrooms.transforms.svdcdn.com/production/images/Furniture-Renders/Shepherd/SV9050DO-WITH-CO9050CW.png?auto=format&fit=crop&crop=focalpoint&q=95&w=800&h=800&fp-x=0.5&fp-y=0.5&dm=1780324369&s=1b0f39e60f9f8330e6281620f58a0be0",
+      "finish": "Deep Oak",
+      "manufacturerUrl": "https://coalbrookuk.co.uk/furniture/shepherd/shepherd-500mm-short-projection-vanity-unit",
+      "illustratedWith": "CO9050CW"
+    },
+    "SV9060DO": {
+      "url": "https://coalbrook-bathrooms.transforms.svdcdn.com/production/images/SV9060DO-WITH-CO9060CW.png?auto=format&fit=crop&crop=focalpoint&q=95&w=800&h=800&fp-x=0.5&fp-y=0.5&dm=1783691829&s=535dad461404f3eca2c1ae7c057e86d6",
+      "finish": "Deep Oak",
+      "manufacturerUrl": "https://coalbrookuk.co.uk/furniture/shepherd/shepherd-600mm-vanity-unit",
+      "illustratedWith": "CO9060CW"
+    },
+    "SV9080DO": {
+      "url": "https://coalbrook-bathrooms.transforms.svdcdn.com/production/images/SV9080DO-WITH-CO9080CW.png?auto=format&fit=crop&crop=focalpoint&q=95&w=800&h=800&fp-x=0.5&fp-y=0.5&dm=1784632179&s=f6106b285c628a05ee530a444b121ea1",
+      "finish": "Deep Oak",
+      "manufacturerUrl": "https://coalbrookuk.co.uk/furniture/shepherd/shepherd-800mm-vanity-unit",
+      "illustratedWith": "CO9080CW"
+    },
+    "SV9080LO": {
+      "url": "https://coalbrook-bathrooms.transforms.svdcdn.com/production/images/SV9080LO-WITH-CO9080CW.png?auto=format&fit=crop&crop=focalpoint&q=95&w=800&h=800&fp-x=0.5&fp-y=0.5&dm=1784632270&s=4e8c6eb311edffbe73c3315159979a2f",
+      "finish": "Light Oak",
+      "manufacturerUrl": "https://coalbrookuk.co.uk/furniture/shepherd/shepherd-800mm-vanity-unit",
+      "illustratedWith": "CO9080CW"
+    },
+    "SV9100DO": {
+      "url": "https://coalbrook-bathrooms.transforms.svdcdn.com/production/images/Furniture-Renders/Shepherd/SV9100DO-WITH-CO9100CW.png?auto=format&fit=crop&crop=focalpoint&q=95&w=800&h=800&fp-x=0.5&fp-y=0.5&dm=1780324672&s=cc979fd20f11c850ca0526cf7275d50b",
+      "finish": "Deep Oak",
+      "manufacturerUrl": "https://coalbrookuk.co.uk/furniture/shepherd/shepherd-1000mm-vanity-unit",
+      "illustratedWith": "CO9100CW"
+    },
+    "SV9120DO": {
+      "url": "https://coalbrook-bathrooms.transforms.svdcdn.com/production/images/Furniture-Renders/Shepherd/SV9120DO-WITH-CO9120CW.png?auto=format&fit=crop&crop=focalpoint&q=95&w=800&h=800&fp-x=0.5&fp-y=0.5&dm=1780324756&s=64dce177627f529ded7180821c86e187",
+      "finish": "Deep Oak",
+      "manufacturerUrl": "https://coalbrookuk.co.uk/furniture/shepherd/shepherd-1200mm-vanity-unit",
+      "illustratedWith": "CO9120CW"
+    }
+  }
+}

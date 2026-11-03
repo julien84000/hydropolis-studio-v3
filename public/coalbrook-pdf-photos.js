@@ -1,10 +1,37 @@
-/* Optional, local-only Coalbrook 2026 photograph import from the user's own PDF extract.
-   Source images remain on this browser (IndexedDB), never posted to Hydropolis
-   or attached to a cloud project. Archive must be STORE-only to avoid CDN dependencies. */
+/* Coalbrook August 2026 official brochure photo bundle.
+   Shipped with Hydropolis as eight static binary pieces; automatically indexed in
+   this browser. Photos are keyed to an exact source SKU, never guessed from a
+   neighbouring collection. No login or manual ZIP upload is required. */
 (function(root){
 'use strict';
 const DB='hydropolis-coalbrook-pdf-photos-v1',STORE='photos';
-let pending=null;const urls=new Map();
+let pending=null;const urls=new Map();let bundledPromise=null;
+const BUNDLE_KEY='__coalbrook_2026_bundle_v1__',BUNDLE_PARTS=8,BUNDLE_BYTES=5084838;
+function bundlePath(i){return '/coalbrook-2026-photo-data/part-'+String(i).padStart(2,'0')+'.bin'}
+async function ensureBundled(){
+ if(bundledPromise)return bundledPromise;
+ bundledPromise=(async()=>{
+  const db=await openDb();
+  const present=await request(db.transaction(STORE,'readonly').objectStore(STORE).get(BUNDLE_KEY));
+  if(present?.complete&&present?.count===785)return present.count;
+  const parts=await Promise.all(Array.from({length:BUNDLE_PARTS},async(_,i)=>{
+   const res=await fetch(bundlePath(i),{cache:'force-cache'});
+   if(!res.ok)throw Error('Photo bundle part '+i+' HTTP '+res.status);
+   return new Uint8Array(await res.arrayBuffer());
+  }));
+  const size=parts.reduce((sum,part)=>sum+part.byteLength,0);
+  if(size!==BUNDLE_BYTES)throw Error('Coalbrook 2026 image bundle corrupted ('+size+')');
+  const merged=new Uint8Array(size);let offset=0;
+  for(const part of parts){merged.set(part,offset);offset+=part.byteLength}
+  const entries=entriesFromStoredZip(merged.buffer);
+  if(entries.length!==785)throw Error('Coalbrook 2026 image list incomplete ('+entries.length+')');
+  if(entries.find(x=>x.reference==='ZU3052BN')?.finishMatch!=='exact')throw Error('Maestro ZU3052BN PDF finish metadata invalid');
+  await writePhotos(entries);
+  return entries.length;
+ })().catch(e=>{bundledPromise=null;console.warn('[Coalbrook 2026 PDF images]',e);return 0});
+ return bundledPromise;
+}
+
 function openDb(){
  if(pending)return pending;
  pending=new Promise((resolve,reject)=>{
@@ -20,11 +47,15 @@ function request(q){
 }
 async function get(reference){
  const ref=String(reference||'').toUpperCase();
+ // Wait for the full manufacturer ZIP to finish indexing, including its exact-
+ // finish manifest, before returning an older or partially hydrated photo.
+ await ensureBundled();
  if(urls.has(ref))return urls.get(ref);
- const db=await openDb(),row=await request(db.transaction(STORE,'readonly').objectStore(STORE).get(ref));
+ const db=await openDb();
+ const row=await request(db.transaction(STORE,'readonly').objectStore(STORE).get(ref));
  if(!row?.image)return null;
  const data={src:URL.createObjectURL(row.image),finishMatch:row.finishMatch,
-  imageSource:'Photo extraite du tarif Coalbrook août 2026 · local',reference:ref};
+  imageSource:'Photographie du tarif Coalbrook août 2026 · intégrée',reference:ref};
  urls.set(ref,data);return data;
 }
 function entriesFromStoredZip(buffer){
@@ -52,20 +83,23 @@ function entriesFromStoredZip(buffer){
  if(!images.length||images.length>2000)throw Error('Aucune photo Coalbrook reconnue dans le ZIP.');
  const manifest=other[0]?JSON.parse(other[0]):{};
  const uncertain=new Set((manifest.excludedDuplicates||[]).map(x=>x.ref));
- return images.map(x=>({...x,finishMatch:uncertain.has(x.reference)?'model-only':'exact'}));
+ return images.map(x=>({...x,finishMatch:uncertain.has(x.reference)||manifest.images?.[x.reference]?.finishVerified!==true?'model-only':'exact'}));
 }
-async function importZip(file){
- if(!file)throw Error('Aucun fichier sélectionné.');
- const entries=entriesFromStoredZip(await file.arrayBuffer());
+async function writePhotos(entries){
  const db=await openDb();
  await new Promise((resolve,reject)=>{
   const tx=db.transaction(STORE,'readwrite'),store=tx.objectStore(STORE);
   tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error||new Error('Enregistrement local impossible'));
   tx.onabort=()=>reject(tx.error||new Error('Import interrompu'));
   entries.forEach(e=>store.put(e));
+  store.put({reference:BUNDLE_KEY,complete:true,count:entries.length});
  });
  urls.forEach(v=>URL.revokeObjectURL(v.src));urls.clear();
  return entries.length;
+}
+async function importZip(file){
+ if(!file)throw Error('Aucun fichier sélectionné.');
+ return writePhotos(entriesFromStoredZip(await file.arrayBuffer()));
 }
 function chooseZip(){
  return new Promise((resolve,reject)=>{
@@ -78,5 +112,5 @@ function chooseZip(){
   input.click();
  });
 }
-root.HydroCoalbrookPdfPhotos={get,importZip,chooseZip};
+root.HydroCoalbrookPdfPhotos={get,importZip,chooseZip,ensureBundled,bundlePath};
 })(window);

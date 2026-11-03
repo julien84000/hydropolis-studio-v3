@@ -186,6 +186,64 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   assert.deepEqual(cardSelection.map(p=>p.reference),['DO1007CP','CO1201']);
   assert.equal(cardSelection[1].accessoryFor,cardSelection[0].id);
 
+  // The 785 real August 2026 brochure photos are now shipped with the app:
+  // no user-supplied ZIP or manual action is necessary.
+  const photoCount=await page.evaluate(()=>window.HydroCoalbrookPdfPhotos.ensureBundled());
+  assert.equal(photoCount,785,'Deployed PDF photo archive incomplete');
+  const maestroPhoto=await page.evaluate(()=>window.HydroCoalbrookPdfPhotos.get('ZU3052BN'));
+  assert.ok(maestroPhoto?.src?.startsWith('blob:'),'Missing exact Maestro ZU3052BN PDF photograph');
+  assert.equal(maestroPhoto.finishMatch,'exact');
+
+  // Exact render URLs scraped from Coalbrook's own furniture product variants.
+  const furniture=await page.evaluate(async()=>{
+    const service=window.HydroCoalbrookFurnitureMedia;
+    const count=await service.ready;
+    return {count,decimal:service.getSync('DV9120GG'),shepherd:service.getSync('SV9060DO'),
+      farnolls:service.getSync('FV906ESO'),tall:service.getSync('FT916RSO'),
+      lightOak:service.getSync('SV9060LO'),
+      paths:['ST916LDO','FT916RSO','FV906ESO','DV9120GG'].map(reference=>{
+        const p={reference,manufacturer:'Coalbrook'};
+        return {reference,base:window.HydroCoalbrook2026.base(p),group:window.HydroCoalbrook2026.classification(p)};
+      })};
+  });
+  assert.ok(furniture.count>=80,'Coalbrook official furniture photo shards did not load');
+  for(const property of ['decimal','shepherd','farnolls','tall'])
+    assert.ok(furniture[property]?.src?.startsWith('https://coalbrook-bathrooms.transforms.svdcdn.com/'),
+      'Manufacturer-verified furniture photo unavailable: '+property);
+  assert.equal(furniture.decimal.finish,'Gauge Green');
+  assert.equal(furniture.shepherd.finish,'Deep Oak');
+  assert.equal(furniture.lightOak,null,'Mismatched Light Oak file must not be mislabelled exact');
+  assert.deepEqual(furniture.paths.map(p=>p.group[0]),['Mobilier','Mobilier','Mobilier','Mobilier']);
+  assert.equal(furniture.paths[0].group[1],'Shepherd');
+  assert.equal(furniture.paths[1].group[1],'Farnolls');
+  assert.equal(furniture.paths[2].group[2],'Modules extra-profonds');
+  assert.equal(furniture.paths[0].base,'ST916L');
+  assert.equal(furniture.paths[2].base,'FV906E');
+  const maestroExpected=await page.evaluate(()=>{
+    const c=window.HydroCoalbrookConfigurator;
+    return ['ZU3052BN','DO3050GM','DC3051CP','BA3053BB','DO3061CP','ZU3062BN','CO3065CP','ZU3005BN']
+     .map(reference=>({reference,rough:c.mandatoryRoughReference({reference,internalReference:''})}));
+  });
+  assert.deepEqual(maestroExpected.map(x=>x.rough),['CO3052','CO3050','CO3051','CO3053','CO3061','CO3062','CO3064','']);
+  const maestroRows=rows.filter(p=>['ZU3052BN','CO3052'].includes(p.reference));
+  assert.equal(maestroRows.length,2,'Maestro trim or required rough-in absent from source catalogue');
+  await page.evaluate(rows=>{
+    window.__maestroSelection=null;
+    window.HydroCoalbrookConfigurator.open(rows,'maestro-room',(main,rough)=>{
+      window.__maestroSelection={reference:main.reference,price:Number(main.price),rough:rough?.reference,roughPrice:Number(rough?.price)};
+    },{reference:'ZU3052BN'});
+  },rows);
+  await page.locator('#coalbrookConfig .coalbrook-rough').waitFor();
+  assert.match(await page.locator('#coalbrookConfig .coalbrook-rough').innerText(),/CO3052/);
+  assert.match(await page.locator('#coalbrookConfig .coalbrook-rough').innerText(),/725,00/);
+  await page.waitForFunction(()=>{
+    const el=document.querySelector('#coalbrookConfig .coalbrook-product-media .coalbrook-media-source');
+    return !!el&&/tarif Coalbrook 2026/.test(el.textContent);
+  },{timeout:30000});
+  await page.locator('#coalbrookConfig .coalbrook-add').click();
+  const maestroAdded=await page.evaluate(()=>window.__maestroSelection);
+  assert.deepEqual(maestroAdded,{reference:'ZU3052BN',price:775,rough:'CO3052',roughPrice:950});
+
   // Browser-local archive ingestion: one exact manufacturer photo must survive
   // a reload in the isolated test profile (no server or project data changed).
   const rawJpeg=Buffer.from('/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////2wBDAf//////////////////////////////////////////////////////////////////////////////////////wAARCAAQABADASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAgEAACAQMDBQAAAAAAAAAAAAABAgMABBEFIRIxQWGR/8QAFQEBAQAAAAAAAAAAAAAAAAAAAwT/xAAaEQACAgMAAAAAAAAAAAAAAAAAAQIDEiEx/9oADAMBAAIRAxEAPwBbQpp6kZZsQCiGz4CqqkebnU5dJbrEwFw4TjmgUJ6r1kyZcMBK5RNDExJgoBgAadQ4P12SDOf0hrVrc7rh93drQRuLjXv//Z','base64');
@@ -204,7 +262,8 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   },zip);
   assert.equal(imported.count,1);
   assert.ok(imported.src.startsWith('blob:'),'Image ZIP not loaded into browser');
-  assert.equal(imported.finishMatch,'exact');
+  // A synthetic JPEG lacking the official reference index cannot claim an exact finish.
+  assert.equal(imported.finishMatch,'model-only');
 
   assert.deepEqual(errors.filter(x=>/coalbrook/i.test(x)),[]);
   console.log('Coalbrook Chromium E2E OK: model, finish, HT prices, linked rough-in, exact photo, official PDF');
