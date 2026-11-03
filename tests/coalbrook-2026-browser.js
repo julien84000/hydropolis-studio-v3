@@ -193,6 +193,32 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   const maestroPhoto=await page.evaluate(()=>window.HydroCoalbrookPdfPhotos.get('ZU3052BN'));
   assert.ok(maestroPhoto?.src?.startsWith('blob:'),'Missing exact Maestro ZU3052BN PDF photograph');
   assert.equal(maestroPhoto.finishMatch,'exact');
+
+  // Exact render URLs scraped from Coalbrook's own furniture product variants.
+  const furniture=await page.evaluate(async()=>{
+    const service=window.HydroCoalbrookFurnitureMedia;
+    const count=await service.ready;
+    return {count,decimal:service.getSync('DV9120GG'),shepherd:service.getSync('SV9060DO'),
+      farnolls:service.getSync('FV906ESO'),tall:service.getSync('FT916RSO'),
+      lightOak:service.getSync('SV9060LO'),
+      paths:['ST916LDO','FT916RSO','FV906ESO','DV9120GG'].map(reference=>{
+        const p={reference,manufacturer:'Coalbrook'};
+        return {reference,base:window.HydroCoalbrook2026.base(p),group:window.HydroCoalbrook2026.classification(p)};
+      })};
+  });
+  assert.ok(furniture.count>=80,'Coalbrook official furniture photo shards did not load');
+  for(const property of ['decimal','shepherd','farnolls','tall'])
+    assert.ok(furniture[property]?.src?.startsWith('https://coalbrook-bathrooms.transforms.svdcdn.com/'),
+      'Manufacturer-verified furniture photo unavailable: '+property);
+  assert.equal(furniture.decimal.finish,'Gauge Green');
+  assert.equal(furniture.shepherd.finish,'Deep Oak');
+  assert.equal(furniture.lightOak,null,'Mismatched Light Oak file must not be mislabelled exact');
+  assert.deepEqual(furniture.paths.map(p=>p.group[0]),['Mobilier','Mobilier','Mobilier','Mobilier']);
+  assert.equal(furniture.paths[0].group[1],'Shepherd');
+  assert.equal(furniture.paths[1].group[1],'Farnolls');
+  assert.equal(furniture.paths[2].group[2],'Modules extra-profonds');
+  assert.equal(furniture.paths[0].base,'ST916L');
+  assert.equal(furniture.paths[2].base,'FV906E');
   const maestroExpected=await page.evaluate(()=>{
     const c=window.HydroCoalbrookConfigurator;
     return ['ZU3052BN','DO3050GM','DC3051CP','BA3053BB','DO3061CP','ZU3062BN','CO3065CP','ZU3005BN']
