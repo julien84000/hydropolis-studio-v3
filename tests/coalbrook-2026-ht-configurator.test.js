@@ -94,3 +94,24 @@ test('Configured Coalbrook media and PDF links exist as source records, without 
  assert.match(config,/Ouvrir la fiche technique PDF officielle/);
  assert.match(config,/Notice d’installation PDF/);
 });
+
+test('31 verified 2026 price corrections preserve HT and included body costs without double counting',()=>{
+ const report=JSON.parse(read('public/coalbrook-2026-price-audit.json'));
+ assert.equal(report.vat,'HT');
+ assert.equal(report.corrected,31);
+ assert.equal(report.verifiedAgainstPDF,593);
+ for(const item of report.changes){
+  const row=byRef.get(item.reference);
+  assert.ok(row,'Reference '+item.reference+' must exist');
+  assert.equal(row.price,item.newHT);
+  assert.equal(row.vat,'HT');
+ }
+ const wall=byRef.get('DO1007CP'),body=byRef.get('CO1201');
+ assert.equal(wall.price,228.13);
+ assert.equal(body.price,127.09);
+ assert.equal(wall.totalPrice,355.22);
+ assert.equal(Number((wall.price+body.price).toFixed(2)),wall.totalPrice);
+ const code=read('public/coalbrook-2026-configurator.js');
+ assert.match(code,/totalPrice:Number\(main\.price\),internalPrice:0/);
+ assert.match(code,/child\.accessoryFor=parent\.id/);
+});
