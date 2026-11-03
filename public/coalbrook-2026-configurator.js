@@ -34,6 +34,15 @@ function chooseText(select,items,preserve=true){
 }
 function safeUrl(value){return /^https:\/\//i.test(value||'')?value:''}
 function variants(rows,base){return rows.filter(r=>T.base(r)===base).sort((a,b)=>(a.finishCode||'').localeCompare(b.finishCode||''))}
+// Mandatory Maestro rough-ins: verified on Coalbrook August 2026 PDF pages 174–186.
+function mandatoryRoughReference(p){
+ const code=T.base(p).toUpperCase();
+ if(/^(?:DO|DC|BA|ZU)30(?:5[0-4]|6[12])$/.test(code))return 'CO'+code.slice(-4);
+ if(code==='CO3065')return 'CO3064';
+ return String(p?.internalReference||'');
+}
+function isMaestro(p){return T.classification(p)[1]==='Maestro'||/maestro/i.test(String(p?.designation||''))}
+function roughFor(p,products){const ref=mandatoryRoughReference(p);return {ref,product:ref?products.find(row=>row.reference===ref)||null:null}}
 function groupModels(rows){
  const used=new Map();
  for(const row of rows){
@@ -160,8 +169,8 @@ function show(rows,roomId,onAdd,initial){
  }
  function display(){
   view.replaceChildren();
-  const p=selection,info=p&&T.detail(p),rough=p&&p.internalReference?products.find(x=>x.reference===p.internalReference):null;
-  add.disabled=!p||!!p?.internalReference&&!rough;
+  const p=selection,info=p&&T.detail(p),required=p?roughFor(p,products):{ref:'',product:null},rough=required.product;
+  add.disabled=!p||!!required.ref&&!rough;
   if(!p){view.append(make('p','','Aucun article disponible pour ces filtres.'));return}
   const preview=make('div','coalbrook-product-media');
   const media=coalbrookPreferredMedia(p), request=++mediaToken;
@@ -228,9 +237,9 @@ function show(rows,roomId,onAdd,initial){
   }
   if(info.specificationPages.length)technical.append(make('small','', 'Dessins et cotes : pages '+info.specificationPages.join(', ')+' du tarif Coalbrook 2026.'));
   d.append(technical);
-  if(p.internalReference){
+  if(required.ref){
    const box=make('div','coalbrook-rough');
-   box.append(make('strong','','Corps encastré obligatoire · '+p.internalReference),
+   box.append(make('strong','','Corps encastré obligatoire · '+required.ref),
     make('span','',rough?fmt(Number(rough.price))+' HT · ajouté en ligne liée':'Référence absente du catalogue : ajout bloqué'));
    if(rough)box.append(make('b','', 'Total articles : '+fmt(Number(p.price)+Number(rough.price))+' HT'));
    d.append(box);
@@ -247,8 +256,8 @@ function show(rows,roomId,onAdd,initial){
  add.addEventListener('click',()=>{
   const p=selection;
   if(!p)return;
-  const rough=p.internalReference?products.find(r=>r.reference===p.internalReference):null;
-  if(p.internalReference&&!rough)return;
+  const required=roughFor(p,products),rough=required.product;
+  if(required.ref&&!rough)return;
   if(!onAdd){alert('Aucune salle du projet cible.');return}
   try{onAdd(p,rough,roomId);overlay.remove();dialog=null}
   catch(e){alert('Impossible d’ajouter la sélection : '+(e.message||e))}
@@ -274,7 +283,7 @@ function commitCoalbrookSelection(main,rough,room){
  // The source catalogue totalPrice already includes the rough-in, so the
  // linked line must be subtracted from the parent to avoid double billing.
  const parent=createSelectedProductRecord({...main,vat:'HT',
-  totalPrice:Number(main.price),internalPrice:0,
+  totalPrice:Number(main.price),internalPrice:0,internalReference:'',
   coalbrookConfiguration:{reference:main.reference,finish:main.finishCode||'',roughIn:rough?.reference||''}
  },room);
  if(!parent)throw Error('Référence principale introuvable.');
@@ -329,5 +338,5 @@ function attach(){
  update();
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',attach,{once:true});else attach();
-window.HydroCoalbrookConfigurator={open:show,openProduct:(product,roomId)=>launch(product,roomId),launch};
+window.HydroCoalbrookConfigurator={open:show,openProduct:(product,roomId)=>launch(product,roomId),launch,mandatoryRoughReference};
 })();
