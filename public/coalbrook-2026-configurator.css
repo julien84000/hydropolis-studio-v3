@@ -34,3 +34,7 @@ body .coalbrook-launch[hidden]{display:none!important}
 @media(max-width:760px){.coalbrook-modal-grid{grid-template-columns:1fr;padding:15px}.coalbrook-modal-head{padding:17px}.coalbrook-product-card{grid-template-columns:1fr}.coalbrook-modal-foot{flex-direction:column;align-items:stretch;padding:15px}.coalbrook-product-media{min-height:165px}.coalbrook-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:450px){.coalbrook-fields{grid-template-columns:1fr}.coalbrook-modal-head h2{font-size:23px}}
 @media print{.coalbrook-modal-overlay,.coalbrook-launch{display:none!important}}
+
+.coalbrook-technical-alert{display:grid;gap:8px}
+.coalbrook-technical-alert .coalbrook-doc-link{display:block;color:#76562c;font-weight:750;text-decoration:underline;text-underline-offset:3px;font-size:11px}
+.coalbrook-technical-alert small{display:block;color:#79848d;font-size:9px;line-height:1.4}
