@@ -41,12 +41,13 @@ function sameModel(url,modelCode){
  }
  if(/hotbath\.it$/i.test(u.hostname)){
   if(!/\/documents\/+ProdCateg\/\d+\//i.test(u.pathname))return false;
-  if(!clean(stem).startsWith(m))return false;
-  const tail=clean(stem).slice(m.length);
-  return !tail||/^(?:[A-Z]{2,3}(?:0[1-9])?|0?[1-9]|[0-9]{2}|LT|L|R)/.test(tail);
+  const id=String(modelCode).toUpperCase();
+  return stem.toUpperCase()===id||stem.toUpperCase().startsWith(id+'_')||
+    stem.toUpperCase().startsWith(id+'-');
  }
  if(/edilportale\.com$/i.test(u.hostname))
-  return /^B_HOTBATH_/i.test(stem)&&clean(stem).includes(m);
+  return /^B_HOTBATH_/i.test(stem)&&
+    stem.toUpperCase().includes('-'+String(modelCode).toUpperCase()+'_');
  return false;
 }
 function registerMedia(json){
