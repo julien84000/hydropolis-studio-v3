@@ -36,6 +36,6 @@ test('UI integration is additive and preserves manufacturer catalogue scripts',(
   'hotbath-galassia-configurator.js','v12-workspace.js','v12-dossier.js'
  ])assert.ok(html.includes(filename+'?v=__APP_VERSION__'),filename);
  const pkg=JSON.parse(read('package.json'));
- assert.equal(pkg.version,'11.64.49');
+ assert.match(pkg.version,/^11\.64\.(?:49|50)$/);
  assert.ok(html.includes('Hydropolis Studio V__APP_VERSION__'));
 });
