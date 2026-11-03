@@ -31,11 +31,6 @@ function tariffIndex(rows){
    const collections=new Set(String(p.collection||'').split('/').map(label=>
      ORDER.find(official=>clean(official)===clean(label))||''
    ).filter(Boolean));
-   // RAY articles are imported as "Sparky" in the supplier price list.
-   // Expose them under the official RAY taxonomy without rewriting source rows.
-   // Concealed supports remain separate and never become selectable models.
-   if(/^(?:RARH50-[123]EXT\.|RARV135-[123]EXT\.|RAAR\.)/.test(String(p.reference||'')))
-     collections.add('Ray');
    for(const col of collections){
      const collection=index.get(col)||new Map();
      if(!index.has(col))index.set(col,collection);
