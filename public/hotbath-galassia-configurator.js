@@ -20,6 +20,8 @@ function totalFor(p,rough){
 }
 function open(rows,roomId,onAdd){
  const supplier=root?.HydroHotbathOfficialGuide,rough=root?.HydroHotbathRoughIn;
+ const ray=root?.HydroHotbathRay2026;
+ ray?.apply(rows);
  if(!supplier||!rough||!Array.isArray(rows)||!rows.some(r=>r?.manufacturer==='Hotbath')||typeof onAdd!=='function')
   return Promise.reject(new Error('Données du configurateur Hotbath indisponibles'));
  const linkAudit=rough.linkCatalog(rows);
@@ -69,6 +71,10 @@ function open(rows,roomId,onAdd){
    return validUrl(item.image);
   }
   function knownImage(c,m){
+   if(c==='Ray'){
+    const source=ray?.specification(m);
+    if(source?.photo)return source.photo;
+   }
    const key=mediaKey(c,m),checked=images.get(key)?.image||'';
    const contemporary=supplier.photo({base:m},c,media)||'';
    return italianPhoto(c,m)||validUrl(checked)||validUrl(contemporary)||supplementalPhoto(c,m)||'';
@@ -82,6 +88,14 @@ function open(rows,roomId,onAdd){
   }
   function selectedImage(m,p){
    const variant=images.get(mediaKey(collection,m,p?.finishCode||''));
+   // RAY is part of the supplier 'Sparky' tariff, and has six verified
+   // manufacturer model photos. Different finish imagery is illustrative.
+   if(collection==='Ray'){
+    if(variant?.scope==='exact'&&validUrl(variant.image))
+      return {url:variant.image,caption:'Photo fabricant · finition exacte '+p.finishCode};
+    const manufacturer=ray?.media(p);
+    if(manufacturer?.src)return {url:manufacturer.src,caption:manufacturer.caption};
+   }
    if(variant?.scope==='exact'&&validUrl(variant.image))
     return {url:variant.image,caption:'Photo fabricant de la finition '+(p?.finishCode||'')};
    const italianUrl=italianPhoto(collection,m);
@@ -204,6 +218,14 @@ function open(rows,roomId,onAdd){
    }
    if(!m.variants.some(x=>x.reference===ref))ref=m.variants[0].reference;
    const p=m.variants.find(v=>v.reference===ref)||m.variants[0],r=rough.resolve(p);
+   const raySpec=collection==='Ray'?ray?.specification(p):null;
+   const rayDetails=raySpec?'<section class="hotbath-ray-tech"><b>Caractéristiques techniques</b>'+
+     '<span>'+(raySpec.orientation==='horizontal'?'Horizontal':'Vertical')+' · '+raySpec.elements+
+     ' élément(s) · '+raySpec.powerW+' W · '+raySpec.voltage+' · '+raySpec.ip+'</span>'+
+     '<span>Longueur élément : '+raySpec.barLengthMm+' mm · câble '+raySpec.cableLengthMm+' mm</span>'+
+     '<span>Support obligatoire : '+esc(raySpec.base)+' · tarifé séparément</span>'+
+     (raySpec.technicalSheetUrl?'<a target="_blank" rel="noopener noreferrer" href="'+esc(raySpec.technicalSheetUrl)+'">Fiche technique officielle PDF</a>':'')+
+     '</section>':'';
    const negotiatedDiscount=rough.purchaseDiscount(p,collection);
    const negotiatedCost=totalFor(p,r)*(1-negotiatedDiscount/100);
    const photo=selectedImage(m.base,p);
@@ -233,7 +255,7 @@ function open(rows,roomId,onAdd){
       priceLines+'<div><span>Total public HT</span><b>'+money(totalFor(p,r))+'</b></div>'+
       '<div><span>Remise d’achat fournisseur</span><b>'+esc(negotiatedDiscount===59.5?'50 % + 10 % + 10 % (59,5 %)':'55 %')+'</b></div>'+
       '<div><span>Coût d’achat théorique HT</span><b>'+money(negotiatedCost)+'</b></div></div>'+
-    bodyMarkup+
+    bodyMarkup+rayDetails+
     '<div class="galassia-docs"><a href="'+esc(italian?.byCollection?.[collection]?.[m.base]?.officialProductPage||'https://hotbath.it/fr/prods/')+'" target="_blank" rel="noopener noreferrer">Voir le modèle sur Hotbath Italie</a>'+
     '<span>Tarifs : base importée 2026 · référence sans suffixe IT.</span></div>'+
     '<button type="button" class="galassia-add hotbath-add"'+(busy||r.required&&!r.verified?' disabled':'')+'>'+
