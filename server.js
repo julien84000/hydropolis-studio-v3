@@ -94,6 +94,7 @@ require("./catalano-product-media-server")(app);
 require("./dornbracht-media-server")(app);
 require("./amphora-media-server")(app);
 require("./radaway-media-server")(app);
+require("./coalbrook-pdf-media-server")(app);
 app.use(express.static(path.join(__dirname,"public")));
 require("./tariff-server")(app);
 
