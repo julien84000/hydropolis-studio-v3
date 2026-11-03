@@ -77,8 +77,10 @@ function open(rows,roomId,onAdd){
       const rayPhoto=ray?.specification(m)?.photo;
       if(rayPhoto)urls.push(rayPhoto);
     }
-    const key=mediaKey(c,m);
-    urls.push(italianPhoto(c,m),validUrl(images.get(key)?.image||''));
+    const key=mediaKey(c,m),checked=images.get(key)?.image||'';
+    // Maintain the legacy Italian-first priority while validating that the
+    // resulting asset actually depicts the selected manufacturer model.
+    urls.push(italianPhoto(c,m)||validUrl(checked));
     urls.push(validUrl(supplier.photo({base:m},c,media)||''));
     urls.push(supplementalPhoto(c,m));
     const saved=verified?.candidates({manufacturer:'Hotbath',collection:c,base:m})||[];
