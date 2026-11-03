@@ -8,7 +8,23 @@ const $=(q,r=document)=>r.querySelector(q);
 const make=(tag,cls,txt)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(txt!==undefined)e.textContent=txt;return e};
 const fmt=n=>new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'}).format(n);
 const allowed=(str,list)=>list.includes(str)?str:(list[0]||'');
-let dialog=null,selection=null;
+let dialog=null,selection=null,mediaToken=0;
+// Preserve manufacturer photos already recovered by the V11 resolver/cache.
+// An old generic image must never be described as an exact finish.
+function coalbrookPreviousMedia(p){
+ if(typeof cachedManufacturerImage!=='function')return null;
+ try{return cachedManufacturerImage(p)||null}catch(_){return null}
+}
+function coalbrookPreferredMedia(p){
+ const previous=coalbrookPreviousMedia(p);
+ if(previous?.src&&previous.finishMatch==='exact')
+   return {src:previous.src,label:'Photo Coalbrook déjà enregistrée · finition exacte',record:previous};
+ if(p?.image&&/^(https?:|\/)/i.test(p.image))
+   return {src:p.image,label:'Photo officielle · finition '+T.finish(p),record:previous};
+ if(previous?.src)
+   return {src:previous.src,label:'Photo enregistrée · finition à vérifier',record:previous};
+ return {src:'',label:'Photo à rechercher',record:previous};
+}
 function chooseText(select,items,preserve=true){
  const value=preserve?select.value:'';
  select.replaceChildren();
@@ -86,10 +102,31 @@ function show(rows,roomId,onAdd,initial){
   add.disabled=!p||!!p?.internalReference&&!rough;
   if(!p){view.append(make('p','','Aucun article disponible pour ces filtres.'));return}
   const preview=make('div','coalbrook-product-media');
-  if(p.image&&/^(https?:|\/)/.test(p.image)){
-   const img=make('img');img.src=p.image;img.loading='lazy';img.alt=(p.designation||'Coalbrook')+' · '+T.finish(p);
-   img.addEventListener('error',()=>{preview.replaceChildren(make('span','','Visuel fabricant à associer à cette référence.'))},{once:true});preview.append(img);
-  }else preview.append(make('div','coalbrook-media-pending','Visuel fabricant non encore associé'));
+  const media=coalbrookPreferredMedia(p), request=++mediaToken;
+  function renderPhoto(src,label){
+   if(!src)return false;
+   const img=make('img');img.src=src;img.loading='lazy';
+   img.alt=(p.designation||'Coalbrook')+' · '+T.finish(p);
+   const note=make('small','coalbrook-media-source',label);
+   img.addEventListener('error',()=>{
+    if(request!==mediaToken||!document.contains(preview))return;
+    preview.replaceChildren(make('span','','Photo momentanément indisponible.'));
+   },{once:true});
+   preview.replaceChildren(img,note);return true;
+  }
+  if(!renderPhoto(media.src,media.label)){
+   preview.append(make('div','coalbrook-media-pending','Recherche parmi les photos Coalbrook déjà enregistrées…'));
+   if(typeof fetchManufacturerImage==='function')fetchManufacturerImage(p,false,{imageOnly:false}).then(result=>{
+    if(request!==mediaToken||selection?.reference!==p.reference||!document.contains(preview))return;
+    if(result?.src)renderPhoto(result.src,result.finishMatch==='exact'?
+     'Photo retrouvée · finition exacte':'Photo fabricant · finition à vérifier');
+    else preview.replaceChildren(make('span','','Photo non trouvée pour cette référence.'));
+   }).catch(()=>{
+    if(request===mediaToken&&document.contains(preview))
+      preview.replaceChildren(make('span','','Photo temporairement indisponible.'));
+   });
+   else preview.replaceChildren(make('span','','Photo non identifiée pour cette référence.'));
+  }
   view.append(preview);
   const d=make('div','coalbrook-product-description');
   d.append(make('span','coalbrook-breadcrumb',info.hierarchy.join('  /  ')),make('h3','',p.designation||p.originalDescription||p.reference),
