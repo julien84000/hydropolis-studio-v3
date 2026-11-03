@@ -26,3 +26,7 @@
  .hotbath-galassia-modal .hotbath-selection{border-left:0;border-top:1px solid #ddd;overflow:visible}
 }
 @media print{.hotbath-galassia-modal{display:none!important}}
+
+.hotbath-galassia-modal .hotbath-ray-tech{display:grid;gap:6px;border:1px solid #d7dedb;background:#f7faf8;border-radius:10px;padding:12px;color:#304640;font-size:12px}
+.hotbath-galassia-modal .hotbath-ray-tech span{line-height:1.45}
+.hotbath-galassia-modal .hotbath-ray-tech a{color:#326f50;text-decoration:underline;font-weight:650}

@@ -77,6 +77,11 @@ function photo(model,collection,photos){
 }
 function categories(collection,taxonomy,index){
  const items=(taxonomy?.collections?.[collection]||[]).filter(x=>Array.isArray(x.refs));
+ // RAY RAAR is listed in the 2026 price list but not in the manufacturer's
+ // public 53-category tree. Present it as a UI-only tariff supplement.
+ if(collection==='Ray'&&(index.get('Ray')||new Map()).has(clean('RAAR')))
+   items.push({id:'ray-accessories',label:'Accessoires sèche-serviettes',
+     source:'Hydropolis · tarif 2026',refs:['RAAR']});
  const all=items.flatMap(x=>x.refs);
  const indexed=index.get(collection)||new Map();
  const present=new Set(all.map(clean));
