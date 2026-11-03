@@ -115,3 +115,13 @@ test('31 verified 2026 price corrections preserve HT and included body costs wit
  assert.match(code,/totalPrice:Number\(main\.price\),internalPrice:0/);
  assert.match(code,/child\.accessoryFor=parent\.id/);
 });
+
+test('Coalbrook reuses verified V11 cached manufacturer media, without mislabelling generic finishes',()=>{
+ const source=read('public/coalbrook-2026-configurator.js');
+ assert.match(source,/cachedManufacturerImage\(p\)/);
+ assert.match(source,/fetchManufacturerImage\(p,false/);
+ assert.match(source,/previous\.finishMatch==='exact'/);
+ assert.match(source,/Photo enregistrée · finition à vérifier/);
+ assert.match(source,/p\.technicalSheetUrl\|\|previousDocs\?\.technicalSheetUrl/);
+ assert.match(source,/p\.installationGuideUrl\|\|previousDocs\?\.installationGuideUrl/);
+});
