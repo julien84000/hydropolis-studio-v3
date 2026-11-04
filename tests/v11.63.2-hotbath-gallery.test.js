@@ -112,3 +112,32 @@ test('Hotbath detail includes selectable finish cards and keeps reference-based 
  assert.match(css,/\.mg-hotbath-official \.hb-finish-option/);
  assert.match(js,/Ajout indisponible · tarif absent/);
 });
+
+test('V11.64.60 Hotbath official preferred finishes match exact model identities, without changing prices',()=>{
+ const {collections}=JSON.parse(fs.readFileSync(path.join(root,'hotbath-curated-finishes-2026.json'),'utf8'));
+ const prefs={Guy:'TB',Chap:'CR',Archie:'IX',Gent:'IX',Ace:'MBP',Gal:'BGP',Cobber:'BCP','Cobber X':'BBP',Fellow:'CR',Mate:'GN'};
+ const min={Guy:40,Chap:2,Archie:60,Gent:20,Ace:40,Gal:30,Cobber:60,'Cobber X':20,Fellow:10,Mate:6};
+ const title=(s)=>String(s).toUpperCase().replace(/[^A-Z0-9]/g,'');
+ for(const [name,expectedFinish] of Object.entries(prefs)){
+  const item=collections[name];assert(item,'Missing collection '+name);
+  assert.equal(item.finishCode,expectedFinish);
+  assert.match(item.sourcePage,/^https:\/\/www\.hotbath\.it\/fr\/prods\//);
+  assert.ok(Object.keys(item.models).length>=min[name],name+' missing finish-specific images');
+  assert.equal(item.heroImage,item.models[item.heroModel]);
+  for(const [model,url] of Object.entries(item.models)){
+   const match=url.match(/^https:\/\/hotbath\.com\/images\/compano\/([^/]+)\/([^/?#]+)\.(?:png|jpe?g|webp)/i);
+   assert(match,model+' wrong image host');
+   assert.equal(title(match[1]),title(model),name+'/'+model+' image belongs to another model');
+   const stem=title(match[2].replace(/_\d+$/,''));
+   assert(stem.startsWith(title(model)),name+'/'+model+' wrong model file');
+   const parsed=stem.slice(title(model).length);
+   assert([expectedFinish,'EXT'+expectedFinish].includes(parsed)||['Gent|GT003','Mate|M100','Mate|M105','Mate|M106'].includes(name+'|'+model),
+    name+'/'+model+' wrong finish: '+parsed);
+  }
+ }
+ const src=fs.readFileSync(path.join(root,'hotbath-galassia-configurator.js'),'utf8');
+ for(const check of ['curatedModel','curatedExact','preference?.heroImage','hotbath-curated-finishes-2026.json','scope:\'exact\''])
+  assert(src.includes(check),check+' missing from Hotbath configurator');
+ const tariff=JSON.parse(fs.readFileSync(path.join(root,'catalog_hotbath.json'),'utf8'));
+ assert(tariff.some(p=>p.reference==='CB003C.GN'));
+});

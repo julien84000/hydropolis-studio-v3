@@ -46,7 +46,7 @@ function open(rows,roomId,onAdd){
   document.body.appendChild(ov);
   const $=q=>ov.querySelector(q),$$=q=>Array.from(ov.querySelectorAll(q));
   const previous=document.activeElement;
-  let taxonomy=null,media=null,italian=null,supplemental=null,collection='Gent',categoryKey='',base='',ref='',search='',closed=false,busy=false;
+  let taxonomy=null,media=null,italian=null,supplemental=null,curated=null,collection='Gent',categoryKey='',base='',ref='',search='',closed=false,busy=false;
   const images=new Map(),asked=new Set(),failed=new Set(),queue=[],pending={count:0};
   function mediaKey(c,m,finish=''){return c+'|'+clean(m)+'|'+clean(finish)}
   // The Italian index contains links copied from manufacturer HTML; it does
@@ -70,9 +70,20 @@ function open(rows,roomId,onAdd){
       !String(item.officialProductPage||'').toUpperCase().endsWith('/'+String(m).toUpperCase()))return '';
    return validUrl(item.image);
   }
+  function curatedModel(c,m){
+    const all=curated?.collections?.[c]?.models||{};
+    const key=clean(m);
+    const found=Object.entries(all).find(([code])=>clean(code)===key);
+    return found?validUrl(found[1]):'';
+  }
+  function curatedExact(c,m,finish){
+    const preferred=curated?.collections?.[c];
+    return preferred&&clean(preferred.finishCode)===clean(finish)?curatedModel(c,m):'';
+  }
   function knownImage(c,m){
     const verified=root?.HydroHotbathFinishMedia;
     const urls=[];
+    if(curatedModel(c,m))urls.push(curatedModel(c,m));
     if(c==='Ray'){
       const rayPhoto=ray?.specification(m)?.photo;
       if(rayPhoto)urls.push(rayPhoto);
@@ -100,6 +111,9 @@ function open(rows,roomId,onAdd){
     const variant=images.get(mediaKey(collection,m,p?.finishCode||''));
     if(variant?.scope==='exact'&&modelUrl(validUrl(variant.image)))
       return {url:variant.image,caption:'Photo fabricant — finition exacte '+(p.finishCode||''),scope:'exact'};
+    const curatedPhoto=curatedExact(collection,m,p?.finishCode||'');
+    if(curatedPhoto&&modelUrl(curatedPhoto))
+      return {url:curatedPhoto,caption:'Photo fabricant — finition exacte '+(p.finishCode||''),scope:'exact'};
     if(collection==='Ray'){
       const manufacturer=ray?.media(p);
       if(manufacturer?.src&&modelUrl(manufacturer.src))
@@ -170,11 +184,12 @@ function open(rows,roomId,onAdd){
   function renderCollections(){
    $('.hotbath-collections').innerHTML=ORDER.map(c=>{
     const items=taxonomy.collections?.[c]||[],count=new Set(items.flatMap(x=>x.refs||[])).size;
-    const url=media.modernCollectionImages?.[c]||media.collectionImages?.[c]||'';
+    const preference=curated?.collections?.[c];
+    const url=validUrl(preference?.heroImage)||media.modernCollectionImages?.[c]||media.collectionImages?.[c]||'';
     return '<button type="button" class="galassia-family'+(c===collection?' active':'')+
       '" data-collection="'+esc(c)+'">'+(url?'<img src="'+esc(url)+'" alt="" loading="lazy">':
       '<span class="galassia-no-photo">H</span>')+
-      '<span>'+esc(c)+'<small>'+count+' modèles</small></span></button>';
+      '<span>'+esc(c)+'<small>'+count+' modèles'+(preference?' · '+esc(preference.finishName):'')+'</small></span></button>';
    }).join('');
    $$('[data-collection]').forEach(button=>button.onclick=()=>{
     collection=button.dataset.collection;categoryKey='';base='';ref='';search='';render();
@@ -209,7 +224,7 @@ function open(rows,roomId,onAdd){
      base=button.dataset.model;ref='';render(false);
    });
    // Discover missing photos progressively, avoiding a fanout to all 647 models.
-   models.slice(0,24).forEach(m=>{if(!italianPhoto(collection,m.base)&&!supplier.photo({base:m.base},collection,media))requestImage(collection,m.base)});
+   models.slice(0,24).forEach(m=>{if(!curatedModel(collection,m.base)&&!italianPhoto(collection,m.base)&&!supplier.photo({base:m.base},collection,media))requestImage(collection,m.base)});
    $$('.hotbath-models .galassia-model').forEach(button=>{
     button.querySelector('img')?.addEventListener('error',e=>{
      const c=collection,m=button.dataset.model;
@@ -292,7 +307,7 @@ function open(rows,roomId,onAdd){
      busy=false;renderSelection();alert('Ajout Hotbath impossible : '+(e?.message||String(e)));
     }
    };
-   if(p.finishCode)requestImage(collection,m.base,p.finishCode);
+   if(p.finishCode&&!curatedExact(collection,m.base,p.finishCode))requestImage(collection,m.base,p.finishCode);
    if(!knownImage(collection,m.base))requestImage(collection,m.base);
   }
   function render(resetSearch=true){
@@ -308,8 +323,9 @@ function open(rows,roomId,onAdd){
    fetch('/brand-guide-hotbath-taxonomy.json?v=__APP_VERSION__',{cache:'no-cache'}).then(r=>{if(!r.ok)throw Error('Taxonomy');return r.json()}),
    fetch('/brand-guide-hotbath-media.json?v=__APP_VERSION__',{cache:'no-cache'}).then(r=>{if(!r.ok)throw Error('Photos');return r.json()}),
    fetch('/hotbath-italian-product-media.json?v=__APP_VERSION__',{cache:'no-cache'}).then(r=>{if(!r.ok)throw Error('Catalogue Italie');return r.json()}),
-   fetch('/hotbath-exact-alternative-media.json?v=__APP_VERSION__',{cache:'no-cache'}).then(r=>r.ok?r.json():{byCollection:{}}).catch(()=>({byCollection:{}}))
-  ]).then(([a,b,c,d])=>{taxonomy=a;media=b;italian=c;supplemental=d;render()}).catch(e=>{
+   fetch('/hotbath-exact-alternative-media.json?v=__APP_VERSION__',{cache:'no-cache'}).then(r=>r.ok?r.json():{byCollection:{}}).catch(()=>({byCollection:{}})),
+   fetch('/hotbath-curated-finishes-2026.json?v=__APP_VERSION__',{cache:'no-cache'}).then(r=>r.ok?r.json():{collections:{}}).catch(()=>({collections:{}}))
+  ]).then(([a,b,c,d,e])=>{taxonomy=a;media=b;italian=c;supplemental=d;curated=e;render()}).catch(e=>{
    $('.hotbath-models').textContent='Catalogue Hotbath indisponible : '+(e.message||e);
   });
  });
