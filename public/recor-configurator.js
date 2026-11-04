@@ -109,14 +109,14 @@ function open(args={}){
    '<h3>'+esc(M.modelName(state.model))+'</h3><span class="recor-meta">'+esc(main.collection)+' · catalogue Recor 2026</span>'+
    '<div class="recor-preview-box"><canvas class="recor-preview-canvas" width="740" height="510" aria-label="Aperçu de la baignoire"></canvas>'+
    '<div class="recor-foot-overlay">'+(footThumb?'<img src="'+esc(footThumb)+'" alt="Pieds sélectionnés">':'')+
-   (foot?'<span>'+esc(foot.designation)+'</span>':'<span>Pieds à sélectionner</span>')+'</div></div>'+
+   (foot?'<span>'+esc(foot.designation)+'</span>':'<span>Support à sélectionner</span>')+'</div></div>'+
    '<div class="recor-preview-hint">Simulation visuelle indicative : la teinte et la matière ne constituent pas une photographie fabricant de la finition exacte.</div>'+
    (source?.images?.length>1?'<div class="recor-gallery">'+source.images.slice(0,5).map((img,i)=>'<button type="button" data-recor-photo="'+i+'" class="'+(state.photoIndex===i?'active':'')+'"><img src="/api/recor-model-photo?model='+encodeURIComponent(state.model)+'&index='+i+'" alt="Vue '+(i+1)+'"></button>').join('')+'</div>':'')+
    '<div class="recor-fields">'+
    '<label><span>1. Dimensions</span>'+selector('dimension',dim,state.dimension)+'</label>'+
    '<label><span>2. Finition de base tarifée</span>'+selector('finish',finishes,state.finish)+'</label>'+
    (options.tapHoles?'<label><span>3. Perçages robinetterie</span>'+selector('holes',[{label:'Sans perçage',value:'no'},{label:'Avec perçages',value:'yes'}],state.holes?'yes':'no')+'</label>':'')+
-   (feetNeeded?'<label><span>4. Pieds (obligatoire)</span>'+selectItem(allFeet,state.feet,'feet','Choisir un jeu de pieds')+'</label>':'')+
+   (feetNeeded?'<label><span>4. Pieds ou socle (obligatoire)</span>'+selectItem(allFeet,state.feet,'feet','Choisir les pieds ou le socle')+'</label>':'')+
    '<label><span>5. Vidage (option)</span>'+selectItem(allWaste,state.waste,'waste','Sans vidage Recor ajouté')+'</label>'+
    '<label><span>6. Finition extérieure personnalisée</span>'+selector('finishMode',[
       {label:'Finition de base du tarif',value:'standard'},
@@ -291,7 +291,7 @@ function open(args={}){
   const {main,foot,waste}=current();
   const error=dlg.querySelector('.recor-error');
   if(!main){if(error)error.textContent='Référence tarifée introuvable';return}
-  if(includesFeet(main)&&!foot){if(error)error.textContent='Choisissez les pieds compatibles.';return}
+  if(includesFeet(main)&&!foot){if(error)error.textContent='Choisissez des pieds ou un socle compatible.';return}
   const configuration={
    model:state.model,dimensions:state.dimension,
    holes:state.holes,baseFinish:state.finish,
