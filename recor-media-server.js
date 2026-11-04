@@ -14,7 +14,7 @@ for(const item of rows)if(item.category==='Bain'){
 // Official Recor 2026 catalogue also illustrates Camile, shower trays and ten
 // finish families absent from the priced SKU import. Show them without inventing prices.
 const EXTRA_OFFICIAL_PAGES=Object.freeze({
- 'CAMILE':'/product/camile-en/',
+ 'CAMILE':'/product/camile/',
  'SHOWER-TRAYS':'/product/shower-trays-en/',
  'HAND-GILDED':'/product/hand-gilded/',
  'MOSAIC-EXTERIOR':'/product/mosaic-exterior/',
