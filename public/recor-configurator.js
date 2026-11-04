@@ -31,7 +31,7 @@ function open(args={}){
   customColor:args.initial?.recorConfiguration?.previewColor||'#84949a',
   antiSlip:!!args.initial?.recorConfiguration?.antiSlip,
   photoIndex:0,media:new Map(),photoObjects:new Map(),closed:false,
-  photoError:false
+  photoError:false,premiumTarget:''
  };
  let previewSnapshot='';
  const overlay=document.createElement('div');
@@ -50,6 +50,11 @@ function open(args={}){
  }
  function ensureState(){
   const groups=M.groupByModel(rows,state.category);
+  if(state.category==='Finitions premium'){
+   if(!M.PREMIUM_FINISHES.some(x=>x.id===state.model))state.model=M.PREMIUM_FINISHES[0].id;
+   const allowed=M.PREMIUM_ELIGIBILITY[state.model]||[];
+   if(!allowed.includes(state.premiumTarget))state.premiumTarget=allowed[0]||'';
+  }
   if(DIMCATEGORY.includes(state.category)){
    if(!groups.some(x=>x.model===state.model))state.model=groups[0]?.model||'';
    const o=M.pricedOptions(rows,state.model);
@@ -64,24 +69,30 @@ function open(args={}){
  const categoryCards=()=>M.CATEGORIES.map(x=>'<button type="button" class="recor-cat'+(state.category===x.id?' active':'')+
   '" data-recor-category="'+esc(x.id)+'"><strong>'+esc(x.label)+'</strong><small>'+esc(x.sub)+'</small></button>').join('');
  function modelCards(){
-  if(state.category==='Finitions premium')return M.METALS.map(m=>'<button type="button" class="recor-model" data-recor-premium="'+esc(m)+'">'+
-   '<span class="recor-model-text"><strong>'+esc(m)+'</strong><small>Sur devis · finition de surface</small></span></button>').join('');
+  if(state.category==='Finitions premium')return M.PREMIUM_FINISHES.map(m=>'<button type="button" class="recor-model'+
+    (state.model===m.id?' active':'')+'" data-recor-premium="'+esc(m.id)+'">'+
+    '<span class="recor-model-visual"><img loading="lazy" src="'+esc(photo(m.id))+'" alt="'+esc(m.original)+
+    '" onerror="this.style.visibility=\'hidden\'"></span>'+
+    '<span class="recor-model-text"><strong>'+esc(m.label)+'</strong><small>'+esc(m.original)+' · '+esc(m.description)+'</small>'+
+    '<b>Sur devis</b></span></button>').join('');
   const models=M.groupByModel(rows,state.category);
   return models.map(x=>{
    const first=x.items[0],bath=isBath(first),p=M.pricedOptions(rows,x.model);
-   const cheapest=Math.min(...x.items.map(a=>Number(a.price||0)));
-   const src=bath?photo(x.model):(first.image||'');
+   const cheapest=x.items.length?Math.min(...x.items.map(a=>Number(a.price||0))):null;
+   const src=photo(x.model);
    return '<button type="button" class="recor-model'+(state.model===x.model?' active':'')+'" data-recor-model="'+esc(x.model)+'">'+
     '<span class="recor-model-visual">'+(src?'<img loading="lazy" src="'+esc(src)+'" alt="'+esc(x.label)+'" onerror="this.style.visibility=\'hidden\'">':'')+'</span>'+
-    '<span class="recor-model-text"><strong>'+esc(x.label)+'</strong><small>'+esc(bath?(p.dimensions.length+' dimension(s) · '+p.finishes.length+' finition(s)'):(x.items.length+' déclinaison(s)'))+'</small>'+
-    '<b>À partir de '+money(cheapest)+' HT</b></span></button>';
+    '<span class="recor-model-text"><strong>'+esc(x.label)+'</strong><small>'+esc(x.quoteOnly?
+      'Présent au catalogue fabricant · prix à confirmer':
+      (p.dimensions.length+' dimension(s) · '+p.finishes.length+' finition(s)'))+'</small>'+
+    '<b>'+(cheapest===null?'Sur devis':'À partir de '+money(cheapest)+' HT')+'</b></span></button>';
   }).join('');
  }
  const selector=(field,values,selected)=>'<select class="recor-field" data-recor-select="'+field+'">'+
   values.map(x=>'<option value="'+esc(x.value)+'"'+(String(selected)===String(x.value)?' selected':'')+'>'+esc(x.label)+'</option>').join('')+'</select>';
  function detail(){
   const {main,options,foot,waste,allFeet,allWaste}=current();
-  if(!main)return '<div class="recor-warn">Aucune référence tarifée disponible pour ce choix.</div>';
+  if(!main)return unpricedDetail();
   const feetNeeded=includesFeet(main),source=state.media.get(state.model);
   const dim=options.dimensions.map(x=>({label:x.label,value:x.label}));
   const finishes=options.finishes.map(x=>({label:x.label,value:x.key}));
