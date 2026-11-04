@@ -100,7 +100,7 @@ function materialFromText(text){
 }
 function productOptions(p){const key=modelCode(p);return {model:key,...pricedOptions([p],key)};}
 function selectedTotal(main,foot,waste){
- return [main,foot,waste].reduce((n,p)=>n+Number(p?.price||0),0)+Number(main?.mandatoryFreight||0);
+ return [main,foot,waste].reduce((n,p)=>n+Number(p?.price||0),0);
 }
 return {CATEGORIES,PDF_MODEL_PAGES,TAPHOLABLE,PREMIUM,METALS,RALS,MATERIALS,
  modelCode,modelName,dimension,finishFamily,pricedOptions,findVariant,groupByModel,feetFor,wastesFor,
