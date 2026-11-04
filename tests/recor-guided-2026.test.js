@@ -163,3 +163,36 @@ test('Recor UI loads official image mappings and persists real manufacturer phot
  assert.match(ui,/image\.removeAttribute\('crossorigin'\)/);
  assert.match(app,/preview\|\|media\.image\|\|window\.HydroRecorCurated/);
 });
+
+test('RAL Classic is the 769 EUR HT surcharge on WHITE exterior, never RAW',()=>{
+ assert.equal(model.RAL_CLASSIC_PUBLIC_SURCHARGE_HT,769);
+ assert.equal(model.RAL_CLASSIC_SUPPLIER_SURCHARGE_HT,290.93);
+ assert.equal(model.ralClassicSurcharge('ral','WHITE'),769);
+ assert.equal(model.ralClassicSurcharge('ral','RAW'),0);
+ assert.equal(model.ralClassicSurcharge('standard','WHITE'),0);
+ const white=model.findVariant(recors,'SLIPPER','137 × 76 cm','WHITE',false);
+ const raw=model.findVariant(recors,'SLIPPER','137 × 76 cm','RAW',false);
+ assert.ok(white&&raw);
+ const ralTotal=model.selectedTotal(white,null,null,model.ralClassicSurcharge('ral','WHITE'));
+ assert.ok(Math.abs(ralTotal-white.price-769)<.001);
+ assert.ok(ralTotal>raw.price+769);
+});
+test('RAL Classic applies to the existing bath SKU, quote total, and supplier cost',()=>{
+ const ui=fs.readFileSync(path.join(__dirname,'../public/recor-configurator.js'),'utf8');
+ const app=fs.readFileSync(path.join(__dirname,'../public/app.js'),'utf8');
+ assert.match(ui,/ralClassicSurchargeHT:M\.ralClassicSurcharge/);
+ assert.match(ui,/Plus-value RAL Classic · extérieur blanc/);
+ assert.match(ui,/M\.selectedTotal\(main,foot,waste,ralExtra\)/);
+ assert.match(ui,/Le RAL Classic nécessite la baignoire Extérieur peint blanc/);
+ assert.match(app,/totalPrice:Number\(main\.totalPrice\|\|0\)\+ralExtra/);
+ assert.match(app,/purchasePrice:Number\(main\.purchasePrice\|\|0\)\+ralSupplier/);
+ assert.match(app,/RAL Classic/);
+});
+test('RAL image requests same-origin readable photo and reapplies on entry',()=>{
+ const ui=fs.readFileSync(path.join(__dirname,'../public/recor-configurator.js'),'utf8');
+ assert.match(ui,/image\.src=paintColor\(\)\?proxyPhoto\(model,index\):photo\(model,index\)/);
+ assert.match(ui,/state\.photoObjects\.clear\(\)/);
+ assert.match(ui,/ctx\.getImageData\(0,0,w,h\)/);
+ assert.match(ui,/ctx\.fillStyle=chosen;ctx\.fillRect\(dx,dy,pw,ph\)/);
+ assert.match(ui,/if\(state\.finishMode==='ral'&&state\.photoIndex===0\)/);
+});
