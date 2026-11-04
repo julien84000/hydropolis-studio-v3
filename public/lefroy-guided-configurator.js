@@ -336,6 +336,13 @@ function attach(){
  const search=catalog.querySelector('.search-card');
  if(search)search.appendChild(card);else catalog.prepend(card);
  card.querySelector('.lf-launch-button').addEventListener('click',()=>launch(null,document.querySelector('#targetRoom')?.value||''));
+ // The main catalogue is reconstructed through a lexical renderCatalog() function.
+ // Observe its direct children, not the nested CTA, so every filter/brand update restores the sanitary entry.
+ const resultsHost=document.querySelector('#results');
+ if(resultsHost){
+   const observer=new MutationObserver(()=>{directCatalogEntry();visibility();});
+   observer.observe(resultsHost,{childList:true});
+ }
  function visibility(){
    const maker=document.querySelector('#manufacturerFilter')?.value;
    const query=document.querySelector('#searchInput')?.value||'';
