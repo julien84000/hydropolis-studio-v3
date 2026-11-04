@@ -144,6 +144,43 @@ function open(args={}){
    '<p class="recor-error" aria-live="polite"></p>'+
    '</div>';
  }
+ function unpricedDetail(){
+  const model=state.model,source=state.media.get(model)||{};
+  const pages=M.PDF_MODEL_PAGES[model]||[];
+  const official=model==='CAMILE'?'https://recor.pt/product/camile-en/':
+   model==='SHOWER-TRAYS'?'https://recor.pt/product/shower-trays-en/':'https://recor.pt/en/';
+  const sizes=model==='CAMILE'?'154 × 75 × 74 · 170 × 76 × 75 · 181,5 × 76,5 × 77 cm':
+   model==='SHOWER-TRAYS'?'72 × 72 × 10 · 80 × 80 × 10 cm':'';
+  return '<div class="recor-configuration"><h3>'+esc(M.modelName(model))+'</h3>'+
+   '<span class="recor-meta">Modèle du catalogue Recor 2026 · prix non importé</span>'+
+   '<div class="recor-preview-box"><canvas class="recor-preview-canvas" width="740" height="510" aria-label="Photo officielle Recor"></canvas></div>'+
+   '<p class="recor-warn">Ce modèle est présent dans le catalogue Recor 2026 mais aucune référence tarifée n’est disponible dans Hydropolis. Aucun prix ni référence ne sont créés artificiellement.</p>'+
+   '<p>Dimensions constructeur : '+esc(sizes)+'</p>'+
+   '<div class="recor-technical-links"><a href="'+esc(source.productUrl||official)+'" rel="noopener noreferrer" target="_blank">Fiche produit officielle</a>'+
+   (source.technicalSheetUrl?'<a href="'+esc(source.technicalSheetUrl)+'" rel="noopener noreferrer" target="_blank">Plan technique constructeur (PDF)</a>':'')+
+   (pages.length?'<small>Catalogue produits 2026 : p. '+pages[0]+' · plans techniques 2026 : p. '+pages[1]+'</small>':'')+
+   '</div><p class="recor-alert">Chiffrage préalable requis avant ajout au devis.</p></div>';
+ }
+ function premiumDetail(){
+  const finish=M.PREMIUM_FINISHES.find(x=>x.id===state.model)||M.PREMIUM_FINISHES[0];
+  const source=state.media.get(finish.id)||{};
+  const compatible=M.PREMIUM_ELIGIBILITY[finish.id]||[];
+  const allowed=compatible.filter(m=>rows.some(p=>p.category==='Bain'&&M.modelCode(p)===m));
+  const target=allowed.includes(state.premiumTarget)?state.premiumTarget:(allowed[0]||'');
+  state.premiumTarget=target;
+  return '<div class="recor-configuration"><h3>'+esc(finish.label)+'</h3>'+
+   '<span class="recor-meta">'+esc(finish.original)+' · catalogue Recor 2026, pp. 54–57</span>'+
+   '<div class="recor-preview-box"><canvas class="recor-preview-canvas" width="740" height="510" aria-label="Illustration fabricant de la finition premium"></canvas></div>'+
+   '<p class="recor-preview-hint">Exemple de finition Recor. Chaque application est soumise à validation fabricant.</p>'+
+   '<p>'+esc(finish.description)+'. Supplément et faisabilité sur devis.</p>'+
+   (allowed.length?
+    '<label class="recor-premium-target"><span>Appliquer à une baignoire compatible</span>'+
+      selector('premiumTarget',allowed.map(x=>({value:x,label:M.modelName(x)})),target)+'</label>'+
+    '<button type="button" class="recor-apply-premium">Configurer la baignoire avec cette finition</button>':
+    '<p class="recor-warn">La brochure ne précise pas les modèles compatibles avec cette finition. Vérification fabricant indispensable.</p>')+
+   '<div class="recor-technical-links"><a href="'+esc(source.productUrl||'https://recor.pt/en/')+
+    '" rel="noopener noreferrer" target="_blank">Voir la finition sur le site Recor</a></div></div>';
+ }
  function standalone(){
   const models=M.groupByModel(rows,state.category);
   const group=models.find(g=>g.model===state.model)||models[0];
@@ -161,9 +198,9 @@ function open(args={}){
    '<div class="recor-layout"><nav class="recor-sidebar">'+categoryCards()+'</nav>'+
    '<main class="recor-browser"><div class="recor-browser-title"><b>'+esc(state.category)+'</b><small>Références du tarif Recor janvier 2026</small></div>'+
    '<div class="recor-model-grid">'+modelCards()+'</div></main>'+
-   '<aside class="recor-detail">'+(DIMCATEGORY.includes(state.category)?detail():standalone())+'</aside></div>';
+   '<aside class="recor-detail">'+(DIMCATEGORY.includes(state.category)?detail():premiumDetail())+'</aside></div>';
   renderPreview();
-  if(DIMCATEGORY.includes(state.category))requestMedia(state.model);
+  if(state.model)requestMedia(state.model);
  }
  function close(){state.closed=true;overlay.remove();document.removeEventListener('keydown',onKey)}
  function onKey(e){if(e.key==='Escape')close()}
@@ -185,7 +222,7 @@ function open(args={}){
    if(!response.ok)throw Error('Fiche fabricant indisponible');
    const m=await response.json();if(!m.ok)throw Error('Média indisponible');
    state.media.set(model,m);
-   if(state.model===model&&DIMCATEGORY.includes(state.category)&&!state.closed)render();
+   if(state.model===model&&!state.closed)render();
   }catch(e){
    state.media.set(model,{image:'',images:[],verifiedModel:false});
    if(!state.closed&&state.model===model)renderPreview();
@@ -286,8 +323,21 @@ function open(args={}){
   }
   const mod=e.target.closest('[data-recor-model]');if(mod){selectionReset(mod.dataset.recorModel);return}
   const premium=e.target.closest('[data-recor-premium]');if(premium){
-   state.category='Baignoires sur pieds';state.model='SLIPPER';
-   state.finishMode=premium.dataset.recorPremium;state.material=premium.dataset.recorPremium;render();return;
+   state.model=premium.dataset.recorPremium;state.photoIndex=0;state.finishMode='standard';
+   state.premiumTarget='';render();return;
+  }
+  if(e.target.closest('.recor-apply-premium')){
+   const finish=M.PREMIUM_FINISHES.find(x=>x.id===state.model);
+   const target=state.premiumTarget;
+   if(!finish||!(M.PREMIUM_ELIGIBILITY[finish.id]||[]).includes(target))return;
+   const bath=rows.find(x=>x.category==='Bain'&&M.modelCode(x)===target);
+   if(!bath)return;
+   state.category=bath.collection;
+   selectionReset(target);
+   const options=M.pricedOptions(rows,target);
+   if(options.finishes.some(x=>x.key==='WHITE'))state.finish='WHITE';
+   state.finishMode=finish.label;state.material=finish.label;
+   render();return;
   }
   const gallery=e.target.closest('[data-recor-photo]');if(gallery){state.photoIndex=Number(gallery.dataset.recorPhoto)||0;render();return}
   const standalone=e.target.closest('[data-recor-standalone]');if(standalone){
@@ -304,6 +354,7 @@ function open(args={}){
   if(f==='holes'){state.holes=e.target.value==='yes';render()}
   if(f==='feet'){state.feet=e.target.value;render()}
   if(f==='waste'){state.waste=e.target.value;render()}
+  if(f==='premiumTarget'){state.premiumTarget=e.target.value;return}
   if(f==='finishMode'){
    state.finishMode=e.target.value;
    if(state.finishMode!=='standard'&&state.finish!=='WHITE'&&M.pricedOptions(rows,state.model).finishes.some(x=>x.key==='WHITE'))
