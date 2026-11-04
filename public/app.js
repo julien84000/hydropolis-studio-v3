@@ -3223,7 +3223,7 @@ function groupQuoteRows(rows){
     if(spaces.length===1)for(const row of roomRows){
       if(row.space==="AUTRES"){row.space=spaces[0];row.spaceLabel=quoteSpaceLabel(row.space);}
     }
-    return roomRows.sort((a,b)=>(QUOTE_SPACE_ORDER[a.space]??99)-(QUOTE_SPACE_ORDER[b.space]??99));
+    return roomRows; // Preserve the original room order even across space categories.
   });
 }
 function quoteEditorRows(){
@@ -3253,8 +3253,7 @@ function quoteEditorRows(){
         total:manualQuoteNetUnit(m)*manualItemQuantity(m)
       });
     });
-    roomRows.sort((a,b)=>(QUOTE_SPACE_ORDER[a.space]??99)-(QUOTE_SPACE_ORDER[b.space]??99)||a.sourceOrder-b.sourceOrder);
-    rows.push(...roomRows);
+    rows.push(...roomRows); // Quote editor follows Projet par pièce order.
   }
   return groupQuoteRows(rows);
 }
@@ -3470,8 +3469,7 @@ function quoteRows(){
         freight:0,leadTime:manualQuoteLeadTime(m),manual:true,discount,manualIndex
       });
     });
-    roomRows.sort((a,b)=>(QUOTE_SPACE_ORDER[a.space]??99)-(QUOTE_SPACE_ORDER[b.space]??99)||a.sourceOrder-b.sourceOrder);
-    rows.push(...roomRows);
+    rows.push(...roomRows); // Quote follows Projet par pièce order, not space category.
   }
   return groupQuoteRows(rows);
 }
@@ -3774,11 +3772,13 @@ function migrateLegacySbordoniGroupedConfigurations(){
 function renderRoomsCore(){
  $("#roomsEditor").innerHTML=state.rooms.map((r,ri)=>{
    let ps=state.selected.filter(p=>p.roomId===r.id && !isRecorBathLinkedAccessory(p) && !p.sbordoniConfigurationAccessory);
-   return `<article class="room-card">
+   return `<article class="room-card" data-room-card="${esc(r.id)}">
    <div class="room-head"><input class="room-title" data-id="${r.id}" value="${esc(r.title)}"><input class="room-sub" data-id="${r.id}" value="${esc(r.subtitle||"")}" placeholder="Sous-titre / ambiance">
    <button class="btn ghost go-cat" data-id="${r.id}">+ Produit catalogue</button><button class="icon del-room" data-id="${r.id}">×</button></div>
-   <div class="room-products">${ps.length?ps.map(p=>`
-      <div class="room-product">
+   <div class="room-reorder-hint">⠿ Glissez la poignée d’un article pour le déplacer dans cette pièce ou une autre. Le devis suit cet ordre.</div>
+   <div class="room-products" data-room-id="${esc(r.id)}">${ps.length?ps.map(p=>`
+      <div class="room-product ${p.accessoryFor?'article-linked-card':''}" data-product-id="${esc(p.id)}">
+        ${p.accessoryFor?'':`<button type="button" class="article-drag-handle" title="Déplacer cet article dans une autre pièce ou modifier son ordre" aria-label="Déplacer ${esc(p.designation||p.reference||'cet article')}">⠿</button>`}
         <div class="room-prod-img">${roomProductImageHtml(p)}</div>
         <div><b>${esc(p.designation)}</b><div class="tech">${p.sbordoniConfiguration?`${esc(p.manufacturer)} · ${esc(p.collection)} · Configuration complète`:`${esc(p.manufacturer)} · ${esc(p.collection)} · ${esc(p.reference)} · <b>${esc(safeExactFinishLabel(p))}</b>`}</div>${roughInWarningHtml(p)}${p.internalReference?`<div class="tech">Complet avec ${p.internalReference}</div>`:""}
         ${p.sbordoniConfigurationIssue?`<div class="recor-config-error">${esc(p.sbordoniConfigurationIssue)}</div>`:""}${p.sbordoniConfiguration?`<button type="button" class="btn primary sbordoni-edit-config" data-id="${p.id}" data-room="${r.id}" style="margin:8px 0 4px">Modifier la configuration</button>`:""}
@@ -4095,6 +4095,20 @@ function renderRooms(){
       renderRooms();renderSelection();
     });
   }catch(e){console.warn("[Hotbath photo tabs]",e)}
+  try{
+    window.HydroRoomArticleDnD?.mount?.($('#roomsEditor'),{
+      onReorder:(ordered,movedId,destinationRoomId)=>{
+        const visible=p=>!isRecorBathLinkedAccessory(p)&&!p.sbordoniConfigurationAccessory;
+        state.selected=window.HydroRoomArticleDnD.reorderSelected(
+          state.selected,state.rooms.map(r=>r.id),ordered,movedId,destinationRoomId,visible
+        );
+        saveState();renderRooms();renderSelection();renderMarginDashboard();
+        toast('Ordre des articles et du devis mis à jour');
+      },
+      onCancel:()=>renderRooms(),
+      onError:e=>toast(e?.message||'Déplacement impossible')
+    });
+  }catch(e){console.warn('[project article sorting]',e)}
 }
 
 
