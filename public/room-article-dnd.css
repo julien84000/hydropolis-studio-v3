@@ -1,4 +1,4 @@
-/* 11.64.61 project drag/reorder. Sortable handle avoids inputs and edit controls. */
+/* 11.64.61 project drag/reorder. Pointer handle avoids inputs and edit controls. */
 #roomsEditor .room-products[data-room-id]{min-height:46px;align-content:start}
 #roomsEditor .room-product[data-product-id]{position:relative}
 #roomsEditor .article-drag-handle{position:static;float:right;margin:0 0 6px 9px;width:28px;height:26px;display:grid;place-items:center;
@@ -16,3 +16,8 @@
 @media(max-width:620px){#roomsEditor .article-drag-handle{width:26px;height:26px;margin-left:6px}}
 
 /* Drag grip is in the article header's normal flow; no overlays on edit or delete controls. */
+
+#roomsEditor .article-drop-before{box-shadow:0 -3px 0 #a6824d!important}
+#roomsEditor .article-drop-after{box-shadow:0 3px 0 #a6824d!important}
+.article-drag-badge{position:fixed;z-index:10000;pointer-events:none;max-width:210px;padding:8px 12px;border-radius:8px;background:#544631;color:white;font-size:12px;box-shadow:0 3px 14px #0003}
+.room-article-dragging{cursor:grabbing;user-select:none}

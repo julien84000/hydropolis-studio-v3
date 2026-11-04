@@ -22,7 +22,7 @@ const pause=ms=>new Promise(r=>setTimeout(r,ms));
   await page.addInitScript(token=>localStorage.setItem('hydropolis-auth-token',token),auth.token);
   await page.goto(base,{waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>typeof state!=='undefined'&&!!window.HydroRoomArticleDnD&&typeof window.HydroRoomArticleDnD.mount==='function'&&
-   typeof catalogIndex!=='undefined'&&catalogIndex.maker('Hotbath').length>=2554,{timeout:60000});
+   typeof catalogIndex!=='undefined'&&catalogIndex.maker('Hotbath').length>=2554,null,{timeout:60000});
   await page.evaluate(()=>{
    state.project.name='PROJET TRI DES PIECES';
    state.rooms=[{id:'r1',title:'Salle de bains principale',subtitle:'',manual:[]},
@@ -44,26 +44,10 @@ const pause=ms=>new Promise(r=>setTimeout(r,ms));
   assert.equal(await zone1.locator(':scope > .room-product[data-product-id]').count(),3);
   assert.equal(await zone2.locator(':scope > .room-product[data-product-id]').count(),1);
   assert.equal(await page.locator('#roomsEditor .article-drag-handle').count(),4);
-  await page.evaluate(()=>{
-   window.dragEvents=[];
-   for(const type of ['pointerdown','pointerup','mousedown','mouseup','dragstart','dragover','drop','dragend'])document.addEventListener(type,e=>window.dragEvents.push({type,target:e.target.className,id:e.target.closest?.('[data-product-id]')?.dataset.productId,x:e.clientX,y:e.clientY}),true);
-  });
   await zone1.locator('[data-product-id="gamma"] .article-drag-handle').dragTo(
    zone1.locator('[data-product-id="alpha"] .article-drag-handle'),
    {sourcePosition:{x:12,y:12},targetPosition:{x:10,y:2},steps:24}
   );
-  console.log('EVENTS',await page.evaluate(()=>window.dragEvents));
-  const observed=await page.evaluate(()=>({
-    stateOrder:state.selected.filter(p=>p.roomId==='r1').map(p=>p.id),
-    domOrder:[...document.querySelectorAll('#roomsEditor .room-products[data-room-id="r1"] > .room-product[data-product-id]')].map(p=>p.dataset.productId),
-    customized:state.rooms[0].articleOrderCustomized,
-    sortableAvailable:typeof window.Sortable,
-    sortableAttached:typeof window.Sortable?.get==='function'?!!window.Sortable.get(document.querySelector('#roomsEditor .room-products[data-room-id="r1"]')):false,
-    globalDnd:!!window.HydroRoomArticleDnD,
-    handleDraggable:document.querySelector('#roomsEditor [data-product-id="gamma"] .article-drag-handle')?.draggable,
-    dragStatus:document.body.classList.contains('room-article-dragging')
-  }));
-  console.log('Room reorder drag diagnostic:',JSON.stringify(observed));
   await page.waitForFunction(()=>state.rooms[0].articleOrderCustomized===true&&
     state.selected.filter(p=>p.roomId==='r1')[0]?.id==='gamma',null,{timeout:15000});
   const within=await page.evaluate(()=>{
@@ -108,8 +92,105 @@ const pause=ms=>new Promise(r=>setTimeout(r,ms));
   assert.equal(after.rooms.r2.customized,true);
   assert(after.stored.some(p=>p.id==='alpha'&&p.roomId==='r2'));
   assert(after.docMarkup>1000,'Client dossier missing after drop');
+  // Moving down, keyboard alternative, and linked components into an empty room.
+  await zone1.locator('[data-product-id="gamma"] .article-drag-handle').press('ArrowDown');
+  assert.deepEqual(await page.evaluate(()=>state.selected.filter(p=>p.roomId==='r1').map(p=>p.id)),['beta','gamma']);
+  await page.evaluate(()=>{
+   state.rooms.push({id:'r3',title:'Pièce vide',subtitle:'',manual:[]});
+   const parent=state.selected.find(p=>p.id==='gamma');
+   state.selected.push({...parent,id:'gamma-body',reference:'LINKED-BODY',accessoryFor:'gamma',requiredRoughIn:true},
+    {...parent,id:'gamma-hidden',reference:'LINKED-HIDDEN',accessoryFor:'gamma-body',sbordoniConfigurationAccessory:true});
+   // An old dossier arrangement must not override the next room move.
+   state.presentationLayout={pageSize:5,blocks:{'r1:SELECTION:0:gamma':{x:20,y:30,w:40,h:50}},
+    assignments:{gamma:'r1:SELECTION:3'},orders:{'r1:SELECTION:0':['gamma','beta']}};
+   saveState();renderRooms();
+   window.beforeMove=JSON.parse(JSON.stringify(state.selected));
+  });
+  const zone3=page.locator('#roomsEditor .room-products[data-room-id="r3"]');
+  await zone1.locator('[data-product-id="gamma"] .article-drag-handle').dragTo(zone3,{targetPosition:{x:30,y:20}});
+  await page.waitForFunction(()=>state.selected.find(p=>p.id==='gamma')?.roomId==='r3');
+  const linked=await page.evaluate(()=>{
+   buildDocument();
+   return {before:window.beforeMove,after:state.selected,layout:state.presentationLayout,
+    quote:quoteRows().filter(r=>r.roomId==='r3').map(r=>r.sourceId),
+    dossier:currentDossierPlan.pages.filter(p=>p.group.room.id==='r3').flatMap(p=>p.items.map(i=>i.id))};
+  });
+  const group=['gamma','gamma-body','gamma-hidden'];
+  assert.deepEqual(linked.after.filter(p=>p.roomId==='r3').map(p=>p.id),group);
+  for(const original of linked.before){
+   const moved=linked.after.find(p=>p.id===original.id);
+   assert.deepEqual({...moved,roomId:original.roomId},original,'Every article field must survive a move');
+  }
+  assert(!linked.layout.assignments.gamma,'Obsolete dossier page assignment cleared');
+  assert(!linked.layout.orders['r1:SELECTION:0'],'Obsolete dossier order cleared');
+  assert(linked.quote.includes('gamma')&&linked.quote.includes('gamma-body'),'Linked body in destination quotation');
+  assert(linked.dossier.includes('gamma'),'Principal in destination dossier');
+
+  // A cancelled drag and ordinary editor clicks must not commit any reordering.
+  const grip=zone3.locator('[data-product-id="gamma"] .article-drag-handle');
+  await grip.scrollIntoViewIfNeeded();
+  const gripBox=await grip.boundingBox();
+  await page.mouse.move(gripBox.x+10,gripBox.y+10);await page.mouse.down();
+  await page.mouse.move(gripBox.x+30,gripBox.y+40,{steps:4});
+  await page.keyboard.press('Escape');await page.mouse.up();
+  assert.deepEqual(await page.evaluate(()=>state.selected.map(p=>[p.id,p.roomId])),linked.after.map(p=>[p.id,p.roomId]));
+  await zone3.locator('[data-product-id="gamma"] .article-editor summary').click();
+  assert.equal(await zone3.locator('[data-product-id="gamma"] .article-editor').getAttribute('open'),'');
+  assert.equal(await page.locator('.article-drag-badge').count(),0);
+
+  // Real Chromium touch input at phone width, without Sortable or synthetic DOM events.
+  await page.setViewportSize({width:390,height:844});
+  const cdp=await page.context().newCDPSession(page);
+  await cdp.send('Emulation.setTouchEmulationEnabled',{enabled:true,maxTouchPoints:1});
+  const touchDrag=async(source,target)=>{
+   await source.scrollIntoViewIfNeeded();
+   const box=await source.boundingBox(),start={x:box.x+12,y:box.y+12};
+   await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{...start,id:1}]});
+   await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:start.x,y:start.y+15,id:1}]});
+   assert.equal(await page.locator('body.room-article-dragging').count(),1,'Touch drag must start');
+   await target.scrollIntoViewIfNeeded();
+   const end=await target.boundingBox();
+   await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:end.x+12,y:end.y+3,id:1}]});
+   await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+  };
+  await page.evaluate(()=>{window.Sortable=undefined});
+  await touchDrag(zone2.locator('[data-product-id="alpha"] .article-drag-handle'),zone1.locator('[data-product-id="beta"] .article-drag-handle'));
+  assert.deepEqual(await page.evaluate(()=>state.selected.filter(p=>p.roomId==='r1').map(p=>p.id)),['alpha','beta']);
+  await touchDrag(zone1.locator('[data-product-id="beta"] .article-drag-handle'),zone1.locator('[data-product-id="alpha"] .article-drag-handle'));
+  assert.deepEqual(await page.evaluate(()=>state.selected.filter(p=>p.roomId==='r1').map(p=>p.id)),['beta','alpha']);
+  await page.evaluate(()=>{state.rooms.push({id:'r4',title:'Pièce tactile vide',subtitle:'',manual:[]});saveState();renderRooms()});
+  await touchDrag(zone1.locator('[data-product-id="alpha"] .article-drag-handle'),page.locator('#roomsEditor .room-products[data-room-id="r4"]'));
+  assert.equal(await page.evaluate(()=>state.selected.find(p=>p.id==='alpha').roomId),'r4');
+  await cdp.send('Emulation.setTouchEmulationEnabled',{enabled:false});
+
+  // More than one page: flattening the recalculated dossier must match the quote.
+  await page.evaluate(()=>{
+   const model=state.selected.find(p=>p.id==='beta');
+   for(let i=0;i<7;i++)state.selected.push({...model,id:'page-'+i});
+   saveState();renderRooms();
+  });
+  await zone1.locator('[data-product-id="page-6"] .article-drag-handle').press('ArrowUp');
+  const paginated=await page.evaluate(()=>{
+   buildDocument();
+   return {project:state.selected.filter(p=>p.roomId==='r1').map(p=>p.id),
+    quote:quoteRows().filter(p=>p.roomId==='r1').map(p=>p.sourceId),
+    editor:quoteEditorRows().filter(p=>p.roomId==='r1').map(p=>p.sourceId),
+    pages:currentDossierPlan.pages.filter(p=>p.group.room.id==='r1').map(p=>p.items.map(i=>i.id))};
+  });
+  assert.equal(paginated.pages.length,2);
+  assert(paginated.pages.every(p=>p.length<=6));
+  assert.deepEqual(paginated.quote,paginated.project);
+  assert.deepEqual(paginated.editor,paginated.project);
+  assert.deepEqual(paginated.pages.flat(),paginated.project);
+  // Save and reopen through the real project API using the isolated test account.
+  const saved=await page.evaluate(async()=>{await saveCloudProject();return {id:cloud.currentProjectId,order:state.selected.map(p=>[p.id,p.roomId])}});
+  assert(saved.id,'Cloud project must exist');
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.waitForFunction(()=>typeof cloud!=='undefined'&&!!cloud.user&&typeof catalogIndex!=='undefined'&&catalogIndex.maker('Hotbath').length>=2554);
+  const reopened=await page.evaluate(async id=>{await openCloudProject(id);return state.selected.map(p=>[p.id,p.roomId])},saved.id);
+  assert.deepEqual(reopened,saved.order,'Server reload preserves full article order and room assignments');
   assert.deepEqual(errors.filter(s=>/RoomArticle|reorderSelected|project article sorting/i.test(s)),[]);
-  console.log('Room article drag browser OK: in-room, cross-room, quotation, photo dossier and persisted order');
+  console.log('Room article drag browser OK: mouse, phone touch, keyboard, empty rooms, linked groups, unchanged article fields, cancellation, editing, quote/editor/dossier, pagination and server reload');
  }catch(e){console.error(e.stack||e,logs.slice(-2500));process.exitCode=1}
  finally{if(browser)await browser.close().catch(()=>{});server.kill('SIGTERM');await pause(150);fs.rmSync(dir,{force:true,recursive:true})}
 })();
