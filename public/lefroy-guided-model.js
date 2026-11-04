@@ -106,11 +106,11 @@
     }else{
       add(set.type==='bidet'?'Bidet':'Lavabo',choices.basin||set.basins[0],true);
       if(set.support)add('Support / colonne',set.support,true);
-      if(choices.waste)add('Bonde',choices.waste,false);
-      if(choices.trap)add('Siphon',choices.trap,false);
-      if(choices.extension&&choices.trap==='LB1302')add('Rallonge de siphon','LB1303',false);
-      if(choices.mounting&&set.basins.includes('XO6000'))add('Fixation murale','XO6010',false);
-      if(choices.rod && ['FR1383','LB1383'].includes(choices.waste))add('Rallonge tirette',choices.rod,false);
+      if(choices.waste)add('Bonde',choices.waste,true);
+      if(choices.trap)add('Siphon',choices.trap,true);
+      if(choices.extension&&choices.trap==='LB1302')add('Rallonge de siphon','LB1303',true);
+      if(choices.mounting&&set.basins.includes('XO6000'))add('Fixation murale','XO6010',true);
+      if(choices.rod && ['FR1383','LB1383'].includes(choices.waste))add('Rallonge tirette',choices.rod,true);
     }
     const seen=new Set(); const unique=specs.filter(function(x){const key=x.item&&x.item.reference||x.base;if(seen.has(key))return false;seen.add(key);return true;});
     return {set,parts:unique,total:unique.filter(function(x){return x.item;}).reduce(function(s,x){return s+Number(x.item.price||0);},0),
