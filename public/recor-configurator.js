@@ -256,7 +256,9 @@ function open(args={}){
     }
     if(!state.closed&&state.model===model)canvas.setAttribute('data-photo-failed','true');
    };
-   image.src=photo(model,index);
+   // RAL simulation requires readable pixel data. Prefer the same-origin
+   // Recor proxy; a direct cross-origin WordPress photo taints the canvas.
+   image.src=paintColor()?proxyPhoto(model,index):photo(model,index);
    return;
   }
   if(!image.complete||!image.naturalWidth)return;
@@ -282,8 +284,15 @@ function open(args={}){
     const light=(rr+gg+bb)/3;
     const difference=Math.hypot(rr-bg[0],gg-bg[1],bb-bg[2]);
     const span=(y-dy)/ph;
-    if(difference<32||light>232||span>.82)continue;
-    const strength=Math.min(.73,Math.max(0,(difference-25)/145))*(light<95?.86:1);
+    // Paint the outside shell, including light cast-iron surfaces. Keep the
+    // white inner enamel (upper opening), feet and surrounding room untouched.
+    const localX=(x-dx)/pw;
+    if(span<.43||span>.81||localX<.10||localX>.92)continue;
+    if(difference<25)continue;
+    const shellBand=(span-.43)/.38;
+    const outline=Math.min(.96,.10+Math.max(0,.47-shellBand)*.12);
+    if(localX<outline||localX>1-outline)continue;
+    const strength=Math.min(.88,Math.max(.48,(difference-16)/110))*(light>236?.70:1);
     if(strength<.03)continue;
     const shine=material?.type==='metal'?Math.sin(x*.035+y*.012)*13:0;
     // Material cues are illustrative only; exact manufacturer texture is not asserted.
@@ -299,9 +308,24 @@ function open(args={}){
    }
    ctx.putImageData(source,0,0);
   }catch(e){
-   // Manufacturer thumbnails can be displayed without pixel access if a
-   // browser refuses CORS despite same-origin server media.
-   console.warn('[Recor simulation couleur]',e.message);
+   // If the official manufacturer's image is CORS-tainted, pixel access is
+   // forbidden by the browser. A clipped, indicative exterior-colour layer
+   // still makes the requested RAL visible without touching the feet.
+   // This is deliberately a model-level mock-up, not an exact paint proof.
+   if(state.finishMode==='ral'&&state.photoIndex===0){
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(dx+pw*.10,dy+ph*.45);
+    ctx.bezierCurveTo(dx+pw*.25,dy+ph*.51,dx+pw*.68,dy+ph*.51,dx+pw*.93,dy+ph*.45);
+    ctx.bezierCurveTo(dx+pw*.89,dy+ph*.64,dx+pw*.83,dy+ph*.78,dx+pw*.72,dy+ph*.79);
+    ctx.lineTo(dx+pw*.34,dy+ph*.79);
+    ctx.bezierCurveTo(dx+pw*.19,dy+ph*.76,dx+pw*.16,dy+ph*.62,dx+pw*.10,dy+ph*.45);
+    ctx.closePath();ctx.clip();
+    ctx.globalAlpha=.72;ctx.fillStyle=chosen;ctx.fillRect(dx,dy,pw,ph);
+    ctx.restore();
+    canvas.dataset.previewApproximate='true';
+   }
+   console.warn('[Recor simulation couleur — aperçu de secours]',e.message);
   }
  }
  function capture(){
