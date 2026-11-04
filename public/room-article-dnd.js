@@ -117,7 +117,7 @@ function mount(host,options={}){
  };
  // Desktop browsers support a native HTML5 drag source on the visible grip.
  // Use it for precise trackpad/mouse movement; retain Sortable for touch pointers.
- const touchPointer=window.matchMedia?.('(pointer: coarse)')?.matches===true;
+ const touchPointer=Number(window.navigator?.maxTouchPoints||0)>0 && window.matchMedia?.('(pointer: coarse)')?.matches===true;
  const nativeSupported='draggable' in document.createElement('button');
  if(touchPointer&&typeof window.Sortable==='function'){
  for(const zone of zones){
@@ -131,8 +131,10 @@ function mount(host,options={}){
   }));
  }
  }else{
-  // Native HTML drag-and-drop fallback for workstations blocking the Sortable CDN.
+  // Desktop native drag is stable regardless of a browser's pointer-media emulation.
+  // Do not move the source while hovering: target elements must remain stable until drop.
   let dragged=null;
+  const clearDropMarker=()=>{for(const z of zones)z.classList.remove('article-drop-zone')};
   const bind=(element,name,fn)=>{
    element.addEventListener(name,fn);
    nativeCleanup.push(()=>element.removeEventListener(name,fn));
@@ -147,7 +149,7 @@ function mount(host,options={}){
     document.body.classList.add('room-article-dragging');
    });
    bind(handle,'dragend',()=>{
-    dragged=null;document.body.classList.remove('room-article-dragging');
+    dragged=null;clearDropMarker();document.body.classList.remove('room-article-dragging');
    });
   }
   for(const zone of zones){
@@ -155,16 +157,20 @@ function mount(host,options={}){
     if(!dragged)return;
     e.preventDefault();
     if(e.dataTransfer)e.dataTransfer.dropEffect='move';
-    const over=e.target.closest?.('.room-product[data-product-id]');
-    if(over&&over!==dragged&&over.parentElement===zone){
-     const r=over.getBoundingClientRect();
-     zone.insertBefore(dragged,e.clientY<r.top+r.height/2?over:over.nextSibling);
-    }else if(!over&&dragged.parentElement!==zone)zone.appendChild(dragged);
+    clearDropMarker();zone.classList.add('article-drop-zone');
    });
    bind(zone,'drop',e=>{
     if(!dragged)return;
     e.preventDefault();
-    const item=dragged;dragged=null;
+    const item=dragged;
+    const over=e.target.closest?.('.room-product[data-product-id]');
+    if(over&&over!==item&&over.parentElement===zone){
+     const bounds=over.getBoundingClientRect();
+     zone.insertBefore(item,e.clientY<bounds.top+bounds.height/2?over:over.nextSibling);
+    }else if(over!==item||item.parentElement!==zone){
+     zone.appendChild(item);
+    }
+    dragged=null;clearDropMarker();
     done({item,to:zone});
    });
   }
