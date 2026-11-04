@@ -3783,9 +3783,8 @@ function renderRoomsCore(){
    <div class="room-reorder-hint">⠿ Glissez la poignée d’un article pour le déplacer dans cette pièce ou une autre. Le devis suit cet ordre.</div>
    <div class="room-products" data-room-id="${esc(r.id)}">${ps.length?ps.map(p=>`
       <div class="room-product ${p.accessoryFor?'article-linked-card':''}" data-product-id="${esc(p.id)}">
-        ${p.accessoryFor?'':`<button type="button" class="article-drag-handle" title="Déplacer cet article dans une autre pièce ou modifier son ordre" aria-label="Déplacer ${esc(p.designation||p.reference||'cet article')}">⠿</button>`}
         <div class="room-prod-img">${roomProductImageHtml(p)}</div>
-        <div><b>${esc(p.designation)}</b><div class="tech">${p.sbordoniConfiguration?`${esc(p.manufacturer)} · ${esc(p.collection)} · Configuration complète`:`${esc(p.manufacturer)} · ${esc(p.collection)} · ${esc(p.reference)} · <b>${esc(safeExactFinishLabel(p))}</b>`}</div>${roughInWarningHtml(p)}${p.internalReference?`<div class="tech">Complet avec ${p.internalReference}</div>`:""}
+        <div>${p.accessoryFor?'':`<button type="button" class="article-drag-handle" title="Déplacer cet article dans une autre pièce ou modifier son ordre" aria-label="Déplacer ${esc(p.designation||p.reference||'cet article')}">⠿</button>`}<b>${esc(p.designation)}</b><div class="tech">${p.sbordoniConfiguration?`${esc(p.manufacturer)} · ${esc(p.collection)} · Configuration complète`:`${esc(p.manufacturer)} · ${esc(p.collection)} · ${esc(p.reference)} · <b>${esc(safeExactFinishLabel(p))}</b>`}</div>${roughInWarningHtml(p)}${p.internalReference?`<div class="tech">Complet avec ${p.internalReference}</div>`:""}
         ${p.sbordoniConfigurationIssue?`<div class="recor-config-error">${esc(p.sbordoniConfigurationIssue)}</div>`:""}${p.sbordoniConfiguration?`<button type="button" class="btn primary sbordoni-edit-config" data-id="${p.id}" data-room="${r.id}" style="margin:8px 0 4px">Modifier la configuration</button>`:""}
         <details class="article-editor">
           <summary>Modifier l'article</summary>
