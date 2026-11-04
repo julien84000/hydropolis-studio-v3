@@ -8,7 +8,9 @@
 const M=root.HydroRecorModel;
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money=v=>(Number(v)||0).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
-const photo=model=>'/api/recor-model-photo?model='+encodeURIComponent(model)+'&index=0';
+const curated=root.HydroRecorCurated;
+const proxyPhoto=(model,index=0)=>'/api/recor-model-photo?model='+encodeURIComponent(model)+'&index='+index;
+const photo=(model,index=0)=>curated?.photo(model,index)||proxyPhoto(model,index);
 const isBath=p=>p?.manufacturer==='Recor'&&p.category==='Bain';
 const externalFinish=p=>String(p?.finishCode||'').startsWith('WHITE')?'WHITE':'RAW';
 const DIMCATEGORY=['Baignoires sur pieds','Baignoires îlot','Baignoires rectangulaires'];
@@ -111,7 +113,7 @@ function open(args={}){
    '<div class="recor-foot-overlay">'+(footThumb?'<img src="'+esc(footThumb)+'" alt="Pieds sélectionnés">':'')+
    (foot?'<span>'+esc(foot.designation)+'</span>':'<span>Support à sélectionner</span>')+'</div></div>'+
    '<div class="recor-preview-hint">Simulation visuelle indicative : la teinte et la matière ne constituent pas une photographie fabricant de la finition exacte.</div>'+
-   (source?.images?.length>1?'<div class="recor-gallery">'+source.images.slice(0,5).map((img,i)=>'<button type="button" data-recor-photo="'+i+'" class="'+(state.photoIndex===i?'active':'')+'"><img src="/api/recor-model-photo?model='+encodeURIComponent(state.model)+'&index='+i+'" alt="Vue '+(i+1)+'"></button>').join('')+'</div>':'')+
+   (source?.images?.length>1?'<div class="recor-gallery">'+source.images.slice(0,5).map((img,i)=>'<button type="button" data-recor-photo="'+i+'" class="'+(state.photoIndex===i?'active':'')+'"><img src="'+esc(photo(state.model,i))+'" alt="Vue '+(i+1)+'"></button>').join('')+'</div>':'')+
    '<div class="recor-fields">'+
    '<label><span>1. Dimensions</span>'+selector('dimension',dim,state.dimension)+'</label>'+
    '<label><span>2. Finition de base tarifée</span>'+selector('finish',finishes,state.finish)+'</label>'+
@@ -240,8 +242,19 @@ function open(args={}){
    image=new Image();image.crossOrigin='anonymous';
    state.photoObjects.set(key,image);
    image.onload=()=>{if(!state.closed&&state.model===model&&state.photoIndex===index)renderPreview()};
-   image.onerror=()=>{if(!state.closed&&state.model===model)canvas.setAttribute('data-photo-failed','true')};
-   image.src='/api/recor-model-photo?model='+encodeURIComponent(model)+'&index='+index;
+   // Recor does not always expose CORS headers. Retry the same official
+   // photograph as a display-only image if pixel-readable loading fails.
+   image.onerror=()=>{
+    const official=curated?.photo(model,index);
+    if(official&&!image.dataset.noCors){
+     image.dataset.noCors='1';image.removeAttribute('crossorigin');image.src=official;return;
+    }
+    if(!image.dataset.proxyTried&&image.src!==location.origin+proxyPhoto(model,index)){
+     image.dataset.proxyTried='1';image.crossOrigin='anonymous';image.src=proxyPhoto(model,index);return;
+    }
+    if(!state.closed&&state.model===model)canvas.setAttribute('data-photo-failed','true');
+   };
+   image.src=photo(model,index);
    return;
   }
   if(!image.complete||!image.naturalWidth)return;

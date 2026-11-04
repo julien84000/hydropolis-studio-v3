@@ -5,6 +5,7 @@
  */
 const axios=require('axios'),cheerio=require('cheerio');
 const rows=require('./public/catalog_recor.json');
+const curated=require('./public/recor-media-curated.js');
 const cache=new Map(),pending=new Map();
 const supported=new Map();
 for(const item of rows)if(item.category==='Bain'){
@@ -90,6 +91,10 @@ function parseProduct(html,pageUrl,model){
 function service({get=axios.get,now=Date.now}={}){
  async function getMedia(model){
   if(!validModel(model))return null;
+  // Verified manufacturer model images work even when Render cannot scrape
+  // Recor WordPress from the server. The website remains the image origin.
+  const official=curated.get(model);
+  if(official)return official;
   const cached=cache.get(model);
   if(cached&&now()-cached.at<8*3600000)return cached.value;
   if(pending.has(model))return pending.get(model);

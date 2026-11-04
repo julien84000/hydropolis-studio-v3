@@ -2525,7 +2525,9 @@ function launchRecorGuidedConfigurator(initial=null,roomId=""){
  const onAdd=async({main,foot,waste,configuration,media,preview,roomId:selectedRoom})=>{
   const room=normalizedRoomId(selectedRoom||targetRoom);
   const rawPhoto="/api/recor-model-photo?model="+encodeURIComponent(configuration.model)+"&index=0";
-  const chosenPhoto=preview||rawPhoto;
+  // Keep a real manufacturer photograph in projects when the rendering proxy
+  // is unavailable; do not persist a broken local API URL.
+  const chosenPhoto=preview||media.image||window.HydroRecorCurated?.photo(configuration.model)||rawPhoto;
   const priceNote=configuration.pricingPending?
    " · ATTENTION : finition personnalisée ou antidérapant sur devis, supplément hors prix catalogue à confirmer avant devis définitif.":"";
   const bathData={...main,
