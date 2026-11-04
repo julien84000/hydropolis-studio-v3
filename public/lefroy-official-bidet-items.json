@@ -1,0 +1,68 @@
+{
+  "source": "https://uk.lefroybrooks.com/all-bidets",
+  "records": {
+    "lb-7205": {
+      "kind": "bidet",
+      "url": "https://uk.lefroybrooks.com/all-bidets/lb-7205",
+      "images": [
+        {
+          "url": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1601047274112-QP02NLUE86W9NFPMURX2/Lefroy-Brooks_LB-7205.jpg",
+          "label": "Lefroy-Brooks_LB-7205.jpg"
+        },
+        {
+          "url": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1601047299373-J5UTSRXJ9DJHCDRMC4N3/Lefroy-Brooks_LB-7205.jpg",
+          "label": "Lefroy-Brooks_LB-7205.jpg"
+        },
+        {
+          "url": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1589283908515-Q8SH3OQQAN7WETYRNSAJ/Lefroy-Brooks_Classic_Bidet_LB-7205_Web.jpg",
+          "label": "Lefroy-Brooks_Classic_Bidet_LB-7205_Web.jpg"
+        }
+      ],
+      "docs": [
+        "https://uk.lefroybrooks.com/s/LB-7205_Technical_Specification_Sheet_B.pdf"
+      ]
+    },
+    "lb-7505": {
+      "kind": "bidet",
+      "url": "https://uk.lefroybrooks.com/all-bidets/lb-7505",
+      "images": [
+        {
+          "url": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1601550578968-1J3VOMEZL1YKYT5ZCDEH/Lefroy-Brooks_LB-7505.jpg",
+          "label": "Lefroy-Brooks_LB-7505.jpg"
+        },
+        {
+          "url": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1589283854590-J68DMNFQ7IMR4WXDTC9P/Lefroy-Brooks_Classic_Lissa-Doon-bidet_Web.jpg",
+          "label": "Lefroy-Brooks_Classic_Lissa-Doon-bidet_Web.jpg"
+        },
+        {
+          "url": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1601550594553-C0VLO0I3GR6VBQ5XB4AO/Lefroy-Brooks_LB-7505.jpg",
+          "label": "Lefroy-Brooks_LB-7505.jpg"
+        }
+      ],
+      "docs": [
+        "https://uk.lefroybrooks.com/s/LB-7505_Technical_Specification_Sheet_A.pdf"
+      ]
+    },
+    "lb-7705": {
+      "kind": "bidet",
+      "url": "https://uk.lefroybrooks.com/all-bidets/lb-7705",
+      "images": [
+        {
+          "url": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1589283967648-RRY375IRXUMTGDWNHPU6/Lefroy-Brooks_La-Chapelle_Bidet_Web.jpg",
+          "label": "Lefroy-Brooks_La-Chapelle_Bidet_Web.jpg"
+        },
+        {
+          "url": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1601047351993-01PEXMJ05FLAEOYKMJ55/Lefroy-Brooks_LB-7705.jpg",
+          "label": "Lefroy-Brooks_LB-7705.jpg"
+        },
+        {
+          "url": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1601047372737-YQTVIMXTZNS53BGA0GVL/Lefroy-Brooks_LB-7705.jpg",
+          "label": "Lefroy-Brooks_LB-7705.jpg"
+        }
+      ],
+      "docs": [
+        "https://uk.lefroybrooks.com/s/LB-7705_Technical_Specification_Sheet_A.pdf"
+      ]
+    }
+  }
+}
