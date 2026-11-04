@@ -26,6 +26,7 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   await page.goto(base,{waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>!!window.HydroLefroyGuided&&typeof catalogIndex!=='undefined'&&
    catalogIndex.maker('Lefroy Brooks').length===3397&&!!state.rooms?.[0]?.id,{timeout:90000});
+  await page.evaluate(()=>showView('catalog'));
   await page.evaluate(()=>{
    document.querySelector('#manufacturerFilter').value='Lefroy Brooks';
    document.querySelector('#manufacturerFilter').dispatchEvent(new Event('change',{bubbles:true}));
