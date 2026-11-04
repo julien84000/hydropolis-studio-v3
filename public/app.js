@@ -3223,7 +3223,9 @@ function groupQuoteRows(rows){
     if(spaces.length===1)for(const row of roomRows){
       if(row.space==="AUTRES"){row.space=spaces[0];row.spaceLabel=quoteSpaceLabel(row.space);}
     }
-    return roomRows; // Preserve the original room order even across space categories.
+    const roomId=String(roomRows[0].roomId||'');
+    const custom=(state.rooms||[]).some(r=>String(r.id)===roomId && r.articleOrderCustomized===true);
+    return custom?roomRows:roomRows.sort((a,b)=>(QUOTE_SPACE_ORDER[a.space]??99)-(QUOTE_SPACE_ORDER[b.space]??99));
   });
 }
 function quoteEditorRows(){
@@ -3253,7 +3255,8 @@ function quoteEditorRows(){
         total:manualQuoteNetUnit(m)*manualItemQuantity(m)
       });
     });
-    rows.push(...roomRows); // Quote editor follows Projet par pièce order.
+    if(room.articleOrderCustomized!==true)roomRows.sort((a,b)=>(QUOTE_SPACE_ORDER[a.space]??99)-(QUOTE_SPACE_ORDER[b.space]??99)||a.sourceOrder-b.sourceOrder);
+    rows.push(...roomRows); // Quote editor matches custom room ordering.
   }
   return groupQuoteRows(rows);
 }
@@ -3469,7 +3472,8 @@ function quoteRows(){
         freight:0,leadTime:manualQuoteLeadTime(m),manual:true,discount,manualIndex
       });
     });
-    rows.push(...roomRows); // Quote follows Projet par pièce order, not space category.
+    if(room.articleOrderCustomized!==true)roomRows.sort((a,b)=>(QUOTE_SPACE_ORDER[a.space]??99)-(QUOTE_SPACE_ORDER[b.space]??99)||a.sourceOrder-b.sourceOrder);
+    rows.push(...roomRows); // Custom room ordering always takes precedence when enabled.
   }
   return groupQuoteRows(rows);
 }

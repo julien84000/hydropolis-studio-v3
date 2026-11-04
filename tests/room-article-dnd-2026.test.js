@@ -40,9 +40,9 @@ test('Reject moving a mandatory component alone and invalid or incomplete orders
  assert.throws(()=>reorderSelected(samples,['r1','r2'],{r1:['a','b'],r2:['c']},'other','r2',visible),/inconnu/);
 });
 test('Devis, quotation editor and dossier are wired to the room order rather than re-sorting by type',()=>{
- assert.match(src,/function quoteRows\(\)[\s\S]*?rows\.push\(\.\.\.roomRows\); \/\/ Quote follows Projet par pièce order/);
- assert.match(src,/function quoteEditorRows\(\)[\s\S]*?rows\.push\(\.\.\.roomRows\); \/\/ Quote editor follows Projet par pièce order/);
- assert.match(src,/return roomRows; \/\/ Preserve the original room order/);
+ assert.match(src,/function quoteRows\(\)[\s\S]*?if\(room\.articleOrderCustomized!==true\)roomRows\.sort/);
+ assert.match(src,/function quoteEditorRows\(\)[\s\S]*?if\(room\.articleOrderCustomized!==true\)roomRows\.sort/);
+ assert.match(src,/return custom\?roomRows:roomRows\.sort/);
  assert.match(src,/preserveArticleOrder:room\.articleOrderCustomized===true/);
  assert.match(src,/Ordre des articles, du devis et du dossier photo mis à jour/);
  assert.match(src,/delete layout\.assignments\[id\]/);
