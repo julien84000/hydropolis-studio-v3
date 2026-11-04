@@ -115,7 +115,11 @@ function mount(host,options={}){
   try{options.onReorder(collect(),movedId,targetRoom)}
   catch(e){console.error('[room article order]',e);options.onError?.(e);options.onCancel?.();}
  };
- if(typeof window.Sortable==='function'){
+ // Desktop browsers support a native HTML5 drag source on the visible grip.
+ // Use it for precise trackpad/mouse movement; retain Sortable for touch pointers.
+ const touchPointer=window.matchMedia?.('(pointer: coarse)')?.matches===true;
+ const nativeSupported='draggable' in document.createElement('button');
+ if(touchPointer&&typeof window.Sortable==='function'){
  for(const zone of zones){
   widgets.push(new window.Sortable(zone,{
    group:{name:'hydropolis-room-articles',pull:true,put:true},
