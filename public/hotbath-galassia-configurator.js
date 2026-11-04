@@ -141,19 +141,27 @@ function open(rows,roomId,onAdd){
     // Prefer verified original Italian catalogue photography, except when a
     // newly checked photo of the selected finish is available on hotbath.com.
     const requestJson=url=>fetch(url,{credentials:'same-origin'}).then(r=>r.ok?r.json():null).catch(()=>null);
-    requestJson(task.finish?modernUrl:italianUrl).then(async first=>{
-      let data=first;
-      if(!data?.image)data=await requestJson(task.finish?italianUrl:modernUrl);
+    requestJson(italianUrl).then(async official=>{
+      const docKey=mediaKey(task.collection,task.model);
+      if(official?.ok&&official.collection===task.collection&&clean(official.model)===clean(task.model)&&
+         (official.technicalSheetUrl||official.drawingUrl)){
+       documents.set(docKey,{technicalSheetUrl:official.technicalSheetUrl||'',
+        drawingUrl:official.drawingUrl||'',productUrl:official.productUrl||''});
+      }
+      const modern=task.finish?await requestJson(modernUrl):null;
+      // Official product photos outrank generic model photos. Exact finish
+      // verified by the modern site is the only higher-priority source.
+      const data=modern?.scope==='exact'&&modern?.image?modern:
+       official?.image?official:modern?.image?modern:await requestJson(modernUrl);
       const matchItalian=String(data?.image||'').match(/^https:\/\/(?:www\.)?hotbath\.it\/documents\/+ProdCateg\/\d+\/([^/?#]+)$/i);
       const matchModern=String(data?.image||'').match(/^https:\/\/hotbath\.com\/images\/compano\/([^/?#]+)\//i);
       const italianValid=matchItalian&&data.verified===true&&
-        (matchItalian[1].toUpperCase().startsWith(task.model.toUpperCase()+'_')||
-         matchItalian[1].toUpperCase().startsWith(task.model.toUpperCase()+'-'));
+       matchItalian[1].toUpperCase().startsWith(task.model.toUpperCase()+'_');
       const modernValid=matchModern&&clean(matchModern[1])===clean(task.model);
       if(data?.ok&&(italianValid||modernValid)&&data.collection===task.collection&&
-        clean(data.model)===clean(task.model)&&
-        (data.scope==='model'||data.scope==='exact')){
-        images.set(task.key,data);
+       clean(data.model)===clean(task.model)&&(data.scope==='model'||data.scope==='exact')){
+       images.set(task.key,data);
+       if(!task.finish&&!images.has(docKey))images.set(docKey,data);
       }else failed.add(task.key);
     }).catch(()=>failed.add(task.key)).finally(()=>{
       pending.count--;flushImages();
@@ -179,7 +187,7 @@ function open(rows,roomId,onAdd){
   }
   function close(){
    if(closed)return;
-   closed=true;ov.remove();document.removeEventListener('keydown',onKey);
+   closed=true;imageObserver?.disconnect();ov.remove();document.removeEventListener('keydown',onKey);
    previous?.focus?.();resolve(true);
   }
   function onKey(e){if(e.key==='Escape'){e.preventDefault();close()}}
@@ -345,10 +353,14 @@ function open(rows,roomId,onAdd){
   }
   function render(resetSearch=true){
    if(!ov.isConnected||!taxonomy||!media)return;
+   const browserScroll=$('.hotbath-browser')?.scrollTop||0;
+   const modelScroll=$('.hotbath-models')?.scrollTop||0;
    const focus=$('.galassia-search')===document.activeElement;
    const pos=focus?$('.galassia-search').selectionStart:null;
    if(resetSearch)$('.galassia-search').value=search;
    renderCollections();renderCategories();renderModels();renderSelection();
+   if($('.hotbath-browser'))$('.hotbath-browser').scrollTop=browserScroll;
+   if($('.hotbath-models'))$('.hotbath-models').scrollTop=modelScroll;
    if(focus){const input=$('.galassia-search');input.focus();input.setSelectionRange(pos,pos)}
   }
   $('.galassia-search').oninput=e=>{search=e.target.value;base='';ref='';render(false)};
