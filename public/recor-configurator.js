@@ -27,11 +27,15 @@ function open(args={}){
   model:M.modelCode(first),dimension:M.dimension(first)?.label||'',
   finish:externalFinish(first),holes:String(first?.finishCode||'').endsWith('-TH'),
   feet:args.existingFootRef||'',waste:args.existingWasteRef||'',
-  finishMode:args.initial?.recorConfiguration?.finishMode||'standard',
+  finishMode:(args.initial?.recorConfiguration?.finishMode==='ral'?'ral-classic':args.initial?.recorConfiguration?.finishMode)||'standard',
   ral:args.initial?.recorConfiguration?.ral||'',
   material:args.initial?.recorConfiguration?.material||'',
   customColor:args.initial?.recorConfiguration?.previewColor||'#84949a',
   antiSlip:!!args.initial?.recorConfiguration?.antiSlip,
+  feetFinish:args.initial?.recorConfiguration?.feetFinish||'',
+  individualBox:!!args.initial?.recorConfiguration?.individualBox,
+  rectFeet:!!args.initial?.recorConfiguration?.rectFeet,
+  chromeGrips:!!args.initial?.recorConfiguration?.chromeGrips,
   photoIndex:0,media:new Map(),photoObjects:new Map(),closed:false,
   photoError:false,premiumTarget:''
  };
@@ -101,9 +105,10 @@ function open(args={}){
   const selectItem=(items,value,field,empty)=>selector(field,
    [{label:empty,value:''},...items.map(x=>({label:x.designation+' · '+x.finish+' · '+money(x.price)+' HT',value:x.reference}))],value);
   const footThumb=foot?.image||foot?.images?.[0]||'';
-  const custom=state.finishMode!=='standard'&&(state.ral||state.material);
-  const ralExtra=M.ralClassicSurcharge(state.finishMode,state.finish);
-  const needsQuote=(state.finishMode!=='standard'&&state.finishMode!=='ral')||state.antiSlip;
+  const pricedAddons=M.configuredExtras(main,foot,state);
+  const extras=M.extraTotals(pricedAddons);
+  const listedModes=['standard','ral','ral-classic','ral-design','primer','polished','gilded','mosaic','glass-tile'];
+  const needsQuote=!listedModes.includes(state.finishMode);
   const sourceURL=source?.productUrl||main.manufacturerUrl||'https://recor.pt/en/';
   const tech=source?.technicalSheetUrl||'';
   const brochure=source?.brochureUrl||'';
@@ -123,20 +128,36 @@ function open(args={}){
    '<label><span>5. Vidage (option)</span>'+selectItem(allWaste,state.waste,'waste','Sans vidage Recor ajouté')+'</label>'+
    '<label><span>6. Finition extérieure personnalisée</span>'+selector('finishMode',[
       {label:'Finition de base du tarif',value:'standard'},
-      {label:'RAL Classic · +769 € HT sur extérieur blanc',value:'ral'},
-      ...M.PREMIUM_FINISHES.filter(m=>(M.PREMIUM_ELIGIBILITY[m.id]||[]).includes(state.model)).map(m=>({label:m.label+' · sur devis',value:m.label})),
+      ...(state.category!=='Baignoires rectangulaires'?[
+       {label:'RAL Classic · +'+money(M.extraLine('ral-classic').price)+' HT',value:'ral-classic'},
+       {label:'RAL Design (couleur spéciale) · +'+money(M.extraLine('ral-design').price)+' HT',value:'ral-design'}]:[]),
+      ...(state.category==='Baignoires sur pieds'?[
+       {label:'Apprêt extérieur · +'+money(M.extraLine('primer').price)+' HT',value:'primer'},
+       {label:'Extérieur poli · +'+money(M.extraLine('polished').price)+' HT',value:'polished'},
+       {label:'Dorure main · +'+money(M.extraLine('gilded').price)+' HT',value:'gilded'},
+       {label:'Mosaïque nacre · +'+money(M.extraLine('mosaic').price)+' HT',value:'mosaic'},
+       {label:'Mosaïque verre · +'+money(M.extraLine('glass-tile').price)+' HT',value:'glass-tile'}
+      ]:[]),
+      ...M.PREMIUM_FINISHES.filter(m=>(M.PREMIUM_ELIGIBILITY[m.id]||[]).includes(state.model)).map(m=>({label:m.label+' · sur devis selon modèle',value:m.label})),
       {label:'Autre matière sur étude fabricant',value:'autre'}],state.finishMode)+'</label>'+
-   (state.finishMode==='ral'?'<label><span>Code RAL Classic ou HEX de simulation</span><input class="recor-ral" placeholder="RAL 7016, RAL 9005, #8F8F8F…" value="'+esc(state.ral)+'"></label>'+
+   (M.isRal(state.finishMode)?'<label><span>Référence '+(state.finishMode==='ral-design'?'RAL Design':'RAL Classic')+' ou HEX de simulation</span><input class="recor-ral" placeholder="RAL 7016, RAL 9005, #8F8F8F…" value="'+esc(state.ral)+'"></label>'+
     '<label><span>Ajuster la couleur d’aperçu</span><input class="recor-pick-color" type="color" value="'+esc(state.customColor)+'"></label>':
     state.finishMode!=='standard'?'<label><span>Matière / finition de simulation</span><input class="recor-material" placeholder="Cuivre, laiton, inox, bronze…" value="'+esc(state.material||state.finishMode)+'"></label>':'')+
-   '<label class="recor-check"><input type="checkbox" data-recor-check="antiSlip" '+(state.antiSlip?'checked':'')+'> Fond antidérapant · sur devis</label>'+
+   '<label class="recor-check"><input type="checkbox" data-recor-check="antiSlip" '+(state.antiSlip?'checked':'')+'> Fond antidérapant · +'+money(M.extraLine('anti-slip').price)+' HT</label>'+
+   (state.category!=='Baignoires îlot'?'<label class="recor-check"><input type="checkbox" data-recor-check="individualBox" '+(state.individualBox?'checked':'')+'> Emballage individuel si commande inférieure à la palette · +'+money(M.extraLine('individual-box').price)+' HT</label>':'')+
+   (foot?.collection==='Pieds Recor'?'<label><span>Option de finition des pieds (si applicable)</span>'+
+      selector('feetFinish',[
+       {label:'Finition des pieds au tarif',value:''},
+       {label:'Peinture couleur spéciale · +'+money(M.extraLine('feet-special').price)+' HT',value:'special'},
+       {label:'Dorure à la feuille · +'+money(M.extraLine('feet-gilded').price)+' HT',value:'gilded'}],state.feetFinish)+'</label>':'')+
+   (state.category==='Baignoires rectangulaires'?'<label class="recor-check"><input type="checkbox" data-recor-check="rectFeet" '+(state.rectFeet?'checked':'')+'> Jeu de 4 pieds · +'+money(M.extraLine(String(main.base||'').endsWith('-MORITZ')?'rect-feet-standard':'rect-feet-adjustable').price)+' HT</label>'+
+     '<label class="recor-check"><input type="checkbox" data-recor-check="chromeGrips" '+(state.chromeGrips?'checked':'')+'> Poignées chromées (paire) · +'+money(M.extraLine('chrome-grips').price)+' HT</label>':'')+
    '</div>'+
    '<div class="recor-price-lines"><div><span>Baignoire · '+esc(main.reference)+'</span><b>'+money(main.price)+' HT</b></div>'+
    (foot?'<div><span>Pieds · '+esc(foot.reference)+'</span><b>'+money(foot.price)+' HT</b></div>':'')+
    (waste?'<div><span>Vidage · '+esc(waste.reference)+'</span><b>'+money(waste.price)+' HT</b></div>':'')+
-   (ralExtra?'<div class="recor-ral-surcharge"><span>Plus-value RAL Classic · extérieur blanc</span><b>'+money(ralExtra)+' HT</b></div>':'')+
-   ''+
-   '<div class="recor-price-total"><b>Total produits HT (hors port fournisseur)</b><strong>'+money(M.selectedTotal(main,foot,waste,ralExtra))+' HT</strong></div>'+
+   pricedAddons.map(x=>'<div class="recor-priced-addon"><span>'+esc(x.label)+'</span><b>'+money(x.price)+' HT</b></div>').join('')+
+   '<div class="recor-price-total"><b>Total produits HT (hors port fournisseur)</b><strong>'+money(M.selectedTotal(main,foot,waste,extras.price))+' HT</strong></div>'+
    (needsQuote?'<p class="recor-alert">Autres personnalisations : prix de l’option non indiqué, à confirmer avant devis définitif.</p>':'')+
    '</div>'+
    '<div class="recor-technical-links">'+
@@ -216,7 +237,7 @@ function open(args={}){
  }
  function paintColor(){
   if(state.finishMode==='standard')return null;
-  if(state.finishMode==='ral')return M.ralColor(state.ral)||state.customColor;
+  if(M.isRal(state.finishMode))return M.ralColor(state.ral)||state.customColor;
   const mat=M.materialFromText(state.material||state.finishMode);
   return mat?.color||null;
  }
@@ -312,7 +333,7 @@ function open(args={}){
    // forbidden by the browser. A clipped, indicative exterior-colour layer
    // still makes the requested RAL visible without touching the feet.
    // This is deliberately a model-level mock-up, not an exact paint proof.
-   if(state.finishMode==='ral'&&state.photoIndex===0){
+   if(M.isRal(state.finishMode)&&state.photoIndex===0){
     ctx.save();
     ctx.beginPath();
     ctx.moveTo(dx+pw*.10,dy+ph*.45);
@@ -336,8 +357,8 @@ function open(args={}){
   const {main,foot,waste}=current();
   const error=dlg.querySelector('.recor-error');
   if(!main){if(error)error.textContent='Référence tarifée introuvable';return}
-  if(state.finishMode==='ral'&&state.finish!=='WHITE'){if(error)error.textContent='Le RAL Classic nécessite la baignoire Extérieur peint blanc.';return}
-  if(state.finishMode==='ral'&&!String(state.ral).trim()){if(error)error.textContent='Indiquez la référence du RAL Classic.';return}
+  if(M.isRal(state.finishMode)&&state.finish!=='WHITE'){if(error)error.textContent='La finition RAL nécessite la baignoire Extérieur peint blanc.';return}
+  if(M.isRal(state.finishMode)&&!String(state.ral).trim()){if(error)error.textContent='Indiquez la référence RAL Classic ou Design.';return}
   if(includesFeet(main)&&!foot){if(error)error.textContent='Choisissez des pieds ou un socle compatible.';return}
   const configuration={
    model:state.model,dimensions:M.technicalDimension(state.model,state.dimension),nominalTariffDimensions:state.dimension,
@@ -345,10 +366,13 @@ function open(args={}){
    feetReference:foot?.reference||'',wasteReference:waste?.reference||'',
    finishMode:state.finishMode,ral:state.ral,material:state.material,
    previewColor:paintColor(),antiSlip:state.antiSlip,
-   ralClassicSurchargeHT:M.ralClassicSurcharge(state.finishMode,state.finish),
-   ralClassicSupplierSurchargeHT:M.ralClassicSurcharge(state.finishMode,state.finish)?M.RAL_CLASSIC_SUPPLIER_SURCHARGE_HT:0,
-   pricingPending:(state.finishMode!=='standard'&&state.finishMode!=='ral')||state.antiSlip,
-   pricingNote:'Autre finition personnalisée ou antidérapant : supplément à confirmer',
+   feetFinish:state.feetFinish,individualBox:state.individualBox,
+   rectFeet:state.rectFeet,chromeGrips:state.chromeGrips,
+   extraLines:M.configuredExtras(main,foot,state),
+   extraPriceHt:M.extraTotals(M.configuredExtras(main,foot,state)).price,
+   extraPurchaseHt:M.extraTotals(M.configuredExtras(main,foot,state)).purchase,
+   pricingPending:!['standard','ral','ral-classic','ral-design','primer','polished','gilded','mosaic','glass-tile'].includes(state.finishMode),
+   pricingNote:'Finition hors des options tarifées : prix à confirmer avec Recor',
    catalogue2026Page:M.PDF_MODEL_PAGES[state.model]?.[0]||null,
    technicalCatalogue2026Page:M.PDF_MODEL_PAGES[state.model]?.[1]||null
   };
@@ -401,12 +425,13 @@ function open(args={}){
   if(f==='dimension'){state.dimension=e.target.value;state.feet='';state.waste='';render()}
   if(f==='finish'){
    state.finish=e.target.value;
-   if(state.finishMode==='ral'&&state.finish!=='WHITE')state.finishMode='standard';
+   if(M.isRal(state.finishMode)&&state.finish!=='WHITE')state.finishMode='standard';
    render();
   }
   if(f==='holes'){state.holes=e.target.value==='yes';render()}
-  if(f==='feet'){state.feet=e.target.value;render()}
+  if(f==='feet'){state.feet=e.target.value;state.feetFinish='';render()}
   if(f==='waste'){state.waste=e.target.value;render()}
+  if(f==='feetFinish'){state.feetFinish=e.target.value;render()}
   if(f==='premiumTarget'){state.premiumTarget=e.target.value;return}
   if(f==='finishMode'){
    const previousMode=state.finishMode;
@@ -415,12 +440,15 @@ function open(args={}){
    // Re-fetch it via the same-origin endpoint on entering RAL preview mode.
    if((previousMode==='standard')!==(state.finishMode==='standard'))
      state.photoObjects.clear();
-   if(state.finishMode!=='standard'&&state.finish!=='WHITE'&&M.pricedOptions(rows,state.model).finishes.some(x=>x.key==='WHITE'))
-      state.finish='WHITE';
-   if(state.finishMode!=='ral'&&state.finishMode!=='standard')state.material=state.finishMode==='autre'?'':state.finishMode;
+   const painted=M.isRal(state.finishMode)||['polished','gilded','mosaic','glass-tile'].includes(state.finishMode);
+   if(painted&&state.finish!=='WHITE'&&M.pricedOptions(rows,state.model).finishes.some(x=>x.key==='WHITE'))state.finish='WHITE';
+   if(state.finishMode==='primer'&&M.pricedOptions(rows,state.model).finishes.some(x=>x.key==='RAW'))state.finish='RAW';
+   if(!M.isRal(state.finishMode)&&state.finishMode!=='standard')state.material=state.finishMode==='autre'?'':state.finishMode;
    render();
   }
-  if(e.target.dataset.recorCheck==='antiSlip'){state.antiSlip=e.target.checked;render()}
+  for(const key of ['antiSlip','individualBox','rectFeet','chromeGrips']){
+   if(e.target.dataset.recorCheck===key){state[key]=e.target.checked;render();return}
+  }
   if(e.target.matches('.recor-pick-color')){state.customColor=e.target.value;renderPreview()}
  });
  overlay.addEventListener('input',e=>{
