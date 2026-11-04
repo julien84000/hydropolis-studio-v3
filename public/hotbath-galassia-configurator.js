@@ -329,7 +329,8 @@ function open(rows,roomId,onAdd){
       '<div><span>Remise d’achat fournisseur</span><b>'+esc(negotiatedDiscount===59.5?'50 % + 10 % + 10 % (59,5 %)':'55 %')+'</b></div>'+
       '<div><span>Coût d’achat théorique HT</span><b>'+money(negotiatedCost)+'</b></div></div>'+
     orientationMarkup+bodyMarkup+rayDetails+
-    '<div class="galassia-docs"><a href="'+esc(italian?.byCollection?.[collection]?.[m.base]?.officialProductPage||'https://hotbath.it/fr/prods/')+'" target="_blank" rel="noopener noreferrer">Voir le modèle sur Hotbath Italie</a>'+
+    '<div class="galassia-docs"><a href="'+esc(docs.productUrl||italian?.byCollection?.[collection]?.[m.base]?.officialProductPage||
+      'https://www.hotbath.it/en/searchproducts/'+encodeURIComponent(m.base))+'" target="_blank" rel="noopener noreferrer">Voir le modèle sur Hotbath Italie</a>'+
     ''+productPdf+catalogueDocument+(cataloguePage?
      '<a href="'+esc(cataloguePage.reproduction)+'" target="_blank" rel="noopener noreferrer">Catalogue 2026 · copie consultable</a>':'')+
      '<span>Tarifs : base importée 2026 · référence sans suffixe IT.</span></div>'+
