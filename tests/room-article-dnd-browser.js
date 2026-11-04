@@ -44,10 +44,15 @@ const pause=ms=>new Promise(r=>setTimeout(r,ms));
   assert.equal(await zone1.locator(':scope > .room-product[data-product-id]').count(),3);
   assert.equal(await zone2.locator(':scope > .room-product[data-product-id]').count(),1);
   assert.equal(await page.locator('#roomsEditor .article-drag-handle').count(),4);
+  await page.evaluate(()=>{
+   window.dragEvents=[];
+   for(const type of ['pointerdown','pointerup','mousedown','mouseup','dragstart','dragover','drop','dragend'])document.addEventListener(type,e=>window.dragEvents.push({type,target:e.target.className,id:e.target.closest?.('[data-product-id]')?.dataset.productId,x:e.clientX,y:e.clientY}),true);
+  });
   await zone1.locator('[data-product-id="gamma"] .article-drag-handle').dragTo(
    zone1.locator('[data-product-id="alpha"] .article-drag-handle'),
    {sourcePosition:{x:12,y:12},targetPosition:{x:10,y:2},steps:24}
   );
+  console.log('EVENTS',await page.evaluate(()=>window.dragEvents));
   const observed=await page.evaluate(()=>({
     stateOrder:state.selected.filter(p=>p.roomId==='r1').map(p=>p.id),
     domOrder:[...document.querySelectorAll('#roomsEditor .room-products[data-room-id="r1"] > .room-product[data-product-id]')].map(p=>p.dataset.productId),
