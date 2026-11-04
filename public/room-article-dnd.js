@@ -5,7 +5,13 @@
 (function(root,factory){
  const api=factory();
  if(typeof module==='object'&&module.exports)module.exports=api;
- if(root)root.HydroRoomArticleDnD=api;
+ if(root){
+  root.HydroRoomArticleDnD=api;
+  // Sortable is deferred; the first project render may happen before it loads.
+  document.addEventListener('DOMContentLoaded',()=>{
+   if(document.querySelector('#roomsEditor .room-products[data-room-id]') && typeof renderRooms==='function')renderRooms();
+  },{once:true});
+ }
 })(typeof window==='object'?window:null,function(){
 'use strict';
 let widgets=[];
