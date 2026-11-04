@@ -10,3 +10,10 @@
 .recor-technical-links a{color:#875e32}.recor-technical-links small{color:#888;width:100%}
 .recor-add-btn{width:100%;border:0;background:#1c5843;color:white;padding:13px;border-radius:6px;font-weight:700;cursor:pointer}
 .recor-add-btn:disabled{opacity:.5;cursor:not-allowed}.recor-error{color:#ad4435;font-size:11px}
+
+/* Recor 2026 — premium finish choice and verified manufacturer quote-only ranges. */
+.recor-premium-target{display:block;margin:12px 0;font-size:12px;font-weight:600}
+.recor-premium-target span{display:block;margin-bottom:6px}
+.recor-premium-target select{width:100%;height:38px;border:1px solid #d4d4d4;border-radius:6px;background:#fff;color:#292b2a;padding:7px}
+.recor-apply-premium{display:block;width:100%;margin:12px 0;border:0;background:#1c5843;color:#fff;padding:12px;border-radius:6px;font-weight:700;cursor:pointer}
+.recor-warn{background:#f5f0e8;border-left:3px solid #b69a72;border-radius:5px;padding:10px 11px;font-size:12px;line-height:1.5;margin:14px 0}
