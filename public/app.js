@@ -2105,7 +2105,15 @@ function renderCatalog(){
      <div><span class="eyebrow">${esc(fs.manufacturer)} · CATALOGUE VISUEL</span><h3>Parcourir les collections du fabricant</h3><p>${fs.manufacturer==="Gessi"?"Univers → collection → famille → produit → finition. Navigation inspirée de Gessi Area Pro.":"Collection → espace → modèle → finition. Références et prix du catalogue existant."}</p></div>
      <button class="btn primary manufacturer-guide-open" type="button">Explorer les collections</button>
    </section>`:"";
-   results.innerHTML=coalbrookLauncher+galassiaLauncher+radawayLauncher+amphoraLauncher+dornbrachtLauncher+naxaniLauncher+betteLauncher+catalanoLauncher+hidroboxLauncher+sbordoniLauncher+manufacturerGuideLauncher+(productCards||`<div class="empty">Aucun résultat.</div>`);
+   const recorLauncher=fs.manufacturer==='Recor'?'<section class="manufacturer-guide-launcher">'+
+     '<div><span class="eyebrow">RECOR · CATALOGUE 2026</span><h3>Configurer les baignoires Recor</h3>'+
+     '<p>Famille → modèle → dimensions → pieds → couleur RAL ou matière → vidage. Photos et plans techniques officiels.</p></div>'+
+     '<button class="btn primary recor-explorer-open" type="button">Explorer les collections Recor</button></section>':'';
+   results.innerHTML=recorLauncher+coalbrookLauncher+galassiaLauncher+radawayLauncher+amphoraLauncher+dornbrachtLauncher+naxaniLauncher+betteLauncher+catalanoLauncher+hidroboxLauncher+sbordoniLauncher+manufacturerGuideLauncher+(productCards||`<div class="empty">Aucun résultat.</div>`);
+   results.querySelector(".recor-explorer-open")?.addEventListener("click",()=>{
+     const room=$("#targetRoom")?.value||state.rooms[0]?.id||"";
+     launchRecorGuidedConfigurator(null,room);
+   });
    results.querySelector(".coalbrook-explorer-open")?.addEventListener("click",()=>{
      const target=$("#targetRoom")?.value||state.rooms[0]?.id||"";
      window.HydroCoalbrookConfigurator?.launch?.(null,target);
