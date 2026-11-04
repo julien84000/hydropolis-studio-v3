@@ -54,6 +54,12 @@ const PDF_MODEL_PAGES=Object.freeze({
 const TAPHOLABLE=new Set(['CARLTON','ANTIQUE','SLIPPER','DUAL','ROLL-TOP','SIENA','MORGAN','DAKOTA','FLEMING','MORITZ','BAVARIA','CLASSIC','BALI']);
 const PREMIUM=new Set(['HUDSON','CARLTON','ANTIQUE','SLIPPER','DUAL','ROLL-TOP','PRIMROSE','LYRA','SIENA','MORGAN','DAKOTA','EPOQUE','GRAND-EPOQUE','IRIS']);
 const METALS=PREMIUM_FINISHES.map(x=>x.label);
+const RAL_CLASSIC_PUBLIC_SURCHARGE_HT=769;
+// Price list 09/01/2026: standard outside finishing in colour €290.93 supplier net.
+const RAL_CLASSIC_SUPPLIER_SURCHARGE_HT=290.93;
+function ralClassicSurcharge(finishMode,baseFinish){
+ return finishMode==='ral'&&baseFinish==='WHITE'?RAL_CLASSIC_PUBLIC_SURCHARGE_HT:0;
+}
 const RALS=Object.freeze({
  '9005':'#0a0a0a','9010':'#f5f2e9','9016':'#f6f6f6','7016':'#383e42','7021':'#303438',
  '7035':'#c5c7c4','7032':'#b5b0a1','7039':'#6b665e','7044':'#cac4b0','1013':'#e7dfcb',
@@ -152,10 +158,10 @@ function materialFromText(text){
  const hit=Object.keys(MATERIALS).find(k=>v.includes(k));return hit?MATERIALS[hit]:null;
 }
 function productOptions(p){const key=modelCode(p);return {model:key,...pricedOptions([p],key)};}
-function selectedTotal(main,foot,waste){
- return [main,foot,waste].reduce((n,p)=>n+Number(p?.price||0),0);
+function selectedTotal(main,foot,waste,extraHt=0){
+ return [main,foot,waste].reduce((n,p)=>n+Number(p?.price||0),0)+Math.max(0,Number(extraHt)||0);
 }
-return {CATEGORIES,FAMILY_MODELS,PREMIUM_FINISHES,PREMIUM_ELIGIBILITY,PDF_MODEL_PAGES,TECHNICAL_SIZES,technicalDimension,TAPHOLABLE,PREMIUM,METALS,RALS,MATERIALS,
+return {RAL_CLASSIC_PUBLIC_SURCHARGE_HT,RAL_CLASSIC_SUPPLIER_SURCHARGE_HT,ralClassicSurcharge,CATEGORIES,FAMILY_MODELS,PREMIUM_FINISHES,PREMIUM_ELIGIBILITY,PDF_MODEL_PAGES,TECHNICAL_SIZES,technicalDimension,TAPHOLABLE,PREMIUM,METALS,RALS,MATERIALS,
  modelCode,modelName,dimension,finishFamily,pricedOptions,findVariant,groupByModel,feetFor,wastesFor,
  ralColor,materialFromText,selectedTotal};
 });
