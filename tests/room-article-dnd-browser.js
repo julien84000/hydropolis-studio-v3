@@ -19,6 +19,7 @@ const pause=ms=>new Promise(r=>setTimeout(r,ms));
   browser=await chromium.launch({headless:true});
   const page=await browser.newPage({viewport:{width:1600,height:950},serviceWorkers:'block'});
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
+  page.on('console',message=>{if(message.type()==='error'||message.text().includes('[project article sorting]'))console.log('Browser:',message.text())});
   await page.addInitScript(token=>localStorage.setItem('hydropolis-auth-token',token),auth.token);
   await page.goto(base,{waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>typeof state!=='undefined'&&!!window.HydroRoomArticleDnD&&typeof window.HydroRoomArticleDnD.mount==='function'&&
@@ -48,11 +49,21 @@ const pause=ms=>new Promise(r=>setTimeout(r,ms));
   // In this long form its old path was only 2 px: no dragstart / drag threshold.
   // Start an actual gesture before scrolling to an off-screen destination.
   const mouseDrag=async(source,target,{bottom=false}={})=>{
+   await page.evaluate(()=>{
+    if(window.pointerTrace)return;
+    window.pointerTrace=[];
+    for(const type of ['pointerdown','pointermove','pointerup','pointercancel','lostpointercapture'])document.addEventListener(type,e=>{
+     window.pointerTrace.push({type,id:e.target.closest?.('[data-product-id]')?.dataset.productId,target:e.target.className,x:e.clientX,y:e.clientY,primary:e.isPrimary,button:e.button,dragging:document.body.classList.contains('room-article-dragging')});
+     if(window.pointerTrace.length>30)window.pointerTrace.shift();
+    });
+   });
    await source.scrollIntoViewIfNeeded();
    const start=await source.boundingBox();assert(start,'Source grip visible');
    await page.mouse.move(start.x+12,start.y+12);await page.mouse.down();
    await page.mouse.move(start.x+28,start.y+26,{steps:5});
-   assert.equal(await page.locator('body.room-article-dragging').count(),1,'Mouse drag must start');
+   const dragging=await page.locator('body.room-article-dragging').count();
+   if(!dragging)console.log('Pointer failure',JSON.stringify({start,errors,trace:await page.evaluate(()=>window.pointerTrace),handle:await source.evaluate(e=>({connected:e.isConnected,draggable:e.draggable,hit:document.elementFromPoint(e.getBoundingClientRect().x+12,e.getBoundingClientRect().y+12)?.outerHTML}))}));
+   assert.equal(dragging,1,'Mouse drag must start');
    await target.scrollIntoViewIfNeeded();
    const end=await target.boundingBox();assert(end,'Drop destination visible');
    await page.mouse.move(end.x+12,end.y+(bottom?end.height-8:3),{steps:12});

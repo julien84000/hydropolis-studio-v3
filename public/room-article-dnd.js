@@ -5,10 +5,7 @@
 (function(root,factory){
  const api=factory();
  if(typeof module==='object'&&module.exports)module.exports=api;
- if(root){
-  root.HydroRoomArticleDnD=api;
-
- }
+ if(root)root.HydroRoomArticleDnD=api;
 })(typeof window==='object'?window:null,function(){
 'use strict';
 let cleanup=[];
@@ -223,7 +220,11 @@ function mount(host,options={}){
   const replacement=[...host.querySelectorAll('.room-product[data-product-id]')].find(card=>card.dataset.productId===item.dataset.productId);
   replacement?.querySelector('.article-drag-handle')?.focus();
  });
- for(const handle of host.querySelectorAll('.article-drag-handle'))handle.draggable=false;
+ for(const handle of host.querySelectorAll('.article-drag-handle')){
+  handle.draggable=false;
+  handle.setAttribute('aria-keyshortcuts','ArrowUp ArrowDown Alt+ArrowUp Alt+ArrowDown');
+  handle.title='Glisser pour déplacer · ↑ / ↓ : ordre · Alt + ↑ / ↓ : changer de pièce';
+ }
  bind(host,'dragstart',e=>{if(e.target.closest?.('.article-drag-handle'))e.preventDefault()});
  return true;
 }
