@@ -3211,7 +3211,7 @@ function groupQuoteRows(rows){
   // Presentation only: retain roomId/sourceIndex/manualIndex for edits and Excel costs.
   const rooms=new Map();
   for(const row of rows){
-    const key=quoteRoomKey(row.room);
+    const key=String(row.roomId||quoteRoomKey(row.room));
     if(!rooms.has(key))rooms.set(key,[]);
     rooms.get(key).push(row);
   }
@@ -3223,7 +3223,9 @@ function groupQuoteRows(rows){
     if(spaces.length===1)for(const row of roomRows){
       if(row.space==="AUTRES"){row.space=spaces[0];row.spaceLabel=quoteSpaceLabel(row.space);}
     }
-    return roomRows.sort((a,b)=>(QUOTE_SPACE_ORDER[a.space]??99)-(QUOTE_SPACE_ORDER[b.space]??99));
+    const roomId=String(roomRows[0].roomId||'');
+    const custom=(state.rooms||[]).some(r=>String(r.id)===roomId && r.articleOrderCustomized===true);
+    return custom?roomRows:roomRows.sort((a,b)=>(QUOTE_SPACE_ORDER[a.space]??99)-(QUOTE_SPACE_ORDER[b.space]??99));
   });
 }
 function quoteEditorRows(){
@@ -3253,8 +3255,8 @@ function quoteEditorRows(){
         total:manualQuoteNetUnit(m)*manualItemQuantity(m)
       });
     });
-    roomRows.sort((a,b)=>(QUOTE_SPACE_ORDER[a.space]??99)-(QUOTE_SPACE_ORDER[b.space]??99)||a.sourceOrder-b.sourceOrder);
-    rows.push(...roomRows);
+    if(room.articleOrderCustomized!==true)roomRows.sort((a,b)=>(QUOTE_SPACE_ORDER[a.space]??99)-(QUOTE_SPACE_ORDER[b.space]??99)||a.sourceOrder-b.sourceOrder);
+    rows.push(...roomRows); // Quote editor matches custom room ordering.
   }
   return groupQuoteRows(rows);
 }
@@ -3470,8 +3472,8 @@ function quoteRows(){
         freight:0,leadTime:manualQuoteLeadTime(m),manual:true,discount,manualIndex
       });
     });
-    roomRows.sort((a,b)=>(QUOTE_SPACE_ORDER[a.space]??99)-(QUOTE_SPACE_ORDER[b.space]??99)||a.sourceOrder-b.sourceOrder);
-    rows.push(...roomRows);
+    if(room.articleOrderCustomized!==true)roomRows.sort((a,b)=>(QUOTE_SPACE_ORDER[a.space]??99)-(QUOTE_SPACE_ORDER[b.space]??99)||a.sourceOrder-b.sourceOrder);
+    rows.push(...roomRows); // Custom room ordering always takes precedence when enabled.
   }
   return groupQuoteRows(rows);
 }
@@ -3536,12 +3538,13 @@ function quotePages(startNo){
     let previousRoom=null,previousSpace="";
     const last=pg===pages-1;
     const quoteBody=chunk.map((row,index)=>{
-      const newGroup=index>0&&(quoteRoomKey(row.room)!==previousRoom||row.space!==previousSpace);
+      const roomKey=String(row.roomId||quoteRoomKey(row.room));
+      const newGroup=index>0&&(roomKey!==previousRoom||row.space!==previousSpace);
       let prefix=newGroup?'</tbody><tbody>':'';
       if(newGroup)previousRoom=null;
-      if(quoteRoomKey(row.room)!==previousRoom){
+      if(roomKey!==previousRoom){
         prefix+=`<tr class="quote-room-row"><td colspan="${columnCount}">${esc(row.room)}</td></tr>`;
-        previousRoom=quoteRoomKey(row.room);previousSpace="";
+        previousRoom=roomKey;previousSpace="";
       }
       if(row.spaceLabel && row.space!==previousSpace){
         prefix+=`<tr class="quote-space-row"><td colspan="${columnCount}">${esc(row.spaceLabel)}</td></tr>`;
@@ -3774,13 +3777,14 @@ function migrateLegacySbordoniGroupedConfigurations(){
 function renderRoomsCore(){
  $("#roomsEditor").innerHTML=state.rooms.map((r,ri)=>{
    let ps=state.selected.filter(p=>p.roomId===r.id && !isRecorBathLinkedAccessory(p) && !p.sbordoniConfigurationAccessory);
-   return `<article class="room-card">
+   return `<article class="room-card" data-room-card="${esc(r.id)}">
    <div class="room-head"><input class="room-title" data-id="${r.id}" value="${esc(r.title)}"><input class="room-sub" data-id="${r.id}" value="${esc(r.subtitle||"")}" placeholder="Sous-titre / ambiance">
    <button class="btn ghost go-cat" data-id="${r.id}">+ Produit catalogue</button><button class="icon del-room" data-id="${r.id}">×</button></div>
-   <div class="room-products">${ps.length?ps.map(p=>`
-      <div class="room-product">
+   <div class="room-reorder-hint">⠿ Glissez la poignée d’un article pour le déplacer dans cette pièce ou une autre. Le devis suit cet ordre.</div>
+   <div class="room-products" data-room-id="${esc(r.id)}">${ps.length?ps.map(p=>`
+      <div class="room-product ${p.accessoryFor?'article-linked-card':''}" data-product-id="${esc(p.id)}">
         <div class="room-prod-img">${roomProductImageHtml(p)}</div>
-        <div><b>${esc(p.designation)}</b><div class="tech">${p.sbordoniConfiguration?`${esc(p.manufacturer)} · ${esc(p.collection)} · Configuration complète`:`${esc(p.manufacturer)} · ${esc(p.collection)} · ${esc(p.reference)} · <b>${esc(safeExactFinishLabel(p))}</b>`}</div>${roughInWarningHtml(p)}${p.internalReference?`<div class="tech">Complet avec ${p.internalReference}</div>`:""}
+        <div>${p.accessoryFor?'':`<button type="button" class="article-drag-handle" title="Déplacer cet article dans une autre pièce ou modifier son ordre" aria-label="Déplacer ${esc(p.designation||p.reference||'cet article')}">⠿</button>`}<b>${esc(p.designation)}</b><div class="tech">${p.sbordoniConfiguration?`${esc(p.manufacturer)} · ${esc(p.collection)} · Configuration complète`:`${esc(p.manufacturer)} · ${esc(p.collection)} · ${esc(p.reference)} · <b>${esc(safeExactFinishLabel(p))}</b>`}</div>${roughInWarningHtml(p)}${p.internalReference?`<div class="tech">Complet avec ${p.internalReference}</div>`:""}
         ${p.sbordoniConfigurationIssue?`<div class="recor-config-error">${esc(p.sbordoniConfigurationIssue)}</div>`:""}${p.sbordoniConfiguration?`<button type="button" class="btn primary sbordoni-edit-config" data-id="${p.id}" data-room="${r.id}" style="margin:8px 0 4px">Modifier la configuration</button>`:""}
         <details class="article-editor">
           <summary>Modifier l'article</summary>
@@ -4083,6 +4087,9 @@ function renderRoomsFallback(error){
   $$(".fallback-del-prod").forEach(b=>b.onclick=()=>removeProduct(b.dataset.id));
 }
 function renderRooms(){
+  // A supplier-media update must not tear down a card while its grip owns a pointer.
+  // The drag controller flushes this deferred render after drop or cancellation.
+  if(window.HydroRoomArticleDnD?.deferRoomRefresh?.())return;
   try{
     if(migrateLegacySbordoniGroupedConfigurations())saveState();
     renderRoomsCore();
@@ -4095,6 +4102,48 @@ function renderRooms(){
       renderRooms();renderSelection();
     });
   }catch(e){console.warn("[Hotbath photo tabs]",e)}
+  try{
+    window.HydroRoomArticleDnD?.mount?.($('#roomsEditor'),{
+      onReorder:(ordered,movedId,destinationRoomId)=>{
+        const visible=p=>!isRecorBathLinkedAccessory(p)&&!p.sbordoniConfigurationAccessory;
+        const moved=state.selected.find(p=>String(p.id)===String(movedId));
+        if(!moved)throw Error('Article déplacé introuvable');
+        const sourceRoomId=String(moved.roomId),targetRoomId=String(destinationRoomId);
+        const before=state.selected,roomFlags=state.rooms.map(r=>r.articleOrderCustomized);
+        const previousLayout=JSON.parse(JSON.stringify(state.presentationLayout||{blocks:{}}));
+        const next=window.HydroRoomArticleDnD.reorderSelected(
+          state.selected,state.rooms.map(r=>r.id),ordered,movedId,destinationRoomId,visible
+        );
+        if(next.every((p,i)=>p.id===before[i]?.id&&p.roomId===before[i]?.roomId)){
+          renderRooms();return;
+        }
+        state.selected=next;
+        const affected=new Set([sourceRoomId,targetRoomId]);
+        for(const room of state.rooms)if(affected.has(String(room.id)))room.articleOrderCustomized=true;
+        // Project ordering takes precedence over previous dossier-only page and
+        // positioning overrides in affected rooms; customized article text/photos
+        // remain untouched.
+        const layout=ensurePresentationLayoutState();
+        const startsInAffected=key=>[...affected].some(id=>String(key).startsWith(id+':'));
+        const ids=new Set(next.filter(p=>affected.has(String(p.roomId))).map(p=>String(p.id)));
+        for(const [id,pageKey] of Object.entries(layout.assignments||{}))
+          if(ids.has(String(id))||startsInAffected(pageKey))delete layout.assignments[id];
+        for(const key of Object.keys(layout.orders||{}))
+          if(startsInAffected(key))delete layout.orders[key];
+        for(const key of Object.keys(layout.blocks||{}))
+          if(startsInAffected(key))delete layout.blocks[key];
+        if(!saveState()){
+          state.selected=before;state.presentationLayout=previousLayout;
+          state.rooms.forEach((room,i)=>{if(roomFlags[i]===undefined)delete room.articleOrderCustomized;else room.articleOrderCustomized=roomFlags[i]});
+          throw Error('Impossible de sauvegarder ce déplacement.');
+        }
+        renderRooms();renderSelection();renderMarginDashboard();
+        toast('Ordre des articles, du devis et du dossier photo mis à jour');
+      },
+      onCancel:()=>renderRooms(),
+      onError:e=>toast(e?.message||'Déplacement impossible')
+    });
+  }catch(e){console.warn('[project article sorting]',e)}
 }
 
 
@@ -4366,7 +4415,21 @@ function presentationSpaceIntro(space){
     AUTRES:"Éléments complémentaires de la pièce."
   }[space]||"";
 }
-function orderedPresentationGroups(items){
+function orderedPresentationGroups(items,{preserveArticleOrder=false}={}){
+  // Once a room is manually reordered, the project sequence is authoritative
+  // for both the quotation and visual dossier.
+  if(preserveArticleOrder){
+    const ordered=(items||[]).filter(p=>{
+      if(!p)return false;
+      if(p.manual)return !!String(p.designation||p.label||'').trim();
+      return isRealSelectedProduct(p);
+    });
+    return ordered.length?[{
+      space:'SELECTION',label:'Sélection de la pièce',
+      intro:'Articles présentés dans l’ordre défini dans Projet par pièce.',
+      items:ordered
+    }]:[];
+  }
   const buckets={LAVABO:[],DOUCHE:[],BAIN:[],WC:[],AUTRES:[]};
   (items||[]).filter(p=>{
     if(!p)return false;
@@ -5034,7 +5097,7 @@ function buildDocument(){
      if(p.collection==='Pieds Recor')return false;
      return p.collection!=='Accessoires Recor'||!/vidage|waste/.test(normalizeText(`${p.designation||''} ${p.originalDescription||''}`));
    });
-   orderedPresentationGroups([...products,...manualItemsForDocument(room)]).forEach(group=>dossierGroups.push({...group,key:String(room.id)+':'+group.space,room}));
+   orderedPresentationGroups([...products,...manualItemsForDocument(room)],{preserveArticleOrder:room.articleOrderCustomized===true}).forEach(group=>dossierGroups.push({...group,key:String(room.id)+':'+group.space,room}));
  });
  currentDossierPlan=HydroDossierPages.plan(dossierGroups,ensurePresentationLayoutState());
  let html=`<section class="page cover-page editorial-page" data-parallax-page>

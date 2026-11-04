@@ -1,0 +1,23 @@
+/* 11.64.61 project drag/reorder. Pointer handle avoids inputs and edit controls. */
+#roomsEditor .room-products[data-room-id]{min-height:46px;align-content:start}
+#roomsEditor .room-product[data-product-id]{position:relative}
+#roomsEditor .article-drag-handle{position:static;float:right;margin:0 0 6px 9px;width:28px;height:26px;display:grid;place-items:center;
+ border:1px solid #e6dfd3;border-radius:7px;background:#faf8f4;color:#806b50;font-size:19px;line-height:1;
+ cursor:grab;z-index:4;touch-action:none;user-select:none}
+#roomsEditor .article-drag-handle:hover,#roomsEditor .article-drag-handle:focus-visible{background:#e9dcc5;color:#3f3528;border-color:#b99b6c;outline:2px solid #cbb18a}
+#roomsEditor .article-drag-handle:active{cursor:grabbing}
+#roomsEditor .room-product.article-linked-card:after{content:'Composant lié au produit principal';grid-column:1/-1;font-size:10px;color:#8c785f}
+#roomsEditor .article-drag-ghost{background:#f6eddc!important;border:2px dashed #a6824d!important;opacity:.7!important}
+#roomsEditor .article-drag-chosen{box-shadow:0 7px 26px rgba(69,48,24,.15)!important}
+.room-article-dragging #roomsEditor .room-products[data-room-id]{outline:2px dashed #cebda4;outline-offset:3px;border-radius:10px}
+.room-article-dragging #roomsEditor .room-empty{pointer-events:none}
+#roomsEditor .room-products.article-drop-zone{outline:2px solid #a6824d;outline-offset:3px;border-radius:10px}
+#roomsEditor .room-reorder-hint{font-size:11px;color:#948b7d;margin:-5px 0 12px 2px}
+@media(max-width:620px){#roomsEditor .article-drag-handle{width:26px;height:26px;margin-left:6px}}
+
+/* Drag grip is in the article header's normal flow; no overlays on edit or delete controls. */
+
+#roomsEditor .article-drop-before{box-shadow:0 -3px 0 #a6824d!important}
+#roomsEditor .article-drop-after{box-shadow:0 3px 0 #a6824d!important}
+.article-drag-badge{position:fixed;z-index:10000;pointer-events:none;max-width:210px;padding:8px 12px;border-radius:8px;background:#544631;color:white;font-size:12px;box-shadow:0 3px 14px #0003}
+.room-article-dragging{cursor:grabbing;user-select:none}
