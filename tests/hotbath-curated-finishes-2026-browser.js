@@ -67,12 +67,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
    await card.click();
    await page.waitForFunction(model=>document.querySelector('.hotbath-selection .galassia-photo img')
     ?.getAttribute('src')?.includes('/'+model+'_2.jpg'),code,{timeout:15000});
-   assert.match(await card.locator('img').getAttribute('src'),new RegExp(code+'_2\\.jpg
-  console.log('Hotbath curated browser OK: preferred finish covers and exact/illustrative model image rules');
- }catch(e){console.error(e.stack||e,logs.slice(-1800));process.exitCode=1}
- finally{if(browser)await browser.close().catch(()=>{});server.kill('SIGTERM');await wait(150);fs.rmSync(dir,{recursive:true,force:true})}
-})();
-));
+   assert.match(await page.locator('.hotbath-selection .galassia-photo img').getAttribute('src'),new RegExp(code+'_2\\.jpg$'));
    assert.match(await page.locator('.hotbath-selection .galassia-docs').innerText(),/Fiche technique officielle/i);
   }
   assert.equal(await page.locator('.hotbath-catalogue-preview, .hotbath-catalogue-tile').count(),0);
