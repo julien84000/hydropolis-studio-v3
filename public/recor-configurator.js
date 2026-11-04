@@ -409,7 +409,12 @@ function open(args={}){
   if(f==='waste'){state.waste=e.target.value;render()}
   if(f==='premiumTarget'){state.premiumTarget=e.target.value;return}
   if(f==='finishMode'){
+   const previousMode=state.finishMode;
    state.finishMode=e.target.value;
+   // The initially loaded manufacturer photo may be CORS-tainted.
+   // Re-fetch it via the same-origin endpoint on entering RAL preview mode.
+   if((previousMode==='standard')!==(state.finishMode==='standard'))
+     state.photoObjects.clear();
    if(state.finishMode!=='standard'&&state.finish!=='WHITE'&&M.pricedOptions(rows,state.model).finishes.some(x=>x.key==='WHITE'))
       state.finish='WHITE';
    if(state.finishMode!=='ral'&&state.finishMode!=='standard')state.material=state.finishMode==='autre'?'':state.finishMode;
