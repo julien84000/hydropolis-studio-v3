@@ -126,3 +126,40 @@ test('Recor photo proxy matches official product model, not unrelated products',
  assert.equal(parsed.verifiedModel,true);
  assert.equal(attachMedia.parseProduct(html,page,'DUAL'),null);
 });
+
+test('Recor official images: all 38 models have exact curated manufacturer photographs',()=>{
+ const media=require('../public/recor-media-curated.js');
+ assert.equal(media.models.length,38);
+ assert.equal(new Set(media.models).size,media.models.length);
+ for(const m of media.models){
+  const item=media.get(m);
+  assert.equal(item.verifiedModel,true,m);
+  assert.ok(item.images.length>0,m);
+  assert.ok(item.images.every(url=>/^https:\/\/recor\.pt\/wp-content\/uploads\/\d{4}\/\d{2}\//.test(url)),m);
+  assert.equal(item.image,item.images[0]);
+  assert.ok(attachMedia.allowedURL(item.image),m);
+  if(item.technicalSheetUrl)assert.ok(attachMedia.allowedURL(item.technicalSheetUrl,'pdf'),m);
+ }
+ assert.equal(media.get('COLLINS').productUrl,'https://recor.pt/product/collins/');
+ assert.equal(media.get('HUDSON').productUrl,'https://recor.pt/product/hudson-2/');
+ assert.ok(media.get('SLIPPER').images[0].includes('Slipper-900X900.jpg'));
+ assert.equal(media.get('NOT-A-MODEL'),null);
+});
+test('Recor live media route data resolves without WordPress scraping',async()=>{
+ const media=attachMedia.service({get:async()=>{throw Error('Network must not be required')}});
+ for(const modelName of ['COLLINS','HUDSON','SLIPPER','CAMILE','SHOWER-TRAYS','HAND-GILDED']){
+  const entry=await media.getMedia(modelName);
+  assert.equal(entry.verifiedModel,true,modelName);
+  assert.ok(entry.images.length,modelName);
+ }
+});
+test('Recor UI loads official image mappings and persists real manufacturer photos',()=>{
+ const ui=fs.readFileSync(path.join(__dirname,'../public/recor-configurator.js'),'utf8');
+ const app=fs.readFileSync(path.join(__dirname,'../public/app.js'),'utf8');
+ const html=fs.readFileSync(path.join(__dirname,'../public/index.html'),'utf8');
+ assert.ok(html.indexOf('recor-media-curated.js')>0);
+ assert.ok(html.indexOf('recor-media-curated.js')<html.indexOf('recor-configurator.js'));
+ assert.match(ui,/const photo=\(model,index=0\)=>curated\?\.photo/);
+ assert.match(ui,/image\.removeAttribute\('crossorigin'\)/);
+ assert.match(app,/preview\|\|media\.image\|\|window\.HydroRecorCurated/);
+});
