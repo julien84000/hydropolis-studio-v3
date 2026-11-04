@@ -4,15 +4,44 @@
  */
 (function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;if(root)root.HydroRecorModel=api;})(typeof window==='object'?window:null,function(){
 'use strict';
+// The four public Recor 2026 ranges, in the exact manufacturer website / PDF order.
 const CATEGORIES=Object.freeze([
- {id:'Baignoires sur pieds',label:'Baignoires sur pieds',sub:'Fonte émaillée · pieds au choix'},
- {id:'Baignoires îlot',label:'Baignoires îlot',sub:'Baignoires autoportantes'},
- {id:'Baignoires rectangulaires',label:'Baignoires encastrées',sub:'Baignoires rectangulaires'},
- {id:'Finitions premium',label:'Finitions premium',sub:'Métaux, dorures, mosaïques et matières'},
- {id:'Pieds Recor',label:'Pieds',sub:'Jeux de pieds compatibles'},
- {id:'Socles Recor',label:'Socles',sub:'Supports et piédestaux'},
- {id:'Accessoires Recor',label:'Vidages et accessoires',sub:'Vidages, siphons, accessoires'}
+ {id:'Baignoires îlot',label:'Baignoires îlot',sub:'Freestanding Bathtubs · 13 modèles'},
+ {id:'Baignoires sur pieds',label:'Baignoires sur pieds',sub:'Bathtubs with Feet · 9 modèles'},
+ {id:'Finitions premium',label:'Finitions premium',sub:'Premium Finishes · 10 finitions'},
+ {id:'Baignoires rectangulaires',label:'Baignoires rectangulaires',sub:'Built-In Bathtubs · baignoires et receveurs'}
 ]);
+const FAMILY_MODELS=Object.freeze({
+ 'Baignoires îlot':['GIBSON','CROSBY','ALLEN','CANOVA','SIENA','MORGAN','DAKOTA','EIFFEL','EPOQUE','GRAND-EPOQUE','IRIS','CHATEAU','CAMILE'],
+ 'Baignoires sur pieds':['COLLINS','HUDSON','CARLTON','ANTIQUE','SLIPPER','DUAL','ROLL-TOP','PRIMROSE','LYRA'],
+ 'Baignoires rectangulaires':['FLEMING','MORITZ','BAVARIA','CLASSIC','BALI','SHOWER-TRAYS']
+});
+// IDs mirror the official Recor website; premium photos are resolved from their own page.
+const PREMIUM_FINISHES=Object.freeze([
+ {id:'HAND-GILDED',label:'Dorure à la feuille',original:'Hand Gilded',description:'Feuille d’or, d’argent ou de cuivre'},
+ {id:'MOSAIC-EXTERIOR',label:'Mosaïque extérieure',original:'Mosaic Exterior',description:'Nacre ou mosaïque émaillée'},
+ {id:'HAND-POLISHED',label:'Polissage à la main',original:'Hand Polished',description:'Métal poli à la main'},
+ {id:'SOLID-COPPER',label:'Cuivre massif',original:'Solid Copper',description:'Revêtement extérieur en cuivre'},
+ {id:'SOLID-BRASS',label:'Laiton massif',original:'Solid Brass',description:'Revêtement extérieur en laiton'},
+ {id:'SOLID-ALUMINIUM',label:'Aluminium massif',original:'Solid Aluminium',description:'Revêtement extérieur en aluminium'},
+ {id:'STAINLESS-STEEL',label:'Acier inoxydable',original:'Stainless Steel',description:'Revêtement extérieur en inox'},
+ {id:'LEATHER',label:'Cuir',original:'Leather',description:'Revêtement extérieur en cuir'},
+ {id:'NATURAL-RUSTIC',label:'Rustique naturel',original:'Natural Rustic',description:'Finition rustique naturelle'},
+ {id:'BRONZE-RUSTIC',label:'Bronze rustique',original:'Bronze Rustic',description:'Finition rustique bronze'}
+]);
+const PREMIUM_ELIGIBILITY=Object.freeze({
+ 'HAND-GILDED':['HUDSON','CARLTON','ANTIQUE','SLIPPER','DUAL','ROLL-TOP','PRIMROSE','LYRA','SIENA','MORGAN','DAKOTA','EPOQUE','GRAND-EPOQUE','IRIS'],
+ 'MOSAIC-EXTERIOR':['HUDSON','CARLTON','ANTIQUE','SLIPPER','DUAL','ROLL-TOP','PRIMROSE','LYRA','SIENA'],
+ 'HAND-POLISHED':['HUDSON','CARLTON','ANTIQUE','SLIPPER','DUAL','ROLL-TOP','PRIMROSE','LYRA','SIENA'],
+ 'SOLID-COPPER':['DAKOTA','EIFFEL','EPOQUE','IRIS'],
+ 'SOLID-BRASS':['EPOQUE','IRIS'],
+ 'SOLID-ALUMINIUM':['EPOQUE','IRIS'],
+ 'STAINLESS-STEEL':['EPOQUE','IRIS'],
+ 'LEATHER':['MORGAN','EPOQUE','IRIS'],
+ // The two rustic catalog illustrations don't specify eligible bath models.
+ 'NATURAL-RUSTIC':[],
+ 'BRONZE-RUSTIC':[]
+});
 const PDF_MODEL_PAGES=Object.freeze({
  COLLINS:[7,6],HUDSON:[9,7],CARLTON:[11,8],ANTIQUE:[13,9],SLIPPER:[15,10],
  DUAL:[17,11],'ROLL-TOP':[19,12],PRIMROSE:[21,13],LYRA:[23,14],
@@ -20,11 +49,11 @@ const PDF_MODEL_PAGES=Object.freeze({
  CANOVA:[35,20],SIENA:[37,21],MORGAN:[39,22],DAKOTA:[41,23],
  EIFFEL:[43,24],EPOQUE:[45,25],'GRAND-EPOQUE':[47,26],IRIS:[49,27],
  CHATEAU:[51,28],FLEMING:[61,30],MORITZ:[63,31],BAVARIA:[65,32],
- CLASSIC:[67,33],BALI:[69,34]
+ CLASSIC:[67,33],BALI:[69,34],'SHOWER-TRAYS':[71,35]
 });
 const TAPHOLABLE=new Set(['CARLTON','ANTIQUE','SLIPPER','DUAL','ROLL-TOP','SIENA','MORGAN','DAKOTA','FLEMING','MORITZ','BAVARIA','CLASSIC','BALI']);
 const PREMIUM=new Set(['HUDSON','CARLTON','ANTIQUE','SLIPPER','DUAL','ROLL-TOP','PRIMROSE','LYRA','SIENA','MORGAN','DAKOTA','EPOQUE','GRAND-EPOQUE','IRIS']);
-const METALS=['Cuivre','Laiton','Inox','Aluminium','Bronze rustique','Finition naturelle rustique','Dorure','Argenture','Mosaïque','Cuir'];
+const METALS=PREMIUM_FINISHES.map(x=>x.label);
 const RALS=Object.freeze({
  '9005':'#0a0a0a','9010':'#f5f2e9','9016':'#f6f6f6','7016':'#383e42','7021':'#303438',
  '7035':'#c5c7c4','7032':'#b5b0a1','7039':'#6b665e','7044':'#cac4b0','1013':'#e7dfcb',
@@ -39,11 +68,14 @@ const MATERIALS=Object.freeze({
  'or':{color:'#b99c52',label:'Dorure',type:'metal'},'argent':{color:'#bdc4c9',label:'Argenture',type:'metal'},
  'mosaique':{color:'#7f9c9e',label:'Mosaïque',type:'texture'},'mosaic':{color:'#7f9c9e',label:'Mosaïque',type:'texture'},
  'cuir':{color:'#76543b',label:'Cuir',type:'texture'},'rustique':{color:'#695f50',label:'Finition rustique',type:'texture'},
- 'bois':{color:'#966b4b',label:'Bois (simulation)',type:'texture'}
+ 'bois':{color:'#966b4b',label:'Bois (simulation)',type:'texture'},
+ 'polissage':{color:'#a6a8a7',label:'Polissage à la main',type:'metal'},
+ 'feuille':{color:'#c6ac65',label:'Dorure à la feuille',type:'metal'},
+ 'nacre':{color:'#bcc2c2',label:'Mosaïque nacrée',type:'texture'}
 });
 const safe=(v)=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
 function modelCode(p){return String(p?.base||'').replace(/^RECOR-/i,'').toUpperCase();}
-function modelName(code){return String(code||'').replace(/-/g,' ').toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());}
+function modelName(code){if(code==='SHOWER-TRAYS')return 'Receveurs de douche';return String(code||'').replace(/-/g,' ').toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());}
 function dimension(p){
  const m=String(p?.reference||'').match(/-(\d{2,4})-X-(\d{2,4})(?=-|$)/);
  return m?{length:Number(m[1]),width:Number(m[2]),label:m[1]+' × '+m[2]+' cm'}:null;
@@ -67,14 +99,15 @@ function findVariant(rows,model,dim,finish,holes){
  return options[0]||null;
 }
 function groupByModel(rows,category){
- const groups=new Map();
+ const listed=FAMILY_MODELS[category]||[];
+ const groups=new Map(listed.map(key=>[key,{model:key,label:modelName(key),category,items:[],quoteOnly:false}]));
  for(const p of rows||[]){
   if(p?.manufacturer!=='Recor'||p.collection!==category)continue;
   const key=modelCode(p);
-  if(!groups.has(key))groups.set(key,{model:key,label:modelName(key),category,items:[]});
-  groups.get(key).items.push(p);
+  if(groups.has(key))groups.get(key).items.push(p);
  }
- return [...groups.values()].sort((a,b)=>a.label.localeCompare(b.label,'fr'));
+ for(const group of groups.values())group.quoteOnly=group.items.length===0;
+ return [...groups.values()];
 }
 function feetFor(rows,bath){
  const model=modelName(modelCode(bath));
@@ -102,7 +135,7 @@ function productOptions(p){const key=modelCode(p);return {model:key,...pricedOpt
 function selectedTotal(main,foot,waste){
  return [main,foot,waste].reduce((n,p)=>n+Number(p?.price||0),0);
 }
-return {CATEGORIES,PDF_MODEL_PAGES,TAPHOLABLE,PREMIUM,METALS,RALS,MATERIALS,
+return {CATEGORIES,FAMILY_MODELS,PREMIUM_FINISHES,PREMIUM_ELIGIBILITY,PDF_MODEL_PAGES,TAPHOLABLE,PREMIUM,METALS,RALS,MATERIALS,
  modelCode,modelName,dimension,finishFamily,pricedOptions,findVariant,groupByModel,feetFor,wastesFor,
  ralColor,materialFromText,selectedTotal};
 });
