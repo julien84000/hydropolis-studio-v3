@@ -4,6 +4,7 @@
  * the configurator until we have confirmed actual image bytes.
  */
 const axios=require('axios');
+const cheerio=require('cheerio');
 const index=require('./public/hotbath-italian-product-media.json');
 const clean=s=>String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
 function lookup(collection,model){
@@ -17,6 +18,57 @@ function lookup(collection,model){
  if(clean(entry.officialProductPage.split('/').pop())!==clean(model))return null;
  return entry;
 }
+
+const OFFICIAL_HOST=/^(?:www\.)?hotbath\.it$/i;
+function productPageUrl(item){
+ if(!item?.officialProductPage)return '';
+ try{
+  const u=new URL(item.officialProductPage);
+  const m=u.pathname.match(/^\/fr\/produits\/(\d+)\/([A-Za-z0-9-]+)$/i);
+  if(u.protocol!=='https:'||!OFFICIAL_HOST.test(u.hostname)||!m)return '';
+  return 'https://www.hotbath.it/en/products/'+m[1]+'/'+m[2];
+ }catch{return ''}
+}
+function matchesProductDocument(raw,item,model,kind='image'){
+ try{
+  const u=new URL(String(raw||''),'https://www.hotbath.it');
+  const page=productPageUrl(item);
+  if(!page||u.protocol!=='https:'||!OFFICIAL_HOST.test(u.hostname))return false;
+  const id=new URL(page).pathname.split('/')[3];
+  const path=decodeURIComponent(u.pathname).replace(/\/+/g,'/');
+  const prefix='/documents/ProdCateg/'+id+'/';
+  if(!path.startsWith(prefix))return false;
+  const file=path.slice(prefix.length).toUpperCase(),code=String(model||'').toUpperCase();
+  if(kind==='pdf')return file===code+'-00.PDF'||file.startsWith(code+'-TECH');
+  const stem=file.replace(/\.(?:JPE?G|PNG|WEBP)$/,'');
+  return file!==stem && stem.startsWith(code+'_') && /^\d+(?:_\d+)?$/.test(stem.slice(code.length+1));
+ }catch{return false}
+}
+function parseProductPage(html,item,model){
+ const url=productPageUrl(item);
+ if(!url||!html||typeof html!=='string')return {images:[],technicalSheetUrl:'',drawingUrl:''};
+ const $=cheerio.load(html),images=[],pdfs=[],drawings=[];
+ const found=new Set();
+ $('[src],[data-src],[href],[data-original]').each((_,node)=>{
+  const el=$(node);
+  for(const attr of ['src','data-src','href','data-original']){
+   const raw=String(el.attr(attr)||'');
+   if(!raw||raw.startsWith('data:'))continue;
+   let absolute;try{absolute=new URL(raw,url).href}catch{continue}
+   if(matchesProductDocument(absolute,item,model,'image')){
+    if(!found.has(absolute)){found.add(absolute);images.push(absolute)}
+   }else if(matchesProductDocument(absolute,item,model,'pdf'))pdfs.push(absolute);
+   else if(/^https:\/\/(?:www\.)?hotbath\.it\/documents\/+ProdCateg\/\d+\/[A-Za-z0-9-]+-LT\.jpg$/i.test(absolute)&&
+     absolute.toUpperCase().includes('/'+String(model).toUpperCase()+'-LT.JPG'))drawings.push(absolute);
+  }
+ });
+ images.sort((a,b)=>{
+  const order=u=>{const m=new URL(u).pathname.match(/_(\d+)(?:_\d+)?\.(?:jpe?g|png|webp)$/i);return m?(m[1]==='2'?-100:Math.abs(Number(m[1])-2)):100};
+  return order(a)-order(b);
+ });
+ return {images,technicalSheetUrl:pdfs[0]||'',drawingUrl:drawings[0]||'',productUrl:url};
+}
+
 const validBytes=(bytes,mime)=>{
  if(!Buffer.isBuffer(bytes)||bytes.length<12)return false;
  if(mime.includes('jpeg')||mime.includes('jpg'))return bytes[0]===255&&bytes[1]===216&&bytes[2]===255;
@@ -24,8 +76,19 @@ const validBytes=(bytes,mime)=>{
  if(mime.includes('webp'))return bytes.subarray(0,4).toString()==='RIFF'&&bytes.subarray(8,12).toString()==='WEBP';
  return false;
 };
+
 function createService({get=axios.get,now=Date.now}={}){
  const cache=new Map(),pending=new Map();
+ async function verifiedImage(url){
+  try{
+   const response=await get(url,{timeout:8000,maxRedirects:2,responseType:'arraybuffer',
+    maxContentLength:6*1024*1024,headers:{'Accept':'image/jpeg,image/png,image/webp'}});
+   const final=new URL(response.request?.res?.responseUrl||url);
+   const mime=String(response.headers?.['content-type']||'').toLowerCase();
+   return response.status===200&&OFFICIAL_HOST.test(final.hostname)&&
+    mime.startsWith('image/')&&validBytes(Buffer.from(response.data||[]),mime);
+  }catch{return false}
+ }
  async function media(collection,model){
   const item=lookup(collection,model);
   if(!item)return null;
@@ -34,22 +97,32 @@ function createService({get=axios.get,now=Date.now}={}){
   if(hit&&now()-hit.at<hit.ttl)return hit.value;
   if(pending.has(key))return pending.get(key);
   const promise=(async()=>{
-   try{
-    const response=await get(item.image,{
-     timeout:6500,maxRedirects:1,responseType:'arraybuffer',maxContentLength:4*1024*1024,
-     headers:{'Accept':'image/jpeg,image/png,image/webp'}
-    });
-    const url=new URL(response.request?.res?.responseUrl||item.image);
-    if(!/^(?:www\.)?hotbath\.it$/i.test(url.hostname))return null;
-    const mime=String(response.headers?.['content-type']||'').toLowerCase();
-    const bytes=Buffer.from(response.data||[]);
-    if(response.status!==200||!mime.startsWith('image/')||!validBytes(bytes,mime))return null;
-    return {image:item.image,collection,model,scope:'model',source:'Hotbath Italie · photographie fabricant',
-     productUrl:item.officialProductPage,verified:true};
-   }catch{return null}
+   const url=productPageUrl(item);
+   let info={images:[],technicalSheetUrl:'',drawingUrl:''};
+   if(url){
+    try{
+     const response=await get(url,{timeout:11000,maxRedirects:2,maxContentLength:3*1024*1024,
+      headers:{'User-Agent':'Mozilla/5.0','Accept':'text/html','Accept-Language':'en'}});
+     if(response.status===200&&typeof response.data==='string'&&response.data.length>500){
+      info=parseProductPage(response.data,item,model);
+     }
+    }catch{/* Fall back to separately indexed manufacturer image URL. */}
+   }
+   const candidates=[...info.images];
+   if(item.image&&!candidates.includes(item.image))candidates.push(item.image);
+   for(const image of candidates.slice(0,5)){
+    if(!matchesProductDocument(image,item,model,'image'))continue;
+    if(!await verifiedImage(image))continue;
+    return {image,collection,model,scope:'model',
+     source:'Hotbath Italie · photographie fabricant vérifiée',productUrl:url||item.officialProductPage,
+     technicalSheetUrl:info.technicalSheetUrl,drawingUrl:info.drawingUrl,verified:true};
+   }
+   return info.technicalSheetUrl?{image:'',collection,model,scope:'missing',verified:false,
+    technicalSheetUrl:info.technicalSheetUrl,drawingUrl:info.drawingUrl,
+    productUrl:url||item.officialProductPage,source:'Hotbath Italie · fiche technique fabricant'}:null;
   })();
   pending.set(key,promise);
-  try{const value=await promise;cache.set(key,{at:now(),ttl:value?6*3600*1000:15*60*1000,value});return value}
+  try{const value=await promise;cache.set(key,{at:now(),ttl:value?.image?6*3600*1000:5*60*1000,value});return value}
   finally{pending.delete(key)}
  }
  return {media};
@@ -64,4 +137,4 @@ function attach(app,{service=createService()}={}){
  });
 }
 module.exports=attach;
-Object.assign(module.exports,{lookup,validBytes,createService});
+Object.assign(module.exports,{lookup,validBytes,createService,productPageUrl,matchesProductDocument,parseProductPage});
