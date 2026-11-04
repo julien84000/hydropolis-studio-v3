@@ -164,35 +164,78 @@ test('Recor UI loads official image mappings and persists real manufacturer phot
  assert.match(app,/preview\|\|media\.image\|\|window\.HydroRecorCurated/);
 });
 
-test('RAL Classic is the 769 EUR HT surcharge on WHITE exterior, never RAW',()=>{
- assert.equal(model.RAL_CLASSIC_PUBLIC_SURCHARGE_HT,769);
- assert.equal(model.RAL_CLASSIC_SUPPLIER_SURCHARGE_HT,290.93);
- assert.equal(model.ralClassicSurcharge('ral','WHITE'),769);
- assert.equal(model.ralClassicSurcharge('ral','RAW'),0);
+
+test('Recor REC15: RAL Classic standard and RAL Design special are purchase-price ×2.6',()=>{
+ assert.equal(model.PUBLIC_COEFFICIENT,2.6);
+ assert.equal(model.EXTRAS['ral-classic'].purchase,290.93);
+ assert.equal(model.EXTRAS['ral-design'].purchase,455.29);
+ assert.equal(model.extraLine('ral-classic').price,756.42);
+ assert.equal(model.extraLine('ral-design').price,1183.75);
+ assert.equal(model.ralClassicSurcharge('ral-classic','WHITE'),756.42);
+ assert.equal(model.ralClassicSurcharge('ral','WHITE'),756.42);
+ assert.equal(model.ralDesignSurcharge('ral-design','WHITE'),1183.75);
+ assert.equal(model.ralDesignSurcharge('ral-design','RAW'),0);
+ assert.equal(model.ralClassicSurcharge('ral-classic','RAW'),0);
  assert.equal(model.ralClassicSurcharge('standard','WHITE'),0);
  const white=model.findVariant(recors,'SLIPPER','137 × 76 cm','WHITE',false);
  const raw=model.findVariant(recors,'SLIPPER','137 × 76 cm','RAW',false);
  assert.ok(white&&raw);
- const ralTotal=model.selectedTotal(white,null,null,model.ralClassicSurcharge('ral','WHITE'));
- assert.ok(Math.abs(ralTotal-white.price-769)<.001);
- assert.ok(ralTotal>raw.price+769);
+ const classic=model.configuredExtras(white,null,{finishMode:'ral-classic'});
+ const design=model.configuredExtras(white,null,{finishMode:'ral-design'});
+ assert.equal(model.extraTotals(classic).price,756.42);
+ assert.equal(model.extraTotals(design).price,1183.75);
+ assert.equal(model.selectedTotal(white,null,null,model.extraTotals(classic).price),white.price+756.42);
+ assert.equal(model.configuredExtras(raw,null,{finishMode:'ral-design'}).length,0);
 });
-test('RAL Classic applies to the existing bath SKU, quote total, and supplier cost',()=>{
+test('Recor REC15: priced additions for antislip, individual box, extra foot finishes',()=>{
+ const white=model.findVariant(recors,'SLIPPER','137 × 76 cm','WHITE',false);
+ const foot=model.feetFor(recors,white)[0];
+ const lines=model.configuredExtras(white,foot,{finishMode:'ral-design',antiSlip:true,individualBox:true,feetFinish:'special'});
+ assert.deepEqual(lines.map(x=>x.id),['ral-design','anti-slip','individual-box','feet-special']);
+ assert.deepEqual(lines.map(x=>x.purchase),[455.29,16.15,181.63,54.68]);
+ assert.ok(lines.every(x=>x.price===model.pricePublic(x.purchase)));
+ assert.equal(model.extraLine('feet-gilded').purchase,821.34);
+ assert.equal(model.extraLine('primer').purchase,180.39);
+ assert.equal(model.extraLine('polished').purchase,1123.09);
+ assert.equal(model.extraLine('gilded').purchase,1625.44);
+ assert.equal(model.extraLine('mosaic').purchase,1625.44);
+ assert.equal(model.extraLine('glass-tile').purchase,813.51);
+ const withStandard=model.configuredExtras(white,foot,{feetFinish:'gilded'});
+ assert.deepEqual(withStandard.map(x=>x.id),['feet-gilded']);
+});
+test('Recor REC15: rectangular bath accessories and already tariffed tap holes',()=>{
+ const rect=recors.find(x=>x.reference==='RECOR-MORITZ-170-X-81-WHITE-NH');
+ assert.ok(rect);
+ const lines=model.configuredExtras(rect,null,{rectFeet:true,chromeGrips:true,antiSlip:true});
+ assert.deepEqual(lines.map(x=>x.id),['anti-slip','rect-feet-standard','chrome-grips']);
+ assert.equal(model.extraLine('rect-feet-standard').purchase,84.10);
+ assert.equal(model.extraLine('rect-feet-adjustable').purchase,42.49);
+ assert.equal(model.extraLine('chrome-grips').purchase,29.06);
+ const bali=recors.find(x=>x.reference==='RECOR-BALI-120-X-70-WHITE-NH');
+ assert.deepEqual(model.configuredExtras(bali,null,{rectFeet:true}).map(x=>x.id),['rect-feet-adjustable']);
+ assert.deepEqual(model.configuredExtras(bali,null,{finishMode:'ral-design'}),[]);
+ const tapped=recors.find(x=>x.reference==='RECOR-BALI-120-X-70-WHITE-TH');
+ assert.ok(tapped.price>bali.price);
+ // A tap-hole choice uses a priced bath SKU and must not add a second surcharge.
+ assert.equal(model.extraTotals(model.configuredExtras(tapped,null,{})).price,0);
+});
+test('Recor app stores real supplier costs and priced options with no hidden fees',()=>{
  const ui=fs.readFileSync(path.join(__dirname,'../public/recor-configurator.js'),'utf8');
  const app=fs.readFileSync(path.join(__dirname,'../public/app.js'),'utf8');
- assert.match(ui,/ralClassicSurchargeHT:M\.ralClassicSurcharge/);
- assert.match(ui,/Plus-value RAL Classic · extérieur blanc/);
- assert.match(ui,/M\.selectedTotal\(main,foot,waste,ralExtra\)/);
- assert.match(ui,/Le RAL Classic nécessite la baignoire Extérieur peint blanc/);
- assert.match(app,/totalPrice:Number\(main\.totalPrice\|\|0\)\+ralExtra/);
- assert.match(app,/purchasePrice:Number\(main\.purchasePrice\|\|0\)\+ralSupplier/);
- assert.match(app,/RAL Classic/);
+ assert.match(ui,/RAL Design \(couleur spéciale\)/);
+ assert.match(ui,/M\.configuredExtras\(main,foot,state\)/);
+ assert.match(ui,/M\.selectedTotal\(main,foot,waste,extras\.price\)/);
+ assert.match(ui,/fond antidérapant/i);
+ assert.match(app,/extraPurchase=Math\.max\(0,Number\(configuration\.extraPurchaseHt\)/);
+ assert.match(app,/purchasePrice:Number\(main\.purchasePrice\|\|0\)\+extraPurchase/);
+ assert.match(app,/totalPrice:Number\(main\.totalPrice\|\|0\)\+extraPrice/);
+ assert.doesNotMatch(ui,/769 € HT/);
 });
-test('RAL image requests same-origin readable photo and reapplies on entry',()=>{
+test('RAL image uses same-origin pixel photo and has a visible colour fallback',()=>{
  const ui=fs.readFileSync(path.join(__dirname,'../public/recor-configurator.js'),'utf8');
  assert.match(ui,/image\.src=paintColor\(\)\?proxyPhoto\(model,index\):photo\(model,index\)/);
  assert.match(ui,/state\.photoObjects\.clear\(\)/);
  assert.match(ui,/ctx\.getImageData\(0,0,w,h\)/);
  assert.match(ui,/ctx\.fillStyle=chosen;ctx\.fillRect\(dx,dy,pw,ph\)/);
- assert.match(ui,/if\(state\.finishMode==='ral'&&state\.photoIndex===0\)/);
+ assert.match(ui,/M\.isRal\(state\.finishMode\)/);
 });
