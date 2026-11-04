@@ -57,7 +57,27 @@
   function matchingRows(rows,base){
     return (rows||[]).filter(function(p){return p.manufacturer==='Lefroy Brooks' && (p.base===base || (p.reference===base))});
   }
-  function variants(rows,base){return matchingRows(rows,base).sort(function(a,b){return String(a.reference).localeCompare(String(b.reference));});}
+  function variants(rows,base){
+    // Approved Hydropolis price exception (4 Nov 2026): single-flush LB 7797
+    // at the same price as the Classic LB 7297 single-flush mechanism.
+    // The supplied 2026 EUR catalogue only contains LB7297DF at 133 EUR HT;
+    // use that currently evidenced amount as a transparent reference-price proxy,
+    // without modifying the 3,397 original tariff lines.
+    if(base==='LB7797'){
+      const existing=matchingRows(rows,base);
+      if(existing.length)return existing;
+      const priceRef=(rows||[]).find(p=>p.manufacturer==='Lefroy Brooks'&&
+        ['LB7297SF','LB7297','LB7297DF'].includes(p.reference));
+      if(!priceRef||!(Number(priceRef.price)>0))return [];
+      return [{...priceRef,reference:'LB7797',base:'LB7797',designation:'La Chapelle high-level cistern internal fittings (6 L single flush)',
+        price:priceRef.price,totalPrice:priceRef.price,internalPrice:0,
+        source:'Exception Hydropolis 2026 : tarif aligné sur LB7297 single flush ; proxy chiffré '+priceRef.reference,
+        originalDescription:'La Chapelle high-level cistern internal fittings (6 L single flush)',
+        priceOverride:{approvedBy:'Hydropolis',comparison:'LB7297 single flush',pricingReference:priceRef.reference,
+          note:'Prix single-flush absent du tarif EUR 2026 ; base vérifiable actuellement LB7297DF.'}}];
+    }
+    return matchingRows(rows,base).sort(function(a,b){return String(a.reference).localeCompare(String(b.reference));});
+  }
   function metalCode(p){
     const ref=String(p&&p.reference||'').toUpperCase();
     const suffix=ref.match(/(?:-|^)(AG|CP|NK|PB)$/);
