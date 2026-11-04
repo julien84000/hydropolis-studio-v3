@@ -253,6 +253,64 @@ function open(initial,roomId){
  loadMedia().then(()=>{if(modal===el&&document.contains(el))render();});
 }
 function launch(initial,roomId){open(initial||null,roomId);}
+/* Reuse verified manufacturer files to populate missing individual catalogue images.
+   Use isolated product views first, otherwise an explicitly labelled composition view.
+   Never overwrite already-cached/user-authored photographs. */
+let indexedPhotos=null;
+function photoCatalogIndex(){
+ if(indexedPhotos)return indexedPhotos;
+ const idx=new Map();
+ for(const group of Object.values(media)){
+  for(const img of (group.images||[])){
+   if(!VALID_IMAGE.test(img.url))continue;
+   const matches=[...String(img.label||'').toUpperCase().matchAll(/(?:LB|BK|MK|XO|FR|PPW)[ _-]?[0-9]{3,4}/g)];
+   const codes=[...new Set(matches.map(m=>m[0].replace(/[^A-Z0-9]/g,'')))];
+   if(!codes.length)continue;
+   const suffix=(String(img.label||'').toUpperCase().match(/(?:[_-])(AG|CP|NK|PB)\.(?:JPG|JPEG|PNG|WEBP)$/)||[])[1]||'';
+   const record={img,codes,suffix};
+   for(const code of codes){
+    if(!idx.has(code))idx.set(code,[]);
+    idx.get(code).push(record);
+   }
+  }
+ }
+ indexedPhotos=idx;
+ return idx;
+}
+function missingCatalogPhotos(){
+ if(!Object.keys(media).length)return {catalog:0,project:0};
+ const idx=photoCatalogIndex();
+ function apply(p){
+  if(!p||p.manufacturer!=='Lefroy Brooks'||p.image||p.customImage)return false;
+  const base=String(p.base||p.reference||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+  const aliases=[base,base.replace(/(?:BL|WH|[LR])$/,'')];
+  const entries=[...new Set(aliases.flatMap(k=>idx.get(k)||[]))];
+  if(!entries.length)return false;
+  const finish=String(p.finishCode||'').toUpperCase();
+  const selected=entries.map(x=>{
+    const isIsolated=x.codes.length===1;
+    const finishExact=!!finish&&['AG','CP','NK','PB'].includes(finish)&&finish===x.suffix;
+    const finishWrong=!!finish&&['AG','CP','NK','PB'].includes(finish)&&x.suffix&&finish!==x.suffix;
+    return {...x,score:(isIsolated?60:20)+(finishExact?75:0)-(finishWrong?70:0)+(x.codes.includes(base)?20:0),isIsolated,finishExact,finishWrong};
+  }).sort((a,b)=>b.score-a.score)[0];
+  if(!selected)return false;
+  const proxy='/api/image-proxy?url='+encodeURIComponent(selected.img.url);
+  p.image=proxy;p.images=[proxy];p.remoteImageUrl=selected.img.url;
+  const scope=selected.isIsolated?(selected.finishExact?'référence et finition exactes':'référence exacte, finition non certifiée'):'composition fabricant, finition non contractuelle';
+  p.imageSource='Site officiel Lefroy Brooks · '+scope;
+  p.imageNote=scope;p.imageFinishMatch=selected.isIsolated&&selected.finishExact?'exact':'model';
+  if(p.id){p.pdfImage=proxy;p.pdfImages=[proxy];}
+  return true;
+ }
+ let count=0,projects=0;
+ for(const p of rows())if(apply(p))count++;
+ try{
+  if(typeof state!=='undefined'&&Array.isArray(state.selected)){
+   for(const p of state.selected)if(apply(p))projects++;
+  }
+ }catch{}
+ return {catalog:count,project:projects};
+}
 function attach(){
  const catalog=document.querySelector('#view-catalog');
  if(!catalog)return;
@@ -275,7 +333,7 @@ function attach(){
  }
  const previous=window.renderCatalog;
  if(typeof previous==='function'){
-   window.renderCatalog=function(){const res=previous.apply(this,arguments);visibility();return res;};
+   window.renderCatalog=function(){const res=previous.apply(this,arguments);const x=missingCatalogPhotos();if(x.catalog)previous.apply(this,arguments);if(x.project){saveState();renderRooms();}visibility();return res;};
  }
  document.addEventListener('click',event=>{
    const button=event.target.closest?.('#results button.add');
@@ -288,7 +346,8 @@ function attach(){
  document.querySelector('#manufacturerFilter')?.addEventListener('change',visibility);
  document.querySelector('#searchInput')?.addEventListener('input',visibility);
  visibility();
+ loadMedia().then(()=>{const added=missingCatalogPhotos();if(added.project){saveState();renderRooms();}if(added.catalog&&typeof window.renderCatalog==='function')window.renderCatalog();}).catch(err=>console.warn('[Lefroy media index]',err));
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',attach,{once:true});else attach();
-root.HydroLefroyGuided={open,launch,model,loadMedia,bestImage,sheetFor};
+root.HydroLefroyGuided={open,launch,model,loadMedia,bestImage,sheetFor,missingCatalogPhotos};
 })(window);
