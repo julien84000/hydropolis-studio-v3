@@ -245,7 +245,7 @@ function open(rows,roomId,onAdd){
      for(const entry of entries){
       if(!entry.isIntersecting)continue;
       const m=entry.target.dataset.model;
-      if(italian?.byCollection?.[collection]?.[m])requestImage(collection,m);
+      requestImage(collection,m);
       imageObserver?.unobserve(entry.target);
      }
     },{rootMargin:'180px'});
@@ -253,7 +253,7 @@ function open(rows,roomId,onAdd){
    }else{
     cards.slice(0,24).forEach(el=>requestImage(collection,el.dataset.model));
    }
-   if(base&&italian?.byCollection?.[collection]?.[base])requestImage(collection,base);
+   if(base)requestImage(collection,base);
    $$('.hotbath-models .galassia-model').forEach(button=>{
     button.querySelector('img')?.addEventListener('error',e=>{
      const c=collection,m=button.dataset.model;
@@ -349,7 +349,7 @@ function open(rows,roomId,onAdd){
     }
    };
    if(p.finishCode&&!curatedExact(collection,m.base,p.finishCode))requestImage(collection,m.base,p.finishCode);
-   if(!knownImage(collection,m.base))requestImage(collection,m.base);
+   requestImage(collection,m.base);
   }
   function render(resetSearch=true){
    if(!ov.isConnected||!taxonomy||!media)return;
