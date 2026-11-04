@@ -4099,11 +4099,39 @@ function renderRooms(){
     window.HydroRoomArticleDnD?.mount?.($('#roomsEditor'),{
       onReorder:(ordered,movedId,destinationRoomId)=>{
         const visible=p=>!isRecorBathLinkedAccessory(p)&&!p.sbordoniConfigurationAccessory;
-        state.selected=window.HydroRoomArticleDnD.reorderSelected(
+        const moved=state.selected.find(p=>String(p.id)===String(movedId));
+        if(!moved)throw Error('Article déplacé introuvable');
+        const sourceRoomId=String(moved.roomId),targetRoomId=String(destinationRoomId);
+        const before=state.selected,roomFlags=state.rooms.map(r=>r.articleOrderCustomized);
+        const previousLayout=JSON.parse(JSON.stringify(state.presentationLayout||{blocks:{}}));
+        const next=window.HydroRoomArticleDnD.reorderSelected(
           state.selected,state.rooms.map(r=>r.id),ordered,movedId,destinationRoomId,visible
         );
-        saveState();renderRooms();renderSelection();renderMarginDashboard();
-        toast('Ordre des articles et du devis mis à jour');
+        if(next.every((p,i)=>p.id===before[i]?.id&&p.roomId===before[i]?.roomId)){
+          renderRooms();return;
+        }
+        state.selected=next;
+        const affected=new Set([sourceRoomId,targetRoomId]);
+        for(const room of state.rooms)if(affected.has(String(room.id)))room.articleOrderCustomized=true;
+        // Project ordering takes precedence over previous dossier-only page and
+        // positioning overrides in affected rooms; customized article text/photos
+        // remain untouched.
+        const layout=ensurePresentationLayoutState();
+        const startsInAffected=key=>[...affected].some(id=>String(key).startsWith(id+':'));
+        const ids=new Set(next.filter(p=>affected.has(String(p.roomId))).map(p=>String(p.id)));
+        for(const [id,pageKey] of Object.entries(layout.assignments||{}))
+          if(ids.has(String(id))||startsInAffected(pageKey))delete layout.assignments[id];
+        for(const key of Object.keys(layout.orders||{}))
+          if(startsInAffected(key))delete layout.orders[key];
+        for(const key of Object.keys(layout.blocks||{}))
+          if(startsInAffected(key))delete layout.blocks[key];
+        if(!saveState()){
+          state.selected=before;state.presentationLayout=previousLayout;
+          state.rooms.forEach((room,i)=>{if(roomFlags[i]===undefined)delete room.articleOrderCustomized;else room.articleOrderCustomized=roomFlags[i]});
+          throw Error('Impossible de sauvegarder ce déplacement.');
+        }
+        renderRooms();renderSelection();renderMarginDashboard();
+        toast('Ordre des articles, du devis et du dossier photo mis à jour');
       },
       onCancel:()=>renderRooms(),
       onError:e=>toast(e?.message||'Déplacement impossible')
@@ -4380,7 +4408,21 @@ function presentationSpaceIntro(space){
     AUTRES:"Éléments complémentaires de la pièce."
   }[space]||"";
 }
-function orderedPresentationGroups(items){
+function orderedPresentationGroups(items,{preserveArticleOrder=false}={}){
+  // Once a room is manually reordered, the project sequence is authoritative
+  // for both the quotation and visual dossier.
+  if(preserveArticleOrder){
+    const ordered=(items||[]).filter(p=>{
+      if(!p)return false;
+      if(p.manual)return !!String(p.designation||p.label||'').trim();
+      return isRealSelectedProduct(p);
+    });
+    return ordered.length?[{
+      space:'SELECTION',label:'Sélection de la pièce',
+      intro:'Articles présentés dans l’ordre défini dans Projet par pièce.',
+      items:ordered
+    }]:[];
+  }
   const buckets={LAVABO:[],DOUCHE:[],BAIN:[],WC:[],AUTRES:[]};
   (items||[]).filter(p=>{
     if(!p)return false;
@@ -5048,7 +5090,7 @@ function buildDocument(){
      if(p.collection==='Pieds Recor')return false;
      return p.collection!=='Accessoires Recor'||!/vidage|waste/.test(normalizeText(`${p.designation||''} ${p.originalDescription||''}`));
    });
-   orderedPresentationGroups([...products,...manualItemsForDocument(room)]).forEach(group=>dossierGroups.push({...group,key:String(room.id)+':'+group.space,room}));
+   orderedPresentationGroups([...products,...manualItemsForDocument(room)],{preserveArticleOrder:room.articleOrderCustomized===true}).forEach(group=>dossierGroups.push({...group,key:String(room.id)+':'+group.space,room}));
  });
  currentDossierPlan=HydroDossierPages.plan(dossierGroups,ensurePresentationLayoutState());
  let html=`<section class="page cover-page editorial-page" data-parallax-page>
