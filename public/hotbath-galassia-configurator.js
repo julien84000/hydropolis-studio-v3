@@ -49,7 +49,7 @@ function open(rows,roomId,onAdd){
   const $=q=>ov.querySelector(q),$$=q=>Array.from(ov.querySelectorAll(q));
   const previous=document.activeElement;
   let taxonomy=null,media=null,italian=null,supplemental=null,curated=null,collection='Gent',categoryKey='',base='',ref='',search='',closed=false,busy=false;
-  const images=new Map(),documents=new Map(),asked=new Set(),failed=new Set(),queue=[],pending={count:0};
+  const images=new Map(),documents=new Map(),bodyChoiceByRef=new Map(),asked=new Set(),failed=new Set(),queue=[],pending={count:0};
   let imageObserver=null;
   function mediaKey(c,m,finish=''){return c+'|'+clean(m)+'|'+clean(finish)}
   // The Italian index contains links copied from manufacturer HTML; it does
@@ -268,7 +268,14 @@ function open(rows,roomId,onAdd){
     return;
    }
    if(!m.variants.some(x=>x.reference===ref))ref=m.variants[0].reference;
-   const p=m.variants.find(v=>v.reference===ref)||m.variants[0],r=rough.resolve(p);
+   const sourceVariant=m.variants.find(v=>v.reference===ref)||m.variants[0];
+   // A chosen installation orientation belongs to this dialog selection.
+   // Never mutate the global supplier tariff row: different projects may
+   // require different H/V bodies for the same visible finish SKU.
+   const p={...sourceVariant};
+   const chosenRef=bodyChoiceByRef.get(p.reference)||'';
+   if(chosenRef)rough.chooseBody?.(p,chosenRef,rows);
+   const r=rough.resolve(p);
    const orientationOptions=rough.bodyOptions?.(p,rows)||[];
    const orientationMarkup=orientationOptions.length>1?
     '<label class="hotbath-rough-in-choice"><strong>Corps d’encastrement · orientation obligatoire</strong>'+
@@ -333,7 +340,10 @@ function open(rows,roomId,onAdd){
       if(p.finishCode)requestImage(collection,m.base,p.finishCode);
     },{once:true});
    $('.hotbath-body-orientation')?.addEventListener('change',e=>{
-    if(rough.chooseBody?.(p,e.target.value,rows))renderSelection();
+    if(e.target.value&&orientationOptions.some(option=>option.reference===e.target.value))
+      bodyChoiceByRef.set(p.reference,e.target.value);
+    else bodyChoiceByRef.delete(p.reference);
+    renderSelection();
    });
    $('.hotbath-variant').onchange=e=>{ref=e.target.value;renderSelection()};
    $('.hotbath-add').onclick=async()=>{
