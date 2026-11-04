@@ -58,3 +58,11 @@
 .lf-launcher[hidden]{display:none!important}
 @media(max-width:1000px){.lf-body{grid-template-columns:minmax(180px,33%) minmax(290px,67%)}.lf-right{grid-column:1/-1;border-left:0;border-top:1px solid var(--lf-line)}.lf-gallery{max-height:440px}}
 @media(max-width:650px){.lf-overlay{padding:0}.lf-modal{max-height:100vh;height:100%;border-radius:0}.lf-head{padding:18px}.lf-kind{padding:10px 14px;flex-wrap:wrap}.lf-body{display:block}.lf-left,.lf-center,.lf-right{border:0;padding:16px}.lf-gallery{display:flex;overflow-x:auto;max-height:none}.lf-set-card{flex:0 0 126px}.lf-fields{grid-template-columns:1fr}.lf-hero img{height:260px}.lf-launcher{flex-direction:column;align-items:start}}
+
+/* Hydropolis 11.64.59 — accessible sanitary entry inside the existing Lefroy Brooks explorer. */
+.lf-direct-catalog-entry{display:flex;flex-direction:column;gap:10px;min-width:225px;max-width:460px;padding:15px 17px;border:1px solid #c9bcb0;border-radius:12px;background:#f6f3ef;color:#282521}
+.lf-direct-catalog-entry strong{display:block;font-size:15px;margin-bottom:5px}
+.lf-direct-catalog-entry small{display:block;font-size:12px;line-height:1.45;color:#645b52}
+.lf-direct-catalog-button{border:0;border-radius:9px;background:#22211f;color:#fff;min-height:42px;padding:10px 14px;font-weight:700;cursor:pointer}
+.lf-direct-catalog-button:hover{background:#645143}
+@media(min-width:850px){.lf-direct-catalog-entry{flex:1}}
