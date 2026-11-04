@@ -113,3 +113,12 @@ test('Lefroy frontend is loaded after the main app and without modifying other c
  assert.ok(html.indexOf('app.js?v=__APP_VERSION__')<html.indexOf('lefroy-guided-model.js?v=__APP_VERSION__'));
  assert.ok(html.includes('lefroy-guided-configurator.css?v=__APP_VERSION__'));
 });
+
+test('Mackintosh 1307/1308 polished brass is blocked even if the price list has a PB code',()=>{
+ for(const slug of ['classic-close-coupled-lavatory','classic-concealed-cistern-lavatory']){
+  const set=model.WC.find(x=>x.slug===slug);
+  const lever=slug.includes('concealed')?'MK1308':'MK1307';
+  const parts=model.assemble(catalog,set,{finish:'PB',lever});
+  assert.ok(parts.missing.some(x=>x.includes(lever)),slug);
+ }
+});
