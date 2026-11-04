@@ -66,6 +66,8 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   assert.equal(persisted.override?.pricingReference,'LB7297DF');
   assert.equal(persisted.config?.kind,'wc');
   // Unpriced corner cloakroom: UI must not allow an incomplete quotation.
+  // A restored cloud project can be ready before supplier catalogue chunks finish loading.
+  await page.waitForFunction(()=>catalogIndex.maker('Lefroy Brooks').length===3397,{timeout:90000});
   await page.evaluate(()=>window.HydroLefroyGuided.open(null,state.rooms[0].id));
   await page.locator('#lefroyGuidedOverlay [data-lf-set="charterhouse-corner-cloakroom-basin"]').count();
   await page.locator('#lefroyGuidedOverlay select[data-lf="collection"]').selectOption('Charterhouse');
