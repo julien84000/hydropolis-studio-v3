@@ -58,6 +58,19 @@ test('Slipper compatible feet and optional wastes are real catalog lines',()=>{
  assert.ok(wastes.every(p=>/vidage|waste/i.test([p.designation,p.originalDescription].join(' '))));
 });
 
+test('Model-specific pedestals are valid alternatives only at their listed nominal sizes',()=>{
+ const roll154=model.findVariant(recors,'ROLL-TOP','154 × 77 cm','RAW',false);
+ const roll170=model.findVariant(recors,'ROLL-TOP','170 × 77 cm','RAW',false);
+ if(!roll154||!roll170)throw Error('Roll Top size variants missing');
+ const feet154=model.feetFor(recors,roll154);
+ const feet170=model.feetFor(recors,roll170);
+ assert.ok(feet154.some(p=>p.collection==='Socles Recor'&&/1540 mm/.test(p.designation)));
+ assert.ok(!feet170.some(p=>p.collection==='Socles Recor'));
+ const antique170=model.findVariant(recors,'ANTIQUE','170 × 77 cm','RAW',false);
+ assert.ok(antique170);
+ assert.ok(!model.feetFor(recors,antique170).some(p=>p.collection==='Socles Recor'));
+});
+
 test('Recor mandatory freight is never added to the product selling total',()=>{
  const bath=model.findVariant(recors,'SLIPPER','137 × 76 cm','RAW',false);
  const foot=model.feetFor(recors,bath).find(p=>p.reference==='RECOR-BALL-CLAW-CAST');
