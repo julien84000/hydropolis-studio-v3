@@ -131,10 +131,12 @@ test('Hotbath: negotiated discounts are 55% standard and sequential 50+10+10=59.
 test('Hotbath unresolved or ambiguous trim never silently receives an invented body',()=>{
  const copy=rows.map(x=>({...x}));
  rough.linkCatalog(copy);
- const missing=copy.find(x=>x.reference==='AR078WEXT.IX');
- assert(missing);
- assert.equal(rough.resolve(missing).kind,'unverified');
- assert.equal(rough.resolve(missing).required,true);
+ const floorMixer=copy.find(x=>x.reference==='AR078WEXT.IX');
+ assert(floorMixer);
+ assert.equal(rough.resolve(floorMixer).kind,'verified',
+  'Catalogue 2026 p.32 explicitly requires the B077.010 floor body, priced in July Excel');
+ assert.equal(rough.resolve(floorMixer).reference,'B077.010');
+ assert.equal(rough.resolve(floorMixer).required,true);
  const ambiguous=copy.find(x=>x.reference==='GL7066EXT.CR');
  assert(ambiguous);
  assert.equal(rough.resolve(ambiguous).kind,'unverified');
