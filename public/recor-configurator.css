@@ -1,0 +1,7 @@
+.recor-guided-overlay{position:fixed;inset:0;z-index:100070;background:#000a;display:flex;align-items:center;justify-content:center;padding:12px}
+.recor-guided-dialog{width:min(1350px,98vw);height:93vh;background:white;color:#292b2a;border-radius:12px;display:flex;flex-direction:column;overflow:hidden}
+.recor-top{background:#222;color:white;padding:15px;display:flex;justify-content:space-between}
+.recor-layout{display:grid;grid-template-columns:180px 1fr 1.2fr;flex:1;min-height:0}
+.recor-sidebar,.recor-browser,.recor-detail{min-width:0;overflow:auto;padding:12px}
+.recor-sidebar{background:#eee}
+.recor-model-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
