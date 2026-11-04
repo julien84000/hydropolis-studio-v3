@@ -48,6 +48,17 @@ const pause=ms=>new Promise(r=>setTimeout(r,ms));
    zone1.locator('[data-product-id="alpha"] .article-drag-handle'),
    {sourcePosition:{x:12,y:12},targetPosition:{x:10,y:2},steps:24}
   );
+  const observed=await page.evaluate(()=>({
+    stateOrder:state.selected.filter(p=>p.roomId==='r1').map(p=>p.id),
+    domOrder:[...document.querySelectorAll('#roomsEditor .room-products[data-room-id="r1"] > .room-product[data-product-id]')].map(p=>p.dataset.productId),
+    customized:state.rooms[0].articleOrderCustomized,
+    sortableAvailable:typeof window.Sortable,
+    sortableAttached:typeof window.Sortable?.get==='function'?!!window.Sortable.get(document.querySelector('#roomsEditor .room-products[data-room-id="r1"]')):false,
+    globalDnd:!!window.HydroRoomArticleDnD,
+    handleDraggable:document.querySelector('#roomsEditor [data-product-id="gamma"] .article-drag-handle')?.draggable,
+    dragStatus:document.body.classList.contains('room-article-dragging')
+  }));
+  console.log('Room reorder drag diagnostic:',JSON.stringify(observed));
   await page.waitForFunction(()=>state.rooms[0].articleOrderCustomized===true&&
     state.selected.filter(p=>p.roomId==='r1')[0]?.id==='gamma',null,{timeout:15000});
   const within=await page.evaluate(()=>{
