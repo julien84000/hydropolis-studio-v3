@@ -181,7 +181,7 @@ function open(initial,roomId){
    if(finishRelevant)fields=inputLine('finish','Finition des éléments métalliques',metalFinishes,choices.finish,
      'Les finitions sans prix dans le tarif 2026 ne peuvent pas être ajoutées.')+fields;
    const lines=assembled.parts.map(p=>
-     '<div class="lf-line'+(p.missing?' missing':'')+'"><span>'+e(p.role)+' <small>'+e(p.item?.reference||p.base)+'</small></span>'+
+     '<div class="lf-line'+(p.missing?' missing':'')+'"><span>'+e(p.role)+' <small>'+e(p.item?.reference||p.base)+(p.item?.priceOverride?' · Tarif d’équivalence Hydropolis':'')+'</small></span>'+
      '<strong>'+(p.item?euros(p.item.price)+' HT':'Prix indisponible')+'</strong></div>'
    ).join('');
    el.innerHTML='<section class="lf-modal" role="dialog" aria-modal="true" aria-label="Configurateur Lefroy Brooks">'+
@@ -222,6 +222,7 @@ function open(initial,roomId){
      const refs=composition.parts.map(p=>p.item.reference);
      const cfg={schemaVersion:1,set:set.slug,collection:set.collection,kind:set.type,
        selectedRefs:refs,finish:state.choice.finish,publicTotalHT:composition.total,
+       priceExceptions:composition.parts.filter(p=>p.item?.priceOverride).map(p=>({reference:p.item.reference,...p.item.priceOverride,price:p.item.price})),
        sourceUrl:indexFor(set)?.url||set.url||'',photoScope:photo?.scope||''};
      const original=composition.parts[0].item;
      const main=createSelectedProductRecord(original,target);
@@ -241,6 +242,7 @@ function open(initial,roomId){
        if(!item)throw Error('Impossible de créer '+part.item.reference);
        item.accessoryFor=main.id;
        item.lefroyGuidedChild=true;
+       if(part.item.priceOverride){item.lefroyPriceOverride=part.item.priceOverride;item.supplierNote=(item.supplierNote||'')+' · Prix d’équivalence approuvé Hydropolis';}
        item.hideFromDossier=true;
        selected.push(item);
      }
