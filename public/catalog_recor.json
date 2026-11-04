@@ -5033,7 +5033,7 @@
   {
     "manufacturer": "Recor",
     "collection": "Socles Recor",
-    "reference": "RECOR-DUAL-PEDESTAL-PRIMER",
+    "reference": "RECOR-DUAL-PEDESTAL-1540-PRIMER",
     "base": "RECOR-DUAL-PEDESTAL",
     "designation": "Socle / pedestal Dual 1540 mm",
     "finishCode": "PRIMER",
@@ -5059,12 +5059,13 @@
       "/assets/recor-feet/pedestal.jpg"
     ],
     "imageSimulation": true,
-    "imageNote": "Visuel générique du principe de socle/pedestal. Forme et finition à vérifier selon le modèle sélectionné."
+    "imageNote": "Visuel générique du principe de socle/pedestal. Forme et finition à vérifier selon le modèle sélectionné.",
+    "internalCatalogReference": true
   },
   {
     "manufacturer": "Recor",
     "collection": "Socles Recor",
-    "reference": "RECOR-DUAL-PEDESTAL-WHITE",
+    "reference": "RECOR-DUAL-PEDESTAL-1540-WHITE",
     "base": "RECOR-DUAL-PEDESTAL",
     "designation": "Socle / pedestal Dual 1540 mm",
     "finishCode": "WHITE",
@@ -5090,12 +5091,13 @@
       "/assets/recor-feet/pedestal.jpg"
     ],
     "imageSimulation": true,
-    "imageNote": "Visuel générique du principe de socle/pedestal. Forme et finition à vérifier selon le modèle sélectionné."
+    "imageNote": "Visuel générique du principe de socle/pedestal. Forme et finition à vérifier selon le modèle sélectionné.",
+    "internalCatalogReference": true
   },
   {
     "manufacturer": "Recor",
     "collection": "Socles Recor",
-    "reference": "RECOR-DUAL-PEDESTAL-PRIMER",
+    "reference": "RECOR-DUAL-PEDESTAL-1700-PRIMER",
     "base": "RECOR-DUAL-PEDESTAL",
     "designation": "Socle / pedestal Dual 1700 mm",
     "finishCode": "PRIMER",
@@ -5121,12 +5123,13 @@
       "/assets/recor-feet/pedestal.jpg"
     ],
     "imageSimulation": true,
-    "imageNote": "Visuel générique du principe de socle/pedestal. Forme et finition à vérifier selon le modèle sélectionné."
+    "imageNote": "Visuel générique du principe de socle/pedestal. Forme et finition à vérifier selon le modèle sélectionné.",
+    "internalCatalogReference": true
   },
   {
     "manufacturer": "Recor",
     "collection": "Socles Recor",
-    "reference": "RECOR-DUAL-PEDESTAL-WHITE",
+    "reference": "RECOR-DUAL-PEDESTAL-1700-WHITE",
     "base": "RECOR-DUAL-PEDESTAL",
     "designation": "Socle / pedestal Dual 1700 mm",
     "finishCode": "WHITE",
@@ -5152,7 +5155,8 @@
       "/assets/recor-feet/pedestal.jpg"
     ],
     "imageSimulation": true,
-    "imageNote": "Visuel générique du principe de socle/pedestal. Forme et finition à vérifier selon le modèle sélectionné."
+    "imageNote": "Visuel générique du principe de socle/pedestal. Forme et finition à vérifier selon le modèle sélectionné.",
+    "internalCatalogReference": true
   },
   {
     "manufacturer": "Recor",
@@ -5219,7 +5223,7 @@
   {
     "manufacturer": "Recor",
     "collection": "Socles Recor",
-    "reference": "RECOR-ANTIQUE-PEDESTAL-PRIMER",
+    "reference": "RECOR-ANTIQUE-PEDESTAL-1540-PRIMER",
     "base": "RECOR-ANTIQUE-PEDESTAL",
     "designation": "Socle / pedestal Antique 1540 mm",
     "finishCode": "PRIMER",
@@ -5245,12 +5249,13 @@
       "/assets/recor-feet/pedestal.jpg"
     ],
     "imageSimulation": true,
-    "imageNote": "Visuel générique du principe de socle/pedestal. Forme et finition à vérifier selon le modèle sélectionné."
+    "imageNote": "Visuel générique du principe de socle/pedestal. Forme et finition à vérifier selon le modèle sélectionné.",
+    "internalCatalogReference": true
   },
   {
     "manufacturer": "Recor",
     "collection": "Socles Recor",
-    "reference": "RECOR-ANTIQUE-PEDESTAL-WHITE",
+    "reference": "RECOR-ANTIQUE-PEDESTAL-1540-WHITE",
     "base": "RECOR-ANTIQUE-PEDESTAL",
     "designation": "Socle / pedestal Antique 1540 mm",
     "finishCode": "WHITE",
@@ -5276,12 +5281,13 @@
       "/assets/recor-feet/pedestal.jpg"
     ],
     "imageSimulation": true,
-    "imageNote": "Visuel générique du principe de socle/pedestal. Forme et finition à vérifier selon le modèle sélectionné."
+    "imageNote": "Visuel générique du principe de socle/pedestal. Forme et finition à vérifier selon le modèle sélectionné.",
+    "internalCatalogReference": true
   },
   {
     "manufacturer": "Recor",
     "collection": "Socles Recor",
-    "reference": "RECOR-ANTIQUE-PEDESTAL-PRIMER",
+    "reference": "RECOR-ANTIQUE-PEDESTAL-1800-PRIMER",
     "base": "RECOR-ANTIQUE-PEDESTAL",
     "designation": "Socle / pedestal Antique 1800 mm",
     "finishCode": "PRIMER",
@@ -5307,12 +5313,13 @@
       "/assets/recor-feet/pedestal.jpg"
     ],
     "imageSimulation": true,
-    "imageNote": "Visuel générique du principe de socle/pedestal. Forme et finition à vérifier selon le modèle sélectionné."
+    "imageNote": "Visuel générique du principe de socle/pedestal. Forme et finition à vérifier selon le modèle sélectionné.",
+    "internalCatalogReference": true
   },
   {
     "manufacturer": "Recor",
     "collection": "Socles Recor",
-    "reference": "RECOR-ANTIQUE-PEDESTAL-WHITE",
+    "reference": "RECOR-ANTIQUE-PEDESTAL-1800-WHITE",
     "base": "RECOR-ANTIQUE-PEDESTAL",
     "designation": "Socle / pedestal Antique 1800 mm",
     "finishCode": "WHITE",
@@ -5338,7 +5345,8 @@
       "/assets/recor-feet/pedestal.jpg"
     ],
     "imageSimulation": true,
-    "imageNote": "Visuel générique du principe de socle/pedestal. Forme et finition à vérifier selon le modèle sélectionné."
+    "imageNote": "Visuel générique du principe de socle/pedestal. Forme et finition à vérifier selon le modèle sélectionné.",
+    "internalCatalogReference": true
   },
   {
     "manufacturer": "Recor",
