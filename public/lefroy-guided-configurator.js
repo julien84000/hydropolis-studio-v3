@@ -5,7 +5,7 @@
 'use strict';
 const model=root.HydroLefroyGuidedData;
 if(!model)return;
-const IMAGE_INDEX=['lefroy-official-basin-sets-01.json','lefroy-official-basin-sets-02.json','lefroy-official-basin-sets-03.json','lefroy-official-wc-sets.json'];
+const IMAGE_INDEX=['lefroy-official-basin-sets-01.json','lefroy-official-basin-sets-02.json','lefroy-official-basin-sets-03.json','lefroy-official-wc-sets.json','lefroy-official-bidet-items.json'];
 const VALID_IMAGE=/^https:\/\/images\.squarespace-cdn\.com\/content\/v1\/[a-zA-Z0-9/_.%-]+$/i;
 const VALID_DOC=/^https:\/\/uk\.lefroybrooks\.com\/s\/[a-zA-Z0-9/_.%-]+\.pdf(?:\?.*)?$/i;
 const e=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
