@@ -2503,6 +2503,81 @@ function commitSelectedRecords(records,{showProject=false}={}){
   return valid.map(x=>x.id);
 }
 
+function launchRecorGuidedConfigurator(initial=null,roomId=""){
+ if(!window.HydroRecorConfigurator?.open)throw Error("Configurateur Recor non chargé");
+ const targetRoom=normalizedRoomId(roomId);
+ const allRecor=CATALOG.filter(p=>p.manufacturer==="Recor");
+ const saved=initial?.id?state.selected.find(p=>p.id===initial.id&&p.manufacturer==="Recor"):null;
+ const linked=saved?state.selected.filter(p=>p.accessoryFor===saved.id&&p.manufacturer==="Recor"):[];
+ const footBefore=linked.find(p=>p.collection==="Pieds Recor")?.reference||"";
+ const wasteBefore=linked.find(p=>p.collection==="Accessoires Recor"&&
+  /vidage|waste/i.test([p.designation,p.originalDescription].filter(Boolean).join(" ")))?.reference||"";
+ const onAdd=async({main,foot,waste,configuration,media,preview,roomId:selectedRoom})=>{
+  const room=normalizedRoomId(selectedRoom||targetRoom);
+  const rawPhoto="/api/recor-model-photo?model="+encodeURIComponent(configuration.model)+"&index=0";
+  const chosenPhoto=preview||rawPhoto;
+  const priceNote=configuration.pricingPending?
+   " · ATTENTION : finition personnalisée ou antidérapant sur devis, supplément hors prix catalogue à confirmer avant devis définitif.":"";
+  const bathData={...main,
+   image:chosenPhoto,images:[chosenPhoto],
+   imageSource:preview?"Recor · simulation de finition extérieure indicative":"Recor · photo du modèle fabricant",
+   manufacturerUrl:media.productUrl||main.manufacturerUrl,
+   technicalSheetUrl:media.technicalSheetUrl||main.technicalSheetUrl||"",
+   technicalSheetLabel:media.technicalSheetUrl?"Plan technique officiel Recor":main.technicalSheetLabel||"",
+   technicalSheetType:media.technicalSheetUrl?"pdf":main.technicalSheetType||"",
+   supplierNote:String(main.supplierNote||"")+priceNote
+  };
+  const updated=createSelectedProductRecord(bathData,room);
+  if(!updated)throw Error("Baignoire Recor indisponible dans le tarif.");
+  updated.image=chosenPhoto;updated.images=[chosenPhoto];
+  updated.pdfImage=chosenPhoto;updated.pdfImages=[chosenPhoto];
+  updated.imageSource=bathData.imageSource;
+  updated.imageStatus=preview?"Simulation couleur Recor · non contractuelle":"Photo fabricant Recor · finition illustrative";
+  updated.customImage=!!preview;
+  updated.remoteImageUrl=media.image||"";
+  updated.resolvedManufacturerUrl=media.productUrl||main.manufacturerUrl||"";
+  updated.technicalSheetUrl=media.technicalSheetUrl||main.technicalSheetUrl||"";
+  updated.technicalSheetLabel=media.technicalSheetUrl?"Plan technique officiel Recor":main.technicalSheetLabel||"";
+  updated.technicalSheetType=media.technicalSheetUrl?"pdf":main.technicalSheetType||"";
+  updated.recorConfiguration={...configuration};
+  updated.recorBrochureUrl=media.brochureUrl||"";
+  updated.recorPricePending=!!configuration.pricingPending;
+  updated.recorPricePendingNote=configuration.pricingPending?configuration.pricingNote:"";
+  updated.recorSelectedFeetImage=foot?.image||foot?.images?.[0]||"";
+  if(saved){
+   const oldIndex=state.selected.findIndex(p=>p.id===saved.id);
+   if(oldIndex<0)throw Error("Baignoire Recor enregistrée introuvable.");
+   updated.id=saved.id;updated.roomId=saved.roomId||room;
+   updated.priceOverride=saved.reference===updated.reference?saved.priceOverride:null;
+   const next=state.selected.filter(p=>!isRecorBathLinkedAccessory(p,saved.id));
+   const index=next.findIndex(p=>p.id===saved.id);
+   const keep={...saved,...updated,id:saved.id,roomId:updated.roomId};
+   next[index]=keep;
+   const children=[foot,waste].filter(Boolean).map(p=>createSelectedProductRecord(p,keep.roomId,keep.id));
+   if(children.some(p=>!p))throw Error("Impossible d’ajouter les options Recor.");
+   next.splice(index+1,0,...children);
+   state.selected=next;
+   reconcileProjectRoughIns();saveState();renderSelection();renderRooms();renderMarginDashboard();
+   showView("project");
+   return saved.id;
+  }
+  const children=[foot,waste].filter(Boolean).map(p=>createSelectedProductRecord(p,room,updated.id));
+  if(children.some(p=>!p))throw Error("Référence d’accessoire Recor introuvable");
+  const ids=commitSelectedRecords([updated,...children],{showProject:true});
+  if(!ids.length)throw Error("Configuration Recor non enregistrée");
+  return updated.id;
+ };
+ const onStandalone=(item,room)=>{
+  const record=createSelectedProductRecord(item,normalizedRoomId(room||targetRoom));
+  if(!record)throw Error("Référence Recor indisponible");
+  return commitSelectedRecords([record],{showProject:true});
+ };
+ return window.HydroRecorConfigurator.open({
+  rows:allRecor,roomId:targetRoom,initial:saved||initial,
+  existingFootRef:footBefore,existingWasteRef:wasteBefore,onAdd,onStandalone
+ });
+}
+
 function openRecorBathConfigurator(p,roomId){
   const targetRoomId=normalizedRoomId(roomId);
   const selectedBath=p?.id?state.selected.find(x=>x.id===p.id && isRecorBathRequiringFeet(x)):null;
@@ -2805,6 +2880,9 @@ function addCatalogProduct(ref,roomId,key="",selectedCollection=""){
     return;
   }
   const targetRoomId=normalizedRoomId(roomId);
+  if(p.manufacturer==='Recor'&&p.category==='Bain'){
+   launchRecorGuidedConfigurator(p,targetRoomId);return;
+  }
   // Coalbrook must enter its full model/finish/rough-in configurator, not the
   // generic one-click catalogue addition (which could omit mandatory bodies).
   if(p.manufacturer==='Coalbrook'&&window.HydroCoalbrookConfigurator?.openProduct){
@@ -3869,7 +3947,7 @@ function renderRoomsCore(){
  }); $$(".edit-recor-config").forEach(b=>b.onclick=()=>{
    const bath=state.selected.find(x=>x.id===b.dataset.id);
    if(!bath)return;
-   openRecorBathConfigurator(bath,b.dataset.room||bath.roomId);
+   launchRecorGuidedConfigurator(bath,b.dataset.room||bath.roomId);
  }); $$(".sbordoni-edit-config").forEach(b=>b.onclick=()=>{
    const product=state.selected.find(x=>x.id===b.dataset.id);
    if(!product||!window.HydroSbordoniConfigurator)return;
