@@ -76,6 +76,17 @@ const MATERIALS=Object.freeze({
 const safe=(v)=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
 function modelCode(p){return String(p?.base||'').replace(/^RECOR-/i,'').toUpperCase();}
 function modelName(code){if(code==='SHOWER-TRAYS')return 'Receveurs de douche';return String(code||'').replace(/-/g,' ').toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());}
+// Precise manufacturer dimensions (mm), distinct from rounded internal tariff SKUs.
+const TECHNICAL_SIZES=Object.freeze({
+ SLIPPER:{137:'137 × 76,5 × 78 cm',154:'154 × 75 × 77 cm',170:'170 × 76 × 79,5 cm'},
+ ANTIQUE:{154:'154 × 75 × 76 cm',170:'170 × 76 × 77 cm',181:'181,5 × 76,5 × 79 cm'},
+ DUAL:{154:'154 × 78 × 63,5 cm',170:'170 × 78 × 65 cm'},
+ 'ROLL-TOP':{137:'137 × 76 × 59 cm',154:'154,7 × 77,5 × 59 cm',170:'171 × 77,5 × 59 cm'}
+});
+function technicalDimension(model,nominal){
+ const mm=String(nominal||'').match(/\d{2,4}/);
+ return (TECHNICAL_SIZES[model]||{})[mm?Number(mm[0]):0]||String(nominal||'')+' cm';
+}
 function dimension(p){
  const m=String(p?.reference||'').match(/-(\d{2,4})-X-(\d{2,4})(?=-|$)/);
  return m?{length:Number(m[1]),width:Number(m[2]),label:m[1]+' × '+m[2]+' cm'}:null;
@@ -144,7 +155,7 @@ function productOptions(p){const key=modelCode(p);return {model:key,...pricedOpt
 function selectedTotal(main,foot,waste){
  return [main,foot,waste].reduce((n,p)=>n+Number(p?.price||0),0);
 }
-return {CATEGORIES,FAMILY_MODELS,PREMIUM_FINISHES,PREMIUM_ELIGIBILITY,PDF_MODEL_PAGES,TAPHOLABLE,PREMIUM,METALS,RALS,MATERIALS,
+return {CATEGORIES,FAMILY_MODELS,PREMIUM_FINISHES,PREMIUM_ELIGIBILITY,PDF_MODEL_PAGES,TECHNICAL_SIZES,technicalDimension,TAPHOLABLE,PREMIUM,METALS,RALS,MATERIALS,
  modelCode,modelName,dimension,finishFamily,pricedOptions,findVariant,groupByModel,feetFor,wastesFor,
  ralColor,materialFromText,selectedTotal};
 });
