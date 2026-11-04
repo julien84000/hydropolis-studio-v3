@@ -44,10 +44,21 @@ const pause=ms=>new Promise(r=>setTimeout(r,ms));
   assert.equal(await zone1.locator(':scope > .room-product[data-product-id]').count(),3);
   assert.equal(await zone2.locator(':scope > .room-product[data-product-id]').count(),1);
   assert.equal(await page.locator('#roomsEditor .article-drag-handle').count(),4);
-  await zone1.locator('[data-product-id="gamma"] .article-drag-handle').dragTo(
-   zone1.locator('[data-product-id="alpha"] .article-drag-handle'),
-   {sourcePosition:{x:12,y:12},targetPosition:{x:10,y:2},steps:24}
-  );
+  // dragTo auto-scrolls source and target separately to the same viewport Y.
+  // In this long form its old path was only 2 px: no dragstart / drag threshold.
+  // Start an actual gesture before scrolling to an off-screen destination.
+  const mouseDrag=async(source,target,{bottom=false}={})=>{
+   await source.scrollIntoViewIfNeeded();
+   const start=await source.boundingBox();assert(start,'Source grip visible');
+   await page.mouse.move(start.x+12,start.y+12);await page.mouse.down();
+   await page.mouse.move(start.x+28,start.y+26,{steps:5});
+   assert.equal(await page.locator('body.room-article-dragging').count(),1,'Mouse drag must start');
+   await target.scrollIntoViewIfNeeded();
+   const end=await target.boundingBox();assert(end,'Drop destination visible');
+   await page.mouse.move(end.x+12,end.y+(bottom?end.height-8:3),{steps:12});
+   await page.mouse.up();
+  };
+  await mouseDrag(zone1.locator('[data-product-id="gamma"] .article-drag-handle'),zone1.locator('[data-product-id="alpha"]'));
   await page.waitForFunction(()=>state.rooms[0].articleOrderCustomized===true&&
     state.selected.filter(p=>p.roomId==='r1')[0]?.id==='gamma',null,{timeout:15000});
   const within=await page.evaluate(()=>{
@@ -66,10 +77,7 @@ const pause=ms=>new Promise(r=>setTimeout(r,ms));
   assert.deepEqual(within.dossier,within.project,'Client dossier must match project order');
   assert.deepEqual(within.stored,within.project,'Room order must persist in local project');
   assert.equal(within.synced,true);
-  await zone1.locator('[data-product-id="alpha"] .article-drag-handle').dragTo(
-   zone2.locator('[data-product-id="delta"] .article-drag-handle'),
-   {sourcePosition:{x:12,y:12},targetPosition:{x:10,y:20},steps:26}
-  );
+  await mouseDrag(zone1.locator('[data-product-id="alpha"] .article-drag-handle'),zone2.locator('[data-product-id="delta"]'),{bottom:true});
   await page.waitForFunction(()=>state.selected.find(p=>p.id==='alpha')?.roomId==='r2',null,{timeout:15000});
   const after=await page.evaluate(()=>{
    buildDocument();
@@ -93,7 +101,7 @@ const pause=ms=>new Promise(r=>setTimeout(r,ms));
   assert(after.stored.some(p=>p.id==='alpha'&&p.roomId==='r2'));
   assert(after.docMarkup>1000,'Client dossier missing after drop');
   // Moving down, keyboard alternative, and linked components into an empty room.
-  await zone1.locator('[data-product-id="gamma"] .article-drag-handle').press('ArrowDown');
+  await mouseDrag(zone1.locator('[data-product-id="gamma"] .article-drag-handle'),zone1.locator('[data-product-id="beta"]'),{bottom:true});
   assert.deepEqual(await page.evaluate(()=>state.selected.filter(p=>p.roomId==='r1').map(p=>p.id)),['beta','gamma']);
   await page.evaluate(()=>{
    state.rooms.push({id:'r3',title:'Pièce vide',subtitle:'',manual:[]});
@@ -107,7 +115,7 @@ const pause=ms=>new Promise(r=>setTimeout(r,ms));
    window.beforeMove=JSON.parse(JSON.stringify(state.selected));
   });
   const zone3=page.locator('#roomsEditor .room-products[data-room-id="r3"]');
-  await zone1.locator('[data-product-id="gamma"] .article-drag-handle').dragTo(zone3,{targetPosition:{x:30,y:20}});
+  await mouseDrag(zone1.locator('[data-product-id="gamma"] .article-drag-handle'),zone3);
   await page.waitForFunction(()=>state.selected.find(p=>p.id==='gamma')?.roomId==='r3');
   const linked=await page.evaluate(()=>{
    buildDocument();
