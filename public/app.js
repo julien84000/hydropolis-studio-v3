@@ -3211,7 +3211,7 @@ function groupQuoteRows(rows){
   // Presentation only: retain roomId/sourceIndex/manualIndex for edits and Excel costs.
   const rooms=new Map();
   for(const row of rows){
-    const key=quoteRoomKey(row.room);
+    const key=String(row.roomId||quoteRoomKey(row.room));
     if(!rooms.has(key))rooms.set(key,[]);
     rooms.get(key).push(row);
   }
@@ -3534,12 +3534,13 @@ function quotePages(startNo){
     let previousRoom=null,previousSpace="";
     const last=pg===pages-1;
     const quoteBody=chunk.map((row,index)=>{
-      const newGroup=index>0&&(quoteRoomKey(row.room)!==previousRoom||row.space!==previousSpace);
+      const roomKey=String(row.roomId||quoteRoomKey(row.room));
+      const newGroup=index>0&&(roomKey!==previousRoom||row.space!==previousSpace);
       let prefix=newGroup?'</tbody><tbody>':'';
       if(newGroup)previousRoom=null;
-      if(quoteRoomKey(row.room)!==previousRoom){
+      if(roomKey!==previousRoom){
         prefix+=`<tr class="quote-room-row"><td colspan="${columnCount}">${esc(row.room)}</td></tr>`;
-        previousRoom=quoteRoomKey(row.room);previousSpace="";
+        previousRoom=roomKey;previousSpace="";
       }
       if(row.spaceLabel && row.space!==previousSpace){
         prefix+=`<tr class="quote-space-row"><td colspan="${columnCount}">${esc(row.spaceLabel)}</td></tr>`;
