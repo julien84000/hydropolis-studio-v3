@@ -269,6 +269,14 @@ function open(rows,roomId,onAdd){
    }
    if(!m.variants.some(x=>x.reference===ref))ref=m.variants[0].reference;
    const p=m.variants.find(v=>v.reference===ref)||m.variants[0],r=rough.resolve(p);
+   const orientationOptions=rough.bodyOptions?.(p,rows)||[];
+   const orientationMarkup=orientationOptions.length>1?
+    '<label class="hotbath-rough-in-choice"><strong>Corps d’encastrement · orientation obligatoire</strong>'+
+    '<select class="hotbath-body-orientation"><option value="">Choisir horizontal ou vertical</option>'+
+    orientationOptions.map(x=>'<option value="'+esc(x.reference)+'"'+
+     (r.reference===x.reference?' selected':'')+'>'+esc(x.label)+' · '+esc(x.reference)+
+      ' · '+money(x.price)+' HT</option>').join('')+'</select>'+
+     '<small>Deux corps distincts au tarif et sur le plan fabricant 2026. Sélectionnez selon la pose.</small></label>':'';
    const raySpec=collection==='Ray'?ray?.specification(p):null;
    const rayDetails=raySpec?'<section class="hotbath-ray-tech"><b>Caractéristiques techniques</b>'+
      '<span>'+(raySpec.orientation==='horizontal'?'Horizontal':'Vertical')+' · '+raySpec.elements+
@@ -313,7 +321,7 @@ function open(rows,roomId,onAdd){
       priceLines+'<div><span>Total public HT</span><b>'+money(totalFor(p,r))+'</b></div>'+
       '<div><span>Remise d’achat fournisseur</span><b>'+esc(negotiatedDiscount===59.5?'50 % + 10 % + 10 % (59,5 %)':'55 %')+'</b></div>'+
       '<div><span>Coût d’achat théorique HT</span><b>'+money(negotiatedCost)+'</b></div></div>'+
-    bodyMarkup+rayDetails+
+    orientationMarkup+bodyMarkup+rayDetails+
     '<div class="galassia-docs"><a href="'+esc(italian?.byCollection?.[collection]?.[m.base]?.officialProductPage||'https://hotbath.it/fr/prods/')+'" target="_blank" rel="noopener noreferrer">Voir le modèle sur Hotbath Italie</a>'+
     ''+productPdf+catalogueDocument+(cataloguePage?
      '<a href="'+esc(cataloguePage.reproduction)+'" target="_blank" rel="noopener noreferrer">Catalogue 2026 · copie consultable</a>':'')+
@@ -324,6 +332,9 @@ function open(rows,roomId,onAdd){
       onItalianError(collection,m.base,e.currentTarget?.getAttribute('src')||'');
       if(p.finishCode)requestImage(collection,m.base,p.finishCode);
     },{once:true});
+   $('.hotbath-body-orientation')?.addEventListener('change',e=>{
+    if(rough.chooseBody?.(p,e.target.value,rows))renderSelection();
+   });
    $('.hotbath-variant').onchange=e=>{ref=e.target.value;renderSelection()};
    $('.hotbath-add').onclick=async()=>{
     if(busy||r.required&&!r.verified)return;
