@@ -2528,17 +2528,20 @@ function launchRecorGuidedConfigurator(initial=null,roomId=""){
   // Keep a real manufacturer photograph in projects when the rendering proxy
   // is unavailable; do not persist a broken local API URL.
   const chosenPhoto=preview||media.image||window.HydroRecorCurated?.photo(configuration.model)||rawPhoto;
-  const ralExtra=Number(configuration.ralClassicSurchargeHT)||0;
-  const ralSupplier=Number(configuration.ralClassicSupplierSurchargeHT)||0;
-  const priceNote=(ralExtra?" · RAL Classic "+String(configuration.ral||"").trim()+" : +"+ralExtra.toFixed(2)+" € HT sur baignoire extérieur blanc.":"")+
+  const extras=Array.isArray(configuration.extraLines)?configuration.extraLines:[];
+  const extraPrice=Math.max(0,Number(configuration.extraPriceHt)||0);
+  const extraPurchase=Math.max(0,Number(configuration.extraPurchaseHt)||0);
+  const finishLabel=extras.find(x=>['ral-classic','ral-design'].includes(x.id))?.label||'';
+  const optionLabel=extras.map(x=>x.label).join(', ');
+  const priceNote=(extras.length?" · OPTIONS TARIF RECOR REC15 : "+extras.map(x=>x.label+" ("+Number(x.price).toFixed(2)+" € HT)").join("; ")+".":"")+
    (configuration.pricingPending?" · ATTENTION : autre option personnalisée sur devis, supplément à confirmer.":"");
-  // The bath SKU remains the official WHITE exterior reference. Only the
-  // configured unit price and supplier purchase cost receive the RAL premium.
+  // Add prices once on the parent bath record; keep linked feet/waste at
+  // their exact catalogue prices. The SKU remains the official WHITE bath.
   const bathData={...main,
-   price:Number(main.price||0)+ralExtra,
-   totalPrice:Number(main.totalPrice||0)+ralExtra,
-   purchasePrice:Number(main.purchasePrice||0)+ralSupplier,
-   designation:String(main.designation||"")+(ralExtra?" · RAL Classic "+String(configuration.ral||"").trim():""),
+   price:Number(main.price||0)+extraPrice,
+   totalPrice:Number(main.totalPrice||0)+extraPrice,
+   purchasePrice:Number(main.purchasePrice||0)+extraPurchase,
+   designation:String(main.designation||"")+(finishLabel?" · "+(configuration.finishMode==='ral-design'?'RAL Design':'RAL Classic')+" "+String(configuration.ral||"").trim():"")+(extras.length?" · Options : "+optionLabel:""),
    image:chosenPhoto,images:[chosenPhoto],
    imageSource:preview?"Recor · simulation de finition extérieure indicative":"Recor · photo du modèle fabricant",
    manufacturerUrl:media.productUrl||main.manufacturerUrl,
@@ -2569,7 +2572,8 @@ function launchRecorGuidedConfigurator(initial=null,roomId=""){
    if(oldIndex<0)throw Error("Baignoire Recor enregistrée introuvable.");
    updated.id=saved.id;updated.roomId=saved.roomId||room;
    updated.priceOverride=saved.reference===updated.reference &&
-     Number(saved.recorConfiguration?.ralClassicSurchargeHT||0)===ralExtra?saved.priceOverride:null;
+     Number(saved.recorConfiguration?.extraPriceHt||0)===extraPrice &&
+     JSON.stringify(saved.recorConfiguration?.extraLines||[])===JSON.stringify(extras)?saved.priceOverride:null;
    const next=state.selected.filter(p=>!isRecorBathLinkedAccessory(p,saved.id));
    const index=next.findIndex(p=>p.id===saved.id);
    const keep={...saved,...updated,id:saved.id,roomId:updated.roomId};
