@@ -2935,9 +2935,10 @@ function addCatalogProduct(ref,roomId,key="",selectedCollection=""){
   if(window.HydroBetteConfigurator?.eligible?.(p)){HydroBetteConfigurator.open(p,targetRoomId).catch(e=>alert(e.message));return;}
   if(window.HydroCarrodrainConfigurator?.eligible?.(p)){HydroCarrodrainConfigurator.open(p,targetRoomId).catch(e=>alert(e.message));return;}
   if(p.manufacturer==='Sira Concrete'){HydroSiraConfigurator.open(p,targetRoomId).catch(e=>alert(e.message));return;}
-  if(isRecorBathRequiringFeet(p)){
-    console.log("[Recor configurator request]",{reference:p.reference,roomId:targetRoomId,model:recorModelName(p)});
-    openRecorBathConfigurator(p,targetRoomId);
+  if(p.manufacturer==="Recor" && p.category==="Bain"){
+    // All bath entries use the same guided manufacturer workflow as
+    // "Explorer les collections" (including Collins and built-in models).
+    launchRecorGuidedConfigurator(p,targetRoomId);
     return;
   }
   return addProduct(ref,targetRoomId,"",key,selectedCollection);
