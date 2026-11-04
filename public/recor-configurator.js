@@ -147,7 +147,7 @@ function open(args={}){
  function unpricedDetail(){
   const model=state.model,source=state.media.get(model)||{};
   const pages=M.PDF_MODEL_PAGES[model]||[];
-  const official=model==='CAMILE'?'https://recor.pt/product/camile-en/':
+  const official=model==='CAMILE'?'https://recor.pt/product/camile/':
    model==='SHOWER-TRAYS'?'https://recor.pt/product/shower-trays-en/':'https://recor.pt/en/';
   const sizes=model==='CAMILE'?'154 × 75 × 74 · 170 × 76 × 75 · 181,5 × 76,5 × 77 cm':
    model==='SHOWER-TRAYS'?'72 × 72 × 10 · 80 × 80 × 10 cm':'';
