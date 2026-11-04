@@ -25,7 +25,15 @@ function verify(value,row,scope){
  if(scope==='exact'){
   if(value.reference!==row.reference||imageCode(value.image)!==row.reference)return null;
  }else if(scope==='model'){
-  if(!String(value.reference).startsWith(row.base)||imageCode(value.image)!==value.reference)return null;
+  if(!String(value.reference).startsWith(row.base))return null;
+  if(value.verifiedTile){
+   // Manufacturer server binds this photo to a single product tile whose
+   // data-codes all share this base + category + collection. Finishes remain
+   // indicative; collection hero photographs are not accepted.
+   if(imageCode(value.image)||!/^https:\/\/www\.catalano\.it\/en\/products\/[^?#]+\/$/.test(String(value.productUrl||'')))return null;
+   const name=decodeURIComponent(new URL(value.image).pathname.split('/').pop()).toUpperCase();
+   if(/^(?:CATALANO[_-]|SET[_-])/.test(name))return null;
+  }else if(imageCode(value.image)!==value.reference)return null;
  }else return null;
  return {src:value.image,image:value.image,scope,sourceReference:value.reference,productUrl:value.productUrl||''};
 }
