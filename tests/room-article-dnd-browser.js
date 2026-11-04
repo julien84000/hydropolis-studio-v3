@@ -78,8 +78,16 @@ const pause=ms=>new Promise(r=>setTimeout(r,ms));
    const dragging=await page.locator('body.room-article-dragging').count();
    if(!dragging)console.log('Pointer failure',JSON.stringify({start,errors,trace:await page.evaluate(()=>window.pointerTrace),handle:await source.evaluate(e=>({connected:e.isConnected,draggable:e.draggable,hit:document.elementFromPoint(e.getBoundingClientRect().x+12,e.getBoundingClientRect().y+12)?.outerHTML}))}));
    assert.equal(dragging,1,'Mouse drag must start');
+   // The card may begin underneath a sticky header after auto-scroll.
+   // Place the pointer in a visible card half instead of at its topmost pixel.
+   await target.evaluate((el,after)=>el.scrollIntoView({block:after?'end':'center',inline:'nearest',behavior:'instant'}),bottom);
    const end=await stableBox(target);assert(end,'Drop destination visible');
-   await page.mouse.move(end.x+12,end.y+(bottom?end.height-8:3),{steps:12});
+   const view=page.viewportSize();
+   const x=Math.min(view.width-30,end.x+Math.min(70,end.width*0.3));
+   const beforeY=end.y+Math.min(60,end.height*0.2);
+   const afterY=end.y+end.height-Math.min(28,end.height*0.2);
+   const y=Math.max(95,Math.min(view.height-25,bottom?afterY:beforeY));
+   await page.mouse.move(x,y,{steps:12});
    await page.mouse.up();
   };
   await mouseDrag(zone1.locator('[data-product-id="gamma"] .article-drag-handle'),zone1.locator('[data-product-id="alpha"]'));
