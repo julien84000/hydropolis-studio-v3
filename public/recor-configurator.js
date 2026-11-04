@@ -94,13 +94,13 @@ function open(args={}){
   const {main,options,foot,waste,allFeet,allWaste}=current();
   if(!main)return unpricedDetail();
   const feetNeeded=includesFeet(main),source=state.media.get(state.model);
-  const dim=options.dimensions.map(x=>({label:x.label,value:x.label}));
+  const dim=options.dimensions.map(x=>({label:M.technicalDimension(state.model,x.label),value:x.label}));
   const finishes=options.finishes.map(x=>({label:x.label,value:x.key}));
   const selectItem=(items,value,field,empty)=>selector(field,
    [{label:empty,value:''},...items.map(x=>({label:x.designation+' · '+x.finish+' · '+money(x.price)+' HT',value:x.reference}))],value);
   const footThumb=foot?.image||foot?.images?.[0]||'';
   const custom=state.finishMode!=='standard'&&(state.ral||state.material);
-  const needsQuote=!!custom||state.antiSlip;
+  const needsQuote=state.finishMode!=='standard'||state.antiSlip;
   const sourceURL=source?.productUrl||main.manufacturerUrl||'https://recor.pt/en/';
   const tech=source?.technicalSheetUrl||'';
   const brochure=source?.brochureUrl||'';
@@ -121,7 +121,8 @@ function open(args={}){
    '<label><span>6. Finition extérieure personnalisée</span>'+selector('finishMode',[
       {label:'Finition de base du tarif',value:'standard'},
       {label:'Peinture RAL (sur devis si hors tarif)',value:'ral'},
-      ...M.METALS.map(m=>({label:m+' · sur devis',value:m}))],state.finishMode)+'</label>'+
+      ...M.PREMIUM_FINISHES.filter(m=>(M.PREMIUM_ELIGIBILITY[m.id]||[]).includes(state.model)).map(m=>({label:m.label+' · sur devis',value:m.label})),
+      {label:'Autre matière sur étude fabricant',value:'autre'}],state.finishMode)+'</label>'+
    (state.finishMode==='ral'?'<label><span>Référence RAL ou code HEX</span><input class="recor-ral" placeholder="RAL 7016, RAL 9005, #8F8F8F…" value="'+esc(state.ral)+'"></label>'+
     '<label><span>Ajuster la couleur d’aperçu</span><input class="recor-pick-color" type="color" value="'+esc(state.customColor)+'"></label>':
     state.finishMode!=='standard'?'<label><span>Matière / finition de simulation</span><input class="recor-material" placeholder="Cuivre, laiton, inox, bronze…" value="'+esc(state.material||state.finishMode)+'"></label>':'')+
@@ -298,7 +299,7 @@ function open(args={}){
   if(!main){if(error)error.textContent='Référence tarifée introuvable';return}
   if(includesFeet(main)&&!foot){if(error)error.textContent='Choisissez des pieds ou un socle compatible.';return}
   const configuration={
-   model:state.model,dimensions:state.dimension,
+   model:state.model,dimensions:M.technicalDimension(state.model,state.dimension),nominalTariffDimensions:state.dimension,
    holes:state.holes,baseFinish:state.finish,
    feetReference:foot?.reference||'',wasteReference:waste?.reference||'',
    finishMode:state.finishMode,ral:state.ral,material:state.material,
@@ -364,7 +365,7 @@ function open(args={}){
    state.finishMode=e.target.value;
    if(state.finishMode!=='standard'&&state.finish!=='WHITE'&&M.pricedOptions(rows,state.model).finishes.some(x=>x.key==='WHITE'))
       state.finish='WHITE';
-   if(state.finishMode!=='ral'&&state.finishMode!=='standard')state.material=state.finishMode;
+   if(state.finishMode!=='ral'&&state.finishMode!=='standard')state.material=state.finishMode==='autre'?'':state.finishMode;
    render();
   }
   if(e.target.dataset.recorCheck==='antiSlip'){state.antiSlip=e.target.checked;render()}
