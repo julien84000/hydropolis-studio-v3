@@ -4087,6 +4087,9 @@ function renderRoomsFallback(error){
   $$(".fallback-del-prod").forEach(b=>b.onclick=()=>removeProduct(b.dataset.id));
 }
 function renderRooms(){
+  // A supplier-media update must not tear down a card while its grip owns a pointer.
+  // The drag controller flushes this deferred render after drop or cancellation.
+  if(window.HydroRoomArticleDnD?.deferRoomRefresh?.())return;
   try{
     if(migrateLegacySbordoniGroupedConfigurations())saveState();
     renderRoomsCore();
