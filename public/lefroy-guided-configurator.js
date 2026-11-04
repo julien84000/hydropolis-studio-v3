@@ -211,7 +211,9 @@ function open(initial,roomId){
    }));
    selectChanges();
  }
- function commit(){
+ async function commit(){
+   // Do not persist a configuration before the official image index is ready.
+   await loadMedia();
    const set=current(),composition=model.assemble(products,set,state.choice);
    if(composition.missing.length){alert('Composition incomplète : '+composition.missing.join(', '));return;}
    if(!composition.parts.length||!composition.parts[0].item)throw Error('Produit principal introuvable');
