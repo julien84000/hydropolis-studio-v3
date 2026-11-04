@@ -309,11 +309,15 @@ function open(args={}){
     // white inner enamel (upper opening), feet and surrounding room untouched.
     const localX=(x-dx)/pw;
     if(span<.43||span>.81||localX<.10||localX>.92)continue;
-    if(difference<25)continue;
     const shellBand=(span-.43)/.38;
-    const outline=Math.min(.96,.10+Math.max(0,.47-shellBand)*.12);
+    // Approximate the taper of a cast-iron bath exterior. In near-white
+    // manufacturer renders, luminance alone cannot distinguish white enamel
+    // from a white backdrop; only tint the high-confidence central shell.
+    const outline=.15+.12*shellBand;
     if(localX<outline||localX>1-outline)continue;
-    const strength=Math.min(.88,Math.max(.48,(difference-16)/110))*(light>236?.70:1);
+    const centralShell=shellBand>.12&&shellBand<.88&&localX>.24+shellBand*.07&&localX<.76-shellBand*.07;
+    if(difference<25&&!centralShell)continue;
+    const strength=Math.min(.88,Math.max(.50,(difference-16)/110))*(light>236?.76:1);
     if(strength<.03)continue;
     const shine=material?.type==='metal'?Math.sin(x*.035+y*.012)*13:0;
     // Material cues are illustrative only; exact manufacturer texture is not asserted.
