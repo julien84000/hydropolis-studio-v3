@@ -270,11 +270,16 @@ function open(args={}){
     const strength=Math.min(.73,Math.max(0,(difference-25)/145))*(light<95?.86:1);
     if(strength<.03)continue;
     const shine=material?.type==='metal'?Math.sin(x*.035+y*.012)*13:0;
-    // Retain original luminance/geometry and highlight shadows.
+    // Material cues are illustrative only; exact manufacturer texture is not asserted.
+    const texture=material?.type==='texture'?(
+     /mosa/i.test(material.label)?(((x%31)<2||(y%31)<2)?-38:((Math.floor(x/31)+Math.floor(y/31))%3-1)*19):
+     /cuir/i.test(material.label)?Math.sin(x*1.18+y*.73)*Math.cos(y*1.57)*7:
+     /rustique/i.test(material.label)?Math.sin(x*.28+y*.49)*Math.cos(x*.67-y*.18)*17:0
+    ):0;
     const shade=.55+.5*(light/255);
-    img[i]=Math.min(255,rr*(1-strength)+(r*shade+shine)*strength);
-    img[i+1]=Math.min(255,gg*(1-strength)+(g*shade+shine)*strength);
-    img[i+2]=Math.min(255,bb*(1-strength)+(b*shade+shine)*strength);
+    img[i]=Math.max(0,Math.min(255,rr*(1-strength)+(r*shade+shine+texture)*strength));
+    img[i+1]=Math.max(0,Math.min(255,gg*(1-strength)+(g*shade+shine+texture)*strength));
+    img[i+2]=Math.max(0,Math.min(255,bb*(1-strength)+(b*shade+shine+texture)*strength));
    }
    ctx.putImageData(source,0,0);
   }catch(e){
