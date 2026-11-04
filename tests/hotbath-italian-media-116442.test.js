@@ -25,7 +25,7 @@ test('Hotbath image service rejects 404 HTML and accepts real JPEG only',async()
  assert.equal(await blocked.media('Archie','AR003'),null);
  const success=source.createService({get:async()=>({status:200,headers:{'content-type':'image/jpeg'},data:jpg})});
  const photo=await success.media('Archie','AR003');
- assert.equal(photo.scope,'model');assert(photo.image.includes('AR003_1_2023.jpg'));
+ assert.equal(photo.scope,'model');assert(photo.image.includes('AR003_2.jpg'),'Supplier photo is verified as real bytes before exposure');
  assert.equal(photo.verified,true);
 });
 test('Hotbath Galassia UI prioritizes the Italian source without substituting a different model',()=>{
@@ -33,7 +33,7 @@ test('Hotbath Galassia UI prioritizes the Italian source without substituting a 
  assert.match(s,/hotbath-italian-product-media\.json/);
  assert.match(s,/function italianPhoto/);
  assert.match(s,/function onItalianError/);
- assert.match(s,/brokenItalian\.add/);
+ assert.doesNotMatch(s,/brokenItalian\.add/,'A broken alternative photo must not blacklist a later official image');
  assert.match(s,/item\?\.verified/);
 });
 
@@ -62,5 +62,5 @@ test('Hotbath fallback catalogue includes exact model images without crossing co
  assert.match(js,/function supplementalPhoto/);
  assert.match(js,/manufacturer-model-code-matched/);
  assert.match(js,/edilportale/);
- assert.match(js,/italianPhoto\(c,m\)\|\|validUrl\(checked\)/);
+ assert.match(js,/urls\.push\(italianPhoto\(c,m\)\)/,'Official product page photos take priority');
 });
