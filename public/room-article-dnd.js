@@ -9,7 +9,12 @@
 })(typeof window==='object'?window:null,function(){
 'use strict';
 let cleanup=[];
-let pointerHeld=false,refreshPostponed=false;
+let pointerHeld=false,refreshPostponed=false,roomRenderDeferred=false;
+function deferRoomRefresh(){
+ if(!pointerHeld)return false;
+ roomRenderDeferred=true;
+ return true;
+}
 // Hotbath's asynchronous media-ready event otherwise rebuilds the room cards
 // while a pointer owns a drag, invalidating pointer capture and its source node.
 if(typeof window!=='undefined'){
@@ -124,9 +129,13 @@ function mount(host,options={}){
   const previous=gesture;
   gesture=null;
   pointerHeld=false;
-  if(previous&&refreshPostponed){
-   refreshPostponed=false;
-   queueMicrotask(()=>window.dispatchEvent(new Event('hydro-hotbath-media-ready')));
+  if(previous&&(refreshPostponed||roomRenderDeferred)){
+   const media=refreshPostponed,redraw=roomRenderDeferred;
+   refreshPostponed=false;roomRenderDeferred=false;
+   queueMicrotask(()=>{
+    if(redraw && typeof window.renderRooms==='function')window.renderRooms();
+    else if(media)window.dispatchEvent(new Event('hydro-hotbath-media-ready'));
+   });
   }
   cancelAnimationFrame(frame);frame=0;
   clearMarkers();
@@ -211,7 +220,9 @@ function mount(host,options={}){
  });
  const cancel=e=>{if(gesture&&gesture.pointerId===e.pointerId)finish()};
  bind(document,'pointercancel',cancel);
- bind(host,'lostpointercapture',cancel);
+ // Pointer capture may be released by Chromium during scroll; keep tracking
+ // document pointer events until pointerup or an explicit cancellation.
+ // The document-wide listeners do not require capture ownership.
  bind(window,'blur',finish);
  bind(document,'keydown',e=>{
   if(e.key==='Escape'&&gesture){e.preventDefault();finish();}
@@ -244,5 +255,5 @@ function mount(host,options={}){
  bind(host,'dragstart',e=>{if(e.target.closest?.('.article-drag-handle'))e.preventDefault()});
  return true;
 }
-return {reorderSelected,mount,destroy};
+return {reorderSelected,mount,destroy,deferRoomRefresh};
 });
