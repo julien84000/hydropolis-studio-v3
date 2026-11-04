@@ -14,7 +14,7 @@
  }
 })(typeof window==='object'?window:null,function(){
 'use strict';
-let widgets=[];
+let widgets=[];let nativeCleanup=[];
 const same=(a,b)=>String(a)===String(b);
 function reorderSelected(selected,roomIds,visibleOrder,movedId,destinationRoomId,isVisible){
  const list=Array.isArray(selected)?selected:[];
@@ -92,10 +92,12 @@ function reorderSelected(selected,roomIds,visibleOrder,movedId,destinationRoomId
 function destroy(){
  for(const w of widgets){try{w.destroy()}catch{}}
  widgets=[];
+ for(const remove of nativeCleanup){try{remove()}catch{}}
+ nativeCleanup=[];
 }
 function mount(host,options={}){
  destroy();
- if(!host||typeof window==='undefined'||typeof window.Sortable!=='function')return false;
+ if(!host||typeof window==='undefined')return false;
  const zones=[...host.querySelectorAll('.room-products[data-room-id]')];
  if(!zones.length)return false;
  const collect=()=>{
@@ -113,6 +115,7 @@ function mount(host,options={}){
   try{options.onReorder(collect(),movedId,targetRoom)}
   catch(e){console.error('[room article order]',e);options.onError?.(e);options.onCancel?.();}
  };
+ if(typeof window.Sortable==='function'){
  for(const zone of zones){
   widgets.push(new window.Sortable(zone,{
    group:{name:'hydropolis-room-articles',pull:true,put:true},
@@ -122,6 +125,45 @@ function mount(host,options={}){
    onStart:()=>document.body.classList.add('room-article-dragging'),onEnd:done,
    onUnchoose:()=>document.body.classList.remove('room-article-dragging')
   }));
+ }
+ }else{
+  // Native HTML drag-and-drop fallback for workstations blocking the Sortable CDN.
+  let dragged=null;
+  const bind=(element,name,fn)=>{
+   element.addEventListener(name,fn);
+   nativeCleanup.push(()=>element.removeEventListener(name,fn));
+  };
+  for(const handle of host.querySelectorAll('.article-drag-handle')){
+   handle.draggable=true;
+   bind(handle,'dragstart',e=>{
+    dragged=handle.closest('.room-product[data-product-id]');
+    if(!dragged)return;
+    e.dataTransfer?.setData('text/plain',dragged.dataset.productId);
+    if(e.dataTransfer)e.dataTransfer.effectAllowed='move';
+    document.body.classList.add('room-article-dragging');
+   });
+   bind(handle,'dragend',()=>{
+    dragged=null;document.body.classList.remove('room-article-dragging');
+   });
+  }
+  for(const zone of zones){
+   bind(zone,'dragover',e=>{
+    if(!dragged)return;
+    e.preventDefault();
+    if(e.dataTransfer)e.dataTransfer.dropEffect='move';
+    const over=e.target.closest?.('.room-product[data-product-id]');
+    if(over&&over!==dragged&&over.parentElement===zone){
+     const r=over.getBoundingClientRect();
+     zone.insertBefore(dragged,e.clientY<r.top+r.height/2?over:over.nextSibling);
+    }else if(!over&&dragged.parentElement!==zone)zone.appendChild(dragged);
+   });
+   bind(zone,'drop',e=>{
+    if(!dragged)return;
+    e.preventDefault();
+    const item=dragged;dragged=null;
+    done({item,to:zone});
+   });
+  }
  }
  return true;
 }
