@@ -48,6 +48,21 @@ const pause=ms=>new Promise(r=>setTimeout(r,ms));
   // dragTo auto-scrolls source and target separately to the same viewport Y.
   // In this long form its old path was only 2 px: no dragstart / drag threshold.
   // Start an actual gesture before scrolling to an off-screen destination.
+  // Media loading can legitimately replace the entire project editor during
+  // bootstrap. Re-acquire the same locator, but never waive drag assertions.
+  const stableBox=async locator=>{
+   for(let attempt=0;attempt<6;attempt++){
+    try{
+     await locator.scrollIntoViewIfNeeded({timeout:2500});
+     const box=await locator.boundingBox();
+     if(box)return box;
+    }catch(error){
+     if(!/detached|not attached|not stable|timeout/i.test(String(error)))throw error;
+    }
+    await pause(250);
+   }
+   throw Error('Article remains unstable after media loading');
+  };
   const mouseDrag=async(source,target,{bottom=false}={})=>{
    await page.evaluate(()=>{
     if(window.pointerTrace)return;
@@ -57,15 +72,13 @@ const pause=ms=>new Promise(r=>setTimeout(r,ms));
      if(window.pointerTrace.length>30)window.pointerTrace.shift();
     });
    });
-   await source.scrollIntoViewIfNeeded();
-   const start=await source.boundingBox();assert(start,'Source grip visible');
+   const start=await stableBox(source);assert(start,'Source grip visible');
    await page.mouse.move(start.x+12,start.y+12);await page.mouse.down();
    await page.mouse.move(start.x+28,start.y+26,{steps:5});
    const dragging=await page.locator('body.room-article-dragging').count();
    if(!dragging)console.log('Pointer failure',JSON.stringify({start,errors,trace:await page.evaluate(()=>window.pointerTrace),handle:await source.evaluate(e=>({connected:e.isConnected,draggable:e.draggable,hit:document.elementFromPoint(e.getBoundingClientRect().x+12,e.getBoundingClientRect().y+12)?.outerHTML}))}));
    assert.equal(dragging,1,'Mouse drag must start');
-   await target.scrollIntoViewIfNeeded();
-   const end=await target.boundingBox();assert(end,'Drop destination visible');
+   const end=await stableBox(target);assert(end,'Drop destination visible');
    await page.mouse.move(end.x+12,end.y+(bottom?end.height-8:3),{steps:12});
    await page.mouse.up();
   };
