@@ -5,6 +5,8 @@
  */
 const axios=require('axios'),cheerio=require('cheerio');
 const rows=require('./public/catalog_recor.json');
+// Known official product photographs, verified against the Recor 2026 catalogue homepage.
+const official=require('./public/recor-official-media.json').items;
 const cache=new Map(),pending=new Map();
 const supported=new Map();
 for(const item of rows)if(item.category==='Bain'){
@@ -29,6 +31,7 @@ const EXTRA_OFFICIAL_PAGES=Object.freeze({
 });
 for(const [model,pathname] of Object.entries(EXTRA_OFFICIAL_PAGES))
  if(!supported.has(model))supported.set(model,'https://recor.pt'+pathname);
+for(const [model,data] of Object.entries(official))if(!supported.has(model))supported.set(model,data.productUrl);
 const ORIGIN='https://recor.pt';
 const validModel=model=>/^[A-Z][A-Z0-9-]{2,38}$/.test(model)&&supported.has(model);
 const allowedURL=(input,kind='image')=>{
@@ -44,7 +47,7 @@ const allowedURL=(input,kind='image')=>{
 function pageCandidates(model){
  const slug=String(model).toLowerCase();
  const stored=supported.get(model)||'';
- const urls=[stored,ORIGIN+'/product/'+slug+'-en/',ORIGIN+'/product/'+slug+'/'];
+ const urls=[official[model]?.productUrl,stored,ORIGIN+'/product/'+slug+'-en/',ORIGIN+'/product/'+slug+'/'];
  return [...new Set(urls.filter(u=>{
   try{const x=new URL(u);return x.hostname==='recor.pt'&&x.protocol==='https:'&&/^\/product\/[\w-]+\/$/.test(x.pathname)}catch{return false}
  }))];
@@ -90,6 +93,9 @@ function parseProduct(html,pageUrl,model){
 function service({get=axios.get,now=Date.now}={}){
  async function getMedia(model){
   if(!validModel(model))return null;
+  // Local verified media removes brittle live WordPress page scraping
+  // and makes every published card immediately resolvable.
+  if(official[model]?.images?.length)return {...official[model]};
   const cached=cache.get(model);
   if(cached&&now()-cached.at<8*3600000)return cached.value;
   if(pending.has(model))return pending.get(model);
@@ -139,12 +145,24 @@ function attach(app,{mediaService=service()}={}){
   if(!validModel(model)||!Number.isInteger(index)||index<0||index>14)
    return res.status(400).end();
   try{
+   // Direct validated thumbnail redirect: no proxy timeout for the 38 model tiles.
+   if(index===1&&official[model]?.thumbnail)
+    return res.redirect(302,official[model].thumbnail);
    const result=await mediaService.image(model,index);
-   if(!result)return res.status(404).end();
+   if(!result){
+    // Image display must survive the manufacturer rejecting Render's egress IP.
+    const fallback=official[model]?.images?.[index]||official[model]?.image;
+    if(fallback&&allowedURL(fallback))return res.redirect(302,fallback);
+    return res.status(404).end();
+   }
    res.set('Content-Type',result.type);
    res.set('Cache-Control','public,max-age=86400');
    res.send(result.bytes);
-  }catch(e){res.status(502).end()}
+  }catch(e){
+   const fallback=official[model]?.images?.[index]||official[model]?.image;
+   if(fallback&&allowedURL(fallback))return res.redirect(302,fallback);
+   res.status(502).end();
+  }
  });
 }
 module.exports=attach;
