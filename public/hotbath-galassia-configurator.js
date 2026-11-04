@@ -49,7 +49,8 @@ function open(rows,roomId,onAdd){
   const $=q=>ov.querySelector(q),$$=q=>Array.from(ov.querySelectorAll(q));
   const previous=document.activeElement;
   let taxonomy=null,media=null,italian=null,supplemental=null,curated=null,collection='Gent',categoryKey='',base='',ref='',search='',closed=false,busy=false;
-  const images=new Map(),asked=new Set(),failed=new Set(),queue=[],pending={count:0};
+  const images=new Map(),documents=new Map(),asked=new Set(),failed=new Set(),queue=[],pending={count:0};
+  let imageObserver=null;
   function mediaKey(c,m,finish=''){return c+'|'+clean(m)+'|'+clean(finish)}
   // The Italian index contains links copied from manufacturer HTML; it does
   // NOT prove that remote JPG bytes exist (some return HTTP 404).
@@ -58,8 +59,7 @@ function open(rows,roomId,onAdd){
   const validUrl=url=>url&&!brokenUrls.has(url)?url:'';
   function italianPhoto(c,m){
    const item=images.get(mediaKey(c,m));
-   if(!item?.verified||!item?.image||item.source?.indexOf('Hotbath Italie')!==0||
-      brokenItalian.has(mediaKey(c,m)))return '';
+   if(!item?.verified||!item?.image||item.source?.indexOf('Hotbath Italie')!==0)return '';
    return validUrl(item.image);
   }
   function supplementalPhoto(c,m){
@@ -85,6 +85,7 @@ function open(rows,roomId,onAdd){
   function knownImage(c,m){
     const verified=root?.HydroHotbathFinishMedia;
     const urls=[];
+    urls.push(italianPhoto(c,m)); // Exact manufacturer product-page model before curated imagery
     if(curatedModel(c,m))urls.push(curatedModel(c,m));
     if(c==='Ray'){
       const rayPhoto=ray?.specification(m)?.photo;
@@ -93,7 +94,7 @@ function open(rows,roomId,onAdd){
     const key=mediaKey(c,m),checked=images.get(key)?.image||'';
     // Maintain the legacy Italian-first priority while validating that the
     // resulting asset actually depicts the selected manufacturer model.
-    urls.push(italianPhoto(c,m)||validUrl(checked));
+    urls.push(validUrl(checked));
     urls.push(validUrl(supplier.photo({base:m},c,media)||''));
     urls.push(supplementalPhoto(c,m));
     const saved=verified?.candidates({manufacturer:'Hotbath',collection:c,base:m})||[];
@@ -102,7 +103,6 @@ function open(rows,roomId,onAdd){
   }
   function onItalianError(c,m,url=''){
    const key=mediaKey(c,m);
-   brokenItalian.add(key);
    if(url)brokenUrls.add(url);
    if(!asked.has(key))requestImage(c,m);
    if(!closed&&ov.isConnected&&c===collection)render(false);
@@ -123,6 +123,9 @@ function open(rows,roomId,onAdd){
           'Photo fabricant — finition exacte '+(p.finishCode||''):
           'Photo générique du même modèle — finition illustrative',scope:manufacturer.exact?'exact':'model-only'};
     }
+    const official=italianPhoto(collection,m);
+    if(official&&modelUrl(official))return {url:official,caption:
+      'Photo du modèle sur le site officiel Hotbath · finition indicative',scope:'model-only'};
     const generic=knownImage(collection,m);
     return {url:generic||'',caption:generic?
       'Photo générique du même modèle — finition illustrative':
@@ -217,12 +220,7 @@ function open(rows,roomId,onAdd){
     return '<button type="button" class="galassia-model'+(m.base===base?' active':'')+
      '" data-model="'+esc(m.base)+'"><span class="galassia-model-photo">'+
      (url?'<img loading="lazy" alt="'+esc(m.base)+'" src="'+esc(url)+'">':
-     (manufacturerCatalogue?.entry?.(m.base)?
-       '<span class="galassia-no-photo hotbath-catalogue-tile"><img loading="lazy" alt="Plan et photographie du catalogue Hotbath · '+esc(m.base)+
-       '" src="'+esc(manufacturerCatalogue.entry(m.base).preview)+
-       '" onerror="this.style.display=\'none\'">'+
-       '<small>Extrait catalogue · p. '+manufacturerCatalogue.entry(m.base).page+'</small></span>':
-       '<span class="galassia-no-photo">Photo du modèle indisponible</span>'))+
+     '<span class="galassia-no-photo">Photo produit indisponible</span>')+
      '</span><strong>'+esc(modelLabel(m))+'</strong><span>'+esc(m.base)+' · '+
      m.variants.length+' déclinaison(s)</span><small>'+
      (minimum>0?'À partir de '+money(minimum)+' HT':'Tarif non importé')+'</small></button>';
@@ -230,8 +228,24 @@ function open(rows,roomId,onAdd){
    $$('[data-model]').forEach(button=>button.onclick=()=>{
      base=button.dataset.model;ref='';render(false);
    });
-   // Discover missing photos progressively, avoiding a fanout to all 647 models.
-   models.slice(0,24).forEach(m=>{if(!curatedModel(collection,m.base)&&!italianPhoto(collection,m.base)&&!supplier.photo({base:m.base},collection,media))requestImage(collection,m.base)});
+   // Lazy-load ALL indexed supplier models, including those below the first
+   // 24 cards. Only visible products request the external manufacturer's page.
+   imageObserver?.disconnect();imageObserver=null;
+   const cards=$$('.hotbath-models .galassia-model');
+   if(typeof IntersectionObserver==='function'){
+    imageObserver=new IntersectionObserver(entries=>{
+     for(const entry of entries){
+      if(!entry.isIntersecting)continue;
+      const m=entry.target.dataset.model;
+      if(italian?.byCollection?.[collection]?.[m])requestImage(collection,m);
+      imageObserver?.unobserve(entry.target);
+     }
+    },{rootMargin:'180px'});
+    cards.forEach(el=>imageObserver.observe(el));
+   }else{
+    cards.slice(0,24).forEach(el=>requestImage(collection,el.dataset.model));
+   }
+   if(base&&italian?.byCollection?.[collection]?.[base])requestImage(collection,base);
    $$('.hotbath-models .galassia-model').forEach(button=>{
     button.querySelector('img')?.addEventListener('error',e=>{
      const c=collection,m=button.dataset.model;
@@ -259,11 +273,9 @@ function open(rows,roomId,onAdd){
    const negotiatedCost=totalFor(p,r)*(1-negotiatedDiscount/100);
    const photo=selectedImage(m.base,p);
    const cataloguePage=manufacturerCatalogue?.entry?.(p);
-   const catalogueImagePreview=!photo.url&&cataloguePage?
-    '<div class="hotbath-catalogue-preview"><img loading="lazy" alt="Extrait du catalogue Hotbath · modèle '+esc(m.base)+
-    ', page '+cataloguePage.page+'" src="'+esc(cataloguePage.preview)+'" onerror="this.style.display=\'none\'">'+
-    '<small>Illustration de la page '+cataloguePage.page+' du catalogue fabricant 2026 · contient éventuellement plusieurs références</small></div>':
-    '<span>Photo produit indisponible</span>';
+   const docs=documents.get(mediaKey(collection,m.base))||{};
+   const productPdf=docs.technicalSheetUrl?
+    '<a href="'+esc(docs.technicalSheetUrl)+'" target="_blank" rel="noopener noreferrer">Fiche technique officielle · '+esc(m.base)+'</a>':'';
    const catalogueDocument=cataloguePage?
     '<a href="'+esc(cataloguePage.url)+'" target="_blank" rel="noopener noreferrer">Plan coté catalogue 2026 · page '+
     cataloguePage.page+'</a>':'';
@@ -281,10 +293,8 @@ function open(rows,roomId,onAdd){
        'Référence et prix non vérifiés')+'</span><small>'+esc(r.note)+' · Référence extérieure exclue de l’ajout tant que le corps obligatoire n’est pas identifié.</small></div>':'';
    $('.hotbath-selection').innerHTML=
     '<div class="galassia-photo">'+(photo.url?'<img src="'+esc(photo.url)+'" alt="'+esc(p.reference)+'">':
-     ''+catalogueImagePreview+'')+'</div>'+
-    '<div class="galassia-image-note">'+esc(photo.url?photo.caption:cataloguePage?
-      'Extrait du catalogue 2026 : page produit illustrative, pas une photo de finition exacte':
-      'Aucun visuel vérifié pour ce modèle')+'</div>'+
+     '<span>Photo produit indisponible</span>')+'</div>'+
+    '<div class="galassia-image-note">'+esc(photo.url?photo.caption:'Photo exacte indisponible · voir la fiche Hotbath')+'</div>'+
     '<span class="galassia-eyebrow">'+esc(collection)+' · '+esc(activeCategory()?.label||'')+'</span>'+
     '<h3>'+esc(modelLabel(m))+'</h3>'+
     '<label class="galassia-variant-label">Référence et finition<select class="hotbath-variant">'+
@@ -297,7 +307,7 @@ function open(rows,roomId,onAdd){
       '<div><span>Coût d’achat théorique HT</span><b>'+money(negotiatedCost)+'</b></div></div>'+
     bodyMarkup+rayDetails+
     '<div class="galassia-docs"><a href="'+esc(italian?.byCollection?.[collection]?.[m.base]?.officialProductPage||'https://hotbath.it/fr/prods/')+'" target="_blank" rel="noopener noreferrer">Voir le modèle sur Hotbath Italie</a>'+
-    ''+catalogueDocument+(cataloguePage?
+    ''+productPdf+catalogueDocument+(cataloguePage?
      '<a href="'+esc(cataloguePage.reproduction)+'" target="_blank" rel="noopener noreferrer">Catalogue 2026 · copie consultable</a>':'')+
      '<span>Tarifs : base importée 2026 · référence sans suffixe IT.</span></div>'+
     '<button type="button" class="galassia-add hotbath-add"'+(busy||r.required&&!r.verified?' disabled':'')+'>'+
@@ -319,6 +329,8 @@ function open(rows,roomId,onAdd){
      const selectedPhoto=selectedImage(m.base,p);
      await onAdd({...p,hotbathSelectedCollection:collection,purchaseDiscount:negotiatedDiscount,
         catalogue2026Page:cataloguePage?.page||null,catalogue2026Url:cataloguePage?.url||'',
+        technicalSheetUrl:docs.technicalSheetUrl||p.technicalSheetUrl||'',
+        technicalSheetLabel:docs.technicalSheetUrl?'Fiche technique produit Hotbath · '+m.base:p.technicalSheetLabel||'',
        image:selectedPhoto.url||'',images:selectedPhoto.url?[selectedPhoto.url]:[],
        pdfImage:selectedPhoto.url||'',imageSource:selectedPhoto.caption,
        imageFinishMatch:selectedPhoto.scope==='exact'?'exact':'model-only',
