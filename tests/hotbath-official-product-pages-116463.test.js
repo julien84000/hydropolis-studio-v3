@@ -114,3 +114,26 @@ test('Hotbath accepts official exact technical PDFs with revision suffixes',()=>
  assert(!supplier.matchesProductDocument(
   'https://www.hotbath.it/documents//ProdCateg/3509/GL7067-00_rel2.pdf',item,'GL7066','pdf'));
 });
+
+test('Official searchproducts endpoint finds previously unindexed 2026 models without adopting a similarly named or foreign result',async()=>{
+ assert.equal(supplier.lookup('Archie','AR7009').status,'manufacturer-search-required');
+ assert.equal(supplier.lookup('Mate','AR003'),null);
+ const model='AR7009',id='9999',source=supplier.lookup('Archie',model);
+ const listing='<html><body><a href="https://www.hotbath.it/en/products/9999/AR7008">Wrong</a>'+
+  '<a href="https://example.com/en/products/9999/AR7009">Foreign</a>'+
+  '<a href="https://www.hotbath.it/en/products/9999/AR7009">Exact model</a></body></html>';
+ assert.equal(supplier.findProductPageFromSearch(listing,model),
+  'https://www.hotbath.it/fr/produits/'+id+'/'+model);
+ assert.equal(supplier.findProductPageFromSearch(listing,'AR7007'),'');
+ const photo='https://www.hotbath.it/documents/ProdCateg/'+id+'/'+model+'_2.jpg';
+ const getter=async url=>{
+  if(url==='https://www.hotbath.it/en/searchproducts/AR7009')return {status:200,data:listing};
+  if(url==='https://www.hotbath.it/en/products/'+id+'/'+model)return {status:200,data:officialHtml(model,id)};
+  if(url===photo)return {status:200,headers:{'content-type':'image/jpeg'},data:jpeg};
+  return {status:404,headers:{'content-type':'text/html'},data:'Not found'};
+ };
+ const media=await supplier.createService({get:getter}).media('Archie',model);
+ assert.equal(media.image,photo);
+ assert.equal(media.verified,true);
+ assert.match(media.technicalSheetUrl,/AR7009-00\.pdf/);
+});
