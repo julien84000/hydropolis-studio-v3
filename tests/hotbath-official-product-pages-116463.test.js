@@ -68,3 +68,49 @@ test('Configurator never substitutes an ArchiExpo catalogue page for any Hotbath
  assert(ui.includes('requestJson(italianUrl)'));
  assert(ui.includes('documents.get(mediaKey(collection,m.base))'));
 });
+
+test('Hotbath concealed-body associations cover all 619 priced external trim finishes',()=>{
+ const rough=require('../public/hotbath-rough-in.js');
+ const tariff=require('../public/catalog_hotbath.json');
+ const rows=JSON.parse(JSON.stringify(tariff));
+ const trims=rows.filter(p=>p.manufacturer==='Hotbath'&&rough.trim(p));
+ assert.equal(trims.length,619,'Supplier July 2026 catalogue external trim count changed');
+ const before=new Map(trims.map(p=>[p.reference,Number(p.price)]));
+ rough.linkCatalog(rows);
+ const verified=trims.filter(p=>rough.resolve(p).kind==='verified');
+ const choices=trims.filter(p=>rough.resolve(p).kind==='unverified');
+ assert.equal(verified.length,601,'Every unambiguous concealed body must be mapped');
+ assert.equal(choices.length,18,'Only CB/CX7001 require horizontal/vertical selection');
+ for(const p of verified){
+  const body=rows.find(b=>b.reference===p.internalReference);
+  assert(body&&Number(body.price)>0,p.reference+' linked to missing/untarfied body '+p.internalReference);
+  assert.equal(Number(p.internalPrice),Number(body.price));
+  assert.equal(Number(p.price),before.get(p.reference),'Original finish tariff must not change');
+  assert.equal(p.totalPrice,Math.round((p.price+body.price)*100)/100);
+ }
+ for(const p of choices){
+  assert(['CB7001','CX7001'].includes(rough.modelCode(p)),p.reference+' must not remain ambiguous');
+  const options=rough.bodyOptions(p,rows);
+  assert.equal(options.length,2);
+  assert(options.every(x=>x.price===367));
+  assert.equal(rough.chooseBody(p,options[0].reference,rows),true);
+  assert.equal(rough.resolve(p).kind,'verified');
+  assert.equal(Number(p.price),before.get(p.reference));
+ }
+ for(const suffix of ['BBP','BGP','CR','GN']){
+  const p=trims.find(x=>x.reference==='GL7066EXT.'+suffix);
+  assert(p);
+  assert.equal(p.internalReference,'HB.CB7066');
+  assert.equal(rough.resolve(p).kind,'verified');
+ }
+ assert.equal(rough.purchaseDiscount({collection:'Archie'},'Archie'),59.5);
+ assert.equal(rough.purchaseDiscount({collection:'Gal'},'Gal'),55);
+});
+test('Hotbath accepts official exact technical PDFs with revision suffixes',()=>{
+ const item=supplier.lookup('Gal','GL7066');
+ assert(item);
+ assert(supplier.matchesProductDocument(
+  'https://www.hotbath.it/documents//ProdCateg/3509/GL7066-00_rel2.pdf',item,'GL7066','pdf'));
+ assert(!supplier.matchesProductDocument(
+  'https://www.hotbath.it/documents//ProdCateg/3509/GL7067-00_rel2.pdf',item,'GL7066','pdf'));
+});
