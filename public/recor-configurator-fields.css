@@ -1,0 +1,12 @@
+.recor-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+.recor-fields label{font-size:11px;font-weight:600;min-width:0}.recor-fields label span{display:block;margin-bottom:4px}
+.recor-fields select,.recor-fields input:not([type=checkbox]){display:block;width:100%;height:37px;border:1px solid #ddd;background:white;border-radius:5px;padding:6px;color:#333}
+.recor-fields .recor-check{grid-column:1/-1;display:flex;align-items:center;gap:7px;font-weight:400}
+.recor-price-lines{background:#f5f2ed;border-radius:8px;padding:10px 12px;margin-top:11px}
+.recor-price-lines>div{display:flex;justify-content:space-between;gap:12px;margin:6px 0;font-size:11px}
+.recor-price-total{border-top:1px solid #d4d0c8;padding-top:9px!important;margin-top:8px!important}
+.recor-price-total strong{font-size:17px}.recor-alert{font-size:10px;background:#fff2d9;color:#684e24;padding:8px;border-radius:5px}
+.recor-technical-links{display:flex;flex-wrap:wrap;gap:7px 12px;font-size:11px;margin:12px 0}
+.recor-technical-links a{color:#875e32}.recor-technical-links small{color:#888;width:100%}
+.recor-add-btn{width:100%;border:0;background:#1c5843;color:white;padding:13px;border-radius:6px;font-weight:700;cursor:pointer}
+.recor-add-btn:disabled{opacity:.5;cursor:not-allowed}.recor-error{color:#ad4435;font-size:11px}
