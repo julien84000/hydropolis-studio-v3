@@ -25,7 +25,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
   await page.addInitScript(token=>localStorage.setItem('hydropolis-auth-token',token),auth.token);
   await page.goto(base,{waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>typeof catalogIndex!=='undefined'&&catalogIndex.maker('Hotbath').length>=2554&&!!window.HydroHotbathGalassia,{timeout:60000});
-  await page.evaluate(()=>window.HydroHotbathGalassia.open(catalogIndex.maker('Hotbath'),'r1',(p,r)=>{window.__hotbathSelected={p,r}}));
+  await page.evaluate(()=>{window.HydroHotbathGalassia.open(catalogIndex.maker('Hotbath'),'r1',(p,r)=>{window.__hotbathSelected={p,r}});});
   await page.locator('.hotbath-collections [data-collection="Mate"]').waitFor({timeout:15000});
   const summaries=await page.locator('.hotbath-collections button').allTextContents();
   assert(summaries.some(s=>s.includes('Mate')&&s.includes('Nickel brossé')));
