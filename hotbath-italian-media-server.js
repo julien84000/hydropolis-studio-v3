@@ -53,7 +53,7 @@ function matchesProductDocument(raw,item,model,kind='image'){
   const prefix='/documents/ProdCateg/'+id+'/';
   if(!path.startsWith(prefix))return false;
   const file=path.slice(prefix.length).toUpperCase(),code=String(model||'').toUpperCase();
-  if(kind==='pdf')return file===code+'-00.PDF'||file.startsWith(code+'-TECH');
+  if(kind==='pdf')return file===code+'-00.PDF'||((file.startsWith(code+'-00_')||file.startsWith(code+'-00-'))&&/\.PDF$/.test(file))||file.startsWith(code+'-TECH');
   const stem=file.replace(/\.(?:JPE?G|PNG|WEBP)$/,'');
   return file!==stem && stem.startsWith(code+'_') && /^\d+(?:_\d+)?$/.test(stem.slice(code.length+1));
  }catch{return false}
