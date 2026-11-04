@@ -1,0 +1,12 @@
+.recor-cat strong,.recor-cat small,.recor-model-text strong,.recor-model-text small,.recor-model-text b{display:block;margin:3px 0}
+.recor-cat small,.recor-model-text small{color:#777;font-size:10px}.recor-cat strong,.recor-model-text strong{font-size:12px}
+.recor-browser{border-right:1px solid #ddd;background:#fafafa}.recor-model-visual{display:block;height:115px;background:#f8f8f8}
+.recor-model-visual img{width:100%;height:100%;object-fit:contain}.recor-model-text b{font-size:11px;color:#86613c}
+.recor-detail h3{font-size:23px;margin:3px 0}.recor-meta{font-size:11px;color:#777}
+.recor-preview-box{position:relative;border:1px solid #ddd;border-radius:7px;background:#f8f8f8;overflow:hidden}
+.recor-preview-canvas{width:100%;aspect-ratio:740/510;display:block}
+.recor-foot-overlay{position:absolute;right:9px;bottom:9px;background:#fffd;border-radius:5px;padding:5px;display:flex;gap:8px;align-items:center;font-size:10px}
+.recor-foot-overlay img{width:42px;height:42px;object-fit:contain}
+.recor-preview-hint{font-size:10px;color:#956d38;margin:6px 0 9px}.recor-gallery{display:flex;gap:6px}
+.recor-gallery button{height:50px;width:50px;border:1px solid #ddd;background:white;cursor:pointer}
+.recor-gallery button.active{border:2px solid #ad8148}.recor-gallery img{width:100%;height:100%;object-fit:contain}

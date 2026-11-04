@@ -316,11 +316,19 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
 
     const recor=await page.evaluate(()=>{const p=CATALOG.find(x=>isRecorBathRequiringFeet(x)&&recorCompatibleFeet(x).length);return {reference:p.reference,key:productKey(p)};});
     await page.evaluate(p=>addCatalogProduct(p.reference,state.rooms[0]?.id,p.key),recor);
-    await page.waitForSelector('#recorConfigurator input[name="recorFeet"]');
-    await page.locator('#recorConfigurator input[name="recorFeet"]').first().check();
-    await page.locator('.recor-config-confirm').click();
-    const bath=await page.evaluate(ref=>{const p=state.selected.find(x=>x.manufacturer==='Recor'&&x.reference===ref);return {exists:!!p,feet:state.selected.filter(x=>x.accessoryFor===p?.id&&x.collection==='Pieds Recor').length};},recor.reference);
-    check('Recor : baignoire et pieds compatibles',bath.exists&&bath.feet===1);
+    await page.waitForSelector('#recorGuidedConfigurator [data-recor-select="feet"]');
+    check('Recor : configurateur guidé ouvert depuis un article catalogue',
+      (await page.locator('#recorGuidedConfigurator .recor-cat').count())===4);
+    await page.locator('#recorGuidedConfigurator [data-recor-select="feet"]').selectOption({index:1});
+    await page.locator('#recorGuidedConfigurator .recor-add-btn').click();
+    await page.waitForFunction(ref=>state.selected.some(x=>x.manufacturer==='Recor'&&x.reference===ref),recor.reference);
+    const bath=await page.evaluate(ref=>{
+      const p=state.selected.find(x=>x.manufacturer==='Recor'&&x.reference===ref);
+      const support=state.selected.filter(x=>x.accessoryFor===p?.id&&['Pieds Recor','Socles Recor'].includes(x.collection));
+      return {exists:!!p,support:support.length,configured:!!p?.recorConfiguration,photo:!!p?.pdfImage};
+    },recor.reference);
+    check('Recor : baignoire, support et image dans le dossier client',
+      bath.exists&&bath.support===1&&bath.configured&&bath.photo);
     const families=await page.evaluate(()=>CATALOG.filter(x=>x.manufacturer==='Sira Concrete').map(x=>({reference:x.reference,key:productKey(x),collection:x.collection})));
     report.sira=[];
     for(const family of families){
