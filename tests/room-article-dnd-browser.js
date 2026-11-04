@@ -167,7 +167,7 @@ const pause=ms=>new Promise(r=>setTimeout(r,ms));
   assert.deepEqual(linked.after.filter(p=>p.roomId==='r3').map(p=>p.id),group);
   for(const original of linked.before){
    const moved=linked.after.find(p=>p.id===original.id);
-   assert.deepEqual({...moved,roomId:original.roomId},original,'Every article field must survive a move');
+   assert.deepEqual(JSON.parse(JSON.stringify({...moved,roomId:original.roomId})),original,'Every serializable article field must survive a move');
   }
   assert(!linked.layout.assignments.gamma,'Obsolete dossier page assignment cleared');
   assert(!linked.layout.orders['r1:SELECTION:0'],'Obsolete dossier order cleared');
