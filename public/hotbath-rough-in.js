@@ -19,6 +19,16 @@ const trim=p=>/EXT(?:\.|$)/i.test(String(p?.reference||''))&&
   /(trim parts?|external parts?|parties extérieures|without concealed body)/i.test(
     [p?.originalDescription,p?.designation].filter(Boolean).join(' '));
 const modelCode=p=>norm(p?.base||p?.reference?.split('.')[0]).replace(/EXT.*$/,'');
+ // Supplementary pairs shown together in the 2026 Hotbath catalogue.
+ // The EXACT underlying body still has to exist as a positive-priced SKU
+ // in the separately imported July 2026 spreadsheet.
+ const PDF_CONFIRMED_BODY=Object.freeze({
+  'AR078W':'B077.010', // catalogue physical PDF p.32
+  'AR187':'B077.010',  // p.35
+  'CB178W':'HB.CB177', // p.116
+  'GL177':'HB.CB177'   // p.101
+ });
+
 function bodyAliases(body){
  const description=String(body?.originalDescription||body?.designation||'').toUpperCase()
    // "CB/CX105" means two official model codes, not a product named "CX105" invented from the trim.
@@ -82,7 +92,13 @@ function linkCatalog(rows){
   }
   if(!trim(p))continue;
   if(p.internalReference&&Number(p.internalPrice)>0){report.already++;continue}
-  const candidates=index.get(modelCode(p))||[];
+  const pdfBody=PDF_CONFIRMED_BODY[modelCode(p)]||'';
+  const pdfMatch=pdfBody?(rows||[]).find(b=>
+   b.manufacturer==='Hotbath'&&b.reference===pdfBody&&
+   Number.isFinite(Number(b.price))&&Number(b.price)>0):null;
+  const candidates=pdfMatch?[pdfMatch]:index.get(modelCode(p))||[];
+  // Manufacturer's catalogue proves the body type; the Excel price list
+  // alone proves the price. Conflicts remain unresolved, never guessed.
   // When multiple manufacturer body descriptions list the same trim model,
   // compatibility is ambiguous; never infer from a similar body code.
   const unique=candidates.length===1?candidates[0]:null;
@@ -98,7 +114,7 @@ function linkCatalog(rows){
   p.internalPrice=bodyPrice;
   p.internalPurchaseDiscount=purchaseDiscount(p);
   p.totalPrice=Math.round((mainPrice+bodyPrice)*100)/100;
-  p.roughInRequirement={required:true,reference:unique.reference,source:'supplier-2026',verified:true};
+  p.roughInRequirement={required:true,reference:unique.reference,source:pdfMatch?'Hotbath catalogue 2026 + Excel 2026':'supplier-2026',verified:true};
   p.supplierNote='Corps d’encastrement obligatoire '+unique.reference+' ('+
     bodyPrice.toFixed(2)+' € HT), rattaché à la référence modèle exacte dans le tarif fabricant 2026.';
   report.linked++;
@@ -134,5 +150,5 @@ function summary(p){
   total:r.verified&&r.priceAgrees?r.declaredTotal:Number(p?.totalPrice)||Number(p?.price)||0,
   reference:r.reference||'',mandatory:r.required};
 }
-return {resolve,summary,suggestsConcealed,linkCatalog,bodyIndex,bodyAliases,trim,modelCode,purchaseDiscount};
+return {resolve,summary,suggestsConcealed,linkCatalog,bodyIndex,bodyAliases,trim,modelCode,purchaseDiscount,PDF_CONFIRMED_BODY};
 });

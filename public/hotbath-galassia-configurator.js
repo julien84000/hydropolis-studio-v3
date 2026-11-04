@@ -21,10 +21,12 @@ function totalFor(p,rough){
 function open(rows,roomId,onAdd){
  const supplier=root?.HydroHotbathOfficialGuide,rough=root?.HydroHotbathRoughIn;
  const ray=root?.HydroHotbathRay2026;
+ const manufacturerCatalogue=root?.HydroHotbathCatalogue2026;
  ray?.apply(rows);
  if(!supplier||!rough||!Array.isArray(rows)||!rows.some(r=>r?.manufacturer==='Hotbath')||typeof onAdd!=='function')
   return Promise.reject(new Error('Données du configurateur Hotbath indisponibles'));
  const linkAudit=rough.linkCatalog(rows);
+ manufacturerCatalogue?.apply?.(rows);
  const indexed=ray?.extendTariffIndex(supplier.tariffIndex(rows),rows)||supplier.tariffIndex(rows);
  return new Promise(resolve=>{
   document.querySelector('.hotbath-galassia-modal')?.remove();
@@ -215,7 +217,12 @@ function open(rows,roomId,onAdd){
     return '<button type="button" class="galassia-model'+(m.base===base?' active':'')+
      '" data-model="'+esc(m.base)+'"><span class="galassia-model-photo">'+
      (url?'<img loading="lazy" alt="'+esc(m.base)+'" src="'+esc(url)+'">':
-     '<span class="galassia-no-photo">Photo du modèle indisponible</span>')+
+     (manufacturerCatalogue?.entry?.(m.base)?
+       '<span class="galassia-no-photo hotbath-catalogue-tile"><img loading="lazy" alt="Plan et photographie du catalogue Hotbath · '+esc(m.base)+
+       '" src="'+esc(manufacturerCatalogue.entry(m.base).preview)+
+       '" onerror="this.style.display=\'none\'">'+
+       '<small>Extrait catalogue · p. '+manufacturerCatalogue.entry(m.base).page+'</small></span>':
+       '<span class="galassia-no-photo">Photo du modèle indisponible</span>'))+
      '</span><strong>'+esc(modelLabel(m))+'</strong><span>'+esc(m.base)+' · '+
      m.variants.length+' déclinaison(s)</span><small>'+
      (minimum>0?'À partir de '+money(minimum)+' HT':'Tarif non importé')+'</small></button>';
@@ -251,6 +258,15 @@ function open(rows,roomId,onAdd){
    const negotiatedDiscount=rough.purchaseDiscount(p,collection);
    const negotiatedCost=totalFor(p,r)*(1-negotiatedDiscount/100);
    const photo=selectedImage(m.base,p);
+   const cataloguePage=manufacturerCatalogue?.entry?.(p);
+   const catalogueImagePreview=!photo.url&&cataloguePage?
+    '<div class="hotbath-catalogue-preview"><img loading="lazy" alt="Extrait du catalogue Hotbath · modèle '+esc(m.base)+
+    ', page '+cataloguePage.page+'" src="'+esc(cataloguePage.preview)+'" onerror="this.style.display=\'none\'">'+
+    '<small>Illustration de la page '+cataloguePage.page+' du catalogue fabricant 2026 · contient éventuellement plusieurs références</small></div>':
+    '<span>Photo produit indisponible</span>';
+   const catalogueDocument=cataloguePage?
+    '<a href="'+esc(cataloguePage.url)+'" target="_blank" rel="noopener noreferrer">Plan coté catalogue 2026 · page '+
+    cataloguePage.page+'</a>':'';
    const priceLines=r.verified&&r.priceAgrees?
     '<div><span>Produit apparent HT</span><b>'+money(p.price)+'</b></div>'+
     '<div><span>Corps obligatoire HT</span><b>'+money(r.price)+'</b></div>':
@@ -265,8 +281,10 @@ function open(rows,roomId,onAdd){
        'Référence et prix non vérifiés')+'</span><small>'+esc(r.note)+' · Référence extérieure exclue de l’ajout tant que le corps obligatoire n’est pas identifié.</small></div>':'';
    $('.hotbath-selection').innerHTML=
     '<div class="galassia-photo">'+(photo.url?'<img src="'+esc(photo.url)+'" alt="'+esc(p.reference)+'">':
-     '<span>Photo produit indisponible</span>')+'</div>'+
-    '<div class="galassia-image-note">'+esc(photo.url?photo.caption:'Aucun visuel vérifié pour ce modèle')+'</div>'+
+     ''+catalogueImagePreview+'')+'</div>'+
+    '<div class="galassia-image-note">'+esc(photo.url?photo.caption:cataloguePage?
+      'Extrait du catalogue 2026 : page produit illustrative, pas une photo de finition exacte':
+      'Aucun visuel vérifié pour ce modèle')+'</div>'+
     '<span class="galassia-eyebrow">'+esc(collection)+' · '+esc(activeCategory()?.label||'')+'</span>'+
     '<h3>'+esc(modelLabel(m))+'</h3>'+
     '<label class="galassia-variant-label">Référence et finition<select class="hotbath-variant">'+
@@ -279,7 +297,9 @@ function open(rows,roomId,onAdd){
       '<div><span>Coût d’achat théorique HT</span><b>'+money(negotiatedCost)+'</b></div></div>'+
     bodyMarkup+rayDetails+
     '<div class="galassia-docs"><a href="'+esc(italian?.byCollection?.[collection]?.[m.base]?.officialProductPage||'https://hotbath.it/fr/prods/')+'" target="_blank" rel="noopener noreferrer">Voir le modèle sur Hotbath Italie</a>'+
-    '<span>Tarifs : base importée 2026 · référence sans suffixe IT.</span></div>'+
+    ''+catalogueDocument+(cataloguePage?
+     '<a href="'+esc(cataloguePage.reproduction)+'" target="_blank" rel="noopener noreferrer">Catalogue 2026 · copie consultable</a>':'')+
+     '<span>Tarifs : base importée 2026 · référence sans suffixe IT.</span></div>'+
     '<button type="button" class="galassia-add hotbath-add"'+(busy||r.required&&!r.verified?' disabled':'')+'>'+
       (busy?'Ajout…':r.required&&!r.verified?'Corps d’encastrement à confirmer':'Ajouter cette configuration au projet')+'</button>';
    $('.hotbath-selection .galassia-photo img')?.addEventListener('error',e=>{
@@ -298,6 +318,7 @@ function open(rows,roomId,onAdd){
      // configurator to the project. Never change the tariff reference or price.
      const selectedPhoto=selectedImage(m.base,p);
      await onAdd({...p,hotbathSelectedCollection:collection,purchaseDiscount:negotiatedDiscount,
+        catalogue2026Page:cataloguePage?.page||null,catalogue2026Url:cataloguePage?.url||'',
        image:selectedPhoto.url||'',images:selectedPhoto.url?[selectedPhoto.url]:[],
        pdfImage:selectedPhoto.url||'',imageSource:selectedPhoto.caption,
        imageFinishMatch:selectedPhoto.scope==='exact'?'exact':'model-only',
