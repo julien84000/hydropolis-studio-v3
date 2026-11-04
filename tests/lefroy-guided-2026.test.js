@@ -73,10 +73,16 @@ test('Belle Aire flush mechanism includes chrome lever, no second lever line',()
  assert.ok(parts.parts.find(x=>x.item?.reference==='LB7789'));
  assert.ok(!parts.parts.some(x=>x.role==='Commande de chasse'));
 });
-test('La Chapelle high level is blocked without missing 2026 tariff for LB7797',()=>{
+test('La Chapelle high level uses approved LB7797 single-flush equivalence at 133 EUR HT',()=>{
  const set=model.WC.find(x=>x.slug==='la-chapelle-high-level-cistern-lavatory');
  const parts=model.assemble(catalog,set,BASE_CHOSEN);
- assert.deepEqual(parts.missing,['Mécanisme de chasse (LB7797)']);
+ assert.deepEqual(parts.missing,[]);
+ const mech=parts.parts.find(x=>x.role==='Mécanisme de chasse').item;
+ assert.equal(mech.reference,'LB7797');
+ assert.equal(mech.price,133);
+ assert.equal(mech.priceOverride.comparison,'LB7297 single flush');
+ assert.equal(mech.priceOverride.pricingReference,'LB7297DF');
+ assert.ok(parts.total>133);
 });
 test('Charterhouse wall mounted left hand is tariffed; corner and right-hand variants require verification',()=>{
  const left=model.BASINS.find(x=>x.slug==='charterhouse-wall-mounted-cloakroom-basin');
