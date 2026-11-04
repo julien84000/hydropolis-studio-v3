@@ -30,3 +30,9 @@
 .hotbath-galassia-modal .hotbath-ray-tech{display:grid;gap:6px;border:1px solid #d7dedb;background:#f7faf8;border-radius:10px;padding:12px;color:#304640;font-size:12px}
 .hotbath-galassia-modal .hotbath-ray-tech span{line-height:1.45}
 .hotbath-galassia-modal .hotbath-ray-tech a{color:#326f50;text-decoration:underline;font-weight:650}
+
+/* 2026 manufacturer catalogue: displayed only when a verified model photo is missing. */
+.hotbath-galassia-modal .hotbath-catalogue-preview{width:100%;display:flex;flex-direction:column;gap:5px;min-width:0}
+.hotbath-galassia-modal .hotbath-catalogue-preview iframe{width:100%;height:280px;border:1px solid #d9d9d9;border-radius:7px;background:#fff}
+.hotbath-galassia-modal .hotbath-catalogue-preview small{font-size:10px;line-height:1.3;color:#555}
+.hotbath-galassia-modal .galassia-docs{display:flex;flex-wrap:wrap;gap:8px}
