@@ -54,11 +54,62 @@ const PDF_MODEL_PAGES=Object.freeze({
 const TAPHOLABLE=new Set(['CARLTON','ANTIQUE','SLIPPER','DUAL','ROLL-TOP','SIENA','MORGAN','DAKOTA','FLEMING','MORITZ','BAVARIA','CLASSIC','BALI']);
 const PREMIUM=new Set(['HUDSON','CARLTON','ANTIQUE','SLIPPER','DUAL','ROLL-TOP','PRIMROSE','LYRA','SIENA','MORGAN','DAKOTA','EPOQUE','GRAND-EPOQUE','IRIS']);
 const METALS=PREMIUM_FINISHES.map(x=>x.label);
-const RAL_CLASSIC_PUBLIC_SURCHARGE_HT=769;
-// Price list 09/01/2026: standard outside finishing in colour €290.93 supplier net.
-const RAL_CLASSIC_SUPPLIER_SURCHARGE_HT=290.93;
+// Recor REC15 09/01/2026 — ALL figures below are NET PURCHASE prices.
+const PUBLIC_COEFFICIENT=2.6;
+const roundEuro=n=>Math.round((Number(n)+Number.EPSILON)*100)/100;
+const pricePublic=purchase=>roundEuro(Number(purchase)*PUBLIC_COEFFICIENT);
+const EXTRAS=Object.freeze({
+ 'ral-classic':{label:'RAL Classic · couleur extérieure',purchase:290.93},
+ 'ral-design':{label:'RAL Design · couleur spéciale extérieure',purchase:455.29},
+ 'anti-slip':{label:'Fond antidérapant',purchase:16.15},
+ 'primer':{label:'Apprêt extérieur de la baignoire',purchase:180.39},
+ 'polished':{label:'Extérieur poli',purchase:1123.09},
+ 'gilded':{label:'Dorure main (or, argent ou cuivre)',purchase:1625.44},
+ 'mosaic':{label:'Mosaïque nacre (Aries ou Pegaso)',purchase:1625.44},
+ 'glass-tile':{label:'Mosaïque verre (Misti, Santa Helena, Pinatubo)',purchase:813.51},
+ 'individual-box':{label:'Emballage individuel hors palette complète',purchase:181.63},
+ 'feet-gilded':{label:'Dorure à la feuille sur pieds fonte',purchase:821.34},
+ 'feet-special':{label:'Pieds peints en couleur spéciale',purchase:54.68},
+ 'rect-feet-adjustable':{label:'Pieds réglables pour baignoire rectangulaire (lot de 4)',purchase:42.49},
+ 'rect-feet-standard':{label:'Pieds standard Moritz (lot de 4)',purchase:84.10},
+ 'chrome-grips':{label:'Poignées chromées (paire)',purchase:29.06}
+});
+function extraLine(id){
+ const data=EXTRAS[id];return data?{id,label:data.label,purchase:data.purchase,price:pricePublic(data.purchase)}:null;
+}
+function isRal(mode){return ['ral','ral-classic','ral-design'].includes(mode)}
 function ralClassicSurcharge(finishMode,baseFinish){
- return finishMode==='ral'&&baseFinish==='WHITE'?RAL_CLASSIC_PUBLIC_SURCHARGE_HT:0;
+ return baseFinish==='WHITE' && ['ral','ral-classic'].includes(finishMode)?pricePublic(EXTRAS['ral-classic'].purchase):0;
+}
+function ralDesignSurcharge(finishMode,baseFinish){
+ return baseFinish==='WHITE' && finishMode==='ral-design'?pricePublic(EXTRAS['ral-design'].purchase):0;
+}
+function configuredExtras(main,foot,opts={}){
+ if(!main)return [];
+ const family=String(main.collection||'');
+ const claw=family==='Baignoires sur pieds',island=family==='Baignoires îlot',
+  rectangular=family==='Baignoires rectangulaires';
+ const lines=[];
+ const add=id=>{const line=extraLine(id);if(line)lines.push(line)};
+ const mode=opts.finishMode||'standard';
+ if((claw||island)&&main.finishCode?.startsWith('WHITE')&&isRal(mode)){
+  add(mode==='ral-design'?'ral-design':'ral-classic');
+ }else if(claw){
+  if(mode==='primer'&&main.finishCode?.startsWith('RAW'))add('primer');
+  if(['polished','gilded','mosaic','glass-tile'].includes(mode))add(mode);
+ }
+ if(opts.antiSlip)add('anti-slip');
+ if(opts.individualBox&&(claw||rectangular))add('individual-box');
+ if(claw&&foot?.collection==='Pieds Recor'){
+  if(opts.feetFinish==='special')add('feet-special');
+  if(opts.feetFinish==='gilded')add('feet-gilded');
+ }
+ if(rectangular&&opts.rectFeet)add(String(main.base||'').endsWith('-MORITZ')?'rect-feet-standard':'rect-feet-adjustable');
+ if(rectangular&&opts.chromeGrips)add('chrome-grips');
+ return lines;
+}
+function extraTotals(lines){
+ return (lines||[]).reduce((sum,l)=>({price:roundEuro(sum.price+(Number(l.price)||0)),purchase:roundEuro(sum.purchase+(Number(l.purchase)||0))}),{price:0,purchase:0});
 }
 const RALS=Object.freeze({
  '9005':'#0a0a0a','9010':'#f5f2e9','9016':'#f6f6f6','7016':'#383e42','7021':'#303438',
@@ -161,7 +212,7 @@ function productOptions(p){const key=modelCode(p);return {model:key,...pricedOpt
 function selectedTotal(main,foot,waste,extraHt=0){
  return [main,foot,waste].reduce((n,p)=>n+Number(p?.price||0),0)+Math.max(0,Number(extraHt)||0);
 }
-return {RAL_CLASSIC_PUBLIC_SURCHARGE_HT,RAL_CLASSIC_SUPPLIER_SURCHARGE_HT,ralClassicSurcharge,CATEGORIES,FAMILY_MODELS,PREMIUM_FINISHES,PREMIUM_ELIGIBILITY,PDF_MODEL_PAGES,TECHNICAL_SIZES,technicalDimension,TAPHOLABLE,PREMIUM,METALS,RALS,MATERIALS,
+return {PUBLIC_COEFFICIENT,EXTRAS,pricePublic,extraLine,configuredExtras,extraTotals,isRal,ralClassicSurcharge,ralDesignSurcharge,CATEGORIES,FAMILY_MODELS,PREMIUM_FINISHES,PREMIUM_ELIGIBILITY,PDF_MODEL_PAGES,TECHNICAL_SIZES,technicalDimension,TAPHOLABLE,PREMIUM,METALS,RALS,MATERIALS,
  modelCode,modelName,dimension,finishFamily,pricedOptions,findVariant,groupByModel,feetFor,wastesFor,
  ralColor,materialFromText,selectedTotal};
 });
