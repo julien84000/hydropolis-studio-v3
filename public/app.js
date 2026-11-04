@@ -2528,9 +2528,17 @@ function launchRecorGuidedConfigurator(initial=null,roomId=""){
   // Keep a real manufacturer photograph in projects when the rendering proxy
   // is unavailable; do not persist a broken local API URL.
   const chosenPhoto=preview||media.image||window.HydroRecorCurated?.photo(configuration.model)||rawPhoto;
-  const priceNote=configuration.pricingPending?
-   " · ATTENTION : finition personnalisée ou antidérapant sur devis, supplément hors prix catalogue à confirmer avant devis définitif.":"";
+  const ralExtra=Number(configuration.ralClassicSurchargeHT)||0;
+  const ralSupplier=Number(configuration.ralClassicSupplierSurchargeHT)||0;
+  const priceNote=(ralExtra?" · RAL Classic "+String(configuration.ral||"").trim()+" : +"+ralExtra.toFixed(2)+" € HT sur baignoire extérieur blanc.":"")+
+   (configuration.pricingPending?" · ATTENTION : autre option personnalisée sur devis, supplément à confirmer.":"");
+  // The bath SKU remains the official WHITE exterior reference. Only the
+  // configured unit price and supplier purchase cost receive the RAL premium.
   const bathData={...main,
+   price:Number(main.price||0)+ralExtra,
+   totalPrice:Number(main.totalPrice||0)+ralExtra,
+   purchasePrice:Number(main.purchasePrice||0)+ralSupplier,
+   designation:String(main.designation||"")+(ralExtra?" · RAL Classic "+String(configuration.ral||"").trim():""),
    image:chosenPhoto,images:[chosenPhoto],
    imageSource:preview?"Recor · simulation de finition extérieure indicative":"Recor · photo du modèle fabricant",
    manufacturerUrl:media.productUrl||main.manufacturerUrl,
@@ -2560,7 +2568,8 @@ function launchRecorGuidedConfigurator(initial=null,roomId=""){
    const oldIndex=state.selected.findIndex(p=>p.id===saved.id);
    if(oldIndex<0)throw Error("Baignoire Recor enregistrée introuvable.");
    updated.id=saved.id;updated.roomId=saved.roomId||room;
-   updated.priceOverride=saved.reference===updated.reference?saved.priceOverride:null;
+   updated.priceOverride=saved.reference===updated.reference &&
+     Number(saved.recorConfiguration?.ralClassicSurchargeHT||0)===ralExtra?saved.priceOverride:null;
    const next=state.selected.filter(p=>!isRecorBathLinkedAccessory(p,saved.id));
    const index=next.findIndex(p=>p.id===saved.id);
    const keep={...saved,...updated,id:saved.id,roomId:updated.roomId};
