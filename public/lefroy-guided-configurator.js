@@ -315,6 +315,18 @@ function missingCatalogPhotos(){
  }catch{}
  return {catalog:count,project:projects};
 }
+function directCatalogEntry(){
+ const host=document.querySelector('#results .manufacturer-guide-launcher');
+ if(!host||document.querySelector('#manufacturerFilter')?.value!=='Lefroy Brooks')return;
+ const previous=host.querySelector('.manufacturer-guide-open');
+ if(previous)previous.textContent='Explorer toute la robinetterie';
+ if(host.querySelector('.lf-direct-catalog-entry'))return;
+ const block=document.createElement('div');
+ block.className='lf-direct-catalog-entry';
+ block.innerHTML='<div><strong>Configurateur sanitaire Lefroy Brooks 2026</strong><small>21 lavabos · 9 WC · 3 bidets · accessoires obligatoires, tarifs HT et photos officielles</small></div><button type="button" class="lf-direct-catalog-button">Configurer lavabos, WC et bidets</button>';
+ block.querySelector('button').addEventListener('click',()=>launch(null,document.querySelector('#targetRoom')?.value||''));
+ host.prepend(block);
+}
 function attach(){
  const catalog=document.querySelector('#view-catalog');
  if(!catalog)return;
@@ -337,7 +349,7 @@ function attach(){
  }
  const previous=window.renderCatalog;
  if(typeof previous==='function'){
-   window.renderCatalog=function(){const res=previous.apply(this,arguments);const x=missingCatalogPhotos();if(x.catalog)previous.apply(this,arguments);if(x.project){saveState();renderRooms();}visibility();return res;};
+   window.renderCatalog=function(){const res=previous.apply(this,arguments);const x=missingCatalogPhotos();if(x.catalog)previous.apply(this,arguments);if(x.project){saveState();renderRooms();}visibility();directCatalogEntry();return res;};
  }
  document.addEventListener('click',event=>{
    const button=event.target.closest?.('#results button.add');
@@ -350,6 +362,7 @@ function attach(){
  document.querySelector('#manufacturerFilter')?.addEventListener('change',visibility);
  document.querySelector('#searchInput')?.addEventListener('input',visibility);
  visibility();
+ directCatalogEntry();
  loadMedia().then(()=>{const added=missingCatalogPhotos();if(added.project){saveState();renderRooms();}if(added.catalog&&typeof window.renderCatalog==='function')window.renderCatalog();}).catch(err=>console.warn('[Lefroy media index]',err));
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',attach,{once:true});else attach();
