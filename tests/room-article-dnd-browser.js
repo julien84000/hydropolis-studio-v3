@@ -83,6 +83,14 @@ const pause=ms=>new Promise(r=>setTimeout(r,ms));
    await page.mouse.up();
   };
   await mouseDrag(zone1.locator('[data-product-id="gamma"] .article-drag-handle'),zone1.locator('[data-product-id="alpha"]'));
+  console.log('Room first drop diagnostic:',JSON.stringify(await page.evaluate(()=>({
+   order:state.selected.map(p=>[p.id,p.roomId]),
+   dom:[...document.querySelectorAll('#roomsEditor .room-products[data-room-id="r1"] > .room-product')].map(e=>e.dataset.productId),
+   flags:state.rooms.map(r=>[r.id,r.articleOrderCustomized]),
+   trace:window.pointerTrace,
+   active:document.body.classList.contains('room-article-dragging'),
+   error:document.querySelector('#roomsEditor')?.textContent?.slice(-100)
+  }))));
   await page.waitForFunction(()=>state.rooms[0].articleOrderCustomized===true&&
     state.selected.filter(p=>p.roomId==='r1')[0]?.id==='gamma',null,{timeout:15000});
   const within=await page.evaluate(()=>{
