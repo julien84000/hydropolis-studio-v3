@@ -95,15 +95,20 @@ async function getMedia(){
      .catch(e=>{failed=true;console.warn('[ManufacturerGuide] '+label+' index unavailable',e);return fallback});
    mediaPromise=Promise.all([
      request('/brand-guide-collections.json','Collections',{collections:{},models:{}}),
-     request('/brand-guide-hotbath-media.json','Hotbath',{models:{},collections:{}})
-   ]).then(([collections,hotbath])=>{
+     request('/brand-guide-hotbath-media.json','Hotbath',{models:{},collections:{}}),
+     request('/lefroy-general-official-media.json','Lefroy Brooks',{families:{},models:{},finishes:{}})
+   ]).then(([collections,hotbath,lefroy])=>{
      if(failed)mediaPromise=null;
-     return {collections,hotbath};
+     return {collections,hotbath,lefroy};
    });
  }
  return mediaPromise;
 }
 function findCollectionVisual(brand,name,media){
+ if(brand==='Lefroy Brooks'){
+  const verified=media?.lefroy?.families?.[nrm(name)];
+  if(verified?.image)return {image:safeUrl(verified.image),url:safeUrl(verified.url)||OFFICIAL[brand]};
+ }
  const dict=brand==='Hotbath'?media.hotbath.collections:media.collections.collections?.[brand]||{};
  const normal=nrm(name);
  let entry=Object.entries(dict||{}).find(([label])=>nrm(label)===normal);
@@ -124,7 +129,8 @@ function findModelVisual(brand,p,base,media){
  // Curated product-page image must match the exact model + finish code.
  // Never transfer an image between different product references or finishes.
  const finish=String(p?.finishCode||'').trim().toUpperCase();
- const exactOfficial=safeUrl(media.collections.finishModels?.[brand]?.[reduced]?.[finish]);
+ const exactOfficial=safeUrl(media.collections.finishModels?.[brand]?.[reduced]?.[finish]) ||
+   (brand==='Lefroy Brooks'?safeUrl(media?.lefroy?.finishes?.[reduced]?.[finish]):'');
  if(exactOfficial)return {image:exactOfficial,caption:'Photographie fabricant de la finition '+finish,match:'exact'};
  const owned=safeUrl(p?.image)||(Array.isArray(p?.images)?safeUrl(p.images[0]):'');
  const exactFlag=String(p?.imageSource||'').toLowerCase();
@@ -135,6 +141,10 @@ function findModelVisual(brand,p,base,media){
    ||(finishCode&&finishPattern.test(filename)&&filename.toUpperCase().includes(reduced)));
  if(exactImage)return {image:owned,caption:'Visuel catalogue de la finition sélectionnée',match:'exact'};
  if(official)return {image:official,caption:'Photographie officielle du modèle · finition illustrative',match:'model'};
+ if(brand==='Lefroy Brooks'){
+  const verified=safeUrl(media?.lefroy?.models?.[reduced]);
+  if(verified)return {image:verified,caption:'Photographie officielle du modèle · finition indicative',match:'model'};
+ }
  if(owned)return {image:owned,caption:'Illustration catalogue · finition à vérifier',match:'catalogue'};
  return {image:'',caption:'Visuel du modèle non disponible',match:'missing'};
 }
@@ -146,7 +156,8 @@ function finishTiles(brand,variants,active,base,media){
    // Verified model+finish associations only: never trust a generic catalogue
    // image, filename heuristic or unverified imageSource flag for a finish tile.
    const finish=String(p.finishCode||'').trim().toUpperCase();
-   const exact=finish?safeUrl(media?.collections?.finishModels?.[brand]?.[nrm(base).toUpperCase()]?.[finish]):'';
+   const exact=finish?(safeUrl(media?.collections?.finishModels?.[brand]?.[nrm(base).toUpperCase()]?.[finish]) ||
+     (brand==='Lefroy Brooks'?safeUrl(media?.lefroy?.finishes?.[nrm(base).toUpperCase()]?.[finish]):'')):'';
    const pressed=p.reference===active;
    return '<button type="button" class="mg-visual-finish'+(pressed?' is-current':'')+'" data-mg-finish="'+esc(p.reference)+'" aria-pressed="'+pressed+'">'+
     (exact?'<img src="'+esc(exact)+'" alt="" loading="lazy" decoding="async" onerror="this.remove()">':'<span class="mg-finish-image-missing" aria-hidden="true">Finition à confirmer sur photo</span>')+

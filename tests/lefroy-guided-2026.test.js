@@ -128,3 +128,30 @@ test('Mackintosh 1307/1308 polished brass is blocked even if the price list has 
   assert.ok(parts.missing.some(x=>x.includes(lever)),slug);
  }
 });
+
+test('11.64.59 visible sanitary CTA and 23 official Lefroy photo source pages remain separate from full catalogue',()=>{
+ const vm=require('node:vm'),window={};
+ const media=JSON.parse(fs.readFileSync(path.join(root,'lefroy-general-official-media.json'),'utf8'));
+ const guided=fs.readFileSync(path.join(root,'lefroy-guided-configurator.js'),'utf8');
+ const visual=fs.readFileSync(path.join(root,'manufacturer-guide.js'),'utf8');
+ assert.match(guided,/lf-direct-catalog-button/);
+ assert.match(guided,/directCatalogEntry\(\)/);
+ assert.match(guided,/new MutationObserver/);
+ assert.match(guided,/Configurer lavabos, WC et bidets/);
+ assert.match(visual,/lefroy-general-official-media\.json/);
+ assert.ok(media.sourceImageCount>=800);
+ assert.ok(Object.keys(media.models).length>=200);
+ assert.ok(Object.keys(media.finishes).length>=150);
+ for(const family of ['baths','chinaware','components','lighting','marble','towelwarmers','xo','kitchen']){
+   assert.match(media.families[family]?.image||'',/^https:\/\/images\.squarespace-cdn\.com\/content\/v1\//,family);
+ }
+ vm.runInNewContext(visual,{window});
+ const guide=window.HydroManufacturerGuide;
+ const indexed={collections:{models:{},collections:{}},hotbath:{},lefroy:media};
+ assert.equal(guide.findCollectionVisual('Lefroy Brooks','XO',indexed).image,media.families.xo.image);
+ const ref='LB3208';
+ assert.ok(media.models[ref]);
+ const image=guide.findModelVisual('Lefroy Brooks',{manufacturer:'Lefroy Brooks',collection:'Towel warmers',base:ref,reference:ref,finishCode:'NK'},ref,indexed);
+ assert.equal(image.match,'exact');
+ assert.match(image.image,/Lefroy-Brooks_LB-3208_NK/i);
+});

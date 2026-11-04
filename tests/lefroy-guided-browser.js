@@ -31,7 +31,7 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
    document.querySelector('#manufacturerFilter').value='Lefroy Brooks';
    document.querySelector('#manufacturerFilter').dispatchEvent(new Event('change',{bubbles:true}));
   });
-  await page.locator('.lf-launcher:not([hidden]) .lf-launch-button').click();
+  await page.locator('#results .lf-direct-catalog-entry .lf-direct-catalog-button').click();
   const dialog=page.locator('#lefroyGuidedOverlay');
   await dialog.waitFor({timeout:20000});
   await dialog.locator('.lf-kind button[value="wc"]').click();
