@@ -46,6 +46,31 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
   const alternate=await page.locator('.hotbath-selection .galassia-image-note').innerText();
   assert.match(alternate,/finition illustrative/i);
   assert.match(await page.locator('.hotbath-selection .galassia-photo img').getAttribute('src'),/\/CB003C\/CB003CBCP_02\.png/);
+  // Regression: no article may inherit the full catalogue page instead of
+  // its exact Hotbath product-model photograph. Verify both examples reported.
+  await page.route(/https:\/\/www\.hotbath\.it\/documents\/ProdCateg\//,route=>route.fulfill({
+   status:200,contentType:'image/png',body:png}));
+  await page.route(/\/api\/hotbath-italian-media\?/,route=>{
+   const req=new URL(route.request().url());
+   const model=req.searchParams.get('model'),collection=req.searchParams.get('collection');
+   const id={GL002:'3498',GL018:'3493'}[model];
+   const data=id&&collection==='Gal'
+    ?{ok:true,image:'https://www.hotbath.it/documents/ProdCateg/'+id+'/'+model+'_2.jpg',
+       collection,model,scope:'model',verified:true,source:'Hotbath Italie · photographie fabricant vérifiée',
+       technicalSheetUrl:'https://www.hotbath.it/documents/ProdCateg/'+id+'/'+model+'-00.pdf'}
+    :{ok:true,collection,model,scope:'missing',image:''};
+   return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(data)});
+  });
+  await page.locator('.hotbath-collections [data-collection="Gal"]').click();
+  for(const code of ['GL002','GL018']){
+   const card=page.locator('.hotbath-models [data-model="'+code+'"]');
+   await card.click();
+   await page.waitForFunction(model=>document.querySelector('.hotbath-selection .galassia-photo img')
+    ?.getAttribute('src')?.includes('/'+model+'_2.jpg'),code,{timeout:15000});
+   assert.match(await page.locator('.hotbath-selection .galassia-photo img').getAttribute('src'),new RegExp(code+'_2\\.jpg$'));
+   assert.match(await page.locator('.hotbath-selection .galassia-docs').innerText(),/Fiche technique officielle/i);
+  }
+  assert.equal(await page.locator('.hotbath-catalogue-preview, .hotbath-catalogue-tile').count(),0);
   assert(!errors.some(e=>/Hotbath.*curated|Cannot read properties/i.test(e)),errors.join('\n'));
   console.log('Hotbath curated browser OK: preferred finish covers and exact/illustrative model image rules');
  }catch(e){console.error(e.stack||e,logs.slice(-1800));process.exitCode=1}

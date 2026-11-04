@@ -23,11 +23,55 @@ const modelCode=p=>norm(p?.base||p?.reference?.split('.')[0]).replace(/EXT.*$/,'
  // The EXACT underlying body still has to exist as a positive-priced SKU
  // in the separately imported July 2026 spreadsheet.
  const PDF_CONFIRMED_BODY=Object.freeze({
-  'AR078W':'B077.010', // catalogue physical PDF p.32
-  'AR187':'B077.010',  // p.35
-  'CB178W':'HB.CB177', // p.116
-  'GL177':'HB.CB177'   // p.101
+  'AR078W':'B077.010',
+  'AR187':'B077.010',
+  'CB178W':'HB.CB177',
+  'GL177':'HB.CB177',
+  'CB007':'HB007',
+  'CB009':'HB009',
+  'CB105':'HB.CB105',
+  'CB105T':'HB.CB105T',
+  'CB127':'HB.CB105',
+  'CB187':'HB.CB177',
+  'CB7171':'HB.CB7071',
+  'CB7172':'HB.CB7072',
+  'CX127':'HB.CB105',
+  'CX187':'HB.CB177',
+  'CX7171':'HB.CB7071',
+  'CX7172':'HB.CB7072',
+  'GL009':'MB009',
+  'GL7066':'HB.CB7066', // official GL7066 product page includes HBCB7066 technical sheet
+  'GLF011':'MHF001',
+  'GLF012':'MHF002',
+  'GLF013':'MHF003',
+  'GY005D':'HB.GY031',
+  'GY005R':'HB.GY031',
+  'GY011D':'HB.GY011',
+  'GY011R':'HB.GY011',
+  'GY031D':'HB.GY031',
+  'GY031R':'HB.GY031',
+  'GY177D':'HB.GY177',
+  'GY177R':'HB.GY177',
+  'GY7009D':'HB.CB7009',
+  'GY7009R':'HB.CB7009',
+  'GY7066D':'HB.CB7066',
+  'GY7066R':'HB.CB7066',
+  'GY7070D':'HB.CB7070',
+  'GY7070R':'HB.CB7070',
+  'GY7071D':'HB.CB7071',
+  'GY7071R':'HB.CB7071',
+  'GY7072D':'HB.CB7072',
+  'GY7072R':'HB.CB7072',
+  'KHDS5':'HB.KHDS4',
+  'AR7171':'HB.CB7071',
+  'AR7172':'HB.CB7072'
  });
+ // Both orientation variants are printed in the physical PDF page 126; the
+ // single trim SKU does NOT encode the chosen orientation. Never guess it.
+ const PDF_ORIENTATION_CHOICES=Object.freeze({
+  'CB7001':['HB.CB7001H','HB.CB7001V'],
+  'CX7001':['HB.CB7001H','HB.CB7001V']
+ });;
 
 function bodyAliases(body){
  const description=String(body?.originalDescription||body?.designation||'').toUpperCase()
@@ -58,6 +102,30 @@ function purchaseDiscount(p,chosenCollection=''){
  const selected=String(chosenCollection||p?.hotbathSelectedCollection||'').trim();
  const scope=String(p?.collection||'').trim();
  return /^Archie$/i.test(selected||scope)?59.5:55;
+}
+
+function bodyOptions(p,rows){
+ const codes=PDF_ORIENTATION_CHOICES[modelCode(p)]||[];
+ return codes.map(ref=>{
+  const b=(rows||[]).find(x=>x.manufacturer==='Hotbath'&&x.reference===ref&&Number(x.price)>0);
+  return b?{reference:ref,price:Number(b.price),
+   label:ref.endsWith('H')?'Horizontal':'Vertical',row:b}:null;
+ }).filter(Boolean);
+}
+function chooseBody(p,reference,rows){
+ if(!trim(p))return false;
+ const chosen=bodyOptions(p,rows).find(x=>x.reference===reference);
+ if(!chosen||!Number.isFinite(Number(p.price))||Number(p.price)<=0)return false;
+ p.internalReference=chosen.reference;
+ p.sourceInternalReference=chosen.row.sourceReference||chosen.reference;
+ p.internalPrice=chosen.price;
+ p.internalPurchaseDiscount=purchaseDiscount(p);
+ p.totalPrice=Math.round((Number(p.price)+chosen.price)*100)/100;
+ p.roughInRequirement={required:true,reference:chosen.reference,verified:true,
+  source:'Catalogue Hotbath 2026 · orientation choisie + tarif juillet 2026'};
+ p.supplierNote='Corps '+chosen.label.toLowerCase()+' '+chosen.reference+
+  ' · '+chosen.price.toFixed(2)+' € HT · sélection explicite parmi les variantes du catalogue 2026.';
+ return true;
 }
 
 function linkCatalog(rows){
@@ -92,6 +160,12 @@ function linkCatalog(rows){
   }
   if(!trim(p))continue;
   if(p.internalReference&&Number(p.internalPrice)>0){report.already++;continue}
+  const options=bodyOptions(p,rows);
+  if(options.length===2){
+   p.roughInChoices=options.map(o=>({reference:o.reference,label:o.label,price:o.price}));
+   p.roughInRequirement={required:true,reference:'',verified:false,reason:'orientation-choice'};
+   report.ambiguous++;continue;
+  }
   const pdfBody=PDF_CONFIRMED_BODY[modelCode(p)]||'';
   const pdfMatch=pdfBody?(rows||[]).find(b=>
    b.manufacturer==='Hotbath'&&b.reference===pdfBody&&
@@ -150,5 +224,5 @@ function summary(p){
   total:r.verified&&r.priceAgrees?r.declaredTotal:Number(p?.totalPrice)||Number(p?.price)||0,
   reference:r.reference||'',mandatory:r.required};
 }
-return {resolve,summary,suggestsConcealed,linkCatalog,bodyIndex,bodyAliases,trim,modelCode,purchaseDiscount,PDF_CONFIRMED_BODY};
+return {resolve,summary,suggestsConcealed,linkCatalog,bodyIndex,bodyAliases,trim,modelCode,purchaseDiscount,PDF_CONFIRMED_BODY,PDF_ORIENTATION_CHOICES,bodyOptions,chooseBody};
 });

@@ -50,7 +50,9 @@ test('Hotbath visual selector includes a source-referenced 2026 document fallbac
  const js=file.readFileSync(path.join(__dirname,'../public/hotbath-galassia-configurator.js'),'utf8');
  const html=file.readFileSync(path.join(__dirname,'../public/index.html'),'utf8');
  assert.match(js,/manufacturerCatalogue\?\.entry\?\.\(p\)/);
- assert.match(js,/catalogueImagePreview/);
+ assert.doesNotMatch(js,/catalogueImagePreview|hotbath-catalogue-tile|cataloguePage\.preview/,'A complete catalogue page must never serve as a product photo');
+ assert.match(js,/requestJson\(italianUrl\)/,'Retrieve the actual manufacturer product page before using a model photo');
+ assert.match(js,/IntersectionObserver/,'All model cards, not only the first 24, are loaded as they enter view');
  assert.match(js,/catalogueDocument/);
  assert.match(html,/hotbath-catalogue-2026\.js/);
 });

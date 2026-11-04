@@ -137,7 +137,9 @@ test('Hotbath unresolved or ambiguous trim never silently receives an invented b
   'Catalogue 2026 p.32 explicitly requires the B077.010 floor body, priced in July Excel');
  assert.equal(rough.resolve(floorMixer).reference,'B077.010');
  assert.equal(rough.resolve(floorMixer).required,true);
- const ambiguous=copy.find(x=>x.reference==='GL7066EXT.CR');
- assert(ambiguous);
- assert.equal(rough.resolve(ambiguous).kind,'unverified');
+ const galThermostatic=copy.find(x=>x.reference==='GL7066EXT.CR');
+ assert(galThermostatic);
+ assert.equal(rough.resolve(galThermostatic).kind,'verified');
+ assert.equal(rough.resolve(galThermostatic).reference,'HB.CB7066',
+  'Hotbath GL7066 official technical page supplies the HBCB7066 body drawing');
 });
