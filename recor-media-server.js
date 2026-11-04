@@ -11,6 +11,24 @@ for(const item of rows)if(item.category==='Bain'){
  const model=String(item.base||'').replace(/^RECOR-/,'').toUpperCase();
  if(model&&!supported.has(model))supported.set(model,String(item.manufacturerUrl||''));
 }
+// Official Recor 2026 catalogue also illustrates Camile, shower trays and ten
+// finish families absent from the priced SKU import. Show them without inventing prices.
+const EXTRA_OFFICIAL_PAGES=Object.freeze({
+ 'CAMILE':'/product/camile-en/',
+ 'SHOWER-TRAYS':'/product/shower-trays-en/',
+ 'HAND-GILDED':'/product/hand-gilded/',
+ 'MOSAIC-EXTERIOR':'/product/mosaic-exterior/',
+ 'HAND-POLISHED':'/product/hand-polished/',
+ 'SOLID-COPPER':'/product/solid-copper/',
+ 'SOLID-BRASS':'/product/solid-brass/',
+ 'SOLID-ALUMINIUM':'/product/solid-aluminium/',
+ 'STAINLESS-STEEL':'/product/stainless-steel/',
+ 'LEATHER':'/product/leather/',
+ 'NATURAL-RUSTIC':'/product/natural-rustic/',
+ 'BRONZE-RUSTIC':'/product/bronze-rustic-finish/'
+});
+for(const [model,pathname] of Object.entries(EXTRA_OFFICIAL_PAGES))
+ if(!supported.has(model))supported.set(model,'https://recor.pt'+pathname);
 const ORIGIN='https://recor.pt';
 const validModel=model=>/^[A-Z][A-Z0-9-]{2,38}$/.test(model)&&supported.has(model);
 const allowedURL=(input,kind='image')=>{
@@ -130,4 +148,4 @@ function attach(app,{mediaService=service()}={}){
  });
 }
 module.exports=attach;
-Object.assign(module.exports,{service,parseProduct,pageCandidates,supported,validModel,allowedURL});
+Object.assign(module.exports,{service,parseProduct,pageCandidates,supported,validModel,allowedURL,EXTRA_OFFICIAL_PAGES});
