@@ -1,0 +1,576 @@
+{
+  "source": "https://recor.pt/en/",
+  "verifiedDate": "2026-11-04",
+  "items": {
+    "GIBSON": {
+      "model": "GIBSON",
+      "productUrl": "https://recor.pt/product/gibson-en/",
+      "image": "https://recor.pt/wp-content/uploads/2024/06/Gibson-900x900-1.jpg",
+      "thumbnail": "https://recor.pt/wp-content/uploads/2024/06/Gibson-900x900-1-300x300.jpg",
+      "images": [
+        "https://recor.pt/wp-content/uploads/2024/06/Gibson-900x900-1.jpg",
+        "https://recor.pt/wp-content/uploads/2024/06/Gibson-900x900-1-300x300.jpg"
+      ],
+      "technicalSheetUrl": "",
+      "brochureUrl": "",
+      "verifiedModel": true,
+      "verifiedExactFinish": false,
+      "source": "recor.pt · official 2026 catalogue thumbnail"
+    },
+    "CROSBY": {
+      "model": "CROSBY",
+      "productUrl": "https://recor.pt/product/crosby-en/",
+      "image": "https://recor.pt/wp-content/uploads/2024/06/Crosby-900x900-1.jpg",
+      "thumbnail": "https://recor.pt/wp-content/uploads/2024/06/Crosby-900x900-1-300x300.jpg",
+      "images": [
+        "https://recor.pt/wp-content/uploads/2024/06/Crosby-900x900-1.jpg",
+        "https://recor.pt/wp-content/uploads/2024/06/Crosby-900x900-1-300x300.jpg"
+      ],
+      "technicalSheetUrl": "",
+      "brochureUrl": "",
+      "verifiedModel": true,
+      "verifiedExactFinish": false,
+      "source": "recor.pt · official 2026 catalogue thumbnail"
+    },
+    "ALLEN": {
+      "model": "ALLEN",
+      "productUrl": "https://recor.pt/product/allen-en/",
+      "image": "https://recor.pt/wp-content/uploads/2024/06/Allen-900X900.jpg",
+      "thumbnail": "https://recor.pt/wp-content/uploads/2024/06/Allen-900X900-300x300.jpg",
+      "images": [
+        "https://recor.pt/wp-content/uploads/2024/06/Allen-900X900.jpg",
+        "https://recor.pt/wp-content/uploads/2024/06/Allen-900X900-300x300.jpg"
+      ],
+      "technicalSheetUrl": "",
+      "brochureUrl": "",
+      "verifiedModel": true,
+      "verifiedExactFinish": false,
+      "source": "recor.pt · official 2026 catalogue thumbnail"
+    },
+    "CANOVA": {
+      "model": "CANOVA",
+      "productUrl": "https://recor.pt/product/canova-en/",
+      "image": "https://recor.pt/wp-content/uploads/2024/06/Canova-900X900.jpg",
+      "thumbnail": "https://recor.pt/wp-content/uploads/2024/06/Canova-900X900-300x300.jpg",
+      "images": [
+        "https://recor.pt/wp-content/uploads/2024/06/Canova-900X900.jpg",
+        "https://recor.pt/wp-content/uploads/2024/06/Canova-900X900-300x300.jpg"
+      ],
+      "technicalSheetUrl": "",
+      "brochureUrl": "",
+      "verifiedModel": true,
+      "verifiedExactFinish": false,
+      "source": "recor.pt · official 2026 catalogue thumbnail"
+    },
+    "SIENA": {
+      "model": "SIENA",
+      "productUrl": "https://recor.pt/product/siena-en/",
+      "image": "https://recor.pt/wp-content/uploads/2024/06/Siena-with-polished-exterior-900X900.jpg",
+      "thumbnail": "https://recor.pt/wp-content/uploads/2024/06/Siena-with-polished-exterior-900X900-300x300.jpg",
+      "images": [
+        "https://recor.pt/wp-content/uploads/2024/06/Siena-with-polished-exterior-900X900.jpg",
+        "https://recor.pt/wp-content/uploads/2024/06/Siena-with-polished-exterior-900X900-300x300.jpg"
+      ],
+      "technicalSheetUrl": "",
+      "brochureUrl": "",
+      "verifiedModel": true,
+      "verifiedExactFinish": false,
+      "source": "recor.pt · official 2026 catalogue thumbnail"
+    },
+    "MORGAN": {
+      "model": "MORGAN",
+      "productUrl": "https://recor.pt/product/morgan-en/",
+      "image": "https://recor.pt/wp-content/uploads/2024/06/Morgan-900X900.jpg",
+      "thumbnail": "https://recor.pt/wp-content/uploads/2024/06/Morgan-900X900-300x300.jpg",
+      "images": [
+        "https://recor.pt/wp-content/uploads/2024/06/Morgan-900X900.jpg",
+        "https://recor.pt/wp-content/uploads/2024/06/Morgan-900X900-300x300.jpg"
+      ],
+      "technicalSheetUrl": "",
+      "brochureUrl": "",
+      "verifiedModel": true,
+      "verifiedExactFinish": false,
+      "source": "recor.pt · official 2026 catalogue thumbnail"
+    },
+    "DAKOTA": {
+      "model": "DAKOTA",
+      "productUrl": "https://recor.pt/product/dakota-en/",
+      "image": "https://recor.pt/wp-content/uploads/2024/06/Dakota-900X900.jpg",
+      "thumbnail": "https://recor.pt/wp-content/uploads/2024/06/Dakota-900X900-300x300.jpg",
+      "images": [
+        "https://recor.pt/wp-content/uploads/2024/06/Dakota-900X900.jpg",
+        "https://recor.pt/wp-content/uploads/2024/06/Dakota-900X900-300x300.jpg"
+      ],
+      "technicalSheetUrl": "",
+      "brochureUrl": "",
+      "verifiedModel": true,
+      "verifiedExactFinish": false,
+      "source": "recor.pt · official 2026 catalogue thumbnail"
+    },
+    "EIFFEL": {
+      "model": "EIFFEL",
+      "productUrl": "https://recor.pt/product/eiffel-en/",
+      "image": "https://recor.pt/wp-content/uploads/2024/06/Eiffel-with-exterior-painted-900X900.jpg",
+      "thumbnail": "https://recor.pt/wp-content/uploads/2024/06/Eiffel-with-exterior-painted-900X900-300x300.jpg",
+      "images": [
+        "https://recor.pt/wp-content/uploads/2024/06/Eiffel-with-exterior-painted-900X900.jpg",
+        "https://recor.pt/wp-content/uploads/2024/06/Eiffel-with-exterior-painted-900X900-300x300.jpg"
+      ],
+      "technicalSheetUrl": "",
+      "brochureUrl": "",
+      "verifiedModel": true,
+      "verifiedExactFinish": false,
+      "source": "recor.pt · official 2026 catalogue thumbnail"
+    },
+    "EPOQUE": {
+      "model": "EPOQUE",
+      "productUrl": "https://recor.pt/product/epoque-en/",
+      "image": "https://recor.pt/wp-content/uploads/2024/06/Epoque-with-exterior-in-Leather-900X900.jpg",
+      "thumbnail": "https://recor.pt/wp-content/uploads/2024/06/Epoque-with-exterior-in-Leather-900X900-300x300.jpg",
+      "images": [
+        "https://recor.pt/wp-content/uploads/2024/06/Epoque-with-exterior-in-Leather-900X900.jpg",
+        "https://recor.pt/wp-content/uploads/2024/06/Epoque-with-exterior-in-Leather-900X900-300x300.jpg"
+      ],
+      "technicalSheetUrl": "",
+      "brochureUrl": "",
+      "verifiedModel": true,
+      "verifiedExactFinish": false,
+      "source": "recor.pt · official 2026 catalogue thumbnail"
+    },
+    "GRAND-EPOQUE": {
+      "model": "GRAND-EPOQUE",
+      "productUrl": "https://recor.pt/product/grand-epoque-en/",
+      "image": "https://recor.pt/wp-content/uploads/2024/06/Grand-Epoque-900X900.jpg",
+      "thumbnail": "https://recor.pt/wp-content/uploads/2024/06/Grand-Epoque-900X900-300x300.jpg",
+      "images": [
+        "https://recor.pt/wp-content/uploads/2024/06/Grand-Epoque-900X900.jpg",
+        "https://recor.pt/wp-content/uploads/2024/06/Grand-Epoque-900X900-300x300.jpg"
+      ],
+      "technicalSheetUrl": "",
+      "brochureUrl": "",
+      "verifiedModel": true,
+      "verifiedExactFinish": false,
+      "source": "recor.pt · official 2026 catalogue thumbnail"
+    },
+    "IRIS": {
+      "model": "IRIS",
+      "productUrl": "https://recor.pt/product/iris-en/",
+      "image": "https://recor.pt/wp-content/uploads/2024/06/Iris-with-exterior-in-polished-stainless-steel-900X900.jpg",
+      "thumbnail": "https://recor.pt/wp-content/uploads/2024/06/Iris-with-exterior-in-polished-stainless-steel-900X900-300x300.jpg",
+      "images": [
+        "https://recor.pt/wp-content/uploads/2024/06/Iris-with-exterior-in-polished-stainless-steel-900X900.jpg",
+        "https://recor.pt/wp-content/uploads/2024/06/Iris-with-exterior-in-polished-stainless-steel-900X900-300x300.jpg"
+      ],
+      "technicalSheetUrl": "",
+      "brochureUrl": "",
+      "verifiedModel": true,
+      "verifiedExactFinish": false,
+      "source": "recor.pt · official 2026 catalogue thumbnail"
+    },
+    "CHATEAU": {
+      "model": "CHATEAU",
+      "productUrl": "https://recor.pt/product/chateau-en/",
+      "image": "https://recor.pt/wp-content/uploads/2024/06/Chateau-900X900.jpg",
+      "thumbnail": "https://recor.pt/wp-content/uploads/2024/06/Chateau-900X900-300x300.jpg",
+      "images": [
+        "https://recor.pt/wp-content/uploads/2024/06/Chateau-900X900.jpg",
+        "https://recor.pt/wp-content/uploads/2024/06/Chateau-900X900-300x300.jpg"
+      ],
+      "technicalSheetUrl": "",
+      "brochureUrl": "",
+      "verifiedModel": true,
+      "verifiedExactFinish": false,
+      "source": "recor.pt · official 2026 catalogue thumbnail"
+    },
+    "CAMILE": {
+      "model": "CAMILE",
+      "productUrl": "https://recor.pt/product/camile/",
+      "image": "https://recor.pt/wp-content/uploads/2026/06/Camile-decor-900x900-1.jpg",
+      "thumbnail": "https://recor.pt/wp-content/uploads/2026/06/Camile-decor-900x900-1-300x225.jpg",
+      "images": [
+        "https://recor.pt/wp-content/uploads/2026/06/Camile-decor-900x900-1.jpg",
+        "https://recor.pt/wp-content/uploads/2026/06/Camile-decor-900x900-1-300x225.jpg"
+      ],
+      "technicalSheetUrl": "",
+      "brochureUrl": "",
+      "verifiedModel": true,
+      "verifiedExactFinish": false,
+      "source": "recor.pt · official 2026 catalogue thumbnail"
+    },
+    "COLLINS": {
+      "model": "COLLINS",
+      "productUrl": "https://recor.pt/product/collins/",
+      "image": "https://recor.pt/wp-content/uploads/2024/06/Collins-900x900-1.jpg",
+      "thumbnail": "https://recor.pt/wp-content/uploads/2024/06/Collins-900x900-1-300x300.jpg",
+      "images": [
+        "https://recor.pt/wp-content/uploads/2024/06/Collins-900x900-1.jpg",
+        "https://recor.pt/wp-content/uploads/2024/06/Collins-900x900-1-300x300.jpg"
+      ],
+      "technicalSheetUrl": "",
+      "brochureUrl": "",
+      "verifiedModel": true,
+      "verifiedExactFinish": false,
+      "source": "recor.pt · official 2026 catalogue thumbnail"
+    },
+    "HUDSON": {
+      "model": "HUDSON",
+      "productUrl": "https://recor.pt/product/hudson-2/",
+      "image": "https://recor.pt/wp-content/uploads/2024/06/Hudson-900X900.jpg",
+      "thumbnail": "https://recor.pt/wp-content/uploads/2024/06/Hudson-900X900-300x300.jpg",
+      "images": [
+        "https://recor.pt/wp-content/uploads/2024/06/Hudson-900X900.jpg",
+        "https://recor.pt/wp-content/uploads/2024/06/Hudson-900X900-300x300.jpg"
+      ],
+      "technicalSheetUrl": "",
+      "brochureUrl": "",
+      "verifiedModel": true,
+      "verifiedExactFinish": false,
+      "source": "recor.pt · official 2026 catalogue thumbnail"
+    },
+    "CARLTON": {
+      "model": "CARLTON",
+      "productUrl": "https://recor.pt/product/carlton-en/",
+      "image": "https://recor.pt/wp-content/uploads/2024/06/Carlton-with-white-feet-900X900.jpg",
+      "thumbnail": "https://recor.pt/wp-content/uploads/2024/06/Carlton-with-white-feet-900X900-300x300.jpg",
+      "images": [
+        "https://recor.pt/wp-content/uploads/2024/06/Carlton-with-white-feet-900X900.jpg",
+        "https://recor.pt/wp-content/uploads/2024/06/Carlton-with-white-feet-900X900-300x300.jpg"
+      ],
+      "technicalSheetUrl": "",
+      "brochureUrl": "",
+      "verifiedModel": true,
+      "verifiedExactFinish": false,
+      "source": "recor.pt · official 2026 catalogue thumbnail"
+    },
+    "ANTIQUE": {
+      "model": "ANTIQUE",
+      "productUrl": "https://recor.pt/product/antique-en/",
+      "image": "https://recor.pt/wp-content/uploads/2024/06/Antique-with-gold-leaf-900X900.jpg",
+      "thumbnail": "https://recor.pt/wp-content/uploads/2024/06/Antique-with-gold-leaf-900X900-300x300.jpg",
+      "images": [
+        "https://recor.pt/wp-content/uploads/2024/06/Antique-with-gold-leaf-900X900.jpg",
+        "https://recor.pt/wp-content/uploads/2024/06/Antique-with-gold-leaf-900X900-300x300.jpg"
+      ],
+      "technicalSheetUrl": "",
+      "brochureUrl": "",
+      "verifiedModel": true,
+      "verifiedExactFinish": false,
+      "source": "recor.pt · official 2026 catalogue thumbnail"
+    },
+    "SLIPPER": {
+      "model": "SLIPPER",
+      "productUrl": "https://recor.pt/product/slipper-en/",
+      "image": "https://recor.pt/wp-content/uploads/2024/06/Slipper-900X900.jpg",
+      "thumbnail": "https://recor.pt/wp-content/uploads/2024/06/Slipper-900X900-300x300.jpg",
+      "images": [
+        "https://recor.pt/wp-content/uploads/2024/06/Slipper-900X900.jpg",
+        "https://recor.pt/wp-content/uploads/2024/06/Slipper-900X900-300x300.jpg"
+      ],
+      "technicalSheetUrl": "",
+      "brochureUrl": "",
+      "verifiedModel": true,
+      "verifiedExactFinish": false,
+      "source": "recor.pt · official 2026 catalogue thumbnail"
+    },
+    "DUAL": {
+      "model": "DUAL",
+      "productUrl": "https://recor.pt/product/dual-en/",
+      "image": "https://recor.pt/wp-content/uploads/2024/06/Dual-with-Aster-feet-900X900.jpg",
+      "thumbnail": "https://recor.pt/wp-content/uploads/2024/06/Dual-with-Aster-feet-900X900-300x300.jpg",
+      "images": [
+        "https://recor.pt/wp-content/uploads/2024/06/Dual-with-Aster-feet-900X900.jpg",
+        "https://recor.pt/wp-content/uploads/2024/06/Dual-with-Aster-feet-900X900-300x300.jpg"
+      ],
+      "technicalSheetUrl": "",
+      "brochureUrl": "",
+      "verifiedModel": true,
+      "verifiedExactFinish": false,
+      "source": "recor.pt · official 2026 catalogue thumbnail"
+    },
+    "ROLL-TOP": {
+      "model": "ROLL-TOP",
+      "productUrl": "https://recor.pt/product/roll-top-en/",
+      "image": "https://recor.pt/wp-content/uploads/2024/06/Roll-Top-with-Aster-feet-900X900.jpg",
+      "thumbnail": "https://recor.pt/wp-content/uploads/2024/06/Roll-Top-with-Aster-feet-900X900-300x300.jpg",
+      "images": [
+        "https://recor.pt/wp-content/uploads/2024/06/Roll-Top-with-Aster-feet-900X900.jpg",
+        "https://recor.pt/wp-content/uploads/2024/06/Roll-Top-with-Aster-feet-900X900-300x300.jpg"
+      ],
+      "technicalSheetUrl": "",
+      "brochureUrl": "",
+      "verifiedModel": true,
+      "verifiedExactFinish": false,
+      "source": "recor.pt · official 2026 catalogue thumbnail"
+    },
+    "PRIMROSE": {
+      "model": "PRIMROSE",
+      "productUrl": "https://recor.pt/product/primrose-en/",
+      "image": "https://recor.pt/wp-content/uploads/2024/06/Primrose-900X900.jpg",
+      "thumbnail": "https://recor.pt/wp-content/uploads/2024/06/Primrose-900X900-300x300.jpg",
+      "images": [
+        "https://recor.pt/wp-content/uploads/2024/06/Primrose-900X900.jpg",
+        "https://recor.pt/wp-content/uploads/2024/06/Primrose-900X900-300x300.jpg"
+      ],
+      "technicalSheetUrl": "",
+      "brochureUrl": "",
+      "verifiedModel": true,
+      "verifiedExactFinish": false,
+      "source": "recor.pt · official 2026 catalogue thumbnail"
+    },
+    "LYRA": {
+      "model": "LYRA",
+      "productUrl": "https://recor.pt/product/lyra-en/",
+      "image": "https://recor.pt/wp-content/uploads/2024/06/Lyra-with-wood-feet-900X900.jpg",
+      "thumbnail": "https://recor.pt/wp-content/uploads/2024/06/Lyra-with-wood-feet-900X900-300x300.jpg",
+      "images": [
+        "https://recor.pt/wp-content/uploads/2024/06/Lyra-with-wood-feet-900X900.jpg",
+        "https://recor.pt/wp-content/uploads/2024/06/Lyra-with-wood-feet-900X900-300x300.jpg"
+      ],
+      "technicalSheetUrl": "",
+      "brochureUrl": "",
+      "verifiedModel": true,
+      "verifiedExactFinish": false,
+      "source": "recor.pt · official 2026 catalogue thumbnail"
+    },
+    "HAND-GILDED": {
+      "model": "HAND-GILDED",
+      "productUrl": "https://recor.pt/product/hand-gilded/",
+      "image": "https://recor.pt/wp-content/uploads/2024/06/Folheado-900x900-1.jpg",
+      "thumbnail": "https://recor.pt/wp-content/uploads/2024/06/Folheado-900x900-1-300x300.jpg",
+      "images": [
+        "https://recor.pt/wp-content/uploads/2024/06/Folheado-900x900-1.jpg",
+        "https://recor.pt/wp-content/uploads/2024/06/Folheado-900x900-1-300x300.jpg"
+      ],
+      "technicalSheetUrl": "",
+      "brochureUrl": "",
+      "verifiedModel": true,
+      "verifiedExactFinish": false,
+      "source": "recor.pt · official 2026 catalogue thumbnail"
+    },
+    "MOSAIC-EXTERIOR": {
+      "model": "MOSAIC-EXTERIOR",
+      "productUrl": "https://recor.pt/product/mosaic-exterior/",
+      "image": "https://recor.pt/wp-content/uploads/2024/06/Mosaico-900X900.jpg",
+      "thumbnail": "https://recor.pt/wp-content/uploads/2024/06/Mosaico-900X900-300x300.jpg",
+      "images": [
+        "https://recor.pt/wp-content/uploads/2024/06/Mosaico-900X900.jpg",
+        "https://recor.pt/wp-content/uploads/2024/06/Mosaico-900X900-300x300.jpg"
+      ],
+      "technicalSheetUrl": "",
+      "brochureUrl": "",
+      "verifiedModel": true,
+      "verifiedExactFinish": false,
+      "source": "recor.pt · official 2026 catalogue thumbnail"
+    },
+    "HAND-POLISHED": {
+      "model": "HAND-POLISHED",
+      "productUrl": "https://recor.pt/product/hand-polished/",
+      "image": "https://recor.pt/wp-content/uploads/2024/06/Polido-900X900.jpg",
+      "thumbnail": "https://recor.pt/wp-content/uploads/2024/06/Polido-900X900-300x300.jpg",
+      "images": [
+        "https://recor.pt/wp-content/uploads/2024/06/Polido-900X900.jpg",
+        "https://recor.pt/wp-content/uploads/2024/06/Polido-900X900-300x300.jpg"
+      ],
+      "technicalSheetUrl": "",
+      "brochureUrl": "",
+      "verifiedModel": true,
+      "verifiedExactFinish": false,
+      "source": "recor.pt · official 2026 catalogue thumbnail"
+    },
+    "SOLID-COPPER": {
+      "model": "SOLID-COPPER",
+      "productUrl": "https://recor.pt/product/solid-copper/",
+      "image": "https://recor.pt/wp-content/uploads/2024/06/Cobre-900X900.jpg",
+      "thumbnail": "https://recor.pt/wp-content/uploads/2024/06/Cobre-900X900-300x300.jpg",
+      "images": [
+        "https://recor.pt/wp-content/uploads/2024/06/Cobre-900X900.jpg",
+        "https://recor.pt/wp-content/uploads/2024/06/Cobre-900X900-300x300.jpg"
+      ],
+      "technicalSheetUrl": "",
+      "brochureUrl": "",
+      "verifiedModel": true,
+      "verifiedExactFinish": false,
+      "source": "recor.pt · official 2026 catalogue thumbnail"
+    },
+    "SOLID-BRASS": {
+      "model": "SOLID-BRASS",
+      "productUrl": "https://recor.pt/product/solid-brass/",
+      "image": "https://recor.pt/wp-content/uploads/2024/06/Latao-900X900.jpg",
+      "thumbnail": "https://recor.pt/wp-content/uploads/2024/06/Latao-900X900-300x300.jpg",
+      "images": [
+        "https://recor.pt/wp-content/uploads/2024/06/Latao-900X900.jpg",
+        "https://recor.pt/wp-content/uploads/2024/06/Latao-900X900-300x300.jpg"
+      ],
+      "technicalSheetUrl": "",
+      "brochureUrl": "",
+      "verifiedModel": true,
+      "verifiedExactFinish": false,
+      "source": "recor.pt · official 2026 catalogue thumbnail"
+    },
+    "SOLID-ALUMINIUM": {
+      "model": "SOLID-ALUMINIUM",
+      "productUrl": "https://recor.pt/product/solid-aluminium/",
+      "image": "https://recor.pt/wp-content/uploads/2024/06/Aluminio-900X900.jpg",
+      "thumbnail": "https://recor.pt/wp-content/uploads/2024/06/Aluminio-900X900-300x300.jpg",
+      "images": [
+        "https://recor.pt/wp-content/uploads/2024/06/Aluminio-900X900.jpg",
+        "https://recor.pt/wp-content/uploads/2024/06/Aluminio-900X900-300x300.jpg"
+      ],
+      "technicalSheetUrl": "",
+      "brochureUrl": "",
+      "verifiedModel": true,
+      "verifiedExactFinish": false,
+      "source": "recor.pt · official 2026 catalogue thumbnail"
+    },
+    "STAINLESS-STEEL": {
+      "model": "STAINLESS-STEEL",
+      "productUrl": "https://recor.pt/product/stainless-steel/",
+      "image": "https://recor.pt/wp-content/uploads/2024/06/Inox-900X900.jpg",
+      "thumbnail": "https://recor.pt/wp-content/uploads/2024/06/Inox-900X900-300x300.jpg",
+      "images": [
+        "https://recor.pt/wp-content/uploads/2024/06/Inox-900X900.jpg",
+        "https://recor.pt/wp-content/uploads/2024/06/Inox-900X900-300x300.jpg"
+      ],
+      "technicalSheetUrl": "",
+      "brochureUrl": "",
+      "verifiedModel": true,
+      "verifiedExactFinish": false,
+      "source": "recor.pt · official 2026 catalogue thumbnail"
+    },
+    "LEATHER": {
+      "model": "LEATHER",
+      "productUrl": "https://recor.pt/product/leather/",
+      "image": "https://recor.pt/wp-content/uploads/2024/06/Pele-900X900.jpg",
+      "thumbnail": "https://recor.pt/wp-content/uploads/2024/06/Pele-900X900-300x300.jpg",
+      "images": [
+        "https://recor.pt/wp-content/uploads/2024/06/Pele-900X900.jpg",
+        "https://recor.pt/wp-content/uploads/2024/06/Pele-900X900-300x300.jpg"
+      ],
+      "technicalSheetUrl": "",
+      "brochureUrl": "",
+      "verifiedModel": true,
+      "verifiedExactFinish": false,
+      "source": "recor.pt · official 2026 catalogue thumbnail"
+    },
+    "NATURAL-RUSTIC": {
+      "model": "NATURAL-RUSTIC",
+      "productUrl": "https://recor.pt/product/natural-rustic/",
+      "image": "https://recor.pt/wp-content/uploads/2025/09/Natural-Rustic-900x900-1.jpg",
+      "thumbnail": "https://recor.pt/wp-content/uploads/2025/09/Natural-Rustic-900x900-1-300x300.jpg",
+      "images": [
+        "https://recor.pt/wp-content/uploads/2025/09/Natural-Rustic-900x900-1.jpg",
+        "https://recor.pt/wp-content/uploads/2025/09/Natural-Rustic-900x900-1-300x300.jpg"
+      ],
+      "technicalSheetUrl": "",
+      "brochureUrl": "",
+      "verifiedModel": true,
+      "verifiedExactFinish": false,
+      "source": "recor.pt · official 2026 catalogue thumbnail"
+    },
+    "BRONZE-RUSTIC": {
+      "model": "BRONZE-RUSTIC",
+      "productUrl": "https://recor.pt/product/bronze-rustic-finish/",
+      "image": "https://recor.pt/wp-content/uploads/2025/09/Bronze-Rustic-900x900-1.jpg",
+      "thumbnail": "https://recor.pt/wp-content/uploads/2025/09/Bronze-Rustic-900x900-1-300x300.jpg",
+      "images": [
+        "https://recor.pt/wp-content/uploads/2025/09/Bronze-Rustic-900x900-1.jpg",
+        "https://recor.pt/wp-content/uploads/2025/09/Bronze-Rustic-900x900-1-300x300.jpg"
+      ],
+      "technicalSheetUrl": "",
+      "brochureUrl": "",
+      "verifiedModel": true,
+      "verifiedExactFinish": false,
+      "source": "recor.pt · official 2026 catalogue thumbnail"
+    },
+    "FLEMING": {
+      "model": "FLEMING",
+      "productUrl": "https://recor.pt/product/fleming-en/",
+      "image": "https://recor.pt/wp-content/uploads/2024/06/Fleming-900X900.jpg",
+      "thumbnail": "https://recor.pt/wp-content/uploads/2024/06/Fleming-900X900-300x300.jpg",
+      "images": [
+        "https://recor.pt/wp-content/uploads/2024/06/Fleming-900X900.jpg",
+        "https://recor.pt/wp-content/uploads/2024/06/Fleming-900X900-300x300.jpg"
+      ],
+      "technicalSheetUrl": "",
+      "brochureUrl": "",
+      "verifiedModel": true,
+      "verifiedExactFinish": false,
+      "source": "recor.pt · official 2026 catalogue thumbnail"
+    },
+    "MORITZ": {
+      "model": "MORITZ",
+      "productUrl": "https://recor.pt/product/moritz-en/",
+      "image": "https://recor.pt/wp-content/uploads/2024/06/Moritz-900x900-1.jpg",
+      "thumbnail": "https://recor.pt/wp-content/uploads/2024/06/Moritz-900x900-1-300x300.jpg",
+      "images": [
+        "https://recor.pt/wp-content/uploads/2024/06/Moritz-900x900-1.jpg",
+        "https://recor.pt/wp-content/uploads/2024/06/Moritz-900x900-1-300x300.jpg"
+      ],
+      "technicalSheetUrl": "",
+      "brochureUrl": "",
+      "verifiedModel": true,
+      "verifiedExactFinish": false,
+      "source": "recor.pt · official 2026 catalogue thumbnail"
+    },
+    "BAVARIA": {
+      "model": "BAVARIA",
+      "productUrl": "https://recor.pt/product/bavaria-en/",
+      "image": "https://recor.pt/wp-content/uploads/2024/06/Bavaria-900X900.jpg",
+      "thumbnail": "https://recor.pt/wp-content/uploads/2024/06/Bavaria-900X900-300x300.jpg",
+      "images": [
+        "https://recor.pt/wp-content/uploads/2024/06/Bavaria-900X900.jpg",
+        "https://recor.pt/wp-content/uploads/2024/06/Bavaria-900X900-300x300.jpg"
+      ],
+      "technicalSheetUrl": "",
+      "brochureUrl": "",
+      "verifiedModel": true,
+      "verifiedExactFinish": false,
+      "source": "recor.pt · official 2026 catalogue thumbnail"
+    },
+    "CLASSIC": {
+      "model": "CLASSIC",
+      "productUrl": "https://recor.pt/product/classic-en/",
+      "image": "https://recor.pt/wp-content/uploads/2024/06/Classic-900X900.jpg",
+      "thumbnail": "https://recor.pt/wp-content/uploads/2024/06/Classic-900X900-300x300.jpg",
+      "images": [
+        "https://recor.pt/wp-content/uploads/2024/06/Classic-900X900.jpg",
+        "https://recor.pt/wp-content/uploads/2024/06/Classic-900X900-300x300.jpg"
+      ],
+      "technicalSheetUrl": "",
+      "brochureUrl": "",
+      "verifiedModel": true,
+      "verifiedExactFinish": false,
+      "source": "recor.pt · official 2026 catalogue thumbnail"
+    },
+    "BALI": {
+      "model": "BALI",
+      "productUrl": "https://recor.pt/product/bali-en/",
+      "image": "https://recor.pt/wp-content/uploads/2024/06/Bali-900X900.jpg",
+      "thumbnail": "https://recor.pt/wp-content/uploads/2024/06/Bali-900X900-300x300.jpg",
+      "images": [
+        "https://recor.pt/wp-content/uploads/2024/06/Bali-900X900.jpg",
+        "https://recor.pt/wp-content/uploads/2024/06/Bali-900X900-300x300.jpg"
+      ],
+      "technicalSheetUrl": "",
+      "brochureUrl": "",
+      "verifiedModel": true,
+      "verifiedExactFinish": false,
+      "source": "recor.pt · official 2026 catalogue thumbnail"
+    },
+    "SHOWER-TRAYS": {
+      "model": "SHOWER-TRAYS",
+      "productUrl": "https://recor.pt/product/shower-trays-en/",
+      "image": "https://recor.pt/wp-content/uploads/2024/06/Base-900X900.jpg",
+      "thumbnail": "https://recor.pt/wp-content/uploads/2024/06/Base-900X900-300x300.jpg",
+      "images": [
+        "https://recor.pt/wp-content/uploads/2024/06/Base-900X900.jpg",
+        "https://recor.pt/wp-content/uploads/2024/06/Base-900X900-300x300.jpg"
+      ],
+      "technicalSheetUrl": "",
+      "brochureUrl": "",
+      "verifiedModel": true,
+      "verifiedExactFinish": false,
+      "source": "recor.pt · official 2026 catalogue thumbnail"
+    }
+  }
+}
