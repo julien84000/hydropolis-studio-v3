@@ -40,6 +40,7 @@ const modelCode=p=>norm(p?.base||p?.reference?.split('.')[0]).replace(/EXT.*$/,'
   'CX7171':'HB.CB7071',
   'CX7172':'HB.CB7072',
   'GL009':'MB009',
+  'GL7066':'HB.CB7066', // official GL7066 product page includes HBCB7066 technical sheet
   'GLF011':'MHF001',
   'GLF012':'MHF002',
   'GLF013':'MHF003',
