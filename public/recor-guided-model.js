@@ -110,10 +110,19 @@ function groupByModel(rows,category){
  return [...groups.values()];
 }
 function feetFor(rows,bath){
+ if(!bath)return [];
  const model=modelName(modelCode(bath));
  const needle=safe(model).replace(/[^A-Z0-9]/g,'');
- return (rows||[]).filter(p=>p?.manufacturer==='Recor'&&p.collection==='Pieds Recor'&&
-   safe(p.supplierNote).replace(/[^A-Z0-9]/g,'').includes(needle));
+ const nominalLength=dimension(bath)?.length||0;
+ return (rows||[]).filter(p=>{
+  if(p?.manufacturer!=='Recor'||!['Pieds Recor','Socles Recor'].includes(p.collection))return false;
+  if(!safe(p.supplierNote).replace(/[^A-Z0-9]/g,'').includes(needle))return false;
+  if(p.collection==='Socles Recor'){
+   const fixedSize=String(p.designation||'').match(/\b(1540|1700|1800)\s*mm\b/i);
+   if(fixedSize&&Math.abs(Number(fixedSize[1])/10-nominalLength)>3)return false;
+  }
+  return true;
+ });
 }
 function wastesFor(rows,bath){
  const model=modelCode(bath);
