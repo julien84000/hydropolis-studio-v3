@@ -119,8 +119,8 @@ function open(args={}){
    '<div class="recor-price-lines"><div><span>Baignoire · '+esc(main.reference)+'</span><b>'+money(main.price)+' HT</b></div>'+
    (foot?'<div><span>Pieds · '+esc(foot.reference)+'</span><b>'+money(foot.price)+' HT</b></div>':'')+
    (waste?'<div><span>Vidage · '+esc(waste.reference)+'</span><b>'+money(waste.price)+' HT</b></div>':'')+
-   '<div><span>Transport Recor obligatoire</span><b>'+money(main.mandatoryFreight)+' HT</b></div>'+
-   '<div class="recor-price-total"><b>Total des éléments tarifés</b><strong>'+money(M.selectedTotal(main,foot,waste))+' HT</strong></div>'+
+   ''+
+   '<div class="recor-price-total"><b>Total produits HT (hors port fournisseur)</b><strong>'+money(M.selectedTotal(main,foot,waste))+' HT</strong></div>'+
    (needsQuote?'<p class="recor-alert">Option personnalisée : supplément non chiffré par le tarif 2026. Total provisoire hors supplément, à confirmer avant devis définitif.</p>':'')+
    '</div>'+
    '<div class="recor-technical-links">'+
