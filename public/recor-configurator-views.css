@@ -10,3 +10,9 @@
 .recor-preview-hint{font-size:10px;color:#956d38;margin:6px 0 9px}.recor-gallery{display:flex;gap:6px}
 .recor-gallery button{height:50px;width:50px;border:1px solid #ddd;background:white;cursor:pointer}
 .recor-gallery button.active{border:2px solid #ad8148}.recor-gallery img{width:100%;height:100%;object-fit:contain}
+
+/* Fallback when WordPress rejects a server-side image proxy: still show the official product. */
+.recor-preview-fallback{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#f8f8f8;z-index:1}
+.recor-preview-fallback[hidden]{display:none!important}
+.recor-preview-fallback:not([hidden]){display:block}
+.recor-foot-overlay{z-index:2}
