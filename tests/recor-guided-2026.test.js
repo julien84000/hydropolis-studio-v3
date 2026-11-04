@@ -12,10 +12,24 @@ test('Recor 2026: real products, priced categories and no duplicate references',
  assert.equal(recors.length,196);
  const references=recors.map(x=>x.reference);
  assert.equal(new Set(references).size,references.length);
- assert.equal(model.CATEGORIES.length,7);
+ assert.deepEqual(model.CATEGORIES.map(x=>x.id),['Baignoires îlot','Baignoires sur pieds','Finitions premium','Baignoires rectangulaires']);
  assert.equal(model.groupByModel(recors,'Baignoires sur pieds').length,9);
- assert.equal(model.groupByModel(recors,'Baignoires îlot').length,12);
- assert.equal(model.groupByModel(recors,'Baignoires rectangulaires').length,5);
+ assert.equal(model.groupByModel(recors,'Baignoires îlot').length,13);
+ assert.equal(model.groupByModel(recors,'Baignoires rectangulaires').length,6);
+});
+
+test('The 2026 catalogue includes quote-only Camile and shower trays without fabricated SKUs',()=>{
+ const camile=model.groupByModel(recors,'Baignoires îlot').find(x=>x.model==='CAMILE');
+ const shower=model.groupByModel(recors,'Baignoires rectangulaires').find(x=>x.model==='SHOWER-TRAYS');
+ assert.equal(camile.quoteOnly,true);
+ assert.equal(shower.quoteOnly,true);
+ assert.equal(camile.items.length,0);
+ assert.equal(shower.items.length,0);
+ assert.deepEqual(model.PDF_MODEL_PAGES['SHOWER-TRAYS'],[71,35]);
+ assert.equal(model.PREMIUM_FINISHES.length,10);
+ assert.ok(model.PREMIUM_FINISHES.some(x=>x.id==='SOLID-COPPER'));
+ assert.deepEqual(model.PREMIUM_ELIGIBILITY['SOLID-COPPER'],['DAKOTA','EIFFEL','EPOQUE','IRIS']);
+ assert.deepEqual(model.PREMIUM_ELIGIBILITY['NATURAL-RUSTIC'],[]);
 });
 
 test('Slipper: find exact 2026 tariff SKU by size, base finish and tap holes',()=>{
@@ -76,6 +90,10 @@ test('Custom RAL and material colors do not create fake priced references',()=>{
 
 test('Manufacturer photo proxy accepts only exact supported model and Recor URLs',()=>{
  assert.ok(attachMedia.validModel('SLIPPER'));
+ assert.ok(attachMedia.validModel('CAMILE'));
+ assert.ok(attachMedia.validModel('SHOWER-TRAYS'));
+ assert.ok(attachMedia.validModel('HAND-GILDED'));
+ assert.ok(attachMedia.validModel('BRONZE-RUSTIC'));
  assert.equal(attachMedia.validModel('NOT-A-RECOR-MODEL'),false);
  assert.ok(attachMedia.pageCandidates('SLIPPER').includes('https://recor.pt/product/slipper-en/'));
  assert.ok(attachMedia.allowedURL('https://recor.pt/wp-content/uploads/2026/01/slipper.jpg'));
