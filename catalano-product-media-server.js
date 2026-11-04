@@ -93,6 +93,32 @@ function parseCollection(html,collection){
   }
   if(!variants.length)return;
   if(!href.startsWith(ROOT+'/en/products/'))return;
+  // When Catalano publishes a model thumbnail without a 10-digit SKU in its
+  // filename, the official card's data-codes still proves which model it shows.
+  // Mark it indicative ONLY, never as an exact finish/reference. Reject editorial
+  // collection/set photography and cards spanning distinct model bases/types.
+  const candidateRows=codes.map(ref=>BY_REF.get(ref))
+   .filter(row=>row?.collection===collection);
+  const bases=new Set(candidateRows.map(row=>row.base));
+  const categories=new Set(candidateRows.map(row=>row.category));
+  if(bases.size===1&&categories.size===1&&candidateRows.length){
+   const first=variants.map(v=>String(v?.image_url||''))
+    .find(url=>{
+     if(!allowedPhoto(url))return false;
+     const filename=decodeURIComponent(new URL(url).pathname.split('/').pop()).toUpperCase();
+     if(photoReference(url))return false;
+     // Editorial images (e.g. CATALANO_Sfera_55_sospesi) are not
+     // reference-specific product thumbnails and stay excluded.
+     if(/^(?:CATALANO[_-]|SET[_-])/.test(filename))return false;
+     return /(?:LAVABO|WASHBASIN|BIDET|WC|SEDILE|SEAT|H3[_-]|SOLID|PLANAR|TOP|PIATTO|VASCA|BATHTUB|CISTERN|CASSETTA)/.test(filename);
+    });
+   if(first){
+    const r=candidateRows[0],key=r.base+'|'+r.category;
+    if(!models[key])models[key]={reference:r.reference,base:r.base,collection,
+     category:r.category,image:first,productUrl:href,scope:'model',
+     verifiedTile:true};
+   }
+  }
   for(const item of variants){
    const image=String(item?.image_url||'');
    const ref=photoReference(image),row=BY_REF.get(ref);
