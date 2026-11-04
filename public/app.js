@@ -2321,10 +2321,12 @@ function recorModelName(p){
   return models.find(m=>hay.includes(normalizeText(m)))||"";
 }
 function recorCompatibleFeet(p){
+  if(window.HydroRecorModel?.feetFor)
+    return window.HydroRecorModel.feetFor(CATALOG,p);
   const model=recorModelName(p);
   if(!model)return [];
-  return CATALOG.filter(c=>c.manufacturer==="Recor" && c.collection==="Pieds Recor" && normalizeText(c.supplierNote||"").includes(normalizeText(model)))
-    .sort((a,b)=>String(a.designation).localeCompare(String(b.designation),"fr") || String(a.finish).localeCompare(String(b.finish),"fr"));
+  return CATALOG.filter(c=>c.manufacturer==="Recor" && c.collection==="Pieds Recor" &&
+    normalizeText(c.supplierNote||"").includes(normalizeText(model)));
 }
 function recorCompatibleWastes(p){
   const model=recorModelName(p);
@@ -2343,7 +2345,7 @@ function recorCompatibleWastes(p){
 function isRecorBathLinkedAccessory(item,parentId=""){
   if(!item || item.manufacturer!=="Recor" || !item.accessoryFor)return false;
   if(parentId && item.accessoryFor!==parentId)return false;
-  if(item.collection==="Pieds Recor")return true;
+  if(item.collection==="Pieds Recor" || item.collection==="Socles Recor")return true;
   if(item.collection==="Accessoires Recor"){
     const t=normalizeText(`${item.designation||""} ${item.originalDescription||""}`);
     return /vidage|waste/.test(t);
@@ -2351,13 +2353,13 @@ function isRecorBathLinkedAccessory(item,parentId=""){
   return false;
 }
 function recorFeetSelected(p){
-  return state.selected.some(x=>x.roomId===p.roomId && x.accessoryFor===p.id && x.manufacturer==="Recor" && x.collection==="Pieds Recor");
+  return state.selected.some(x=>x.roomId===p.roomId && x.accessoryFor===p.id && x.manufacturer==="Recor" && ["Pieds Recor","Socles Recor"].includes(x.collection));
 }
 function recorBathOptions(p,roomId){
   if(!isRecorBathRequiringFeet(p))return "";
   const model=recorModelName(p);
   const linked=state.selected.filter(x=>x.roomId===roomId && x.accessoryFor===p.id && x.manufacturer==="Recor");
-  const selectedFeet=linked.filter(x=>x.collection==="Pieds Recor");
+  const selectedFeet=linked.filter(x=>["Pieds Recor","Socles Recor"].includes(x.collection));
   const selectedWastes=linked.filter(x=>{
     if(x.collection!=="Accessoires Recor")return false;
     return /vidage|waste/.test(normalizeText(`${x.designation||""} ${x.originalDescription||""}`));
@@ -2501,7 +2503,7 @@ function commitSelectedRecords(records,{showProject=false}={}){
     const isRitmonio=/^Ritmonio$/i.test(item.manufacturer||"");
     // A grouped Sbordoni result already owns its exact catalogue composition image.
     // Do not replace it with a generic manufacturer lookup.
-    if(!item.lefroyGuidedConfiguration && !item.lefroyGuidedChild && !item.sbordoniGrouped && !item.sbordoniWCConfiguration && !item.sbordoniWCConfigurationAccessory && !(item.siraConfiguration && item.image) && item.manufacturer!=="Galassia" && !(item.manufacturer==="Vismaravetro" && item.image && item.imageFinishMatch==="collection-only") && !(item.manufacturer==="Hidrobox" && item.hidroboxConfiguration?.officialConfiguratorImage))enqueueSelectedImageSearch(item);
+    if(!item.recorConfiguration && !item.lefroyGuidedConfiguration && !item.lefroyGuidedChild && !item.sbordoniGrouped && !item.sbordoniWCConfiguration && !item.sbordoniWCConfigurationAccessory && !(item.siraConfiguration && item.image) && item.manufacturer!=="Galassia" && !(item.manufacturer==="Vismaravetro" && item.image && item.imageFinishMatch==="collection-only") && !(item.manufacturer==="Hidrobox" && item.hidroboxConfiguration?.officialConfiguratorImage))enqueueSelectedImageSearch(item);
     if(isRitmonio && !item.technicalSheetUrl){
       fetchRitmonioDocuments(item).then(docs=>{
         if(docs?.technicalSheet?.url){saveState();renderRooms();}
@@ -2517,7 +2519,7 @@ function launchRecorGuidedConfigurator(initial=null,roomId=""){
  const allRecor=CATALOG.filter(p=>p.manufacturer==="Recor");
  const saved=initial?.id?state.selected.find(p=>p.id===initial.id&&p.manufacturer==="Recor"):null;
  const linked=saved?state.selected.filter(p=>p.accessoryFor===saved.id&&p.manufacturer==="Recor"):[];
- const footBefore=linked.find(p=>p.collection==="Pieds Recor")?.reference||"";
+ const footBefore=linked.find(p=>["Pieds Recor","Socles Recor"].includes(p.collection))?.reference||"";
  const wasteBefore=linked.find(p=>p.collection==="Accessoires Recor"&&
   /vidage|waste/i.test([p.designation,p.originalDescription].filter(Boolean).join(" ")))?.reference||"";
  const onAdd=async({main,foot,waste,configuration,media,preview,roomId:selectedRoom})=>{
