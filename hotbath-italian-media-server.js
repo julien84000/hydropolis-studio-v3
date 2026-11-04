@@ -117,7 +117,7 @@ function createService({get=axios.get,now=Date.now}={}){
     try{
      const response=await get(url,{timeout:11000,maxRedirects:2,maxContentLength:3*1024*1024,
       headers:{'User-Agent':'Mozilla/5.0','Accept':'text/html','Accept-Language':'en'}});
-     if(response.status===200&&typeof response.data==='string'&&response.data.length>500){
+     if(response.status===200&&typeof response.data==='string'&&response.data.length>100){
       info=parseProductPage(response.data,item,model);
      }
     }catch{/* Fall back to separately indexed manufacturer image URL. */}
