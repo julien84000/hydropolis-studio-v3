@@ -230,10 +230,10 @@ function open(initial,roomId){
      main.manufacturerUrl=cfg.sourceUrl||main.manufacturerUrl;
      main.technicalSheetUrl=sheet||main.technicalSheetUrl||'';
      if(photo?.src){
-       main.image=photo.src;main.images=[photo.src];main.remoteImageUrl=photo.src;
+       const proxied='/api/image-proxy?url='+encodeURIComponent(photo.src);
+       main.image=proxied;main.images=[proxied];main.pdfImage=proxied;main.pdfImages=[proxied];main.remoteImageUrl=photo.src;
        main.imageSource='Site officiel Lefroy Brooks — '+photo.scope;
        main.imageNote=photo.scope;main.imageFinishMatch=photo.exact?'exact':'collection';
-       main.customImage=true;
      }
      const selected=[main];
      for(const part of composition.parts.slice(1)){
