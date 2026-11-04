@@ -9,6 +9,16 @@
 })(typeof window==='object'?window:null,function(){
 'use strict';
 let cleanup=[];
+let pointerHeld=false,refreshPostponed=false;
+// Hotbath's asynchronous media-ready event otherwise rebuilds the room cards
+// while a pointer owns a drag, invalidating pointer capture and its source node.
+if(typeof window!=='undefined'){
+ window.addEventListener('hydro-hotbath-media-ready',e=>{
+  if(!pointerHeld)return;
+  refreshPostponed=true;
+  e.stopImmediatePropagation();
+ },true);
+}
 const same=(a,b)=>String(a)===String(b);
 function reorderSelected(selected,roomIds,visibleOrder,movedId,destinationRoomId,isVisible){
  const list=Array.isArray(selected)?selected:[];
@@ -113,6 +123,11 @@ function mount(host,options={}){
  function finish(){
   const previous=gesture;
   gesture=null;
+  pointerHeld=false;
+  if(previous&&refreshPostponed){
+   refreshPostponed=false;
+   queueMicrotask(()=>window.dispatchEvent(new Event('hydro-hotbath-media-ready')));
+  }
   cancelAnimationFrame(frame);frame=0;
   clearMarkers();
   document.body.classList.remove('room-article-dragging');
@@ -166,6 +181,7 @@ function mount(host,options={}){
   if(!item||item.classList.contains('article-linked-card'))return;
   e.preventDefault();
   gesture={handle,item,pointerId:e.pointerId,startX:e.clientX,startY:e.clientY,x:e.clientX,y:e.clientY,active:false};
+  pointerHeld=true;
   handle.setPointerCapture(e.pointerId);
  });
  bind(document,'pointermove',e=>{
