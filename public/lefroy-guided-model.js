@@ -67,6 +67,8 @@
   }
   function pick(rows,base,finish){
     if(!base)return null;
+    // Manufacturer excludes Mackintosh levers in polished brass, even though the price list has PB SKUs.
+    if(finish==='PB'&&['MK1307','MK1308'].includes(base))return null;
     const available=variants(rows,base);
     if(!available.length)return null;
     if(!finish)return available.find(function(x){return metalCode(x)==='CP';})||available[0];
