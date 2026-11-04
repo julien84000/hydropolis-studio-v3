@@ -222,7 +222,7 @@ const pause=ms=>new Promise(r=>setTimeout(r,ms));
    buildDocument();
    return {project:state.selected.filter(p=>p.roomId==='r1').map(p=>p.id),
     quote:quoteRows().filter(p=>p.roomId==='r1').map(p=>p.sourceId),
-    editor:quoteEditorRows().filter(p=>p.roomId==='r1').map(p=>p.sourceId),
+    editor:quoteEditorRows().filter(p=>p.roomId==='r1').map(p=>p.kind==='product'?state.selected[p.sourceIndex]?.id:null),
     pages:currentDossierPlan.pages.filter(p=>p.group.room.id==='r1').map(p=>p.items.map(i=>i.id))};
   });
   assert.equal(paginated.pages.length,2);
