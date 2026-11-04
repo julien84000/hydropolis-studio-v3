@@ -8,6 +8,7 @@ const CATEGORIES=Object.freeze([
  {id:'Baignoires sur pieds',label:'Baignoires sur pieds',sub:'Fonte émaillée · pieds au choix'},
  {id:'Baignoires îlot',label:'Baignoires îlot',sub:'Baignoires autoportantes'},
  {id:'Baignoires rectangulaires',label:'Baignoires encastrées',sub:'Baignoires rectangulaires'},
+ {id:'Finitions premium',label:'Finitions premium',sub:'Métaux, dorures, mosaïques et matières'},
  {id:'Pieds Recor',label:'Pieds',sub:'Jeux de pieds compatibles'},
  {id:'Socles Recor',label:'Socles',sub:'Supports et piédestaux'},
  {id:'Accessoires Recor',label:'Vidages et accessoires',sub:'Vidages, siphons, accessoires'}
