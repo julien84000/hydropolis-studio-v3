@@ -102,7 +102,8 @@ function open(args={}){
    [{label:empty,value:''},...items.map(x=>({label:x.designation+' · '+x.finish+' · '+money(x.price)+' HT',value:x.reference}))],value);
   const footThumb=foot?.image||foot?.images?.[0]||'';
   const custom=state.finishMode!=='standard'&&(state.ral||state.material);
-  const needsQuote=state.finishMode!=='standard'||state.antiSlip;
+  const ralExtra=M.ralClassicSurcharge(state.finishMode,state.finish);
+  const needsQuote=(state.finishMode!=='standard'&&state.finishMode!=='ral')||state.antiSlip;
   const sourceURL=source?.productUrl||main.manufacturerUrl||'https://recor.pt/en/';
   const tech=source?.technicalSheetUrl||'';
   const brochure=source?.brochureUrl||'';
@@ -122,10 +123,10 @@ function open(args={}){
    '<label><span>5. Vidage (option)</span>'+selectItem(allWaste,state.waste,'waste','Sans vidage Recor ajouté')+'</label>'+
    '<label><span>6. Finition extérieure personnalisée</span>'+selector('finishMode',[
       {label:'Finition de base du tarif',value:'standard'},
-      {label:'Peinture RAL (sur devis si hors tarif)',value:'ral'},
+      {label:'RAL Classic · +769 € HT sur extérieur blanc',value:'ral'},
       ...M.PREMIUM_FINISHES.filter(m=>(M.PREMIUM_ELIGIBILITY[m.id]||[]).includes(state.model)).map(m=>({label:m.label+' · sur devis',value:m.label})),
       {label:'Autre matière sur étude fabricant',value:'autre'}],state.finishMode)+'</label>'+
-   (state.finishMode==='ral'?'<label><span>Référence RAL ou code HEX</span><input class="recor-ral" placeholder="RAL 7016, RAL 9005, #8F8F8F…" value="'+esc(state.ral)+'"></label>'+
+   (state.finishMode==='ral'?'<label><span>Code RAL Classic ou HEX de simulation</span><input class="recor-ral" placeholder="RAL 7016, RAL 9005, #8F8F8F…" value="'+esc(state.ral)+'"></label>'+
     '<label><span>Ajuster la couleur d’aperçu</span><input class="recor-pick-color" type="color" value="'+esc(state.customColor)+'"></label>':
     state.finishMode!=='standard'?'<label><span>Matière / finition de simulation</span><input class="recor-material" placeholder="Cuivre, laiton, inox, bronze…" value="'+esc(state.material||state.finishMode)+'"></label>':'')+
    '<label class="recor-check"><input type="checkbox" data-recor-check="antiSlip" '+(state.antiSlip?'checked':'')+'> Fond antidérapant · sur devis</label>'+
@@ -133,9 +134,10 @@ function open(args={}){
    '<div class="recor-price-lines"><div><span>Baignoire · '+esc(main.reference)+'</span><b>'+money(main.price)+' HT</b></div>'+
    (foot?'<div><span>Pieds · '+esc(foot.reference)+'</span><b>'+money(foot.price)+' HT</b></div>':'')+
    (waste?'<div><span>Vidage · '+esc(waste.reference)+'</span><b>'+money(waste.price)+' HT</b></div>':'')+
+   (ralExtra?'<div class="recor-ral-surcharge"><span>Plus-value RAL Classic · extérieur blanc</span><b>'+money(ralExtra)+' HT</b></div>':'')+
    ''+
-   '<div class="recor-price-total"><b>Total produits HT (hors port fournisseur)</b><strong>'+money(M.selectedTotal(main,foot,waste))+' HT</strong></div>'+
-   (needsQuote?'<p class="recor-alert">Option personnalisée : supplément non chiffré par le tarif 2026. Total provisoire hors supplément, à confirmer avant devis définitif.</p>':'')+
+   '<div class="recor-price-total"><b>Total produits HT (hors port fournisseur)</b><strong>'+money(M.selectedTotal(main,foot,waste,ralExtra))+' HT</strong></div>'+
+   (needsQuote?'<p class="recor-alert">Autres personnalisations : prix de l’option non indiqué, à confirmer avant devis définitif.</p>':'')+
    '</div>'+
    '<div class="recor-technical-links">'+
    '<a href="'+esc(sourceURL)+'" rel="noopener noreferrer" target="_blank">Fiche produit Recor</a>'+
@@ -310,6 +312,8 @@ function open(args={}){
   const {main,foot,waste}=current();
   const error=dlg.querySelector('.recor-error');
   if(!main){if(error)error.textContent='Référence tarifée introuvable';return}
+  if(state.finishMode==='ral'&&state.finish!=='WHITE'){if(error)error.textContent='Le RAL Classic nécessite la baignoire Extérieur peint blanc.';return}
+  if(state.finishMode==='ral'&&!String(state.ral).trim()){if(error)error.textContent='Indiquez la référence du RAL Classic.';return}
   if(includesFeet(main)&&!foot){if(error)error.textContent='Choisissez des pieds ou un socle compatible.';return}
   const configuration={
    model:state.model,dimensions:M.technicalDimension(state.model,state.dimension),nominalTariffDimensions:state.dimension,
@@ -317,8 +321,10 @@ function open(args={}){
    feetReference:foot?.reference||'',wasteReference:waste?.reference||'',
    finishMode:state.finishMode,ral:state.ral,material:state.material,
    previewColor:paintColor(),antiSlip:state.antiSlip,
-   pricingPending:state.finishMode!=='standard'||state.antiSlip,
-   pricingNote:'Finition personnelle ou antidérapant : supplément non tarifé, prix à confirmer',
+   ralClassicSurchargeHT:M.ralClassicSurcharge(state.finishMode,state.finish),
+   ralClassicSupplierSurchargeHT:M.ralClassicSurcharge(state.finishMode,state.finish)?M.RAL_CLASSIC_SUPPLIER_SURCHARGE_HT:0,
+   pricingPending:(state.finishMode!=='standard'&&state.finishMode!=='ral')||state.antiSlip,
+   pricingNote:'Autre finition personnalisée ou antidérapant : supplément à confirmer',
    catalogue2026Page:M.PDF_MODEL_PAGES[state.model]?.[0]||null,
    technicalCatalogue2026Page:M.PDF_MODEL_PAGES[state.model]?.[1]||null
   };
@@ -369,7 +375,11 @@ function open(args={}){
  overlay.addEventListener('change',e=>{
   const f=e.target.dataset.recorSelect;
   if(f==='dimension'){state.dimension=e.target.value;state.feet='';state.waste='';render()}
-  if(f==='finish'){state.finish=e.target.value;render()}
+  if(f==='finish'){
+   state.finish=e.target.value;
+   if(state.finishMode==='ral'&&state.finish!=='WHITE')state.finishMode='standard';
+   render();
+  }
   if(f==='holes'){state.holes=e.target.value==='yes';render()}
   if(f==='feet'){state.feet=e.target.value;render()}
   if(f==='waste'){state.waste=e.target.value;render()}
