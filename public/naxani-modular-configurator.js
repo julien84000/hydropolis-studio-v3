@@ -92,6 +92,7 @@ function open(rows,roomId,onAdd,initial){
  if(initial?.manufacturer==='Naxani'){
    family=['plan-solid','plan-mdf'].includes(initial.productType)?'tops':initial.productType||'bois-massif';
    collection=initial.collection||'';reference=initial.reference||'';
+   if(initial.productType==='plan-integre')basinCount=Number(initial.naSinkCount||1);
  }
  const prior=document.querySelector('.nax-modal');if(prior)prior.remove();
  const ov=document.createElement('div');ov.className='nax-modal';
