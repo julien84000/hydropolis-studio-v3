@@ -27,7 +27,7 @@ test('PDF : la feuille finale supprime le clipping V12 et conserve le format A4'
 test('PDF : la couverture personnelle est sauvegardée et préchargée avant impression',()=>{
   assert.match(source,/if\(!saveState\(\)\)\s*\{\s*state\.project\.cover=previous/);
   assert.match(source,/class="cover-image"[^>]*loading="eager" decoding="sync"/);
-  assert.match(source,/waitForDocumentImages\(12000\)/);
+  assert.match(source,/waitForDocumentImages\(6000\)/);
   assert.match(source,/coverImage\.naturalWidth<1/);
   assert.match(source,/Export PDF interrompu/);
 });
