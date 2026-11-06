@@ -4325,8 +4325,15 @@ function bindProject(){
   }
   $("#coverInput").onchange=async e=>{
     let f=e.target.files[0];if(!f)return;
-    let data=await normalizeImageFile(f,2200,1500,.92);
-    state.project.cover=data;saveState();
+    // Keep the cover reasonably sized so a full project can be saved in browser storage.
+    const data=await normalizeImageFile(f,1900,1300,.85);
+    const previous=state.project.cover;
+    state.project.cover=data;
+    if(!saveState()){
+      state.project.cover=previous;
+      alert("Image de couverture non enregistrée : stockage du projet saturé. Réduisez l’image ou libérez de l’espace avant l’export PDF.");
+      return;
+    }
     $("#coverDrop").classList.add("has");
     $("#coverDrop").style.backgroundImage=`url("${data}")`;
   };
@@ -5244,7 +5251,7 @@ function buildDocument(){
  currentDossierPlan=HydroDossierPages.plan(dossierGroups,ensurePresentationLayoutState());
  let html=`<section class="page cover-page editorial-page" data-parallax-page>
   <div class="cover-ambient" data-parallax-layer="0.10"></div>
-  <div class="coverimg editorial-cover-image" data-parallax-layer="0.18">${state.project.cover?`<img class="cover-image" src="${state.project.cover}" alt="Couverture du projet">`:moodboardCoverHtml()}</div>
+  <div class="coverimg editorial-cover-image" data-parallax-layer="0.18">${state.project.cover?`<img class="cover-image" src="${state.project.cover}" alt="Couverture du projet" loading="eager" decoding="sync">`:moodboardCoverHtml()}</div>
   <div class="brandcover editorial-cover-card" data-parallax-layer="-0.08">
     <div class="cover-kicker">MAISON HYDROPOLIS</div>
     <h2>Hydropolis</h2>
@@ -5486,7 +5493,11 @@ async function exportClientPdf(){
 
   try{
     if(document.fonts?.ready)await Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,1500))]);
-    const preload=await waitForDocumentImages(6000);
+    const preload=await waitForDocumentImages(12000);
+    const coverImage=document.querySelector("#document .cover-page img.cover-image");
+    if(state.project.cover && (!coverImage || !coverImage.complete || coverImage.naturalWidth<1)){
+      throw new Error("L’image choisie pour la page de garde n’est pas prête. Rechargez-la dans les informations du projet.");
+    }
     if(preload.failed.length){
       const reason=preload.timedOut
         ?"certaines images n’ont pas fini de charger"
@@ -5505,6 +5516,9 @@ async function exportClientPdf(){
       printStarted=false;
       throw e;
     }
+  }catch(error){
+    console.error("[Hydropolis PDF] Export annulé",error);
+    alert("Export PDF interrompu : "+(error?.message||"image ou mise en page indisponible"));
   }finally{
     if(!printStarted){
       restore();
