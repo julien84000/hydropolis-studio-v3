@@ -494,6 +494,63 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
       showView('catalog');
     });
 
+    // Naxani 2026: verify the actual stand-alone Daro double-top workflow,
+    // its model picture/diagram and the stored linked customer record.
+    await page.evaluate(()=>{
+      HydroManufacturerGuide.open('Naxani',catalogIndex.maker('Naxani'),state.rooms[0]?.id,
+        p=>addNaxaniConfigured(p,state.rooms[0]?.id));
+    });
+    await page.locator('.nax-modal [data-family="plan-integre"]').click();
+    await page.locator('.nax-modal [data-collection="Daro"]').click();
+    await page.locator('.nax-modal [data-input="standaloneSinkCount"]').selectOption('2');
+    check('Naxani : Daro propose les 4 références double vasque officielles',
+      await page.locator('.nax-modal [data-standalone-plan-ref]').count()===4);
+    await page.locator('.nax-modal [data-standalone-plan-ref="574996"]').click();
+    check('Naxani : Daro 140 cm double vasque référence 574996 sélectionnable',
+      (await page.locator('.nax-modal [data-input="reference"]').inputValue())==='574996' &&
+      await page.locator('.nax-modal .nax-add').isEnabled());
+    const mediaDaro=await page.locator('.nax-modal .nax-standalone-top').evaluate(el=>({
+      photo:el.querySelector('img')?.getAttribute('src')||'',
+      paired:!!el.querySelector('[data-naxani-paired-model="Daro"]'),
+      diagram:!!el.querySelector('.nax-plan-technical')
+    }));
+    check('Naxani : photo du modèle Daro et dessin technique liés',
+      mediaDaro.paired&&mediaDaro.diagram&&/\/daro-02-scaled\.jpg/.test(mediaDaro.photo));
+    const drw=await page.request.get(base+'/api/naxani-plan-drawing?model=Daro');
+    check('Naxani : dessin technique découpé Daro accessible en PNG',
+      drw.status()===200&&/image\/png/i.test(drw.headers()['content-type']||''));
+    await page.locator('.nax-modal .nax-add').click();
+    await page.waitForSelector('.nax-modal',{state:'detached'});
+    const savedDaro=await page.evaluate(()=>{
+      const p=state.selected.find(x=>x.manufacturer==='Naxani'&&x.reference==='574996');
+      return p&&{count:p.naSinkCount,width:p.naWidth,price:p.price,
+        drawing:p.drawingUrl,photo:p.image,media:p.naxaniPlanMedia};
+    });
+    check('Naxani : double vasque Daro sauvegardée avec photo et plan dans le projet',
+      savedDaro?.count===2&&savedDaro?.width===140&&savedDaro?.price===1304&&
+      savedDaro?.drawing?.includes('model=Daro')&&savedDaro?.photo?.includes('daro-02-scaled.jpg'));
+    await page.evaluate(()=>{
+      const p=state.selected.find(x=>x.manufacturer==='Naxani'&&x.reference==='574996');
+      if(p)removeProduct(p.id);
+      showView('catalog');
+    });
+    // A double plan must also remain available in a 140 cm furniture assembly.
+    await page.evaluate(()=>{
+      HydroManufacturerGuide.open('Naxani',catalogIndex.maker('Naxani'),state.rooms[0]?.id,
+        p=>addNaxaniConfigured(p,state.rooms[0]?.id));
+    });
+    await page.locator('.nax-modal [data-collection="Aalto"]').click();
+    await page.locator('.nax-modal [data-input="width"]').selectOption('140');
+    await page.locator('.nax-modal [data-input="basinCount"]').selectOption('2');
+    await page.locator('.nax-modal [data-plan-collection="Daro"]').click();
+    check('Naxani : Daro 140 cm double vasque disponible avec meuble Aalto 140',
+      await page.locator('.nax-modal [data-plan-ref="574996"]').count()===1);
+    await page.locator('.nax-modal [data-plan-ref="574996"]').click();
+    check('Naxani : association meuble 140 + Daro double vasque chiffrée',
+      await page.locator('.nax-modal .nax-add').isEnabled() &&
+      (await page.locator('.nax-modal .nax-selected-plan').innerText()).includes('140'));
+    await page.locator('.nax-modal .nax-close').click();
+
     // V11.64 — Gessi-inspired guide validation in a REAL Chromium DOM on desktop/mobile.
     // Synthetic tariff rows are used so the exact selected object and price can be asserted
     // without mutating a user project. Official finish imagery is resolved by existing assets.
