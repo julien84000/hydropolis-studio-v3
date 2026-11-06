@@ -5493,7 +5493,7 @@ async function exportClientPdf(){
 
   try{
     if(document.fonts?.ready)await Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,1500))]);
-    const preload=await waitForDocumentImages(12000);
+    const preload=await waitForDocumentImages(6000);
     const coverImage=document.querySelector("#document .cover-page img.cover-image");
     if(state.project.cover && (!coverImage || !coverImage.complete || coverImage.naturalWidth<1)){
       throw new Error("L’image choisie pour la page de garde n’est pas prête. Rechargez-la dans les informations du projet.");
