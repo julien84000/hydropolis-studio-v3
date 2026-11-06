@@ -26,6 +26,14 @@ const photo=p=>E.picture(p);
 const img=p=>photo(p)?'<img src="'+esc(photo(p))+'" alt="Photo illustrative '+esc(p.collection)+'" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\'"><span class="nax-photo-fallback" style="display:none">Photo indisponible</span>':'<span class="nax-photo-fallback">Photo non disponible · schéma ci-dessous</span>';
 const pict=p=>E.pictogram(p);
 const topDrawing=p=>p?.productType==='plan-integre'&&root.HydroNaxaniPlanDrawings?.html?.(p.collection)||pict(p);
+const topPair=p=>{
+ if(p?.productType!=='plan-integre')return pict(p);
+ return '<div class="nax-top-pair" data-naxani-paired-model="'+esc(p.collection)+'">'+
+  '<div class="nax-top-photo"><span class="nax-media-title">Photo Naxani</span>'+
+    (photo(p)?img(p):'<span class="nax-photo-fallback">Photographie de collection à confirmer</span>')+'</div>'+
+  '<div class="nax-top-plan"><span class="nax-media-title">Plan technique</span>'+topDrawing(p)+'</div>'+
+  '</div>';
+};
 // Official manufacturer examples, never a promise that the illustrated SKU/width is exact.
 const woodGallery={
  'Suró':{
@@ -121,7 +129,7 @@ function open(rows,roomId,onAdd,initial){
   $('.nax-crumb').textContent=groups.find(g=>g[1]===family)?.[2]||family;
   $('.nax-cards').innerHTML=names.map(name=>{
    const variants=all.filter(p=>p.collection===name),sample=variants.find(p=>photo(p))||variants[0],price=Math.min(...variants.map(p=>Number(p.price)).filter(Number.isFinite));
-   return '<button type="button" class="nax-card '+(name===collection?'active':'')+'" data-collection="'+esc(name)+'"><div class="nax-card-image">'+img(sample)+'</div><div class="nax-card-picto">'+pict(sample)+'</div><b>'+esc(name)+'</b><small>'+variants.length+' références du tarif</small><span>Dès '+euro(price)+' HT</span></button>'
+   return '<button type="button" class="nax-card '+(name===collection?'active':'')+'" data-collection="'+esc(name)+'"><div class="nax-card-image">'+(family==='plan-integre'?topPair(sample):img(sample))+'</div><div class="nax-card-picto">'+(family==='plan-integre'?'':pict(sample))+'</div><b>'+esc(name)+'</b><small>'+variants.length+' références du tarif</small><span>Dès '+euro(price)+' HT</span></button>'
   }).join('')||'<p class="nax-empty">Aucune collection trouvée.</p>';
   $$('[data-collection]').forEach(b=>b.onclick=()=>{collection=b.dataset.collection;reference='';moduleRefs=[];resetOptions();render()});
  }
@@ -164,6 +172,8 @@ function open(rows,roomId,onAdd,initial){
   const illustration=exactFinishPhoto?{...p,image:exactFinishPhoto}:p;
   const note=exactFinishPhoto?'Photo fabricant illustrant l’essence ou la teinte '+esc(p.naWood)+' (dimensions non contractuelles).':
    (p?.naWood?'Photo de collection, pas nécessairement la finition '+esc(p.naWood)+'.':'Photo de collection illustrative, finition non contractuelle.');
+  if(p.productType==='plan-integre')
+   return '<div class="nax-standalone-top">'+topPair(p)+'</div><div class="nax-photonote">Photo de collection illustrative et dessin technique issu du tarif Naxani 2026. Nombre de vasques et dimensions selon référence.</div>';
   return '<div class="nax-mainphoto">'+img(illustration)+'</div><div class="nax-picto-main">'+pict(p)+'</div><div class="nax-photonote">'+note+' Pictogramme schématique.</div>';
  }
  function renderDetail(){
@@ -262,7 +272,7 @@ function open(rows,roomId,onAdd,initial){
       const name=sample.collection,selected=name===planCollection;
       const available=plans.filter(x=>x.collection===name).length;
       return '<button type="button" class="nax-plan-card '+(selected?'active':'')+'" data-plan-collection="'+esc(name)+'" aria-pressed="'+selected+'" aria-label="Choisir le plan '+esc(name)+'">'+
-       '<div class="nax-plan-pict">'+(mode==='integrated'?topDrawing(sample):pict(sample))+'</div><span>'+esc(name)+'</span>'+
+       '<div class="nax-plan-pict">'+(mode==='integrated'?topPair(sample):pict(sample))+'</div><span>'+esc(name)+'</span>'+
        (mode==='integrated'&&basinCount===2&&!available?'<small>Double vasque : sur devis</small>':
         '<small>'+available+' référence'+(available>1?'s':'')+' tarifée'+(available>1?'s':'')+'</small>')+
        (selected?'<strong class="nax-plan-check">✓ Sélectionné</strong>':'')+'</button>';
@@ -272,7 +282,7 @@ function open(rows,roomId,onAdd,initial){
        '<div class="nax-plan-variants" role="group" aria-label="Références et dimensions de '+esc(planCollection)+'">'+chosenPlan.map(x=>{
         const selected=x.reference===activePlanRef;
         return '<button type="button" class="nax-plan-variant '+(selected?'active':'')+'" data-plan-ref="'+esc(x.reference)+'" aria-pressed="'+selected+'" aria-label="'+esc(planCollection)+' '+width(x).toLocaleString('fr-FR')+' cm '+esc(x.naPosition||'')+' référence '+esc(x.reference)+'">'+
-         '<div class="nax-plan-variant-pict">'+(mode==='integrated'?topDrawing(x):pict(x))+'</div><b>'+width(x).toLocaleString('fr-FR')+' cm</b>'+
+         '<div class="nax-plan-variant-pict">'+(mode==='integrated'?topPair(x):pict(x))+'</div><b>'+width(x).toLocaleString('fr-FR')+' cm</b>'+
          (mode==='integrated'?'<small>'+esc(x.naPosition|| (Number(x.naSinkCount||1)===2?'Double vasque':'Simple vasque'))+'</small>':'')+
          '<small>Réf. '+esc(x.reference)+'</small><strong>'+euro(x.price)+' HT</strong>'+
          (selected?'<span class="nax-plan-check">✓ Sélectionné</span>':'')+'</button>';
@@ -282,7 +292,7 @@ function open(rows,roomId,onAdd,initial){
      (mode==='integrated'&&basinCount===2?'Double vasque '+esc(planCollection||'')+' : pas de référence et de prix public confirmés pour '+total.toLocaleString('fr-FR')+' cm dans le tarif Naxani 2026. Configuration sur devis fabricant ; vous pouvez également sélectionner un plan de travail avec 2 vasques à poser.':
       'Aucune référence tarifée compatible à cette longueur dans le tarif importé.')+'</p>';
     const displayPlan=byRef.get(mode==='integrated'?planRef:topRef);
-    if(displayPlan)html+='<div class="nax-selected-plan">'+(mode==='integrated'?topDrawing(displayPlan):pict(displayPlan))+'<div>'+img(displayPlan)+'</div><small>Plan '+width(displayPlan).toLocaleString('fr-FR')+' cm · caissons '+total.toLocaleString('fr-FR')+' cm · débord total : '+(width(displayPlan)-total).toLocaleString('fr-FR')+' cm</small></div>';
+    if(displayPlan)html+='<div class="nax-selected-plan">'+(mode==='integrated'?topPair(displayPlan):pict(displayPlan))+(mode==='integrated'?'':'<div>'+img(displayPlan)+'</div>')+'<small>Plan '+width(displayPlan).toLocaleString('fr-FR')+' cm · caissons '+total.toLocaleString('fr-FR')+' cm · débord total : '+(width(displayPlan)-total).toLocaleString('fr-FR')+' cm</small></div>';
     if(mode==='separate'){
      const selectedBasin=byRef.get(basinRef);
      const basinModels=[...new Map(basinRows.map(x=>[x.collection,x])).values()];
@@ -387,7 +397,11 @@ function open(rows,roomId,onAdd,initial){
        totalWidth:b.totalWidth,planWidth:b.planWidth,total:sum,
        woodFinish:p.naWood||null,woodFinishType:p.naFinishType||'essence',cabinetType:p.naVariant||null,
        source:'Tarif officiel Naxani 2026',
-       drawingStatus:'Pictogrammes schématiques non contractuels'
+       drawingStatus:'Photo de collection et dessin fabricant Naxani 2026 (forme indicative)',
+       planMedia:(()=>{const selected=furniture(p)?byRef.get(mode==='integrated'?planRef:topRef):p;
+        const media=selected?.productType==='plan-integre'?root.HydroNaxaniPlanMedia?.get?.(selected.collection):null;
+        return media?{model:selected.collection,reference:selected.reference,photo:media.image,drawingUrl:media.drawingUrl,sourceUrl:media.sourceUrl,scope:media.scope}:null;
+       })()
      }};
      await onAdd(chosen,roomId);close();
     }catch(err){busy=false;render(false);root.alert('Naxani : '+(err?.message||err))}
