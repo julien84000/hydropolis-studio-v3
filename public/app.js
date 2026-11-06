@@ -2905,6 +2905,10 @@ function addNaxaniConfigured(p,roomId){
   record.naxaniPlanMedia={model:original.collection,reference:original.reference,
     photo:photos[0]||'',drawingUrl:plan,sourceUrl:match.sourceUrl,
     scope:match.scope};
+  record.customImage=true; // prevent subsequent generic-image enrichment from overwriting verified plan photos
+  record.technicalSheetUrl=plan;
+  record.technicalSheetType='image/png';
+  record.technicalSheetLabel='Dessin technique Naxani '+original.collection+' (forme indicative)';
   return record;
  }
  const main=applyExactPlanMedia(createSelectedProductRecord({...parts[0],naxaniAssembly:assembly,naxaniGenericPhoto:true},roomId),parts[0]);
