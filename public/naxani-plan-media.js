@@ -10,19 +10,13 @@
  const gallery={
  "Alma": {
   "sourceUrl": "https://naxani.com/producto/alma-y-alpos/",
-  "photos": [
-   "https://naxani.com/wp-content/uploads/2026/02/WALDEN_180_ROBLE_04.jpg",
-   "https://naxani.com/wp-content/uploads/2026/02/WALDEN_180_ROBLE_01.jpg"
-  ],
-  "scope": "famille commune Alma / Alpos"
+  "photos": [],
+  "scope": "pas de photographie exclusive vérifiée — utiliser le dessin technique"
  },
  "Alpos": {
   "sourceUrl": "https://naxani.com/producto/alma-y-alpos/",
-  "photos": [
-   "https://naxani.com/wp-content/uploads/2026/02/WALDEN_180_ROBLE_04.jpg",
-   "https://naxani.com/wp-content/uploads/2026/02/WALDEN_180_ROBLE_01.jpg"
-  ],
-  "scope": "famille commune Alma / Alpos"
+  "photos": [],
+  "scope": "pas de photographie exclusive vérifiée — utiliser le dessin technique"
  },
  "Aran": {
   "sourceUrl": "https://naxani.com/producto/aran-e-inis/",
@@ -139,9 +133,9 @@
    if(item?.manufacturer!=='Naxani'||item.productType!=='plan-integre')continue;
    const media=get(item.collection);if(!media)continue;
    // Only catalogue items with the identical plan model get these photographs.
-   const sourceNote=media.scope.includes('famille commune')?
-     'Photo fabricant indicative — '+media.scope+' ; modèle précis non garanti':
-     'Photo officielle de la famille '+item.collection+' ; dimensions et nombre de vasques illustratifs';
+   const sourceNote=!media.photos.length?'Photographie du modèle non vérifiée — dessin technique fabricant disponible':
+      media.scope.includes('famille commune')?'Photographie fabricant de famille, modèle exact non confirmé':
+      'Photo officielle du modèle '+item.collection+' ; dimensions et nombre de vasques illustratifs';
    item.image=media.image;
    item.images=[...media.photos,media.drawingUrl];
    item.imageSource=sourceNote;
