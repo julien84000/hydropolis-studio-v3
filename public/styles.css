@@ -3507,3 +3507,7 @@ main{background:transparent}
  #hidroboxGuided .hb-fs-icon{height:82px}
  #hidroboxGuided .hb-fs-model-card{min-height:135px;padding:8px}
 }
+
+/* Room actions stay legible in the two-column project editor. */
+.room-head .duplicate-room{grid-column:1 / 3;grid-row:2;justify-self:start}
+@media(max-width:900px){.room-head .duplicate-room{grid-column:1;grid-row:3}.room-head .go-cat{grid-column:1}.room-head .del-room{grid-column:2;grid-row:2}}

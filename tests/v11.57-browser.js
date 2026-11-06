@@ -122,6 +122,7 @@ const check=(name,value)=>{assert.ok(value,name);report.checks.push(name);};
     check('choix dossier persistant après rendu',!(await page.locator(`.dossier-visibility-check[data-id="${target.id}"]`).isChecked()));
 
     const quoteStructure=await page.evaluate(()=>{
+      state.rooms.forEach(r=>r.subtitle='Sélection personnalisée');
       const html=quotePages(1).html;
       return {room:html.includes('quote-room-row'),space:html.includes('quote-space-row')};
     });
@@ -129,8 +130,8 @@ const check=(name,value)=>{assert.ok(value,name);report.checks.push(name);};
     check('devis structuré par espace',quoteStructure.space);
 
     const layout=await page.evaluate(()=>{
-      state.rooms=[{id:'wc',title:'SDB 01',manual:[{label:'Bâti support ALCA',price:250,quantity:1}]},
-        {id:'shower',title:' SDB  01 ',manual:[]},{id:'basin',title:'SDB 02',manual:[]}];
+      state.rooms=[{id:'wc',title:'SDB 01',subtitle:'Espace WC',manual:[{label:'Bâti support ALCA',price:250,quantity:1}]},
+        {id:'shower',title:' SDB  01 ',subtitle:'Espace douche',manual:[]},{id:'basin',title:'SDB 02',subtitle:'Espace lavabo',manual:[]}];
       const article=(id,roomId,designation,extra={})=>({id,roomId,designation,reference:id,manufacturer:'Sélection libre',quantity:1,totalPrice:100,quoteUnitOverride:100,quoteDiscountOverride:10,...extra});
       state.selected=[
         article('brush','wc','Wall mtd toilet brush & holder'),
@@ -155,7 +156,7 @@ const check=(name,value)=>{assert.ok(value,name);report.checks.push(name);};
       host.innerHTML=quotePages(1).html;
       fitQuotationPages();
       const roomTitles=[...host.querySelectorAll('.quote-room-row')].map(el=>el.querySelector('.quote-room-title')?.textContent.trim()||el.textContent.trim());
-      const wcRefs=rows.filter(row=>row.space==='WC').map(row=>row.reference);
+      const wcRefs=rows.filter(row=>row.space==='wc').map(row=>row.reference);
       const manual=rows.find(row=>row.manual);
       const sameRows=rows.every((row,i)=>row.sourceIndex===editorRows[i].sourceIndex && row.manualIndex===editorRows[i].manualIndex && row.roomId===editorRows[i].roomId && row.space===editorRows[i].space);
       const totals=rows.reduce((sum,row)=>sum+row.qty*row.netUnit,0);
@@ -178,8 +179,8 @@ const check=(name,value)=>{assert.ok(value,name);report.checks.push(name);};
     report.quoteLayout=layout;
     check('titres de pièce et espace alignés à gauche, montants à droite',layout.left&&layout.numericRight);
     check('pièce rappelée sur chaque page du devis',layout.roomTitles.length>=layout.pages&&layout.roomTitles.includes('SDB 02')&&layout.editorRooms===2);
-    check('accessoires WC et bâti libre rattachés au WC',layout.wcRefs.includes('paper')&&layout.wcRefs.includes('plate')&&layout.wcRefs.includes('hygiene')&&layout.manualSpace==='WC');
-    check('corps natif rattaché à sa douche et accessoire implicite au lavabo',layout.roughSpace==='DOUCHE'&&layout.implicitSpace==='LAVABO');
+    check('accessoires WC et bâti libre rattachés au WC',layout.wcRefs.includes('paper')&&layout.wcRefs.includes('plate')&&layout.wcRefs.includes('hygiene')&&layout.manualSpace==='wc');
+    check('corps natif rattaché à sa douche et accessoire implicite au lavabo',layout.roughSpace==='shower'&&layout.implicitSpace==='basin');
     check('aucun sous-titre Autres éléments, toutes les lignes conservées',layout.noOther&&layout.count===14);
     check('totaux, quantités et données sources préservés',layout.totals===1510&&layout.unchanged);
     check('éditeur et export cohérents, cibles des modifications préservées',layout.sameRows&&layout.targets);
