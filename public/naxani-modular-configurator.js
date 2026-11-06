@@ -92,7 +92,7 @@ function open(rows,roomId,onAdd,initial){
  if(initial?.manufacturer==='Naxani'){
    family=['plan-solid','plan-mdf'].includes(initial.productType)?'tops':initial.productType||'bois-massif';
    collection=initial.collection||'';reference=initial.reference||'';
-   if(initial.productType==='plan-integre')basinCount=Number(initial.naSinkCount||1);
+   if(['plan-integre','suspendu'].includes(initial.productType))basinCount=Number(initial.naSinkCount||1);
  }
  const prior=document.querySelector('.nax-modal');if(prior)prior.remove();
  const ov=document.createElement('div');ov.className='nax-modal';
@@ -109,10 +109,13 @@ function open(rows,roomId,onAdd,initial){
  const current=()=>byRef.get(reference);
  const resetOptions=()=>{planRef='';topRef='';basinRef='';drainRef='';planCollection=''};
  const beginMain=(ref,preserveCount=false)=>{reference=ref;moduleRefs=[ref];if(!preserveCount)basinCount=1;resetOptions()};
+ const basinSelectable=p=>['plan-integre','suspendu'].includes(p?.productType);
+ const pricedBasinVariants=p=>collectionRows().filter(x=>x.productType===p.productType&&Number(x.naSinkCount||1)===basinCount);
+ const suspendedPair=p=>p?.productType==='suspendu'&&basinCount===2&&!pricedBasinVariants(p).length;
  function selectCollection(){
    if(!collectionRows().length){collection=categoryRows()[0]?.collection||'';reference='';moduleRefs=[];resetOptions()}
    if(!collectionRows().some(p=>p.reference===reference)){
-      beginMain(collectionRows()[0]?.reference||'');
+      beginMain(collectionRows()[0]?.reference||'',family==='plan-integre'||family==='suspendu');
    }
    if(!moduleRefs.length)moduleRefs=[reference];
  }
@@ -142,9 +145,11 @@ function open(rows,roomId,onAdd,initial){
  }
  function bundle(p){
   if(!furniture(p)){
-  const valid=p?.productType!=='plan-integre'||Number(p.naSinkCount||1)===basinCount;
-  const drains=drainRef&&byRef.has(drainRef)?Array.from({length:p?.productType==='plan-integre'?basinCount:1},()=>byRef.get(drainRef)):[];
-  return {items:[p,...drains],valid,reason:valid?'':'Aucune référence '+basinCount+' vasque(s) n’est tarifée pour ce modèle. Demander un devis Naxani.',totalWidth:width(p)};
+  const isPair=suspendedPair(p);
+  const valid=!basinSelectable(p)||isPair||Number(p.naSinkCount||1)===basinCount;
+  const units=isPair?[p,p]:[p];
+  const drains=drainRef&&byRef.has(drainRef)?Array.from({length:basinSelectable(p)?basinCount:1},()=>byRef.get(drainRef)):[];
+  return {items:[...units,...drains],valid,reason:valid?'':'Aucune référence '+basinCount+' vasque(s) n’est tarifée pour ce modèle. Demander un devis Naxani.',totalWidth:isPair?2*width(p):width(p)};
  }
   const modules=moduleRefs.map(ref=>byRef.get(ref)).filter(Boolean);
   const totalWidth=modules.reduce((s,m)=>s+width(m),0);
@@ -181,7 +186,7 @@ function open(rows,roomId,onAdd,initial){
    const p=current();
    if(!p){$('.nax-detail').innerHTML='<p class="nax-empty">Choisissez une collection.</p>';return}
    const variants=collectionRows(),kinds=[...new Set(variants.map(variant))],woods=[...new Set(variants.filter(x=>variant(x)===variant(p)).map(x=>x.naWood).filter(Boolean))];
-   const alternatives=p.productType==='plan-integre'?mainRowsLike(p).filter(x=>Number(x.naSinkCount||1)===basinCount):mainRowsLike(p);
+   const alternatives=basinSelectable(p)?mainRowsLike(p).filter(x=>suspendedPair(p)||Number(x.naSinkCount||1)===basinCount):mainRowsLike(p);
    const widths=[...new Set(alternatives.map(width).filter(n=>Number.isFinite(n)&&n>0))].sort((a,b)=>a-b);
    let html=visual(p)+'<span class="nax-eyebrow">'+esc(groups.find(g=>g[1]===family)?.[2]||'')+'</span><h3>'+esc(collection)+'</h3>';
    if(kinds.length>1)html+='<label>Type de caisson / composition<select data-input="variant">'+kinds.map(x=>'<option value="'+esc(x)+'"'+(x===variant(p)?' selected':'')+'>'+esc(x)+'</option>').join('')+'</select></label>';
@@ -204,12 +209,14 @@ function open(rows,roomId,onAdd,initial){
      }
      html+='</div>';
    }
-   if(p.productType==='plan-integre'){
-    const forCount=collectionRows().filter(x=>Number(x.naSinkCount||1)===basinCount);
+   if(basinSelectable(p)){
+    const exactDoubles=collectionRows().filter(x=>Number(x.naSinkCount||1)===2);
+    const pair=suspendedPair(p);
+    const forCount=collectionRows().filter(x=>pair||Number(x.naSinkCount||1)===basinCount);
     html+='<div class="nax-plan-count"><label>Nombre de vasques du plan<select data-input="standaloneSinkCount">'+
       '<option value="1"'+(basinCount===1?' selected':'')+'>1 vasque</option>'+
       '<option value="2"'+(basinCount===2?' selected':'')+'>2 vasques</option></select></label>'+
-      '<small>'+forCount.length+' références '+(basinCount===2?'double vasque':'simple vasque')+' tarifées pour '+esc(collection)+'</small></div>';
+      '<small>'+(pair?'Deux lavabos suspendus indépendants : 2 références identiques, largeur totale indicative '+(2*width(p)).toLocaleString('fr-FR')+' cm. Pas un plan monobloc double vasque.':forCount.length+' références '+(basinCount===2?'double vasque':'simple vasque')+' tarifées pour '+esc(collection))+'</small></div>';
     if(forCount.length)html+='<div class="nax-plan-variants nax-standalone-variants" role="group" aria-label="Dimensions et références du plan">'+
       forCount.map(x=>'<button type="button" class="nax-plan-variant '+(reference===x.reference?'active':'')+
        '" data-standalone-plan-ref="'+esc(x.reference)+'" aria-pressed="'+(reference===x.reference)+'">'+
@@ -332,16 +339,17 @@ function open(rows,roomId,onAdd,initial){
     const k=el.dataset.input,v=el.value;
     if(['variant','wood','width','reference'].includes(k)){
       let possible=collectionRows();
-      if(p.productType==='plan-integre')possible=possible.filter(x=>Number(x.naSinkCount||1)===basinCount);
+      if(basinSelectable(p))possible=possible.filter(x=>suspendedPair(p)||Number(x.naSinkCount||1)===basinCount);
       if(k==='variant'){const matching=possible.filter(x=>variant(x)===v);possible=matching.filter(x=>!p.naWood||x.naWood===p.naWood);if(!possible.length)possible=matching;}
       if(k==='wood')possible=possible.filter(x=>variant(x)===variant(p)&&x.naWood===v);
       if(k==='width')possible=possible.filter(x=>variant(x)===variant(p)&&(!p.naWood||x.naWood===p.naWood)&&eq(width(x),Number(v)));
       const next=k==='reference'?v:(possible.find(x=>eq(width(x),width(p)))||possible[0])?.reference;
-      if(next)beginMain(next,p.productType==='plan-integre');
+      if(next)beginMain(next,basinSelectable(p));
     }
     if(k==='standaloneSinkCount'){
       basinCount=Number(v);
-      const choices=collectionRows().filter(x=>x.productType==='plan-integre'&&Number(x.naSinkCount||1)===basinCount);
+      const exact=collectionRows().filter(x=>x.productType===p.productType&&Number(x.naSinkCount||1)===basinCount);
+      const choices=exact.length?exact:(p.productType==='suspendu'?collectionRows().filter(x=>x.productType==='suspendu'&&Number(x.naSinkCount||1)===1):[]);
       const chosen=choices.find(x=>eq(width(x),width(p)))||choices[0];
       if(chosen)beginMain(chosen.reference,true);
     }
