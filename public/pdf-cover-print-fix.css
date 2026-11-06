@@ -1,0 +1,111 @@
+/* Dossier client — stabilité du PDF A4 paysage et couverture (2026-11-06).
+   La navigation V12 par page garde normalement un conteneur défilant :
+   à l'impression, ce défilement coupe la couverture et son visuel. */
+@media print {
+  @page { size: A4 landscape; margin: 0; }
+
+  html, body, .shell, main, #view-preview, #view-preview .preview-bg,
+  #view-preview #document {
+    overflow: visible !important;
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+    max-width: none !important;
+    max-height: none !important;
+    transform: none !important;
+    perspective: none !important;
+    clip-path: none !important;
+  }
+
+  body.v12-page-focus #view-preview .preview-bg,
+  #view-preview .preview-bg {
+    width: 297mm !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    min-height: 0 !important;
+    border-radius: 0 !important;
+    scroll-behavior: auto !important;
+  }
+
+  body.v12-page-focus #view-preview #document,
+  #view-preview #document {
+    display: block !important;
+    width: 297mm !important;
+    min-width: 297mm !important;
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    gap: 0 !important;
+  }
+
+  body.v12-page-focus #view-preview #document > .page,
+  #view-preview #document > .page {
+    display: block !important;
+    width: 297mm !important;
+    min-width: 297mm !important;
+    max-width: 297mm !important;
+    height: 210mm !important;
+    min-height: 210mm !important;
+    max-height: 210mm !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  #view-preview #document .cover-page {
+    position: relative !important;
+    overflow: hidden !important;
+    isolation: isolate !important;
+  }
+
+  /* Les animations et la perspective du mode aperçu ne doivent ni masquer
+     la photo ni la déplacer hors de la feuille lors de l'impression. */
+  #view-preview #document .cover-page [data-parallax-layer] {
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+    filter: none !important;
+    will-change: auto !important;
+  }
+
+  #view-preview #document .editorial-cover-image {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    inset: 13mm 12mm 16mm 42% !important;
+    width: auto !important;
+    height: auto !important;
+    overflow: hidden !important;
+    background: #eee9df !important;
+    box-shadow: none !important;
+  }
+
+  #view-preview #document .editorial-cover-image > img.cover-image {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: contain !important;
+    object-position: center center !important;
+    transform: none !important;
+    filter: none !important;
+  }
+
+  /* Les modèles de couverture automatiques conservent leurs photos. */
+  #view-preview #document .cover-moodboard img {
+    visibility: visible !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  #view-preview #document .editorial-cover-card {
+    box-sizing: border-box !important;
+    overflow-wrap: anywhere !important;
+    max-height: 177mm !important;
+  }
+}
