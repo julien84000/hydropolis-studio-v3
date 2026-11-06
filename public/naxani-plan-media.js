@@ -150,8 +150,10 @@
    item.drawingUrl=media.drawingUrl;
    item.drawingType='image/png';
    item.drawingLabel='Plan Naxani '+item.collection+' — forme du modèle (schéma non contractuel)';
-   item.technicalSheetUrl='https://naxani.com/wp-content/uploads/2026/02/catalogo_naxani_2026.pdf';
-   item.technicalSheetLabel='Catalogue fabricant Naxani 2026';
+   // This exact diagram is accessible and local; no unverified PDF URL.
+   item.technicalSheetUrl=media.drawingUrl;
+   item.technicalSheetType='image/png';
+   item.technicalSheetLabel='Schéma du modèle '+item.collection+' · tarif fabricant 2026 (dimensions indicatives)';
    item.naxaniMediaPaired=true;
    item.naxaniPhotoScope=media.scope;
   }
