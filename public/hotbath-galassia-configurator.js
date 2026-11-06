@@ -268,7 +268,7 @@ function open(rows,roomId,onAdd){
   function refreshMediaForModel(c,m){
    if(closed||!ov.isConnected||collection!==c)return;
    // Never destroy and re-observe the entire grid on one image failure.
-   const card=$('.hotbath-models [data-model]').find(el=>el.dataset.model===m);
+   const card=Array.from(ov.querySelectorAll('.hotbath-models [data-model]')).find(el=>el.dataset.model===m);
    if(card){
     const holder=card.querySelector('.galassia-model-photo');
     const next=knownImage(c,m);
