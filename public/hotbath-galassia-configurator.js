@@ -99,13 +99,16 @@ function open(rows,roomId,onAdd){
     urls.push(supplementalPhoto(c,m));
     const saved=verified?.candidates({manufacturer:'Hotbath',collection:c,base:m})||[];
     saved.forEach(v=>urls.push(v.src));
-    return urls.find(url=>url&&(!verified||verified.sameModel(url,m)))||'';
+    return urls.find(url=>url&&!brokenUrls.has(url)&&(!verified||verified.sameModel(url,m)))||'';
   }
   function onItalianError(c,m,url=''){
-   const key=mediaKey(c,m);
+   // A broken fallback must never be reinserted: this can cause a 404
+   // -> image error -> full render -> identical 404 loop.
+   if(url&&brokenUrls.has(url))return;
    if(url)brokenUrls.add(url);
+   const key=mediaKey(c,m);
    if(!asked.has(key))requestImage(c,m);
-   if(!closed&&ov.isConnected&&c===collection)render(false);
+   refreshMediaForModel(c,m);
   }
   function selectedImage(m,p){
     const resolver=root?.HydroHotbathFinishMedia;
@@ -165,7 +168,8 @@ function open(rows,roomId,onAdd){
       }else failed.add(task.key);
     }).catch(()=>failed.add(task.key)).finally(()=>{
       pending.count--;flushImages();
-      if(!closed&&ov.isConnected&&collection===task.collection)render(false);
+      // Refresh just the affected model instead of rebuilding the entire gallery.
+       refreshMediaForModel(task.collection,task.model);
     });
    }
   }
@@ -260,6 +264,27 @@ function open(rows,roomId,onAdd){
      onItalianError(c,m,e.currentTarget?.getAttribute('src')||'');
     },{once:true});
    });
+  }
+  function refreshMediaForModel(c,m){
+   if(closed||!ov.isConnected||collection!==c)return;
+   // Never destroy and re-observe the entire grid on one image failure.
+   const card=$('.hotbath-models [data-model]').find(el=>el.dataset.model===m);
+   if(card){
+    const holder=card.querySelector('.galassia-model-photo');
+    const next=knownImage(c,m);
+    const current=holder?.querySelector('img')?.getAttribute('src')||'';
+    if(holder&&next!==current){
+     holder.innerHTML=next?
+      '<img loading="lazy" alt="'+esc(m)+'" src="'+esc(next)+'">':
+      '<span class="galassia-no-photo">Photo produit indisponible</span>';
+     holder.querySelector('img')?.addEventListener('error',e=>{
+      onItalianError(c,m,e.currentTarget?.getAttribute('src')||'');
+     },{once:true});
+    }
+   }
+   // Preserve collection/search/card controls while updating the active
+   // variant's photo and any newly resolved manufacturer documentation.
+   if(base===m)renderSelection();
   }
   function renderSelection(){
    const m=activeModels().find(x=>x.base===base);
