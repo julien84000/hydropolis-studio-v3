@@ -24,6 +24,7 @@ const variant=p=>(p?.naVariant||'Meuble')+(p?.naPrepricedJoin?' · composition 2
 const photo=p=>E.picture(p);
 const img=p=>photo(p)?'<img src="'+esc(photo(p))+'" alt="Photo illustrative '+esc(p.collection)+'" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\'"><span class="nax-photo-fallback" style="display:none">Photo indisponible</span>':'<span class="nax-photo-fallback">Photo non disponible · schéma ci-dessous</span>';
 const pict=p=>E.pictogram(p);
+const topDrawing=p=>p?.productType==='plan-integre'&&root.HydroNaxaniPlanDrawings?.html?.(p.collection)||pict(p);
 // Official manufacturer examples, never a promise that the illustrated SKU/width is exact.
 const woodGallery={
  'Suró':{
@@ -213,12 +214,19 @@ function open(rows,roomId,onAdd,initial){
     html+='<div class="nax-total-width">'+count+' caisson'+(count>1?'s':'')+' · largeur totale : <b>'+total.toLocaleString('fr-FR')+' cm</b></div>';
     if(count>1)html+='<small class="nax-detail-note">Assemblage de modules à mentionner sur la commande fabricant. Certaines collections ont des compositions déjà tarifées : choisir la variante correspondante ci-dessus.</small>';
     html+='</div>';
+    // Filter on exact corrected widths, known 2026 references and manufacturer exclusions.
     const integrated=rows.filter(x=>x.productType==='plan-integre'&&Number(x.naSinkCount||1)===basinCount&&topMatch(x,total)&&compatible(p,x,catalog,total));
+    // Keep every compatible model visible so a collection does not disappear when
+    // its DOUBLE variant is unpriced or unavailable at the chosen width.
+    const allIntegratedModels=[...new Map(rows.filter(x=>x.productType==='plan-integre'&&
+      !(catalog.compatibilities?.[norm(p.collection)]?.excluded||[]).some(y=>norm(y)===norm(x.collection)))
+      .map(x=>[x.collection,x])).values()];
     const worktops=rows.filter(x=>['plan-solid','plan-mdf'].includes(x.productType)&&topMatch(x,total));
     const basinRows=rows.filter(x=>x.productType==='vasque-poser');
     const plans=mode==='integrated'?integrated:worktops;
     if(!plans.some(x=>x.reference===(mode==='integrated'?planRef:topRef))){if(mode==='integrated')planRef=plans[0]?.reference||'';else topRef=plans[0]?.reference||''}
-    if(!planCollection||!plans.some(x=>x.collection===planCollection))planCollection=plans[0]?.collection||'';
+    if(!planCollection||!(mode==='integrated'?allIntegratedModels:plans).some(x=>x.collection===planCollection))
+      planCollection=plans[0]?.collection||allIntegratedModels[0]?.collection||'';
     const chosenPlan=plans.filter(x=>x.collection===planCollection);
     if(!chosenPlan.some(x=>x.reference===(mode==='integrated'?planRef:topRef))){
      if(mode==='integrated')planRef=chosenPlan[0]?.reference||'';else topRef=chosenPlan[0]?.reference||'';
@@ -230,26 +238,32 @@ function open(rows,roomId,onAdd,initial){
     // exact tariffed widths / positions as clickable pictograms too.
     const activePlanRef=mode==='integrated'?planRef:topRef;
     html+='<div class="nax-plan-hint">Sélectionnez un modèle en cliquant sur son pictogramme :</div>'+
-     '<div class="nax-plan-cards" role="group" aria-label="Modèles de plans vasques">'+[...new Set(plans.map(x=>x.collection))].map(name=>{
-      const sample=plans.find(x=>x.collection===name);
-      const selected=name===planCollection;
+     '<div class="nax-plan-cards" role="group" aria-label="Modèles de plans vasques">'+
+    (mode==='integrated'?allIntegratedModels:[...new Map(plans.map(x=>[x.collection,x])).values()]).map(sample=>{
+      const name=sample.collection,selected=name===planCollection;
+      const available=plans.filter(x=>x.collection===name).length;
       return '<button type="button" class="nax-plan-card '+(selected?'active':'')+'" data-plan-collection="'+esc(name)+'" aria-pressed="'+selected+'" aria-label="Choisir le plan '+esc(name)+'">'+
-       '<div class="nax-plan-pict">'+pict(sample)+'</div><span>'+esc(name)+'</span>'+(selected?'<strong class="nax-plan-check">✓ Sélectionné</strong>':'')+'</button>';
+       '<div class="nax-plan-pict">'+(mode==='integrated'?topDrawing(sample):pict(sample))+'</div><span>'+esc(name)+'</span>'+
+       (mode==='integrated'&&basinCount===2&&!available?'<small>Double vasque : sur devis</small>':
+        '<small>'+available+' référence'+(available>1?'s':'')+' tarifée'+(available>1?'s':'')+'</small>')+
+       (selected?'<strong class="nax-plan-check">✓ Sélectionné</strong>':'')+'</button>';
     }).join('')+'</div>';
     if(chosenPlan.length){
       html+='<div class="nax-plan-hint">Choisissez la dimension et la position des vasques :</div>'+
        '<div class="nax-plan-variants" role="group" aria-label="Références et dimensions de '+esc(planCollection)+'">'+chosenPlan.map(x=>{
         const selected=x.reference===activePlanRef;
         return '<button type="button" class="nax-plan-variant '+(selected?'active':'')+'" data-plan-ref="'+esc(x.reference)+'" aria-pressed="'+selected+'" aria-label="'+esc(planCollection)+' '+width(x).toLocaleString('fr-FR')+' cm '+esc(x.naPosition||'')+' référence '+esc(x.reference)+'">'+
-         '<div class="nax-plan-variant-pict">'+pict(x)+'</div><b>'+width(x).toLocaleString('fr-FR')+' cm</b>'+
+         '<div class="nax-plan-variant-pict">'+(mode==='integrated'?topDrawing(x):pict(x))+'</div><b>'+width(x).toLocaleString('fr-FR')+' cm</b>'+
          (mode==='integrated'?'<small>'+esc(x.naPosition|| (Number(x.naSinkCount||1)===2?'Double vasque':'Simple vasque'))+'</small>':'')+
          '<small>Réf. '+esc(x.reference)+'</small><strong>'+euro(x.price)+' HT</strong>'+
          (selected?'<span class="nax-plan-check">✓ Sélectionné</span>':'')+'</button>';
        }).join('')+'</div>';
       html+='<label>Référence du plan sélectionné<select data-input="plan">'+selectOptions(chosenPlan,activePlanRef)+'</select></label>';
-    }else html+='<p class="nax-warning">Aucune référence de plan pour '+basinCount+' vasque(s) à cette longueur dans le tarif importé. Ne pas inventer de prix sur mesure.</p>';
+    }else html+='<p class="nax-warning">'+
+     (mode==='integrated'&&basinCount===2?'Double vasque '+esc(planCollection||'')+' : pas de référence et de prix public confirmés pour '+total.toLocaleString('fr-FR')+' cm dans le tarif Naxani 2026. Configuration sur devis fabricant ; vous pouvez également sélectionner un plan de travail avec 2 vasques à poser.':
+      'Aucune référence tarifée compatible à cette longueur dans le tarif importé.')+'</p>';
     const displayPlan=byRef.get(mode==='integrated'?planRef:topRef);
-    if(displayPlan)html+='<div class="nax-selected-plan">'+pict(displayPlan)+'<div>'+img(displayPlan)+'</div><small>Plan '+width(displayPlan).toLocaleString('fr-FR')+' cm · caissons '+total.toLocaleString('fr-FR')+' cm · débord total : '+(width(displayPlan)-total).toLocaleString('fr-FR')+' cm</small></div>';
+    if(displayPlan)html+='<div class="nax-selected-plan">'+(mode==='integrated'?topDrawing(displayPlan):pict(displayPlan))+'<div>'+img(displayPlan)+'</div><small>Plan '+width(displayPlan).toLocaleString('fr-FR')+' cm · caissons '+total.toLocaleString('fr-FR')+' cm · débord total : '+(width(displayPlan)-total).toLocaleString('fr-FR')+' cm</small></div>';
     if(mode==='separate'){
      const selectedBasin=byRef.get(basinRef);
      const basinModels=[...new Map(basinRows.map(x=>[x.collection,x])).values()];

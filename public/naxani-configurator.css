@@ -128,3 +128,10 @@
 .nax-wood-choice small{font-size:10px;line-height:1.3;color:#736456}
 .nax-wood-selected{font-weight:700;font-size:10px;color:#206c48}
 @media(max-width:730px){.nax-wood-options{grid-template-columns:1fr}.nax-wood-choice img,.nax-wood-no-photo{height:68px}}
+
+/* Accurate cropped manufacturer's solid-surface integrated top technical drawings. */
+.nax-plan-technical{display:block;width:100%;aspect-ratio:450/120;background-image:var(--naxani-plan-sprite);background-size:300% 500%;background-repeat:no-repeat;background-color:#fff;max-width:100%;}
+.nax-plan-pict .nax-plan-technical{min-height:43px}
+.nax-plan-variant-pict .nax-plan-technical{height:65px;width:100%;max-width:260px;margin-inline:auto}
+.nax-selected-plan>.nax-plan-technical{width:min(100%,380px);height:95px}
+.nax-plan-card small{font-size:10px;color:#756858;text-align:center}
