@@ -325,6 +325,39 @@ const check=(name,value)=>{assert.ok(value,name);report.checks.push(name);};
     });
     check('image cassée détectée avant PDF',preload.broken===1);
     check('image valide acceptée avant PDF',preload.good===0&&preload.total===1);
+    // Régression réelle Chromium : la pagination V12 ne doit couper ni la
+    // couverture ni la photo quand le moteur passe au média impression.
+    await page.evaluate(()=>{
+      const c=document.createElement('canvas');c.width=900;c.height=600;
+      const ctx=c.getContext('2d');ctx.fillStyle='#bf9973';ctx.fillRect(0,0,900,600);
+      ctx.fillStyle='#1b262a';ctx.fillRect(180,150,540,300);
+      state.project.cover=c.toDataURL('image/jpeg',.86);
+      state.project.name='Validation couverture A4';
+      state.selected=[];state.rooms=[{id:'r1',title:'Salle de bains',subtitle:'',manual:[]}];
+      document.body.classList.add('v12-page-focus');
+      showView('preview');buildDocument();
+    });
+    await page.waitForFunction(()=>document.querySelector('#document .cover-image')?.naturalWidth>0);
+    await page.emulateMedia({media:'print'});
+    const printedCover=await page.evaluate(()=>{
+      const page=document.querySelector('#document .cover-page');
+      const image=document.querySelector('#document .editorial-cover-image');
+      const img=document.querySelector('#document .cover-image');
+      const bounds=page.getBoundingClientRect(),visual=image.getBoundingClientRect();
+      return {
+        width:bounds.width,height:bounds.height,fit:getComputedStyle(img).objectFit,
+        overflow:getComputedStyle(document.querySelector('#view-preview .preview-bg')).overflowX,
+        contained:visual.left>=bounds.left-1&&visual.right<=bounds.right+1&&visual.top>=bounds.top-1&&visual.bottom<=bounds.bottom+1,
+        imageWidth:img.naturalWidth,visible:getComputedStyle(page).display!=='none'
+      };
+    });
+    check('PDF : couverture A4 paysage complète',Math.abs(printedCover.width-1122.5)<5&&Math.abs(printedCover.height-793.7)<5&&printedCover.contained);
+    check('PDF : aucune coupe du défilement V12',printedCover.visible&&printedCover.overflow==='visible');
+    check('PDF : visuel chargé sans rognage',printedCover.imageWidth>=900&&printedCover.fit==='contain');
+    const printedPdf=await page.pdf({format:'A4',landscape:true,printBackground:true,margin:{top:0,right:0,bottom:0,left:0}});
+    check('PDF : image de couverture embarquée',printedPdf.subarray(0,4).toString()==='%PDF'&&printedPdf.includes(Buffer.from('/Subtype /Image')));
+    await page.emulateMedia({media:'screen'});
+    await page.evaluate(()=>document.body.classList.remove('v12-page-focus'));
     check('aucune erreur JavaScript',report.errors.length===0);
 
     console.log(JSON.stringify(report,null,2));
