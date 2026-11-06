@@ -239,7 +239,7 @@ function open(rows,roomId,onAdd,initial){
     const activePlanRef=mode==='integrated'?planRef:topRef;
     html+='<div class="nax-plan-hint">Sélectionnez un modèle en cliquant sur son pictogramme :</div>'+
      '<div class="nax-plan-cards" role="group" aria-label="Modèles de plans vasques">'+
-    (mode==='integrated'?allIntegratedModels:plans).map(sample=>{
+    (mode==='integrated'?allIntegratedModels:[...new Map(plans.map(x=>[x.collection,x])).values()]).map(sample=>{
       const name=sample.collection,selected=name===planCollection;
       const available=plans.filter(x=>x.collection===name).length;
       return '<button type="button" class="nax-plan-card '+(selected?'active':'')+'" data-plan-collection="'+esc(name)+'" aria-pressed="'+selected+'" aria-label="Choisir le plan '+esc(name)+'">'+
