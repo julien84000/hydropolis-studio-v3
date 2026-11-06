@@ -95,6 +95,7 @@ require("./dornbracht-media-server")(app);
 require("./amphora-media-server")(app);
 require("./radaway-media-server")(app);
 require("./recor-media-server")(app);
+require("./naxani-plan-media-server")(app);
 app.use(express.static(path.join(__dirname,"public")));
 require("./tariff-server")(app);
 
