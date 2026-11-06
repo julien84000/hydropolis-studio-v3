@@ -23,11 +23,15 @@ async function render(name){
  if(!index.has(name))return null;
  if(cached.has(name))return cached.get(name);
  const im=await loadSprite();
- if(im.width%3||im.height%5)throw Error('Naxani drawing grid dimensions are not divisible 3×5');
- const w=im.width/3,h=im.height/5,i=index.get(name);
+ // The original optimized manufacturer WebP sheet has 1–2 extra pixels
+ // from the encoder (e.g. 1050×467), so the source cell can be fractional.
+ // Crop using float source coordinates and integer target dimensions.
+ if(im.width<150||im.height<150)throw Error('Naxani drawing sprite is too small');
+ const srcW=im.width/3,srcH=im.height/5,i=index.get(name);
+ const w=Math.round(srcW),h=Math.round(srcH);
  const canvas=createCanvas(w,h),ctx=canvas.getContext('2d');
  ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);
- ctx.drawImage(im,(i%3)*w,Math.floor(i/3)*h,w,h,0,0,w,h);
+ ctx.drawImage(im,(i%3)*srcW,Math.floor(i/3)*srcH,srcW,srcH,0,0,w,h);
  const png=canvas.toBuffer('image/png');
  cached.set(name,png);
  return png;
