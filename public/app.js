@@ -2824,6 +2824,7 @@ function addNaxaniConfigured(p,roomId){
   throw Error('Composition Naxani invalide : référence principale manquante.');
  const rows=catalogIndex.maker('Naxani');
  window.HydroNaxaniEnhancements?.annotate?.(rows);
+ window.HydroNaxaniPlanMedia?.apply?.(rows);
  window.HydroNaxaniWoodFinishes?.annotate?.(rows);
  const catalog=new Map(rows.map(r=>[r.reference,r]));
  // Duplicates are intentional when two identical cabinets or countertop basins are used.
@@ -2883,11 +2884,34 @@ function addNaxaniConfigured(p,roomId){
  }
  const total=parts.reduce((sum,x)=>sum+Number(x.price),0);
  if(Math.abs(total-Number(assembly.total))>.01)throw Error('Écart tarifaire Naxani dans la composition.');
- const main=createSelectedProductRecord({...parts[0],naxaniAssembly:assembly,naxaniGenericPhoto:true},roomId);
+ const media=window.HydroNaxaniPlanMedia;
+ function applyExactPlanMedia(record,original){
+  if(!record||original?.productType!=='plan-integre')return record;
+  const match=media?.get?.(original.collection);
+  if(!match)return record;
+  const photos=match.photos||[],plan=match.drawingUrl||'';
+  // Product image and technical drawing remain separate, preserving both in
+  // customer photo dossiers, exports and saved projects.
+  const mainPhoto=photos[0]||plan;
+  record.image=mainPhoto;
+  record.pdfImage=mainPhoto;
+  record.images=[...photos,...(plan?[plan]:[])];
+  record.pdfImages=record.images.slice();
+  record.drawingUrl=plan;
+  record.drawingType=plan?'image/png':'';
+  record.drawingLabel='Plan technique Naxani '+original.collection+' (forme indicative)';
+  record.imageSource=photos.length?'Naxani · photographie de collection':'Naxani · dessin technique du modèle';
+  record.imageStatus=photos.length?'Photo officielle indicative du modèle':'Dessin fabricant · photo indisponible';
+  record.naxaniPlanMedia={model:original.collection,reference:original.reference,
+    photo:photos[0]||'',drawingUrl:plan,sourceUrl:match.sourceUrl,
+    scope:match.scope};
+  return record;
+ }
+ const main=applyExactPlanMedia(createSelectedProductRecord({...parts[0],naxaniAssembly:assembly,naxaniGenericPhoto:true},roomId),parts[0]);
  if(!main)throw Error('Impossible d’ajouter le meuble Naxani.');
  const records=[main];
  for(const item of parts.slice(1)){
-  const record=createSelectedProductRecord({...item,naxaniLinkedAccessory:true},roomId,main.id);
+  const record=applyExactPlanMedia(createSelectedProductRecord({...item,naxaniLinkedAccessory:true},roomId,main.id),item);
   if(!record)throw Error('Composant Naxani introuvable : '+item.reference);
   record.accessoryFor=main.id;
   record.naxaniLinkedAccessory=true;
