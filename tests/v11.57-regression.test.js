@@ -69,7 +69,8 @@ test('quote is structured by room then bathroom space without changing article i
   const quoteStart=appSource.indexOf('function quoteRows(');
   const quoteEnd=appSource.indexOf('function quotePages(',quoteStart);
   const quoteSource=appSource.slice(quoteStart,quoteEnd);
-  assert.match(quoteSource,/roomRows\.sort/,'quote rows must be ordered inside each room by functional space');
+  assert.doesNotMatch(quoteSource,/roomRows\.sort/,'quote rows must preserve the project article order');
+  assert.match(quoteSource,/spaceLabel:room\.subtitle/,'quote headings must use the explicit project sub-space');
   assert.doesNotMatch(quoteSource,/hideFromDossier/,'dossier visibility must never remove an article from the quote');
 });
 

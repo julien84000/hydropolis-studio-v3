@@ -3312,25 +3312,8 @@ function quoteSpaceForProduct(p,seen=new Set()){
 function quoteSpaceLabel(space){return space==="AUTRES"?"":presentationSpaceLabel(space);}
 function quoteRoomKey(room){return String(room||"").trim().replace(/\s+/g," ").toLocaleUpperCase("fr-FR");}
 function groupQuoteRows(rows){
-  // Presentation only: retain roomId/sourceIndex/manualIndex for edits and Excel costs.
-  const rooms=new Map();
-  for(const row of rows){
-    const key=String(row.roomId||quoteRoomKey(row.room));
-    if(!rooms.has(key))rooms.set(key,[]);
-    rooms.get(key).push(row);
-  }
-  return [...rooms.values()].flatMap(roomRows=>{
-    const title=String(roomRows[0].room||"").trim().replace(/\s+/g," ");
-    for(const row of roomRows)row.room=title;
-    const spaces=[...new Set(roomRows.map(row=>row.space).filter(space=>space!=="AUTRES"))];
-    // A single identified space gives otherwise generic accessories an unambiguous context.
-    if(spaces.length===1)for(const row of roomRows){
-      if(row.space==="AUTRES"){row.space=spaces[0];row.spaceLabel=quoteSpaceLabel(row.space);}
-    }
-    const roomId=String(roomRows[0].roomId||'');
-    const custom=(state.rooms||[]).some(r=>String(r.id)===roomId && r.articleOrderCustomized===true);
-    return custom?roomRows:roomRows.sort((a,b)=>(QUOTE_SPACE_ORDER[a.space]??99)-(QUOTE_SPACE_ORDER[b.space]??99));
-  });
+  // The project already supplies the room, sub-space and article sequence.
+  return rows;
 }
 function quoteEditorRows(){
   const rows=[];
@@ -3338,9 +3321,9 @@ function quoteEditorRows(){
     const roomRows=[];
     (state.selected||[]).forEach((p,sourceIndex)=>{
       if(p.roomId!==room.id || !isRealSelectedProduct(p))return;
-      const space=quoteSpaceForProduct(p);
+      const space=String(room.id);
       roomRows.push({
-        kind:"product",sourceIndex,sourceOrder:sourceIndex,roomId:room.id,room:room.title,space,spaceLabel:quoteSpaceLabel(space),
+        kind:"product",sourceIndex,sourceOrder:sourceIndex,roomId:room.id,room:room.title,space,spaceLabel:room.subtitle||"",
         manufacturer:p.manufacturer||"",finish:p.finish||"",
         reference:quoteLineReference(p),designation:quoteLineDesignation(p),
         leadTime:quoteLineLeadTime(p),qty:itemQuantity(p),
@@ -3349,9 +3332,9 @@ function quoteEditorRows(){
       });
     });
     validManualItemsForRoom(room).forEach((m,manualIndex)=>{
-      const space=quoteSpaceForProduct({designation:manualQuoteDesignation(m)});
+      const space=String(room.id);
       roomRows.push({
-        kind:"manual",manualIndex,sourceOrder:100000+manualIndex,roomId:room.id,room:room.title,space,spaceLabel:quoteSpaceLabel(space),
+        kind:"manual",manualIndex,sourceOrder:100000+manualIndex,roomId:room.id,room:room.title,space,spaceLabel:room.subtitle||"",
         manufacturer:"Élément libre",finish:"",
         reference:manualQuoteReference(m),designation:manualQuoteDesignation(m),
         leadTime:manualQuoteLeadTime(m),qty:manualItemQuantity(m),
@@ -3359,7 +3342,6 @@ function quoteEditorRows(){
         total:manualQuoteNetUnit(m)*manualItemQuantity(m)
       });
     });
-    if(room.articleOrderCustomized!==true)roomRows.sort((a,b)=>(QUOTE_SPACE_ORDER[a.space]??99)-(QUOTE_SPACE_ORDER[b.space]??99)||a.sourceOrder-b.sourceOrder);
     rows.push(...roomRows); // Quote editor matches custom room ordering.
   }
   return groupQuoteRows(rows);
@@ -3556,9 +3538,9 @@ function quoteRows(){
       const qty=itemQuantity(p);
       const unit=quoteLineUnit(p);
       const discount=quoteLineDiscount(p);
-      const space=quoteSpaceForProduct(p);
+      const space=String(room.id);
       roomRows.push({
-        room:room.title,roomId:room.id,space,spaceLabel:quoteSpaceLabel(space),sourceOrder:sourceIndex,
+        room:room.title,roomId:room.id,space,spaceLabel:room.subtitle||"",sourceOrder:sourceIndex,
         reference:quoteLineReference(p),designation:quoteLineDesignation(p),finish:p.finish||"",
         manufacturer:p.manufacturer||"",qty,unit,netUnit:unit*(1-discount/100),
         freight:0,leadTime:quoteLineLeadTime(p),manual:false,discount,sourceIndex,sourceId:p.id||""
@@ -3568,15 +3550,14 @@ function quoteRows(){
       const qty=manualItemQuantity(m);
       const unit=manualQuoteUnit(m);
       const discount=manualQuoteDiscount(m);
-      const space=quoteSpaceForProduct({designation:manualQuoteDesignation(m)});
+      const space=String(room.id);
       roomRows.push({
-        room:room.title,roomId:room.id,space,spaceLabel:quoteSpaceLabel(space),sourceOrder:100000+manualIndex,
+        room:room.title,roomId:room.id,space,spaceLabel:room.subtitle||"",sourceOrder:100000+manualIndex,
         reference:manualQuoteReference(m),designation:manualQuoteDesignation(m),finish:"",
         manufacturer:"Élément libre",qty,unit,netUnit:unit*(1-discount/100),
         freight:0,leadTime:manualQuoteLeadTime(m),manual:true,discount,manualIndex
       });
     });
-    if(room.articleOrderCustomized!==true)roomRows.sort((a,b)=>(QUOTE_SPACE_ORDER[a.space]??99)-(QUOTE_SPACE_ORDER[b.space]??99)||a.sourceOrder-b.sourceOrder);
     rows.push(...roomRows); // Custom room ordering always takes precedence when enabled.
   }
   return groupQuoteRows(rows);
@@ -3652,8 +3633,8 @@ function quotePages(startNo){
       }
       if(row.spaceLabel && row.space!==previousSpace){
         prefix+=`<tr class="quote-space-row"><td colspan="${columnCount}">${esc(row.spaceLabel)}</td></tr>`;
-        previousSpace=row.space;
       }
+      previousSpace=row.space;
       return prefix+`<tr class="quote-product-row">
         ${state.showSupplierReferences!==false?`<td>${esc(row.reference||"—")}</td>`:""}
         <td><b>${esc(row.designation)}</b><small>${esc(row.manufacturer)}${row.finish?` · ${esc(row.finish)}`:""}</small></td>
@@ -3698,6 +3679,58 @@ function quotePages(startNo){
 function renderSelection(){
  $("#selectionCount").textContent=state.rooms.length+" pièce"+(state.rooms.length>1?"s":"")+" · "+state.selected.length+" produit"+(state.selected.length>1?"s":"");
  $("#selectionMini").innerHTML=state.rooms.map(r=>{let ps=state.selected.filter(p=>p.roomId===r.id);return `<div class="mini"><b>${r.title}</b><div class="mini-room">${ps.length} produit${ps.length>1?"s":""}</div>${ps.slice(0,3).map(p=>`<div>${p.reference} · ${euro(articleMerchandisePrice(p))}</div>`).join("")}</div>`}).join("");
+}
+// Copy every block bearing this exact room title, in project order. New IDs
+// isolate quantities, custom media/configuration and accessory links from source.
+function duplicateRoomRecords(rooms,selected,roomId,title,makeId){
+  const source=rooms.find(r=>r.id===roomId);
+  if(!source)throw Error('Pièce introuvable.');
+  if(!String(title||'').trim())throw Error('Indiquez un nom pour la copie.');
+  if(rooms.some(r=>quoteRoomKey(r.title)===quoteRoomKey(title)))
+    throw Error('Ce nom de pièce existe déjà. Choisissez un autre nom pour la copie.');
+  const sources=rooms.filter(r=>r.title===source.title);
+  const sourceIds=new Set(sources.map(r=>r.id));
+  const products=selected.filter(p=>sourceIds.has(p.roomId));
+  const used=new Set([...rooms,...selected].map(x=>x.id));
+  function nextId(){
+    const id=makeId();
+    if(!id||used.has(id))throw Error('Impossible de créer un identifiant unique.');
+    used.add(id);return id;
+  }
+  const roomIds=new Map(sources.map(r=>[r.id,nextId()]));
+  const productIds=new Map(products.map(p=>[p.id,nextId()]));
+  const clone=value=>JSON.parse(JSON.stringify(value));
+  const copies=sources.map(r=>({...clone(r),id:roomIds.get(r.id),title}));
+  const copiedProducts=products.map(p=>{
+    const copy={...clone(p),id:productIds.get(p.id),roomId:roomIds.get(p.roomId)};
+    if(copy.accessoryFor){
+      if(productIds.has(copy.accessoryFor))copy.accessoryFor=productIds.get(copy.accessoryFor);
+      else delete copy.accessoryFor; // Never retain a mutable link into the source room.
+    }
+    return copy;
+  });
+  const insertAt=Math.max(...sources.map(r=>rooms.indexOf(r)))+1;
+  return {rooms:[...rooms.slice(0,insertAt),...copies,...rooms.slice(insertAt)],
+    selected:[...selected,...copiedProducts],firstRoomId:copies[0].id};
+}
+function duplicateRoom(roomId){
+  const source=roomById(roomId);if(!source)return;
+  let suggested=source.title+' — copie',n=2;
+  while(state.rooms.some(r=>quoteRoomKey(r.title)===quoteRoomKey(suggested)))suggested=source.title+' — copie '+n++;
+  const title=prompt('Nom de la nouvelle pièce (tous les sous-espaces seront copiés)',suggested);
+  if(title===null)return;
+  const beforeRooms=state.rooms,beforeSelected=state.selected;
+  try{
+    const result=duplicateRoomRecords(state.rooms,state.selected,roomId,title.trim(),()=>crypto.randomUUID());
+    state.rooms=result.rooms;state.selected=result.selected;
+    if(!saveState()){
+      state.rooms=beforeRooms;state.selected=beforeSelected;
+      throw Error('Impossible de sauvegarder la copie.');
+    }
+    renderRoomSelect();renderSelection();renderRooms();renderMarginDashboard();
+    $('#targetRoom').value=result.firstRoomId;
+    toast('Pièce dupliquée avec ses sous-espaces et articles');
+  }catch(error){toast(error.message||'Duplication impossible');}
 }
 function newRoom(){let title=prompt("Nom de la pièce","SDB SUITE");if(!title)return;let id="r"+Date.now();state.rooms.push({id,title,subtitle:"",manual:[]});saveState();renderRoomSelect();renderSelection();renderRooms();renderMarginDashboard();$("#targetRoom").value=id;renderCatalog();}
 
@@ -3882,8 +3915,8 @@ function renderRoomsCore(){
  $("#roomsEditor").innerHTML=state.rooms.map((r,ri)=>{
    let ps=state.selected.filter(p=>p.roomId===r.id && !isRecorBathLinkedAccessory(p) && !p.sbordoniConfigurationAccessory);
    return `<article class="room-card" data-room-card="${esc(r.id)}">
-   <div class="room-head"><input class="room-title" data-id="${r.id}" value="${esc(r.title)}"><input class="room-sub" data-id="${r.id}" value="${esc(r.subtitle||"")}" placeholder="Sous-titre / ambiance">
-   <button class="btn ghost go-cat" data-id="${r.id}">+ Produit catalogue</button><button class="icon del-room" data-id="${r.id}">×</button></div>
+   <div class="room-head"><input class="room-title" data-id="${r.id}" value="${esc(r.title)}"><input class="room-sub" data-id="${r.id}" value="${esc(r.subtitle||"")}" placeholder="Sous-espace / ambiance">
+   <button type="button" class="btn ghost duplicate-room" data-id="${r.id}" title="Dupliquer la pièce avec tous ses sous-espaces et articles">Dupliquer la pièce</button><button class="btn ghost go-cat" data-id="${r.id}">+ Produit catalogue</button><button class="icon del-room" data-id="${r.id}">×</button></div>
    <div class="room-reorder-hint">⠿ Glissez la poignée d’un article pour le déplacer dans cette pièce ou une autre. Le devis suit cet ordre.</div>
    <div class="room-products" data-room-id="${esc(r.id)}">${ps.length?ps.map(p=>`
       <div class="room-product ${p.accessoryFor?'article-linked-card':''}" data-product-id="${esc(p.id)}">
@@ -3960,6 +3993,7 @@ function renderRoomsCore(){
    </div></article>`;}).join("");
  $$(".room-title").forEach(x=>x.oninput=()=>{roomById(x.dataset.id).title=x.value;saveState();renderRoomSelect();renderSelection();});
  $$(".room-sub").forEach(x=>x.oninput=()=>{roomById(x.dataset.id).subtitle=x.value;saveState();});
+ $$(".duplicate-room").forEach(b=>b.onclick=()=>duplicateRoom(b.dataset.id));
  $$(".go-cat").forEach(b=>b.onclick=()=>{showView("catalog");$("#targetRoom").value=b.dataset.id;renderCatalog();});
  $$(".del-room").forEach(b=>b.onclick=()=>{if(state.rooms.length===1)return alert("Il faut conserver au moins une pièce.");let id=b.dataset.id;if(!confirm("Supprimer cette pièce et ses éléments ?"))return;state.rooms=state.rooms.filter(r=>r.id!==id);state.selected=state.selected.filter(p=>p.roomId!==id);saveState();renderRoomSelect();renderRooms();renderSelection();renderMarginDashboard();});
  $$(".del-prod").forEach(b=>b.onclick=()=>removeProduct(b.dataset.id));
@@ -4519,41 +4553,17 @@ function presentationSpaceIntro(space){
     AUTRES:"Éléments complémentaires de la pièce."
   }[space]||"";
 }
-function orderedPresentationGroups(items,{preserveArticleOrder=false}={}){
-  // Once a room is manually reordered, the project sequence is authoritative
-  // for both the quotation and visual dossier.
-  if(preserveArticleOrder){
-    const ordered=(items||[]).filter(p=>{
-      if(!p)return false;
-      if(p.manual)return !!String(p.designation||p.label||'').trim();
-      return isRealSelectedProduct(p);
-    });
-    return ordered.length?[{
-      space:'SELECTION',label:'Sélection de la pièce',
-      intro:'Articles présentés dans l’ordre défini dans Projet par pièce.',
-      items:ordered
-    }]:[];
-  }
-  const buckets={LAVABO:[],DOUCHE:[],BAIN:[],WC:[],AUTRES:[]};
-  (items||[]).filter(p=>{
+function orderedPresentationGroups(items,{room={}}={}){
+  // A project block is one user-defined sub-space. Never infer new categories
+  // from product wording, even before the first drag-and-drop operation.
+  const ordered=(items||[]).filter(p=>{
     if(!p)return false;
-    if(p.manual)return !!String(p.designation||p.label||"").trim();
+    if(p.manual)return !!String(p.designation||p.label||'').trim();
     return isRealSelectedProduct(p);
-  }).forEach(p=>{
-    const key=p.manual?"AUTRES":(p.accessoryFor?quoteSpaceForProduct(p):presentationSpace(p));
-    (buckets[key]||buckets.AUTRES).push(p);
   });
-  const groups=[];
-  if(buckets.LAVABO.length && buckets.BAIN.length){
-    groups.push({space:"LAVABO_BAIN",label:"Espaces lavabo / bain",intro:"Une composition commune autour du plan lavabo et de l’espace baignoire.",items:[...buckets.LAVABO,...buckets.BAIN]});
-  }else{
-    if(buckets.LAVABO.length) groups.push({space:"LAVABO",label:"Espace lavabo",intro:presentationSpaceIntro("LAVABO"),items:buckets.LAVABO});
-    if(buckets.BAIN.length) groups.push({space:"BAIN",label:"Espace bain",intro:presentationSpaceIntro("BAIN"),items:buckets.BAIN});
-  }
-  if(buckets.DOUCHE.length) groups.push({space:"DOUCHE",label:"Espace douche",intro:presentationSpaceIntro("DOUCHE"),items:buckets.DOUCHE});
-  if(buckets.WC.length) groups.push({space:"WC",label:"Espace toilette",intro:presentationSpaceIntro("WC"),items:buckets.WC});
-  if(buckets.AUTRES.length) groups.push({space:"AUTRES",label:"Accessoires & éléments complémentaires",intro:presentationSpaceIntro("AUTRES"),items:buckets.AUTRES});
-  return groups;
+  return ordered.length?[{
+    space:'PROJECT',label:room.subtitle||room.title||'',intro:'',items:ordered
+  }]:[];
 }
 // Sum the pictured selection and its linked components using the quote's net amounts.
 function presentationGroupSubtotal(roomId,group,rows=quoteRows()){
@@ -5201,7 +5211,7 @@ function buildDocument(){
      if(p.collection==='Pieds Recor')return false;
      return p.collection!=='Accessoires Recor'||!/vidage|waste/.test(normalizeText(`${p.designation||''} ${p.originalDescription||''}`));
    });
-   orderedPresentationGroups([...products,...manualItemsForDocument(room)],{preserveArticleOrder:room.articleOrderCustomized===true}).forEach(group=>dossierGroups.push({...group,key:String(room.id)+':'+group.space,room}));
+   orderedPresentationGroups([...products,...manualItemsForDocument(room)],{room}).forEach(group=>dossierGroups.push({...group,key:String(room.id)+':'+group.space,room}));
  });
  currentDossierPlan=HydroDossierPages.plan(dossierGroups,ensurePresentationLayoutState());
  let html=`<section class="page cover-page editorial-page" data-parallax-page>

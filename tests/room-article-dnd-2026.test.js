@@ -39,11 +39,7 @@ test('Reject moving a mandatory component alone and invalid or incomplete orders
  assert.throws(()=>reorderSelected(samples,['r1','r2'],{r1:['a'],r2:['c']},'a','r1',visible),/Articles manquants/);
  assert.throws(()=>reorderSelected(samples,['r1','r2'],{r1:['a','b'],r2:['c']},'other','r2',visible),/inconnu/);
 });
-test('Devis, quotation editor and dossier are wired to the room order rather than re-sorting by type',()=>{
- assert.match(src,/function quoteRows\(\)[\s\S]*?if\(room\.articleOrderCustomized!==true\)roomRows\.sort/);
- assert.match(src,/function quoteEditorRows\(\)[\s\S]*?if\(room\.articleOrderCustomized!==true\)roomRows\.sort/);
- assert.match(src,/return custom\?roomRows:roomRows\.sort/);
- assert.match(src,/preserveArticleOrder:room\.articleOrderCustomized===true/);
+test('Project order resets conflicting dossier placements after a drag',()=>{
  assert.match(src,/Ordre des articles, du devis et du dossier photo mis à jour/);
  assert.match(src,/delete layout\.assignments\[id\]/);
 });
@@ -61,7 +57,7 @@ test('Client dossier preserves exact user-chosen room article sequence in a sing
  ];
  const groups=func(items,{preserveArticleOrder:true});
  assert.equal(groups.length,1);
- assert.equal(groups[0].space,'SELECTION');
+ assert.equal(groups[0].space,'PROJECT');
  assert.deepEqual(Array.from(groups[0].items,p=>p.id),['shower','basin','shower2']);
  const {plan}=require('../public/dossier-pages.js');
  assert.deepEqual(plan([{...groups[0],key:'r1:SELECTION'}]).pages[0].items.map(p=>p.id),['shower','basin','shower2']);
