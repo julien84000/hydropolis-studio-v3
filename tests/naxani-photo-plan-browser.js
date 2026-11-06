@@ -53,8 +53,11 @@ let browser,server;
   await modal.locator('button[data-standalone-plan-ref="572268"]').click();
   assert.match(await modal.locator('.nax-supplier').innerText(),/572268/);
   assert.equal(await modal.locator('.nax-top-pair').count()>0,true);
-  const image=modal.locator('.nax-standalone-top img').first();
-  assert.equal((await image.getAttribute('src')).includes('naxani.com/wp-content/uploads/'),true);
+  // The manufacturer's Alma/Alpos family page does not provide a verified
+  // Alpos-specific photograph. Show the real cropped technical plan instead
+  // of incorrectly using a Walden furniture photo.
+  assert.equal(await modal.locator('.nax-standalone-top .nax-plan-technical').count(),1);
+  assert.equal(await modal.locator('.nax-standalone-top .nax-photo-fallback').count(),1);
   await modal.locator('.nax-add').click();
   await page.waitForFunction(()=>!!window.__added);
   const saved=await page.evaluate(()=>({
