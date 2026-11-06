@@ -8,6 +8,7 @@ function load(name){vm.runInNewContext(fs.readFileSync(path.join(root,name),'utf
 load('naxani-2026-catalog.js');
 load('naxani-2026-enhancements.js');
 load('naxani-plan-drawings.js');
+load('naxani-plan-media.js');
 const source=ctx.window.HydroNaxani2026;
 const E=ctx.window.HydroNaxaniEnhancements;
 E.annotate(source.rows);
@@ -57,7 +58,7 @@ test('Naxani: no unpriced double-integrated basin fabricated for the other six f
  assert.match(ui,/Double vasque : sur devis/);
  assert.match(ui,/pas de référence et de prix public confirmés/);
  assert.match(ui,/const allIntegratedModels/);
- assert.match(ui,/topDrawing\(sample\)/);
+ assert.match(ui,/topPair\(sample\)/);
 });
 test('Naxani: 15 cropped manufacturer technical diagrams bound to the matching family',()=>{
  const drawings=ctx.window.HydroNaxaniPlanDrawings;
@@ -81,4 +82,41 @@ test('Naxani: 15 cropped manufacturer technical diagrams bound to the matching f
  assert.ok(index.indexOf('naxani-plan-drawings.js')<index.indexOf('naxani-modular-configurator.js'));
  const css=fs.readFileSync(path.join(root,'naxani-configurator.css'),'utf8');
  assert.match(css,/\.nax-plan-technical/);
+});
+
+test('Naxani: all 15 photo and technical drawing pairs retain their actual model',()=>{
+ const media=ctx.window.HydroNaxaniPlanMedia;
+ assert.equal(media.collections.length,15);
+ for(const name of media.collections){
+  const m=media.get(name);
+  assert.equal(m.collection,name);
+  assert.match(m.drawingUrl,/^\/api\/naxani-plan-drawing\?model=/);
+  assert.equal(m.sourceUrl.startsWith('https://naxani.com/producto/'),true);
+  assert.equal(m.photos.every(u=>u.startsWith('https://naxani.com/wp-content/uploads/')),true);
+ }
+ const all=source.rows.filter(x=>x.productType==='plan-integre');
+ media.apply(all);
+ assert.equal(all.length,968);
+ for(const row of all){
+  const m=media.get(row.collection);
+  assert.equal(row.image,m.image);
+  assert.equal(row.drawingUrl,m.drawingUrl);
+  assert.equal(row.naxaniMediaPaired,true);
+  assert.equal(row.technicalSheetUrl,row.drawingUrl);
+ }
+ const css=fs.readFileSync(path.join(root,'naxani-configurator.css'),'utf8');
+ assert.match(css,/\.nax-top-pair/);
+ const app=fs.readFileSync(path.join(root,'app.js'),'utf8');
+ assert.match(app,/function applyExactPlanMedia/);
+ assert.match(app,/record\.customImage=true/);
+});
+test('Naxani: standalone and furniture both expose 1/2-basin choices without runtime collection errors',()=>{
+ const ui=fs.readFileSync(path.join(root,'naxani-modular-configurator.js'),'utf8');
+ assert.match(ui,/data-input="standaloneSinkCount"/);
+ assert.match(ui,/data-input="basinCount"/);
+ assert.ok(ui.includes("$$('[data-standalone-plan-ref]').forEach"));
+ assert.ok(!ui.includes("\n   $('[data-standalone-plan-ref]').forEach"));
+ assert.match(ui,/data-standalone-plan-ref/);
+ assert.match(ui,/planMedia:/);
+ assert.match(ui,/topPair\(displayPlan\)/);
 });
