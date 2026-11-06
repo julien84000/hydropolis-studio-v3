@@ -11,3 +11,23 @@ test('PDF : erreur réseau distincte du chargement',async()=>{const img=new Test
 test('PDF : décodage rejeté bloque l’impression',async()=>{assert.equal((await wait(new TestImage({complete:true,naturalWidth:100,decode:async()=>{throw Error('image invalide')}}))).failed.length,1)});
 test('PDF : décodage bloqué ne peut pas être déclaré prêt',async()=>{assert.equal((await wait(new TestImage({complete:true,naturalWidth:100,decode:()=>new Promise(()=>{})}))).failed.length,1)});
 test('PDF : chargement interrompu termine sur timeout',async()=>{const r=await wait(new TestImage());assert.equal(r.failed.length,1);assert.equal(r.timedOut,true)});
+
+test('PDF : la feuille finale supprime le clipping V12 et conserve le format A4',()=>{
+  const css=fs.readFileSync(require('node:path').join(__dirname,'../public/pdf-cover-print-fix.css'),'utf8');
+  const html=fs.readFileSync(require('node:path').join(__dirname,'../public/index.html'),'utf8');
+  assert.match(css,/@page\\s*\\{\\s*size:\\s*A4 landscape/);
+  assert.match(css,/body\\.v12-page-focus #view-preview \\.preview-bg/);
+  assert.match(css,/overflow:\\s*visible\\s*!important/);
+  assert.match(css,/\\.editorial-cover-image > img\\.cover-image/);
+  assert.match(css,/object-fit:\\s*contain\\s*!important/);
+  const lastTheme=html.lastIndexOf('recor-configurator-mobile.css');
+  const fix=html.lastIndexOf('pdf-cover-print-fix.css');
+  assert.ok(fix>lastTheme,'Le correctif doit charger après les thèmes et configurateurs');
+});
+test('PDF : la couverture personnelle est sauvegardée et préchargée avant impression',()=>{
+  assert.match(source,/if\\(!saveState\\(\\)\\)\\s*\\{\\s*state\\.project\\.cover=previous/);
+  assert.match(source,/class="cover-image"[^>]*loading="eager" decoding="sync"/);
+  assert.match(source,/waitForDocumentImages\\(12000\\)/);
+  assert.match(source,/coverImage\\.naturalWidth<1/);
+  assert.match(source,/Export PDF interrompu/);
+});
