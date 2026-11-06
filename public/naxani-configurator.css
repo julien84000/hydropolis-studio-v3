@@ -135,3 +135,26 @@
 .nax-plan-variant-pict .nax-plan-technical{height:65px;width:100%;max-width:260px;margin-inline:auto}
 .nax-selected-plan>.nax-plan-technical{width:min(100%,380px);height:95px}
 .nax-plan-card small{font-size:10px;color:#756858;text-align:center}
+
+
+/* Naxani 2026: paired model photo and original manufacturer technical plan. */
+.nax-top-pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px;width:100%;align-items:stretch}
+.nax-top-photo,.nax-top-plan{min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:#fff;border-radius:6px;padding:5px;overflow:hidden}
+.nax-media-title{font-size:9px;color:#806951;font-weight:700;line-height:1.2;white-space:nowrap}
+.nax-top-photo img{width:100%;height:100%;max-height:125px;object-fit:cover;display:block}
+.nax-top-plan .nax-plan-technical{width:100%;height:80px;min-height:0;background-size:300% 500%;background-color:white}
+.nax-top-photo .nax-photo-fallback{display:block;color:#888;font-size:10px;text-align:center;line-height:1.3}
+.nax-plan-pict .nax-top-pair,.nax-plan-variant-pict .nax-top-pair{width:100%;min-height:86px}
+.nax-plan-pict .nax-top-pair img,.nax-plan-variant-pict .nax-top-pair img{max-height:85px}
+.nax-plan-cards .nax-top-plan .nax-plan-technical{height:75px}
+.nax-selected-plan>.nax-top-pair{max-width:100%;margin-bottom:7px}
+.nax-standalone-top .nax-top-pair{margin:5px 0}
+.nax-standalone-top .nax-top-photo img{max-height:185px}
+.nax-standalone-top .nax-top-plan .nax-plan-technical{height:150px}
+.nax-plan-count{margin:12px 0;padding:10px;border-radius:8px;background:#f5f1ea}
+.nax-plan-count label{display:block;margin:0}
+.nax-plan-count small{display:block;margin-top:5px;color:#756858}
+.nax-standalone-variants{max-height:300px;overflow:auto;margin:8px 0}
+.nax-card .nax-top-pair .nax-media-title{font-size:8px}
+.nax-card .nax-top-pair .nax-top-plan .nax-plan-technical{height:65px}
+@media(max-width:600px){.nax-top-pair{gap:3px}.nax-media-title{font-size:8px}.nax-standalone-variants{max-height:250px}}
