@@ -88,6 +88,42 @@ let browser,server;
   assert.equal(await selected.locator('.nax-top-pair').count(),1);
   const chosen=await modal.locator('.nax-add').isDisabled();
   assert.equal(chosen,false,'Compatible Grid/Alpos composition should be addable');
+  // Lembo has 34 official single suspended SKUs and no manufacturer
+  // double SKU. Two sinks must remain two separate priced catalogue lines.
+  await page.evaluate(()=>{
+    const rows=window.HydroNaxani2026.rows;
+    const first=rows.find(x=>x.reference==='515341');
+    window.__suspended=null;
+    window.HydroNaxaniConfigurator.open(rows,'room-test',value=>{window.__suspended=value},first);
+  });
+  await modal.waitFor();
+  const suspendedCount=modal.locator('[data-input="standaloneSinkCount"]');
+  assert.equal(await suspendedCount.count(),1,'Suspended basins must expose the 1/2 selector');
+  assert.match(await modal.locator('.nax-plan-count').innerText(),/Nombre de lavabos suspendus/);
+  await suspendedCount.selectOption('2');
+  assert.match(await modal.locator('.nax-plan-count').innerText(),/Deux lavabos suspendus indépendants/);
+  assert.match(await modal.locator('.nax-plan-count').innerText(),/Pas un plan monobloc double vasque/);
+  assert.equal(await modal.locator('[data-input="width"] option').count(),34,'Do not lose priced Lembo widths');
+  await modal.locator('[data-input="width"]').selectOption('149');
+  assert.match(await modal.locator('.nax-supplier').innerText(),/515556/);
+  assert.match(await modal.locator('.nax-grand').innerText(),/1\\s?910/);
+  assert.equal(await modal.locator('.nax-add').isDisabled(),false);
+  await modal.locator('.nax-add').click();
+  await page.waitForFunction(()=>!!window.__suspended);
+  const pair=await page.evaluate(()=>window.__suspended);
+  assert.equal(pair.reference,'515556');
+  assert.deepEqual(pair.naxaniAssembly.references,['515556','515556']);
+  assert.equal(pair.naxaniAssembly.basinCount,2);
+  assert.equal(pair.naxaniAssembly.totalWidth,298);
+  assert.equal(pair.naxaniAssembly.total,1910);
+  // A saved two-basin configuration must reopen with two basins selected.
+  await page.evaluate(()=>{
+    const rows=window.HydroNaxani2026.rows;
+    window.HydroNaxaniConfigurator.open(rows,'room-test',()=>{},window.__suspended);
+  });
+  await modal.waitFor();
+  assert.equal(await modal.locator('[data-input="standaloneSinkCount"]').inputValue(),'2');
+  assert.match(await modal.locator('.nax-grand').innerText(),/1\\s?910/);
   assert.deepEqual(errors,[],'JavaScript runtime errors');
   console.log('Naxani V11.64.69: 15 paired photos/drawings, standalone double 572268, Grid 149 + double Alpos 571889: OK');
  }finally{
