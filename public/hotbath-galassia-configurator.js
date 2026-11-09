@@ -202,12 +202,24 @@ function open(rows,roomId,onAdd){
    $('.hotbath-collections').innerHTML=ORDER.map(c=>{
     const items=taxonomy.collections?.[c]||[],count=new Set(items.flatMap(x=>x.refs||[])).size;
     const preference=curated?.collections?.[c];
-    const url=validUrl(preference?.heroImage)||media.modernCollectionImages?.[c]||media.collectionImages?.[c]||'';
+    const url=validUrl(preference?.heroImage)||validUrl(media.modernCollectionImages?.[c])||validUrl(media.collectionImages?.[c])||'';
     return '<button type="button" class="galassia-family'+(c===collection?' active':'')+
       '" data-collection="'+esc(c)+'">'+(url?'<img src="'+esc(url)+'" alt="" loading="lazy">':
       '<span class="galassia-no-photo">H</span>')+
       '<span>'+esc(c)+'<small>'+count+' modèles'+(preference?' · '+esc(preference.finishName):'')+'</small></span></button>';
    }).join('');
+   // Remember failed collection covers between rerenders instead of requesting
+   // the same broken manufacturer image after every collection/model change.
+   $$('.hotbath-collections .galassia-family img').forEach(img=>{
+    img.addEventListener('error',()=>{
+     const bad=img.getAttribute('src')||'';
+     if(bad)brokenUrls.add(bad);
+     const substitute=document.createElement('span');
+     substitute.className='galassia-no-photo';
+     substitute.textContent='H';
+     img.replaceWith(substitute);
+    },{once:true});
+   });
    $$('[data-collection]').forEach(button=>button.onclick=()=>{
     collection=button.dataset.collection;categoryKey='';base='';ref='';search='';render();
    });

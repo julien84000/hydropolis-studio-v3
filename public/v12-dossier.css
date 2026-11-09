@@ -153,4 +153,18 @@ body.v12-page-focus #view-preview .preview-bg{
 @media print{
  .v12-pagination-nav{display:none!important}
  body.v12-page-focus #view-preview #document > .page{display:block!important}
+ /* Only document pages belong in the print flow. The workspace heading and
+    any editor panels inserted before the preview must not offset the cover. */
+ body #view-preview > :not(.preview-bg){display:none!important}
+ body #view-preview .preview-bg{
+  margin:0!important;padding:0!important;border-radius:0!important;
+  overflow:visible!important;min-height:0!important;
+ }
+ body #view-preview #document{
+  display:block!important;width:297mm!important;max-width:none!important;
+  margin:0!important;padding:0!important;
+ }
+ body #view-preview #document > .page{
+  break-inside:avoid!important;page-break-inside:avoid!important;
+ }
 }
