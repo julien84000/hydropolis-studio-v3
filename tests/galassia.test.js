@@ -59,7 +59,8 @@ test('Manufacturer media and technical PDF are never invented for non-indexed SK
  const code=fs.readFileSync(path.join(__dirname,'../public/app.js'),'utf8');
  assert.match(code,/HydroGalassiaConfigurator\?\.eligible/);
  assert.match(code,/Carrodrain\|Galassia/);
- assert.match(code,/Galassia:50/);
+ assert.match(code,/const DEFAULT_SUPPLIER_DISCOUNTS=Object\.freeze/);
+ assert.match(code,/"Galassia":50/);
  const manifest=require('../public/catalog_manifest.json');
  assert(manifest.chunks.some(p=>p.file==='catalog_galassia.json'&&p.count===rows.length));
 });
