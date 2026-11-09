@@ -4,7 +4,8 @@ const CATALOG=[{"manufacturer":"Amphora","collection":"REEL","reference":"RE001.
 // Naxani 2026 PDF catalogue: loaded as a separate versioned static asset.
 if(typeof window!=='undefined' && Array.isArray(window.HydroNaxani2026?.rows))CATALOG.push(...window.HydroNaxani2026.rows);
 if(typeof window!=='undefined' && Array.isArray(window.HydroRadawayCatalog?.rows))CATALOG.push(...window.HydroRadawayCatalog.rows);
-const state={project:{name:"",client:"",location:"",date:"",intro:"",cover:""},rooms:[{id:"r1",title:"SDB MASTER",subtitle:"Robinetterie & sanitaires",manual:[]}],selected:[],commercial:{clientDiscount:0,vatRate:20,shippingFee:0,supplierShippingFee:0,supplierDiscounts:{"Amphora":50,"Catalano":64,"Coalbrook":50,"Zucchetti":55,"Lefroy Brooks":55,"Hotbath":50,"Recor":61.5385,"Ritmonio":55,"Nicolazzi":50,"Gessi":50,"Sbordoni":55,"Dornbracht":50.5,"Hidrobox":50,"Bette":50,"Carrodrain":50,"Galassia":50,"Naxani":0}}};
+const DEFAULT_SUPPLIER_DISCOUNTS=Object.freeze({"Amphora":50,"Catalano":64,"Coalbrook":50,"Zucchetti":55,"Lefroy Brooks":55,"Hotbath":50,"Recor":61.5385,"Ritmonio":55,"Nicolazzi":50,"Gessi":50,"Sbordoni":55,"Dornbracht":50.5,"Hidrobox":50,"Bette":50,"Carrodrain":50,"Galassia":50,"Radaway":50,"Naxani":0});
+const state={project:{name:"",client:"",location:"",date:"",intro:"",cover:""},rooms:[{id:"r1",title:"SDB MASTER",subtitle:"Robinetterie & sanitaires",manual:[]}],selected:[],commercial:{clientDiscount:0,vatRate:20,shippingFee:0,supplierShippingFee:0,supplierDiscounts:{...DEFAULT_SUPPLIER_DISCOUNTS}}};
 const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const esc=value=>String(value??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
 // V11.18 — Recor foot visuals are embedded once in the client bundle.
@@ -80,8 +81,45 @@ const cloud={
   dirty:false,
   loadingProject:false,
   persistentConfigured:false,
-  started:false
+  started:false,
+  currentProjectUpdatedAt:null
 };
+const cloudAssetTickets=new Map(),cloudAssetPending=new Map();
+function assetTicketKey(file){
+  return `${cloud.user?.id||""}:${cloud.currentProjectId||""}:${String(file||"")}`;
+}
+function cachedProjectAssetHref(file){
+  const found=cloudAssetTickets.get(assetTicketKey(file));
+  return found && found.expiresAt>Date.now()+30000 ? found.url : "";
+}
+async function fetchProjectAssetHref(file,force=false){
+  if(!file||!cloud.currentProjectId||!cloud.token||!navigator.onLine)return "";
+  const key=assetTicketKey(file);
+  if(!force){
+    const cached=cachedProjectAssetHref(file);
+    if(cached)return cached;
+  }
+  if(cloudAssetPending.has(key))return cloudAssetPending.get(key);
+  const projectId=cloud.currentProjectId;
+  const task=apiFetch(`/api/project-assets/${encodeURIComponent(projectId)}/${encodeURIComponent(file)}/read-ticket`,{
+    method:"POST"
+  }).then(result=>{
+    if(projectId!==cloud.currentProjectId)return "";
+    cloudAssetTickets.set(key,{url:result.url,expiresAt:Number(result.expiresAt)||0});
+    return result.url;
+  });
+  cloudAssetPending.set(key,task);
+  try{return await task}finally{cloudAssetPending.delete(key)}
+}
+async function refreshProjectAssetHrefs(force=false){
+  if(!navigator.onLine||!cloud.currentProjectId||!cloud.token)return;
+  const files=new Set();
+  for(const product of state.selected||[]){
+    if(product?.customTechnicalSheet&&product.technicalSheetAsset?.file)files.add(product.technicalSheetAsset.file);
+    if(product?.installationGuideAsset?.file)files.add(product.installationGuideAsset.file);
+  }
+  await Promise.all([...files].map(file=>fetchProjectAssetHref(file,force)));
+}
 
 function blankProjectState(){
   return {
@@ -90,7 +128,7 @@ function blankProjectState(){
     selected:[],
     commercial:{
       clientDiscount:0,vatRate:20,shippingFee:0,supplierShippingFee:0,
-      supplierDiscounts:{"Amphora":50,"Catalano":64,"Coalbrook":50,"Zucchetti":55,"Lefroy Brooks":55,"Hotbath":50,"Recor":61.5385,"Ritmonio":55,"Nicolazzi":50,"Gessi":50,"Sbordoni":55,"Dornbracht":50.5,"Galassia":50,"Radaway":50}
+      supplierDiscounts:{...DEFAULT_SUPPLIER_DISCOUNTS}
     },
     showClientPrices:true,
     showSpaceSubtotals:false,
@@ -147,7 +185,11 @@ async function apiFetch(url,options={}){
     cloudLogout(false);
     throw new Error("Session expirée");
   }
-  if(!r.ok)throw new Error(data.error||data.detail||`Erreur ${r.status}`);
+  if(!r.ok){
+    const error=new Error(data.error||data.detail||`Erreur ${r.status}`);
+    error.status=r.status;error.code=data.code||"";
+    throw error;
+  }
   return data;
 }
 function setAuthError(msg=""){
@@ -185,7 +227,8 @@ function markCloudDirty(){
 function offlineUserKey(){return "hydropolis-offline-user"}
 function offlineProjectListKey(){return cloud.user?.id?`hydropolis-project-list:${cloud.user.id}`:""}
 function cloudLogout(reload=true){
-  cloud.token="";cloud.user=null;cloud.currentProjectId=null;cloud.projects=[];
+  cloud.token="";cloud.user=null;cloud.currentProjectId=null;cloud.currentProjectUpdatedAt=null;cloud.projects=[];
+  cloudAssetTickets.clear();cloudAssetPending.clear();
   localStorage.removeItem("hydropolis-auth-token");
   localStorage.removeItem("hydropolis-last-project");
   localStorage.removeItem(offlineUserKey());
@@ -238,7 +281,7 @@ async function loadCloudProjects(){
   updateCloudStatus(!navigator.onLine?"Mode hors connexion · projets du cache local":"");
   return cloud.projects;
 }
-async function openCloudProject(id){
+async function openCloudProject(id,{ignoreLocalDraft=false}={}){
   if(cloud.dirty && cloud.currentProjectId && cloud.currentProjectId!==id){
     if(!confirm("Le projet ouvert contient des modifications non enregistrées. Ouvrir un autre projet et abandonner ces changements ?"))return;
   }
@@ -250,6 +293,7 @@ async function openCloudProject(id){
       try{payload=JSON.parse(localStorage.getItem(draftKey)||"null")}catch{}
       if(!payload)throw new Error("Ce projet n’est pas encore disponible dans le cache local. Ouvrez-le une fois avec une connexion avant de travailler hors ligne.");
       cloud.currentProjectId=id;
+      cloud.currentProjectUpdatedAt=cloud.projects.find(p=>p.id===id)?.updatedAt||null;
       localStorage.setItem("hydropolis-last-project",id);
       applyProjectState(payload);
       await hydrateCustomAssets();
@@ -265,15 +309,18 @@ async function openCloudProject(id){
     const serverAt=Date.parse(data.project.updatedAt||"")||0;
     let payload=data.project.data||{};
     let restoredDraft=false;
-    if(draftKey&&draftAt>serverAt){
+    if(!ignoreLocalDraft&&draftKey&&draftAt>serverAt){
       try{
         const draft=JSON.parse(localStorage.getItem(draftKey)||"null");
         if(draft&&confirm("Un brouillon local plus récent que la version serveur existe pour ce projet. Le restaurer ?")){payload=draft;restoredDraft=true}
       }catch{}
     }
     cloud.currentProjectId=id;
+    cloud.currentProjectUpdatedAt=data.project.updatedAt;
+    cloudAssetTickets.clear();cloudAssetPending.clear();
     localStorage.setItem("hydropolis-last-project",id);
     applyProjectState(payload);
+    await refreshProjectAssetHrefs().catch(e=>console.warn("[asset links]",e));
     saveState();
     await hydrateCustomAssets();
     cloud.dirty=restoredDraft;
@@ -298,12 +345,26 @@ async function saveCloudProject(){
       body:JSON.stringify({name:state.project.name||"Nouveau projet",data:compactStateForCloud()})
     });
     cloud.currentProjectId=created.project.id;
+    cloud.currentProjectUpdatedAt=created.project.updatedAt;
     localStorage.setItem("hydropolis-last-project",cloud.currentProjectId);
   }else{
-    await apiFetch(`/api/projects/${encodeURIComponent(cloud.currentProjectId)}`,{
-      method:"PUT",
-      body:JSON.stringify({name:state.project.name||"Projet",data:compactStateForCloud()})
-    });
+    try{
+      const saved=await apiFetch(`/api/projects/${encodeURIComponent(cloud.currentProjectId)}`,{
+        method:"PUT",
+        body:JSON.stringify({name:state.project.name||"Projet",data:compactStateForCloud(),updatedAt:cloud.currentProjectUpdatedAt})
+      });
+      cloud.currentProjectUpdatedAt=saved.project.updatedAt;
+    }catch(e){
+      if(e.status!==409 && e.status!==428)throw e;
+      saveState();
+      cloud.dirty=true;
+      updateCloudStatus("Conflit : projet modifié ailleurs · brouillon local préservé");
+      if(confirm("Ce projet a été modifié dans un autre onglet ou appareil. Votre brouillon reste enregistré localement. Recharger la dernière version du serveur sans écraser ses modifications ?")){
+        cloud.dirty=false;
+        await openCloudProject(cloud.currentProjectId,{ignoreLocalDraft:true});
+      }
+      return;
+    }
   }
   cloud.dirty=false;
   if(cloud.user?.id&&cloud.currentProjectId)localStorage.removeItem(`hydropolis-draft-at:${cloud.user.id}:${cloud.currentProjectId}`);
@@ -335,6 +396,8 @@ async function deleteCloudProject(id){
   await apiFetch(`/api/projects/${encodeURIComponent(id)}`,{method:"DELETE"});
   if(cloud.currentProjectId===id){
     cloud.currentProjectId=null;
+    cloud.currentProjectUpdatedAt=null;
+    cloudAssetTickets.clear();cloudAssetPending.clear();
     localStorage.removeItem("hydropolis-last-project");
     applyProjectState(blankProjectState());
     cloud.dirty=false;
@@ -358,15 +421,28 @@ function formatProjectDate(s){
 }
 
 
+function projectAssetHref(file){
+  if(!file||!cloud.currentProjectId||!cloud.token)return "";
+  const cached=cachedProjectAssetHref(file);
+  if(cached)return cached;
+  if(navigator.onLine && !cloud.loadingProject){
+    void fetchProjectAssetHref(file).then(url=>{
+      if(!url)return;
+      if(document.querySelector("#view-preview:not(.hidden)"))buildDocument();
+      else renderRooms();
+    }).catch(e=>console.warn("[asset read]",e));
+  }
+  return "";
+}
 function technicalSheetHref(p){
-  if(p?.customTechnicalSheet && p?.technicalSheetAsset?.file && cloud.currentProjectId && cloud.token){
-    return `${location.origin}/api/project-assets/${encodeURIComponent(cloud.currentProjectId)}/${encodeURIComponent(p.technicalSheetAsset.file)}?access=${encodeURIComponent(cloud.token)}`;
+  if(p?.customTechnicalSheet && p?.technicalSheetAsset?.file){
+    return projectAssetHref(p.technicalSheetAsset.file);
   }
   return p?.technicalSheetUrl||"";
 }
 function installationGuideHref(p){
-  if(p?.installationGuideAsset?.file && cloud.currentProjectId && cloud.token){
-    return `${location.origin}/api/project-assets/${encodeURIComponent(cloud.currentProjectId)}/${encodeURIComponent(p.installationGuideAsset.file)}?access=${encodeURIComponent(cloud.token)}`;
+  if(p?.installationGuideAsset?.file){
+    return projectAssetHref(p.installationGuideAsset.file);
   }
   return p?.installationGuideUrl||"";
 }
@@ -409,6 +485,7 @@ async function uploadTechnicalSheet(p,file){
   });
 
   p.technicalSheetAsset=payload.asset;
+  await fetchProjectAssetHref(payload.asset.file,true).catch(e=>console.warn("[asset ticket upload]",e));
   p.technicalSheetUrl="";
   p.technicalSheetLabel=file.name||"Fiche technique personnalisée";
   p.technicalSheetType="pdf";
@@ -1570,8 +1647,7 @@ function loadState(override=null){
 
   if(!state.commercial || typeof state.commercial!=="object")state.commercial=fresh.commercial;
   if(!state.commercial.supplierDiscounts || typeof state.commercial.supplierDiscounts!=="object")state.commercial.supplierDiscounts={};
-  const defaultSupplierDiscounts={"Amphora":50,"Catalano":64,"Coalbrook":50,"Zucchetti":55,"Lefroy Brooks":55,"Hotbath":50,"Recor":61.5385,"Ritmonio":55,"Nicolazzi":50,"Gessi":50,"Sbordoni":55,"Dornbracht":50.5,"Radaway":50};
-  Object.entries(defaultSupplierDiscounts).forEach(([maker,rate])=>{
+  Object.entries(DEFAULT_SUPPLIER_DISCOUNTS).forEach(([maker,rate])=>{
     if(state.commercial.supplierDiscounts[maker]===undefined || state.commercial.supplierDiscounts[maker]===null || state.commercial.supplierDiscounts[maker]==="")state.commercial.supplierDiscounts[maker]=rate;
   });
   // V11.23 commercial-condition migration: Lefroy Brooks moved from the former
@@ -3168,8 +3244,7 @@ function clearQuoteLineOverrides(obj){
 function supplierDiscountRate(manufacturer){
   const configured=state.commercial?.supplierDiscounts?.[manufacturer];
   if(configured!==undefined&&configured!==null&&configured!=="")return clampPercent(configured);
-  const defaults={Hidrobox:50,Bette:50,Carrodrain:50,Galassia:50,Radaway:50};
-  return clampPercent(defaults[manufacturer]||0);
+  return clampPercent(DEFAULT_SUPPLIER_DISCOUNTS[manufacturer]??0);
 }
 function selectedCatalogTotal(){
   return (state.selected||[]).filter(isRealSelectedProduct).reduce((sum,p)=>sum+quoteLineUnit(p)*itemQuantity(p),0);
@@ -5465,6 +5540,7 @@ async function exportClientPdf(){
   }
 
   showView("preview");
+  await refreshProjectAssetHrefs(true);
   buildDocument();
 
   const btns=[$("#printBtn"),$("#exportPdfTopBtn")].filter(Boolean);
@@ -7537,6 +7613,7 @@ $$(".nav").forEach(n=>n.onclick=()=>showView(n.dataset.view));
     if(!cloud.currentProjectId)throw new Error('Enregistrez le projet avant de joindre le PDF.');
     const result=await apiFetch(`/api/projects/${encodeURIComponent(cloud.currentProjectId)}/assets/${encodeURIComponent(p.id)}/installation-guide`,{method:'POST',body:JSON.stringify({fileName:file.name,mime:'application/pdf',dataBase64:await fileToBase64(file)})});
     p.installationGuideAsset=result.asset;p.installationGuideUrl='';p.installationGuideLabel=file.name;p.includeInstallationGuide=true;
+    await fetchProjectAssetHref(result.asset.file,true).catch(e=>console.warn("[asset ticket upload]",e));
   }
   function closeEditor(){document.getElementById('freeArticleModal')?.remove();}
   function openFreeArticleEditor(roomId,id='') {
