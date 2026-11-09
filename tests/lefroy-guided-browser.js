@@ -27,6 +27,25 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   await page.waitForFunction(()=>!!window.HydroLefroyGuided&&typeof catalogIndex!=='undefined'&&
    catalogIndex.maker('Lefroy Brooks').length===3397&&!!state.rooms?.[0]?.id,{timeout:90000});
   await page.evaluate(()=>showView('catalog'));
+  // E2E: render a model newly recovered from the manufacturer's real product gallery.
+  await page.evaluate(()=>window.HydroManufacturerGuide.open('Lefroy Brooks',catalogIndex.maker('Lefroy Brooks'),state.rooms[0].id,()=>{}));
+  const mediaDialog=page.locator('#manufacturerGuidedSelector');
+  await mediaDialog.locator('[data-go="collection"][data-value="1900 Classic"]').waitFor({timeout:30000});
+  await mediaDialog.locator('[data-go="collection"][data-value="1900 Classic"]').click();
+  await mediaDialog.locator('[data-go="category"][data-value="Accessoires"]').click();
+  const allModels=mediaDialog.locator('[data-go="subcategory"][data-value=""]');
+  if(await allModels.count())await allModels.click();
+  await mediaDialog.locator('#mgSearch').fill('BK4500');
+  const recovered=mediaDialog.locator('[data-go="model"][data-value="BK4500"] img');
+  await recovered.waitFor({timeout:25000});
+  assert.match(await recovered.getAttribute('src'),/Lefroy-Brooks_BK-4500-NK\.jpg$/i);
+  await mediaDialog.locator('[data-go="model"][data-value="BK4500"]').click();
+  await mediaDialog.locator('[data-mg-finish="BK4500NK"]').click();
+  assert.match(await mediaDialog.locator('.mg-detail .mg-photo img').getAttribute('src'),/Lefroy-Brooks_BK-4500-NK\.jpg$/i);
+  assert.match(await mediaDialog.locator('.mg-detail .mg-photo small').innerText(),/finition NK/i);
+  assert.match(await mediaDialog.locator('.mg-detail .mg-official').getAttribute('href'),/\/main-accessories\/bk-4500$/i);
+  await mediaDialog.locator('.mg-close').click();
+
   await page.evaluate(()=>{
    document.querySelector('#manufacturerFilter').value='Lefroy Brooks';
    document.querySelector('#manufacturerFilter').dispatchEvent(new Event('change',{bubbles:true}));
