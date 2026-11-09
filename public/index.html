@@ -31,7 +31,7 @@
       <label>Fonction<input id="setupTitle" placeholder="Commercial Hydropolis"></label>
       <label>E-mail<input id="setupEmail" type="email" autocomplete="email" placeholder="prenom@hydropolis.fr"></label>
       <label>Téléphone<input id="setupPhone" type="tel" autocomplete="tel" placeholder="06 …"></label>
-      <label>Mot de passe<input id="setupPassword" type="password" autocomplete="new-password" minlength="6" required></label>
+      <label>Mot de passe<input id="setupPassword" type="password" autocomplete="new-password" minlength="12" required></label>
       <button class="btn primary wide" type="submit">Créer l'espace Hydropolis</button>
     </form>
 
@@ -130,7 +130,7 @@
       <input id="teamTitle" placeholder="Fonction">
       <input id="teamEmail" type="email" placeholder="E-mail">
       <input id="teamPhone" type="tel" placeholder="Téléphone">
-      <input id="teamPassword" type="password" placeholder="Mot de passe temporaire">
+      <input id="teamPassword" type="password" minlength="12" placeholder="Mot de passe temporaire (12 caractères min.)">
       <button class="btn primary" id="createTeamUserBtn">Créer l'accès</button>
     </div>
     <div id="teamList" class="team-list"></div>
