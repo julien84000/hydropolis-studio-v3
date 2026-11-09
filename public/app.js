@@ -309,7 +309,16 @@ async function openCloudProject(id,{ignoreLocalDraft=false}={}){
     const serverAt=Date.parse(data.project.updatedAt||"")||0;
     let payload=data.project.data||{};
     let restoredDraft=false;
-    if(!ignoreLocalDraft&&draftKey&&draftAt>serverAt){
+    const conflictBackupKey=cloud.user?.id?`hydropolis-conflict-backup:${cloud.user.id}:${id}`:"";
+    if(!ignoreLocalDraft&&conflictBackupKey){
+      try{
+        const backup=JSON.parse(localStorage.getItem(conflictBackupKey)||"null");
+        if(backup?.data&&confirm("Une copie de sécurité d'un brouillon en conflit existe sur cet appareil. La restaurer dans l'éditeur ? Le serveur ne sera pas modifié sans un nouvel enregistrement.")){
+          payload=backup.data;restoredDraft=true;
+        }
+      }catch{}
+    }
+    if(!restoredDraft&&!ignoreLocalDraft&&draftKey&&draftAt>serverAt){
       try{
         const draft=JSON.parse(localStorage.getItem(draftKey)||"null");
         if(draft&&confirm("Un brouillon local plus récent que la version serveur existe pour ce projet. Le restaurer ?")){payload=draft;restoredDraft=true}
@@ -359,9 +368,12 @@ async function saveCloudProject(){
       saveState();
       cloud.dirty=true;
       updateCloudStatus("Conflit : projet modifié ailleurs · brouillon local préservé");
-      if(confirm("Ce projet a été modifié dans un autre onglet ou appareil. Votre brouillon reste enregistré localement. Recharger la dernière version du serveur sans écraser ses modifications ?")){
+      if(confirm("Ce projet a été modifié dans un autre onglet ou appareil. Recharger la version du serveur ? Une copie de sécurité de votre brouillon sera conservée localement, sans écraser le projet distant.")){
+        const backupKey=`hydropolis-conflict-backup:${cloud.user.id}:${cloud.currentProjectId}`;
+        localStorage.setItem(backupKey,JSON.stringify({savedAt:new Date().toISOString(),data:compactStateForCloud()}));
         cloud.dirty=false;
         await openCloudProject(cloud.currentProjectId,{ignoreLocalDraft:true});
+        updateCloudStatus("Version serveur rechargée · brouillon précédent conservé sur cet appareil");
       }
       return;
     }
