@@ -18,7 +18,46 @@ function metadataCache(name,max=120){const cache=new MetadataCache({max});legacy
 const cacheSweep=setInterval(()=>Object.values(legacyCaches).forEach(c=>c.prune()),60000);cacheSweep.unref();
 app.locals.legacyCacheStats=()=>Object.fromEntries(Object.entries(legacyCaches).map(([key,c])=>[key,{entries:c.size,limit:c.max}]));
 
-app.use(express.json({limit:"20mb"}));
+app.disable("x-powered-by");
+app.use((req,res,next)=>{res.set("Referrer-Policy","no-referrer");next();});
+// Parse small unauthenticated requests with a strict limit. Large project writes
+// and PDF uploads are allowed only after the Bearer has been authenticated.
+const smallJsonParser=express.json({limit:"128kb"});
+const largeJsonParser=express.json({limit:"20mb"});
+app.use(async(req,res,next)=>{
+  const needsLargeBody=(req.method==="POST"&&req.path==="/api/projects") ||
+    (req.method==="PUT"&&/^\/api\/projects\/[^/]+$/.test(req.path)) ||
+    (req.method==="POST"&&/^\/api\/projects\/[^/]+\/assets\/[^/]+\/(?:technical-sheet|installation-guide)$/.test(req.path));
+  if(!needsLargeBody)return smallJsonParser(req,res,next);
+  try{
+    const user=await authUser(req);
+    if(!user)return res.status(401).json({error:"Authentification requise"});
+    req.user=user;
+    return largeJsonParser(req,res,next);
+  }catch(e){return next(e)}
+});
+// In-memory limits are suitable for one Render instance; centralize if scaled.
+const requestBuckets=new Map();
+function requestLimit(max,windowMs){
+  return (req,res,next)=>{
+    const key=`${req.path}:${req.ip||req.socket.remoteAddress||"unknown"}`;
+    const now=Date.now(),old=requestBuckets.get(key);
+    if(requestBuckets.size>10000){
+      for(const [k,b] of requestBuckets)if(b.until<=now)requestBuckets.delete(k);
+      if(requestBuckets.size>10000)requestBuckets.clear();
+    }
+    const bucket=!old||old.until<=now?{count:0,until:now+windowMs}:old;
+    bucket.count++;requestBuckets.set(key,bucket);
+    if(bucket.count>max){
+      res.set("Retry-After",String(Math.max(1,Math.ceil((bucket.until-now)/1000))));
+      return res.status(429).json({error:"Trop de requêtes. Réessayez plus tard."});
+    }
+    next();
+  };
+}
+app.use(["/api/auth/login","/api/auth/setup"],requestLimit(12,10*60*1000));
+app.use("/api/pdf-page-image",requestLimit(60,60*1000));
+app.use("/api/image-proxy",requestLimit(120,60*1000));
 
 const SBORDONI_MEDIA_ROOT=path.join(__dirname,"public","sbordoni");
 let SBORDONI_MEDIA_INDEX=null;
@@ -111,6 +150,9 @@ const TOKEN_SECRET = process.env.HYDRO_TOKEN_SECRET || crypto
   .createHash("sha256")
   .update(DATABASE_URL || "hydropolis-local-fallback")
   .digest("hex");
+// Production should set a high-entropy HYDRO_TOKEN_SECRET independent from
+// DATABASE_URL. Do not rotate it without planning a session invalidation.
+const {signAssetReadTicket,verifyAssetReadTicket}=require("./asset-read-tickets");
 
 const pgPool = USE_POSTGRES ? new Pool({
   connectionString:DATABASE_URL,
@@ -397,20 +439,27 @@ async function storeCreateProject(project){
   }
   const db=readDb();db.projects.push(project);writeDb(db);return project;
 }
-async function storeUpdateProject(userId,id,{name,client,data}){
+async function storeUpdateProject(userId,id,{name,client,data,expectedUpdatedAt}){
+  if(!Number.isFinite(Date.parse(String(expectedUpdatedAt||""))))return null;
   if(USE_POSTGRES){
+    // Node serializes PostgreSQL timestamptz to milliseconds. Compare at the
+    // same precision, atomically in SQL, and always advance to a new millisecond.
     const q=await pgPool.query(
       `UPDATE hydropolis_projects
        SET name=COALESCE($3,name),client=COALESCE($4,client),
-           data=COALESCE($5::jsonb,data),updated_at=NOW()
-       WHERE id=$1 AND user_id=$2 RETURNING *`,
-      [id,userId,name??null,client??null,data===undefined?null:JSON.stringify(data)]
+           data=COALESCE($5::jsonb,data),
+           updated_at=GREATEST(NOW(),date_trunc('milliseconds',updated_at)+INTERVAL '1 millisecond')
+       WHERE id=$1 AND user_id=$2
+         AND date_trunc('milliseconds',updated_at)=$6::timestamptz
+       RETURNING *`,
+      [id,userId,name??null,client??null,data===undefined?null:JSON.stringify(data),expectedUpdatedAt]
     );
     return mapPgProject(q.rows[0]);
   }
   const db=readDb(),p=db.projects.find(x=>x.id===id&&x.userId===userId);if(!p)return null;
+  if(Date.parse(p.updatedAt)!==Date.parse(expectedUpdatedAt))return null;
   if(name!==undefined)p.name=name;if(client!==undefined)p.client=client;if(data!==undefined)p.data=data;
-  p.updatedAt=new Date().toISOString();writeDb(db);return p;
+  p.updatedAt=new Date(Math.max(Date.now(),Date.parse(p.updatedAt)+1)).toISOString();writeDb(db);return p;
 }
 async function storeDeleteProject(userId,id){
   if(USE_POSTGRES){
@@ -482,7 +531,7 @@ async function storeCopyAssets(userId,sourceProjectId,destProjectId){
 
 async function authUser(req){
   const raw=String(req.headers.authorization||"");
-  const token=raw.startsWith("Bearer ")?raw.slice(7):String(req.query?.access||"");
+  const token=raw.startsWith("Bearer ")?raw.slice(7):"";
   const payload=parseToken(token);
   if(!payload)return null;
   const user=await storeFindUserById(payload.sub);
@@ -678,7 +727,10 @@ app.put("/api/projects/:id",requireAuth,async(req,res)=>{
       ? String(req.body?.name||data?.project?.name||current.name||"Projet").trim()||"Projet"
       : (req.body?.name?String(req.body.name).trim():undefined);
     const client=data?String(data?.project?.client||""):undefined;
-    const project=await storeUpdateProject(req.user.id,req.params.id,{name,client,data});
+    const expectedUpdatedAt=String(req.body?.updatedAt||"");
+    if(!Number.isFinite(Date.parse(expectedUpdatedAt)))return res.status(428).json({error:"Version du projet requise"});
+    const project=await storeUpdateProject(req.user.id,req.params.id,{name,client,data,expectedUpdatedAt});
+    if(!project)return res.status(409).json({code:"PROJECT_CONFLICT",error:"Le projet a été modifié depuis son chargement. Rechargez la version récente avant d’enregistrer."});
     res.json({project:publicProject(project)});
   }catch(e){res.status(500).json({error:"Enregistrement du projet impossible",detail:e.message})}
 });
@@ -3914,6 +3966,43 @@ function safeAssetName(v){
   const name=path.basename(String(v||""));
   return /^[a-zA-Z0-9._-]+$/.test(name)?name:"";
 }
+// Asset-read tickets have a different HMAC namespace than session tokens:
+// possessing one can never grant API access beyond a specific file.
+async function requireAssetRead(req,res,next){
+  try{
+    let user=await authUser(req);
+    if(!user && req.query.ticket){
+      const file=safeAssetName(req.params.file);
+      const ticket=verifyAssetReadTicket(req.query.ticket,TOKEN_SECRET,{
+        projectId:req.params.projectId,file
+      });
+      if(ticket){
+        const existing=await storeFindUserById(ticket.sub);
+        if(existing&&!existing.disabled&&Number(existing.sessionVersion||1)===ticket.sv){
+          user={id:existing.id};
+        }
+      }
+    }
+    if(!user)return res.status(401).send("Authentification requise");
+    req.user=user;next();
+  }catch(e){next(e)}
+}
+app.post("/api/project-assets/:projectId/:file/read-ticket",requireAuth,async(req,res)=>{
+  try{
+    const file=safeAssetName(req.params.file);
+    if(!file)return res.status(400).json({error:"Fichier invalide"});
+    const project=await storeGetProject(req.user.id,req.params.projectId);
+    if(!project)return res.status(404).json({error:"Projet introuvable"});
+    if(!await storeAssetGet(req.user.id,project.id,file))return res.status(404).json({error:"Fichier introuvable"});
+    const storedUser=await storeFindUserById(req.user.id);
+    const {ticket,expiresAt}=signAssetReadTicket({
+      userId:req.user.id,projectId:project.id,file,
+      sessionVersion:storedUser.sessionVersion,secret:TOKEN_SECRET
+    });
+    res.set("Cache-Control","no-store");
+    res.json({url:`/api/project-assets/${encodeURIComponent(project.id)}/${encodeURIComponent(file)}?ticket=${encodeURIComponent(ticket)}`,expiresAt});
+  }catch(e){console.error("[asset ticket]",e);res.status(500).json({error:"Accès au document impossible"})}
+});
 
 app.post(["/api/projects/:id/assets/:productId/technical-sheet","/api/projects/:id/assets/:productId/installation-guide"],requireAuth,async(req,res)=>{
   try{
@@ -3961,7 +4050,7 @@ app.delete("/api/projects/:id/assets/:file",requireAuth,async(req,res)=>{
   }catch(e){res.status(500).json({error:"Suppression du fichier impossible"})}
 });
 
-app.get("/api/project-assets/:projectId/:file/page-image",requireAuth,async(req,res)=>{
+app.get("/api/project-assets/:projectId/:file/page-image",requireAssetRead,async(req,res)=>{
   let pdf;
   try{
     const project=await storeGetProject(req.user.id,req.params.projectId);
@@ -3979,7 +4068,7 @@ app.get("/api/project-assets/:projectId/:file/page-image",requireAuth,async(req,
   finally{if(pdf)await pdf.destroy().catch(()=>{});}
 });
 
-app.get("/api/project-assets/:projectId/:file",requireAuth,async(req,res)=>{
+app.get("/api/project-assets/:projectId/:file",requireAssetRead,async(req,res)=>{
   try{
     const project=await storeGetProject(req.user.id,req.params.projectId);
     if(!project)return res.status(404).send("Projet introuvable");
@@ -3989,7 +4078,7 @@ app.get("/api/project-assets/:projectId/:file",requireAuth,async(req,res)=>{
     if(!asset)return res.status(404).send("Fichier introuvable");
     res.set("Content-Type",asset.mime||"application/pdf");
     res.set("Content-Disposition",`inline; filename="${safeAssetName(asset.name)||file}"`);
-    res.set("Cache-Control","private, max-age=300");
+    res.set("Cache-Control","private, no-store");
     res.send(asset.data);
   }catch(e){
     console.error("[asset read]",e);

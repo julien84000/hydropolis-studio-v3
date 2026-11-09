@@ -1,5 +1,14 @@
 # Hydropolis Studio
 
+## Sécurité des sessions et des documents (11.64.76)
+
+- Configurer `HYDRO_TOKEN_SECRET` dans les variables d'environnement **Render** : utiliser une valeur aléatoire longue (au moins 32 octets), indépendante de `DATABASE_URL`. Ne jamais commiter de secrets ou de fichier `.env`.
+- À défaut, la signature des sessions reste dérivée de SHA-256(`DATABASE_URL`) ou de la valeur de secours locale pour compatibilité historique ; **ce repli n'est pas une configuration de production recommandée**.
+- Changer `HYDRO_TOKEN_SECRET` invalide toutes les sessions signées précédemment : prévoir une reconnexion des utilisateurs et une fenêtre de déploiement. La PR ne modifie pas elle-même les secrets Render.
+- Les fichiers PDF privés se consultent via l'en-tête Bearer ou un ticket de lecture à usage restreint (utilisateur, projet, fichier, expiration de 5 minutes). Le Bearer n'est jamais transporté par `?access=`.
+- Les mises à jour `PUT /api/projects/:id` doivent inclure `updatedAt` obtenu au chargement. Réponse `409 PROJECT_CONFLICT` si une autre sauvegarde a pris le dessus, `428` si aucune version n'est fournie. Le navigateur conserve un brouillon distinct avant rechargement.
+- Ne pas exécuter les anciens scripts `apply-v11.*` ni modifier le schéma `hydropolis_users`, `hydropolis_projects`, `hydropolis_assets`.
+
 La version d’exécution provient de `package.json`. Le rapport de consolidation, les résultats et les limites de validation sont dans [docs/RELEASE-11.56.1.md](docs/RELEASE-11.56.1.md).
 
 ```bash

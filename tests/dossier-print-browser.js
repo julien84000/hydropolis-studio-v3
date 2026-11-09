@@ -55,12 +55,18 @@ const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
         return {
           head:getComputedStyle(document.querySelector('#v12PreviewHead')).display,
           pages:pages.map(p => ({top:p.getBoundingClientRect().top + scrollY, height:p.getBoundingClientRect().height, width:p.getBoundingClientRect().width, display:getComputedStyle(p).display})),
-          image:document.querySelector('.cover-image').naturalWidth
+          image:document.querySelector('.cover-image').naturalWidth,
+          coverFit:getComputedStyle(document.querySelector('#document .editorial-cover-image img')).objectFit,
+          coverTransform:getComputedStyle(document.querySelector('#document .editorial-cover-image img')).transform,
+          coverOverflow:getComputedStyle(document.querySelector('#document .editorial-cover-image')).overflow
         };
       });
       assert.equal(geometry.head, 'none', 'Editor heading must never enter the PDF');
       assert.ok(Math.abs(geometry.pages[0].top) < 1, 'Cover must start at the top of sheet 1');
       assert.ok(geometry.image > 0, 'Cover image must be decoded');
+      assert.equal(geometry.coverFit,'contain','Cover photograph must be fully visible in print');
+      assert.equal(geometry.coverTransform,'none','Cover photograph must not be enlarged in print');
+      assert.equal(geometry.coverOverflow,'visible','Printed cover must not crop its image');
       for (const p of geometry.pages) {
         assert.notEqual(p.display, 'none', 'Page focus must not omit pages from export');
         assert.ok(Math.abs(p.width - 297 * 96 / 25.4) < 1);

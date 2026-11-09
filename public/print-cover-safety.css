@@ -1,0 +1,23 @@
+/* Print-only cover safety: preserve the entire source photograph. */
+@media print {
+  #document .editorial-cover-image {
+    overflow:visible!important;
+    transform:none!important;
+    filter:none!important;
+  }
+  #document .editorial-cover-image img,
+  #document[data-v12-template] .editorial-cover-image img {
+    object-fit:contain!important;
+    object-position:center center!important;
+    transform:none!important;
+    filter:none!important;
+    transition:none!important;
+    max-width:100%!important;
+    max-height:100%!important;
+  }
+  #document .cover-page [data-parallax-layer],
+  #document .cover-page[data-parallax-page] {
+    transform:none!important;
+    transition:none!important;
+  }
+}

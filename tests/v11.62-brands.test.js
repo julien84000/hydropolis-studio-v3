@@ -51,7 +51,8 @@ test('V11.62 app routes new brands to configurators and uses 50 percent supplier
   assert.match(app,/HydroHidroboxConfigurator/);
   assert.match(app,/HydroBetteConfigurator/);
   assert.match(app,/HydroCarrodrainConfigurator/);
-  assert.match(app,/Hidrobox:50,Bette:50,Carrodrain:50/);
+  assert.match(app,/const DEFAULT_SUPPLIER_DISCOUNTS=Object\.freeze/);
+  assert.match(app,/"Hidrobox":50,"Bette":50,"Carrodrain":50/);
   assert.match(app,/Hidrobox\|Bette\|Carrodrain/);
 });
 
