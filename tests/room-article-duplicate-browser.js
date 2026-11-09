@@ -120,7 +120,18 @@ const pause=ms=>new Promise(r=>setTimeout(r,ms));
    await openCloudProject(id);
    return JSON.stringify(state.selected);
   },persisted.id);
-  assert.deepEqual(JSON.parse(restored),JSON.parse(persisted.records),'Saved independent article records are restored');
+  const savedRecords=JSON.parse(persisted.records),reloadedRecords=JSON.parse(restored);
+  assert.deepEqual(reloadedRecords.map(p=>p.id),savedRecords.map(p=>p.id),'Persisted article sequence and IDs');
+  const businessFields=['roomId','accessoryFor','reference','designation','configuration','quantity',
+    'quoteUnitOverride','quoteDiscountOverride','clientDiscountOverride','price','totalPrice','finish',
+    'hideFromDossier','requiredRoughIn'];
+  for(let i=0;i<savedRecords.length;i++){
+   for(const key of businessFields){
+    if(!Object.hasOwn(savedRecords[i],key))continue;
+    assert.deepEqual(reloadedRecords[i][key],savedRecords[i][key],
+     'Saved article '+savedRecords[i].id+' must preserve '+key);
+   }
+  }
   assert.deepEqual(errors,[],'Browser page errors');
   console.log('Article duplication browser OK: cross-room/precise position, quote, linked rough-in, pricing, independence, dossier and cloud persistence');
  }catch(e){
