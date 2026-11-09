@@ -210,7 +210,7 @@ function open(rows,roomId,onAdd){
    }).join('');
    // Remember failed collection covers between rerenders instead of requesting
    // the same broken manufacturer image after every collection/model change.
-   $('.hotbath-collections .galassia-family img').forEach(img=>{
+   $$('.hotbath-collections .galassia-family img').forEach(img=>{
     img.addEventListener('error',()=>{
      const bad=img.getAttribute('src')||'';
      if(bad)brokenUrls.add(bad);
@@ -220,7 +220,7 @@ function open(rows,roomId,onAdd){
      img.replaceWith(substitute);
     },{once:true});
    });
-   $('[data-collection]').forEach(button=>button.onclick=()=>{
+   $$('[data-collection]').forEach(button=>button.onclick=()=>{
     collection=button.dataset.collection;categoryKey='';base='';ref='';search='';render();
    });
   }
