@@ -641,7 +641,7 @@ async function renderTeamAdmin(){
         </div>
       </div>`).join("");
     $$(".team-reset").forEach(b=>b.onclick=async()=>{
-      const pwd=prompt("Nouveau mot de passe temporaire (6 caractères minimum)");
+      const pwd=prompt("Nouveau mot de passe temporaire (12 caractères minimum)");
       if(!pwd)return;
       try{await apiFetch(`/api/users/${b.dataset.id}/password`,{method:"PATCH",body:JSON.stringify({password:pwd})});alert("Mot de passe modifié.");}
       catch(e){alert(e.message)}

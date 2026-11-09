@@ -19,7 +19,7 @@ const cacheSweep=setInterval(()=>Object.values(legacyCaches).forEach(c=>c.prune(
 app.locals.legacyCacheStats=()=>Object.fromEntries(Object.entries(legacyCaches).map(([key,c])=>[key,{entries:c.size,limit:c.max}]));
 
 app.disable("x-powered-by");
-app.use((req,res,next)=>{res.set("Referrer-Policy","no-referrer");next();});
+app.use((req,res,next)=>{res.set("Referrer-Policy","no-referrer");res.set("X-Content-Type-Options","nosniff");res.set("X-Frame-Options","SAMEORIGIN");next();});
 // Parse small unauthenticated requests with a strict limit. Large project writes
 // and PDF uploads are allowed only after the Bearer has been authenticated.
 const smallJsonParser=express.json({limit:"128kb"});
@@ -150,6 +150,9 @@ const TOKEN_SECRET = process.env.HYDRO_TOKEN_SECRET || crypto
   .createHash("sha256")
   .update(DATABASE_URL || "hydropolis-local-fallback")
   .digest("hex");
+if(process.env.NODE_ENV==="production" && !process.env.HYDRO_TOKEN_SECRET){
+  console.warn("[Hydropolis security] Configure HYDRO_TOKEN_SECRET independently from DATABASE_URL; no automatic rotation has been performed.");
+}
 // Production should set a high-entropy HYDRO_TOKEN_SECRET independent from
 // DATABASE_URL. Do not rotate it without planning a session invalidation.
 const {signAssetReadTicket,verifyAssetReadTicket}=require("./asset-read-tickets");
@@ -374,6 +377,41 @@ async function storeCreateUser(user){
   }
   const db=readDb();db.users.push(user);writeDb(db);return user;
 }
+// Prevent concurrent requests from provisioning two first administrators.
+// PostgreSQL advisory locking serializes bootstrapping across Render instances.
+// The local-file branch is synchronous and has no await between read and write.
+async function storeCreateBootstrapAdmin(user){
+  if(USE_POSTGRES){
+    const client=await pgPool.connect();
+    try{
+      await client.query("BEGIN");
+      await client.query("SELECT pg_advisory_xact_lock(116477, 20261109)");
+      const existing=await client.query("SELECT 1 FROM hydropolis_users LIMIT 1");
+      if(existing.rows.length){
+        await client.query("ROLLBACK");
+        return false;
+      }
+      await client.query(
+        `INSERT INTO hydropolis_users
+         (id,name,username,role,title,email,phone,salt,password_hash,disabled,session_version,created_at)
+         VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
+        [user.id,user.name,user.username,"admin",user.title||"",user.email||"",user.phone||"",
+         user.salt,user.passwordHash,!!user.disabled,Number(user.sessionVersion||1),user.createdAt||new Date().toISOString()]
+      );
+      await client.query("COMMIT");
+      return true;
+    }catch(e){
+      await client.query("ROLLBACK").catch(()=>{});
+      throw e;
+    }finally{client.release()}
+  }
+  const db=readDb();
+  if(db.users.length)return false;
+  db.users.push(user);
+  writeDb(db);
+  return true;
+}
+
 async function storeUpdateUserProfile(id,patch){
   if(USE_POSTGRES){
     const q=await pgPool.query(
@@ -592,8 +630,8 @@ app.post("/api/auth/setup",async(req,res)=>{
     const name=String(req.body?.name||"").trim();
     const username=normalizeUsername(req.body?.username);
     const password=String(req.body?.password||"");
-    if(!name || username.length<3 || password.length<6){
-      return res.status(400).json({error:"Nom, identifiant (3 caractères) et mot de passe (6 caractères minimum) requis"});
+    if(!name || username.length<3 || password.length<12){
+      return res.status(400).json({error:"Nom, identifiant (3 caractères) et mot de passe (12 caractères minimum) requis"});
     }
     const h=hashPassword(password);
     const user={
@@ -603,7 +641,7 @@ app.post("/api/auth/setup",async(req,res)=>{
       phone:String(req.body?.phone||"").trim(),
       salt:h.salt,passwordHash:h.hash,disabled:false,sessionVersion:1,createdAt:new Date().toISOString()
     };
-    await storeCreateUser(user);
+    if(!await storeCreateBootstrapAdmin(user))return res.status(409).json({error:"Le compte administrateur existe déjà"});
     res.json({token:signToken(user),user:publicUser(user)});
   }catch(e){
     console.error("[setup]",e);
@@ -653,8 +691,8 @@ app.post("/api/users",requireAuth,requireAdmin,async(req,res)=>{
     const name=String(req.body?.name||"").trim();
     const username=normalizeUsername(req.body?.username);
     const password=String(req.body?.password||"");
-    if(!name || username.length<3 || password.length<6){
-      return res.status(400).json({error:"Nom, identifiant et mot de passe de 6 caractères minimum requis"});
+    if(!name || username.length<3 || password.length<12){
+      return res.status(400).json({error:"Nom, identifiant et mot de passe de 12 caractères minimum requis"});
     }
     if(await storeFindUserByUsername(username))return res.status(409).json({error:"Cet identifiant existe déjà"});
     const h=hashPassword(password);
@@ -676,7 +714,7 @@ app.post("/api/users",requireAuth,requireAdmin,async(req,res)=>{
 app.patch("/api/users/:id/password",requireAuth,requireAdmin,async(req,res)=>{
   try{
     const password=String(req.body?.password||"");
-    if(password.length<6)return res.status(400).json({error:"6 caractères minimum"});
+    if(password.length<12)return res.status(400).json({error:"12 caractères minimum"});
     const h=hashPassword(password);
     if(!await storeUpdatePassword(req.params.id,h.salt,h.hash))return res.status(404).json({error:"Utilisateur introuvable"});
     res.json({ok:true});
