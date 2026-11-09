@@ -52,7 +52,9 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   checkpoint('await Hotbath catalogue');
   await page.waitForFunction(()=>typeof catalogIndex!=='undefined'&&catalogIndex.maker('Hotbath').length>=2554&&!!window.HydroHotbathGalassia,{timeout:60000});
   checkpoint('open Hotbath configurator');
-  await page.evaluate(()=>window.HydroHotbathGalassia.open(catalogIndex.maker('Hotbath'),'r1',()=>{}));
+  // The modal returns a Promise that resolves on CLOSE. Opening must not await it,
+  // otherwise the test deadlocks before it can exercise and close the dialog.
+  await page.evaluate(()=>{window.HydroHotbathGalassia.open(catalogIndex.maker('Hotbath'),'r1',()=>{});});
   checkpoint('select Archie collection');
   await page.locator('.hotbath-collections [data-collection="Archie"]').click({timeout:12000});
   checkpoint('check Archie selection and thumbnail failures');

@@ -71,6 +71,9 @@ const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
       assert.equal(pdf.numPages, geometry.pages.length, 'One PDF sheet per dossier page, without overflow or blank sheets');
       for (let i = 1; i <= pdf.numPages; i++) {
         const sheet = await pdf.getPage(i);
+        const sheetSize = sheet.getViewport({scale:1}); // PDF points (72 dpi)
+        assert.ok(Math.abs(sheetSize.width - 297 * 72 / 25.4) < 1, 'PDF sheet must be 297 mm wide (A4 landscape)');
+        assert.ok(Math.abs(sheetSize.height - 210 * 72 / 25.4) < 1, 'PDF sheet must be 210 mm high (A4 landscape)');
         const text = (await sheet.getTextContent()).items.map(item => item.str).join(' ');
         assert.doesNotMatch(text, /Votre présentation client|STUDIO ÉDITORIAL|Retour au projet/);
         if (i === 1) {
