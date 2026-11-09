@@ -4021,8 +4021,8 @@ function renderRoomsCore(){
    </div></article>`;}).join("");
  $$(".room-title").forEach(x=>x.oninput=()=>{roomById(x.dataset.id).title=x.value;saveState();renderRoomSelect();renderSelection();});
  $$(".room-sub").forEach(x=>x.oninput=()=>{roomById(x.dataset.id).subtitle=x.value;saveState();});
- $(".duplicate-room").forEach(b=>b.onclick=()=>duplicateRoom(b.dataset.id));
- $(".duplicate-article").forEach(b=>b.onclick=()=>window.HydroRoomArticleDuplicate?.open(b.dataset.id,{
+ $$(".duplicate-room").forEach(b=>b.onclick=()=>duplicateRoom(b.dataset.id));
+ $$(".duplicate-article").forEach(b=>b.onclick=()=>window.HydroRoomArticleDuplicate?.open(b.dataset.id,{
     state,saveState,renderRooms,renderSelection,renderMarginDashboard,ensurePresentationLayoutState,
     toast,cloud,assetGet,assetSet,apiFetch,fileToBase64,technicalSheetHref
  }));
