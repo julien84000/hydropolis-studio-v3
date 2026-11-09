@@ -75,7 +75,9 @@ const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
         assert.doesNotMatch(text, /Votre présentation client|STUDIO ÉDITORIAL|Retour au projet/);
         if (i === 1) {
           assert.match(text, /PRINT COVER TEST/);
-          assert.match(text, /DOSSIER CLIENT/, 'The bottom of the cover must stay on sheet 1');
+          // PDF extraction may split the letter-spaced footer into separate glyphs.
+          assert.match(text.replace(/\s+/g, ''), /DOSSIERCLIENT/, 'The bottom of the cover must stay on sheet 1: ' + text);
+          console.log('Cover PDF text:', JSON.stringify(text));
         }
       }
       if (process.env.HYDRO_PRINT_PDF) fs.writeFileSync(process.env.HYDRO_PRINT_PDF, bytes);
