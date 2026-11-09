@@ -371,7 +371,23 @@ const check=(name,value)=>{assert(value,name);report.checks.push(name);};
     check('Hotbath : 12 collections dans la colonne Galassia',
       await page.locator('#manufacturerGuidedSelector .hotbath-collections [data-collection]').count()===12);
     await page.locator('#manufacturerGuidedSelector [data-collection="Cobber"]').click();
-    await page.waitForSelector('#manufacturerGuidedSelector .hotbath-categories [data-category="3593"]');
+    try {
+      await page.waitForSelector('#manufacturerGuidedSelector .hotbath-categories [data-category="3593"]');
+    } catch (e) {
+      // Diagnose real modal state without replacing or skipping the category assertion.
+      const diagnostic=await page.evaluate(()=>{
+        const modal=document.querySelector('#manufacturerGuidedSelector');
+        return {
+          modal:!!modal,activeCollection:modal?.querySelector('.hotbath-collections .active')?.getAttribute('data-collection'),
+          collections:[...modal?.querySelectorAll('.hotbath-collections [data-collection]')||[]].map(x=>x.getAttribute('data-collection')),
+          categories:[...modal?.querySelectorAll('.hotbath-categories [data-category]')||[]].map(x=>({id:x.getAttribute('data-category'),label:x.textContent?.trim()})),
+          categoryHtml:modal?.querySelector('.hotbath-categories')?.innerHTML?.slice(0,500),
+          modelCount:modal?.querySelectorAll('.hotbath-models [data-model]').length||0
+        };
+      });
+      console.error('Hotbath Cobber category timeout diagnostic:',JSON.stringify(diagnostic));
+      throw e;
+    }
     check('Cobber : catégories tarifaires conservées',
       await page.locator('#manufacturerGuidedSelector .hotbath-categories [data-category]').count()>=6);
     await page.locator('#manufacturerGuidedSelector [data-category="3593"]').click();
