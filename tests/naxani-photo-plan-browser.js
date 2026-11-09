@@ -106,7 +106,7 @@ let browser,server;
   assert.equal(await modal.locator('[data-input="width"] option').count(),34,'Do not lose priced Lembo widths');
   await modal.locator('[data-input="width"]').selectOption('149');
   assert.match(await modal.locator('.nax-supplier').innerText(),/515556/);
-  assert.match(await modal.locator('.nax-grand').innerText(),/1\\s?910/);
+  assert.match(await modal.locator('.nax-grand').innerText(),/1\s?910/);
   assert.equal(await modal.locator('.nax-add').isDisabled(),false);
   await modal.locator('.nax-add').click();
   await page.waitForFunction(()=>!!window.__suspended);
@@ -123,7 +123,7 @@ let browser,server;
   });
   await modal.waitFor();
   assert.equal(await modal.locator('[data-input="standaloneSinkCount"]').inputValue(),'2');
-  assert.match(await modal.locator('.nax-grand').innerText(),/1\\s?910/);
+  assert.match(await modal.locator('.nax-grand').innerText(),/1\s?910/);
   assert.deepEqual(errors,[],'JavaScript runtime errors');
   console.log('Naxani V11.64.69: 15 paired photos/drawings, standalone double 572268, Grid 149 + double Alpos 571889: OK');
  }finally{
