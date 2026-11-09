@@ -19,7 +19,7 @@ const cacheSweep=setInterval(()=>Object.values(legacyCaches).forEach(c=>c.prune(
 app.locals.legacyCacheStats=()=>Object.fromEntries(Object.entries(legacyCaches).map(([key,c])=>[key,{entries:c.size,limit:c.max}]));
 
 app.disable("x-powered-by");
-app.use((req,res,next)=>{res.set("Referrer-Policy","no-referrer");next();});
+app.use((req,res,next)=>{res.set("Referrer-Policy","no-referrer");res.set("X-Content-Type-Options","nosniff");res.set("X-Frame-Options","DENY");next();});
 // Parse small unauthenticated requests with a strict limit. Large project writes
 // and PDF uploads are allowed only after the Bearer has been authenticated.
 const smallJsonParser=express.json({limit:"128kb"});
@@ -150,6 +150,9 @@ const TOKEN_SECRET = process.env.HYDRO_TOKEN_SECRET || crypto
   .createHash("sha256")
   .update(DATABASE_URL || "hydropolis-local-fallback")
   .digest("hex");
+if(process.env.NODE_ENV==="production" && !process.env.HYDRO_TOKEN_SECRET){
+  console.warn("[Hydropolis security] Configure HYDRO_TOKEN_SECRET independently from DATABASE_URL; no automatic rotation has been performed.");
+}
 // Production should set a high-entropy HYDRO_TOKEN_SECRET independent from
 // DATABASE_URL. Do not rotate it without planning a session invalidation.
 const {signAssetReadTicket,verifyAssetReadTicket}=require("./asset-read-tickets");
