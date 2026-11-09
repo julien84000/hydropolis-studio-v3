@@ -12,7 +12,13 @@
     "https://uk.lefroybrooks.com/all-bath-components",
     "https://uk.lefroybrooks.com/all-towel-warmers",
     "https://uk.lefroybrooks.com/all-mirrors",
-    "https://uk.lefroybrooks.com/all-lighting"
+    "https://uk.lefroybrooks.com/all-lighting",
+    "https://uk.lefroybrooks.com/classic-bath-shower-mixers-1",
+    "https://uk.lefroybrooks.com/classic-bath-fillers",
+    "https://uk.lefroybrooks.com/classic-riser-showers",
+    "https://uk.lefroybrooks.com/mackintosh-riser-showers",
+    "https://uk.lefroybrooks.com/all-baths",
+    "https://uk.lefroybrooks.com/janey-mac-bath-shower-mixers-1"
   ],
   "models": {
     "GD8700": {
@@ -4010,6 +4016,366 @@
       "productUrl": "https://uk.lefroybrooks.com/all-lighting/lb-4007",
       "source": "Lefroy Brooks UK — fabricant",
       "illustratedFinish": "NK"
+    },
+    "WMBL8823": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1603207260951-05WXRWDH2VHB1K4BGZNA/Lefroy-Brooks_WM-BL-8823_NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/classic-bath-shower-mixers-1/wm-bl-8823",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "LB1700": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/477bdc5a-cdc4-4dbb-94f7-0a66245dcb5a/Lefroy-Brooks_LB-1700-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/classic-bath-shower-mixers-1/lb-1700",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "LB1701": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/dddee80e-a3b5-4c5f-b830-b13dd5639548/Lefroy-Brooks_LB-1701-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/classic-bath-shower-mixers-1/lb-1701",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "WL1700": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/d98b7451-f10d-4ee4-9f2b-22cebefc3eff/Lefroy-Brooks_WL-1700-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/classic-bath-shower-mixers-1/wl-1700",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "WL1701": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/504d22fa-9351-4054-bafc-02309ec312b7/Lefroy-Brooks_WL-1701-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/classic-bath-shower-mixers-1/wl-1701",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "BL1700": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/695c82c8-f55c-4668-a56f-588c24d01407/Lefroy-Brooks_BL-1700-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/classic-bath-shower-mixers-1/bl-1700",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "BL1701": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/e7e61938-2705-423b-93b5-91d2f9e2e8a6/Lefroy-Brooks_BL-1701-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/classic-bath-shower-mixers-1/bl-1701",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "CH1700": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/b41f5c3f-1b45-49cb-828a-28057821efbb/Lefroy-Brooks-CH-1700-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/classic-bath-shower-mixers-1/ch-1700",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "DMBL8825": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/0403a5ee-d81c-4e21-9be4-c3b5ac6fc7ac/Lefroy-Brooks_DM-BL-8825-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/classic-bath-shower-mixers-1/dm-bl-8825",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "GD8701": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/305ee64e-e211-4f12-a23b-d049fc06131a/Lefroy-Brooks_GD-8701-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/classic-riser-showers/gd-8701",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "GD8702": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/8d2548e1-0742-4752-b143-15875500a1d9/Lefroy-Brooks_GD-8702-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/classic-riser-showers/gd-8702",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "BL8701": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/681c2747-3149-42af-9a65-d238578fb400/Lefroy-Brooks_BL-8701-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/classic-riser-showers/bl-8701",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "BL8702": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/c5aec0d4-c902-4390-b05c-f0c311eaf5a0/Lefroy-Brooks_BL-8702-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/classic-riser-showers/bl-8702",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "GD8703": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/eddaa9d2-3112-4435-858c-8ab4eeca9ed2/Lefroy-Brooks_GD-8703-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/classic-riser-showers/gd-8703",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "GD8704": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/5f01f04a-215e-4fdb-8614-3961800b6c5d/Lefroy-Brooks_GD-8704-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/classic-riser-showers/gd-8704",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "BL8703": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/57823384-5f71-44bf-a08f-d96c2dac7a81/Lefroy-Brooks_BL-8703-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/classic-riser-showers/bl-8703",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "BL8704": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/436f14e8-eb4f-49b4-91e0-60b7dc0118ec/Lefroy-Brooks_BL-8704-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/classic-riser-showers/bl-8704",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "GD8743": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/a28e9a1f-87ce-4cb1-a1dd-b8a14964ef6a/Lefroy-Brooks_GD-8743-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/classic-riser-showers/gd-8743",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "GD8744": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/528acf94-abbd-4d60-95f9-14eee3753dc1/Lefroy-Brooks_GD-8744-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/classic-riser-showers/gd-8744",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "BL8743": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/2e5ffc7b-163d-4be8-bcdf-a262bae980bd/Lefroy-Brooks_BL-8743-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/classic-riser-showers/bl-8743",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "BL8744": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/282be70c-5307-484d-940e-b20c98ec3c1d/Lefroy-Brooks_BL-8744-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/classic-riser-showers/bl-8744",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "GD8741": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/c27827be-aae4-4499-aae8-2c3a01334cc5/Lefroy-Brooks_GD-8741-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/classic-riser-showers/gd-8741",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "GD8742": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/5ab024d6-aa67-422b-b04f-b9be88ee0fd3/Lefroy-Brooks_GD-8742-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/classic-riser-showers/gd-8742",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "BL8741": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/2c72779f-7e9e-427f-a473-6eb32ae257cb/Lefroy-Brooks_BL-8741-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/classic-riser-showers/bl-8741",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "BL8742": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/2dcaa178-81f3-4e43-80d9-106b61bf17a1/Lefroy-Brooks_BL-8742-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/classic-riser-showers/bl-8742",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "GD8748": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1634899076948-57UMGH9HD2JLU4XPQ7FI/Lefroy-Brooks_GD-8748-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/classic-riser-showers/gd-8748",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "GD8749": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/116c2a7b-e4fe-4126-b2e7-7159f393f821/Lefroy-Brooks_GD-8749-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/classic-riser-showers/gd-8749",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "BL8748": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/2c8f9202-60f6-4315-a428-9c6f1baa2313/Lefroy-Brooks_BL-8748-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/classic-riser-showers/bl-8748",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "BL8749": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/73a93a12-048d-48a1-973f-f1128c836543/Lefroy-Brooks_BL-8749-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/classic-riser-showers/bl-8749",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "GD8753": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/382a6282-dd36-4470-a5b2-a45e74413962/Lefroy-Brooks_GD-8753-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/classic-riser-showers/gd-8753",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "GD8754": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/6944a6ce-fea6-4b6c-b796-91adb5e24798/Lefroy-Brooks_GD-8754-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/classic-riser-showers/gd-8754",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "BL8753": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/22a70899-2b67-4a6f-8844-bb1515b6c1dd/Lefroy-Brooks_BL-8753-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/classic-riser-showers/bl-8753",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "BL8754": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/e737616b-e63f-4a5f-b93e-3a988a77329a/Lefroy-Brooks_BL-8754-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/classic-riser-showers/bl-8754",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "ML8701": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714056435894-KSFZUZM6GXC8KLHMZQ5M/Lefroy-Brooks_ML-8701-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/mackintosh-riser-showers/ml-8701",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "ML8702": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714056368717-C9WRSRVHFOGX31R75L20/Lefroy-Brooks_ML-8702-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/mackintosh-riser-showers/ml-8702",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "MB8701": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714056273219-TC6VW0O7LU140KCGGMP2/Lefroy-Brooks_MB-8701-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/mackintosh-riser-showers/mb-8701",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "MB8702": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714056228522-DA6RF7F7IVMQI2DG0LFT/Lefroy-Brooks_MB-8702-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/mackintosh-riser-showers/mb-8702",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "MK8701": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714056175910-VMRPFSKS3CGKYTPSZO4A/Lefroy-Brooks_MK-8701-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/mackintosh-riser-showers/mk-8701",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "MK8702": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714056052213-EL5C4E93YI9GOZ5IYZE4/Lefroy-Brooks_MK-8702-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/mackintosh-riser-showers/mk-8702",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "ML8704": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714055641872-1W5QFXMLH6W6IP4WNYRO/Lefroy-Brooks_ML-8704-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/mackintosh-riser-showers/ml-8704",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "MB8703": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714055573558-5M5D16EBUK4L0D8028N0/Lefroy-Brooks_MB-8703-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/mackintosh-riser-showers/mb-8703",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "MB8704": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714055507150-PYKALCKJD2ADX6YY608L/Lefroy-Brooks_MB-8704-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/mackintosh-riser-showers/mb-8704",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "MK8703": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714055442500-1ESDJR0ZOOL0W4HQH5A8/Lefroy-Brooks_MK-8703-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/mackintosh-riser-showers/mk-8703",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "MK8704": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714055368858-ZYR8KOZNQR11YM16W95R/Lefroy-Brooks_MK-8704-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/mackintosh-riser-showers/mk-8704",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "ML8741": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714052871773-QK31K9B04CUOKGTWEMWG/Lefroy-Brooks_ML-8741-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/mackintosh-riser-showers/ml-8741",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "ML8742": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714052786360-QEJX3DYHXTXZIK1E9DXM/Lefroy-Brooks_ML-8742-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/mackintosh-riser-showers/ml-8742",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "MB8741": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714052339222-ONWSGUG3D6JSIVNCR2UR/Lefroy-Brooks_MB-8741-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/mackintosh-riser-showers/mb-8741",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "MB8742": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714052190302-R5WHHCLK6HTBM60ROKD5/Lefroy-Brooks_MB-8742-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/mackintosh-riser-showers/mb-8742",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "MK8741": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714052051963-TE24TCTVGCCT1XRH2QFK/Lefroy-Brooks_MK-8741-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/mackintosh-riser-showers/mk-8741",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "MK8742": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714051939028-7E6NN7SVO7356MHCH07J/Lefroy-Brooks_MK-8742-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/mackintosh-riser-showers/mk-8742",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "ML8748": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714050774884-R4FQWCOG1ZOYGF5W9NGC/Lefroy-Brooks_ML-8748-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/mackintosh-riser-showers/ml-8748",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "ML8749": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714050696621-SXCPQEN56LQB65SHY8O6/Lefroy-Brooks_ML-8749-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/mackintosh-riser-showers/ml-8749",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "MB8748": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714050470502-F00F2CIRQ468XCCM089Y/Lefroy-Brooks_MB-8748-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/mackintosh-riser-showers/mb-8748",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "MB8749": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714050400289-YCTDKTU3OUGIQUCNJJOM/Lefroy-Brooks_MB-8749-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/mackintosh-riser-showers/mb-8749",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "MK8748": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714050074770-U9ZYVR3ENPHJJVTE5UQ1/Lefroy-Brooks_MK-8748-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/mackintosh-riser-showers/mk-8748",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "MK8749": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714050006899-LEQDQBR6YJQPVUETNXZ0/Lefroy-Brooks_MK-8749-NK.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/mackintosh-riser-showers/mk-8749",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": "NK"
+    },
+    "LB8643": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1462803406595-LE1HE6XQ28YTR0SL1KMC/LB-8643.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/all-baths/lb-8643",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": ""
+    },
+    "LB8641": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1462804636850-JDRUBSWBZIYBUG0SAE24/LB-8641.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/all-baths/lb-8641",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": ""
+    },
+    "LB8644": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1462804965731-A6WWTHOS04GRMZB9EF7P/LB-8644.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/all-baths/lb-8644",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": ""
+    },
+    "LB8642": {
+      "image": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1462804820655-RV3Z5BSUBLQ8TBWLHR2J/LB-8642.jpg",
+      "productUrl": "https://uk.lefroybrooks.com/all-baths/lb-8642",
+      "source": "Lefroy Brooks UK — fabricant",
+      "illustratedFinish": ""
     }
   },
   "finishes": {
@@ -5710,6 +6076,168 @@
     },
     "LB4007": {
       "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1641309553595-2F6LMJO289S946HQ6PL1/Lefroy-Brooks_LB-4007-NK.jpg"
+    },
+    "LB1700": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/477bdc5a-cdc4-4dbb-94f7-0a66245dcb5a/Lefroy-Brooks_LB-1700-NK.jpg"
+    },
+    "LB1701": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/dddee80e-a3b5-4c5f-b830-b13dd5639548/Lefroy-Brooks_LB-1701-NK.jpg"
+    },
+    "WL1700": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/d98b7451-f10d-4ee4-9f2b-22cebefc3eff/Lefroy-Brooks_WL-1700-NK.jpg"
+    },
+    "WL1701": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/504d22fa-9351-4054-bafc-02309ec312b7/Lefroy-Brooks_WL-1701-NK.jpg"
+    },
+    "BL1700": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/695c82c8-f55c-4668-a56f-588c24d01407/Lefroy-Brooks_BL-1700-NK.jpg"
+    },
+    "BL1701": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/e7e61938-2705-423b-93b5-91d2f9e2e8a6/Lefroy-Brooks_BL-1701-NK.jpg"
+    },
+    "CH1700": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/b41f5c3f-1b45-49cb-828a-28057821efbb/Lefroy-Brooks-CH-1700-NK.jpg"
+    },
+    "GD8701": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/305ee64e-e211-4f12-a23b-d049fc06131a/Lefroy-Brooks_GD-8701-NK.jpg"
+    },
+    "GD8702": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/8d2548e1-0742-4752-b143-15875500a1d9/Lefroy-Brooks_GD-8702-NK.jpg"
+    },
+    "BL8701": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/681c2747-3149-42af-9a65-d238578fb400/Lefroy-Brooks_BL-8701-NK.jpg"
+    },
+    "BL8702": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/c5aec0d4-c902-4390-b05c-f0c311eaf5a0/Lefroy-Brooks_BL-8702-NK.jpg"
+    },
+    "GD8703": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/eddaa9d2-3112-4435-858c-8ab4eeca9ed2/Lefroy-Brooks_GD-8703-NK.jpg"
+    },
+    "GD8704": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/5f01f04a-215e-4fdb-8614-3961800b6c5d/Lefroy-Brooks_GD-8704-NK.jpg"
+    },
+    "BL8703": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/57823384-5f71-44bf-a08f-d96c2dac7a81/Lefroy-Brooks_BL-8703-NK.jpg"
+    },
+    "BL8704": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/436f14e8-eb4f-49b4-91e0-60b7dc0118ec/Lefroy-Brooks_BL-8704-NK.jpg"
+    },
+    "GD8743": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/a28e9a1f-87ce-4cb1-a1dd-b8a14964ef6a/Lefroy-Brooks_GD-8743-NK.jpg"
+    },
+    "GD8744": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/528acf94-abbd-4d60-95f9-14eee3753dc1/Lefroy-Brooks_GD-8744-NK.jpg"
+    },
+    "BL8743": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/2e5ffc7b-163d-4be8-bcdf-a262bae980bd/Lefroy-Brooks_BL-8743-NK.jpg"
+    },
+    "BL8744": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/282be70c-5307-484d-940e-b20c98ec3c1d/Lefroy-Brooks_BL-8744-NK.jpg"
+    },
+    "GD8741": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/c27827be-aae4-4499-aae8-2c3a01334cc5/Lefroy-Brooks_GD-8741-NK.jpg"
+    },
+    "GD8742": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/5ab024d6-aa67-422b-b04f-b9be88ee0fd3/Lefroy-Brooks_GD-8742-NK.jpg"
+    },
+    "BL8741": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/2c72779f-7e9e-427f-a473-6eb32ae257cb/Lefroy-Brooks_BL-8741-NK.jpg"
+    },
+    "BL8742": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/2dcaa178-81f3-4e43-80d9-106b61bf17a1/Lefroy-Brooks_BL-8742-NK.jpg"
+    },
+    "GD8748": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1634899076948-57UMGH9HD2JLU4XPQ7FI/Lefroy-Brooks_GD-8748-NK.jpg"
+    },
+    "GD8749": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/116c2a7b-e4fe-4126-b2e7-7159f393f821/Lefroy-Brooks_GD-8749-NK.jpg"
+    },
+    "BL8748": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/2c8f9202-60f6-4315-a428-9c6f1baa2313/Lefroy-Brooks_BL-8748-NK.jpg"
+    },
+    "BL8749": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/73a93a12-048d-48a1-973f-f1128c836543/Lefroy-Brooks_BL-8749-NK.jpg"
+    },
+    "GD8753": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/382a6282-dd36-4470-a5b2-a45e74413962/Lefroy-Brooks_GD-8753-NK.jpg"
+    },
+    "GD8754": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/6944a6ce-fea6-4b6c-b796-91adb5e24798/Lefroy-Brooks_GD-8754-NK.jpg"
+    },
+    "BL8753": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/22a70899-2b67-4a6f-8844-bb1515b6c1dd/Lefroy-Brooks_BL-8753-NK.jpg"
+    },
+    "BL8754": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/e737616b-e63f-4a5f-b93e-3a988a77329a/Lefroy-Brooks_BL-8754-NK.jpg"
+    },
+    "ML8701": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714056435894-KSFZUZM6GXC8KLHMZQ5M/Lefroy-Brooks_ML-8701-NK.jpg"
+    },
+    "ML8702": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714056368717-C9WRSRVHFOGX31R75L20/Lefroy-Brooks_ML-8702-NK.jpg"
+    },
+    "MB8701": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714056273219-TC6VW0O7LU140KCGGMP2/Lefroy-Brooks_MB-8701-NK.jpg"
+    },
+    "MB8702": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714056228522-DA6RF7F7IVMQI2DG0LFT/Lefroy-Brooks_MB-8702-NK.jpg"
+    },
+    "MK8701": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714056175910-VMRPFSKS3CGKYTPSZO4A/Lefroy-Brooks_MK-8701-NK.jpg"
+    },
+    "MK8702": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714056052213-EL5C4E93YI9GOZ5IYZE4/Lefroy-Brooks_MK-8702-NK.jpg"
+    },
+    "ML8704": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714055641872-1W5QFXMLH6W6IP4WNYRO/Lefroy-Brooks_ML-8704-NK.jpg"
+    },
+    "MB8703": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714055573558-5M5D16EBUK4L0D8028N0/Lefroy-Brooks_MB-8703-NK.jpg"
+    },
+    "MB8704": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714055507150-PYKALCKJD2ADX6YY608L/Lefroy-Brooks_MB-8704-NK.jpg"
+    },
+    "MK8703": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714055442500-1ESDJR0ZOOL0W4HQH5A8/Lefroy-Brooks_MK-8703-NK.jpg"
+    },
+    "MK8704": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714055368858-ZYR8KOZNQR11YM16W95R/Lefroy-Brooks_MK-8704-NK.jpg"
+    },
+    "ML8741": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714052871773-QK31K9B04CUOKGTWEMWG/Lefroy-Brooks_ML-8741-NK.jpg"
+    },
+    "ML8742": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714052786360-QEJX3DYHXTXZIK1E9DXM/Lefroy-Brooks_ML-8742-NK.jpg"
+    },
+    "MB8741": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714052339222-ONWSGUG3D6JSIVNCR2UR/Lefroy-Brooks_MB-8741-NK.jpg"
+    },
+    "MB8742": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714052190302-R5WHHCLK6HTBM60ROKD5/Lefroy-Brooks_MB-8742-NK.jpg"
+    },
+    "MK8741": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714052051963-TE24TCTVGCCT1XRH2QFK/Lefroy-Brooks_MK-8741-NK.jpg"
+    },
+    "MK8742": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714051939028-7E6NN7SVO7356MHCH07J/Lefroy-Brooks_MK-8742-NK.jpg"
+    },
+    "ML8748": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714050774884-R4FQWCOG1ZOYGF5W9NGC/Lefroy-Brooks_ML-8748-NK.jpg"
+    },
+    "ML8749": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714050696621-SXCPQEN56LQB65SHY8O6/Lefroy-Brooks_ML-8749-NK.jpg"
+    },
+    "MB8748": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714050470502-F00F2CIRQ468XCCM089Y/Lefroy-Brooks_MB-8748-NK.jpg"
+    },
+    "MB8749": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714050400289-YCTDKTU3OUGIQUCNJJOM/Lefroy-Brooks_MB-8749-NK.jpg"
+    },
+    "MK8748": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714050074770-U9ZYVR3ENPHJJVTE5UQ1/Lefroy-Brooks_MK-8748-NK.jpg"
+    },
+    "MK8749": {
+      "NK": "https://images.squarespace-cdn.com/content/v1/55659efce4b0a87d403dfd88/1714050006899-LEQDQBR6YJQPVUETNXZ0/Lefroy-Brooks_MK-8749-NK.jpg"
     }
   }
 }
