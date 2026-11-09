@@ -96,10 +96,11 @@ async function getMedia(){
    mediaPromise=Promise.all([
      request('/brand-guide-collections.json','Collections',{collections:{},models:{}}),
      request('/brand-guide-hotbath-media.json','Hotbath',{models:{},collections:{}}),
-     request('/lefroy-general-official-media.json','Lefroy Brooks',{families:{},models:{},finishes:{}})
-   ]).then(([collections,hotbath,lefroy])=>{
+     request('/lefroy-general-official-media.json','Lefroy Brooks',{families:{},models:{},finishes:{}}),
+     request('/lefroy-catalog-official-images.json','Lefroy Brooks catalogue',{models:{},finishes:{}})
+   ]).then(([collections,hotbath,lefroy,lefroyCatalogue])=>{
      if(failed)mediaPromise=null;
-     return {collections,hotbath,lefroy};
+     return {collections,hotbath,lefroy,lefroyCatalogue};
    });
  }
  return mediaPromise;
@@ -131,7 +132,8 @@ function findModelVisual(brand,p,base,media){
  const finish=String(p?.finishCode||'').trim().toUpperCase();
  const exactOfficial=safeUrl(media.collections.finishModels?.[brand]?.[reduced]?.[finish]) ||
    (brand==='Lefroy Brooks'?safeUrl(media?.lefroy?.finishes?.[reduced]?.[finish]):'');
- if(exactOfficial)return {image:exactOfficial,caption:'Photographie fabricant de la finition '+finish,match:'exact'};
+ const catalogueExact=brand==='Lefroy Brooks'?safeUrl(media?.lefroyCatalogue?.finishes?.[reduced]?.[finish]):'';
+ if(exactOfficial||catalogueExact)return {image:exactOfficial||catalogueExact,caption:'Photographie fabricant de la finition '+finish,match:'exact'};
  const owned=safeUrl(p?.image)||(Array.isArray(p?.images)?safeUrl(p.images[0]):'');
  const exactFlag=String(p?.imageSource||'').toLowerCase();
  const finishCode=String(p?.finishCode||'').replace(/[^a-z0-9]/gi,'');
@@ -142,6 +144,8 @@ function findModelVisual(brand,p,base,media){
  if(exactImage)return {image:owned,caption:'Visuel catalogue de la finition sélectionnée',match:'exact'};
  if(official)return {image:official,caption:'Photographie officielle du modèle · finition illustrative',match:'model'};
  if(brand==='Lefroy Brooks'){
+  const verifiedCatalogue=safeUrl(media?.lefroyCatalogue?.models?.[reduced]?.image);
+  if(verifiedCatalogue)return {image:verifiedCatalogue,caption:'Photographie officielle du modèle · finition illustrative',match:'model'};
   const verified=safeUrl(media?.lefroy?.models?.[reduced]);
   if(verified)return {image:verified,caption:'Photographie officielle du modèle · finition indicative',match:'model'};
  }
@@ -157,7 +161,7 @@ function finishTiles(brand,variants,active,base,media){
    // image, filename heuristic or unverified imageSource flag for a finish tile.
    const finish=String(p.finishCode||'').trim().toUpperCase();
    const exact=finish?(safeUrl(media?.collections?.finishModels?.[brand]?.[nrm(base).toUpperCase()]?.[finish]) ||
-     (brand==='Lefroy Brooks'?safeUrl(media?.lefroy?.finishes?.[nrm(base).toUpperCase()]?.[finish]):'')):'';
+     (brand==='Lefroy Brooks'?(safeUrl(media?.lefroy?.finishes?.[nrm(base).toUpperCase()]?.[finish])||safeUrl(media?.lefroyCatalogue?.finishes?.[nrm(base).toUpperCase()]?.[finish])):'')):'';
    const pressed=p.reference===active;
    return '<button type="button" class="mg-visual-finish'+(pressed?' is-current':'')+'" data-mg-finish="'+esc(p.reference)+'" aria-pressed="'+pressed+'">'+
     (exact?'<img src="'+esc(exact)+'" alt="" loading="lazy" decoding="async" onerror="this.remove()">':'<span class="mg-finish-image-missing" aria-hidden="true">Finition à confirmer sur photo</span>')+
@@ -233,7 +237,8 @@ function open(brand,rows,roomId,onAdd){
      const supplierPage=Object.entries(media.collections.modelPages?.[brand]||{})
        .find(([candidate])=>nrm(candidate)===sku)?.[1];
      // A verified model detail is more useful than the supplier homepage.
-     const link=safeUrl(supplierPage)||safeUrl(selected.manufacturerUrl)||official.url;
+     const manufacturerPage=brand==='Lefroy Brooks'?safeUrl(media?.lefroyCatalogue?.models?.[sku.toUpperCase()]?.productUrl):'';
+     const link=safeUrl(supplierPage)||manufacturerPage||safeUrl(selected.manufacturerUrl)||official.url;
      content='<section class="mg-detail"><div class="mg-photo">'+
        (imageResult.image?'<img src="'+esc(imageResult.image)+'" alt="'+esc(model.base)+'" onerror="this.style.display=\'none\'">':'<div class="mg-noimage">Image de référence indisponible</div>')+
        '<small>'+esc(imageResult.caption)+'</small></div><div class="mg-config"><div class="mg-ref">Référence de base : '+esc(model.base)+'</div><h3>'+esc(selected.designation||model.base)+'</h3>'+
