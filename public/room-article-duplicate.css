@@ -1,0 +1,26 @@
+/* V11.64.74 — article duplication in Projet par pièce. */
+#roomsEditor .duplicate-article{
+  display:inline-flex;align-items:center;gap:4px;margin:0 0 6px 10px;
+  padding:4px 9px;border:1px solid #cfbea5;border-radius:7px;
+  color:#675137;background:#fff9ed;cursor:pointer;font-weight:600;font-size:11px;
+}
+#roomsEditor .duplicate-article:hover,#roomsEditor .duplicate-article:focus-visible{
+  background:#f5e7cd;outline:2px solid #d2ae75;
+}
+.article-duplicate-modal{
+  position:fixed;inset:0;margin:auto;min-width:min(390px,calc(100vw - 32px));
+  max-width:min(520px,calc(100vw - 32px));width:100%;max-height:calc(100dvh - 32px);
+  overflow:auto;padding:0;border:1px solid #e5dccf;border-radius:15px;
+  background:#fff;box-shadow:0 20px 70px #0004;z-index:9999;color:#302c28;
+}
+.article-duplicate-modal::backdrop{background:#201c16aa}
+.article-duplicate-form{display:flex;flex-direction:column;gap:14px;padding:24px}
+.article-duplicate-form h3{font-size:20px;margin:0}
+.article-duplicate-description{font-size:13px;line-height:1.5;overflow-wrap:anywhere;margin:0;color:#655848}
+.article-duplicate-form label{display:flex;flex-direction:column;gap:7px;font-size:13px;font-weight:600}
+.article-duplicate-form select{width:100%;padding:11px 10px;border:1px solid #cfc7bc;border-radius:8px;background:white;color:#302c28;font:inherit}
+.article-duplicate-help{font-size:12px;color:#7b6b58;line-height:1.45;margin:0}
+.article-duplicate-error{color:#a52927;font-size:12px;font-weight:600;margin:0}
+.article-duplicate-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:8px}
+.article-duplicate-confirm:disabled{opacity:.6;cursor:wait}
+@media(max-width:620px){.article-duplicate-form{padding:18px}.article-duplicate-actions{flex-wrap:wrap}.article-duplicate-actions button{flex:1}}
