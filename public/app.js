@@ -3949,7 +3949,7 @@ function renderRoomsCore(){
    <div class="room-products" data-room-id="${esc(r.id)}">${ps.length?ps.map(p=>`
       <div class="room-product ${p.accessoryFor?'article-linked-card':''}" data-product-id="${esc(p.id)}">
         <div class="room-prod-img">${roomProductImageHtml(p)}</div>
-        <div>${p.accessoryFor?'':`<button type="button" class="article-drag-handle" title="Déplacer cet article dans une autre pièce ou modifier son ordre" aria-label="Déplacer ${esc(p.designation||p.reference||'cet article')}">⠿</button>`}<b>${esc(p.designation)}</b><div class="tech">${p.sbordoniConfiguration?`${esc(p.manufacturer)} · ${esc(p.collection)} · Configuration complète`:`${esc(p.manufacturer)} · ${esc(p.collection)} · ${esc(p.reference)} · <b>${esc(safeExactFinishLabel(p))}</b>`}</div>${roughInWarningHtml(p)}${p.internalReference?`<div class="tech">Complet avec ${p.internalReference}</div>`:""}
+        <div>${p.accessoryFor?'':`<button type="button" class="article-drag-handle" title="Déplacer cet article dans une autre pièce ou modifier son ordre" aria-label="Déplacer ${esc(p.designation||p.reference||'cet article')}">⠿</button>`}<b>${esc(p.designation)}</b>${p.accessoryFor||p.requiredRoughIn||p.sbordoniConfigurationAccessory?'':`<button type="button" class="tiny duplicate-article" data-id="${esc(p.id)}" title="Dupliquer cet article et choisir sa place dans le projet">⧉ Dupliquer</button>`}<div class="tech">${p.sbordoniConfiguration?`${esc(p.manufacturer)} · ${esc(p.collection)} · Configuration complète`:`${esc(p.manufacturer)} · ${esc(p.collection)} · ${esc(p.reference)} · <b>${esc(safeExactFinishLabel(p))}</b>`}</div>${roughInWarningHtml(p)}${p.internalReference?`<div class="tech">Complet avec ${p.internalReference}</div>`:""}
         ${p.sbordoniConfigurationIssue?`<div class="recor-config-error">${esc(p.sbordoniConfigurationIssue)}</div>`:""}${p.sbordoniConfiguration?`<button type="button" class="btn primary sbordoni-edit-config" data-id="${p.id}" data-room="${r.id}" style="margin:8px 0 4px">Modifier la configuration</button>`:""}
         <details class="article-editor">
           <summary>Modifier l'article</summary>
@@ -4021,7 +4021,11 @@ function renderRoomsCore(){
    </div></article>`;}).join("");
  $$(".room-title").forEach(x=>x.oninput=()=>{roomById(x.dataset.id).title=x.value;saveState();renderRoomSelect();renderSelection();});
  $$(".room-sub").forEach(x=>x.oninput=()=>{roomById(x.dataset.id).subtitle=x.value;saveState();});
- $$(".duplicate-room").forEach(b=>b.onclick=()=>duplicateRoom(b.dataset.id));
+ $(".duplicate-room").forEach(b=>b.onclick=()=>duplicateRoom(b.dataset.id));
+ $(".duplicate-article").forEach(b=>b.onclick=()=>window.HydroRoomArticleDuplicate?.open(b.dataset.id,{
+    state,saveState,renderRooms,renderSelection,renderMarginDashboard,ensurePresentationLayoutState,
+    toast,cloud,assetGet,assetSet,apiFetch,fileToBase64,technicalSheetHref
+ }));
  $$(".go-cat").forEach(b=>b.onclick=()=>{showView("catalog");$("#targetRoom").value=b.dataset.id;renderCatalog();});
  $$(".del-room").forEach(b=>b.onclick=()=>{if(state.rooms.length===1)return alert("Il faut conserver au moins une pièce.");let id=b.dataset.id;if(!confirm("Supprimer cette pièce et ses éléments ?"))return;state.rooms=state.rooms.filter(r=>r.id!==id);state.selected=state.selected.filter(p=>p.roomId!==id);saveState();renderRoomSelect();renderRooms();renderSelection();renderMarginDashboard();});
  $$(".del-prod").forEach(b=>b.onclick=()=>removeProduct(b.dataset.id));
