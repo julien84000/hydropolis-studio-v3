@@ -25,7 +25,7 @@ const pause=ms=>new Promise(r=>setTimeout(r,ms));
    body:JSON.stringify({name:'Article Duplicate Test',username:'duplicate-articles',password:'test-articles-long-password'})
   });
   const auth=await setup.json();assert(auth.token,'No authorization token');
-  browser=await chromium.launch({headless:true});
+  browser=await chromium.launch({headless:true,...(process.env.CHROMIUM_PATH?{executablePath:process.env.CHROMIUM_PATH}:{})});
   const page=await browser.newPage({viewport:{width:1450,height:900},serviceWorkers:'block'});
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.addInitScript(token=>localStorage.setItem('hydropolis-auth-token',token),auth.token);
