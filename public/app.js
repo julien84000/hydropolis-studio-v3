@@ -534,9 +534,44 @@ function renderSalesProfile(){
   if(name)name.value=cloud.user.name||"";
   if(title)title.value=cloud.user.title||"";
   if(email)email.value=cloud.user.email||"";
-  
-... 1588 bytes omitted ...
-nerReset');if(reset)reset.onclick=()=>{delete state.project.dossierDesigner;saveState();bindDossierDesigner();};
+  if(phone)phone.value=cloud.user.phone||"";
+}
+async function saveSalesProfile(){
+  const payload={
+    name:$("#salesProfileName")?.value||"",
+    title:$("#salesProfileTitle")?.value||"",
+    email:$("#salesProfileEmail")?.value||"",
+    phone:$("#salesProfilePhone")?.value||""
+  };
+  const status=$("#salesProfileStatus");
+  if(status)status.textContent="Enregistrement…";
+  const data=await apiFetch("/api/me/profile",{method:"PATCH",body:JSON.stringify(payload)});
+  cloud.user=data.user;
+  updateUserBox();
+  renderSalesProfile();
+  if(status){
+    status.textContent="Coordonnées enregistrées ✓";
+    setTimeout(()=>{if(status.textContent.includes("✓"))status.textContent=""},1800);
+  }
+  if($("#view-preview")?.classList.contains("active"))buildDocument();
+}
+function dossierDesignerProfile(){
+  const saved=state.project?.dossierDesigner;
+  const source=saved&&typeof saved==='object'?saved:salespersonProfile();
+  return Object.fromEntries(['name','title','phone','email','address'].map(key=>[key,String(source[key]||'').trim()]));
+}
+function bindDossierDesigner(){
+  const profile=dossierDesignerProfile();
+  const fields={Name:'name',Title:'title',Phone:'phone',Email:'email',Address:'address'};
+  Object.entries(fields).forEach(([suffix,key])=>{
+    const input=$('#dossierDesigner'+suffix);if(!input)return;
+    input.value=profile[key];
+    input.oninput=()=>{
+      if(!state.project.dossierDesigner)state.project.dossierDesigner=dossierDesignerProfile();
+      state.project.dossierDesigner[key]=input.value;saveState();
+    };
+  });
+  const reset=$('#dossierDesignerReset');if(reset)reset.onclick=()=>{delete state.project.dossierDesigner;saveState();bindDossierDesigner();};
 }
 function salespersonContactPage(no){
   const s=dossierDesignerProfile();
