@@ -196,7 +196,7 @@ function open(articleId,ctx){
         if(result.copies.some(p=>String(p.id)===String(id))||String(page).startsWith(prefix))delete layout.assignments[id];
       for(const key of Object.keys(layout.orders||{}))if(String(key).startsWith(prefix))delete layout.orders[key];
       for(const key of Object.keys(layout.blocks||{}))if(String(key).startsWith(prefix))delete layout.blocks[key];
-      if(!ctx.saveState())throw Error('Impossible de sauvegarder la duplication.');
+      if(!ctx.saveState())throw Error('Le stockage local est plein ou indisponible. La duplication a été annulée ; l’article original est conservé.');
       ctx.renderRooms();ctx.renderSelection();ctx.renderMarginDashboard();
       dialog.close();
       ctx.toast(attachmentWarnings
