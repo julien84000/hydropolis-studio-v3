@@ -1,0 +1,28 @@
+name: Free article and photo storage regression
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'public/app.js'
+      - 'public/local-project-storage.js'
+      - 'public/room-article-duplicate.js'
+      - 'tests/free-article-storage-browser.js'
+      - '.github/workflows/free-article-storage.yml'
+permissions:
+  contents: read
+jobs:
+  regression:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm install --no-save --package-lock=false playwright@1.55.0
+      - run: npx playwright install --with-deps chromium
+      - run: node --test tests/local-project-storage.test.js
+      - run: node tests/free-article-storage-browser.js
+      - run: node tests/room-article-duplicate-browser.js

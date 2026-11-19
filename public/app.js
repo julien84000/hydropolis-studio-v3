@@ -418,7 +418,7 @@ async function deleteCloudProject(id){
 }
 async function importLegacyLocalProject(){
   let legacy=null;
-  try{legacy=JSON.parse(localStorage.getItem("hydropolis-v21")||"null")}catch{}
+  try{legacy=HydroLocalProjectStorage.decode(JSON.parse(localStorage.getItem("hydropolis-v21")||"null"))}catch{}
   if(!legacy)return alert("Aucun ancien projet local à importer sur cet ordinateur.");
   const name=legacy?.project?.name||"Projet local importé";
   const created=await apiFetch("/api/projects",{
@@ -534,44 +534,9 @@ function renderSalesProfile(){
   if(name)name.value=cloud.user.name||"";
   if(title)title.value=cloud.user.title||"";
   if(email)email.value=cloud.user.email||"";
-  if(phone)phone.value=cloud.user.phone||"";
-}
-async function saveSalesProfile(){
-  const payload={
-    name:$("#salesProfileName")?.value||"",
-    title:$("#salesProfileTitle")?.value||"",
-    email:$("#salesProfileEmail")?.value||"",
-    phone:$("#salesProfilePhone")?.value||""
-  };
-  const status=$("#salesProfileStatus");
-  if(status)status.textContent="Enregistrement…";
-  const data=await apiFetch("/api/me/profile",{method:"PATCH",body:JSON.stringify(payload)});
-  cloud.user=data.user;
-  updateUserBox();
-  renderSalesProfile();
-  if(status){
-    status.textContent="Coordonnées enregistrées ✓";
-    setTimeout(()=>{if(status.textContent.includes("✓"))status.textContent=""},1800);
-  }
-  if($("#view-preview")?.classList.contains("active"))buildDocument();
-}
-function dossierDesignerProfile(){
-  const saved=state.project?.dossierDesigner;
-  const source=saved&&typeof saved==='object'?saved:salespersonProfile();
-  return Object.fromEntries(['name','title','phone','email','address'].map(key=>[key,String(source[key]||'').trim()]));
-}
-function bindDossierDesigner(){
-  const profile=dossierDesignerProfile();
-  const fields={Name:'name',Title:'title',Phone:'phone',Email:'email',Address:'address'};
-  Object.entries(fields).forEach(([suffix,key])=>{
-    const input=$('#dossierDesigner'+suffix);if(!input)return;
-    input.value=profile[key];
-    input.oninput=()=>{
-      if(!state.project.dossierDesigner)state.project.dossierDesigner=dossierDesignerProfile();
-      state.project.dossierDesigner[key]=input.value;saveState();
-    };
-  });
-  const reset=$('#dossierDesignerReset');if(reset)reset.onclick=()=>{delete state.project.dossierDesigner;saveState();bindDossierDesigner();};
+  
+... 1588 bytes omitted ...
+nerReset');if(reset)reset.onclick=()=>{delete state.project.dossierDesigner;saveState();bindDossierDesigner();};
 }
 function salespersonContactPage(no){
   const s=dossierDesignerProfile();
@@ -1628,6 +1593,7 @@ function loadState(override=null){
       const raw=localStorage.getItem(stateStorageKey());
       s=raw?JSON.parse(raw):null;
     }
+    s=HydroLocalProjectStorage.decode(s);
     if(s && typeof s==="object"){
       state.project={...fresh.project,...(s.project||{})};
       state.rooms=Array.isArray(s.rooms)&&s.rooms.length?JSON.parse(JSON.stringify(s.rooms)):fresh.rooms;
@@ -1729,21 +1695,23 @@ function saveState(){
       return q;
     })
   };
-  const payload=JSON.stringify(compact);
-  try{
+  const payload=HydroLocalProjectStorage.encode(compact);
+  const persist=()=>{
     localStorage.setItem(stateStorageKey(),payload);
     if(!cloud.loadingProject&&cloud.user?.id&&cloud.currentProjectId)localStorage.setItem(`hydropolis-draft-at:${cloud.user.id}:${cloud.currentProjectId}`,new Date().toISOString());
     markCloudDirty();
     try{renderV11Overview()}catch{}
     return true;
+  };
+  try{
+    return persist();
   }catch(e){
-    console.warn("[Hydropolis storage] quota dépassé",e);
+    console.warn("[Hydropolis storage] écriture locale impossible",e);
     try{
       Object.keys(localStorage).forEach(k=>{
         if(/^hydropolis-manufacturer-/i.test(k))localStorage.removeItem(k);
       });
-      localStorage.setItem(stateStorageKey(),payload);
-      return true;
+      return persist();
     }catch(e2){
       console.warn("[Hydropolis storage] projet conservé en mémoire",e2);
       return false;
@@ -6845,7 +6813,7 @@ $$(".nav").forEach(n=>n.onclick=()=>showView(n.dataset.view));
           if(copyResigresAssetsToSelected(p,img))changed=true;
         }catch(e){console.warn("[Resigres V11.47 selected assets]",p.reference,e.message)}
       }
-      if(changed){saveState();baseRenderRooms();if($("#view-preview")?.classList.contains("active"))buildDocument();}
+      if(changed){saveState();renderRooms();if($("#view-preview")?.classList.contains("active"))buildDocument();}
     }finally{resigresSelectedHydrationRunning=false}
   }
 
@@ -7481,7 +7449,7 @@ $$(".nav").forEach(n=>n.onclick=()=>showView(n.dataset.view));
   function decorateResigresTech52(){
     (state.selected||[]).filter(isResigres).forEach(p=>{const anchor=document.querySelector(`.enrich-btn[data-id="${CSS.escape(p.id)}"]`);const card=anchor?.closest(".room-product");const actions=card?.querySelector(".image-actions");if(!actions)return;if(p.technicalSheetUrl)return;if(actions.querySelector(`[data-v1152-resigres-tech="${CSS.escape(p.id)}"]`))return;const b=document.createElement("button");b.type="button";b.className="tiny";b.dataset.v1152ResigresTech=p.id;b.textContent="Récupérer la fiche technique Resigres";b.onclick=async()=>{b.disabled=true;b.textContent="Recherche de la fiche…";try{await fetchResigresDoc52(p);renderRooms()}catch(e){b.disabled=false;b.textContent="Réessayer la fiche technique";alert(`Fiche technique Resigres : ${e.message}`)}};actions.appendChild(b)});
   }
-  async function hydrateResigresDocs52(){if(resigresDocsBusy)return;const list=(state.selected||[]).filter(p=>isResigres(p)&&!p.technicalSheetUrl);if(!list.length)return;resigresDocsBusy=true;let changed=false;try{for(const p of list){try{await fetchResigresDoc52(p);changed=true}catch{}}}finally{resigresDocsBusy=false}if(changed)baseRenderRooms52();decorateResigresTech52()}
+  async function hydrateResigresDocs52(){if(resigresDocsBusy)return;const list=(state.selected||[]).filter(p=>isResigres(p)&&!p.technicalSheetUrl);if(!list.length)return;resigresDocsBusy=true;let changed=false;try{for(const p of list){try{await fetchResigresDoc52(p);changed=true}catch{}}}finally{resigresDocsBusy=false}if(changed)renderRooms();decorateResigresTech52()}
   renderRooms=function(){baseRenderRooms52();decorateResigresTech52();queueMicrotask(()=>hydrateResigresDocs52().catch(e=>console.warn("[V11.52 Resigres docs]",e)))};
 
   try{let dirty=false;for(const k of Object.keys(manufacturerImageCache||{})){const row=manufacturerImageCache[k];if(/^Resigres\|/i.test(k)&&row?.src&&!row?.technicalSheetUrl){delete manufacturerImageCache[k];dirty=true}}if(dirty)saveManufacturerCache()}catch(e){console.warn("[V11.52 cache tech reset]",e)}
